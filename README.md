@@ -60,7 +60,10 @@ im Dashboard erlaubst — einmalig oder für die Sitzung.
 1. **Browser (sofort):** Mikrofon-Button = Push-to-talk. Schalter
    „Wake-Word-Modus" in SETUP → dauerhaft zuhören, reagiert auf „Jarvis …".
    Antworten werden per `speechSynthesis` gesprochen. (Chrome/Edge)
-2. **Lokal (volle Privatsphäre):** `pip install -e ".[voice]"` installiert
+2. **ElevenLabs (beste Stimme):** `JARVIS_ELEVENLABS_API_KEY` und
+   `JARVIS_ELEVENLABS_VOICE_ID` in `.env` setzen — JARVIS spricht dann mit
+   deiner ElevenLabs-Stimme (MP3 wird ans Dashboard gestreamt).
+3. **Lokal (volle Privatsphäre):** `pip install -e ".[voice]"` installiert
    openwakeword (Wake Word), faster-whisper (STT) und piper (TTS). JARVIS
    nutzt sie automatisch, sobald verfügbar.
 

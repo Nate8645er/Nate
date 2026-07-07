@@ -1,7 +1,14 @@
-"""Text-to-speech via Piper (optional dependency).
+"""Text-to-speech engines.
 
-synthesize() returns WAV bytes for a sentence. Missing dependency ->
-unavailable; the dashboard then uses the browser's speechSynthesis.
+Two interchangeable backends, both exposing `available`, `mime` and
+`synthesize(text) -> bytes`:
+
+  * ElevenLabsTTS — cloud voices via the ElevenLabs API (MP3). Chosen when
+    an API key + voice id are configured.
+  * PiperTTS     — fully local voices via piper (WAV, optional dependency).
+
+If neither is available the dashboard falls back to the browser's
+speechSynthesis, so speech output always works.
 """
 
 from __future__ import annotations
@@ -11,10 +18,50 @@ import io
 import logging
 import wave
 
+import httpx
+
 log = logging.getLogger(__name__)
 
 
-class TextToSpeech:
+class ElevenLabsTTS:
+    """Cloud TTS via ElevenLabs; returns MP3 bytes."""
+
+    mime = "audio/mpeg"
+
+    def __init__(
+        self,
+        api_key: str,
+        voice_id: str,
+        model: str = "eleven_multilingual_v2",
+    ) -> None:
+        self.api_key = api_key
+        self.voice_id = voice_id
+        self.model = model
+        self.available = bool(api_key and voice_id)
+        if self.available:
+            log.info("TTS ready: elevenlabs (voice %s)", voice_id)
+
+    async def synthesize(self, text: str) -> bytes:
+        if not self.available:
+            raise RuntimeError(
+                "ElevenLabs nicht konfiguriert — JARVIS_ELEVENLABS_API_KEY "
+                "und JARVIS_ELEVENLABS_VOICE_ID in .env setzen."
+            )
+        async with httpx.AsyncClient(timeout=60) as client:
+            resp = await client.post(
+                f"https://api.elevenlabs.io/v1/text-to-speech/{self.voice_id}",
+                headers={"xi-api-key": self.api_key},
+                json={"text": text, "model_id": self.model},
+            )
+            resp.raise_for_status()
+            return resp.content
+
+
+class PiperTTS:
+    """Local TTS via piper (optional dependency); returns WAV bytes."""
+
+    mime = "audio/wav"
+
     def __init__(self, voice: str = "de_DE-thorsten-medium") -> None:
         self.voice_name = voice
         self._voice = None
@@ -53,3 +100,18 @@ class TextToSpeech:
             return buf.getvalue()
 
         return await asyncio.to_thread(run)
+
+
+def create_tts(
+    provider: str,
+    piper_voice: str,
+    elevenlabs_api_key: str = "",
+    elevenlabs_voice_id: str = "",
+    elevenlabs_model: str = "eleven_multilingual_v2",
+) -> ElevenLabsTTS | PiperTTS:
+    """Pick the TTS backend. "auto" prefers ElevenLabs when configured."""
+    if provider in ("auto", "elevenlabs") and elevenlabs_api_key and elevenlabs_voice_id:
+        return ElevenLabsTTS(elevenlabs_api_key, elevenlabs_voice_id, elevenlabs_model)
+    if provider == "elevenlabs":
+        log.warning("ElevenLabs requested but key/voice missing — trying piper")
+    return PiperTTS(piper_voice)

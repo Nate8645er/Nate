@@ -51,7 +51,11 @@ class Settings(BaseSettings):
     # --- Voice ---
     voice_enabled: bool = True
     stt_model: str = "small"  # faster-whisper model size
+    tts_provider: str = "auto"  # auto | elevenlabs | piper
     tts_voice: str = "de_DE-thorsten-medium"  # piper voice
+    elevenlabs_api_key: str = ""
+    elevenlabs_voice_id: str = ""
+    elevenlabs_model: str = "eleven_multilingual_v2"
 
     # --- Safety ---
     # Actions with risk >= this level always require explicit user approval.

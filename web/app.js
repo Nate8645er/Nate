@@ -153,9 +153,12 @@ $("#set-wakeword").onchange = (e) => {
 };
 
 function speak(data) {
-  if (data.wav_b64) {
-    // Server-side Piper audio
-    new Audio(`data:audio/wav;base64,${data.wav_b64}`).play().catch(() => {});
+  if (data.audio_b64) {
+    // Server-side audio (ElevenLabs MP3 or Piper WAV)
+    const audio = new Audio(`data:${data.mime || "audio/wav"};base64,${data.audio_b64}`);
+    audio.onplay = () => setCore(2, "spreche…");
+    audio.onended = () => setCore(0, "bereit");
+    audio.play().catch(() => {});
     return;
   }
   if (!$("#set-tts").checked || !window.speechSynthesis) return;
@@ -273,7 +276,9 @@ async function refreshStatus() {
   $("#sys-llm").textContent = s.llm;
   $("#sys-agents").textContent = s.agents.length;
   $("#sys-skills").textContent = s.skills;
-  $("#sys-voice").textContent = s.voice.stt_local ? "lokal" : "browser";
+  $("#sys-voice").textContent =
+    s.voice.tts_backend === "ElevenLabsTTS" ? "elevenlabs"
+    : s.voice.tts_available ? "piper" : "browser";
   $("#set-wake").textContent = s.voice.wake_word || "jarvis";
   renderSchedule(s.schedule);
 }
