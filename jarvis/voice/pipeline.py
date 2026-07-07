@@ -17,7 +17,7 @@ import base64
 import logging
 from typing import TYPE_CHECKING
 
-from jarvis.voice.stt import SpeechToText
+from jarvis.voice.stt import create_stt
 from jarvis.voice.tts import create_tts
 from jarvis.voice.wakeword import WakeWordListener
 
@@ -31,7 +31,12 @@ class VoicePipeline:
     def __init__(self, kernel: "Kernel") -> None:
         self.kernel = kernel
         cfg = kernel.settings
-        self.stt = SpeechToText(model_size=cfg.stt_model, language=cfg.language)
+        self.stt = create_stt(
+            cfg.stt_model,
+            cfg.language,
+            openai_api_key=cfg.openai_api_key,
+            openai_base_url=cfg.openai_base_url,
+        )
         self.tts = create_tts(
             cfg.tts_provider,
             piper_voice=cfg.tts_voice,
@@ -43,7 +48,8 @@ class VoicePipeline:
 
     def status(self) -> dict[str, bool | str]:
         return {
-            "stt_local": self.stt.available,
+            "stt_backend": type(self.stt).__name__,
+            "stt_available": self.stt.available,
             "tts_backend": type(self.tts).__name__,
             "tts_available": self.tts.available,
             "wakeword_local": self.wakeword.available,

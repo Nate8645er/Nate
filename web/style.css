@@ -166,6 +166,22 @@ button.mini { font-size: 9px; letter-spacing: 1px; padding: 3px 8px; }
 .switch input:checked + i::after { left: 18px; background: var(--cyan); }
 
 /* ------------------------------------------------------------- modal */
+#activate-backdrop {
+  position: fixed; inset: 0; z-index: 60;
+  background: rgba(2, 6, 15, .85);
+  display: flex; align-items: center; justify-content: center;
+}
+#activate-modal {
+  width: 400px; padding: 26px; text-align: center;
+  background: var(--panel); border: 1px solid var(--cyan);
+  border-radius: 10px; backdrop-filter: blur(10px);
+  box-shadow: 0 0 40px rgba(64, 180, 255, .3);
+}
+#activate-modal h2 { color: var(--cyan); font-size: 14px; letter-spacing: 4px; margin-bottom: 12px; }
+#activate-modal p { font-size: 13px; line-height: 1.6; margin-bottom: 16px; color: var(--text); }
+#activate-modal button { width: 100%; padding: 12px; font-size: 14px; }
+
+
 #approval-backdrop {
   position: fixed; inset: 0; z-index: 50;
   background: rgba(2, 6, 15, .8);

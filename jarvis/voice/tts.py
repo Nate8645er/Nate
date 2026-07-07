@@ -3,8 +3,8 @@
 Two interchangeable backends, both exposing `available`, `mime` and
 `synthesize(text) -> bytes`:
 
-  * ElevenLabsTTS — cloud voices via the ElevenLabs API (MP3). Chosen when
-    an API key + voice id are configured.
+  * ElevenLabsTTS — cloud voices via the ElevenLabs API (PCM wrapped as
+    WAV). Chosen when an API key + voice id are configured.
   * PiperTTS     — fully local voices via piper (WAV, optional dependency).
 
 If neither is available the dashboard falls back to the browser's
@@ -23,10 +23,26 @@ import httpx
 log = logging.getLogger(__name__)
 
 
-class ElevenLabsTTS:
-    """Cloud TTS via ElevenLabs; returns MP3 bytes."""
+def pcm_to_wav(pcm: bytes, sample_rate: int = 22050) -> bytes:
+    """Wrap raw 16-bit mono PCM in a WAV container."""
+    buf = io.BytesIO()
+    with wave.open(buf, "wb") as wav_file:
+        wav_file.setnchannels(1)
+        wav_file.setsampwidth(2)
+        wav_file.setframerate(sample_rate)
+        wav_file.writeframes(pcm)
+    return buf.getvalue()
 
-    mime = "audio/mpeg"
+
+class ElevenLabsTTS:
+    """Cloud TTS via ElevenLabs.
+
+    Requests raw PCM and wraps it as WAV so browsers AND the local voice
+    satellite (sounddevice) can play the same payload without an MP3 codec.
+    """
+
+    mime = "audio/wav"
+    sample_rate = 22050
 
     def __init__(
         self,
@@ -50,11 +66,12 @@ class ElevenLabsTTS:
         async with httpx.AsyncClient(timeout=60) as client:
             resp = await client.post(
                 f"https://api.elevenlabs.io/v1/text-to-speech/{self.voice_id}",
+                params={"output_format": f"pcm_{self.sample_rate}"},
                 headers={"xi-api-key": self.api_key},
                 json={"text": text, "model_id": self.model},
             )
             resp.raise_for_status()
-            return resp.content
+            return pcm_to_wav(resp.content, self.sample_rate)
 
 
 class PiperTTS:

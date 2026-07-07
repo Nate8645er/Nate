@@ -55,17 +55,40 @@ Jeder Skill deklariert ein Risiko-Level:
 Ab `JARVIS_APPROVAL_THRESHOLD` (Default: 1) blockiert die Aktion, bis du sie
 im Dashboard erlaubst — einmalig oder für die Sitzung.
 
-## Sprachsteuerung
+## Sprechen wie mit einem Kollegen (freihändig, ohne Knopf)
 
-1. **Browser (sofort):** Mikrofon-Button = Push-to-talk. Schalter
-   „Wake-Word-Modus" in SETUP → dauerhaft zuhören, reagiert auf „Jarvis …".
-   Antworten werden per `speechSynthesis` gesprochen. (Chrome/Edge)
-2. **ElevenLabs (beste Stimme):** `JARVIS_ELEVENLABS_API_KEY` und
-   `JARVIS_ELEVENLABS_VOICE_ID` in `.env` setzen — JARVIS spricht dann mit
-   deiner ElevenLabs-Stimme (MP3 wird ans Dashboard gestreamt).
-3. **Lokal (volle Privatsphäre):** `pip install -e ".[voice]"` installiert
-   openwakeword (Wake Word), faster-whisper (STT) und piper (TTS). JARVIS
-   nutzt sie automatisch, sobald verfügbar.
+Das Dashboard hört **automatisch** zu (einmalig „Zuhören starten" klicken —
+Browser-Pflicht für die Mikrofonfreigabe, danach nie wieder):
+
+1. „**Jarvis**, wie ist das Wetter in Zürich?" → er antwortet mit deiner Stimme
+2. Danach ist das Gespräch **offen**: 45 Sekunden lang brauchst du kein
+   Wake Word — einfach weiterreden wie mit einem Kollegen
+3. Während JARVIS spricht, ist das Mikrofon stumm (er hört sich nicht selbst)
+4. Mikrofon-Button = nur noch Stummschalten
+
+**Stimme & Erkennung:**
+- **ElevenLabs**: `JARVIS_ELEVENLABS_API_KEY` + `JARVIS_ELEVENLABS_VOICE_ID`
+  in `.env` → JARVIS spricht mit deiner Wunschstimme
+- **STT**: lokal via faster-whisper (`[voice]`-Extra) — oder automatisch über
+  die OpenAI-Whisper-API, wenn nur ein OpenAI-Key gesetzt ist (kein Modell-Download)
+
+## JARVIS im ganzen System (ohne Browser)
+
+Der **Voice-Satellit** `jarvis-voice` lauscht systemweit am Mikrofon —
+Dashboard offen oder nicht, egal:
+
+```bash
+pip install -e ".[voice]"    # Mikrofon-Stack (openwakeword, sounddevice)
+jarvis-voice                 # lauscht ab sofort auf „Jarvis …"
+```
+
+**Autostart mit dem PC** (Server + Satellit starten bei jeder Anmeldung):
+
+| System | Befehl |
+|---|---|
+| Linux | `bash scripts/install-autostart-linux.sh` (systemd-User-Dienste) |
+| Windows | `powershell -ExecutionPolicy Bypass -File scripts\install-autostart-windows.ps1` (Autostart + Desktop-Icon) |
+| macOS | `jarvis` + `jarvis-voice` als Anmeldeobjekte hinzufügen (Systemeinstellungen → Allgemein → Anmeldeobjekte) |
 
 ## Eigene Agenten
 

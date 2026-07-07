@@ -21,13 +21,14 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Local voice stack (wake word, speech-to-text, text-to-speech)
+# Local voice stack (wake word, mic satellite, optional local STT/TTS)
 voice = [
     "openwakeword>=0.6",
-    "faster-whisper>=1.0",
-    "piper-tts>=1.2",
     "sounddevice>=0.4",
     "numpy>=1.26",
+    "websockets>=12.0",
+    "faster-whisper>=1.0",
+    "piper-tts>=1.2",
 ]
 # Vector memory backends
 vector = [
@@ -61,6 +62,7 @@ dev = [
 
 [project.scripts]
 jarvis = "jarvis.__main__:main"
+jarvis-voice = "jarvis.voice.satellite:main"
 
 [tool.setuptools.packages.find]
 include = ["jarvis*"]

@@ -42,8 +42,8 @@
     <div id="chat"></div>
 
     <div id="inputbar">
-      <button id="mic" title="Sprechen (oder Wake Word 'Jarvis')">🎙</button>
-      <input id="text" placeholder="Sag etwas… (@agent für Direktauftrag)" autocomplete="off">
+      <button id="mic" title="Zuhören stummschalten/aktivieren">🎙</button>
+      <input id="text" placeholder="Sprich einfach — oder tippe hier… (@agent für Direktauftrag)" autocomplete="off">
       <button id="send">➤</button>
     </div>
   </main>
@@ -88,13 +88,23 @@
       <div class="kv"><span>Browser-Stimme</span>
         <label class="switch"><input type="checkbox" id="set-tts" checked><i></i></label>
       </div>
-      <div class="kv"><span>Wake-Word-Modus</span>
-        <label class="switch"><input type="checkbox" id="set-wakeword"><i></i></label>
+      <div class="kv"><span>Immer zuhören (freihändig)</span>
+        <label class="switch"><input type="checkbox" id="set-wakeword" checked><i></i></label>
       </div>
       <p class="hint">API-Keys &amp; Backends werden über <code>.env</code> konfiguriert
         (JARVIS_ANTHROPIC_API_KEY, JARVIS_LLM_PROVIDER, …). Siehe README.</p>
     </section>
   </aside>
+</div>
+
+<!-- one-time mic activation (browser permission gesture) -->
+<div id="activate-backdrop" class="hidden">
+  <div id="activate-modal">
+    <h2>J.A.R.V.I.S. AKTIVIEREN</h2>
+    <p>Ein Klick genügt — danach hört JARVIS dauerhaft zu.<br>
+       Sag „Jarvis“, und sprich mit ihm wie mit einem Kollegen.</p>
+    <button id="activate-btn" class="confirm">🎙 ZUHÖREN STARTEN</button>
+  </div>
 </div>
 
 <!-- approval modal -->

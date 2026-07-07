@@ -9,12 +9,14 @@
 "use strict";
 
 const $ = (sel) => document.querySelector(sel);
+const FOLLOWUP_MS = 45000; // after an answer, keep talking without wake word
 const state = {
   ws: null,
   session: "default",
   listening: false,
-  wakeMode: false,
+  wakeMode: localStorage.getItem("jarvis.wakeMode") !== "off", // hands-free by default
   speaking: false,
+  conversationUntil: 0,
   coreLevel: 0, // 0 idle, 1 listening, 2 thinking/speaking
 };
 
@@ -91,16 +93,26 @@ function sendText(text) {
 $("#send").onclick = () => sendText();
 $("#text").addEventListener("keydown", (e) => e.key === "Enter" && sendText());
 
-/* -------------------------------------------------------------- voice */
+/* -------------------------------------------------------------- voice
+ * Hands-free by default: the dashboard starts listening automatically.
+ * Say "Jarvis …" once; after every answer a follow-up window keeps the
+ * conversation open — no wake word, no button, like talking to a colleague.
+ * While JARVIS speaks the recognizer pauses so he never hears himself. */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognizer = null;
+let suppressListening = false;
+
+function idleLabel() {
+  return state.wakeMode ? `sag „${$("#set-wake").textContent}“…` : "bereit";
+}
 
 function startRecognition(continuous) {
   if (!SR) {
     addMessage("jarvis", "Spracherkennung wird von diesem Browser nicht unterstützt (Chrome/Edge nutzen).", "voice");
     return;
   }
-  stopRecognition();
+  if (suppressListening) return;
+  stopRecognition(true);
   recognizer = new SR();
   recognizer.lang = document.documentElement.lang === "de" ? "de-DE" : "en-US";
   recognizer.continuous = continuous;
@@ -108,64 +120,116 @@ function startRecognition(continuous) {
   recognizer.onstart = () => {
     state.listening = true;
     $("#mic").classList.add("listening");
-    setCore(1, "höre zu…");
+    hideActivateOverlay();
+    if (state.coreLevel === 0) setCore(1, idleLabel());
+  };
+  recognizer.onerror = (e) => {
+    if (e.error === "not-allowed" || e.error === "service-not-allowed") {
+      state.wakeMode && showActivateOverlay();
+    }
   };
   recognizer.onend = () => {
     state.listening = false;
     $("#mic").classList.remove("listening");
     if (state.coreLevel === 1) setCore(0, "bereit");
-    if (state.wakeMode) setTimeout(() => startRecognition(true), 300);
+    // Keep the always-on loop alive (Chrome stops recognition periodically).
+    if (state.wakeMode && !suppressListening) setTimeout(() => startRecognition(true), 300);
   };
   recognizer.onresult = (e) => {
     const text = e.results[e.results.length - 1][0].transcript.trim();
     if (!text) return;
-    if (state.wakeMode) {
-      const wake = ($("#set-wake").textContent || "jarvis").toLowerCase();
-      const lower = text.toLowerCase();
-      const idx = lower.indexOf(wake);
-      if (idx === -1) return; // ignore speech without the wake word
-      const command = text.slice(idx + wake.length).replace(/^[,.!?\s]+/, "");
-      if (command) sendText(command);
-      else setCore(1, "ja?");
-    } else {
-      sendText(text);
+    if (!state.wakeMode) { sendText(text); return; }
+    const wake = ($("#set-wake").textContent || "jarvis").toLowerCase();
+    const lower = text.toLowerCase();
+    const idx = lower.indexOf(wake);
+    const inConversation = Date.now() < state.conversationUntil;
+    let command = null;
+    if (idx !== -1) command = text.slice(idx + wake.length).replace(/^[,.!?\s]+/, "");
+    else if (inConversation) command = text; // follow-up: no wake word needed
+    if (command) {
+      state.conversationUntil = Date.now() + FOLLOWUP_MS;
+      sendText(command);
+    } else if (idx !== -1) {
+      state.conversationUntil = Date.now() + FOLLOWUP_MS;
+      setCore(1, "ja?");
     }
   };
   try { recognizer.start(); } catch (_) { /* already started */ }
 }
 
-function stopRecognition() {
+function stopRecognition(silent) {
   if (recognizer) {
     recognizer.onend = null;
     try { recognizer.stop(); } catch (_) {}
     recognizer = null;
   }
   state.listening = false;
-  $("#mic").classList.remove("listening");
+  if (!silent) $("#mic").classList.remove("listening");
 }
 
-$("#mic").onclick = () => (state.listening ? stopRecognition() : startRecognition(false));
+function pauseForSpeech() {
+  suppressListening = true;
+  stopRecognition(true);
+}
+
+function resumeAfterSpeech() {
+  suppressListening = false;
+  state.conversationUntil = Date.now() + FOLLOWUP_MS;
+  setCore(0, idleLabel());
+  if (state.wakeMode) startRecognition(true);
+}
+
+$("#mic").onclick = () => {
+  if (state.listening) {
+    state.wakeMode = false;
+    localStorage.setItem("jarvis.wakeMode", "off");
+    $("#set-wakeword").checked = false;
+    stopRecognition();
+    setCore(0, "stumm");
+  } else {
+    state.wakeMode = true;
+    localStorage.setItem("jarvis.wakeMode", "on");
+    $("#set-wakeword").checked = true;
+    startRecognition(true);
+  }
+};
 
 $("#set-wakeword").onchange = (e) => {
   state.wakeMode = e.target.checked;
+  localStorage.setItem("jarvis.wakeMode", state.wakeMode ? "on" : "off");
   if (state.wakeMode) startRecognition(true);
-  else stopRecognition();
+  else { stopRecognition(); setCore(0, "stumm"); }
+};
+
+/* one-time activation overlay: browsers need a single click before the
+ * mic may be used on a fresh origin — afterwards it auto-starts forever */
+function showActivateOverlay() {
+  $("#activate-backdrop").classList.remove("hidden");
+}
+function hideActivateOverlay() {
+  $("#activate-backdrop").classList.add("hidden");
+}
+$("#activate-btn").onclick = () => {
+  hideActivateOverlay();
+  startRecognition(true);
 };
 
 function speak(data) {
   if (data.audio_b64) {
-    // Server-side audio (ElevenLabs MP3 or Piper WAV)
+    // Server-side audio (ElevenLabs or Piper, both WAV)
     const audio = new Audio(`data:${data.mime || "audio/wav"};base64,${data.audio_b64}`);
-    audio.onplay = () => setCore(2, "spreche…");
-    audio.onended = () => setCore(0, "bereit");
-    audio.play().catch(() => {});
+    audio.onplay = () => { pauseForSpeech(); setCore(2, "spreche…"); };
+    audio.onended = resumeAfterSpeech;
+    audio.onerror = resumeAfterSpeech;
+    audio.play().catch(() => resumeAfterSpeech());
     return;
   }
   if (!$("#set-tts").checked || !window.speechSynthesis) return;
   const utter = new SpeechSynthesisUtterance(data.text);
   utter.lang = "de-DE";
-  utter.onstart = () => setCore(2, "spreche…");
-  utter.onend = () => setCore(0, "bereit");
+  utter.onstart = () => { pauseForSpeech(); setCore(2, "spreche…"); };
+  utter.onend = resumeAfterSpeech;
+  utter.onerror = resumeAfterSpeech;
   speechSynthesis.cancel();
   speechSynthesis.speak(utter);
 }
@@ -446,3 +510,16 @@ function refreshAll() {
 connect();
 refreshAll();
 setInterval(() => refreshStatus().catch(() => {}), 15000);
+
+// Hands-free from the first second: auto-start the always-on listener.
+// If the browser still needs a mic-permission gesture, the overlay appears.
+$("#set-wakeword").checked = state.wakeMode;
+if (state.wakeMode) {
+  if (navigator.permissions?.query) {
+    navigator.permissions.query({ name: "microphone" })
+      .then((p) => (p.state === "granted" ? startRecognition(true) : showActivateOverlay()))
+      .catch(() => startRecognition(true));
+  } else {
+    startRecognition(true);
+  }
+}
