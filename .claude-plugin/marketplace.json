@@ -1,0 +1,31 @@
+{
+  "name": "nate-marketplace",
+  "owner": {
+    "name": "Nate",
+    "email": "beamswiss@gmail.com"
+  },
+  "metadata": {
+    "description": "Nates privater Plugin-Marketplace. Enthaelt ULTRA AI ENTERPRISE OS.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "ultra-enterprise-os",
+      "source": "./ultra-enterprise-os",
+      "description": "Autonomes AI Enterprise Operating System: dynamischer Orchestrator, der fuer jede Aufgabe die optimale virtuelle Organisation aus spezialisierten Teams, Agenten und Sub-Agenten zusammenstellt und nur das konsolidierte Endergebnis liefert.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Nate"
+      },
+      "keywords": [
+        "orchestrator",
+        "multi-agent",
+        "enterprise",
+        "teams",
+        "automation",
+        "quality"
+      ],
+      "category": "productivity"
+    }
+  ]
+}
