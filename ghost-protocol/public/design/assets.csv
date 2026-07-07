@@ -1,0 +1,26 @@
+id,role,type,description,size/ratio,style line ref,source
+img_title,title screen backdrop + deploy thumbnail,background,abandoned neon arcade cabinet glowing portal in dark hall,16:9,STYLE FORMULA,generate
+img_favicon,deploy favicon + app icon,ui,glowing cyan digital ghost emblem,1:1,STYLE FORMULA,generate
+img_ch1,chapter 1 cinematic backdrop (The Arcade),background,retro arcade hall dissolving into digital grid,16:9,STYLE FORMULA,generate
+img_ch2,chapter 2 cinematic backdrop (The Forgotten Network),background,ruined data highway with broken server monoliths,16:9,STYLE FORMULA,generate
+img_ch3,chapter 3 cinematic backdrop (Neon Factory),background,automated neon factory with conveyor lines and robot arms,16:9,STYLE FORMULA,generate
+img_ch4,chapter 4 cinematic backdrop (Virus Garden),background,overgrown digital garden of corrupted crystalline flora,16:9,STYLE FORMULA,generate
+img_ch5,chapter 5 cinematic backdrop (Core Memory),background,vast memory vault of floating light archives,16:9,STYLE FORMULA,generate
+img_ch6,chapter 6 cinematic backdrop (The Architect),background,colossal wireframe titan on a throne of code,16:9,STYLE FORMULA,generate
+img_end_delete,ending cinematic DELETE,background,digital world collapsing into red static void,16:9,STYLE FORMULA,generate
+img_end_merge,ending cinematic MERGE (true end),background,human silhouette fusing with radiant AI light being,16:9,STYLE FORMULA,generate
+mus_main,exploration music loop,music,dark driving synthwave with pulsing analog bass and retro arpeggios,40s,-,generate
+mus_boss,boss battle music loop,music,intense aggressive synthwave with pounding drums and alarm-like leads,30s,-,generate
+sfx_dash,player dash,sfx,short electric whoosh dash,1s,-,generate
+sfx_emp,EMP blast,sfx,deep electromagnetic pulse blast with crackle,2s,-,generate
+sfx_frag,memory fragment pickup,sfx,bright crystalline digital chime,1s,-,generate
+sfx_alert,hunter alert sting,sfx,sharp digital alarm sting,1s,-,generate
+sfx_hit,heavy impact hit,sfx,heavy distorted electric impact,1s,-,generate
+spr_player,hero sprite Neo,sprite,radiant cyan-white runner,procedural canvas,STYLE FORMULA,procedural(code)
+spr_hunters,4 hunter sprites (Blaze/Phantom/Widow/Glitch),sprite,hot magenta and crimson glow hunters,procedural canvas,STYLE FORMULA,procedural(code)
+spr_bosses,6 boss forms,sprite,large crimson/violet glowing constructs,procedural canvas,STYLE FORMULA,procedural(code)
+spr_npc,NPC lost programs,sprite,soft teal flickering figures,procedural canvas,STYLE FORMULA,procedural(code)
+tile_walls,maze wall tiles per chapter,tile,neon circuit walls in midnight-blue/violet with chapter accent hue,procedural canvas seamless-by-construction,STYLE FORMULA,procedural(code)
+tile_floor,maze floor tiles per chapter,tile,dark grid floor with faint circuit traces,procedural canvas seamless-by-construction,STYLE FORMULA,procedural(code)
+fx_particles,"particles, glow, bloom, fog, CRT overlay",fx,neon particles and scanline overlay,procedural canvas,STYLE FORMULA,procedural(code)
+sfx_ui,"UI blips, dialogue ticks, menu sounds",sfx,procedural WebAudio synth,runtime,-,procedural(code)
