@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "nate-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "Nate8645er/Nate"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "ultra-enterprise-os@nate-marketplace": true
+  }
+}
