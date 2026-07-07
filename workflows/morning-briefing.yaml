@@ -1,0 +1,18 @@
+# Beispiel-Workflow: morgendliches Briefing.
+# Starten per Dashboard, API (POST /api/workflows/morning-briefing/run)
+# oder Sprachbefehl "starte den Workflow morning-briefing".
+name: morning-briefing
+description: Morgendliches Briefing mit Terminen und System-Check
+steps:
+  - name: system
+    skill: system_stats
+    args: {}
+  - name: schedule
+    skill: list_schedule
+    args: {}
+  - name: briefing
+    agent: ceo
+    goal: >-
+      Erstelle ein kurzes Morgen-Briefing. Systemstatus: {{steps.system}}.
+      Anstehende Termine: {{steps.schedule}}. Fasse beides freundlich in
+      3 Sätzen zusammen.
