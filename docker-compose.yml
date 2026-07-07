@@ -1,0 +1,61 @@
+# Full JARVIS AI OS stack.
+# Minimal start:   docker compose up jarvis
+# Full stack:      docker compose --profile full up
+services:
+  jarvis:
+    build: .
+    ports:
+      - "8765:8765"
+    environment:
+      JARVIS_HOST: 0.0.0.0
+      JARVIS_LLM_PROVIDER: ${JARVIS_LLM_PROVIDER:-auto}
+      JARVIS_ANTHROPIC_API_KEY: ${JARVIS_ANTHROPIC_API_KEY:-}
+      JARVIS_OPENAI_API_KEY: ${JARVIS_OPENAI_API_KEY:-}
+      JARVIS_OLLAMA_BASE_URL: http://ollama:11434
+      JARVIS_QDRANT_URL: http://qdrant:6333
+      JARVIS_DATABASE_URL: ${JARVIS_DATABASE_URL:-}
+      JARVIS_REDIS_URL: redis://redis:6379/0
+    volumes:
+      - jarvis-data:/data
+      - ./plugins:/app/plugins
+      - ./workflows:/app/workflows
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    profiles: ["full"]
+    environment:
+      POSTGRES_DB: jarvis
+      POSTGRES_USER: jarvis
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-jarvis}
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    profiles: ["full"]
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    profiles: ["full"]
+    volumes:
+      - qdrant-data:/qdrant/storage
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    profiles: ["full"]
+    volumes:
+      - ollama-data:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  jarvis-data:
+  pg-data:
+  redis-data:
+  qdrant-data:
+  ollama-data:

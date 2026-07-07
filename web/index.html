@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>J.A.R.V.I.S. — AI OS</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div id="hud">
+  <!-- ================= left column: system ================= -->
+  <aside class="col left">
+    <section class="panel" id="panel-system">
+      <h2>SYSTEM</h2>
+      <div class="kv"><span>Status</span><b id="sys-status" class="glow">BOOTING…</b></div>
+      <div class="kv"><span>LLM</span><b id="sys-llm">–</b></div>
+      <div class="kv"><span>Agenten</span><b id="sys-agents">–</b></div>
+      <div class="kv"><span>Skills</span><b id="sys-skills">–</b></div>
+      <div class="kv"><span>Voice</span><b id="sys-voice">–</b></div>
+      <div class="kv"><span>Uhrzeit</span><b id="sys-clock">–</b></div>
+    </section>
+
+    <section class="panel grow" id="panel-agents">
+      <h2>AGENTEN <button class="mini" onclick="hirePrompt()">+ EINSTELLEN</button></h2>
+      <div id="agent-list" class="list"></div>
+    </section>
+
+    <section class="panel" id="panel-schedule">
+      <h2>TERMINE &amp; ERINNERUNGEN</h2>
+      <div id="schedule-list" class="list small"></div>
+    </section>
+  </aside>
+
+  <!-- ================= center: core + chat ================= -->
+  <main class="col center">
+    <div id="core-wrap">
+      <canvas id="core" width="420" height="420"></canvas>
+      <div id="core-label">J.A.R.V.I.S.</div>
+      <div id="core-state">bereit</div>
+    </div>
+
+    <div id="chat"></div>
+
+    <div id="inputbar">
+      <button id="mic" title="Zuhören stummschalten/aktivieren">🎙</button>
+      <input id="text" placeholder="Sprich einfach — oder tippe hier… (@agent für Direktauftrag)" autocomplete="off">
+      <button id="send">➤</button>
+    </div>
+  </main>
+
+  <!-- ================= right column: managers ================= -->
+  <aside class="col right">
+    <nav id="tabs">
+      <button data-tab="skills" class="active">SKILLS</button>
+      <button data-tab="plugins">PLUGINS</button>
+      <button data-tab="workflows">WORKFLOWS</button>
+      <button data-tab="memory">MEMORY</button>
+      <button data-tab="logs">LOGS</button>
+      <button data-tab="settings">SETUP</button>
+    </nav>
+
+    <section class="panel grow tab" id="tab-skills">
+      <div id="skill-list" class="list small"></div>
+    </section>
+
+    <section class="panel grow tab hidden" id="tab-plugins">
+      <div id="plugin-list" class="list"></div>
+    </section>
+
+    <section class="panel grow tab hidden" id="tab-workflows">
+      <div id="workflow-list" class="list"></div>
+      <textarea id="wf-editor" spellcheck="false"
+        placeholder='Workflow als JSON… {"name":"demo","steps":[{"name":"s1","skill":"system_stats","args":{}}]}'></textarea>
+      <button class="mini" onclick="saveWorkflow()">SPEICHERN</button>
+    </section>
+
+    <section class="panel grow tab hidden" id="tab-memory">
+      <input id="mem-query" placeholder="Gedächtnis durchsuchen…">
+      <div id="memory-list" class="list small"></div>
+    </section>
+
+    <section class="panel grow tab hidden" id="tab-logs">
+      <div id="log-list" class="list small mono"></div>
+    </section>
+
+    <section class="panel grow tab hidden" id="tab-settings">
+      <div class="kv"><span>Wake Word</span><b id="set-wake">jarvis</b></div>
+      <div class="kv"><span>Browser-Stimme</span>
+        <label class="switch"><input type="checkbox" id="set-tts" checked><i></i></label>
+      </div>
+      <div class="kv"><span>Immer zuhören (freihändig)</span>
+        <label class="switch"><input type="checkbox" id="set-wakeword" checked><i></i></label>
+      </div>
+      <p class="hint">API-Keys &amp; Backends werden über <code>.env</code> konfiguriert
+        (JARVIS_ANTHROPIC_API_KEY, JARVIS_LLM_PROVIDER, …). Siehe README.</p>
+    </section>
+  </aside>
+</div>
+
+<!-- one-time mic activation (browser permission gesture) -->
+<div id="activate-backdrop" class="hidden">
+  <div id="activate-modal">
+    <h2>J.A.R.V.I.S. AKTIVIEREN</h2>
+    <p>Ein Klick genügt — danach hört JARVIS dauerhaft zu.<br>
+       Sag „Jarvis“, und sprich mit ihm wie mit einem Kollegen.</p>
+    <button id="activate-btn" class="confirm">🎙 ZUHÖREN STARTEN</button>
+  </div>
+</div>
+
+<!-- approval modal -->
+<div id="approval-backdrop" class="hidden">
+  <div id="approval-modal">
+    <h2>⚠ FREIGABE ERFORDERLICH</h2>
+    <p id="approval-text"></p>
+    <label><input type="checkbox" id="approval-remember"> Für diese Sitzung merken</label>
+    <div class="row">
+      <button id="approve-no" class="danger">ABLEHNEN</button>
+      <button id="approve-yes" class="confirm">ERLAUBEN</button>
+    </div>
+  </div>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
