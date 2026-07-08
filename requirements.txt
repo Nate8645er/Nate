@@ -3,3 +3,4 @@
 # Weitere Pakete (Sprache, Vision, etc.) kommen in späteren Schritten dazu.
 
 requests>=2.32.0
+PyYAML>=6.0

@@ -13,7 +13,9 @@ Alles läuft lokal auf deinem Rechner – keine Cloud, keine API-Kosten.
 | `jarvis/system` | Windows-Programme öffnen und steuern | geplant |
 | `jarvis/vision` | Bildschirmanalyse | geplant |
 | `jarvis/web` | Internetsuche | geplant |
-| `jarvis/plugins` | Plugin-System für neue Funktionen | geplant |
+| `jarvis/plugins` | Plugin-System für neue Funktionen | ✅ Schritt 3 |
+| `skills/` | Skill-System (Prompts als Markdown) | ✅ Schritt 3 |
+| Agenten + Firma | ULTRA AI ENTERPRISE OS in Jarvis | ✅ Schritt 3 |
 | `jarvis/utils` | Konfiguration, Logging | ✅ Schritt 1 |
 
 ## Projektstruktur
@@ -89,8 +91,31 @@ das Modell erinnert sich innerhalb der Sitzung an den bisherigen Verlauf.
 
 | Befehl | Wirkung |
 |---|---|
+| `/hilfe` | Alle Befehle anzeigen |
+| `/plugins` | Geladene Plugins und ihre Befehle |
+| `/zeit`, `/datum` | Uhrzeit / Datum (Plugin) |
+| `/rechne 2*(3+4)` | Taschenrechner (Plugin) |
+| `/systeminfo` | Infos über deinen Rechner (Plugin) |
+| `/skills` | Verfügbare Skills anzeigen |
+| `/skill uebersetzen Hallo` | Skill ausführen |
+| `/agenten` | Alle Agenten des Unternehmens |
+| `/agent ultra-architect <Frage>` | Einen Agenten direkt fragen |
+| `/firma <Aufgabe>` | Aufgabe durchs komplette Unternehmen schicken |
 | `/neu` | Gesprächsverlauf (Kurzzeitgedächtnis) löschen |
 | `/exit` oder `/quit` | Jarvis beenden (auch `Strg+C`) |
+
+**Eigene Plugins:** Neue `.py`-Datei in `jarvis/plugins/` mit einer
+`JarvisPlugin`-Unterklasse ablegen – wird beim Start automatisch geladen.
+
+**Eigene Skills:** Neue `.md`-Datei in `skills/` ablegen (Frontmatter mit
+`name`/`description`, Body = Prompt mit `{input}`-Platzhalter).
+
+**Das Unternehmen:** `/firma` schickt eine Aufgabe nacheinander durch die
+Abteilungen des ULTRA AI ENTERPRISE OS (Orchestrator → Architekt →
+Fullstack → QA, konfigurierbar in `config.json` unter `company.pipeline`).
+Die Agenten-Rollen kommen direkt aus `ultra-enterprise-os/agents/`.
+Hinweis: Jede Abteilung ist eine eigene Modell-Anfrage – bei lokalen
+Modellen dauert `/firma` entsprechend ein paar Minuten.
 
 ## Konfiguration
 

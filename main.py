@@ -1,35 +1,166 @@
 """Jarvis - Einstiegspunkt.
 
-Schritt 2: Interaktiver Gesprächsmodus mit Kurzzeitgedächtnis.
+Schritt 3: Plugins, Skills, Agenten und das virtuelle Unternehmen.
+
 Befehle im Chat:
-  /neu     - Gesprächsverlauf zurücksetzen
-  /exit    - Jarvis beenden (auch: /quit, exit, quit)
+  /hilfe               - Alle Befehle anzeigen
+  /plugins             - Geladene Plugins und ihre Befehle
+  /skills              - Verfügbare Skills
+  /skill <name> <text> - Skill ausführen (z.B. /skill uebersetzen Hallo Welt)
+  /agenten             - Verfügbare Agenten des Unternehmens
+  /agent <name> <frage>- Einen Agenten direkt fragen
+  /firma <aufgabe>     - Aufgabe durch das komplette Unternehmen schicken
+  /neu                 - Gesprächsverlauf zurücksetzen
+  /exit                - Jarvis beenden
 """
 
 import sys
 
+from jarvis.core.agents import AgentRegistry
+from jarvis.core.company import Company
 from jarvis.core.conversation import ConversationManager
 from jarvis.core.ollama_client import OllamaClient, OllamaConnectionError
-from jarvis.utils.config_loader import load_config
+from jarvis.core.skills import SkillRegistry
+from jarvis.plugins.loader import PluginManager
+from jarvis.utils.config_loader import PROJECT_ROOT, load_config
 from jarvis.utils.logger import setup_logger
 
-EXIT_COMMANDS = {"/exit", "/quit", "exit", "quit"}
+EXIT_COMMANDS = {"exit", "quit"}
+
+HELP_TEXT = """Verfügbare Befehle:
+  /hilfe                Diese Übersicht
+  /plugins              Geladene Plugins und ihre Befehle
+  /skills               Verfügbare Skills
+  /skill <name> <text>  Skill ausführen, z.B. /skill uebersetzen Hallo Welt
+  /agenten              Verfügbare Agenten des Unternehmens
+  /agent <name> <frage> Einen Agenten direkt fragen
+  /firma <aufgabe>      Aufgabe durchs komplette Unternehmen schicken
+  /neu                  Gesprächsverlauf (Kurzzeitgedächtnis) löschen
+  /exit                 Jarvis beenden
+Alles andere ist normales Gespräch mit Jarvis."""
 
 
-def build_client(config: dict) -> OllamaClient:
-    ollama_cfg = config["ollama"]
-    return OllamaClient(
-        base_url=ollama_cfg["base_url"],
-        model=ollama_cfg["model"],
-        timeout=ollama_cfg.get("timeout_seconds", 120),
-    )
+class Jarvis:
+    """Bündelt alle Komponenten und verteilt eingehende Befehle."""
+
+    def __init__(self, config: dict, logger):
+        self.config = config
+        self.logger = logger
+
+        ollama_cfg = config["ollama"]
+        self.client = OllamaClient(
+            base_url=ollama_cfg["base_url"],
+            model=ollama_cfg["model"],
+            timeout=ollama_cfg.get("timeout_seconds", 120),
+        )
+
+        assistant_cfg = config.get("assistant", {})
+        self.conversation = ConversationManager(
+            client=self.client,
+            system_prompt=assistant_cfg.get(
+                "system_prompt", "Du bist ein hilfsbereiter Assistent."
+            ),
+            max_history_messages=assistant_cfg.get("max_history_messages", 20),
+        )
+
+        self.plugins = PluginManager()
+        self.plugins.load_plugins()
+
+        skills_path = PROJECT_ROOT / config.get("skills", {}).get("path", "skills")
+        self.skills = SkillRegistry(skills_path)
+        self.skills.load()
+
+        agent_paths = [
+            PROJECT_ROOT / p
+            for p in config.get("agents", {}).get(
+                "paths", ["ultra-enterprise-os/agents"]
+            )
+        ]
+        self.agents = AgentRegistry(agent_paths)
+        self.agents.load()
+
+        self.company = Company(
+            client=self.client,
+            agents=self.agents,
+            pipeline=config.get("company", {}).get("pipeline"),
+        )
+
+    # ------------------------------------------------------------------
+    # Befehlsverarbeitung
+    # ------------------------------------------------------------------
+
+    def handle(self, user_input: str) -> str | None:
+        """Verarbeitet eine Eingabe. None = Jarvis beenden."""
+        lowered = user_input.lower()
+
+        if lowered in EXIT_COMMANDS or lowered in {"/exit", "/quit"}:
+            return None
+        if lowered in {"/hilfe", "/help"}:
+            return HELP_TEXT
+        if lowered == "/neu":
+            self.conversation.reset()
+            return "(Verlauf gelöscht - wir fangen von vorne an.)"
+        if lowered == "/plugins":
+            return self.plugins.overview()
+        if lowered == "/skills":
+            return self.skills.overview()
+        if lowered in {"/agenten", "/agents"}:
+            return self.agents.overview()
+
+        if user_input.startswith("/"):
+            command, _, args = user_input[1:].partition(" ")
+            command = command.lower()
+            args = args.strip()
+
+            if command == "skill":
+                return self._run_skill(args)
+            if command == "agent":
+                return self._run_agent(args)
+            if command == "firma":
+                return self._run_company(args)
+
+            plugin_answer = self.plugins.handle(command, args)
+            if plugin_answer is not None:
+                return plugin_answer
+            return f"Unbekannter Befehl: /{command} - /hilfe zeigt alle Befehle."
+
+        # Kein Befehl: normales Gespräch mit Kurzzeitgedächtnis
+        return self.conversation.ask(user_input)
+
+    def _run_skill(self, args: str) -> str:
+        name, _, text = args.partition(" ")
+        if not name:
+            return "Nutzung: /skill <name> <text>\n" + self.skills.overview()
+        if not text.strip():
+            return f"Bitte Text angeben: /skill {name} <text>"
+        return self.skills.run(self.client, name, text.strip())
+
+    def _run_agent(self, args: str) -> str:
+        name, _, question = args.partition(" ")
+        if not name:
+            return "Nutzung: /agent <name> <frage>\n" + self.agents.overview()
+        if not question.strip():
+            return f"Bitte eine Frage angeben: /agent {name} <frage>"
+        return self.agents.ask(self.client, name, question.strip())
+
+    def _run_company(self, task: str) -> str:
+        if not task.strip():
+            return "Nutzung: /firma <aufgabe> - z.B. /firma Plane eine Todo-App"
+
+        def on_step(role: str, step: int, total: int) -> None:
+            print(f"  [{step}/{total}] {role} arbeitet ...")
+
+        print("\nDas Unternehmen übernimmt die Aufgabe:")
+        results = self.company.run(task.strip(), on_step=on_step)
+        blocks = [
+            f"{'=' * 60}\n{role.upper()}\n{'=' * 60}\n{answer}"
+            for role, answer in results
+        ]
+        return "\n\n".join(blocks)
 
 
-def chat_loop(conversation: ConversationManager, logger) -> None:
-    """Liest Nutzereingaben und gibt die Antworten des Modells aus."""
-    print("\nJarvis ist bereit. Schreib mir etwas!")
-    print("Befehle: /neu (Verlauf löschen), /exit (beenden)\n")
-
+def chat_loop(jarvis: Jarvis) -> None:
+    print("\nJarvis ist bereit. Schreib mir etwas! (/hilfe zeigt alle Befehle)\n")
     while True:
         try:
             user_input = input("Du: ").strip()
@@ -39,20 +170,18 @@ def chat_loop(conversation: ConversationManager, logger) -> None:
 
         if not user_input:
             continue
-        if user_input.lower() in EXIT_COMMANDS:
-            print("Bis bald!")
-            return
-        if user_input.lower() == "/neu":
-            conversation.reset()
-            print("(Verlauf gelöscht - wir fangen von vorne an.)\n")
-            continue
 
         try:
-            answer = conversation.ask(user_input)
-            print(f"\nJarvis: {answer}\n")
+            answer = jarvis.handle(user_input)
         except OllamaConnectionError as e:
-            logger.error("%s", e)
+            jarvis.logger.error("%s", e)
             print("(Verbindungsproblem - versuch es gleich nochmal.)\n")
+            continue
+
+        if answer is None:
+            print("Bis bald!")
+            return
+        print(f"\nJarvis: {answer}\n")
 
 
 def main() -> int:
@@ -63,11 +192,11 @@ def main() -> int:
         return 1
 
     logger = setup_logger("jarvis", config)
-    logger.info("Jarvis startet (Schritt 2: Gesprächsmodus) ...")
+    logger.info("Jarvis startet (Schritt 3: Plugins, Skills, Agenten, Firma) ...")
 
-    client = build_client(config)
+    jarvis = Jarvis(config, logger)
 
-    if not client.is_available():
+    if not jarvis.client.is_available():
         logger.error(
             "Ollama ist unter %s nicht erreichbar. "
             "Bitte Ollama starten (z.B. 'ollama serve' oder die Ollama-App öffnen).",
@@ -78,29 +207,19 @@ def main() -> int:
     logger.info("Ollama-Server erreichbar.")
 
     try:
-        models = client.list_models()
+        models = jarvis.client.list_models()
         logger.info("Installierte Modelle: %s", ", ".join(models) or "keine")
-        if not any(m.startswith(client.model) for m in models):
+        if not any(m.startswith(jarvis.client.model) for m in models):
             logger.warning(
                 "Modell '%s' scheint nicht installiert zu sein. "
                 "Installation mit: ollama pull %s",
-                client.model,
-                client.model,
+                jarvis.client.model, jarvis.client.model,
             )
     except OllamaConnectionError as e:
         logger.error("%s", e)
         return 1
 
-    assistant_cfg = config.get("assistant", {})
-    conversation = ConversationManager(
-        client=client,
-        system_prompt=assistant_cfg.get(
-            "system_prompt", "Du bist ein hilfsbereiter Assistent."
-        ),
-        max_history_messages=assistant_cfg.get("max_history_messages", 20),
-    )
-
-    chat_loop(conversation, logger)
+    chat_loop(jarvis)
     logger.info("Jarvis beendet.")
     return 0
 

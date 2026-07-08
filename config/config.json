@@ -13,5 +13,19 @@
     "language": "de",
     "system_prompt": "Du bist Jarvis, ein hilfsbereiter deutscher KI-Assistent auf dem Windows-11-PC deines Nutzers. Antworte kurz, präzise und freundlich auf Deutsch.",
     "max_history_messages": 20
+  },
+  "skills": {
+    "path": "skills"
+  },
+  "agents": {
+    "paths": ["ultra-enterprise-os/agents"]
+  },
+  "company": {
+    "pipeline": [
+      "ultra-orchestrator",
+      "ultra-architect",
+      "ultra-fullstack",
+      "ultra-qa"
+    ]
   }
 }
