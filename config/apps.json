@@ -1,0 +1,22 @@
+{
+  "rechner": "calc.exe",
+  "editor": "notepad.exe",
+  "notepad": "notepad.exe",
+  "explorer": "explorer.exe",
+  "paint": "mspaint.exe",
+  "browser": "https://www.google.com",
+  "chrome": "chrome.exe",
+  "edge": "msedge.exe",
+  "firefox": "firefox.exe",
+  "word": "winword.exe",
+  "excel": "excel.exe",
+  "powerpoint": "powerpnt.exe",
+  "taskmanager": "taskmgr.exe",
+  "einstellungen": "ms-settings:",
+  "cmd": "cmd.exe",
+  "powershell": "powershell.exe",
+  "vscode": "code",
+  "spotify": "spotify.exe",
+  "youtube": "https://www.youtube.com",
+  "github": "https://github.com"
+}

@@ -23,6 +23,7 @@ from jarvis.core.ollama_client import OllamaClient, OllamaConnectionError
 from jarvis.core.skills import SkillRegistry
 from jarvis.memory.long_term import LongTermMemory
 from jarvis.plugins.loader import PluginManager
+from jarvis.system.app_control import AppController
 from jarvis.utils.config_loader import PROJECT_ROOT, load_config
 from jarvis.utils.logger import setup_logger
 
@@ -36,6 +37,9 @@ HELP_TEXT = """Verfügbare Befehle:
   /agenten              Verfügbare Agenten des Unternehmens
   /agent <name> <frage> Einen Agenten direkt fragen
   /firma <aufgabe>      Aufgabe durchs komplette Unternehmen schicken
+  /oeffne <programm>    Programm, Datei oder Webseite öffnen
+  /schliesse <programm> Programm beenden
+  /apps                 Alle bekannten Programme anzeigen
   /merken <fakt>        Fakt dauerhaft speichern (Langzeitgedächtnis)
   /gedaechtnis          Alle gespeicherten Fakten anzeigen
   /vergessen <nr>       Fakt Nummer <nr> löschen (/vergessen alles = alle)
@@ -89,6 +93,11 @@ class Jarvis:
         self.agents = AgentRegistry(agent_paths)
         self.agents.load()
 
+        apps_file = PROJECT_ROOT / config.get("apps", {}).get(
+            "file", "config/apps.json"
+        )
+        self.app_control = AppController(apps_file)
+
         self.company = Company(
             client=self.client,
             agents=self.agents,
@@ -126,6 +135,8 @@ class Jarvis:
             return self.agents.overview()
         if lowered == "/gedaechtnis":
             return self.memory.overview()
+        if lowered == "/apps":
+            return self.app_control.overview()
 
         if user_input.startswith("/"):
             command, _, args = user_input[1:].partition(" ")
@@ -142,6 +153,10 @@ class Jarvis:
                 return self._remember(args)
             if command == "vergessen":
                 return self._forget(args)
+            if command in {"oeffne", "öffne", "open"}:
+                return self.app_control.open(args)
+            if command in {"schliesse", "schließe", "close"}:
+                return self.app_control.close(args)
 
             plugin_answer = self.plugins.handle(command, args)
             if plugin_answer is not None:
@@ -238,7 +253,7 @@ def main() -> int:
         return 1
 
     logger = setup_logger("jarvis", config)
-    logger.info("Jarvis startet (Schritt 4: Langzeitgedächtnis) ...")
+    logger.info("Jarvis startet (Schritt 5: Programme öffnen und steuern) ...")
 
     jarvis = Jarvis(config, logger)
 
