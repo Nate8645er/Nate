@@ -140,6 +140,14 @@ Antwort abgewartet wird. Nach jeder Runde zeigt eine ⏱-Zeile, wohin die
 Zeit ging (Transkript → erster Satz → Sprachbeginn → Ausgesprochen);
 abschaltbar über `speech.show_timing: false` in `config/config.json`.
 
+**Im Browser testen:** `python jarvis_web.py` starten und
+<http://localhost:8000> öffnen (einmalig `pip install flask`). Die Seite
+streamt die Antworten satzweise, spricht sie über die Browser-Stimme
+(`speechSynthesis`), nimmt Spracheingabe über das 🎤 des Browsers entgegen
+(Chrome/Edge, Deutsch) und zeigt die ⏱-Latenz pro Runde. Ohne
+API-Schlüssel/Ollama: `python jarvis_web.py --demo` liefert simulierte
+Antworten, um Oberfläche und Streaming auszuprobieren.
+
 **Eigene Plugins:** Neue `.py`-Datei in `jarvis/plugins/` mit einer
 `JarvisPlugin`-Unterklasse ablegen – wird beim Start automatisch geladen.
 
