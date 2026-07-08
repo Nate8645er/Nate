@@ -32,6 +32,7 @@ from jarvis.system.app_control import AppController
 from jarvis.utils.config_loader import PROJECT_ROOT, load_config
 from jarvis.utils.latency import TurnTimer
 from jarvis.utils.logger import setup_logger
+from jarvis.utils.secrets import ensure_secrets_file
 
 EXIT_COMMANDS = {"exit", "quit"}
 
@@ -385,6 +386,14 @@ def main() -> int:
 
     logger = setup_logger("jarvis", config)
     logger.info("Jarvis startet (Schritt 6: Sprachsteuerung) ...")
+
+    if ensure_secrets_file():
+        print(
+            "\nHinweis: config/secrets.json wurde angelegt. Öffne die Datei\n"
+            "mit einem Editor und ersetze die Platzhalter durch deine\n"
+            "API-Schlüssel (Claude, Deepgram, ElevenLabs) - oder starte\n"
+            "den Assistenten:  python einrichten.py\n"
+        )
 
     jarvis = Jarvis(config, logger)
 

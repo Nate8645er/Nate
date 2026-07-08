@@ -128,6 +128,12 @@ def main() -> None:
     except json.JSONDecodeError:
         print(f"FEHLER: {SECRETS_PATH} ist kein gültiges JSON - bitte prüfen.")
         return
+    # Übrig gebliebene Platzhalter aus der Vorlage zählen nicht als Schlüssel
+    secrets = {
+        name: value
+        for name, value in secrets.items()
+        if value and "HIER-DEINEN" not in str(value)
+    }
 
     for name, label, check in PROVIDERS:
         already_there = bool(secrets.get(name))

@@ -24,6 +24,7 @@ from jarvis.core.ollama_client import OllamaClient
 from jarvis.memory.long_term import LongTermMemory
 from jarvis.utils.config_loader import PROJECT_ROOT, load_config
 from jarvis.utils.latency import TurnTimer
+from jarvis.utils.secrets import ensure_secrets_file
 
 
 class DemoClient:
@@ -300,6 +301,11 @@ def main() -> None:
     parser.add_argument("--port", type=int, default=8000)
     args = parser.parse_args()
 
+    if ensure_secrets_file():
+        print(
+            "\nHinweis: config/secrets.json wurde angelegt - dort gehören "
+            "deine API-Schlüssel hinein (oder: python einrichten.py)."
+        )
     app = create_app(demo=args.demo)
     print(f"\n  Jarvis läuft: http://localhost:{args.port}"
           f"{'  (Demo-Modus)' if args.demo else ''}\n")
