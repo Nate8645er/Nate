@@ -39,51 +39,65 @@ class SpeechToText:
             return f"Spracheingabe nicht verfügbar ({self._error})."
         return "Spracheingabe ist bereit."
 
-    def _record(self) -> bytes:
-        """Nimmt Audio auf, bis der Nutzer Enter drückt."""
+    # ------------------------------------------------------------------
+    # Aufnahme (Start/Stopp getrennt, damit Konsole UND GUI sie nutzen können)
+    # ------------------------------------------------------------------
+
+    def record_start(self) -> None:
+        """Startet die Mikrofon-Aufnahme."""
         import sounddevice as sd
 
-        frames: list[bytes] = []
+        self._frames: list[bytes] = []
 
         def callback(indata, frame_count, time_info, status):
-            frames.append(bytes(indata))
+            self._frames.append(bytes(indata))
 
-        print("🎤 Ich höre zu ... (Enter drücken, wenn du fertig gesprochen hast)")
-        with sd.RawInputStream(
+        self._stream = sd.RawInputStream(
             samplerate=SAMPLE_RATE, channels=1, dtype="int16", callback=callback
-        ):
-            input()
-        return b"".join(frames)
+        )
+        self._stream.start()
 
-    def listen(self) -> str | None:
-        """Nimmt auf und gibt den erkannten Text zurück (None bei Fehler)."""
-        if not self._ok:
-            print(f"(Spracheingabe nicht verfügbar: {self._error})")
-            return None
+    def record_stop(self) -> bytes:
+        """Stoppt die Aufnahme und gibt die Audiodaten zurück."""
+        self._stream.stop()
+        self._stream.close()
+        return b"".join(self._frames)
 
+    def transcribe(self, raw: bytes) -> tuple[str | None, str]:
+        """Wandelt Audiodaten in Text um. Ergebnis: (text, meldung)."""
         import speech_recognition as sr
 
-        try:
-            raw = self._record()
-        except Exception as e:
-            logger.error("Aufnahme fehlgeschlagen: %s", e)
-            print(f"(Mikrofon-Problem: {e})")
-            return None
-
         if len(raw) < SAMPLE_RATE * SAMPLE_WIDTH // 2:  # unter ~0,5 Sekunden
-            print("(Die Aufnahme war zu kurz.)")
-            return None
+            return None, "Die Aufnahme war zu kurz."
 
         audio = sr.AudioData(raw, SAMPLE_RATE, SAMPLE_WIDTH)
         recognizer = sr.Recognizer()
         try:
             text = recognizer.recognize_google(audio, language=self.language)
             logger.info("Verstanden: %s", text)
-            return text
+            return text, ""
         except sr.UnknownValueError:
-            print("(Ich habe dich leider nicht verstanden - versuch es nochmal.)")
-            return None
+            return None, "Ich habe dich leider nicht verstanden - versuch es nochmal."
         except sr.RequestError as e:
             logger.error("Spracherkennung nicht erreichbar: %s", e)
-            print("(Die Spracherkennung braucht eine Internetverbindung.)")
+            return None, "Die Spracherkennung braucht eine Internetverbindung."
+
+    def listen(self) -> str | None:
+        """Konsolen-Modus: Aufnahme per Enter starten/stoppen."""
+        if not self._ok:
+            print(f"(Spracheingabe nicht verfügbar: {self._error})")
             return None
+        try:
+            self.record_start()
+            print("🎤 Ich höre zu ... (Enter drücken, wenn du fertig gesprochen hast)")
+            input()
+            raw = self.record_stop()
+        except Exception as e:
+            logger.error("Aufnahme fehlgeschlagen: %s", e)
+            print(f"(Mikrofon-Problem: {e})")
+            return None
+
+        text, message = self.transcribe(raw)
+        if message:
+            print(f"({message})")
+        return text

@@ -62,6 +62,11 @@ Nate/
 2. ZIP entpacken (Rechtsklick → „Alle extrahieren")
 3. **Doppelklick auf `jarvis_starten.bat`**
 
+Jarvis öffnet sich als futuristisches HUD: links der pulsierende Orb mit
+🎤-Knopf (sprechen) und 🔊-Knopf (Stimme an/aus), rechts das Gespräch.
+Alle Chat-Befehle funktionieren dort genauso. Wer lieber die Konsole mag:
+`python main.py`.
+
 Die Startdatei prüft Python und Ollama, erstellt beim ersten Mal die
 virtuelle Umgebung, installiert die Pakete, lädt bei Bedarf das Modell
 herunter und startet Jarvis. Voraussetzung: Python und Ollama sind

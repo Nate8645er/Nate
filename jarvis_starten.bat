@@ -71,13 +71,18 @@ if errorlevel 1 (
 )
 echo [OK] Sprachmodell llama3.2 vorhanden.
 
-rem --- 6. Jarvis starten ---
+rem --- 6. Jarvis starten (Oberflaeche; bei Problemen Konsolen-Version) ---
 echo.
 echo ============================================
 echo   Jarvis startet ...
 echo ============================================
 echo.
-".venv\Scripts\python.exe" main.py
+".venv\Scripts\python.exe" jarvis_gui.py
+if errorlevel 1 (
+    echo.
+    echo [Hinweis] Oberflaeche konnte nicht starten - nutze Konsolen-Version.
+    ".venv\Scripts\python.exe" main.py
+)
 
 echo.
 pause
