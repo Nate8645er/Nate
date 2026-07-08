@@ -9,7 +9,7 @@ Alles läuft lokal auf deinem Rechner – keine Cloud, keine API-Kosten.
 |---|---|---|
 | `jarvis/core` | Ollama-Anbindung, Gesprächslogik | ✅ Schritt 1+2 |
 | `jarvis/speech` | Sprache zu Text, Text zu Sprache | geplant |
-| `jarvis/memory` | Kurz- und Langzeitgedächtnis | geplant |
+| `jarvis/memory` | Kurz- und Langzeitgedächtnis | ✅ Schritt 2+4 |
 | `jarvis/system` | Windows-Programme öffnen und steuern | geplant |
 | `jarvis/vision` | Bildschirmanalyse | geplant |
 | `jarvis/web` | Internetsuche | geplant |
@@ -98,6 +98,9 @@ das Modell erinnert sich innerhalb der Sitzung an den bisherigen Verlauf.
 | `/systeminfo` | Infos über deinen Rechner (Plugin) |
 | `/skills` | Verfügbare Skills anzeigen |
 | `/skill uebersetzen Hallo` | Skill ausführen |
+| `/merken Mein Name ist Nate` | Fakt dauerhaft speichern (Langzeitgedächtnis) |
+| `/gedaechtnis` | Alle gespeicherten Fakten anzeigen |
+| `/vergessen 2` | Fakt Nr. 2 löschen (`/vergessen alles` = alle) |
 | `/agenten` | Alle Agenten des Unternehmens |
 | `/agent ultra-architect <Frage>` | Einen Agenten direkt fragen |
 | `/firma <Aufgabe>` | Aufgabe durchs komplette Unternehmen schicken |

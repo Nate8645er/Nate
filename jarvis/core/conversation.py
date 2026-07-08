@@ -41,6 +41,10 @@ class ConversationManager:
         self.messages = self.messages[:1]
         logger.info("Gesprächsverlauf zurückgesetzt.")
 
+    def update_system_prompt(self, system_prompt: str) -> None:
+        """Tauscht den System-Prompt aus (z.B. nach Gedächtnis-Änderungen)."""
+        self.messages[0] = {"role": "system", "content": system_prompt}
+
     def _trim_history(self) -> None:
         """Kürzt den Verlauf auf max_history_messages (System-Prompt bleibt)."""
         # +1, weil der System-Prompt nicht mitgezählt wird

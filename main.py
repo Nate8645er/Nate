@@ -21,6 +21,7 @@ from jarvis.core.company import Company
 from jarvis.core.conversation import ConversationManager
 from jarvis.core.ollama_client import OllamaClient, OllamaConnectionError
 from jarvis.core.skills import SkillRegistry
+from jarvis.memory.long_term import LongTermMemory
 from jarvis.plugins.loader import PluginManager
 from jarvis.utils.config_loader import PROJECT_ROOT, load_config
 from jarvis.utils.logger import setup_logger
@@ -35,6 +36,9 @@ HELP_TEXT = """Verfügbare Befehle:
   /agenten              Verfügbare Agenten des Unternehmens
   /agent <name> <frage> Einen Agenten direkt fragen
   /firma <aufgabe>      Aufgabe durchs komplette Unternehmen schicken
+  /merken <fakt>        Fakt dauerhaft speichern (Langzeitgedächtnis)
+  /gedaechtnis          Alle gespeicherten Fakten anzeigen
+  /vergessen <nr>       Fakt Nummer <nr> löschen (/vergessen alles = alle)
   /neu                  Gesprächsverlauf (Kurzzeitgedächtnis) löschen
   /exit                 Jarvis beenden
 Alles andere ist normales Gespräch mit Jarvis."""
@@ -54,12 +58,18 @@ class Jarvis:
             timeout=ollama_cfg.get("timeout_seconds", 120),
         )
 
+        memory_file = PROJECT_ROOT / config.get("memory", {}).get(
+            "file", "data/memory/long_term.json"
+        )
+        self.memory = LongTermMemory(memory_file)
+
         assistant_cfg = config.get("assistant", {})
+        self.base_system_prompt = assistant_cfg.get(
+            "system_prompt", "Du bist ein hilfsbereiter Assistent."
+        )
         self.conversation = ConversationManager(
             client=self.client,
-            system_prompt=assistant_cfg.get(
-                "system_prompt", "Du bist ein hilfsbereiter Assistent."
-            ),
+            system_prompt=self._full_system_prompt(),
             max_history_messages=assistant_cfg.get("max_history_messages", 20),
         )
 
@@ -85,6 +95,14 @@ class Jarvis:
             pipeline=config.get("company", {}).get("pipeline"),
         )
 
+    def _full_system_prompt(self) -> str:
+        """Basis-Prompt plus alle Fakten aus dem Langzeitgedächtnis."""
+        return self.base_system_prompt + self.memory.as_prompt_context()
+
+    def _refresh_memory_context(self) -> None:
+        """Nach Gedächtnis-Änderungen den System-Prompt aktualisieren."""
+        self.conversation.update_system_prompt(self._full_system_prompt())
+
     # ------------------------------------------------------------------
     # Befehlsverarbeitung
     # ------------------------------------------------------------------
@@ -106,6 +124,8 @@ class Jarvis:
             return self.skills.overview()
         if lowered in {"/agenten", "/agents"}:
             return self.agents.overview()
+        if lowered == "/gedaechtnis":
+            return self.memory.overview()
 
         if user_input.startswith("/"):
             command, _, args = user_input[1:].partition(" ")
@@ -118,6 +138,10 @@ class Jarvis:
                 return self._run_agent(args)
             if command == "firma":
                 return self._run_company(args)
+            if command == "merken":
+                return self._remember(args)
+            if command == "vergessen":
+                return self._forget(args)
 
             plugin_answer = self.plugins.handle(command, args)
             if plugin_answer is not None:
@@ -142,6 +166,28 @@ class Jarvis:
         if not question.strip():
             return f"Bitte eine Frage angeben: /agent {name} <frage>"
         return self.agents.ask(self.client, name, question.strip())
+
+    def _remember(self, fact: str) -> str:
+        if not fact.strip():
+            return "Nutzung: /merken <fakt> - z.B. /merken Mein Name ist Nate"
+        number = self.memory.remember(fact)
+        self._refresh_memory_context()
+        return f"Gemerkt (Fakt Nr. {number}): {fact.strip()}"
+
+    def _forget(self, args: str) -> str:
+        args = args.strip().lower()
+        if args in {"alles", "alle"}:
+            count = self.memory.forget_all()
+            self._refresh_memory_context()
+            return f"Langzeitgedächtnis gelöscht ({count} Fakten entfernt)."
+        if not args.isdigit():
+            return ("Nutzung: /vergessen <nummer> oder /vergessen alles\n"
+                    + self.memory.overview())
+        removed = self.memory.forget(int(args))
+        if removed is None:
+            return f"Fakt Nr. {args} gibt es nicht.\n" + self.memory.overview()
+        self._refresh_memory_context()
+        return f"Vergessen: {removed}"
 
     def _run_company(self, task: str) -> str:
         if not task.strip():
@@ -192,7 +238,7 @@ def main() -> int:
         return 1
 
     logger = setup_logger("jarvis", config)
-    logger.info("Jarvis startet (Schritt 3: Plugins, Skills, Agenten, Firma) ...")
+    logger.info("Jarvis startet (Schritt 4: Langzeitgedächtnis) ...")
 
     jarvis = Jarvis(config, logger)
 
