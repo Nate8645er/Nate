@@ -25,16 +25,15 @@ if errorlevel 1 (
 )
 echo [OK] Python gefunden.
 
-rem --- 2. Ollama pruefen ---
+rem --- 2. Ollama pruefen (nur noetig fuer das lokale Gehirn) ---
+set "HAS_OLLAMA=1"
 where ollama >nul 2>nul
 if errorlevel 1 (
-    echo [FEHLER] Ollama wurde nicht gefunden.
-    echo Bitte von https://ollama.com/download installieren.
-    echo.
-    pause
-    exit /b 1
+    set "HAS_OLLAMA=0"
+    echo [Hinweis] Ollama nicht gefunden - nur noetig, wenn provider "ollama" ist.
+) else (
+    echo [OK] Ollama gefunden.
 )
-echo [OK] Ollama gefunden.
 
 rem --- 3. Virtuelle Umgebung anlegen (nur beim ersten Start) ---
 if not exist ".venv\Scripts\python.exe" (
@@ -58,18 +57,15 @@ if errorlevel 1 (
 )
 echo [OK] Pakete installiert.
 
-rem --- 5. Sprachmodell pruefen, bei Bedarf laden (~2 GB, nur einmal) ---
-ollama list 2>nul | findstr /i "llama3.2" >nul
-if errorlevel 1 (
-    echo [...] Lade Sprachmodell llama3.2 herunter - das dauert einige Minuten ...
-    ollama pull llama3.2
+rem --- 5. Lokales Sprachmodell pruefen, bei Bedarf laden (~2 GB, nur einmal) ---
+if "%HAS_OLLAMA%"=="1" (
+    ollama list 2>nul | findstr /i "llama3.2" >nul
     if errorlevel 1 (
-        echo [FEHLER] Modell konnte nicht geladen werden. Laeuft Ollama?
-        pause
-        exit /b 1
+        echo [...] Lade Sprachmodell llama3.2 herunter - das dauert einige Minuten ...
+        ollama pull llama3.2
     )
+    echo [OK] Lokales Sprachmodell bereit.
 )
-echo [OK] Sprachmodell llama3.2 vorhanden.
 
 rem --- 6. Jarvis starten (Oberflaeche; bei Problemen Konsolen-Version) ---
 echo.

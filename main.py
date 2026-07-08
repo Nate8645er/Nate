@@ -64,11 +64,19 @@ class Jarvis:
         self.provider = config.get("provider", "ollama")
         if self.provider == "claude":
             claude_cfg = config.get("claude", {})
-            self.client = ClaudeClient(
+            claude = ClaudeClient(
                 model=claude_cfg.get("model", "claude-opus-4-8"),
                 max_tokens=claude_cfg.get("max_tokens", 16000),
             )
-        else:
+            if claude.is_available():
+                self.client = claude
+            else:
+                logger.warning(
+                    "provider ist 'claude', aber es wurde kein API-Schlüssel "
+                    "gefunden (config/secrets.json) - nutze stattdessen Ollama."
+                )
+                self.provider = "ollama"
+        if self.provider == "ollama":
             ollama_cfg = config["ollama"]
             self.client = OllamaClient(
                 base_url=ollama_cfg["base_url"],
