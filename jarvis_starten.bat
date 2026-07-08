@@ -8,6 +8,22 @@ echo   Jarvis wird vorbereitet ...
 echo ============================================
 echo.
 
+rem --- 0. Wurde die Datei direkt aus dem ZIP gestartet? ---
+if not exist "requirements.txt" (
+    echo [FEHLER] Die Jarvis-Dateien wurden hier nicht gefunden.
+    echo.
+    echo Wahrscheinlich wurde jarvis_starten.bat direkt aus der
+    echo ZIP-Datei heraus gestartet. Das funktioniert nicht.
+    echo.
+    echo So geht es richtig:
+    echo   1. Rechtsklick auf die ZIP-Datei - "Alle extrahieren ..."
+    echo   2. Den entpackten Ordner oeffnen
+    echo   3. Dort jarvis_starten.bat doppelklicken
+    echo.
+    pause
+    exit /b 1
+)
+
 rem --- 1. Python finden (py oder python) ---
 set "PYTHON=py"
 where py >nul 2>nul
