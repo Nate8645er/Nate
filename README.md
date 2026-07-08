@@ -7,7 +7,7 @@ Alles läuft lokal auf deinem Rechner – keine Cloud, keine API-Kosten.
 
 | Modul | Funktion | Status |
 |---|---|---|
-| `jarvis/core` | Ollama-Anbindung, Gesprächslogik | ✅ Schritt 1 |
+| `jarvis/core` | Ollama-Anbindung, Gesprächslogik | ✅ Schritt 1+2 |
 | `jarvis/speech` | Sprache zu Text, Text zu Sprache | geplant |
 | `jarvis/memory` | Kurz- und Langzeitgedächtnis | geplant |
 | `jarvis/system` | Windows-Programme öffnen und steuern | geplant |
@@ -31,7 +31,8 @@ Nate/
 │   └── memory/                 # Gedächtnis-Daten (später)
 └── jarvis/                     # Hauptpaket
     ├── core/
-    │   └── ollama_client.py    # Verbindung zu Ollama
+    │   ├── ollama_client.py    # Verbindung zu Ollama
+    │   └── conversation.py     # Gesprächslogik + Kurzzeitgedächtnis
     ├── speech/
     ├── memory/
     ├── system/
@@ -81,8 +82,15 @@ ollama serve
 python main.py
 ```
 
-Erwartete Ausgabe: Jarvis verbindet sich mit Ollama, listet die installierten
-Modelle auf, stellt eine Testfrage und gibt die Antwort des Modells aus.
+Jarvis startet einen interaktiven Gesprächsmodus mit Kurzzeitgedächtnis –
+das Modell erinnert sich innerhalb der Sitzung an den bisherigen Verlauf.
+
+**Befehle im Chat:**
+
+| Befehl | Wirkung |
+|---|---|
+| `/neu` | Gesprächsverlauf (Kurzzeitgedächtnis) löschen |
+| `/exit` oder `/quit` | Jarvis beenden (auch `Strg+C`) |
 
 ## Konfiguration
 

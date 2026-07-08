@@ -38,15 +38,23 @@ class OllamaClient:
                 f"Modellliste konnte nicht geladen werden: {e}"
             ) from e
 
-    def chat(self, prompt: str) -> str:
-        """Sendet eine Nachricht an das Modell und gibt die Antwort zurück."""
+    def chat(self, prompt: str | None = None, messages: list[dict] | None = None) -> str:
+        """Sendet eine Nachricht oder einen Gesprächsverlauf an das Modell.
+
+        Entweder `prompt` (einzelne Frage) oder `messages`
+        (kompletter Verlauf im Format [{"role": ..., "content": ...}]) angeben.
+        """
+        if messages is None:
+            if prompt is None:
+                raise ValueError("Entweder 'prompt' oder 'messages' angeben.")
+            messages = [{"role": "user", "content": prompt}]
         payload = {
             "model": self.model,
-            "messages": [{"role": "user", "content": prompt}],
+            "messages": messages,
             "stream": False,
         }
         try:
-            logger.info("Sende Anfrage an Modell '%s' ...", self.model)
+            logger.debug("Sende Anfrage an Modell '%s' ...", self.model)
             response = requests.post(
                 f"{self.base_url}/api/chat",
                 json=payload,
@@ -54,7 +62,7 @@ class OllamaClient:
             )
             response.raise_for_status()
             answer = response.json()["message"]["content"]
-            logger.info("Antwort erhalten (%d Zeichen).", len(answer))
+            logger.debug("Antwort erhalten (%d Zeichen).", len(answer))
             return answer
         except requests.ConnectionError as e:
             raise OllamaConnectionError(
