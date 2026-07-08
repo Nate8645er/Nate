@@ -42,7 +42,9 @@
     "path": "skills"
   },
   "agents": {
-    "paths": ["ultra-enterprise-os/agents"]
+    "paths": [
+      "ultra-enterprise-os/agents"
+    ]
   },
   "company": {
     "pipeline": [

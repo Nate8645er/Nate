@@ -135,7 +135,11 @@ Stimme. „x" + Enter verlässt den Sprachmodus. Ohne weitere Einrichtung
 nutzt die Sprachausgabe die Windows-Stimmen (offline) und die Erkennung
 die kostenlose Google-Web-Speech-Schnittstelle (Internet nötig).
 
-**Bessere Ohren und Stimme (optional):** Trage deine Schlüssel in
+**Bessere Ohren und Stimme (optional):** Am einfachsten mit dem
+Assistenten: `python einrichten.py` fragt die Schlüssel ab (Eingabe
+unsichtbar), prüft sie direkt beim Anbieter, listet deine
+ElevenLabs-Stimmen zur Auswahl auf und trägt alles an die richtigen
+Stellen ein. Oder von Hand: Trage deine Schlüssel in
 `config/secrets.json` ein (Vorlage: `config/secrets.example.json`):
 `deepgram_api_key` schaltet die Deepgram-Erkennung frei (schneller und
 genauer als Google), `elevenlabs_api_key` **plus**
