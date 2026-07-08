@@ -1,0 +1,15 @@
+{
+  "ollama": {
+    "base_url": "http://localhost:11434",
+    "model": "llama3.2",
+    "timeout_seconds": 120
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "logs/jarvis.log"
+  },
+  "assistant": {
+    "name": "Jarvis",
+    "language": "de"
+  }
+}

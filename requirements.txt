@@ -1,0 +1,5 @@
+# Jarvis - KI-Assistent für Windows 11
+# Schritt 1: Nur die Basis-Abhängigkeit für die Ollama-Verbindung.
+# Weitere Pakete (Sprache, Vision, etc.) kommen in späteren Schritten dazu.
+
+requests>=2.32.0
