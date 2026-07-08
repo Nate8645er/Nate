@@ -82,8 +82,13 @@ class SpeechToText:
             logger.error("Spracherkennung nicht erreichbar: %s", e)
             return None, "Die Spracherkennung braucht eine Internetverbindung."
 
-    def listen(self) -> str | None:
-        """Konsolen-Modus: Aufnahme per Enter starten/stoppen."""
+    def listen(self, timer=None) -> str | None:
+        """Konsolen-Modus: Aufnahme per Enter starten/stoppen.
+
+        `timer` (TurnTimer, optional) startet beim Ende der Aufnahme und
+        bekommt eine Marke, sobald das Transkript fertig ist - so sieht man,
+        wie viel der Wartezeit auf die Spracherkennung entfällt.
+        """
         if not self._ok:
             print(f"(Spracheingabe nicht verfügbar: {self._error})")
             return None
@@ -97,7 +102,11 @@ class SpeechToText:
             print(f"(Mikrofon-Problem: {e})")
             return None
 
+        if timer is not None:
+            timer.start()  # Nullpunkt: der Nutzer ist fertig mit Sprechen
         text, message = self.transcribe(raw)
+        if timer is not None:
+            timer.mark("Transkript")
         if message:
             print(f"({message})")
         return text

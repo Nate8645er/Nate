@@ -29,6 +29,7 @@ from jarvis.speech.speech_to_text import SpeechToText
 from jarvis.speech.text_to_speech import TextToSpeech
 from jarvis.system.app_control import AppController
 from jarvis.utils.config_loader import PROJECT_ROOT, load_config
+from jarvis.utils.latency import TurnTimer
 from jarvis.utils.logger import setup_logger
 
 EXIT_COMMANDS = {"exit", "quit"}
@@ -128,6 +129,8 @@ class Jarvis:
             enabled=speech_cfg.get("tts_enabled", True),
         )
         self.stt = SpeechToText(language=speech_cfg.get("stt_language", "de-DE"))
+        # Latenz-Anzeige im Sprachmodus: zeigt pro Runde, wohin die Zeit geht
+        self.show_timing = speech_cfg.get("show_timing", True)
 
         self.company = Company(
             client=self.client,
@@ -163,20 +166,38 @@ class Jarvis:
             choice = input("[Enter = sprechen | x = beenden] ").strip().lower()
             if choice in {"x", "exit", "beenden"}:
                 return "Sprachmodus beendet - wir tippen wieder."
-            text = self.stt.listen()
+            timer = TurnTimer()
+            text = self.stt.listen(timer)
             if not text:
                 continue
             print(f"Du (verstanden): {text}")
             if text.lower().strip(".!?") in {"beenden", "stopp", "auf wiedersehen"}:
                 return "Sprachmodus beendet - wir tippen wieder."
+
+            # Antwort satzweise streamen: der erste Satz wird gesprochen,
+            # während das Modell noch am Rest schreibt - keine lange Stille.
+            print("\nJarvis: ", end="", flush=True)
             try:
-                answer = self.conversation.ask(text)
+                for sentence in self.conversation.ask_stream(text):
+                    timer.mark("erster Satz")
+                    print(sentence, end=" ", flush=True)
+                    self.tts.speak_async(
+                        sentence, on_start=lambda: timer.mark("Sprachbeginn")
+                    )
             except LLMError as e:
                 self.logger.error("%s", e)
-                print("(Verbindungsproblem - versuch es gleich nochmal.)\n")
+                print("\n(Verbindungsproblem - versuch es gleich nochmal.)\n")
+                self.tts.wait()
                 continue
-            print(f"\nJarvis: {answer}\n")
-            self.tts.speak(answer)
+            timer.mark("Antwort komplett")
+            self.tts.wait()
+            timer.mark("Ausgesprochen")
+            print("\n")
+            timer.log()
+            if self.show_timing:
+                report = timer.report()
+                if report:
+                    print(f"   ⏱  {report}\n")
 
     def _full_system_prompt(self) -> str:
         """Basis-Prompt plus alle Fakten aus dem Langzeitgedächtnis."""

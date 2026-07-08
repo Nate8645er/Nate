@@ -24,7 +24,8 @@
     "tts_enabled": true,
     "rate": 180,
     "voice_language": "de",
-    "stt_language": "de-DE"
+    "stt_language": "de-DE",
+    "show_timing": true
   },
   "apps": {
     "file": "config/apps.json"

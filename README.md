@@ -134,6 +134,12 @@ nochmal Enter zum Stoppen der Aufnahme. Jarvis antwortet mit Text **und**
 Stimme. „x" + Enter verlässt den Sprachmodus. Die Sprachausgabe nutzt die
 Windows-Stimmen (offline); die Spracherkennung benötigt Internet.
 
+Jarvis spricht dabei **satzweise, während die Antwort noch entsteht** –
+der erste Satz ertönt, sobald er fertig ist, statt dass die komplette
+Antwort abgewartet wird. Nach jeder Runde zeigt eine ⏱-Zeile, wohin die
+Zeit ging (Transkript → erster Satz → Sprachbeginn → Ausgesprochen);
+abschaltbar über `speech.show_timing: false` in `config/config.json`.
+
 **Eigene Plugins:** Neue `.py`-Datei in `jarvis/plugins/` mit einer
 `JarvisPlugin`-Unterklasse ablegen – wird beim Start automatisch geladen.
 

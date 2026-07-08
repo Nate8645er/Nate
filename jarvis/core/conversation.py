@@ -3,6 +3,7 @@
 import logging
 
 from jarvis.core.ollama_client import OllamaClient
+from jarvis.utils.sentences import SentenceStream
 
 logger = logging.getLogger("jarvis.conversation")
 
@@ -35,6 +36,34 @@ class ConversationManager:
         answer = self.client.chat(messages=self.messages)
         self.messages.append({"role": "assistant", "content": answer})
         return answer
+
+    def ask_stream(self, user_input: str):
+        """Wie ask(), aber liefert die Antwort satzweise, sobald sie entsteht.
+
+        Generator: jeder fertige Satz kommt sofort, damit die Sprachausgabe
+        schon spricht, während das Modell noch schreibt. Am Ende landet die
+        komplette Antwort wie gewohnt im Verlauf.
+        """
+        self.messages.append({"role": "user", "content": user_input})
+        self._trim_history()
+
+        chat_stream = getattr(self.client, "chat_stream", None)
+        splitter = SentenceStream()
+
+        if chat_stream is None:
+            # Client kann kein Streaming - Antwort trotzdem satzweise liefern.
+            answer = self.client.chat(messages=self.messages)
+            self.messages.append({"role": "assistant", "content": answer})
+            yield from splitter.feed(answer)
+            yield from splitter.flush()
+            return
+
+        parts: list[str] = []
+        for piece in chat_stream(messages=self.messages):
+            parts.append(piece)
+            yield from splitter.feed(piece)
+        yield from splitter.flush()
+        self.messages.append({"role": "assistant", "content": "".join(parts)})
 
     def reset(self) -> None:
         """Löscht das Kurzzeitgedächtnis (behält den System-Prompt)."""

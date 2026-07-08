@@ -1,5 +1,6 @@
 """Client für die Verbindung zu einem lokalen Ollama-Server."""
 
+import json
 import logging
 
 import requests
@@ -66,6 +67,52 @@ class OllamaClient:
             answer = response.json()["message"]["content"]
             logger.debug("Antwort erhalten (%d Zeichen).", len(answer))
             return answer
+        except requests.ConnectionError as e:
+            raise OllamaConnectionError(
+                f"Keine Verbindung zu Ollama unter {self.base_url}. "
+                "Läuft der Ollama-Server? (Start mit: ollama serve)"
+            ) from e
+        except requests.HTTPError as e:
+            raise OllamaConnectionError(
+                f"Ollama-Fehler: {e.response.status_code} - {e.response.text}"
+            ) from e
+        except requests.RequestException as e:
+            raise OllamaConnectionError(f"Anfrage fehlgeschlagen: {e}") from e
+
+    def chat_stream(self, prompt: str | None = None, messages: list[dict] | None = None):
+        """Wie chat(), aber als Generator: liefert die Antwort stückweise.
+
+        Ollama sendet bei stream=True eine JSON-Zeile pro Text-Häppchen;
+        jedes Häppchen wird sofort weitergereicht, damit die Sprachausgabe
+        nicht auf die komplette Antwort warten muss.
+        """
+        if messages is None:
+            if prompt is None:
+                raise ValueError("Entweder 'prompt' oder 'messages' angeben.")
+            messages = [{"role": "user", "content": prompt}]
+        payload = {
+            "model": self.model,
+            "messages": messages,
+            "stream": True,
+        }
+        try:
+            logger.debug("Sende Stream-Anfrage an Modell '%s' ...", self.model)
+            with requests.post(
+                f"{self.base_url}/api/chat",
+                json=payload,
+                timeout=self.timeout,
+                stream=True,
+            ) as response:
+                response.raise_for_status()
+                for line in response.iter_lines():
+                    if not line:
+                        continue
+                    data = json.loads(line)
+                    piece = data.get("message", {}).get("content", "")
+                    if piece:
+                        yield piece
+                    if data.get("done"):
+                        break
         except requests.ConnectionError as e:
             raise OllamaConnectionError(
                 f"Keine Verbindung zu Ollama unter {self.base_url}. "
