@@ -25,6 +25,7 @@ from jarvis.core.ollama_client import OllamaClient
 from jarvis.core.skills import SkillRegistry
 from jarvis.memory.long_term import LongTermMemory
 from jarvis.plugins.loader import PluginManager
+from jarvis.speech.elevenlabs_tts import ElevenLabsTTS
 from jarvis.speech.speech_to_text import SpeechToText
 from jarvis.speech.text_to_speech import TextToSpeech
 from jarvis.system.app_control import AppController
@@ -123,12 +124,12 @@ class Jarvis:
         self.app_control = AppController(apps_file)
 
         speech_cfg = config.get("speech", {})
-        self.tts = TextToSpeech(
-            rate=speech_cfg.get("rate", 180),
-            language=speech_cfg.get("voice_language", "de"),
-            enabled=speech_cfg.get("tts_enabled", True),
+        self.tts = self._build_tts(speech_cfg, logger)
+        self.stt = SpeechToText(
+            language=speech_cfg.get("stt_language", "de-DE"),
+            provider=speech_cfg.get("stt_provider", "auto"),
+            deepgram_model=speech_cfg.get("deepgram_model", "nova-2"),
         )
-        self.stt = SpeechToText(language=speech_cfg.get("stt_language", "de-DE"))
         # Latenz-Anzeige im Sprachmodus: zeigt pro Runde, wohin die Zeit geht
         self.show_timing = speech_cfg.get("show_timing", True)
 
@@ -136,6 +137,34 @@ class Jarvis:
             client=self.client,
             agents=self.agents,
             pipeline=config.get("company", {}).get("pipeline"),
+        )
+
+    @staticmethod
+    def _build_tts(speech_cfg: dict, logger):
+        """Wählt die Stimme: ElevenLabs (wenn konfiguriert), sonst Windows.
+
+        tts_provider in config.json: "auto" (ElevenLabs, wenn Schlüssel und
+        Voice-ID da sind), "elevenlabs" oder "windows".
+        """
+        provider = speech_cfg.get("tts_provider", "auto")
+        enabled = speech_cfg.get("tts_enabled", True)
+        if provider in ("auto", "elevenlabs"):
+            eleven = ElevenLabsTTS(
+                voice_id=speech_cfg.get("elevenlabs_voice_id", ""),
+                model=speech_cfg.get("elevenlabs_model", "eleven_flash_v2_5"),
+                enabled=enabled,
+            )
+            if eleven.available:
+                return eleven
+            if provider == "elevenlabs":
+                logger.warning(
+                    "tts_provider ist 'elevenlabs', aber %s - nutze die "
+                    "Windows-Stimme.", eleven.status()
+                )
+        return TextToSpeech(
+            rate=speech_cfg.get("rate", 180),
+            language=speech_cfg.get("voice_language", "de"),
+            enabled=enabled,
         )
 
     #: Antwort, die nach dem Anzeigen noch gesprochen werden soll

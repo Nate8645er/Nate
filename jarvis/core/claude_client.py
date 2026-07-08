@@ -7,29 +7,12 @@ Jarvis sucht ihn in dieser Reihenfolge:
      (diese Datei steht in .gitignore und landet nie auf GitHub)
 """
 
-import json
 import logging
-import os
 
 from jarvis.core.errors import LLMError
-from jarvis.utils.config_loader import PROJECT_ROOT
+from jarvis.utils.secrets import load_secret
 
 logger = logging.getLogger("jarvis.claude")
-
-SECRETS_PATH = PROJECT_ROOT / "config" / "secrets.json"
-
-
-def _load_api_key() -> str | None:
-    key = os.environ.get("ANTHROPIC_API_KEY")
-    if key:
-        return key
-    if SECRETS_PATH.exists():
-        try:
-            secrets = json.loads(SECRETS_PATH.read_text(encoding="utf-8"))
-            return secrets.get("anthropic_api_key") or None
-        except (OSError, json.JSONDecodeError) as e:
-            logger.error("secrets.json konnte nicht gelesen werden: %s", e)
-    return None
 
 
 class ClaudeClient:
@@ -46,7 +29,7 @@ class ClaudeClient:
         # Springt automatisch ein, wenn das Hauptmodell eine Anfrage aus
         # Sicherheitsgründen ablehnt (relevant vor allem für Claude Fable 5).
         self.fallback_model = fallback_model if fallback_model != model else None
-        self._api_key = _load_api_key()
+        self._api_key = load_secret("anthropic_api_key", "ANTHROPIC_API_KEY")
         self._client = None
         if self._api_key:
             import anthropic

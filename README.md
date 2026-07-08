@@ -131,8 +131,20 @@ das Modell erinnert sich innerhalb der Sitzung an den bisherigen Verlauf.
 
 **Sprachmodus:** `/sprechen` eingeben, dann Enter drücken und lossprechen,
 nochmal Enter zum Stoppen der Aufnahme. Jarvis antwortet mit Text **und**
-Stimme. „x" + Enter verlässt den Sprachmodus. Die Sprachausgabe nutzt die
-Windows-Stimmen (offline); die Spracherkennung benötigt Internet.
+Stimme. „x" + Enter verlässt den Sprachmodus. Ohne weitere Einrichtung
+nutzt die Sprachausgabe die Windows-Stimmen (offline) und die Erkennung
+die kostenlose Google-Web-Speech-Schnittstelle (Internet nötig).
+
+**Bessere Ohren und Stimme (optional):** Trage deine Schlüssel in
+`config/secrets.json` ein (Vorlage: `config/secrets.example.json`):
+`deepgram_api_key` schaltet die Deepgram-Erkennung frei (schneller und
+genauer als Google), `elevenlabs_api_key` **plus**
+`speech.elevenlabs_voice_id` in `config/config.json` schalten die
+ElevenLabs-Stimme frei (gestreamt mit dem Flash-Modell - der Satz ertönt,
+während er noch synthetisiert wird). Beides greift automatisch
+(`stt_provider`/`tts_provider: "auto"`); fehlen die Schlüssel, bleibt
+alles beim alten Verhalten. Schlüssel niemals in `config.json`, in den
+Code oder auf GitHub - `secrets.json` steht dafür in `.gitignore`.
 
 Jarvis spricht dabei **satzweise, während die Antwort noch entsteht** –
 der erste Satz ertönt, sobald er fertig ist, statt dass die komplette

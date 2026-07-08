@@ -25,7 +25,12 @@
     "rate": 180,
     "voice_language": "de",
     "stt_language": "de-DE",
-    "show_timing": true
+    "show_timing": true,
+    "stt_provider": "auto",
+    "deepgram_model": "nova-2",
+    "tts_provider": "auto",
+    "elevenlabs_voice_id": "",
+    "elevenlabs_model": "eleven_flash_v2_5"
   },
   "apps": {
     "file": "config/apps.json"
