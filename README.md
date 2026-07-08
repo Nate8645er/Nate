@@ -55,7 +55,19 @@ Nate/
    ollama pull llama3.2
    ```
 
-## Installation (Windows 11, PowerShell)
+## Schnellstart (Windows 11) – empfohlen
+
+1. Projekt als ZIP herunterladen:
+   https://github.com/Nate8645er/Nate/archive/refs/heads/claude/jarvis-ai-assistant-wvvtds.zip
+2. ZIP entpacken (Rechtsklick → „Alle extrahieren")
+3. **Doppelklick auf `jarvis_starten.bat`**
+
+Die Startdatei prüft Python und Ollama, erstellt beim ersten Mal die
+virtuelle Umgebung, installiert die Pakete, lädt bei Bedarf das Modell
+herunter und startet Jarvis. Voraussetzung: Python und Ollama sind
+installiert (Links siehe oben).
+
+## Manuelle Installation (Windows 11, PowerShell)
 
 ```powershell
 # 1. In den Projektordner wechseln
