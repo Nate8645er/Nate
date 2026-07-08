@@ -24,7 +24,13 @@
     "tts_enabled": true,
     "rate": 180,
     "voice_language": "de",
-    "stt_language": "de-DE"
+    "stt_language": "de-DE",
+    "show_timing": true,
+    "stt_provider": "auto",
+    "deepgram_model": "nova-2",
+    "tts_provider": "auto",
+    "elevenlabs_voice_id": "e3bIMyLemdwvh75g9Vpt",
+    "elevenlabs_model": "eleven_flash_v2_5"
   },
   "apps": {
     "file": "config/apps.json"
@@ -36,14 +42,11 @@
     "path": "skills"
   },
   "agents": {
-    "paths": ["ultra-enterprise-os/agents"]
+    "paths": [
+      "ultra-enterprise-os/agents"
+    ]
   },
   "company": {
-    "pipeline": [
-      "ultra-orchestrator",
-      "ultra-architect",
-      "ultra-fullstack",
-      "ultra-qa"
-    ]
+    "pipeline": "auto"
   }
 }

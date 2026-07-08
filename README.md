@@ -131,8 +131,48 @@ das Modell erinnert sich innerhalb der Sitzung an den bisherigen Verlauf.
 
 **Sprachmodus:** `/sprechen` eingeben, dann Enter drücken und lossprechen,
 nochmal Enter zum Stoppen der Aufnahme. Jarvis antwortet mit Text **und**
-Stimme. „x" + Enter verlässt den Sprachmodus. Die Sprachausgabe nutzt die
-Windows-Stimmen (offline); die Spracherkennung benötigt Internet.
+Stimme. „x" + Enter verlässt den Sprachmodus. Ohne weitere Einrichtung
+nutzt die Sprachausgabe die Windows-Stimmen (offline) und die Erkennung
+die kostenlose Google-Web-Speech-Schnittstelle (Internet nötig).
+
+**Bessere Ohren und Stimme (optional):** Am einfachsten mit dem
+Assistenten: `python einrichten.py` fragt die Schlüssel ab (Eingabe
+unsichtbar), prüft sie direkt beim Anbieter, listet deine
+ElevenLabs-Stimmen zur Auswahl auf und trägt alles an die richtigen
+Stellen ein. Oder von Hand: Trage deine Schlüssel in
+`config/secrets.json` ein (Vorlage: `config/secrets.example.json`):
+`deepgram_api_key` schaltet die Deepgram-Erkennung frei (schneller und
+genauer als Google), `elevenlabs_api_key` **plus**
+`speech.elevenlabs_voice_id` in `config/config.json` schalten die
+ElevenLabs-Stimme frei (gestreamt mit dem Flash-Modell - der Satz ertönt,
+während er noch synthetisiert wird). Beides greift automatisch
+(`stt_provider`/`tts_provider: "auto"`); fehlen die Schlüssel, bleibt
+alles beim alten Verhalten. Schlüssel niemals in `config.json`, in den
+Code oder auf GitHub - `secrets.json` steht dafür in `.gitignore`.
+
+Jarvis spricht dabei **satzweise, während die Antwort noch entsteht** –
+der erste Satz ertönt, sobald er fertig ist, statt dass die komplette
+Antwort abgewartet wird. Nach jeder Runde zeigt eine ⏱-Zeile, wohin die
+Zeit ging (Transkript → erster Satz → Sprachbeginn → Ausgesprochen);
+abschaltbar über `speech.show_timing: false` in `config/config.json`.
+
+**JARVIS // COMMAND CENTER (Browser):** `python jarvis_web.py` starten
+und <http://localhost:8000> öffnen (einmalig `pip install flask`). Die
+Kommandozentrale im Sci-Fi-Look zeigt Neuronen-Netz, Reaktorkern und
+Live-Systemstatus (Gehirn, Ohren, Stimme, Plugins, Skills, Abteilungen),
+streamt die Antworten satzweise, spricht sie über die Browser-Stimme,
+nimmt Spracheingabe über das Browser-Mikrofon entgegen (Chrome/Edge,
+Deutsch) und zeigt die ⏱-Latenz pro Runde. Ohne API-Schlüssel/Ollama:
+`python jarvis_web.py --demo` liefert simulierte Antworten.
+
+**Das virtuelle Unternehmen:** `/firma <aufgabe>` schickt eine Aufgabe
+durch den Konzern mit 20 Abteilungen (CEO, Finance, Marketing, Sales,
+Legal, HR, Support, Research, Product, Innovation, Architektur,
+Business, Data/ML, Design, DevOps, Docs, Fullstack, Orchestrator, QA,
+Security). Mit `company.pipeline: "auto"` (Standard) wählt der
+Orchestrator pro Aufgabe die 2-5 passenden Abteilungen, und der CEO
+fasst am Ende alles zu einer Entscheidung zusammen. Wer eine feste
+Reihenfolge will, trägt stattdessen eine Liste von Abteilungen ein.
 
 **Eigene Plugins:** Neue `.py`-Datei in `jarvis/plugins/` mit einer
 `JarvisPlugin`-Unterklasse ablegen – wird beim Start automatisch geladen.

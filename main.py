@@ -25,11 +25,14 @@ from jarvis.core.ollama_client import OllamaClient
 from jarvis.core.skills import SkillRegistry
 from jarvis.memory.long_term import LongTermMemory
 from jarvis.plugins.loader import PluginManager
+from jarvis.speech.elevenlabs_tts import ElevenLabsTTS
 from jarvis.speech.speech_to_text import SpeechToText
 from jarvis.speech.text_to_speech import TextToSpeech
 from jarvis.system.app_control import AppController
 from jarvis.utils.config_loader import PROJECT_ROOT, load_config
+from jarvis.utils.latency import TurnTimer
 from jarvis.utils.logger import setup_logger
+from jarvis.utils.secrets import ensure_secrets_file
 
 EXIT_COMMANDS = {"exit", "quit"}
 
@@ -122,17 +125,47 @@ class Jarvis:
         self.app_control = AppController(apps_file)
 
         speech_cfg = config.get("speech", {})
-        self.tts = TextToSpeech(
-            rate=speech_cfg.get("rate", 180),
-            language=speech_cfg.get("voice_language", "de"),
-            enabled=speech_cfg.get("tts_enabled", True),
+        self.tts = self._build_tts(speech_cfg, logger)
+        self.stt = SpeechToText(
+            language=speech_cfg.get("stt_language", "de-DE"),
+            provider=speech_cfg.get("stt_provider", "auto"),
+            deepgram_model=speech_cfg.get("deepgram_model", "nova-2"),
         )
-        self.stt = SpeechToText(language=speech_cfg.get("stt_language", "de-DE"))
+        # Latenz-Anzeige im Sprachmodus: zeigt pro Runde, wohin die Zeit geht
+        self.show_timing = speech_cfg.get("show_timing", True)
 
         self.company = Company(
             client=self.client,
             agents=self.agents,
             pipeline=config.get("company", {}).get("pipeline"),
+        )
+
+    @staticmethod
+    def _build_tts(speech_cfg: dict, logger):
+        """Wählt die Stimme: ElevenLabs (wenn konfiguriert), sonst Windows.
+
+        tts_provider in config.json: "auto" (ElevenLabs, wenn Schlüssel und
+        Voice-ID da sind), "elevenlabs" oder "windows".
+        """
+        provider = speech_cfg.get("tts_provider", "auto")
+        enabled = speech_cfg.get("tts_enabled", True)
+        if provider in ("auto", "elevenlabs"):
+            eleven = ElevenLabsTTS(
+                voice_id=speech_cfg.get("elevenlabs_voice_id", ""),
+                model=speech_cfg.get("elevenlabs_model", "eleven_flash_v2_5"),
+                enabled=enabled,
+            )
+            if eleven.available:
+                return eleven
+            if provider == "elevenlabs":
+                logger.warning(
+                    "tts_provider ist 'elevenlabs', aber %s - nutze die "
+                    "Windows-Stimme.", eleven.status()
+                )
+        return TextToSpeech(
+            rate=speech_cfg.get("rate", 180),
+            language=speech_cfg.get("voice_language", "de"),
+            enabled=enabled,
         )
 
     #: Antwort, die nach dem Anzeigen noch gesprochen werden soll
@@ -163,20 +196,38 @@ class Jarvis:
             choice = input("[Enter = sprechen | x = beenden] ").strip().lower()
             if choice in {"x", "exit", "beenden"}:
                 return "Sprachmodus beendet - wir tippen wieder."
-            text = self.stt.listen()
+            timer = TurnTimer()
+            text = self.stt.listen(timer)
             if not text:
                 continue
             print(f"Du (verstanden): {text}")
             if text.lower().strip(".!?") in {"beenden", "stopp", "auf wiedersehen"}:
                 return "Sprachmodus beendet - wir tippen wieder."
+
+            # Antwort satzweise streamen: der erste Satz wird gesprochen,
+            # während das Modell noch am Rest schreibt - keine lange Stille.
+            print("\nJarvis: ", end="", flush=True)
             try:
-                answer = self.conversation.ask(text)
+                for sentence in self.conversation.ask_stream(text):
+                    timer.mark("erster Satz")
+                    print(sentence, end=" ", flush=True)
+                    self.tts.speak_async(
+                        sentence, on_start=lambda: timer.mark("Sprachbeginn")
+                    )
             except LLMError as e:
                 self.logger.error("%s", e)
-                print("(Verbindungsproblem - versuch es gleich nochmal.)\n")
+                print("\n(Verbindungsproblem - versuch es gleich nochmal.)\n")
+                self.tts.wait()
                 continue
-            print(f"\nJarvis: {answer}\n")
-            self.tts.speak(answer)
+            timer.mark("Antwort komplett")
+            self.tts.wait()
+            timer.mark("Ausgesprochen")
+            print("\n")
+            timer.log()
+            if self.show_timing:
+                report = timer.report()
+                if report:
+                    print(f"   ⏱  {report}\n")
 
     def _full_system_prompt(self) -> str:
         """Basis-Prompt plus alle Fakten aus dem Langzeitgedächtnis."""
@@ -335,6 +386,14 @@ def main() -> int:
 
     logger = setup_logger("jarvis", config)
     logger.info("Jarvis startet (Schritt 6: Sprachsteuerung) ...")
+
+    if ensure_secrets_file():
+        print(
+            "\nHinweis: config/secrets.json wurde angelegt. Öffne die Datei\n"
+            "mit einem Editor und ersetze die Platzhalter durch deine\n"
+            "API-Schlüssel (Claude, Deepgram, ElevenLabs) - oder starte\n"
+            "den Assistenten:  python einrichten.py\n"
+        )
 
     jarvis = Jarvis(config, logger)
 

@@ -12,3 +12,9 @@ anthropic>=0.116.0
 pyttsx3>=2.90
 SpeechRecognition>=3.10
 sounddevice>=0.4.6
+
+# Browser-Test (python jarvis_web.py -> http://localhost:8000)
+flask>=3.0
+
+# Nur für die Entwicklung: Tests ausführen mit `python -m pytest`
+pytest>=8.0
