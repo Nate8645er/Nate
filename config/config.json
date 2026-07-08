@@ -29,7 +29,7 @@
     "stt_provider": "auto",
     "deepgram_model": "nova-2",
     "tts_provider": "auto",
-    "elevenlabs_voice_id": "",
+    "elevenlabs_voice_id": "e3bIMyLemdwvh75g9Vpt",
     "elevenlabs_model": "eleven_flash_v2_5"
   },
   "apps": {
