@@ -1,4 +1,9 @@
 {
+  "provider": "ollama",
+  "claude": {
+    "model": "claude-opus-4-8",
+    "max_tokens": 16000
+  },
   "ollama": {
     "base_url": "http://localhost:11434",
     "model": "llama3.2",

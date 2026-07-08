@@ -147,6 +147,29 @@ Die Agenten-Rollen kommen direkt aus `ultra-enterprise-os/agents/`.
 Hinweis: Jede Abteilung ist eine eigene Modell-Anfrage – bei lokalen
 Modellen dauert `/firma` entsprechend ein paar Minuten.
 
+## Gehirn wählen: Ollama (lokal) oder Claude API (Cloud)
+
+Jarvis unterstützt zwei Sprachmodell-Anbieter, umschaltbar in
+`config/config.json` über das Feld `"provider"`:
+
+- `"provider": "ollama"` (Standard) – läuft komplett lokal, kostenlos
+- `"provider": "claude"` – nutzt das Claude API von Anthropic (deutlich
+  klüger, benötigt Internet und einen API-Schlüssel; kostenpflichtig)
+
+**Claude einrichten:**
+
+1. API-Schlüssel erstellen auf https://platform.claude.com/ (beginnt mit `sk-ant-`)
+2. Die Datei `config/secrets.example.json` kopieren zu `config/secrets.json`
+3. Dort den Schlüssel eintragen:
+   ```json
+   { "anthropic_api_key": "sk-ant-DEIN-SCHLUESSEL" }
+   ```
+4. In `config/config.json` setzen: `"provider": "claude"`
+
+⚠️ **Sicherheit:** `config/secrets.json` steht in `.gitignore` und wird nie
+zu GitHub hochgeladen. Behandle den Schlüssel wie ein Passwort – niemals in
+Chats posten oder weitergeben.
+
 ## Konfiguration
 
 Alle Einstellungen liegen in `config/config.json`:

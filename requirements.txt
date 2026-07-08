@@ -5,6 +5,9 @@
 requests>=2.32.0
 PyYAML>=6.0
 
+# Optionales Cloud-Gehirn (Claude API von Anthropic)
+anthropic>=0.116.0
+
 # Sprachmodul (Sprache zu Text, Text zu Sprache)
 pyttsx3>=2.90
 SpeechRecognition>=3.10

@@ -17,9 +17,11 @@ Befehle im Chat:
 import sys
 
 from jarvis.core.agents import AgentRegistry
+from jarvis.core.claude_client import ClaudeClient
 from jarvis.core.company import Company
 from jarvis.core.conversation import ConversationManager
-from jarvis.core.ollama_client import OllamaClient, OllamaConnectionError
+from jarvis.core.errors import LLMError
+from jarvis.core.ollama_client import OllamaClient
 from jarvis.core.skills import SkillRegistry
 from jarvis.memory.long_term import LongTermMemory
 from jarvis.plugins.loader import PluginManager
@@ -59,12 +61,20 @@ class Jarvis:
         self.config = config
         self.logger = logger
 
-        ollama_cfg = config["ollama"]
-        self.client = OllamaClient(
-            base_url=ollama_cfg["base_url"],
-            model=ollama_cfg["model"],
-            timeout=ollama_cfg.get("timeout_seconds", 120),
-        )
+        self.provider = config.get("provider", "ollama")
+        if self.provider == "claude":
+            claude_cfg = config.get("claude", {})
+            self.client = ClaudeClient(
+                model=claude_cfg.get("model", "claude-opus-4-8"),
+                max_tokens=claude_cfg.get("max_tokens", 16000),
+            )
+        else:
+            ollama_cfg = config["ollama"]
+            self.client = OllamaClient(
+                base_url=ollama_cfg["base_url"],
+                model=ollama_cfg["model"],
+                timeout=ollama_cfg.get("timeout_seconds", 120),
+            )
 
         memory_file = PROJECT_ROOT / config.get("memory", {}).get(
             "file", "data/memory/long_term.json"
@@ -152,7 +162,7 @@ class Jarvis:
                 return "Sprachmodus beendet - wir tippen wieder."
             try:
                 answer = self.conversation.ask(text)
-            except OllamaConnectionError as e:
+            except LLMError as e:
                 self.logger.error("%s", e)
                 print("(Verbindungsproblem - versuch es gleich nochmal.)\n")
                 continue
@@ -295,9 +305,9 @@ def chat_loop(jarvis: Jarvis) -> None:
 
         try:
             answer = jarvis.handle(user_input)
-        except OllamaConnectionError as e:
+        except LLMError as e:
             jarvis.logger.error("%s", e)
-            print("(Verbindungsproblem - versuch es gleich nochmal.)\n")
+            print(f"(Problem mit dem Sprachmodell: {e})\n")
             continue
 
         if answer is None:
@@ -319,28 +329,36 @@ def main() -> int:
 
     jarvis = Jarvis(config, logger)
 
-    if not jarvis.client.is_available():
-        logger.error(
-            "Ollama ist unter %s nicht erreichbar. "
-            "Bitte Ollama starten (z.B. 'ollama serve' oder die Ollama-App öffnen).",
-            config["ollama"]["base_url"],
-        )
-        return 1
-
-    logger.info("Ollama-Server erreichbar.")
-
-    try:
-        models = jarvis.client.list_models()
-        logger.info("Installierte Modelle: %s", ", ".join(models) or "keine")
-        if not any(m.startswith(jarvis.client.model) for m in models):
-            logger.warning(
-                "Modell '%s' scheint nicht installiert zu sein. "
-                "Installation mit: ollama pull %s",
-                jarvis.client.model, jarvis.client.model,
+    if jarvis.provider == "claude":
+        if not jarvis.client.is_available():
+            logger.error(
+                "Kein Anthropic-API-Schlüssel gefunden. Trage ihn in "
+                "config/secrets.json ein (Vorlage: config/secrets.example.json) "
+                "oder setze provider in config/config.json zurück auf \"ollama\"."
             )
-    except OllamaConnectionError as e:
-        logger.error("%s", e)
-        return 1
+            return 1
+        logger.info("Cloud-Gehirn aktiv: Claude API (%s).", jarvis.client.model)
+    else:
+        if not jarvis.client.is_available():
+            logger.error(
+                "Ollama ist unter %s nicht erreichbar. "
+                "Bitte Ollama starten (z.B. 'ollama serve' oder die Ollama-App öffnen).",
+                config["ollama"]["base_url"],
+            )
+            return 1
+        logger.info("Ollama-Server erreichbar.")
+        try:
+            models = jarvis.client.list_models()
+            logger.info("Installierte Modelle: %s", ", ".join(models) or "keine")
+            if not any(m.startswith(jarvis.client.model) for m in models):
+                logger.warning(
+                    "Modell '%s' scheint nicht installiert zu sein. "
+                    "Installation mit: ollama pull %s",
+                    jarvis.client.model, jarvis.client.model,
+                )
+        except LLMError as e:
+            logger.error("%s", e)
+            return 1
 
     chat_loop(jarvis)
     logger.info("Jarvis beendet.")

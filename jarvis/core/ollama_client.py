@@ -4,10 +4,12 @@ import logging
 
 import requests
 
+from jarvis.core.errors import LLMError
+
 logger = logging.getLogger("jarvis.ollama")
 
 
-class OllamaConnectionError(Exception):
+class OllamaConnectionError(LLMError):
     """Wird ausgelöst, wenn der Ollama-Server nicht erreichbar ist."""
 
 

@@ -14,7 +14,7 @@ import threading
 import tkinter as tk
 from tkinter import font as tkfont
 
-from jarvis.core.ollama_client import OllamaConnectionError
+from jarvis.core.errors import LLMError
 from jarvis.utils.config_loader import load_config
 from jarvis.utils.logger import setup_logger
 from main import Jarvis
@@ -206,8 +206,8 @@ class JarvisGUI:
         """Läuft im Hintergrund-Thread, damit die Oberfläche flüssig bleibt."""
         try:
             answer = self.jarvis.handle(user_input)
-        except OllamaConnectionError as e:
-            self.ui_queue.put(("info", f"Verbindungsproblem: {e}"))
+        except LLMError as e:
+            self.ui_queue.put(("info", f"Problem mit dem Sprachmodell: {e}"))
             self.ui_queue.put(("done", ""))
             return
         except Exception as e:  # GUI darf nie abstürzen
