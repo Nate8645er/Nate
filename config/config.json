@@ -1,0 +1,49 @@
+{
+  "provider": "claude",
+  "claude": {
+    "model": "claude-fable-5",
+    "fallback_model": "claude-opus-4-8",
+    "max_tokens": 16000
+  },
+  "ollama": {
+    "base_url": "http://localhost:11434",
+    "model": "llama3.2",
+    "timeout_seconds": 120
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "logs/jarvis.log"
+  },
+  "assistant": {
+    "name": "Jarvis",
+    "language": "de",
+    "system_prompt": "Du bist Jarvis, ein hilfsbereiter deutscher KI-Assistent auf dem Windows-11-PC deines Nutzers. Antworte kurz, präzise und freundlich auf Deutsch.",
+    "max_history_messages": 20
+  },
+  "speech": {
+    "tts_enabled": true,
+    "rate": 180,
+    "voice_language": "de",
+    "stt_language": "de-DE"
+  },
+  "apps": {
+    "file": "config/apps.json"
+  },
+  "memory": {
+    "file": "data/memory/long_term.json"
+  },
+  "skills": {
+    "path": "skills"
+  },
+  "agents": {
+    "paths": ["ultra-enterprise-os/agents"]
+  },
+  "company": {
+    "pipeline": [
+      "ultra-orchestrator",
+      "ultra-architect",
+      "ultra-fullstack",
+      "ultra-qa"
+    ]
+  }
+}

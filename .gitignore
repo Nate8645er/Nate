@@ -1,0 +1,27 @@
+# Virtuelle Umgebung
+.venv/
+venv/
+
+# Python-Artefakte
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Logs
+logs/*.log
+
+# Laufzeitdaten / Gedächtnis
+data/memory/*.json
+data/memory/*.db
+
+# Geheime Schlüssel - NIEMALS committen!
+config/secrets.json
+
+# IDE
+.vscode/
+.idea/
+
+# Betriebssystem
+Thumbs.db
+.DS_Store
