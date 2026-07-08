@@ -4,3 +4,8 @@
 
 requests>=2.32.0
 PyYAML>=6.0
+
+# Sprachmodul (Sprache zu Text, Text zu Sprache)
+pyttsx3>=2.90
+SpeechRecognition>=3.10
+sounddevice>=0.4.6

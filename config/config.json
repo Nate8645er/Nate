@@ -14,6 +14,12 @@
     "system_prompt": "Du bist Jarvis, ein hilfsbereiter deutscher KI-Assistent auf dem Windows-11-PC deines Nutzers. Antworte kurz, präzise und freundlich auf Deutsch.",
     "max_history_messages": 20
   },
+  "speech": {
+    "tts_enabled": true,
+    "rate": 180,
+    "voice_language": "de",
+    "stt_language": "de-DE"
+  },
   "apps": {
     "file": "config/apps.json"
   },

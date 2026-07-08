@@ -8,7 +8,7 @@ Alles läuft lokal auf deinem Rechner – keine Cloud, keine API-Kosten.
 | Modul | Funktion | Status |
 |---|---|---|
 | `jarvis/core` | Ollama-Anbindung, Gesprächslogik | ✅ Schritt 1+2 |
-| `jarvis/speech` | Sprache zu Text, Text zu Sprache | geplant |
+| `jarvis/speech` | Sprache zu Text, Text zu Sprache | ✅ Schritt 6 |
 | `jarvis/memory` | Kurz- und Langzeitgedächtnis | ✅ Schritt 2+4 |
 | `jarvis/system` | Windows-Programme öffnen und steuern | ✅ Schritt 5 |
 | `jarvis/vision` | Bildschirmanalyse | geplant |
@@ -110,6 +110,8 @@ das Modell erinnert sich innerhalb der Sitzung an den bisherigen Verlauf.
 | `/systeminfo` | Infos über deinen Rechner (Plugin) |
 | `/skills` | Verfügbare Skills anzeigen |
 | `/skill uebersetzen Hallo` | Skill ausführen |
+| `/sprechen` | 🎤 Sprachmodus: mit Jarvis reden statt tippen |
+| `/stimme an` / `/stimme aus` | 🔊 Gesprochene Antworten ein-/ausschalten |
 | `/oeffne rechner` | Programm/Datei/Webseite öffnen (`/apps` = Liste) |
 | `/schliesse rechner` | Programm beenden |
 | `/apps` | Alle bekannten Programme anzeigen |
@@ -121,6 +123,11 @@ das Modell erinnert sich innerhalb der Sitzung an den bisherigen Verlauf.
 | `/firma <Aufgabe>` | Aufgabe durchs komplette Unternehmen schicken |
 | `/neu` | Gesprächsverlauf (Kurzzeitgedächtnis) löschen |
 | `/exit` oder `/quit` | Jarvis beenden (auch `Strg+C`) |
+
+**Sprachmodus:** `/sprechen` eingeben, dann Enter drücken und lossprechen,
+nochmal Enter zum Stoppen der Aufnahme. Jarvis antwortet mit Text **und**
+Stimme. „x" + Enter verlässt den Sprachmodus. Die Sprachausgabe nutzt die
+Windows-Stimmen (offline); die Spracherkennung benötigt Internet.
 
 **Eigene Plugins:** Neue `.py`-Datei in `jarvis/plugins/` mit einer
 `JarvisPlugin`-Unterklasse ablegen – wird beim Start automatisch geladen.

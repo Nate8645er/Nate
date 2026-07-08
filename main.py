@@ -23,6 +23,8 @@ from jarvis.core.ollama_client import OllamaClient, OllamaConnectionError
 from jarvis.core.skills import SkillRegistry
 from jarvis.memory.long_term import LongTermMemory
 from jarvis.plugins.loader import PluginManager
+from jarvis.speech.speech_to_text import SpeechToText
+from jarvis.speech.text_to_speech import TextToSpeech
 from jarvis.system.app_control import AppController
 from jarvis.utils.config_loader import PROJECT_ROOT, load_config
 from jarvis.utils.logger import setup_logger
@@ -37,6 +39,8 @@ HELP_TEXT = """Verfügbare Befehle:
   /agenten              Verfügbare Agenten des Unternehmens
   /agent <name> <frage> Einen Agenten direkt fragen
   /firma <aufgabe>      Aufgabe durchs komplette Unternehmen schicken
+  /sprechen             Sprachmodus: mit Jarvis reden statt tippen
+  /stimme an|aus        Gesprochene Antworten ein-/ausschalten
   /oeffne <programm>    Programm, Datei oder Webseite öffnen
   /schliesse <programm> Programm beenden
   /apps                 Alle bekannten Programme anzeigen
@@ -98,11 +102,62 @@ class Jarvis:
         )
         self.app_control = AppController(apps_file)
 
+        speech_cfg = config.get("speech", {})
+        self.tts = TextToSpeech(
+            rate=speech_cfg.get("rate", 180),
+            language=speech_cfg.get("voice_language", "de"),
+            enabled=speech_cfg.get("tts_enabled", True),
+        )
+        self.stt = SpeechToText(language=speech_cfg.get("stt_language", "de-DE"))
+
         self.company = Company(
             client=self.client,
             agents=self.agents,
             pipeline=config.get("company", {}).get("pipeline"),
         )
+
+    #: Antwort, die nach dem Anzeigen noch gesprochen werden soll
+    pending_speech: str | None = None
+
+    def flush_speech(self) -> None:
+        """Spricht die zuletzt gemerkte Antwort aus (falls Stimme an)."""
+        if self.pending_speech:
+            self.tts.speak(self.pending_speech)
+            self.pending_speech = None
+
+    def _toggle_voice(self, args: str) -> str:
+        args = args.strip().lower()
+        if args == "an":
+            self.tts.enabled = True
+        elif args == "aus":
+            self.tts.enabled = False
+        elif args:
+            return "Nutzung: /stimme an  oder  /stimme aus"
+        return f"{self.tts.status()}\n{self.stt.status()}"
+
+    def _voice_mode(self) -> str:
+        if not self.stt.available:
+            return self.stt.status()
+        print("\n🎤 Sprachmodus! Enter drücken und lossprechen.")
+        print("   (x + Enter beendet den Sprachmodus)\n")
+        while True:
+            choice = input("[Enter = sprechen | x = beenden] ").strip().lower()
+            if choice in {"x", "exit", "beenden"}:
+                return "Sprachmodus beendet - wir tippen wieder."
+            text = self.stt.listen()
+            if not text:
+                continue
+            print(f"Du (verstanden): {text}")
+            if text.lower().strip(".!?") in {"beenden", "stopp", "auf wiedersehen"}:
+                return "Sprachmodus beendet - wir tippen wieder."
+            try:
+                answer = self.conversation.ask(text)
+            except OllamaConnectionError as e:
+                self.logger.error("%s", e)
+                print("(Verbindungsproblem - versuch es gleich nochmal.)\n")
+                continue
+            print(f"\nJarvis: {answer}\n")
+            self.tts.speak(answer)
 
     def _full_system_prompt(self) -> str:
         """Basis-Prompt plus alle Fakten aus dem Langzeitgedächtnis."""
@@ -157,6 +212,10 @@ class Jarvis:
                 return self.app_control.open(args)
             if command in {"schliesse", "schließe", "close"}:
                 return self.app_control.close(args)
+            if command == "stimme":
+                return self._toggle_voice(args)
+            if command == "sprechen":
+                return self._voice_mode()
 
             plugin_answer = self.plugins.handle(command, args)
             if plugin_answer is not None:
@@ -164,7 +223,9 @@ class Jarvis:
             return f"Unbekannter Befehl: /{command} - /hilfe zeigt alle Befehle."
 
         # Kein Befehl: normales Gespräch mit Kurzzeitgedächtnis
-        return self.conversation.ask(user_input)
+        answer = self.conversation.ask(user_input)
+        self.pending_speech = answer
+        return answer
 
     def _run_skill(self, args: str) -> str:
         name, _, text = args.partition(" ")
@@ -243,6 +304,7 @@ def chat_loop(jarvis: Jarvis) -> None:
             print("Bis bald!")
             return
         print(f"\nJarvis: {answer}\n")
+        jarvis.flush_speech()
 
 
 def main() -> int:
@@ -253,7 +315,7 @@ def main() -> int:
         return 1
 
     logger = setup_logger("jarvis", config)
-    logger.info("Jarvis startet (Schritt 5: Programme öffnen und steuern) ...")
+    logger.info("Jarvis startet (Schritt 6: Sprachsteuerung) ...")
 
     jarvis = Jarvis(config, logger)
 
