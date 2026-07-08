@@ -65,8 +65,9 @@ class Jarvis:
         if self.provider == "claude":
             claude_cfg = config.get("claude", {})
             claude = ClaudeClient(
-                model=claude_cfg.get("model", "claude-opus-4-8"),
+                model=claude_cfg.get("model", "claude-fable-5"),
                 max_tokens=claude_cfg.get("max_tokens", 16000),
+                fallback_model=claude_cfg.get("fallback_model", "claude-opus-4-8"),
             )
             if claude.is_available():
                 self.client = claude

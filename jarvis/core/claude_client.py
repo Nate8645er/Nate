@@ -35,9 +35,17 @@ def _load_api_key() -> str | None:
 class ClaudeClient:
     """Gleiche Schnittstelle wie OllamaClient - austauschbar per Konfiguration."""
 
-    def __init__(self, model: str = "claude-opus-4-8", max_tokens: int = 16000):
+    def __init__(
+        self,
+        model: str = "claude-fable-5",
+        max_tokens: int = 16000,
+        fallback_model: str | None = "claude-opus-4-8",
+    ):
         self.model = model
         self.max_tokens = max_tokens
+        # Springt automatisch ein, wenn das Hauptmodell eine Anfrage aus
+        # Sicherheitsgründen ablehnt (relevant vor allem für Claude Fable 5).
+        self.fallback_model = fallback_model if fallback_model != model else None
         self._api_key = _load_api_key()
         self._client = None
         if self._api_key:
@@ -95,7 +103,16 @@ class ClaudeClient:
             }
             if system_prompt:
                 request["system"] = system_prompt
-            response = self._client.messages.create(**request)
+            if self.fallback_model:
+                # Server-seitiger Fallback: lehnt das Hauptmodell ab,
+                # beantwortet das Ersatzmodell dieselbe Anfrage automatisch.
+                response = self._client.beta.messages.create(
+                    **request,
+                    betas=["server-side-fallback-2026-06-01"],
+                    fallbacks=[{"model": self.fallback_model}],
+                )
+            else:
+                response = self._client.messages.create(**request)
         except anthropic.AuthenticationError as e:
             raise LLMError(
                 "Der API-Schlüssel wurde abgelehnt. Bitte prüfe ihn in "
@@ -114,6 +131,7 @@ class ClaudeClient:
             raise LLMError(f"Claude-API-Fehler ({e.status_code}): {e.message}") from e
 
         if response.stop_reason == "refusal":
+            # Auch das Fallback-Modell hat abgelehnt (oder keins konfiguriert)
             return "Diese Anfrage kann ich aus Sicherheitsgründen nicht beantworten."
 
         answer = "".join(
