@@ -156,13 +156,23 @@ Antwort abgewartet wird. Nach jeder Runde zeigt eine ⏱-Zeile, wohin die
 Zeit ging (Transkript → erster Satz → Sprachbeginn → Ausgesprochen);
 abschaltbar über `speech.show_timing: false` in `config/config.json`.
 
-**Im Browser testen:** `python jarvis_web.py` starten und
-<http://localhost:8000> öffnen (einmalig `pip install flask`). Die Seite
-streamt die Antworten satzweise, spricht sie über die Browser-Stimme
-(`speechSynthesis`), nimmt Spracheingabe über das 🎤 des Browsers entgegen
-(Chrome/Edge, Deutsch) und zeigt die ⏱-Latenz pro Runde. Ohne
-API-Schlüssel/Ollama: `python jarvis_web.py --demo` liefert simulierte
-Antworten, um Oberfläche und Streaming auszuprobieren.
+**JARVIS // COMMAND CENTER (Browser):** `python jarvis_web.py` starten
+und <http://localhost:8000> öffnen (einmalig `pip install flask`). Die
+Kommandozentrale im Sci-Fi-Look zeigt Neuronen-Netz, Reaktorkern und
+Live-Systemstatus (Gehirn, Ohren, Stimme, Plugins, Skills, Abteilungen),
+streamt die Antworten satzweise, spricht sie über die Browser-Stimme,
+nimmt Spracheingabe über das Browser-Mikrofon entgegen (Chrome/Edge,
+Deutsch) und zeigt die ⏱-Latenz pro Runde. Ohne API-Schlüssel/Ollama:
+`python jarvis_web.py --demo` liefert simulierte Antworten.
+
+**Das virtuelle Unternehmen:** `/firma <aufgabe>` schickt eine Aufgabe
+durch den Konzern mit 20 Abteilungen (CEO, Finance, Marketing, Sales,
+Legal, HR, Support, Research, Product, Innovation, Architektur,
+Business, Data/ML, Design, DevOps, Docs, Fullstack, Orchestrator, QA,
+Security). Mit `company.pipeline: "auto"` (Standard) wählt der
+Orchestrator pro Aufgabe die 2-5 passenden Abteilungen, und der CEO
+fasst am Ende alles zu einer Entscheidung zusammen. Wer eine feste
+Reihenfolge will, trägt stattdessen eine Liste von Abteilungen ein.
 
 **Eigene Plugins:** Neue `.py`-Datei in `jarvis/plugins/` mit einer
 `JarvisPlugin`-Unterklasse ablegen – wird beim Start automatisch geladen.

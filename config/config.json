@@ -47,11 +47,6 @@
     ]
   },
   "company": {
-    "pipeline": [
-      "ultra-orchestrator",
-      "ultra-architect",
-      "ultra-fullstack",
-      "ultra-qa"
-    ]
+    "pipeline": "auto"
   }
 }
