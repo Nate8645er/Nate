@@ -52,6 +52,14 @@ node blin.mjs --browse "…" --headless                 # ohne Fenster (Test)
   gespeichert (localStorage) — nie hier im Code.
 - `node_modules/`, `tasks.json` und Screenshots sind aus Git ausgeschlossen.
 
+## Blin per Siri auf dem iPhone
+
+`siri-shortcut.md` ist die komplette Schritt-für-Schritt-Anleitung fuer
+einen Siri-Kurzbefehl „Blin": du sagst „Hey Siri, Blin", sprichst deine
+Frage, Blin denkt (Claude/Fable 5) und antwortet mit deiner ElevenLabs-
+Stimme. Keys werden nur auf dem iPhone in der Kurzbefehle-App gespeichert,
+nie im Code.
+
 ## Wie es „1:1 wie im Video" wird
 
 1. `blin.mjs` liefert das Dashboard (linker/rechter Monitor im Video).
