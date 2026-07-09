@@ -2,3 +2,9 @@
 dist/
 node_modules/
 .DS_Store
+
+# Blin lokaler Agent
+ultra-enterprise-os/blin/node_modules/
+ultra-enterprise-os/blin/tasks.json
+ultra-enterprise-os/blin/*.png
+ultra-enterprise-os/blin/package*.json

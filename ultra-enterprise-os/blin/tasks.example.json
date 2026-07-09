@@ -1,0 +1,12 @@
+{
+  "day_start": "08:00",
+  "title": "Mein Tag startet.",
+  "tasks": [
+    { "name": "Mails checken & Wichtiges markieren", "status": "done",   "weight": 3, "eta": "08:05" },
+    { "name": "Shopify: Umsatz gestern pruefen",      "status": "done",   "weight": 2, "eta": "08:12" },
+    { "name": "Reel-Idee des Tages entwerfen",         "status": "active", "weight": 4, "eta": "08:30" },
+    { "name": "Whey-Wettbewerb recherchieren",         "status": "todo",   "weight": 3, "eta": "09:00" },
+    { "name": "Landingpage-Text finalisieren",         "status": "todo",   "weight": 2, "eta": "09:30" },
+    { "name": "Workout & Pause",                        "status": "todo",   "weight": 2, "eta": "12:00" }
+  ]
+}
