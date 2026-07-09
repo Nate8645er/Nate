@@ -148,6 +148,14 @@ Mikrofon-Freigabe). Ehrlich: Blin nutzt Mikrofon und Stimme des Handys, kann
 aber das Handy-Betriebssystem nicht selbst fernsteuern — das echte Ausfuehren
 passiert ueber `/ultra` in Claude Code mit den verbundenen Werkzeugen.
 
+**Echte Stimme (ElevenLabs):** Ueber ⚙ STIMME kannst du eine ElevenLabs
+Voice-ID + API-Key eintragen. Diese werden **nur im Browser (localStorage)**
+gespeichert — nie im Code, nie im Repo, nie in einem Commit. Funktioniert nur
+in der lokalen `app/index.html` (der claude.ai-Link blockiert externe
+Verbindungen); blockiert der Browser die Verbindung, faellt Blin automatisch
+auf die Browser-Stimme zurueck. **Trage API-Keys niemals direkt in den Code
+ein.**
+
 Das Promo (`promo/index.html`) ist eine selbststaendige HTML-Animation im
 Stil eines Instagram-Reels: 7 Szenen, Story-Fortschrittsleiste, Countdown,
 Autopilot-Task-Grid — einfach im Browser oeffnen (tippen = naechste Szene).
