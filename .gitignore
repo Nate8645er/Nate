@@ -1,0 +1,4 @@
+# Build-Artefakte (werden von scripts/ neu erzeugt)
+dist/
+node_modules/
+.DS_Store

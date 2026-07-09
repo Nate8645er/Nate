@@ -50,6 +50,28 @@ Danach Claude Code neu starten oder die Sitzung fortsetzen — Skill,
 Agenten und Commands sind dann verfuegbar (`/ultra`, `/ultra-team`,
 `/ultra-review`).
 
+## Harmonisierung: eine Quelle, drei Wege
+
+Dasselbe Betriebssystem laeuft ueberall — aus **einer** Quelle
+(`ultra-enterprise-os/`), ohne Drift:
+
+| Umgebung | Weg | Was laeuft |
+|---|---|---|
+| Claude Code (Plugin) | `/plugin install ultra-enterprise-os@nate-marketplace` | Skill + 10 Agenten + 3 Commands |
+| Claude Code (dieses Repo) | `.claude/`-Spiegel laedt automatisch in jeder Session | Skill + 10 Agenten + 3 Commands |
+| Claude.ai (App/Web) | `scripts/build-claude-ai-skill.sh` → ZIP unter Settings → Capabilities → Skills hochladen | Skill (Rollen werden intern simuliert — gleiches Protokoll, gleiche Gates) |
+
+Regeln gegen Drift:
+
+- **Quelle der Wahrheit** ist immer `ultra-enterprise-os/`. Aenderungen
+  nur dort machen.
+- Danach `scripts/sync-mirror.sh` ausfuehren — synchronisiert den
+  `.claude/`-Spiegel.
+- `scripts/sync-mirror.sh --check` prueft jederzeit auf Abweichungen
+  (Exit 1 bei Drift; ideal fuer CI oder als Pre-Commit-Check).
+- Nach Skill-Aenderungen das Claude.ai-Paket neu bauen und erneut
+  hochladen (`scripts/build-claude-ai-skill.sh`).
+
 ## Konfiguration
 
 Keine Pflicht-Konfiguration. Optional:
@@ -95,8 +117,13 @@ ultra-enterprise-os/
 │   ├── SKILL.md                    # Betriebsprotokoll (5 Phasen)
 │   └── references/org-chart.md     # Generativer Rollenkatalog
 ├── agents/                         # 10 spawnbare Team-Leads
-└── commands/                       # /ultra, /ultra-team, /ultra-review
+├── commands/                       # /ultra, /ultra-team, /ultra-review
+└── promo/index.html                # Pixel-Art-Promo (Reel-Stil, standalone)
 ```
+
+Das Promo (`promo/index.html`) ist eine selbststaendige HTML-Animation im
+Stil eines Instagram-Reels: 7 Szenen, Story-Fortschrittsleiste, Countdown,
+Autopilot-Task-Grid — einfach im Browser oeffnen (tippen = naechste Szene).
 
 ## Tests
 

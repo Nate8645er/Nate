@@ -49,6 +49,14 @@ Regeln:
   Subagenten wuenscht oder die Aufgabe es klar erfordert; sonst simuliere
   die Rollen intern in einem Durchgang (schneller, gleicher Effekt).
 
+Umgebungs-Harmonisierung (Claude Code ⇄ Claude.ai):
+- **Claude Code**: Agent-Tool und `/ultra`-Commands verfuegbar — echte
+  Subagenten sind eine Option (siehe Regel oben).
+- **Claude.ai** (App/Web, Skill-Upload): kein Agent-Tool, keine Commands.
+  Simuliere dieselben Rollen intern in einem Durchgang. Protokoll,
+  Rollenkatalog, Qualitaets-Gates und Delivery-Standard sind identisch —
+  das Ergebnis darf sich zwischen den Umgebungen nicht unterscheiden.
+
 ## Phase 3 — Ausfuehrung (Entwickler-Modus)
 
 Fuer alles, was Code betrifft:
