@@ -27,7 +27,18 @@ produktionsreife Endergebnis wird ausgeliefert.
 | `ultra-data-ml` | Data Science, ML/DL, AI Research, LLM-Integration |
 | `ultra-design` | UI/UX, Product Design, Zugaenglichkeit |
 | `ultra-business` | Strategie, Finance, Marketing, Sales, SEO, Content, Branding |
+| `ultra-growth` | Growth/Revenue: Funnels, Conversion, Shopify-Ops, CRM, Creatives |
+| `ultra-automation` | Automation/Integration: verbundene Dienste zu Workflows koppeln |
 | `ultra-docs` | Dokumentation, Legal-Hinweise, Projekt-Management |
+
+### Echte Werkzeug-Integrationen
+
+`skills/ultra-enterprise-os/references/integrations.md` koppelt die
+**tatsaechlich verbundenen** Dienste an die Rollen: **GitHub, Gmail,
+Google Drive, Shopify, Higgsfield, Web**. Standardmodell ist **Fable 5**
+(`claude-fable-5`); pro Teilaufgabe wird das passende Modell gewaehlt.
+Ist ein Dienst nicht verbunden, liefert das System Entwurf + Anleitung
+statt eines vorgetaeuschten Live-Ergebnisses.
 
 ### 3 Commands
 
@@ -115,8 +126,10 @@ ultra-enterprise-os/
 ├── .claude-plugin/plugin.json      # Plugin-Manifest
 ├── skills/ultra-enterprise-os/
 │   ├── SKILL.md                    # Betriebsprotokoll (5 Phasen)
-│   └── references/org-chart.md     # Generativer Rollenkatalog
-├── agents/                         # 10 spawnbare Team-Leads
+│   └── references/
+│       ├── org-chart.md            # Generativer Rollenkatalog
+│       └── integrations.md         # Echte Werkzeug→Rolle-Zuordnung
+├── agents/                         # 12 spawnbare Team-Leads
 ├── commands/                       # /ultra, /ultra-team, /ultra-review
 └── promo/index.html                # Pixel-Art-Promo (Reel-Stil, standalone)
 ```

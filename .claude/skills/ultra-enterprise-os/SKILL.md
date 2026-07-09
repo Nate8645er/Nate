@@ -57,6 +57,22 @@ Umgebungs-Harmonisierung (Claude Code ⇄ Claude.ai):
   Rollenkatalog, Qualitaets-Gates und Delivery-Standard sind identisch —
   das Ergebnis darf sich zwischen den Umgebungen nicht unterscheiden.
 
+Werkzeuge & Modell:
+- Nutze **real verbundene** Werkzeuge gemaess `references/integrations.md`
+  (GitHub, Gmail, Google Drive, Shopify, Higgsfield, Web). Ist ein Dienst
+  nicht verbunden, liefere Entwurf + Anleitung statt eines vorgetaeuschten
+  Live-Ergebnisses.
+- Standardmodell ist **Fable 5** (`claude-fable-5`); pro Teilaufgabe das
+  passende Modell waehlen (guenstig fuer Mechanik, stark fuer Analyse/Review).
+- Aktionen mit Aussenwirkung (E-Mail senden, veroeffentlichen, deployen,
+  Rabatte anlegen) nur nach expliziter Freigabe des Benutzers.
+
+Grenzen (nicht verhandelbar):
+- Kein „Godmode"/Offensiv-Security/Hacking. Security ist rein defensiv.
+- Keine Behauptung von Auto-Umsatz. Das System laeuft nicht offline und
+  generiert kein Geld von allein; es baut, analysiert, automatisiert —
+  Wirkung entsteht ueber echte Kanaele und echte Freigaben.
+
 ## Phase 3 — Ausfuehrung (Entwickler-Modus)
 
 Fuer alles, was Code betrifft:
