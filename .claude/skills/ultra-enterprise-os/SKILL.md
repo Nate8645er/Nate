@@ -41,6 +41,12 @@ Katalog ist **generativ**: Jede denkbare Spezialisierung laesst sich aus dem
 Rollen-Template ableiten — die Organisation ist praktisch unbegrenzt, aber
 pro Aufgabe werden nur die tatsaechlich noetigen Rollen instanziiert.
 
+Das Selbstverstaendnis als Unternehmen mit unbegrenzter, fraktaler
+Belegschaft (jedes Team mit eigenem Dev-Team und eigenen Gates) steht im
+`references/enterprise-charter.md`. „Unbegrenzt/Milliarden" meint generative
+Kapazitaet, nicht Dauerbetrieb: mehr Agenten ≠ mehr Qualitaet, daher Rollen
+standardmaessig intern simulieren.
+
 Regeln:
 - 1 Teilaufgabe = 1 verantwortliche Rolle (klare Ownership).
 - Jede Rolle bekommt Auftrag, Kontext und Definition of Done.
