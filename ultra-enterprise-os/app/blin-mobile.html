@@ -2,12 +2,12 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<title>Blin — dein Jarvis</title>
+<title>Nate — dein Jarvis</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body style="margin:0">
 <style>
-  /* Blin Mobile — Vollbild-Sprachassistent (Jarvis-Stil). Ein dunkler
+  /* Nate Mobile — Vollbild-Sprachassistent (Jarvis-Stil). Ein dunkler
      Kosmos, ein glühender Orb. Bewusst Single-Theme. */
   :root{
     --bg:#060810; --bg2:#0B0F1C; --ink:#EAF0FF; --dim:#8A97BE; --faint:#4E5A7E;
@@ -81,7 +81,7 @@
 </style>
 
 <div class="top">
-  <div class="name"><span class="mk"></span>BLIN <small>DEIN JARVIS</small></div>
+  <div class="name"><span class="mk"></span>NATE <small>DEIN JARVIS</small></div>
   <div class="gear" id="gear" aria-label="Einstellungen">⚙</div>
 </div>
 
@@ -89,7 +89,7 @@
   <div class="orbwrap"><canvas id="orb"></canvas></div>
   <div class="status" id="status">TIPPE ZUM SPRECHEN</div>
   <div class="heard" id="heard"></div>
-  <div class="reply" id="reply">Hallo, ich bin Blin. Tippe den Kreis und sag mir, was du brauchst.</div>
+  <div class="reply" id="reply">Hallo, ich bin Nate. Tippe den Kreis und sag mir, was du brauchst.</div>
   <div class="teams" id="teams"></div>
 </div>
 
@@ -105,9 +105,9 @@
 <!-- settings -->
 <div class="sheet-bg" id="sheetBg">
   <div class="sheet">
-    <h3>Blins Stimme · ElevenLabs</h3>
+    <h3>Nates Stimme · ElevenLabs</h3>
     <div class="s">Für eine echte Stimme statt der System-Stimme. Voice-ID + Key bleiben <b>nur auf diesem Handy</b> — nie im Code, nie im Netz gespeichert.</div>
-    <div class="warn">🔒 Nur im lokal geöffneten HTML möglich. Im geteilten Link blockiert der Browser externe Verbindungen — dann nutzt Blin die System-Stimme. Teile diesen Bildschirm nie mit sichtbarem Key.</div>
+    <div class="warn">🔒 Nur im lokal geöffneten HTML möglich. Im geteilten Link blockiert der Browser externe Verbindungen — dann nutzt Nate die System-Stimme. Teile diesen Bildschirm nie mit sichtbarem Key.</div>
     <div class="fld"><label>ElevenLabs API-Key</label><input id="f_key" type="password" placeholder="sk_…" autocomplete="off"></div>
     <div class="fld"><label>Voice ID</label><input id="f_voice" type="text" placeholder="21m00Tcm4TlvDq8ikWAM" autocomplete="off"></div>
     <div class="acts">
@@ -135,15 +135,15 @@ const ROUTES=[
 const DEFAULT={teams:['Chief of Staff','Full-Stack','QA'], say:'Ich zerlege das und gebe es an die richtigen Teams. In Claude Code arbeite ich es dann echt ab.'};
 
 /* ---------- state + voice ---------- */
-const LS={key:'blin_el_key',voice:'blin_el_voice'};
+const LS={key:'Nate_el_key',voice:'Nate_el_voice'};
 function cfg(){return{key:localStorage.getItem(LS.key)||'',voice:localStorage.getItem(LS.voice)||''};}
-let lastReply='Hallo, ich bin Blin.';
+let lastReply='Hallo, ich bin Nate.';
 const $=id=>document.getElementById(id);
 
 function setStatus(t){$('status').textContent=t;}
 function provRefresh(){const c=cfg();$('voiceProv').textContent=(c.key&&c.voice)?'ElevenLabs':'System';}
 
-let blinAudio=null, warned=false;
+let NateAudio=null, warned=false;
 async function speak(text){
   lastReply=text;
   const c=cfg();
@@ -154,10 +154,10 @@ async function speak(text){
         body:JSON.stringify({text,model_id:'eleven_multilingual_v2',voice_settings:{stability:.5,similarity_boost:.75}})});
       if(!res.ok)throw new Error('HTTP '+res.status);
       const url=URL.createObjectURL(await res.blob());
-      if(blinAudio)blinAudio.pause();
-      blinAudio=new Audio(url);orb.speaking(true);
-      blinAudio.onended=()=>{orb.speaking(false);URL.revokeObjectURL(url);};
-      await blinAudio.play();return;
+      if(NateAudio)NateAudio.pause();
+      NateAudio=new Audio(url);orb.speaking(true);
+      NateAudio.onended=()=>{orb.speaking(false);URL.revokeObjectURL(url);};
+      await NateAudio.play();return;
     }catch(e){ if(!warned){warned=true;} }
   }
   try{
@@ -178,7 +178,7 @@ function respond(text){
   const tc=$('teams');tc.innerHTML='';
   r.teams.forEach((t,i)=>{const c=document.createElement('span');c.className='tchip';c.textContent=t;tc.appendChild(c);
     setTimeout(()=>c.classList.add('on'),150+i*120);});
-  setStatus('BLIN ANTWORTET');
+  setStatus('NATE ANTWORTET');
   speak(r.say);
   setTimeout(()=>setStatus('TIPPE ZUM SPRECHEN'),1400);
 }
@@ -193,7 +193,7 @@ if(SR){
   recog.onend=()=>stop();recog.onerror=()=>{stop();};
 }
 function start(){
-  if(!recog){ $('reply').textContent='Sprache geht in diesem Browser nicht. Öffne Blin in Safari oder Chrome.'; return; }
+  if(!recog){ $('reply').textContent='Sprache geht in diesem Browser nicht. Öffne Nate in Safari oder Chrome.'; return; }
   listening=true;$('mic').classList.add('listening');orb.listen(true);
   setStatus('ICH HÖRE …');$('heard').textContent='';
   speak('Ja?');
@@ -210,8 +210,8 @@ $('gear').onclick=()=>{const c=cfg();$('f_key').value=c.key;$('f_voice').value=c
 $('sheetBg').onclick=e=>{if(e.target===$('sheetBg'))$('sheetBg').classList.remove('on');};
 function save(){localStorage.setItem(LS.key,$('f_key').value.trim());localStorage.setItem(LS.voice,$('f_voice').value.trim());provRefresh();}
 $('s_save').onclick=()=>{save();$('sheetBg').classList.remove('on');const c=cfg();
-  if(c.key&&c.voice)speak('Hallo, ich bin Blin. Ab jetzt spreche ich mit meiner echten Stimme.');};
-$('s_test').onclick=()=>{save();speak('Hallo, ich bin Blin. So klinge ich.');};
+  if(c.key&&c.voice)speak('Hallo, ich bin Nate. Ab jetzt spreche ich mit meiner echten Stimme.');};
+$('s_test').onclick=()=>{save();speak('Hallo, ich bin Nate. So klinge ich.');};
 $('s_clear').onclick=()=>{localStorage.removeItem(LS.key);localStorage.removeItem(LS.voice);$('f_key').value='';$('f_voice').value='';provRefresh();};
 provRefresh();
 

@@ -1,6 +1,6 @@
-# Blin als Siri-Kurzbefehl (iPhone)
+# Nate als Siri-Kurzbefehl (iPhone)
 
-„Hey Siri, Blin" — du sprichst, Blin denkt (Claude/Fable 5), Blin antwortet
+„Hey Siri, Nate" — du sprichst, Nate denkt (Claude/Fable 5), Nate antwortet
 mit deiner ElevenLabs-Stimme. Der sichere, offizielle Weg auf dem iPhone.
 
 ## Sicherheit zuerst (bitte lesen)
@@ -27,12 +27,12 @@ hinzufügen (oben suchen und antippen):
    Danach: **„Variable festlegen"** → Name `ANTHROPIC_KEY`.
 2. **„Text"** → trage deinen ElevenLabs-Key ein.
    Danach: **„Variable festlegen"** → Name `ELEVEN_KEY`.
-3. **„Diktat"** (Text diktieren) → Sprache Deutsch. Das ist deine Frage an Blin.
+3. **„Diktat"** (Text diktieren) → Sprache Deutsch. Das ist deine Frage an Nate.
    Danach: **„Variable festlegen"** → Name `FRAGE`.
 4. **„Wörterbuch"** (JSON-Body für Claude) mit diesen Einträgen:
    - `model` (Text) → `claude-fable-5`
    - `max_tokens` (Zahl) → `1024`
-   - `system` (Text) → `Du bist Blin, ein hilfreicher, direkter Sprachassistent. Antworte kurz und gesprochen, in maximal 3 Sätzen.`
+   - `system` (Text) → `Du bist Nate, ein hilfreicher, direkter Sprachassistent. Antworte kurz und gesprochen, in maximal 3 Sätzen.`
    - `messages` (Array) → 1 Eintrag vom Typ **Wörterbuch**:
      - `role` (Text) → `user`
      - `content` (Text) → Variable **FRAGE**
@@ -47,7 +47,7 @@ hinzufügen (oben suchen und antippen):
 6. **„Wörterbuchwert abrufen"** → Schlüssel `content` aus der Antwort.
    Dann nochmal **„Wörterbuchwert abrufen"** → Schlüssel `text` (erstes
    Element). Ergebnis: **„Variable festlegen"** → Name `ANTWORT`.
-   (Blins Textantwort.)
+   (Nates Textantwort.)
 7. **ElevenLabs-Stimme** — **„Wörterbuch"** für den Sprach-Body:
    - `text` (Text) → Variable **ANTWORT**
    - `model_id` (Text) → `eleven_multilingual_v2`
@@ -60,13 +60,13 @@ hinzufügen (oben suchen und antippen):
      - `accept` → `audio/mpeg`
    - **Anfragetext**: **JSON** → das Wörterbuch aus Schritt 7
 9. **„Audio abspielen"** (oder „Ton abspielen") → nimmt das Ergebnis von
-   Schritt 8 (die MP3). Blin spricht mit deiner Stimme.
+   Schritt 8 (die MP3). Nate spricht mit deiner Stimme.
 
-Kurzbefehl oben **„Blin"** nennen. Fertig.
+Kurzbefehl oben **„Nate"** nennen. Fertig.
 
 ## Starten per Stimme
 
-- Sag **„Hey Siri, Blin"** → sprich deine Frage → Blin antwortet mit Stimme.
+- Sag **„Hey Siri, Nate"** → sprich deine Frage → Nate antwortet mit Stimme.
 - Beim ersten Mal fragt iOS nach **Mikrofon** und **Netzwerk** → erlauben.
 
 ## Falls es klemmt (ehrlich)
@@ -81,10 +81,10 @@ Kurzbefehl oben **„Blin"** nennen. Fertig.
   (z. B. `claude-sonnet-5`).
 - **Fehler 401 bei ElevenLabs:** ElevenLabs-Key falsch.
 
-## Was Blin per Siri kann — und was nicht
+## Was Nate per Siri kann — und was nicht
 
 - ✅ Zuhören, denken (echtes Claude/Fable 5), mit deiner Stimme antworten.
 - ✅ Erweiterbar: weitere Kurzbefehl-Aktionen (Nachricht senden, App öffnen,
-  Wecker stellen, Kalender, Standort) hinzufügen — Blin kann sie ausloesen.
+  Wecker stellen, Kalender, Standort) hinzufügen — Nate kann sie ausloesen.
 - ⚠️ Er steuert nicht beliebige fremde Apps „von innen"; er nutzt nur, was
   die Kurzbefehle-App an Aktionen erlaubt. Das ist Apples Sicherheitsgrenze.
