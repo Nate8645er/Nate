@@ -14,13 +14,22 @@
 // Nutzung:
 //   node blin.mjs                      # Tages-Dashboard (Live-Countdown)
 //   node blin.mjs --once               # Dashboard einmal rendern (Test)
+//   node blin.mjs --speak              # Dashboard + Blin liest den Bericht laut vor
+//   node blin.mjs --say "Hallo"        # Blin sagt einen Satz (Stimm-Test)
 //   node blin.mjs --browse "whey protein"   # echten Browser oeffnen + suchen
 //   node blin.mjs --browse "…" --headless   # ohne sichtbares Fenster (Test/CI)
+//
+// Stimme:
+//   - Standard: eingebaute System-Stimme (Mac: `say`, Linux: `spd-say`/`espeak`).
+//   - Echte Stimme via ElevenLabs, wenn gesetzt (Keys nur als Umgebungsvariablen!):
+//       export BLIN_ELEVEN_KEY=…   export BLIN_VOICE_ID=…
 //
 // Aufgaben liegen in tasks.json (siehe tasks.example.json).
 
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
+import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -84,6 +93,57 @@ function render(data) {
   return lines.join('\n');
 }
 
+// ---- Stimme: Blin spricht ----
+function haveCmd(cmd) {
+  const r = spawnSync(process.platform === 'win32' ? 'where' : 'which', [cmd], { stdio: 'ignore' });
+  return r.status === 0;
+}
+async function elevenSpeak(text, key, voice) {
+  const model = process.env.BLIN_ELEVEN_MODEL || 'eleven_multilingual_v2';
+  const res = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + encodeURIComponent(voice), {
+    method: 'POST',
+    headers: { 'xi-api-key': key, 'Content-Type': 'application/json', 'Accept': 'audio/mpeg' },
+    body: JSON.stringify({ text, model_id: model, voice_settings: { stability: 0.5, similarity_boost: 0.75 } }),
+  });
+  if (!res.ok) throw new Error('ElevenLabs HTTP ' + res.status);
+  const buf = Buffer.from(await res.arrayBuffer());
+  const file = path.join(os.tmpdir(), 'blin-voice-' + Date.now() + '.mp3');
+  fs.writeFileSync(file, buf);
+  const player = process.platform === 'darwin' ? 'afplay'
+    : haveCmd('mpg123') ? 'mpg123' : haveCmd('ffplay') ? 'ffplay' : null;
+  if (!player) { console.log(C.gold + '(Audio gespeichert, aber kein Player gefunden: ' + file + ')' + C.reset); return; }
+  await new Promise((r) => {
+    const a = player === 'ffplay' ? ['-nodisp', '-autoexit', file] : [file];
+    const p = spawn(player, a, { stdio: 'ignore' }); p.on('close', r); p.on('error', r);
+  });
+}
+async function speak(text) {
+  const key = process.env.BLIN_ELEVEN_KEY, voice = process.env.BLIN_VOICE_ID;
+  if (key && voice) {
+    try { await elevenSpeak(text, key, voice); return; }
+    catch (e) { console.log(C.gold + 'ElevenLabs nicht erreichbar (' + e.message + ') — System-Stimme.' + C.reset); }
+  }
+  let cmd = null, args = [];
+  if (process.platform === 'darwin') { cmd = 'say'; args = ['-v', process.env.BLIN_SAY_VOICE || 'Anna', text]; }
+  else if (haveCmd('spd-say')) { cmd = 'spd-say'; args = ['-l', 'de', '-w', text]; }
+  else if (haveCmd('espeak-ng')) { cmd = 'espeak-ng'; args = ['-v', 'de', text]; }
+  else if (haveCmd('espeak')) { cmd = 'espeak'; args = ['-v', 'de', text]; }
+  if (!cmd) { console.log(C.gold + '🔊 (keine System-Stimme gefunden — am Mac funktioniert `say` sofort)' + C.reset); return; }
+  await new Promise((r) => { const p = spawn(cmd, args, { stdio: 'ignore' }); p.on('close', r); p.on('error', r); });
+}
+function briefing(data) {
+  const tasks = data.tasks || [];
+  const active = tasks.find((t) => t.status === 'active');
+  const next = tasks.filter((t) => t.status === 'todo').slice(0, 2).map((t) => t.name);
+  const doneN = tasks.filter((t) => t.status === 'done').length;
+  let s = 'Guten Morgen. ' + (data.title || 'Mein Tag startet.') + ' ';
+  s += doneN + ' von ' + tasks.length + ' Aufgaben erledigt. ';
+  if (active) s += 'Gerade dran: ' + active.name + '. ';
+  if (next.length) s += 'Als Naechstes: ' + next.join(', dann ') + '. ';
+  s += 'Ich uebernehme, was ich darf, und frage vor allem mit Aussenwirkung nach.';
+  return s;
+}
+
 async function browse(query, headless) {
   let chromium;
   try { ({ chromium } = await import('playwright-core')); }
@@ -112,11 +172,18 @@ async function browse(query, headless) {
 }
 
 // ---- main ----
-if (has('--browse')) {
+if (has('--say')) {
+  await speak(val('--say') || 'Hallo, ich bin Blin.');
+} else if (has('--browse')) {
   await browse(val('--browse') || 'ULTRA AI ENTERPRISE OS', has('--headless'));
 } else {
   const data = loadTasks();
-  if (has('--once')) { console.clear(); process.stdout.write(render(data) + '\n'); }
+  if (has('--speak')) {
+    console.clear(); process.stdout.write(render(data) + '\n');
+    const text = briefing(data);
+    console.log('  ' + C.coral + '● Blin spricht:' + C.reset + ' ' + C.dim + text + C.reset + '\n');
+    await speak(text);
+  } else if (has('--once')) { console.clear(); process.stdout.write(render(data) + '\n'); }
   else {
     const tick = () => { console.clear(); process.stdout.write(render(data) + '\n' +
       '  ' + C.dim + '⌃C zum Beenden · Aufgaben in tasks.json' + C.reset + '\n'); };
