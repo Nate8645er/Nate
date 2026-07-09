@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<title>ULTRA AI ENTERPRISE OS — Command Deck</title>
+<title>Blin — ULTRA AI ENTERPRISE OS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body style="margin:0">
@@ -96,8 +96,15 @@
   .cmdbar button{background:linear-gradient(90deg,var(--coral),var(--plasma));color:#20120C;border:none;
     font-weight:800;font-size:13px;padding:9px 16px;border-radius:10px;cursor:pointer;font-family:var(--grot);
     letter-spacing:.02em;transition:filter .15s,transform .1s;}
-  .cmdbar button:hover{filter:brightness(1.08);}
-  .cmdbar button:active{transform:translateY(1px);}
+  .cmdbar button.go:hover{filter:brightness(1.08);}
+  .cmdbar button.go:active{transform:translateY(1px);}
+  .mic{background:var(--panel2);border:1px solid var(--line2);color:var(--coral);font-size:17px;
+    width:42px;height:40px;border-radius:10px;cursor:pointer;flex:none;transition:border-color .2s,background .2s;
+    display:flex;align-items:center;justify-content:center;}
+  .mic:hover{border-color:var(--coral);}
+  .mic.on{background:linear-gradient(90deg,var(--coral),var(--plasma));color:#20120C;border-color:var(--coral);
+    animation:micpulse 1.1s infinite;}
+  @keyframes micpulse{50%{box-shadow:0 0 0 7px rgba(233,123,102,.16);}}
   .examples{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-top:11px;}
   .ex{font-size:11px;color:var(--ink-dim);border:1px solid var(--line);background:var(--panel);border-radius:20px;
     padding:6px 12px;cursor:pointer;transition:border-color .2s,color .2s;}
@@ -160,13 +167,13 @@
   <div class="top">
     <div class="brand">
       <span class="mark"></span>
-      ULTRA&nbsp;OS <small>AI ENTERPRISE</small>
+      BLIN <small>· ULTRA AI ENTERPRISE</small>
     </div>
     <div class="live">
+      <span class="pill" id="voiceToggle" style="cursor:pointer">🔊 STIMME · <b>AN</b></span>
       <span class="pill">MODELL · <b id="topModel">Fable 5</b></span>
-      <span class="pill" id="topTeams">TEAMS · <b>12</b></span>
       <span class="pill">MODE · <b id="topMode">STANDARD</b></span>
-      <span><span class="dot"></span> LIVE</span>
+      <span><span class="dot"></span> <span id="phoneState">HANDY VERBUNDEN</span></span>
     </div>
   </div>
 
@@ -179,19 +186,20 @@
   <!-- CENTER -->
   <div class="center">
     <div class="headline">
-      <h1>Ein Befehl. <em>Dein ganzes Unternehmen.</em></h1>
-      <p>Sag dem Deck, was du willst. Es zerlegt die Aufgabe, ruft die richtigen Teams und Werkzeuge, prueft gegen — und liefert das Ergebnis.</p>
+      <h1>Hallo, ich bin <em>Blin.</em></h1>
+      <p>Sprich mit mir oder tippe. Ich zerlege deine Aufgabe, rufe die richtigen Teams und Werkzeuge, pruefe gegen — und liefere das Ergebnis. Tippe aufs Mikrofon und sprich.</p>
     </div>
     <div class="orbwrap">
       <div class="modechip" id="orbMode">STANDARD-DENKEN</div>
       <canvas id="orb"></canvas>
-      <div class="orbcap" id="orbCap">BEREIT · WARTET AUF BEFEHL</div>
+      <div class="orbcap" id="orbCap">BEREIT · SPRICH ODER TIPPE</div>
     </div>
     <div class="cmd">
       <div class="cmdbar">
-        <span class="chev">/ultra</span>
-        <input id="cmdIn" placeholder="z. B. Baue mir eine Werbeanzeige fuer mein Produkt…" autocomplete="off">
-        <button id="cmdGo">Ausfuehren</button>
+        <span class="chev">Blin</span>
+        <input id="cmdIn" placeholder="Sprich mit mir oder tippe… (Mikrofon antippen)" autocomplete="off">
+        <button id="micBtn" class="mic" title="Mit Blin sprechen" aria-label="Mit Blin sprechen">🎙</button>
+        <button id="cmdGo" class="go">Ausfuehren</button>
       </div>
       <div class="examples" id="examples"></div>
     </div>
@@ -226,7 +234,7 @@
 
   <!-- BOTTOM -->
   <div class="bot" id="bot">
-    <b>Ehrlich:</b> Dieses Deck ist das Cockpit. Das echte Ausfuehren passiert ueber <b>/ultra</b> in Claude Code mit den verbundenen Werkzeugen — es laeuft nicht offline und generiert kein Geld von allein. Security ist rein defensiv.
+    <b>Blin & dein Handy:</b> Blin nutzt Mikrofon und Stimme deines Handys ueber den Browser — du kannst mit ihm sprechen statt tippen (Mikro-Freigabe noetig). Er kann das Handy-Betriebssystem nicht selbst fernsteuern. Das echte Ausfuehren laeuft ueber <b>/ultra</b> in Claude Code mit den verbundenen Werkzeugen — kein Offline-Betrieb, kein Auto-Umsatz, Security rein defensiv.
   </div>
 </div>
 
@@ -287,7 +295,7 @@ const ROUTES = [
 const TEAMLABEL = {};
 DIVISIONS.forEach(d=>d.teams.forEach(t=>TEAMLABEL[t.id]=t.n));
 
-let state={model:'Fable 5', god:false};
+let state={model:'Fable 5', god:false, voice:true};
 
 /* ============ RENDER ORG ============ */
 const org=document.getElementById('org');
@@ -382,11 +390,67 @@ function dispatch(cmd){
          logFeed('Fertig — '+teams.length+' Teams, Werkzeug '+route.tool);},
   ];
   let i=0;(function next(){if(i<steps.length){steps[i++]();setTimeout(next,i<3?260:520);}})();
+  // Blin spricht
+  speak('Alles klar. Ich starte '+teams.length+' Teams. '+route.out+'.');
   // highlight teams in org
   document.querySelectorAll('.team').forEach(el=>{
     el.open=teams.includes(el.dataset.id);
   });
 }
+
+/* ============ BLIN — STIMME (Sprechen + Zuhoeren) ============ */
+function speak(text){
+  try{
+    if(!state.voice || !('speechSynthesis' in window))return;
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='de-DE';u.rate=1.03;u.pitch=1.0;
+    const vs=speechSynthesis.getVoices();const de=vs.find(v=>/de[-_]/i.test(v.lang));
+    if(de)u.voice=de;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+if('speechSynthesis' in window){ speechSynthesis.onvoiceschanged=()=>{}; }
+
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const micBtn=document.getElementById('micBtn');
+let recog=null, listening=false;
+if(SR){
+  recog=new SR();recog.lang='de-DE';recog.interimResults=true;recog.continuous=false;
+  recog.onresult=e=>{
+    let t='';for(const r of e.results)t+=r[0].transcript;
+    document.getElementById('cmdIn').value=t;
+    if(e.results[e.results.length-1].isFinal){ stopListen(); dispatch(t); }
+  };
+  recog.onend=()=>stopListen();
+  recog.onerror=()=>{stopListen();};
+  micBtn.onclick=()=>{ listening?stopListen():startListen(); };
+}else{
+  micBtn.onclick=()=>{
+    logFeed('Sprache in diesem Browser nicht verfuegbar — nutze Safari/Chrome und tippe solange.');
+    document.getElementById('cmdIn').focus();
+  };
+}
+function startListen(){
+  if(!recog)return; listening=true; micBtn.classList.add('on');
+  orbCap.textContent='🎙 BLIN HOERT ZU…'; orb.excite(); speak('Ja, ich hoere.');
+  logFeed('Blin hoert zu…');
+  try{recog.start();}catch(e){}
+}
+function stopListen(){
+  listening=false; micBtn.classList.remove('on');
+  if(!busy)orbCap.textContent='BEREIT · SPRICH ODER TIPPE';
+  try{recog&&recog.stop();}catch(e){}
+}
+
+/* Stimme an/aus */
+document.getElementById('voiceToggle').onclick=function(){
+  state.voice=!state.voice;
+  this.querySelector('b').textContent=state.voice?'AN':'AUS';
+  if(!state.voice && 'speechSynthesis' in window)speechSynthesis.cancel();
+  logFeed('Stimme '+(state.voice?'AN':'AUS'));
+  if(state.voice)speak('Stimme an.');
+};
 document.getElementById('cmdGo').onclick=()=>dispatch(document.getElementById('cmdIn').value);
 document.getElementById('cmdIn').addEventListener('keydown',e=>{if(e.key==='Enter')dispatch(e.target.value);});
 

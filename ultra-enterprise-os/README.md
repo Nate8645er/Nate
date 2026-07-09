@@ -135,14 +135,18 @@ ultra-enterprise-os/
 └── app/index.html                  # ULTRA Command Deck (AI-Agent-Cockpit)
 ```
 
-Das **Command Deck** (`app/index.html`) ist das Cockpit deines AI-Agenten:
-ein lebender Partikel-Orb, eine Befehlszeile (`/ultra …`), die komplette
-fraktale Organisation (12 Teams, jedes mit eigenem Dev-Team + Gates), die
-verbundenen Werkzeuge (GitHub, Gmail, Drive, Shopify, Higgsfield, Web),
-alle Fable-5-Modelle und ein Godmode-Denken-Schalter. Ein Befehl zeigt live,
-welche Teams und Werkzeuge ULTRA dafuer instanziiert. Ehrlich: Das Deck ist
-die Steuerzentrale — das echte Ausfuehren passiert ueber `/ultra` in Claude
-Code mit den verbundenen Werkzeugen.
+Der AI-Agent **Blin** (`app/index.html`) ist das Cockpit deines
+Unternehmens: ein lebender Partikel-Orb, **Sprachsteuerung** (Mikrofon
+antippen und mit Blin reden — er antwortet mit Stimme), eine Befehlszeile,
+die komplette fraktale Organisation (12 Teams, jedes mit eigenem Dev-Team +
+Gates), die verbundenen Werkzeuge (GitHub, Gmail, Drive, Shopify,
+Higgsfield, Web), alle Fable-5-Modelle und ein Godmode-Denken-Schalter. Ein
+Befehl zeigt live, welche Teams und Werkzeuge ULTRA dafuer instanziiert.
+
+Sprache laeuft ueber die Web-Speech-API des Browsers (Safari/Chrome, mit
+Mikrofon-Freigabe). Ehrlich: Blin nutzt Mikrofon und Stimme des Handys, kann
+aber das Handy-Betriebssystem nicht selbst fernsteuern — das echte Ausfuehren
+passiert ueber `/ultra` in Claude Code mit den verbundenen Werkzeugen.
 
 Das Promo (`promo/index.html`) ist eine selbststaendige HTML-Animation im
 Stil eines Instagram-Reels: 7 Szenen, Story-Fortschrittsleiste, Countdown,
