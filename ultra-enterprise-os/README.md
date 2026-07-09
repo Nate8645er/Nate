@@ -131,8 +131,18 @@ ultra-enterprise-os/
 │       └── integrations.md         # Echte Werkzeug→Rolle-Zuordnung
 ├── agents/                         # 12 spawnbare Team-Leads
 ├── commands/                       # /ultra, /ultra-team, /ultra-review
-└── promo/index.html                # Pixel-Art-Promo (Reel-Stil, standalone)
+├── promo/index.html                # Pixel-Art-Promo (Reel-Stil, standalone)
+└── app/index.html                  # ULTRA Command Deck (AI-Agent-Cockpit)
 ```
+
+Das **Command Deck** (`app/index.html`) ist das Cockpit deines AI-Agenten:
+ein lebender Partikel-Orb, eine Befehlszeile (`/ultra …`), die komplette
+fraktale Organisation (12 Teams, jedes mit eigenem Dev-Team + Gates), die
+verbundenen Werkzeuge (GitHub, Gmail, Drive, Shopify, Higgsfield, Web),
+alle Fable-5-Modelle und ein Godmode-Denken-Schalter. Ein Befehl zeigt live,
+welche Teams und Werkzeuge ULTRA dafuer instanziiert. Ehrlich: Das Deck ist
+die Steuerzentrale — das echte Ausfuehren passiert ueber `/ultra` in Claude
+Code mit den verbundenen Werkzeugen.
 
 Das Promo (`promo/index.html`) ist eine selbststaendige HTML-Animation im
 Stil eines Instagram-Reels: 7 Szenen, Story-Fortschrittsleiste, Countdown,
