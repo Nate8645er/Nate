@@ -27,7 +27,18 @@ produktionsreife Endergebnis wird ausgeliefert.
 | `ultra-data-ml` | Data Science, ML/DL, AI Research, LLM-Integration |
 | `ultra-design` | UI/UX, Product Design, Zugaenglichkeit |
 | `ultra-business` | Strategie, Finance, Marketing, Sales, SEO, Content, Branding |
+| `ultra-growth` | Growth/Revenue: Funnels, Conversion, Shopify-Ops, CRM, Creatives |
+| `ultra-automation` | Automation/Integration: verbundene Dienste zu Workflows koppeln |
 | `ultra-docs` | Dokumentation, Legal-Hinweise, Projekt-Management |
+
+### Echte Werkzeug-Integrationen
+
+`skills/ultra-enterprise-os/references/integrations.md` koppelt die
+**tatsaechlich verbundenen** Dienste an die Rollen: **GitHub, Gmail,
+Google Drive, Shopify, Higgsfield, Web**. Standardmodell ist **Fable 5**
+(`claude-fable-5`); pro Teilaufgabe wird das passende Modell gewaehlt.
+Ist ein Dienst nicht verbunden, liefert das System Entwurf + Anleitung
+statt eines vorgetaeuschten Live-Ergebnisses.
 
 ### 3 Commands
 
@@ -49,6 +60,28 @@ Dieses Repo ist gleichzeitig ein Plugin-Marketplace. In Claude Code:
 Danach Claude Code neu starten oder die Sitzung fortsetzen — Skill,
 Agenten und Commands sind dann verfuegbar (`/ultra`, `/ultra-team`,
 `/ultra-review`).
+
+## Harmonisierung: eine Quelle, drei Wege
+
+Dasselbe Betriebssystem laeuft ueberall — aus **einer** Quelle
+(`ultra-enterprise-os/`), ohne Drift:
+
+| Umgebung | Weg | Was laeuft |
+|---|---|---|
+| Claude Code (Plugin) | `/plugin install ultra-enterprise-os@nate-marketplace` | Skill + 10 Agenten + 3 Commands |
+| Claude Code (dieses Repo) | `.claude/`-Spiegel laedt automatisch in jeder Session | Skill + 10 Agenten + 3 Commands |
+| Claude.ai (App/Web) | `scripts/build-claude-ai-skill.sh` → ZIP unter Settings → Capabilities → Skills hochladen | Skill (Rollen werden intern simuliert — gleiches Protokoll, gleiche Gates) |
+
+Regeln gegen Drift:
+
+- **Quelle der Wahrheit** ist immer `ultra-enterprise-os/`. Aenderungen
+  nur dort machen.
+- Danach `scripts/sync-mirror.sh` ausfuehren — synchronisiert den
+  `.claude/`-Spiegel.
+- `scripts/sync-mirror.sh --check` prueft jederzeit auf Abweichungen
+  (Exit 1 bei Drift; ideal fuer CI oder als Pre-Commit-Check).
+- Nach Skill-Aenderungen das Claude.ai-Paket neu bauen und erneut
+  hochladen (`scripts/build-claude-ai-skill.sh`).
 
 ## Konfiguration
 
@@ -93,10 +126,39 @@ ultra-enterprise-os/
 ├── .claude-plugin/plugin.json      # Plugin-Manifest
 ├── skills/ultra-enterprise-os/
 │   ├── SKILL.md                    # Betriebsprotokoll (5 Phasen)
-│   └── references/org-chart.md     # Generativer Rollenkatalog
-├── agents/                         # 10 spawnbare Team-Leads
-└── commands/                       # /ultra, /ultra-team, /ultra-review
+│   └── references/
+│       ├── org-chart.md            # Generativer Rollenkatalog
+│       └── integrations.md         # Echte Werkzeug→Rolle-Zuordnung
+├── agents/                         # 12 spawnbare Team-Leads
+├── commands/                       # /ultra, /ultra-team, /ultra-review
+├── promo/index.html                # Pixel-Art-Promo (Reel-Stil, standalone)
+└── app/index.html                  # ULTRA Command Deck (AI-Agent-Cockpit)
 ```
+
+Der AI-Agent **Blin** (`app/index.html`) ist das Cockpit deines
+Unternehmens: ein lebender Partikel-Orb, **Sprachsteuerung** (Mikrofon
+antippen und mit Blin reden — er antwortet mit Stimme), eine Befehlszeile,
+die komplette fraktale Organisation (12 Teams, jedes mit eigenem Dev-Team +
+Gates), die verbundenen Werkzeuge (GitHub, Gmail, Drive, Shopify,
+Higgsfield, Web), alle Fable-5-Modelle und ein Godmode-Denken-Schalter. Ein
+Befehl zeigt live, welche Teams und Werkzeuge ULTRA dafuer instanziiert.
+
+Sprache laeuft ueber die Web-Speech-API des Browsers (Safari/Chrome, mit
+Mikrofon-Freigabe). Ehrlich: Blin nutzt Mikrofon und Stimme des Handys, kann
+aber das Handy-Betriebssystem nicht selbst fernsteuern — das echte Ausfuehren
+passiert ueber `/ultra` in Claude Code mit den verbundenen Werkzeugen.
+
+**Echte Stimme (ElevenLabs):** Ueber ⚙ STIMME kannst du eine ElevenLabs
+Voice-ID + API-Key eintragen. Diese werden **nur im Browser (localStorage)**
+gespeichert — nie im Code, nie im Repo, nie in einem Commit. Funktioniert nur
+in der lokalen `app/index.html` (der claude.ai-Link blockiert externe
+Verbindungen); blockiert der Browser die Verbindung, faellt Blin automatisch
+auf die Browser-Stimme zurueck. **Trage API-Keys niemals direkt in den Code
+ein.**
+
+Das Promo (`promo/index.html`) ist eine selbststaendige HTML-Animation im
+Stil eines Instagram-Reels: 7 Szenen, Story-Fortschrittsleiste, Countdown,
+Autopilot-Task-Grid — einfach im Browser oeffnen (tippen = naechste Szene).
 
 ## Tests
 
