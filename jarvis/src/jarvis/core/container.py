@@ -74,6 +74,8 @@ class ServiceContainer:
             )
         result = factory(self)
         if inspect.isawaitable(result):
+            if inspect.iscoroutine(result):
+                result.close()
             raise ConfigurationError(
                 f"Service {interface.__name__!r} has an async factory; use aresolve()"
             )
