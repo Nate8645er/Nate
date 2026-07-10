@@ -107,7 +107,7 @@ class VectorStore(ABC):
 def _cosine(a: list[float], b: list[float]) -> float:
     if len(a) != len(b):
         return 0.0
-    dot = sum(x * y for x, y in zip(a, b))
+    dot = sum(x * y for x, y in zip(a, b, strict=False))
     norm_a = math.sqrt(sum(x * x for x in a)) or 1.0
     norm_b = math.sqrt(sum(y * y for y in b)) or 1.0
     return dot / (norm_a * norm_b)
@@ -135,7 +135,7 @@ class LocalVectorStore(VectorStore):
     async def add(self, texts: list[str], metadatas: list[dict[str, Any]] | None = None) -> list[str]:
         vectors = await self._embedder.embed(texts)
         ids: list[str] = []
-        for i, (text, vector) in enumerate(zip(texts, vectors)):
+        for i, (text, vector) in enumerate(zip(texts, vectors, strict=True)):
             record_id = uuid.uuid4().hex
             self._records[record_id] = {
                 "text": text,

@@ -98,7 +98,7 @@ class ProviderRegistry:
         """Names of all currently reachable providers (probed concurrently)."""
         names = self.available_names
         results = await asyncio.gather(*(self.healthy(name) for name in names))
-        return [name for name, ok in zip(names, results) if ok]
+        return [name for name, ok in zip(names, results, strict=False) if ok]
 
     async def aclose(self) -> None:
         await asyncio.gather(

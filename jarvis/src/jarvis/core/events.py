@@ -8,6 +8,7 @@ trailing wildcards (``"voice.*"``).
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import fnmatch
 import inspect
 from collections.abc import Awaitable, Callable
@@ -46,6 +47,7 @@ class EventBus:
 
     def __init__(self) -> None:
         self._subs: list[Subscription] = []
+        self._background: set[asyncio.Task] = set()
 
     def subscribe(self, pattern: str, handler: EventHandler) -> Subscription:
         """Subscribe a handler to a topic pattern (supports ``*`` wildcards)."""
@@ -54,10 +56,8 @@ class EventBus:
         return sub
 
     def _unsubscribe(self, sub: Subscription) -> None:
-        try:
+        with contextlib.suppress(ValueError):
             self._subs.remove(sub)
-        except ValueError:
-            pass
 
     async def publish(self, topic: str, data: dict[str, Any] | None = None) -> None:
         """Publish an event; handler errors are logged, never propagated."""
@@ -79,4 +79,6 @@ class EventBus:
         except RuntimeError:
             asyncio.run(self.publish(topic, data))
             return
-        loop.create_task(self.publish(topic, data))
+        task = loop.create_task(self.publish(topic, data))
+        self._background.add(task)
+        task.add_done_callback(self._background.discard)

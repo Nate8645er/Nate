@@ -16,7 +16,7 @@ from typing import Any
 
 import aiosqlite
 
-from jarvis.core.errors import MemoryError_
+from jarvis.core.errors import MemoryStoreError
 from jarvis.core.logging import get_logger
 
 logger = get_logger("memory.long_term")
@@ -111,7 +111,7 @@ class LongTermMemory:
     @property
     def db(self) -> aiosqlite.Connection:
         if self._db is None:
-            raise MemoryError_("Long-term memory is not opened; call open() first")
+            raise MemoryStoreError("Long-term memory is not opened; call open() first")
         return self._db
 
     async def close(self) -> None:

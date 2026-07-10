@@ -174,7 +174,7 @@ class OpenAICompatProvider(LLMProvider):
         message = choice.get("message") or {}
         tool_calls = [
             ToolCall.from_json_arguments(
-                id=call.get("id") or f"call_{i}",
+                call_id=call.get("id") or f"call_{i}",
                 name=call.get("function", {}).get("name", ""),
                 arguments=call.get("function", {}).get("arguments", "{}"),
             )
@@ -256,7 +256,7 @@ class OpenAICompatProvider(LLMProvider):
 
         tool_calls = [
             ToolCall.from_json_arguments(
-                id=slot["id"] or f"call_{idx}", name=slot["name"], arguments=slot["arguments"]
+                call_call_id=slot["id"] or f"call_{idx}", name=slot["name"], arguments=slot["arguments"]
             )
             for idx, slot in sorted(pending_calls.items())
         ]

@@ -100,7 +100,7 @@ class BaseAgent:
         steps: list[AgentStep] = []
         specs = self.tools.specs(self.tool_tags)
 
-        for iteration in range(self.max_iterations):
+        for _ in range(self.max_iterations):
             response: ChatResponse = await self.router.chat(
                 messages,
                 tools=specs or None,

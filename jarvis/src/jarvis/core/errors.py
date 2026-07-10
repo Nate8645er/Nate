@@ -53,7 +53,7 @@ class AgentError(JarvisError):
     """Raised when an agent run fails."""
 
 
-class MemoryError_(JarvisError):
+class MemoryStoreError(JarvisError):
     """Raised when a memory backend operation fails."""
 
 

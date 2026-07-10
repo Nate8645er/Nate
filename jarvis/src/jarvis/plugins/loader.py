@@ -43,7 +43,7 @@ class PluginLoader:
     def __init__(self, context_factory, directories: list[Path]) -> None:
         """``context_factory(name) -> PluginContext`` builds a fresh context per plugin."""
         self._context_factory = context_factory
-        self._directories = [d for d in directories]
+        self._directories = list(directories)
         self._loaded: dict[str, LoadedPlugin] = {}
         self._watch_task: asyncio.Task | None = None
 

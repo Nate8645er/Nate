@@ -10,13 +10,13 @@ from __future__ import annotations
 import json
 from abc import ABC, abstractmethod
 from collections.abc import AsyncIterator
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, Field
 
 
-class Role(str, Enum):
+class Role(StrEnum):
     SYSTEM = "system"
     USER = "user"
     ASSISTANT = "assistant"
@@ -38,14 +38,14 @@ class ToolCall(BaseModel):
     arguments: dict[str, Any] = Field(default_factory=dict)
 
     @classmethod
-    def from_json_arguments(cls, id: str, name: str, arguments: str) -> ToolCall:
+    def from_json_arguments(cls, call_id: str, name: str, arguments: str) -> ToolCall:
         try:
             parsed = json.loads(arguments) if arguments else {}
         except json.JSONDecodeError:
             parsed = {"_raw": arguments}
         if not isinstance(parsed, dict):
             parsed = {"value": parsed}
-        return cls(id=id, name=name, arguments=parsed)
+        return cls(id=call_id, name=name, arguments=parsed)
 
 
 class Message(BaseModel):
