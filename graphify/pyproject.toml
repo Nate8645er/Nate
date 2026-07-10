@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "graphify"
+version = "1.0.0"
+description = "Wissensgraph fuer deine Codebase — Claude navigiert durch den Graphen statt Dateien neu zu lesen"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["knowledge-graph", "codebase", "claude", "mcp", "token-savings"]
+
+[project.scripts]
+graphify = "graphify.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["graphify*"]
