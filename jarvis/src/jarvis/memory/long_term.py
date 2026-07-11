@@ -137,7 +137,7 @@ class LongTermMemory:
             "ORDER BY id DESC LIMIT ?",
             (session_id, limit),
         )
-        rows = await cursor.fetchall()
+        rows = list(await cursor.fetchall())
         return [(row["role"], row["content"]) for row in reversed(rows)]
 
     async def sessions(self, limit: int = 50) -> list[dict[str, Any]]:

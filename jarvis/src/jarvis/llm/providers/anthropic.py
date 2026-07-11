@@ -244,7 +244,7 @@ class AnthropicProvider(LLMProvider):
 
         tool_calls = [
             ToolCall.from_json_arguments(
-                call_call_id=slot["id"] or f"call_{idx}", name=slot["name"], arguments=slot["json"] or "{}"
+                call_id=slot["id"] or f"call_{idx}", name=slot["name"], arguments=slot["json"] or "{}"
             )
             for idx, slot in sorted(tool_blocks.items())
         ]

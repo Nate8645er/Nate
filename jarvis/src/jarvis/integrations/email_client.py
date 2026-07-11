@@ -86,6 +86,8 @@ class EmailClient(IntegrationClient):
         message["Subject"] = subject
         message.set_content(body)
         try:
+            if self.smtp_host is None:
+                raise IntegrationError("email: EMAIL_SMTP_HOST is not configured")
             with smtplib.SMTP(self.smtp_host, self.smtp_port, timeout=30) as smtp:
                 smtp.ehlo()
                 if smtp.has_extn("starttls"):
@@ -149,7 +151,7 @@ class EmailClient(IntegrationClient):
     def _read_sync(self, message_id: str) -> dict[str, Any]:
         try:
             with self._connect_imap() as imap:
-                _, fetched = imap.fetch(message_id.encode("ascii"), "(RFC822)")
+                _, fetched = imap.fetch(message_id, "(RFC822)")
                 raw = _fetch_payload(fetched)
                 if raw is None:
                     raise IntegrationError(f"email: message '{message_id}' not found")

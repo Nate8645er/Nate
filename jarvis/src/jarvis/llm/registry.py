@@ -8,8 +8,9 @@ Plugins can call ``register_provider`` at load time.
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Callable
 
-from jarvis.core.config import JarvisConfig
+from jarvis.core.config import JarvisConfig, ProviderConfig
 from jarvis.core.errors import ProviderUnavailableError
 from jarvis.core.logging import get_logger
 from jarvis.llm.base import LLMProvider
@@ -27,10 +28,10 @@ from jarvis.llm.providers import (
 
 logger = get_logger("llm.registry")
 
-_PROVIDER_TYPES: dict[str, type[LLMProvider]] = {}
+_PROVIDER_TYPES: dict[str, Callable[[ProviderConfig], LLMProvider]] = {}
 
 
-def register_provider(name: str, provider_type: type[LLMProvider]) -> None:
+def register_provider(name: str, provider_type: Callable[[ProviderConfig], LLMProvider]) -> None:
     """Register a provider class under a config name (used by plugins too)."""
     _PROVIDER_TYPES[name] = provider_type
 

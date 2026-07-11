@@ -108,7 +108,7 @@ class ModelRouter:
             model = next((m for m in models if m.name == wanted), None) if wanted else None
             if model is None:
                 model = ModelInfo(
-                    name=wanted or getattr(provider, "default_model", "default"),
+                    name=wanted or str(getattr(provider, "default_model", "default")),
                     provider=name,
                 )
             return RoutedModel(provider=provider, model=model)

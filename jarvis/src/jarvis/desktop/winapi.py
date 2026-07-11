@@ -87,7 +87,7 @@ def get_active_window_title() -> str:
         pass  # fall back to raw WinAPI below
     import ctypes
 
-    user32 = ctypes.windll.user32
+    user32 = ctypes.windll.user32  # type: ignore[attr-defined]
     handle = user32.GetForegroundWindow()
     length = user32.GetWindowTextLengthW(handle)
     buffer = ctypes.create_unicode_buffer(length + 1)

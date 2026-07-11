@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import asyncio
 import functools
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 from jarvis.core.errors import DesktopError
 from jarvis.desktop import apps, office, terminal, winapi
@@ -346,7 +346,10 @@ def register(app: JarvisApp) -> None:
         button: str = "left",
         double: bool = False,
     ) -> str:
-        return await asyncio.to_thread(controller.click, x, y, button, double)
+        if button not in ("left", "middle", "right"):
+            return f"Error: unknown mouse button '{button}'"
+        chosen = cast(Literal["left", "middle", "right"], button)
+        return await asyncio.to_thread(controller.click, x, y, chosen, double)
 
     tools.register_function(
         "mouse_click",

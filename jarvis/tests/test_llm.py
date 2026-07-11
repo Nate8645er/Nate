@@ -281,3 +281,66 @@ class TestRouter:
         assert fake.last_options is not None
         assert fake.last_options.model == "m"
         assert fake.last_options.max_tokens == config.llm.max_tokens
+
+
+class TestStreamingToolCalls:
+    """Regression: tool calls assembled from streaming deltas (call_id typo)."""
+
+    @respx.mock
+    async def test_openai_stream_tool_call_assembly(self) -> None:
+        provider = _openai_provider()
+        sse = (
+            'data: {"choices":[{"delta":{"tool_calls":[{"index":0,"id":"call_9",'
+            '"function":{"name":"get_", "arguments":""}}]}}]}\n\n'
+            'data: {"choices":[{"delta":{"tool_calls":[{"index":0,'
+            '"function":{"name":"weather","arguments":"{\\"city\\": "}}]}}]}\n\n'
+            'data: {"choices":[{"delta":{"tool_calls":[{"index":0,'
+            '"function":{"arguments":"\\"Bern\\"}"}}]},"finish_reason":"tool_calls"}]}\n\n'
+            "data: [DONE]\n\n"
+        )
+        respx.post("https://api.openai.com/v1/chat/completions").mock(
+            return_value=httpx.Response(
+                200, content=sse.encode(), headers={"content-type": "text/event-stream"}
+            )
+        )
+        final: ChatResponse | None = None
+        async for chunk in provider.chat_stream(
+            [Message.user("weather?")], tools=[ToolSpec(name="get_weather", description="d")]
+        ):
+            if chunk.done:
+                final = chunk.response
+        assert final is not None
+        assert final.tool_calls[0].id == "call_9"
+        assert final.tool_calls[0].name == "get_weather"
+        assert final.tool_calls[0].arguments == {"city": "Bern"}
+        await provider.aclose()
+
+    @respx.mock
+    async def test_anthropic_stream_tool_call_assembly(self) -> None:
+        provider = AnthropicProvider(ProviderConfig(api_key=SecretStr("sk-ant")))
+        sse = (
+            'data: {"type":"message_start","message":{"model":"claude-sonnet-4-5"}}\n\n'
+            'data: {"type":"content_block_start","index":0,"content_block":'
+            '{"type":"tool_use","id":"tu_7","name":"search"}}\n\n'
+            'data: {"type":"content_block_delta","index":0,"delta":'
+            '{"type":"input_json_delta","partial_json":"{\\"q\\":"}}\n\n'
+            'data: {"type":"content_block_delta","index":0,"delta":'
+            '{"type":"input_json_delta","partial_json":"\\"arc\\"}"}}\n\n'
+            'data: {"type":"message_delta","delta":{"stop_reason":"tool_use"},"usage":{"output_tokens":7}}\n\n'
+        )
+        respx.post("https://api.anthropic.com/v1/messages").mock(
+            return_value=httpx.Response(
+                200, content=sse.encode(), headers={"content-type": "text/event-stream"}
+            )
+        )
+        final: ChatResponse | None = None
+        async for chunk in provider.chat_stream(
+            [Message.user("find")], tools=[ToolSpec(name="search", description="d")]
+        ):
+            if chunk.done:
+                final = chunk.response
+        assert final is not None
+        assert final.tool_calls[0].id == "tu_7"
+        assert final.tool_calls[0].arguments == {"q": "arc"}
+        assert final.finish_reason == "tool_use"
+        await provider.aclose()
