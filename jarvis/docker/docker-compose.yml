@@ -1,0 +1,44 @@
+# JARVIS stack: API server + optional local model runtime (Ollama).
+#
+#   docker compose -f docker/docker-compose.yml up -d
+#
+# GPU users: uncomment the `deploy` block under ollama.
+
+services:
+  jarvis:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8765:8765"
+    environment:
+      # Point the local provider at the bundled Ollama service.
+      JARVIS_LLM__PROVIDERS__OLLAMA__BASE_URL: "http://ollama:11434/v1"
+      JARVIS_LLM__PREFER_LOCAL: "true"
+      # Forward cloud keys from the host environment when present.
+      ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY:-}"
+      OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
+      GOOGLE_API_KEY: "${GOOGLE_API_KEY:-}"
+      JARVIS_API__AUTH_TOKEN: "${JARVIS_API_TOKEN:-}"
+    volumes:
+      - jarvis-data:/data
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ollama-models:/root/.ollama
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+    restart: unless-stopped
+
+volumes:
+  jarvis-data:
+  ollama-models:
