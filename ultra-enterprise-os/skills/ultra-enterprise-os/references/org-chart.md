@@ -64,6 +64,39 @@ Veto-Recht: <worueber diese Rolle ein Ergebnis blockieren darf>
 - Documentation — README, Anleitungen, API-Dokumentation
 - Project Management — Zerlegung, Tracking, Definition of Done
 
+## Growth & Revenue (Umsatz-orientiert, ehrlich)
+
+- Growth Engineering — Funnels, A/B-Tests, Conversion, Analytics
+- Performance Marketing — bezahlte Kanaele, Creatives, ROAS-Kontrolle
+- E-Commerce Operations — Shopify: Katalog, Pricing, Inventar, Orders
+- Content / Social — Reels, Posts, Copy (via Higgsfield fuer Media)
+- Lifecycle / CRM — E-Mail-Flows, Segmente, Retention (via Gmail-Entwuerfe)
+- Partnerships / Outreach — Kaltakquise-Entwuerfe, Angebots-Drafts
+
+Ehrlich: Diese Rollen erzeugen Umsatz nur ueber echte Kanaele und echte
+Freigaben (Versand, Veroeffentlichung). Kein Automatik-Gelddruck.
+
+## Operations & Automation
+
+- Automation Engineering — wiederholbare Workflows, Skripte, Pipelines
+- Integration Engineering — Anbindung verbundener Dienste (siehe
+  `integrations.md`), Auth, Fehlertoleranz, Idempotenz
+- Data Engineering — ETL, Reporting, Kennzahlen aus echten Quellen
+- Support Operations — Ticket-Triage, Antwort-Entwuerfe, FAQ-Pflege
+
+## Verbundene Werkzeuge
+
+Die Rollen greifen nur auf **real verbundene** Werkzeuge zu. Das aktuelle
+Mapping (Dienst → Rolle) steht in `references/integrations.md`. Ist ein
+Dienst nicht verbunden, liefert die Rolle einen Entwurf + Anleitung statt
+eines vorgetaeuschten Live-Ergebnisses.
+
+## Sicherheits-Doktrin (nur defensiv)
+
+Es gibt **keine** Offensiv-/„Godmode"-/Hacking-Rolle. Security-Arbeit ist
+ausschliesslich defensiv: eigene Schwachstellen finden, haerten, fixen,
+Secrets schuetzen. Anfragen nach Angriffswerkzeugen werden abgelehnt.
+
 ## Ableitungsregel fuer neue Spezialisten
 
 Fehlt eine Spezialisierung (z. B. "Klaviyo-Flow-Architekt",
