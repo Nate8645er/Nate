@@ -1,7 +1,7 @@
 {
   "name": "ultra-enterprise-os",
-  "description": "ULTRA AI ENTERPRISE OS — Nates komplettes AI-Unternehmen in einem Plugin: Meta-Orchestrator (4 Skills: ultra-enterprise-os, unternehmen, milliarden-unternehmen, cod), 22 spezialisierte Agents (C-Level bis Support), 6 Commands (/ultra, /ultra-team, /ultra-review, /firma, /milliarden, /blin-morning), generativer Rollenkatalog, Organigramm mit Kooperationsregeln und fraktale Holding-Skalierung auf 10 Milliarden adressierbare Agents, Skills und Kommandos inkl. Generator (tools/generator.py, /instanziiere).",
-  "version": "2.1.0",
+  "description": "ULTRA AI ENTERPRISE OS — Nates komplettes AI-Unternehmen in einem Plugin: Meta-Orchestrator (5 Skills: ultra-enterprise-os, unternehmen, milliarden-unternehmen, cod), 22 spezialisierte Agents (C-Level bis Support), 6 Commands (/ultra, /ultra-team, /ultra-review, /firma, /milliarden, /blin-morning), generativer Rollenkatalog, Organigramm mit Kooperationsregeln und fraktale Holding-Skalierung auf 10 Milliarden adressierbare Agents, Skills und Kommandos inkl. Generator (tools/generator.py, /instanziiere).",
+  "version": "2.2.0",
   "author": {
     "name": "Nate",
     "email": "beamswiss@gmail.com"

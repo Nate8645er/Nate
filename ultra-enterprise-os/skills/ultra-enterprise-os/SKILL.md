@@ -10,7 +10,7 @@ description: >-
   parallel arbeiten lassen, Ergebnisse gegenseitig pruefen und nur das
   konsolidierte, produktionsreife Endergebnis liefern. Explizite Trigger:
   "/ultra", "ULTRA OS", "Enterprise Modus", "stell ein Team zusammen",
-  "/firma", "/org", "/milliarden", "/cod".
+  "/firma", "/org", "/milliarden", "/cod", "/fable".
 ---
 
 # ULTRA AI ENTERPRISE OS — Betriebsprotokoll
@@ -80,6 +80,7 @@ Regeln:
   unklar: unternehmen-Skill via /firma — das Organigramm routet. Braucht
   sie mehr Spezialisierung als das Basis-Organigramm: milliarden-unternehmen
   via /milliarden. Reine Coding-Arbeit auf hoechster Stufe: cod-Skill.
+  Maximale Qualitaet, alles auf Fable 5: fable-5-max-Skill via /fable.
 - 1 Teilaufgabe = 1 verantwortliche Rolle (klare Ownership).
 - Jede Rolle bekommt Auftrag, Kontext und Definition of Done.
 - Fuer echte Parallelarbeit in Claude Code: nutze die mitgelieferten
