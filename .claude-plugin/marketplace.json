@@ -12,8 +12,8 @@
     {
       "name": "ultra-enterprise-os",
       "source": "./ultra-enterprise-os",
-      "description": "Nates komplettes AI-Unternehmen in einem Plugin: 4 Skills, 22 Agents, 6 Commands — Orchestrierung, Organigramm, Milliarden-Skalierung und COD-Coding-Modus.",
-      "version": "2.0.0",
+      "description": "Nates komplettes AI-Unternehmen in einem Plugin: 4 Skills, 22 Agents, 7 Commands — Orchestrierung, Organigramm, 10-Milliarden-Skalierung mit Generator und COD-Coding-Modus.",
+      "version": "2.1.0",
       "author": {
         "name": "Nate"
       },

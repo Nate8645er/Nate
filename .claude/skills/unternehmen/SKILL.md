@@ -95,8 +95,8 @@ jemanden. Einstellung ist eine bewusste Entscheidung mit Nate, keine Laune.
 
 Braucht eine Aufgabe MEHR Spezialisierung, als dieses Organigramm hergibt,
 skaliert die milliarden-unternehmen-Skill (via /milliarden) die Firma fraktal
-zur Holding mit 1.000.000.000+ adressierbaren Agents — dieselben Regeln 1-6
-gelten dort auf jeder Ebene.
+zur Holding mit 10.000.000.000 adressierbaren Agents, Skills und Kommandos —
+dieselben Regeln 1-6 gelten dort auf jeder Ebene.
 
 ## /firma — der Dispatcher
 

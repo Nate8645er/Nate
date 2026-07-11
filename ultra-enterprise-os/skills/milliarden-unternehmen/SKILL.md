@@ -1,6 +1,6 @@
 ---
 name: milliarden-unternehmen
-description: 'Das MILLIARDEN-UNTERNEHMEN: fraktale Holding-Struktur, die das Agenten-Unternehmen auf 1.000.000.000+ adressierbare Agents und unbegrenzt viele Skills skaliert — generativ, nicht als Dateien. Holding -> Divisionen -> Companies -> Departments -> Teams -> Agents; jede Ebene wird bei Bedarf aus Templates instanziiert, jeder Agent kann beliebig viele Skills ableiten. AKTIVIEREN wenn eine Aufgabe mehr Spezialisierung braucht als das Basis-Organigramm hergibt, oder auf explizite Trigger: /milliarden, "Milliarden Unternehmen", "skaliere die Firma", "Holding", "ganze Konzern".'
+description: 'Das MILLIARDEN-UNTERNEHMEN: fraktale Holding-Struktur, die das Agenten-Unternehmen auf 10.000.000.000 (10 Milliarden) adressierbare Agents, 10+ Milliarden Skills und 10 Milliarden aufrufbare Kommandos skaliert — generativ ueber den Adressraum plus Generator (tools/generator.py), nicht als Dateien. Holding -> Divisionen -> Companies -> Departments -> Teams -> Agents; jede Ebene wird bei Bedarf aus Templates instanziiert, jeder Agent kann beliebig viele Skills ableiten. AKTIVIEREN wenn eine Aufgabe mehr Spezialisierung braucht als das Basis-Organigramm hergibt, oder auf explizite Trigger: /milliarden, "Milliarden Unternehmen", "skaliere die Firma", "Holding", "ganze Konzern".'
 ---
 
 # DAS MILLIARDEN-UNTERNEHMEN (ULTRA-Modul: fraktale Skalierung)
@@ -21,13 +21,21 @@ NATE (Inhaber der Holding — letztes Wort, immer)
       x 100 COMPANIES     (z.B. engineering/web, engineering/mobile, business/ads-ch)
         x 100 DEPARTMENTS (z.B. web/frontend, web/api, ads-ch/meta)
           x 100 TEAMS     (z.B. frontend/performance, meta/creatives)
-            x 10 AGENTS   (z.B. creatives/hook-writer-3)
+            x 1000 AGENTS (z.B. creatives/hook-writer-3)
 
-10 x 100 x 100 x 100 x 10 = 1.000.000.000 adressierbare Agents
+10 x 100 x 100 x 100 x 1000 = 10.000.000.000 adressierbare Agents (10 Milliarden)
 ```
 
-Jeder Agent kann nach dem Skill-Template unbegrenzt Skills ableiten
--> Milliarden Agents x beliebige Skills = praktisch unbegrenzte Faehigkeiten.
+Daraus folgen die drei 10-Milliarden-Raeume:
+- **10 Mrd. AGENTS** — jede Adresse ist ein Agent.
+- **10+ Mrd. SKILLS** — jeder Agent besitzt mindestens einen Primaer-Skill
+  (Adresse + /primaer) und leitet nach Template beliebig weitere ab.
+- **10 Mrd. KOMMANDOS** — jede Agent-Adresse ist direkt aufrufbar:
+  /milliarden <adresse>: <auftrag> ruft genau diesen Agent.
+
+Jede dieser Einheiten laesst sich mit `tools/generator.py` deterministisch
+als echte Datei materialisieren (siehe /instanziiere) — gleiche Adresse,
+gleiches Ergebnis, jederzeit reproduzierbar.
 
 ## Adressierung
 
