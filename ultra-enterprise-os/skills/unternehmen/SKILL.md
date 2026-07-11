@@ -93,6 +93,11 @@ Ein neuer Agent wird nur eingestellt, wenn eine Aufgabe regelmaessig anfaellt,
 die KEIN bestehender Agent besitzt — und dann ersetzt oder entlastet er explizit
 jemanden. Einstellung ist eine bewusste Entscheidung mit Nate, keine Laune.
 
+Braucht eine Aufgabe MEHR Spezialisierung, als dieses Organigramm hergibt,
+skaliert die milliarden-unternehmen-Skill (via /milliarden) die Firma fraktal
+zur Holding mit 1.000.000.000+ adressierbaren Agents — dieselben Regeln 1-6
+gelten dort auf jeder Ebene.
+
 ## /firma — der Dispatcher
 
 Bei /firma <Aufgabe>: Aufgabe lesen, anhand der Organigramm-Aeste routen

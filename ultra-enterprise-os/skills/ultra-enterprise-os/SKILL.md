@@ -10,7 +10,7 @@ description: >-
   parallel arbeiten lassen, Ergebnisse gegenseitig pruefen und nur das
   konsolidierte, produktionsreife Endergebnis liefern. Explizite Trigger:
   "/ultra", "ULTRA OS", "Enterprise Modus", "stell ein Team zusammen",
-  "/firma", "/org".
+  "/firma", "/org", "/milliarden".
 ---
 
 # ULTRA AI ENTERPRISE OS — Betriebsprotokoll
