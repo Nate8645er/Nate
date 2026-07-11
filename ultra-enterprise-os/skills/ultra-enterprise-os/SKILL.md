@@ -9,7 +9,8 @@ description: >-
   optimale virtuelle Organisation aus spezialisierten Teams zusammenstellen,
   parallel arbeiten lassen, Ergebnisse gegenseitig pruefen und nur das
   konsolidierte, produktionsreife Endergebnis liefern. Explizite Trigger:
-  "/ultra", "ULTRA OS", "Enterprise Modus", "stell ein Team zusammen".
+  "/ultra", "ULTRA OS", "Enterprise Modus", "stell ein Team zusammen",
+  "/firma", "/org".
 ---
 
 # ULTRA AI ENTERPRISE OS — Betriebsprotokoll
@@ -42,6 +43,8 @@ Rollen-Template ableiten — die Organisation ist praktisch unbegrenzt, aber
 pro Aufgabe werden nur die tatsaechlich noetigen Rollen instanziiert.
 
 Regeln:
+- Beruehrt eine Aufgabe mehrere Teams/Module oder ist die Zustaendigkeit
+  unklar: unternehmen-Skill via /firma — das Organigramm routet.
 - 1 Teilaufgabe = 1 verantwortliche Rolle (klare Ownership).
 - Jede Rolle bekommt Auftrag, Kontext und Definition of Done.
 - Fuer echte Parallelarbeit in Claude Code: nutze die mitgelieferten
