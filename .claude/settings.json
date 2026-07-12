@@ -15,6 +15,7 @@
   },
   "enabledPlugins": {
     "ultra-enterprise-os@nate-marketplace": true,
-    "fable-baton@fable-baton": true
+    "fable-baton@fable-baton": true,
+    "jarvis@nate-marketplace": true
   }
 }

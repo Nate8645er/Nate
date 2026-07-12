@@ -1,0 +1,16 @@
+{
+  "name": "jarvis",
+  "description": "Persoenlicher AI Chief of Staff (\"JARVIS\"): verwandelt Claude Code + Fable 5 in eine Mission-Control-Zentrale, die eine virtuelle Organisation aus Agenten dirigiert — delegiert mechanische Arbeit, behaelt Absicht, Entscheidungen und Qualitaets-Gates in der eigenen Hand und liefert das Endergebnis mit Live-Ticker und Missionsbericht.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Nate"
+  },
+  "keywords": [
+    "jarvis",
+    "orchestrator",
+    "mission-control",
+    "chief-of-staff",
+    "fable-baton",
+    "automation"
+  ]
+}
