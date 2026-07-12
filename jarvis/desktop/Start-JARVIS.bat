@@ -97,6 +97,59 @@ echo Installiere/aktualisiere benoetigte Python-Pakete ...
 "%PY%" -m pip install --quiet --upgrade pip
 "%PY%" -m pip install --quiet fastapi uvicorn anthropic
 
+rem --- Optional: Claude Code Plugin "fable-baton" einrichten ---
+echo.
+where claude >nul 2>nul
+if errorlevel 1 goto :claude_not_found
+
+echo Claude Code gefunden - richte fable-baton ein ...
+claude plugin marketplace add realgarit/fable-baton >nul 2>nul
+claude plugin install fable-baton@fable-baton >nul 2>nul
+echo fable-baton ist eingerichtet (aktiv ab der naechsten Claude-Code-Session).
+goto :fable_baton_done
+
+:claude_not_found
+echo Claude Code wurde nicht gefunden - das ist optional.
+echo Falls gewuenscht, richtet Start-JARVIS.bat fable-baton automatisch ein,
+echo sobald Claude Code installiert ist. Download: https://claude.com/claude-code
+
+:fable_baton_done
+
+rem --- Optional: Open Interpreter (die Haende) einrichten ---
+echo.
+where interpreter >nul 2>nul
+if errorlevel 1 goto :oi_not_found
+
+echo Open Interpreter ist bereits installiert.
+goto :oi_done
+
+:oi_not_found
+choice /c JN /m "Open Interpreter jetzt installieren (fuehrt Befehle auf diesem PC aus)? [J/N]"
+if errorlevel 2 goto :oi_skip
+if errorlevel 1 goto :oi_install
+goto :oi_done
+
+:oi_install
+if exist "%~dp0Install-OpenInterpreter.bat" goto :oi_install_script
+echo.
+echo Installiere Open Interpreter ueber den offiziellen Installer ...
+powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://www.openinterpreter.com/install.ps1 | iex"
+if errorlevel 1 (
+    echo.
+    echo [HINWEIS] Die Installation von Open Interpreter ist fehlgeschlagen.
+    echo Du kannst es spaeter jederzeit per Install-OpenInterpreter.bat nachholen.
+)
+goto :oi_done
+
+:oi_install_script
+call "%~dp0Install-OpenInterpreter.bat"
+goto :oi_done
+
+:oi_skip
+echo Uebersprungen - spaeter jederzeit per Install-OpenInterpreter.bat nachholbar.
+
+:oi_done
+
 rem --- Hinweise vor dem Start ---
 echo.
 echo ========================================

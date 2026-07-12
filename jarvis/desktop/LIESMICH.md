@@ -29,6 +29,10 @@ einmal ablehnt).
 
 3. Der Browser oeffnet sich automatisch unter http://127.0.0.1:8737
 
+Start-JARVIS.bat richtet dabei optional auch noch das Claude Code Plugin
+fable-baton ein (wenn Claude Code installiert ist) und bietet die Installation
+von Open Interpreter an.
+
 ## Sprachsteuerung
 
 - Mikrofon-Button gedrueckt halten, um einmalig zu sprechen.
