@@ -5,8 +5,8 @@
     "email": "beamswiss@gmail.com"
   },
   "metadata": {
-    "description": "Nates privater Plugin-Marketplace. Enthaelt ULTRA AI ENTERPRISE OS.",
-    "version": "1.0.0"
+    "description": "Nates privater Plugin-Marketplace. Enthaelt ULTRA AI ENTERPRISE OS und Everything Claude Code.",
+    "version": "1.1.0"
   },
   "plugins": [
     {
@@ -26,6 +26,28 @@
         "quality"
       ],
       "category": "productivity"
+    },
+    {
+      "name": "everything-claude-code",
+      "source": "./everything-claude-code",
+      "description": "Battle-tested Claude Code Konfigurationen (Anthropic-Hackathon-Gewinner): 9 Agents, 15 Commands, 11 Skills, Lifecycle-Hooks und 8 Rules fuer TDD, Code-Review, Security und Memory-Persistenz.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Affaan Mustafa"
+      },
+      "homepage": "https://github.com/affaan-m/everything-claude-code",
+      "license": "MIT",
+      "keywords": [
+        "agents",
+        "skills",
+        "hooks",
+        "commands",
+        "tdd",
+        "code-review",
+        "security",
+        "best-practices"
+      ],
+      "category": "workflow"
     }
   ]
 }
