@@ -35,6 +35,16 @@ substanzieller Aufgaben und ergänzt nach relevanten Arbeiten einen kurzen Eintr
 - **Neue Commands** angelegt: `/project-map`, `/find-impact <datei>`, `/explain-module <name>`, `/optimize-context`.
 - **Brain angelegt**: diese Datei (`.claude/brain.md`), referenziert aus `CLAUDE.md`.
 
+### Session 3 — 2026-07-12 — Higgsfield AI Creative System
+*(gleicher Branch: `claude/graphify-claude-code-setup-qnj1v4`, PR #15)*
+
+- **5 Higgsfield Skills** projekt-lokal installiert (`.claude/skills/`, aus dem offiziellen Repo `higgsfield-ai/skills` v0.12.0, vom User als ZIP hochgeladen): higgsfield-generate, higgsfield-soul-id, higgsfield-product-photoshoot, higgsfield-marketplace-cards, higgsfield-websites.
+- **Higgsfield CLI v1.1.13** global installiert (`npm install -g @higgsfield/cli`). Achtung: CLI braucht `higgsfield auth login`; im ephemeren Container muss sie ggf. neu installiert werden — der **Higgsfield MCP-Server** ist der zuverlässige Weg (bereits verbunden, ~70 Tools).
+- **CLAUDE.md**: Abschnitt „Higgsfield Creative Agent Mode" mit Arbeitsweise (Ziel → Produktionsplan → Funktion → Prompts → Konsistenz) und 3 Produktionsmodi (Hollywood / Werbeagentur / Social Media Creator).
+- **6 neue Commands**: `/movie`, `/ad`, `/trailer`, `/storyboard`, `/product-video`, `/cinematic`.
+- **Kontostand bei Setup**: 0,2 Credits (Starter-Plan) → echte Bild-/Video-Generierung erst nach Credit-Aufladung; Konzepte/Prompts sind gratis. Kosten-Regel in CLAUDE.md verankert (vor Render-Batches bestätigen).
+- Wichtige Modelle (via `models_explore`): Seedance 2.0 & Cinema Studio Video 3.0 (Video), GPT Image 2 / Nano Banana 2/Pro / Seedream 5.0 / FLUX.2 (Bild), Soul 2.0 / Soul Cinema (Charaktere), Marketing Studio (Ads/UGC), Seed Audio 1.0 (Audio), Meshy/SAM-3 (3D).
+
 ## Entscheidungen & Konventionen
 
 - **Graph zuerst**: Codebase-Fragen laufen über `graphify query/explain/path/affected`, nicht über grep/find/volles Lesen. Erzwungen per PreToolUse-Hooks.
