@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JARVIS Mission Control</title>
+<style>
+  :root {
+    --bg: #0A0E16;
+    --panel: #111825;
+    --panel-2: #0D1420;
+    --line: #1F2A3D;
+    --text: #D7E0EE;
+    --muted: #7B8AA3;
+    --amber: #F5B841;
+    --amber-dim: #8A6A2A;
+    --ice: #6FB7FF;
+    --good: #4ADE80;
+    --crit: #F87171;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, Menlo, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); margin: 0; min-height: 100vh; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 20px 48px; }
+
+  header { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; padding: 22px 0 14px; }
+  .brand { font-size: 1.45rem; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase; }
+  .brand .j { color: var(--amber); }
+  .sub { color: var(--muted); font-size: 0.8rem; letter-spacing: 0.08em; }
+  .clock { margin-left: auto; font-family: var(--mono); font-size: 0.95rem; color: var(--ice); font-variant-numeric: tabular-nums; }
+  .live { display: inline-flex; align-items: center; gap: 7px; font-size: 0.7rem; letter-spacing: 0.18em; border: 1px solid var(--line); border-radius: 3px; padding: 4px 10px; }
+  .live.ok { color: var(--good); }
+  .live.warn { color: var(--crit); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; animation: pulse 1.6s infinite; }
+  @keyframes pulse { 50% { opacity: 0.25; } }
+
+  .band { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); overflow: hidden; white-space: nowrap; background: var(--panel-2); }
+  .band-inner { display: inline-block; padding: 9px 0; font-family: var(--mono); font-size: 0.82rem; color: var(--amber); font-variant-numeric: tabular-nums; animation: scroll 55s linear infinite; }
+  .band-inner span { margin-right: 3.2em; }
+  .band-inner .up { color: var(--good); }
+  .band-inner .dn { color: var(--crit); }
+  @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 18px; }
+  .panel h2 { margin: 0 0 14px; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+  /* ── JARVIS-Konsole ─────────────────────────────── */
+  .console { margin-top: 18px; }
+  .console-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .console-head h2 { margin: 0; flex: 1; }
+  .ctl {
+    font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.06em;
+    background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+    border-radius: 3px; padding: 7px 13px; cursor: pointer; user-select: none;
+  }
+  .ctl:hover { border-color: var(--ice); }
+  .ctl.on { color: var(--good); border-color: rgba(74, 222, 128, 0.5); }
+  .ctl.rec { color: var(--crit); border-color: rgba(248, 113, 113, 0.6); }
+  .banner {
+    border: 1px solid rgba(248, 113, 113, 0.4); border-radius: 3px; background: rgba(248, 113, 113, 0.06);
+    color: var(--text); font-size: 0.8rem; padding: 9px 12px; margin-bottom: 12px; display: none;
+  }
+  .banner code { font-family: var(--mono); color: var(--amber); }
+  .log { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; margin-bottom: 12px; }
+  .msg { max-width: 78%; padding: 9px 12px; border-radius: 4px; font-size: 0.88rem; line-height: 1.5; white-space: pre-wrap; }
+  .msg.user { align-self: flex-end; background: #16233B; border: 1px solid #24365A; }
+  .msg.jarvis { align-self: flex-start; background: var(--panel-2); border: 1px solid var(--line); border-left: 2px solid var(--amber-dim); }
+  .msg.sys { align-self: center; color: var(--muted); font-size: 0.75rem; background: none; }
+  .msg .who { display: block; font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.14em; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; }
+  .inrow { display: flex; gap: 8px; }
+  .inrow input {
+    flex: 1; background: var(--panel-2); border: 1px solid var(--line); border-radius: 3px;
+    color: var(--text); font-family: var(--sans); font-size: 0.9rem; padding: 10px 12px; outline: none;
+  }
+  .inrow input:focus { border-color: var(--ice); }
+  .send { background: var(--amber); color: #14100A; border: none; border-radius: 3px; font-weight: 700; padding: 0 18px; cursor: pointer; }
+  .send:disabled { opacity: 0.5; cursor: wait; }
+  .hint { color: var(--muted); font-size: 0.72rem; margin-top: 8px; }
+
+  /* ── KPI + Raster (Original-Dashboard) ──────────── */
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: 12px; margin: 18px 0; }
+  .kpi { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 16px 18px 14px; }
+  .kpi .label { font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+  .kpi .value { font-family: var(--mono); font-size: 1.7rem; font-weight: 700; margin-top: 8px; font-variant-numeric: tabular-nums; }
+  .kpi .value.amber { color: var(--amber); }
+  .kpi .value.ice { color: var(--ice); }
+  .kpi .note { font-size: 0.72rem; color: var(--muted); margin-top: 6px; }
+  .tag { font-size: 0.6rem; letter-spacing: 0.1em; padding: 2px 6px; border-radius: 3px; border: 1px solid var(--line); color: var(--muted); flex-shrink: 0; }
+  .tag.real { color: var(--good); border-color: rgba(74, 222, 128, 0.35); }
+  .tag.sim { color: var(--amber); border-color: rgba(245, 184, 65, 0.35); }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } .msg { max-width: 95%; } }
+  .org { display: flex; flex-direction: column; gap: 8px; }
+  .node { display: flex; align-items: center; gap: 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel-2); padding: 10px 12px; }
+  .node .depth { color: var(--muted); font-family: var(--mono); font-size: 0.75rem; flex-shrink: 0; }
+  .node .name { font-weight: 600; font-size: 0.9rem; }
+  .node .meta { margin-left: auto; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); text-align: right; }
+  .node.you { border-color: var(--amber-dim); }
+  .node.you .name { color: var(--amber); }
+  .node.jarvis .name { color: var(--ice); }
+  .tier { display: flex; gap: 6px; flex-wrap: wrap; margin-left: 26px; }
+  .chip { font-family: var(--mono); font-size: 0.72rem; padding: 4px 9px; border: 1px solid var(--line); border-radius: 3px; color: var(--text); background: var(--panel-2); }
+  .chip b { color: var(--ice); font-weight: 600; }
+
+  .feed { display: flex; flex-direction: column; gap: 6px; max-height: 430px; overflow-y: auto; }
+  .evt { display: grid; grid-template-columns: 62px 1fr auto; gap: 10px; align-items: baseline; font-size: 0.8rem; padding: 7px 10px; border-left: 2px solid var(--line); background: var(--panel-2); }
+  .evt:first-child { border-left-color: var(--ice); }
+  .evt .t { font-family: var(--mono); color: var(--muted); font-size: 0.72rem; }
+  .evt .who { color: var(--ice); font-family: var(--mono); font-size: 0.74rem; }
+  .evt.money { border-left-color: var(--amber-dim); }
+  .evt.money .who { color: var(--amber); }
+  .evt.ok { border-left-color: rgba(74, 222, 128, 0.5); }
+
+  footer { margin-top: 26px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 0.74rem; color: var(--muted); line-height: 1.6; max-width: 68ch; }
+  footer b { color: var(--text); }
+
+  @media (prefers-reduced-motion: reduce) { .band-inner { animation: none; } .dot { animation: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="brand"><span class="j">JARVIS</span> Mission Control</div>
+      <div class="sub" id="subline">Desktop · Claude · Virtuelle Konzern-Holding „Nate Group“</div>
+    </div>
+    <div class="live ok" id="liveBadge"><span class="dot"></span> <span id="liveText">VERBINDE …</span></div>
+    <div class="clock" id="clock">--:--:--</div>
+  </header>
+
+  <div class="band"><div class="band-inner" id="band"></div></div>
+
+  <!-- ── JARVIS-Konsole mit Sprache ── -->
+  <div class="panel console">
+    <div class="console-head">
+      <h2>JARVIS · Konsole</h2>
+      <button class="ctl" id="btnMic" title="Gedrückt halten und sprechen">🎙 Sprechen</button>
+      <button class="ctl" id="btnFree" title="Dauerhaft zuhören — Befehle mit „Jarvis …“ beginnen">Freihand: aus</button>
+      <button class="ctl on" id="btnTts" title="Antworten vorlesen">Stimme: an</button>
+      <button class="ctl" id="btnReset" title="Gesprächsverlauf löschen">Neu</button>
+    </div>
+    <div class="banner" id="banner"></div>
+    <div class="log" id="log">
+      <div class="msg jarvis"><span class="who">JARVIS</span>Guten Tag, Sir. Alle Systeme bereit. Sie können tippen — oder oben „Freihand“ aktivieren und mich mit „Jarvis, …“ ansprechen.</div>
+    </div>
+    <div class="inrow">
+      <input id="input" placeholder="Nachricht an JARVIS … (Enter zum Senden)" autocomplete="off">
+      <button class="send" id="btnSend">Senden</button>
+    </div>
+    <div class="hint" id="hint">Spracherkennung: Deutsch · funktioniert in Chrome/Edge · Mikrofonzugriff beim ersten Mal erlauben.</div>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi">
+      <div class="label">Virtuelle Positionen <span class="tag sim">Simulation</span></div>
+      <div class="value amber" id="virt">0</div>
+      <div class="note">Zielbild: 100 Mrd × 100 Mrd = 10²² Positionen</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Virtueller Konzernwert <span class="tag sim">Simulation</span></div>
+      <div class="value amber" id="wert">0 €</div>
+      <div class="note">Live-Ticker der Divisions-Ergebnisse</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Gesprächs-Turns <span class="tag real">Echt</span></div>
+      <div class="value ice" id="turns">0</div>
+      <div class="note">Nachrichten in dieser JARVIS-Sitzung</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Modell <span class="tag real">Echt</span></div>
+      <div class="value ice" id="modelName" style="font-size:1.05rem">–</div>
+      <div class="note" id="modelNote">wird geladen …</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>Organisation · Befehlskette</h2>
+      <div class="org">
+        <div class="node you"><span class="depth">L0</span><span class="name">Nate — Eigentümer</span><span class="meta">trifft Entscheidungen</span></div>
+        <div class="node jarvis"><span class="depth">L1</span><span class="name">JARVIS (Fable 5)</span><span class="meta">Orchestrierung · Bericht</span></div>
+        <div class="node"><span class="depth">L2</span><span class="name">Delegations-Tier (fable-baton)</span><span class="meta">in Claude Code aktiv</span></div>
+        <div class="tier">
+          <span class="chip"><b>scout</b> · Haiku</span><span class="chip"><b>executor</b> · Sonnet</span>
+          <span class="chip"><b>architect</b> · Opus</span><span class="chip"><b>verifier</b> · Haiku</span>
+        </div>
+        <div class="node"><span class="depth">L3</span><span class="name">Divisionen (ultra-enterprise-os)</span><span class="meta">10 Teams</span></div>
+        <div class="tier">
+          <span class="chip">orchestrator</span><span class="chip">architect</span><span class="chip">fullstack</span>
+          <span class="chip">qa</span><span class="chip">security</span><span class="chip">devops</span>
+          <span class="chip">data-ml</span><span class="chip">design</span><span class="chip">business</span><span class="chip">docs</span>
+        </div>
+        <div class="node"><span class="depth">L4+</span><span class="name">Virtuelle Tochterkonzerne</span><span class="meta"><span id="firmen">0</span> Firmen · Simulation</span></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Live-Ticker · Ereignisse</h2>
+      <div class="feed" id="feed"></div>
+    </div>
+  </div>
+
+  <footer>
+    <b>Transparenz:</b> Die Konsole oben spricht mit der echten Anthropic-API (jede Anfrage
+    kostet Tokens). Ebenen L0–L3 entsprechen deiner echten Claude-Code-Umgebung; L4+ und alle
+    mit „Simulation“ markierten Zahlen sind eine Visualisierung des Zielbilds. Agenten-Missionen
+    startest du in Claude Code mit <b>/jarvis</b>.
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* ── Uhr ── */
+  function tick() {
+    var d = new Date();
+    $("clock").textContent = d.toLocaleTimeString("de-CH", { hour12: false }) + " · " + d.toLocaleDateString("de-CH");
+  }
+  tick(); setInterval(tick, 1000);
+
+  /* ── Börsenband ── */
+  var divisionen = ["NATE-AI", "NATE-BAU", "NATE-FIN", "NATE-MED", "NATE-ENERGIE",
+    "NATE-LOGISTIK", "NATE-SPACE", "NATE-RETAIL", "NATE-BIO", "NATE-QUANT"];
+  function bandHTML() {
+    var s = "";
+    for (var i = 0; i < divisionen.length; i++) {
+      var chg = (Math.random() * 8 - 3).toFixed(2);
+      var up = +chg >= 0;
+      s += "<span>" + divisionen[i] + " " + (40 + Math.random() * 400).toFixed(2) +
+        " <span class='" + (up ? "up" : "dn") + "'>" + (up ? "▲" : "▼") + chg + "%</span></span>";
+    }
+    return s;
+  }
+  $("band").innerHTML = bandHTML() + bandHTML();
+
+  /* ── Zähler ── */
+  var v = 0, w = 0, f = 0;
+  function fmt(n) {
+    if (n >= 1e21) return (n / 1e21).toFixed(2) + " Trilliarden";
+    if (n >= 1e18) return (n / 1e18).toFixed(2) + " Trillionen";
+    if (n >= 1e15) return (n / 1e15).toFixed(2) + " Billiarden";
+    if (n >= 1e12) return (n / 1e12).toFixed(2) + " Bio.";
+    if (n >= 1e9)  return (n / 1e9).toFixed(2) + " Mrd.";
+    if (n >= 1e6)  return (n / 1e6).toFixed(2) + " Mio.";
+    return Math.round(n).toLocaleString("de-CH");
+  }
+  function grow() {
+    v = Math.min(v * 1.13 + 12345, 1e22);
+    w = Math.min(w * 1.11 + 987654, 8.6e21);
+    f = Math.min(f * 1.12 + 7, 1e11);
+    $("virt").textContent = fmt(v);
+    $("wert").textContent = fmt(w) + " €";
+    $("firmen").textContent = fmt(f);
+  }
+  grow(); setInterval(grow, reduced ? 4000 : 900);
+
+  /* ── Ereignis-Feed ── */
+  var akteure = ["scout", "executor", "architect", "verifier", "ultra-qa",
+    "ultra-fullstack", "ultra-security", "ultra-devops", "ultra-design", "ultra-business"];
+  var aktionen = [
+    ["scannt Repository nach offenen Aufgaben", ""], ["implementiert Feature-Branch", ""],
+    ["prüft Architektur-Entscheidung", ""], ["Tests bestanden — 0 Regressionen", "ok"],
+    ["Tochterfirma gegründet: NATE-Sub #", "money"], ["Quartalsabschluss Division konsolidiert", "money"],
+    ["Deployment freigegeben", "ok"], ["Sicherheitsaudit abgeschlossen — keine Funde", "ok"],
+    ["rekrutiert 1,2 Mio virtuelle Positionen", "money"], ["Code-Review abgeschlossen", ""]
+  ];
+  var n = 0;
+  function evt() {
+    n++;
+    var who = akteure[Math.floor(Math.random() * akteure.length)];
+    var a = aktionen[Math.floor(Math.random() * aktionen.length)];
+    var el = document.createElement("div");
+    el.className = "evt" + (a[1] ? " " + a[1] : "");
+    el.innerHTML = "<span class='t'>" + new Date().toLocaleTimeString("de-CH", { hour12: false }) +
+      "</span><span>" + a[0].replace("#", String(n)) + "</span><span class='who'>" + who + "</span>";
+    var feed = $("feed");
+    feed.insertBefore(el, feed.firstChild);
+    while (feed.children.length > 40) feed.removeChild(feed.lastChild);
+  }
+  evt(); evt(); evt(); setInterval(evt, reduced ? 6000 : 2200);
+
+  /* ══ JARVIS-Konsole ══════════════════════════════ */
+  var ttsOn = true, freeOn = false, busy = false;
+
+  function addMsg(kind, text) {
+    var el = document.createElement("div");
+    el.className = "msg " + kind;
+    if (kind !== "sys") {
+      var who = document.createElement("span");
+      who.className = "who";
+      who.textContent = kind === "user" ? "Du" : "JARVIS";
+      el.appendChild(who);
+    }
+    el.appendChild(document.createTextNode(text));
+    var log = $("log");
+    log.appendChild(el);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  /* ── Sprachausgabe ── */
+  var germanVoice = null;
+  function pickVoice() {
+    var voices = speechSynthesis.getVoices();
+    for (var i = 0; i < voices.length; i++) {
+      if (voices[i].lang && voices[i].lang.toLowerCase().indexOf("de") === 0) { germanVoice = voices[i]; break; }
+    }
+  }
+  if ("speechSynthesis" in window) {
+    pickVoice();
+    speechSynthesis.onvoiceschanged = pickVoice;
+  }
+  function speak(text) {
+    if (!ttsOn || !("speechSynthesis" in window)) return;
+    speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = "de-DE";
+    if (germanVoice) u.voice = germanVoice;
+    u.rate = 1.04;
+    speechSynthesis.speak(u);
+  }
+
+  /* ── Senden ── */
+  function send(text) {
+    text = (text || "").trim();
+    if (!text || busy) return;
+    busy = true;
+    $("btnSend").disabled = true;
+    addMsg("user", text);
+    $("input").value = "";
+    fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text })
+    })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (res) {
+        var reply = res.ok ? res.j.reply : (res.j.error || "Unbekannter Fehler.");
+        addMsg(res.ok ? "jarvis" : "sys", reply);
+        if (res.ok) speak(reply);
+        refreshStatus();
+      })
+      .catch(function () { addMsg("sys", "Verbindung zum lokalen JARVIS-Server verloren."); })
+      .finally(function () { busy = false; $("btnSend").disabled = false; $("input").focus(); });
+  }
+  $("btnSend").addEventListener("click", function () { send($("input").value); });
+  $("input").addEventListener("keydown", function (e) { if (e.key === "Enter") send($("input").value); });
+  $("btnReset").addEventListener("click", function () {
+    fetch("/api/reset", { method: "POST" }).then(function () {
+      $("log").innerHTML = "";
+      addMsg("jarvis", "Verlauf gelöscht, Sir. Womit fangen wir neu an?");
+      refreshStatus();
+    });
+  });
+
+  /* ── Spracherkennung ── */
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var rec = null, recActive = false;
+  if (!SR) {
+    $("btnMic").style.display = "none";
+    $("btnFree").style.display = "none";
+    $("hint").textContent = "Spracherkennung wird von diesem Browser nicht unterstützt — bitte Chrome oder Edge verwenden. Tippen funktioniert weiterhin.";
+  } else {
+    rec = new SR();
+    rec.lang = "de-DE";
+    rec.interimResults = false;
+
+    rec.onresult = function (e) {
+      var text = "";
+      for (var i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) text += e.results[i][0].transcript;
+      }
+      text = text.trim();
+      if (!text) return;
+      if (freeOn) {
+        // Freihand: nur auf das Weckwort „Jarvis“ reagieren
+        var lower = text.toLowerCase();
+        var idx = lower.indexOf("jarvis");
+        if (idx === -1) return;
+        var cmd = text.slice(idx + 6).replace(/^[\s,.:!?-]+/, "").trim();
+        if (cmd) send(cmd);
+      } else {
+        send(text);
+      }
+    };
+    rec.onend = function () {
+      recActive = false;
+      $("btnMic").classList.remove("rec");
+      $("btnMic").textContent = "🎙 Sprechen";
+      if (freeOn) { try { rec.start(); recActive = true; } catch (e) {} }
+    };
+    rec.onerror = function (e) {
+      if (e.error === "not-allowed") {
+        freeOn = false; updateFree();
+        addMsg("sys", "Mikrofonzugriff verweigert — bitte in den Browser-Einstellungen erlauben.");
+      }
+    };
+
+    $("btnMic").addEventListener("click", function () {
+      if (freeOn) return;
+      if (recActive) { rec.stop(); return; }
+      rec.continuous = false;
+      try { rec.start(); recActive = true; } catch (e) { return; }
+      $("btnMic").classList.add("rec");
+      $("btnMic").textContent = "● Aufnahme … (klicken zum Stoppen)";
+    });
+
+    function updateFree() {
+      $("btnFree").textContent = "Freihand: " + (freeOn ? "an" : "aus");
+      $("btnFree").classList.toggle("on", freeOn);
+      $("btnMic").disabled = freeOn;
+    }
+    $("btnFree").addEventListener("click", function () {
+      freeOn = !freeOn;
+      updateFree();
+      if (freeOn) {
+        rec.continuous = true;
+        try { if (!recActive) { rec.start(); recActive = true; } } catch (e) {}
+        addMsg("sys", "Freihand aktiv — beginne Befehle mit „Jarvis, …“");
+      } else {
+        try { rec.stop(); } catch (e) {}
+        addMsg("sys", "Freihand deaktiviert.");
+      }
+    });
+  }
+
+  $("btnTts").addEventListener("click", function () {
+    ttsOn = !ttsOn;
+    if (!ttsOn && "speechSynthesis" in window) speechSynthesis.cancel();
+    this.textContent = "Stimme: " + (ttsOn ? "an" : "aus");
+    this.classList.toggle("on", ttsOn);
+  });
+
+  /* ── Status ── */
+  function refreshStatus() {
+    fetch("/api/status")
+      .then(function (r) { return r.json(); })
+      .then(function (s) {
+        $("liveBadge").className = "live " + (s.key_present ? "ok" : "warn");
+        $("liveText").textContent = s.key_present ? "SYSTEM AKTIV" : "API-KEY FEHLT";
+        $("modelName").textContent = s.model;
+        $("modelNote").textContent = s.fallback ? "Fallback: " + s.fallback : "direkt";
+        $("turns").textContent = s.turns;
+        var b = $("banner");
+        if (!s.key_present) {
+          b.style.display = "block";
+          b.innerHTML = "Kein Anthropic API-Key gefunden. In der Eingabeaufforderung setzen: " +
+            "<code>setx ANTHROPIC_API_KEY \"sk-ant-...\"</code> — danach neues Terminal öffnen und JARVIS neu starten. " +
+            "Key erstellen: platform.claude.com";
+        } else {
+          b.style.display = "none";
+        }
+      })
+      .catch(function () {
+        $("liveBadge").className = "live warn";
+        $("liveText").textContent = "SERVER OFFLINE";
+      });
+  }
+  refreshStatus(); setInterval(refreshStatus, 15000);
+})();
+</script>
+</body>
+</html>
