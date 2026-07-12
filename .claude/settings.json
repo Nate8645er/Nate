@@ -9,5 +9,37 @@
   },
   "enabledPlugins": {
     "ultra-enterprise-os@nate-marketplace": true
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v graphify >/dev/null 2>&1 || { command -v uv >/dev/null 2>&1 && uv tool install 'graphifyy==0.9.13' >/dev/null 2>&1; }; command -v graphify >/dev/null 2>&1 && graphify check-update . 2>/dev/null; exit 0"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "g=$(command -v graphify || echo \"$HOME/.local/bin/graphify\"); [ -x \"$g\" ] && exec \"$g\" hook-guard search; exit 0"
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Glob",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "g=$(command -v graphify || echo \"$HOME/.local/bin/graphify\"); [ -x \"$g\" ] && exec \"$g\" hook-guard read; exit 0"
+          }
+        ]
+      }
+    ]
   }
 }

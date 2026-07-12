@@ -1,0 +1,492 @@
+{
+  ".claude-plugin/marketplace.json": {
+    "mtime": 1783871066.7174356,
+    "ast_hash": "da65fff8cf71dba7891237f2f6f10488",
+    "semantic_hash": "da65fff8cf71dba7891237f2f6f10488"
+  },
+  ".claude/settings.json": {
+    "mtime": 1783872829.2106974,
+    "ast_hash": "8cec987834f4e7536be8a99cfde3a662",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/.claude-plugin/plugin.json": {
+    "mtime": 1783871066.7250586,
+    "ast_hash": "559375ca2cf2696883087e2f63f6200b",
+    "semantic_hash": "559375ca2cf2696883087e2f63f6200b"
+  },
+  ".claude/CLAUDE.md": {
+    "mtime": 1783871540.117897,
+    "ast_hash": "9b31786b637be3c13978bec4c2330752",
+    "semantic_hash": ""
+  },
+  ".claude/agents/ultra-architect.md": {
+    "mtime": 1783871066.7217958,
+    "ast_hash": "5dbe64be1e3a556cdb6f3fdf3967aab3",
+    "semantic_hash": ""
+  },
+  ".claude/agents/ultra-business.md": {
+    "mtime": 1783871066.7221718,
+    "ast_hash": "a5273408a655ac8383dcb03e0bfed7d2",
+    "semantic_hash": ""
+  },
+  ".claude/agents/ultra-data-ml.md": {
+    "mtime": 1783871066.7221718,
+    "ast_hash": "c880f430f9ed03f6e587651034cbc107",
+    "semantic_hash": ""
+  },
+  ".claude/agents/ultra-design.md": {
+    "mtime": 1783871066.7221718,
+    "ast_hash": "52dca8f37cc50e8e9f6eb8f103c4218b",
+    "semantic_hash": ""
+  },
+  ".claude/agents/ultra-devops.md": {
+    "mtime": 1783871066.7221718,
+    "ast_hash": "595443ad658de75825fc2649d6f70091",
+    "semantic_hash": ""
+  },
+  ".claude/agents/ultra-docs.md": {
+    "mtime": 1783871066.7221718,
+    "ast_hash": "72ce514bdd6ee12561237c1e61306d6f",
+    "semantic_hash": ""
+  },
+  ".claude/agents/ultra-fullstack.md": {
+    "mtime": 1783871066.7221718,
+    "ast_hash": "86c545e76289911bffa03acfdc8c8a9c",
+    "semantic_hash": ""
+  },
+  ".claude/agents/ultra-orchestrator.md": {
+    "mtime": 1783871066.7221718,
+    "ast_hash": "463eb0091e0b1336d051946753ed99de",
+    "semantic_hash": ""
+  },
+  ".claude/agents/ultra-qa.md": {
+    "mtime": 1783871066.7221718,
+    "ast_hash": "8364683e63d386b115b427c85e25d48f",
+    "semantic_hash": ""
+  },
+  ".claude/agents/ultra-security.md": {
+    "mtime": 1783871066.7221718,
+    "ast_hash": "effaf2769b954c246d3b485096c2f6d3",
+    "semantic_hash": ""
+  },
+  ".claude/brain.md": {
+    "mtime": 1783873765.950676,
+    "ast_hash": "9e2fb11058e8bf15e086fc0705db2439",
+    "semantic_hash": ""
+  },
+  ".claude/commands/ad.md": {
+    "mtime": 1783873676.086678,
+    "ast_hash": "e0dee32513f4e46335a3ea0f6bffe2c8",
+    "semantic_hash": ""
+  },
+  ".claude/commands/cinematic.md": {
+    "mtime": 1783873700.3866775,
+    "ast_hash": "01383948967c12b581ccf6d57c54d91d",
+    "semantic_hash": ""
+  },
+  ".claude/commands/explain-module.md": {
+    "mtime": 1783871621.3212175,
+    "ast_hash": "ffe1aea801453f96bff1890eeeaa8873",
+    "semantic_hash": ""
+  },
+  ".claude/commands/find-impact.md": {
+    "mtime": 1783871617.0092173,
+    "ast_hash": "2e58a5845b8faf821e09a366db59c702",
+    "semantic_hash": ""
+  },
+  ".claude/commands/movie.md": {
+    "mtime": 1783873670.450678,
+    "ast_hash": "42ddab0c83df97aca3489ed94829ac61",
+    "semantic_hash": ""
+  },
+  ".claude/commands/optimize-context.md": {
+    "mtime": 1783871625.6852176,
+    "ast_hash": "9407746a6967bbac7c34fc7da2c68549",
+    "semantic_hash": ""
+  },
+  ".claude/commands/product-video.md": {
+    "mtime": 1783873693.2386775,
+    "ast_hash": "95765364c75420ca0f58879f91b232dc",
+    "semantic_hash": ""
+  },
+  ".claude/commands/project-map.md": {
+    "mtime": 1783871612.333217,
+    "ast_hash": "f99b3b06757ca55669d9b8d6ea72f42c",
+    "semantic_hash": ""
+  },
+  ".claude/commands/storyboard.md": {
+    "mtime": 1783873687.4346776,
+    "ast_hash": "669abee0697e89cf7bc2e2f8094fe028",
+    "semantic_hash": ""
+  },
+  ".claude/commands/trailer.md": {
+    "mtime": 1783873681.742678,
+    "ast_hash": "d6d1438b27ceba8734a90c3c8484e4f5",
+    "semantic_hash": ""
+  },
+  ".claude/commands/ultra-review.md": {
+    "mtime": 1783871066.7221718,
+    "ast_hash": "8395f84deef29bec19cc2ea4c2085aca",
+    "semantic_hash": ""
+  },
+  ".claude/commands/ultra-team.md": {
+    "mtime": 1783871066.72362,
+    "ast_hash": "eae25daf7e91e165285e917f2a6137b4",
+    "semantic_hash": ""
+  },
+  ".claude/commands/ultra.md": {
+    "mtime": 1783871066.72362,
+    "ast_hash": "39c016c12fa74a1a78aa6a337125b7fe",
+    "semantic_hash": ""
+  },
+  ".claude/skills/graphify/SKILL.md": {
+    "mtime": 1783871540.117595,
+    "ast_hash": "e582759bfc00f68579f37c74cbb64df9",
+    "semantic_hash": ""
+  },
+  ".claude/skills/graphify/references/add-watch.md": {
+    "mtime": 1783871508.8932106,
+    "ast_hash": "d59d027fe449f06aa03905a01184e779",
+    "semantic_hash": ""
+  },
+  ".claude/skills/graphify/references/exports.md": {
+    "mtime": 1783871508.8932106,
+    "ast_hash": "9da2a2152e60a22f07f05fed5158f287",
+    "semantic_hash": ""
+  },
+  ".claude/skills/graphify/references/extraction-spec.md": {
+    "mtime": 1783871508.8932106,
+    "ast_hash": "42fef56a01698118f7fd722acdadea34",
+    "semantic_hash": ""
+  },
+  ".claude/skills/graphify/references/github-and-merge.md": {
+    "mtime": 1783871508.8932106,
+    "ast_hash": "cde13df085e4c492aeb7ba298a996d0d",
+    "semantic_hash": ""
+  },
+  ".claude/skills/graphify/references/hooks.md": {
+    "mtime": 1783871508.8932106,
+    "ast_hash": "3f545db6ce646650bb9de588f5512a27",
+    "semantic_hash": ""
+  },
+  ".claude/skills/graphify/references/query.md": {
+    "mtime": 1783871508.8932106,
+    "ast_hash": "3c46f8ad006874260614ed8657d02307",
+    "semantic_hash": ""
+  },
+  ".claude/skills/graphify/references/transcribe.md": {
+    "mtime": 1783871508.8932106,
+    "ast_hash": "67b6a5fa6c0974e18f60db9f8932fbd8",
+    "semantic_hash": ""
+  },
+  ".claude/skills/graphify/references/update.md": {
+    "mtime": 1783871508.8932106,
+    "ast_hash": "c698309979460d0f02ba616417844399",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-generate/SKILL.md": {
+    "mtime": 1783873454.3453074,
+    "ast_hash": "5fcfcf818057bca613c135b23a953c4d",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-generate/references/marketing-ad-references.md": {
+    "mtime": 1783873454.3454103,
+    "ast_hash": "e3c810934041bb239a8ca20c8b59842a",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-generate/references/marketing-avatars.md": {
+    "mtime": 1783873454.345442,
+    "ast_hash": "c04d894a747b3fbcafe2fafa8b20d580",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-generate/references/marketing-brand-kits.md": {
+    "mtime": 1783873454.3454592,
+    "ast_hash": "69077ef8159fac252b581a1497913d63",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-generate/references/marketing-dtc-ads.md": {
+    "mtime": 1783873454.345476,
+    "ast_hash": "d9436ecb80ec0ae2303afe99aefeef70",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-generate/references/marketing-modes.md": {
+    "mtime": 1783873454.3454936,
+    "ast_hash": "abf36d2f19f04b3cbf076316c504cd95",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-generate/references/marketing-products.md": {
+    "mtime": 1783873454.3455117,
+    "ast_hash": "baadf1e32447838079e69e0d1300bd90",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-generate/references/marketing-setup-items.md": {
+    "mtime": 1783873454.3455265,
+    "ast_hash": "bbd795c198a6f73a82ab71b3f90a6221",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-generate/references/media-inputs.md": {
+    "mtime": 1783873454.345544,
+    "ast_hash": "4e5942244b35b32723e8c812ee601f13",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-generate/references/model-catalog.md": {
+    "mtime": 1783873454.3455634,
+    "ast_hash": "6db4e5d1f961dd64cbefd789b2888ae6",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-generate/references/prompt-engineering.md": {
+    "mtime": 1783873454.345587,
+    "ast_hash": "2d1e7fee20a2e3857e28b250e075c5a7",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-generate/references/troubleshooting.md": {
+    "mtime": 1783873454.3456562,
+    "ast_hash": "907e8a5ae621b2697213a151c9c15d79",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-generate/references/workflows.md": {
+    "mtime": 1783873454.3456755,
+    "ast_hash": "bdc7446404b4b92c62835e821c8a3c1e",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-marketplace-cards/SKILL.md": {
+    "mtime": 1783873454.3527696,
+    "ast_hash": "7c2fd67a95e336c9966ef0964cd1e14b",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-product-photoshoot/SKILL.md": {
+    "mtime": 1783873454.3502414,
+    "ast_hash": "63270b7359dc80469ee6c8c9b9432464",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-soul-id/SKILL.md": {
+    "mtime": 1783873454.3476493,
+    "ast_hash": "359f07e0a4d944c5d42b319911bcbd52",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-soul-id/references/photo-guide.md": {
+    "mtime": 1783873454.3477104,
+    "ast_hash": "d09550e8661694196080752a032f3e74",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-soul-id/references/troubleshooting.md": {
+    "mtime": 1783873454.3477712,
+    "ast_hash": "a387a5d5e563716827637a67877fae1a",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/SKILL.md": {
+    "mtime": 1783873454.355449,
+    "ast_hash": "41cc7db77aaea2438323ed4353d3ed17",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/app-cover.md": {
+    "mtime": 1783873454.355532,
+    "ast_hash": "fc7684950ac8d2bc0abaa8e157b3168c",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/app-flow.md": {
+    "mtime": 1783873454.3555722,
+    "ast_hash": "ee034e2712c793b036cca578de47e7d0",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/app-layouts.md": {
+    "mtime": 1783873454.3556056,
+    "ast_hash": "2994ab856b0e851abd20d09ce1ea5188",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/app-quickstart.md": {
+    "mtime": 1783873454.3559265,
+    "ast_hash": "65786fb5b27829d5fa80e112e2f91c1e",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/asset-system.md": {
+    "mtime": 1783873454.3559527,
+    "ast_hash": "f8418e4e7d717383acdb8c55066064e8",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/auth.md": {
+    "mtime": 1783873454.356026,
+    "ast_hash": "b238e739c0c76dff7481127ec2bf29db",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/containers.md": {
+    "mtime": 1783873454.3560457,
+    "ast_hash": "67681b944c22d493cb4c35a18b0db8ea",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/contest.md": {
+    "mtime": 1783873454.3560772,
+    "ast_hash": "02f9b0dfd6fd2b605e008f17558e2fe0",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/cover-animator.md": {
+    "mtime": 1783873454.3560953,
+    "ast_hash": "065fd7ad8e8b208167b349a1ae176a27",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/design-recipe.md": {
+    "mtime": 1783873454.3561192,
+    "ast_hash": "0694b804c6985c403886dbd2ab4a7ad4",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/design-taste-frontend.md": {
+    "mtime": 1783873454.3561437,
+    "ast_hash": "3143fa8453f9c4ece81286fcb22ab52b",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/fnf-react.md": {
+    "mtime": 1783873454.3562498,
+    "ast_hash": "fbb24a19f058fda93a6196ae09c1cec0",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/fnf-sdk.md": {
+    "mtime": 1783873454.3562725,
+    "ast_hash": "ef55a77c3c44ad149d4e17cf1eca1434",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/image-to-code.md": {
+    "mtime": 1783873454.3563032,
+    "ast_hash": "dc1a64ab9101b978fed97b6d2f159c2b",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/quanta-design.md": {
+    "mtime": 1783873454.3563213,
+    "ast_hash": "be87249375c4a9627c301b886bebbca3",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/reference-boards.md": {
+    "mtime": 1783873454.3563519,
+    "ast_hash": "95737c547aeb74a32a63ca75c5be7da2",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/review-rubric.md": {
+    "mtime": 1783873454.3563712,
+    "ast_hash": "ae8dbc1742eb375d627c7406eb331dd9",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/runtime-and-infra.md": {
+    "mtime": 1783873454.3563895,
+    "ast_hash": "c1520fe45251ff362d2b30935fe253db",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/security.md": {
+    "mtime": 1783873454.3564093,
+    "ast_hash": "415627f8b1c46f341897f83f03155943",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/seo.md": {
+    "mtime": 1783873454.356481,
+    "ast_hash": "ac5bd9363498b74db6c02f571c940b29",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/website-flow.md": {
+    "mtime": 1783873454.3565125,
+    "ast_hash": "63f77cd722eb954200cc14887d66cf47",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/wow-catalog.md": {
+    "mtime": 1783873454.3565392,
+    "ast_hash": "8e422ab126df2b2e39580154cd869cc0",
+    "semantic_hash": ""
+  },
+  ".claude/skills/higgsfield-websites/references/wow-maker.md": {
+    "mtime": 1783873454.3565578,
+    "ast_hash": "14b276468e78972f5c48977b388e0384",
+    "semantic_hash": ""
+  },
+  ".claude/skills/ultra-enterprise-os/SKILL.md": {
+    "mtime": 1783871066.7242494,
+    "ast_hash": "1d749dd99f735437b5f5b82582283399",
+    "semantic_hash": ""
+  },
+  ".claude/skills/ultra-enterprise-os/references/org-chart.md": {
+    "mtime": 1783871066.7247097,
+    "ast_hash": "318f66e3b10ca1891e7692bf69e60b24",
+    "semantic_hash": ""
+  },
+  "CLAUDE.md": {
+    "mtime": 1783873656.3746784,
+    "ast_hash": "439ba74da0cc4b27365dc49f42cec902",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/README.md": {
+    "mtime": 1783871066.7250586,
+    "ast_hash": "72159cb9cb173a96970d13a3daccbbed",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/agents/ultra-architect.md": {
+    "mtime": 1783871066.7250586,
+    "ast_hash": "5dbe64be1e3a556cdb6f3fdf3967aab3",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/agents/ultra-business.md": {
+    "mtime": 1783871066.7260993,
+    "ast_hash": "a5273408a655ac8383dcb03e0bfed7d2",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/agents/ultra-data-ml.md": {
+    "mtime": 1783871066.7260993,
+    "ast_hash": "c880f430f9ed03f6e587651034cbc107",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/agents/ultra-design.md": {
+    "mtime": 1783871066.7260993,
+    "ast_hash": "52dca8f37cc50e8e9f6eb8f103c4218b",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/agents/ultra-devops.md": {
+    "mtime": 1783871066.7260993,
+    "ast_hash": "595443ad658de75825fc2649d6f70091",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/agents/ultra-docs.md": {
+    "mtime": 1783871066.7260993,
+    "ast_hash": "72ce514bdd6ee12561237c1e61306d6f",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/agents/ultra-fullstack.md": {
+    "mtime": 1783871066.7260993,
+    "ast_hash": "86c545e76289911bffa03acfdc8c8a9c",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/agents/ultra-orchestrator.md": {
+    "mtime": 1783871066.7260993,
+    "ast_hash": "463eb0091e0b1336d051946753ed99de",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/agents/ultra-qa.md": {
+    "mtime": 1783871066.7260993,
+    "ast_hash": "8364683e63d386b115b427c85e25d48f",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/agents/ultra-security.md": {
+    "mtime": 1783871066.7260993,
+    "ast_hash": "effaf2769b954c246d3b485096c2f6d3",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/commands/ultra-review.md": {
+    "mtime": 1783871066.7260993,
+    "ast_hash": "8395f84deef29bec19cc2ea4c2085aca",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/commands/ultra-team.md": {
+    "mtime": 1783871066.7280304,
+    "ast_hash": "eae25daf7e91e165285e917f2a6137b4",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/commands/ultra.md": {
+    "mtime": 1783871066.7280304,
+    "ast_hash": "39c016c12fa74a1a78aa6a337125b7fe",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/skills/ultra-enterprise-os/SKILL.md": {
+    "mtime": 1783871066.7284753,
+    "ast_hash": "1d749dd99f735437b5f5b82582283399",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/skills/ultra-enterprise-os/references/org-chart.md": {
+    "mtime": 1783871066.7287288,
+    "ast_hash": "318f66e3b10ca1891e7692bf69e60b24",
+    "semantic_hash": ""
+  }
+}
