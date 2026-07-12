@@ -68,3 +68,45 @@ Windows. Zum Deaktivieren einfach diese Datei loeschen:
   und `Start-JARVIS.bat` danach in einem neuen Terminal erneut starten.
 - **Port bereits belegt:** Umgebungsvariable `JARVIS_PORT` auf einen anderen
   Port setzen, bevor `Start-JARVIS.bat` gestartet wird.
+
+## PC bedienen: Open Interpreter (die Hände)
+
+JARVIS Desktop ist die **Stimme und der Kopf**: Es hört zu, denkt nach und
+redet mit dir - es führt aber selbst keine Befehle auf deinem PC aus.
+
+Für die **Hände** - also damit tatsächlich etwas auf deinem PC passiert
+(Programme öffnen, Dateien anlegen, Einstellungen ändern, ...) - gibt es
+[Open Interpreter](https://www.openinterpreter.com/). Das ist ein separates,
+eigenständiges Werkzeug: eine Kommandozeilen-KI, die echte Befehle im
+Terminal ausführen kann und dich vor jedem einzelnen Befehl um Bestätigung
+bittet.
+
+### Installation
+
+Doppelklick auf `Install-OpenInterpreter.bat` in diesem Ordner. Das Skript:
+
+- prüft, ob `ANTHROPIC_API_KEY` gesetzt ist (derselbe Schlüssel, den auch
+  JARVIS Desktop verwendet),
+- installiert Open Interpreter über den offiziellen Installer,
+- legt beim ersten Mal eine einfache Konfiguration an, die Claude als Modell
+  verwendet.
+
+### Benutzung
+
+1. Ein Terminal öffnen (z. B. `cmd` oder PowerShell).
+2. `interpreter` eingeben und Enter drücken.
+3. Deinen Auftrag auf Deutsch beschreiben, z. B. "oeffne den Task-Manager".
+
+### Sicherheit
+
+Open Interpreter bestätigt jeden Befehl, bevor er ihn wirklich ausführt -
+du siehst also vorher, was passieren würde, und kannst ablehnen. Trotzdem
+gilt: Gib nur Aufträge, die du wirklich verstehst, und lies dir vorgeschlagene
+Befehle vor der Bestätigung durch. Open Interpreter führt echte Befehle auf
+deinem echten PC aus, es ist keine Simulation.
+
+### Alternative
+
+Wer eine vollständigere Integration möchte (Bildschirm sehen und steuern statt
+nur Terminalbefehle), kann stattdessen die Claude Desktop-App mit der
+"Computer Use"-Funktion verwenden.
