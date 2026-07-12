@@ -18,6 +18,8 @@ Store: **www.katzenufos.com** · Währung: CHF · Land: Schweiz · Plan: Shopify
 - ✅ **Vendor** von „My Store" auf „MeowUFO" geändert
 - ✅ Produkt zur Collection **Bestseller** hinzugefügt (war leer)
 - ✅ **FAQ-Seite** erstellt und veröffentlicht: `/pages/faq` (Versand, Akku, Rückgabe, Twint, Ersatzfedern)
+- ✅ **Rabattcode `CATLOVERS10`**: 10 % auf die Bestellung, für alle Kunden, aktiv, kein Enddatum
+- ✅ **Automatischer Rabatt „3 für 2 – Kaufe 2, erhalte 1 gratis 🐱"**: wird ohne Code im Warenkorb angewendet (2x Federwedel kaufen → 3. gratis, max. 1x pro Bestellung; nicht mit CATLOVERS10 kombinierbar, Versandrabatte erlaubt)
 - ✅ **2 SEO-Blogartikel** im News-Blog veröffentlicht:
   - „Wohnungskatze beschäftigen: 7 Ideen gegen Langeweile"
   - „Katze allein zu Hause: So lange geht es wirklich – und so bleibt sie glücklich"
@@ -31,10 +33,10 @@ Store: **www.katzenufos.com** · Währung: CHF · Land: Schweiz · Plan: Shopify
 
 ## Manuelle nächste Schritte (kann die API nicht / braucht deine Entscheidung)
 
-1. **Shop-Name ändern**: „My Store" → „MeowUFO / Katzenufos" (Shopify Admin → Einstellungen → Allgemein)
+1. **Shop-Name ändern**: „My Store" → „KatzenUfos" (Shopify Admin → Einstellungen → Allgemein; per API nicht möglich)
 2. **Story-Seite veröffentlichen**: „🚀 Die MeowUFO-Geschichte" ist als Entwurf da – prüfen und publishen
 3. **FAQ-Seite ins Footer-Menü aufnehmen** (Onlineshop → Navigation)
-4. **Rabattcode** (z. B. `CATLOVERS10`, 10 %): sag Bescheid, ab wann er gelten soll und für wen, dann lege ich ihn an
+4. **3-für-2-Aktion bewerben**: Banner auf der Startseite/Produktseite, damit Kunden die automatische Aktion sehen
 5. **Review-App** installieren (Judge.me / Loox) – wichtigster Trust-Hebel
 6. **Meta-Pixel + GA4 + Google Merchant Center** einrichten (Voraussetzung für Ads)
 7. **Twint sichtbar machen** (Badge im Header/Footer) – grösster Conversion-Hebel für CH-Kunden
