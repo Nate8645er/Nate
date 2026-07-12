@@ -5,9 +5,16 @@
         "source": "github",
         "repo": "Nate8645er/Nate"
       }
+    },
+    "fable-baton": {
+      "source": {
+        "source": "github",
+        "repo": "realgarit/fable-baton"
+      }
     }
   },
   "enabledPlugins": {
-    "ultra-enterprise-os@nate-marketplace": true
+    "ultra-enterprise-os@nate-marketplace": true,
+    "fable-baton@fable-baton": true
   }
 }
