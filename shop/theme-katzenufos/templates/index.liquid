@@ -1,0 +1,103 @@
+{% assign featured = collections['bestseller'].products.first | default: collections.all.products.first %}
+
+<section class="hero">
+  <p class="kicker">{{ settings.hero_kicker }}</p>
+  <h1>{{ settings.hero_headline }}</h1>
+  <p class="hero-sub">{{ settings.hero_subheadline }}</p>
+  {% if featured %}
+    <a class="btn btn-lg" href="{{ featured.url }}">{{ settings.hero_cta }} – ab {{ featured.price_min | money }}</a>
+    <p class="hero-note">✓ 30 Tage Rückgaberecht &nbsp; ✓ Twint &amp; Kreditkarte &nbsp; ✓ Sendungsverfolgung</p>
+  {% endif %}
+</section>
+
+{% if featured and featured.featured_image %}
+  <section class="media-box">
+    {% comment %} Video-Platzhalter: Produktvideo hier einbinden (Shopify-Video-Upload oder mp4 als Asset). Bis dahin: Produktbild. {% endcomment %}
+    <img src="{{ featured.featured_image | image_url: width: 1200 }}" alt="{{ featured.featured_image.alt | escape }}">
+  </section>
+{% endif %}
+
+<section class="problem">
+  <h2>Kennst du das?</h2>
+  <div class="grid grid-3">
+    <div class="pain">😿 <strong>8–10 Stunden allein</strong><p>Deine Katze wartet den ganzen Arbeitstag – und langweilt sich.</p></div>
+    <div class="pain">🛋️ <strong>Zerkratzte Möbel</strong><p>Aufgestaute Energie sucht sich ein Ventil. Meistens dein Sofa.</p></div>
+    <div class="pain">🌙 <strong>4-Uhr-Weckdienst</strong><p>Tagsüber unterfordert, nachts hellwach – auf deiner Bettdecke.</p></div>
+  </div>
+  <p class="problem-bridge">Das Problem ist nicht deine Katze. Es ist der fehlende <strong>Jagdtrieb-Auslauf</strong>. Und genau dafür gibt es MeowUFO.</p>
+</section>
+
+<section class="steps">
+  <h2>So einfach funktioniert's</h2>
+  <div class="grid grid-3">
+    <div class="step"><span class="step-num">1</span><h3>Per USB laden</h3><p>Kein Batteriemüll, kein Nachkaufen. Eine Ladung hält tagelang.</p></div>
+    <div class="step"><span class="step-num">2</span><h3>Einschalten &amp; hinstellen</h3><p>Der Automatik-Modus mit cleveren Pausen hält die Neugier wach.</p></div>
+    <div class="step"><span class="step-num">3</span><h3>Katze macht den Rest</h3><p>Jagen, springen, auspowern – während du arbeitest.</p></div>
+  </div>
+</section>
+
+<section class="usps">
+  <h2>Warum MeowUFO?</h2>
+  <div class="grid grid-3">
+    <div class="card card-pad"><h3>🐾 Beschäftigung ohne dich</h3><p>Automatische Spielsessions genau dann, wenn niemand zu Hause ist. Gegen Langeweile, Übergewicht und schlechtes Gewissen.</p></div>
+    <div class="card card-pad"><h3>🔋 USB-Akku statt Batterien</h3><p>Einmal laden statt ständig Batterien kaufen. Gut für dein Portemonnaie und die Umwelt.</p></div>
+    <div class="card card-pad"><h3>🇨🇭 Schweizer Shop</h3><p>Preise in CHF inkl. MwSt., Twint-Zahlung, deutschsprachiger Support und 30 Tage Rückgaberecht.</p></div>
+  </div>
+</section>
+
+{% if settings.show_reviews %}
+<section class="reviews">
+  <h2>Das sagen Katzeneltern</h2>
+  {% comment %}
+    PLATZHALTER-SEKTION: Standardmäßig deaktiviert (Theme-Einstellungen → Conversion).
+    Erst aktivieren, wenn hier ECHTE Kundenbewertungen stehen oder eine Review-App
+    (Judge.me / Loox) eingebunden ist. Keine erfundenen Bewertungen veröffentlichen.
+  {% endcomment %}
+  <div class="grid grid-3">
+    <div class="card card-pad review"><p>„Hier echte Bewertung einfügen"</p><small>— Name, Ort</small></div>
+    <div class="card card-pad review"><p>„Hier echte Bewertung einfügen"</p><small>— Name, Ort</small></div>
+    <div class="card card-pad review"><p>„Hier echte Bewertung einfügen"</p><small>— Name, Ort</small></div>
+  </div>
+</section>
+{% endif %}
+
+{% if featured %}
+<section class="cta-card">
+  <div class="cta-inner">
+    {% if featured.featured_image %}<img src="{{ featured.featured_image | image_url: width: 500 }}" alt="{{ featured.title | escape }}">{% endif %}
+    <div>
+      <h2>{{ featured.title }}</h2>
+      <p class="price-line">ab <strong>{{ featured.price_min | money }}</strong> · 2er-Set „Luna + Nova" spart zusätzlich</p>
+      <p>🎁 Gerade aktiv: <strong>3 für 2</strong> – der dritte Federwedel ist geschenkt (automatisch im Warenkorb).</p>
+      <a class="btn btn-lg" href="{{ featured.url }}">Zum Produkt</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="faq">
+  <h2>Häufige Fragen</h2>
+  <details><summary>Wie lange dauert der Versand?</summary><p>Versand aus dem EU-Lager, Lieferzeit in die Schweiz 7–14 Tage, inklusive Sendungsverfolgung per E-Mail.</p></details>
+  <details><summary>Was, wenn meine Katze nicht damit spielt?</summary><p>Der Automatik-Modus mit unregelmäßigen Pausen hält den Reiz frisch. Und falls doch nicht: 30 Tage Rückgaberecht – Geld zurück.</p></details>
+  <details><summary>Wie laut ist der Motor?</summary><p>Flüsterleise – entwickelt für Wohnungen. Deine Katze hört das Rascheln der Feder, nicht den Motor.</p></details>
+  <details><summary>Wie lange hält der Akku?</summary><p>Eine USB-Ladung reicht dank Automatik-Pausen für mehrere Tage normalen Spielens.</p></details>
+  <details><summary>Kann die Katze unbeaufsichtigt damit spielen?</summary><p>Ja, dafür ist MeowUFO gemacht. Wie bei jedem Spielzeug gilt: Die ersten Sessions kurz beobachten.</p></details>
+</section>
+
+{% if blogs.news.articles.size > 0 %}
+<section>
+  <h2 class="section-title">Aus dem Katzen-Ratgeber</h2>
+  <div class="grid grid-3">
+    {% for article in blogs.news.articles limit: 3 %}
+      <div class="card">
+        <a href="{{ article.url }}">
+          <div class="card-body">
+            <h3>{{ article.title }}</h3>
+            <p>{{ article.excerpt_or_content | strip_html | truncate: 110 }}</p>
+          </div>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}

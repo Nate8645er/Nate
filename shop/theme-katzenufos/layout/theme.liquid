@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page_title }}{% unless page_title contains shop.name %} – {{ shop.name }}{% endunless %}</title>
+  {% if page_description %}<meta name="description" content="{{ page_description | escape }}">{% endif %}
+  <link rel="canonical" href="{{ canonical_url }}">
+  {{ 'theme.css' | asset_url | stylesheet_tag }}
+  <style>
+    :root {
+      --accent: {{ settings.accent_color | default: '#6c5ce7' }};
+      --ink: {{ settings.ink_color | default: '#1c1c28' }};
+      --bg-soft: {{ settings.soft_bg_color | default: '#f6f5fb' }};
+    }
+  </style>
+  {{ content_for_header }}
+</head>
+<body>
+  {% if settings.show_announcement %}
+    <div class="announcement">{{ settings.announcement_text }}</div>
+  {% endif %}
+
+  <header class="site-header">
+    <a class="logo" href="{{ routes.root_url }}">🛸 {{ shop.name }}</a>
+    <nav class="site-nav">
+      {% for link in linklists.main-menu.links %}
+        <a href="{{ link.url }}">{{ link.title }}</a>
+      {% endfor %}
+    </nav>
+    <a class="cart-link" href="{{ routes.cart_url }}">🧺 <span class="cart-count">{{ cart.item_count }}</span></a>
+  </header>
+
+  <main>
+    {{ content_for_layout }}
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-cols">
+      <div>
+        <h4>{{ shop.name }}</h4>
+        <p>Beschäftigung für Wohnungskatzen – automatisch, leise, per USB aufladbar.</p>
+      </div>
+      <div>
+        <h4>Service</h4>
+        {% for link in linklists.footer.links %}
+          <a href="{{ link.url }}">{{ link.title }}</a><br>
+        {% endfor %}
+      </div>
+      <div>
+        <h4>Sicher einkaufen</h4>
+        <p>💳 Twint · Kreditkarte · PayPal<br>🔄 30 Tage Rückgaberecht<br>📦 Versand mit Sendungsverfolgung<br>🇨🇭 Preise in CHF inkl. MwSt.</p>
+      </div>
+    </div>
+    <p class="copyright">© {{ 'now' | date: '%Y' }} {{ shop.name }}</p>
+  </footer>
+</body>
+</html>

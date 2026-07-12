@@ -1,0 +1,10 @@
+<article class="page-content">
+  <h1 class="section-title">{{ article.title }}</h1>
+  <p class="article-meta">{{ article.published_at | date: '%d.%m.%Y' }} · {{ article.author }}</p>
+  {% if article.image %}
+    <img src="{{ article.image | image_url: width: 1000 }}" alt="{{ article.title | escape }}" style="border-radius:14px;margin-bottom:20px">
+  {% endif %}
+  <div class="rte">
+    {{ article.content }}
+  </div>
+</article>
