@@ -1,0 +1,42 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "KatzenUfos Premium",
+    "theme_version": "2.0.0",
+    "theme_author": "KatzenUfos",
+    "theme_documentation_url": "https://www.katzenufos.com",
+    "theme_support_url": "https://www.katzenufos.com/pages/contact"
+  },
+  {
+    "name": "Farben",
+    "settings": [
+      { "type": "color", "id": "accent_color", "label": "Akzentfarbe", "default": "#6c5ce7" },
+      { "type": "color", "id": "ink_color", "label": "Textfarbe", "default": "#1c1c28" },
+      { "type": "color", "id": "soft_bg_color", "label": "Sanfter Hintergrund", "default": "#f6f5fb" }
+    ]
+  },
+  {
+    "name": "Ankündigungsleiste",
+    "settings": [
+      { "type": "checkbox", "id": "show_announcement", "label": "Leiste anzeigen", "default": true },
+      { "type": "text", "id": "announcement_text", "label": "Text", "default": "🛸 3 für 2: Dritter Federwedel geschenkt · Code CATLOVERS10 = 10% Rabatt" }
+    ]
+  },
+  {
+    "name": "Startseite – Hero",
+    "settings": [
+      { "type": "text", "id": "hero_kicker", "label": "Kicker (kleine Zeile oben)", "default": "Für Wohnungskatzen entwickelt" },
+      { "type": "text", "id": "hero_headline", "label": "Headline", "default": "Deine Katze spielt. Auch wenn du nicht da bist." },
+      { "type": "textarea", "id": "hero_subheadline", "label": "Subheadline", "default": "Der automatische MeowUFO-Federwedel weckt den Jagdinstinkt deiner Katze – mit cleveren Pausen, USB-Akku und flüsterleisem Motor. Schluss mit schlechtem Gewissen im Büro." },
+      { "type": "text", "id": "hero_cta", "label": "Button-Text", "default": "Jetzt MeowUFO holen" }
+    ]
+  },
+  {
+    "name": "Conversion",
+    "settings": [
+      { "type": "range", "id": "free_shipping_threshold", "label": "Gratisversand-Schwelle (CHF)", "min": 0, "max": 200, "step": 5, "default": 70 },
+      { "type": "checkbox", "id": "show_inventory_urgency", "label": "Niedrigen Lagerbestand anzeigen (nur echte Bestände)", "default": true },
+      { "type": "checkbox", "id": "show_reviews", "label": "Bewertungs-Sektion anzeigen (erst aktivieren, wenn echte Bewertungen eingetragen sind)", "default": false }
+    ]
+  }
+]

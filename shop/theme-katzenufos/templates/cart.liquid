@@ -1,0 +1,60 @@
+<h1 class="section-title">Dein Warenkorb</h1>
+
+{% if cart.item_count == 0 %}
+  <p>Dein Warenkorb ist leer. <a href="{{ routes.all_products_collection_url }}">Zu den Produkten →</a></p>
+{% else %}
+  {% assign threshold_cents = settings.free_shipping_threshold | default: 70 | times: 100 %}
+  {% if threshold_cents > 0 %}
+    {% assign remaining = threshold_cents | minus: cart.total_price %}
+    {% assign progress = cart.total_price | times: 100 | divided_by: threshold_cents %}
+    {% if progress > 100 %}{% assign progress = 100 %}{% endif %}
+    <div class="shipping-bar">
+      {% if remaining > 0 %}
+        <p>Noch <strong>{{ remaining | money }}</strong> bis zum <strong>Gratisversand</strong> 🚚</p>
+      {% else %}
+        <p>🎉 <strong>Gratisversand erreicht!</strong></p>
+      {% endif %}
+      <div class="progress"><div class="progress-fill" style="width: {{ progress }}%"></div></div>
+    </div>
+  {% endif %}
+
+  {% form 'cart', cart %}
+    <table class="cart-table">
+      <thead>
+        <tr><th></th><th>Produkt</th><th>Menge</th><th>Summe</th></tr>
+      </thead>
+      <tbody>
+        {% for item in cart.items %}
+          <tr>
+            <td>
+              {% if item.image %}<img src="{{ item.image | image_url: width: 150 }}" alt="{{ item.title | escape }}">{% endif %}
+            </td>
+            <td>
+              <a href="{{ item.url }}">{{ item.product.title }}</a><br>
+              <small>{{ item.variant.title }}</small>
+              {% if item.line_level_discount_allocations.size > 0 %}
+                {% for d in item.line_level_discount_allocations %}
+                  <br><small class="discount-tag">🎁 {{ d.discount_application.title }} (−{{ d.amount | money }})</small>
+                {% endfor %}
+              {% endif %}
+              <br><small><a href="{{ item.url_to_remove }}">Entfernen</a></small>
+            </td>
+            <td>
+              <input type="number" name="updates[]" value="{{ item.quantity }}" min="0" aria-label="Menge">
+            </td>
+            <td>{{ item.final_line_price | money }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <p class="cart-total"><strong>Zwischensumme: {{ cart.total_price | money }}</strong><br>
+    <small>inkl. MwSt., Versand wird im Checkout berechnet</small></p>
+
+    <div class="cart-actions">
+      <button type="submit" name="update" class="btn btn-ghost">Aktualisieren</button>
+      <button type="submit" name="checkout" class="btn btn-lg">Zur Kasse 🔒</button>
+    </div>
+    <p class="cart-trust">💳 Twint · Kreditkarte · PayPal &nbsp;·&nbsp; 🔄 30 Tage Rückgaberecht</p>
+  {% endform %}
+{% endif %}

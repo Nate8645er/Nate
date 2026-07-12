@@ -8,6 +8,64 @@
     }
   },
   "enabledPlugins": {
-    "ultra-enterprise-os@nate-marketplace": true
+    "ultra-enterprise-os@nate-marketplace": true,
+    "everything-claude-code@nate-marketplace": true
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/everything-claude-code/scripts/hooks/session-start.js\" 2>/dev/null || true",
+            "timeout": 15,
+            "statusMessage": "Lade Session-Kontext (ECC)"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/everything-claude-code/scripts/hooks/pre-compact.js\" 2>/dev/null || true",
+            "timeout": 15,
+            "statusMessage": "Sichere Kontext vor Kompaktierung (ECC)"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/everything-claude-code/scripts/hooks/session-end.js\" 2>/dev/null || true",
+            "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/everything-claude-code/scripts/hooks/evaluate-session.js\" 2>/dev/null || true",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/everything-claude-code/scripts/hooks/suggest-compact.js\" 2>/dev/null || true",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
   }
 }

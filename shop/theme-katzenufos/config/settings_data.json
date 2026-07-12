@@ -1,0 +1,16 @@
+{
+  "current": {
+    "accent_color": "#6c5ce7",
+    "ink_color": "#1c1c28",
+    "soft_bg_color": "#f6f5fb",
+    "show_announcement": true,
+    "announcement_text": "🛸 3 für 2: Dritter Federwedel geschenkt · Code CATLOVERS10 = 10% Rabatt",
+    "hero_kicker": "Für Wohnungskatzen entwickelt",
+    "hero_headline": "Deine Katze spielt. Auch wenn du nicht da bist.",
+    "hero_subheadline": "Der automatische MeowUFO-Federwedel weckt den Jagdinstinkt deiner Katze – mit cleveren Pausen, USB-Akku und flüsterleisem Motor. Schluss mit schlechtem Gewissen im Büro.",
+    "hero_cta": "Jetzt MeowUFO holen",
+    "free_shipping_threshold": 70,
+    "show_inventory_urgency": true,
+    "show_reviews": false
+  }
+}

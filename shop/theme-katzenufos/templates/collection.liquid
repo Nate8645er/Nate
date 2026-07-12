@@ -1,0 +1,27 @@
+<h1 class="section-title">{{ collection.title }}</h1>
+{% if collection.description != blank %}
+  <div class="rte">{{ collection.description }}</div>
+{% endif %}
+
+{% paginate collection.products by 24 %}
+  <div class="grid">
+    {% for product in collection.products %}
+      <div class="card">
+        <a href="{{ product.url within: collection }}">
+          {% if product.featured_image %}
+            <img src="{{ product.featured_image | image_url: width: 600 }}" alt="{{ product.featured_image.alt | escape }}" loading="lazy">
+          {% endif %}
+          <div class="card-body">
+            <h3>{{ product.title }}</h3>
+            <p class="price">ab {{ product.price_min | money }}</p>
+          </div>
+        </a>
+      </div>
+    {% else %}
+      <p>In dieser Kategorie sind noch keine Produkte.</p>
+    {% endfor %}
+  </div>
+  {% if paginate.pages > 1 %}
+    <div class="pagination">{{ paginate | default_pagination }}</div>
+  {% endif %}
+{% endpaginate %}

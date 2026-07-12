@@ -1,0 +1,17 @@
+<h1 class="section-title">{{ page.title }}</h1>
+<div class="page-content rte">
+  {{ page.content }}
+
+  {% form 'contact' %}
+    {% if form.posted_successfully? %}
+      <p>✅ Danke! Wir melden uns so schnell wie möglich.</p>
+    {% endif %}
+    {% if form.errors %}
+      <p>⚠️ Bitte prüfe deine Angaben.</p>
+    {% endif %}
+    <p><label>Name<br><input type="text" name="contact[name]" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd"></label></p>
+    <p><label>E-Mail<br><input type="email" name="contact[email]" required style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd"></label></p>
+    <p><label>Nachricht<br><textarea name="contact[body]" rows="6" required style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd"></textarea></label></p>
+    <button type="submit" class="btn">Absenden</button>
+  {% endform %}
+</div>

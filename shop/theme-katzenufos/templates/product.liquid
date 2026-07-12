@@ -1,0 +1,69 @@
+<div class="product-layout">
+  <div class="product-gallery">
+    {% for image in product.images %}
+      <img src="{{ image | image_url: width: 900 }}" alt="{{ image.alt | escape }}" {% unless forloop.first %}loading="lazy"{% endunless %}>
+    {% endfor %}
+  </div>
+
+  <div class="product-info">
+    <h1>{{ product.title }}</h1>
+    <p class="product-price">ab {{ product.price_min | money }} <small>inkl. MwSt.</small></p>
+
+    <div class="badges">
+      <span>💳 Twint &amp; Karte</span>
+      <span>🔄 30 Tage Rückgabe</span>
+      <span>📦 Mit Sendungsverfolgung</span>
+    </div>
+
+    {% form 'product', product %}
+      {% if product.variants.size > 1 %}
+        <fieldset class="variant-cards">
+          <legend>Wähle deine Ausführung</legend>
+          {% for variant in product.variants %}
+            <label class="variant-card {% unless variant.available %}is-soldout{% endunless %}">
+              <input type="radio" name="id" value="{{ variant.id }}"
+                {% if forloop.first %}checked{% endif %}
+                {% unless variant.available %}disabled{% endunless %}>
+              <span class="vc-body">
+                <span class="vc-title">{{ variant.title }}
+                  {% if variant.title contains '2er-Set' %}<span class="vc-badge">Beliebteste Wahl</span>{% endif %}
+                </span>
+                <span class="vc-price">{{ variant.price | money }}</span>
+                {% if variant.title contains '2er-Set' %}<span class="vc-hint">Zwei Standorte, doppelte Abwechslung – spart 4.90</span>{% endif %}
+                {% unless variant.available %}<span class="vc-hint">Ausverkauft</span>{% else %}
+                  {% if settings.show_inventory_urgency and variant.inventory_quantity > 0 and variant.inventory_quantity <= 15 %}
+                    <span class="vc-stock">Nur noch {{ variant.inventory_quantity }} an Lager</span>
+                  {% endif %}
+                {% endunless %}
+              </span>
+            </label>
+          {% endfor %}
+        </fieldset>
+      {% else %}
+        <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+      {% endif %}
+
+      {% if product.available %}
+        <button type="submit" class="btn btn-lg btn-block">In den Warenkorb 🧺</button>
+        <button type="submit" class="btn sticky-buy">In den Warenkorb – ab {{ product.price_min | money }}</button>
+      {% else %}
+        <button type="submit" class="btn btn-lg btn-block" disabled>Ausverkauft</button>
+      {% endif %}
+    {% endform %}
+
+    <p class="crosssell">🎁 <strong>3 für 2:</strong> Leg drei in den Warenkorb – der günstigste ist automatisch gratis. Zusätzlich 10&nbsp;% mit Code <strong>CATLOVERS10</strong> (nicht kombinierbar).</p>
+
+    <div class="product-desc rte">
+      {{ product.description }}
+    </div>
+
+    <div class="faq">
+      <h2>Noch Fragen?</h2>
+      <details><summary>Wie laut ist der Motor?</summary><p>Flüsterleise – entwickelt für Wohnungen. Deine Katze hört die Feder, nicht den Motor.</p></details>
+      <details><summary>Wie lange hält der Akku?</summary><p>Eine USB-Ladung reicht dank cleverer Automatik-Pausen für mehrere Tage.</p></details>
+      <details><summary>Was, wenn meine Katze nicht damit spielt?</summary><p>30 Tage Rückgaberecht: Katze spielt nicht? Geld zurück. Ohne Diskussion.</p></details>
+      <details><summary>Ist unbeaufsichtigtes Spielen sicher?</summary><p>Ja, dafür ist MeowUFO gemacht. Die ersten Sessions trotzdem kurz beobachten – wie bei jedem neuen Spielzeug.</p></details>
+      <details><summary>Wie lange dauert der Versand?</summary><p>7–14 Tage aus dem EU-Lager in die Schweiz, mit Tracking-Link per E-Mail. Details: <a href="/pages/versand-rueckgabe">Versand &amp; Rückgabe</a>.</p></details>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,10 @@
+{
+  "general": {
+    "404": {
+      "title": "Seite nicht gefunden"
+    },
+    "search": {
+      "placeholder": "Wonach suchst du?"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{% layout none %}
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Geschenkgutschein – {{ shop.name }}</title>
+  {{ 'theme.css' | asset_url | stylesheet_tag }}
+</head>
+<body>
+  <main style="text-align:center;padding:48px 20px">
+    <h1>🎁 Dein Geschenkgutschein</h1>
+    <p style="font-size:2rem;font-weight:700">{{ gift_card.initial_value | money }}</p>
+    <p>Code: <strong>{{ gift_card.code | format_code }}</strong></p>
+    {% if gift_card.expires_on %}<p>Gültig bis: {{ gift_card.expires_on | date: '%d.%m.%Y' }}</p>{% endif %}
+    <a class="btn" href="{{ shop.url }}">Jetzt einlösen</a>
+  </main>
+</body>
+</html>

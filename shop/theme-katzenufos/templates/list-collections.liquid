@@ -1,0 +1,15 @@
+<h1 class="section-title">Kategorien</h1>
+<div class="grid">
+  {% for collection in collections %}
+    <div class="card">
+      <a href="{{ collection.url }}">
+        {% if collection.image %}
+          <img src="{{ collection.image | image_url: width: 600 }}" alt="{{ collection.title | escape }}" loading="lazy">
+        {% endif %}
+        <div class="card-body">
+          <h3>{{ collection.title }}</h3>
+        </div>
+      </a>
+    </div>
+  {% endfor %}
+</div>
