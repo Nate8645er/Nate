@@ -23,9 +23,43 @@ goto :python_found
 
 :no_python
 echo.
-echo [FEHLER] Es wurde keine Python-Installation gefunden.
+echo Python ist nicht installiert - ich installiere es jetzt automatisch ...
 echo.
-echo Bitte installiere Python von https://www.python.org/downloads/
+
+set "INSTALL_OK="
+
+where winget >nul 2>nul
+if errorlevel 1 goto :try_ps_installer
+
+echo Installiere Python ueber winget ...
+winget install -e --id Python.Python.3.12 --accept-source-agreements --accept-package-agreements --silent
+if errorlevel 1 goto :try_ps_installer
+set "INSTALL_OK=1"
+goto :install_done
+
+:try_ps_installer
+echo Installiere Python ueber den offiziellen Installer von python.org ...
+powershell -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://www.python.org/ftp/python/3.12.10/python-3.12.10-amd64.exe' -OutFile \"$env:TEMP\python-setup.exe\""
+if errorlevel 1 goto :install_failed
+
+"%TEMP%\python-setup.exe" /quiet InstallAllUsers=0 PrependPath=1 Include_test=0
+if errorlevel 1 goto :install_failed
+
+del /q "%TEMP%\python-setup.exe" >nul 2>nul
+set "INSTALL_OK=1"
+goto :install_done
+
+:install_failed
+del /q "%TEMP%\python-setup.exe" >nul 2>nul
+goto :install_done
+
+:install_done
+if defined INSTALL_OK goto :install_success
+
+echo.
+echo [FEHLER] Die automatische Installation von Python ist fehlgeschlagen.
+echo.
+echo Bitte installiere Python manuell von https://www.python.org/downloads/
 echo WICHTIG: Setze bei der Installation unbedingt den Haken bei
 echo          "Add Python to PATH".
 echo.
@@ -33,6 +67,15 @@ echo Starte diese Datei danach erneut.
 echo.
 pause
 exit /b 1
+
+:install_success
+echo.
+echo Installation abgeschlossen.
+echo Bitte dieses Fenster schliessen und Start-JARVIS.bat ERNEUT
+echo doppelklicken - dann geht es automatisch weiter.
+echo.
+pause
+exit /b 0
 
 :python_found
 

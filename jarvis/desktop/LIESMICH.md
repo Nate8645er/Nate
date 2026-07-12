@@ -10,7 +10,9 @@ einmal ablehnt).
 ## Voraussetzungen
 
 - Windows
-- Python 3.10 oder neuer
+- Python 3.10 oder neuer (muss nicht vorinstalliert sein - Start-JARVIS.bat
+  installiert es bei Bedarf automatisch, ueber winget oder den offiziellen
+  Installer)
 - Ein Anthropic-API-Key von https://platform.claude.com/
 - Chrome oder Edge (die Spracherkennung im Browser braucht einen der beiden)
 
@@ -26,6 +28,12 @@ einmal ablehnt).
    wird.
 
 2. Doppelklick auf `Start-JARVIS.bat`.
+
+   Falls noch kein Python installiert ist, holt Start-JARVIS.bat das
+   automatisch nach (winget oder offizieller Installer). Nach einer
+   Python-Neuinstallation bitte dieses Fenster schliessen und
+   `Start-JARVIS.bat` einmal erneut starten, damit die PATH-Aenderung
+   wirksam wird.
 
 3. Der Browser oeffnet sich automatisch unter http://127.0.0.1:8737
 
