@@ -1,0 +1,17 @@
+{
+  ".claude-plugin/marketplace.json": {
+    "mtime": 1783871066.7174356,
+    "ast_hash": "da65fff8cf71dba7891237f2f6f10488",
+    "semantic_hash": "da65fff8cf71dba7891237f2f6f10488"
+  },
+  ".claude/settings.json": {
+    "mtime": 1783871540.1829774,
+    "ast_hash": "26a47fbed4ef916a0aa05d00da20a97e",
+    "semantic_hash": "26a47fbed4ef916a0aa05d00da20a97e"
+  },
+  "ultra-enterprise-os/.claude-plugin/plugin.json": {
+    "mtime": 1783871066.7250586,
+    "ast_hash": "559375ca2cf2696883087e2f63f6200b",
+    "semantic_hash": "559375ca2cf2696883087e2f63f6200b"
+  }
+}
