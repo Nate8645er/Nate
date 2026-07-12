@@ -284,7 +284,18 @@
   evt(); evt(); evt(); setInterval(evt, reduced ? 6000 : 2200);
 
   /* ══ JARVIS-Konsole ══════════════════════════════ */
+  var fileMode = location.protocol === "file:";
   var ttsOn = true, freeOn = false, busy = false;
+
+  if (fileMode) {
+    $("liveBadge").className = "live warn";
+    $("liveText").textContent = "FALSCH GEOEFFNET";
+    $("input").disabled = true;
+    $("btnSend").disabled = true;
+    var fileBanner = $("banner");
+    fileBanner.style.display = "block";
+    fileBanner.innerHTML = "Diese Seite wurde direkt als Datei geoeffnet — so kann sie JARVIS nicht erreichen. Bitte <b>Start-JARVIS.bat</b> doppelklicken (schwarzes Fenster offen lassen); der Browser oeffnet dann automatisch <code>http://127.0.0.1:8737</code>.";
+  }
 
   function addMsg(kind, text) {
     var el = document.createElement("div");
@@ -343,7 +354,7 @@
         if (res.ok) speak(reply);
         refreshStatus();
       })
-      .catch(function () { addMsg("sys", "Verbindung zum lokalen JARVIS-Server verloren."); })
+      .catch(function () { addMsg("sys", "JARVIS-Server nicht erreichbar. Laeuft Start-JARVIS.bat noch (schwarzes Fenster offen)? Diese Seite muss ueber http://127.0.0.1:8737 geoeffnet sein."); })
       .finally(function () { busy = false; $("btnSend").disabled = false; $("input").focus(); });
   }
   $("btnSend").addEventListener("click", function () { send($("input").value); });
@@ -457,9 +468,12 @@
       .catch(function () {
         $("liveBadge").className = "live warn";
         $("liveText").textContent = "SERVER OFFLINE";
+        var b = $("banner");
+        b.style.display = "block";
+        b.innerHTML = "Keine Verbindung zum JARVIS-Server. Start-JARVIS.bat starten bzw. offen lassen — dann hier neu laden.";
       });
   }
-  refreshStatus(); setInterval(refreshStatus, 15000);
+  if (!fileMode) { refreshStatus(); setInterval(refreshStatus, 15000); }
 })();
 </script>
 </body>
