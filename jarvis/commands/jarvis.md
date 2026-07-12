@@ -60,6 +60,23 @@ Schreibrechte) darf die Mission niemals zum Scheitern bringen — im
 Zweifel Ticker-Fehler stillschweigend ignorieren und mit der Mission
 fortfahren.
 
+## Lokale PC-Aufgaben (Open Interpreter)
+
+Ist Open Interpreter auf dem Rechner des Nutzers installiert, delegiere
+klar umrissene Aufgaben zur **lokalen Ausfuehrung ausserhalb des
+Projekts** (z. B. den PC selbst steuern, lokale Programme starten,
+eigenstaendige Automatisierung) an den Agenten `oi-hands`. Fuer
+Installation oder Konfiguration von Open Interpreter nutze den Skill
+`open-interpreter`.
+
+Innerhalb des aktuellen Projekts bzw. Repos bleiben die normalen
+Werkzeuge und `fable-baton`-Agenten (Tier 1) die erste Wahl — sie sind
+direkter und billiger als der Umweg ueber Open Interpreter.
+
+Auch fuer Delegationen an `oi-hands` gilt die Ticker-Pflicht: Dispatch
+und Abschluss (`status: "dispatched"` / `"completed"` / `"failed"`) wie
+bei jedem anderen Agenten in `.jarvis/ticker.jsonl` protokollieren.
+
 ## Uebersicht auf Zuruf
 
 Fragt der Nutzer nach "status", "ueberblick" oder "dashboard", fasse den

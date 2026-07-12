@@ -81,8 +81,33 @@ Danach Claude Code neu starten oder die Sitzung fortsetzen — der Command
 
 ```
 jarvis/
-├── .claude-plugin/plugin.json      # Plugin-Manifest
-├── commands/jarvis.md              # /jarvis Command
-├── dashboard/mission-control.html  # Mission-Control-Dashboard (separat)
+├── .claude-plugin/plugin.json           # Plugin-Manifest
+├── agents/oi-hands.md                   # Agent fuer lokale PC-Aufgaben
+├── commands/jarvis.md                   # /jarvis Command
+├── dashboard/mission-control.html       # Mission-Control-Dashboard (separat)
+├── skills/open-interpreter/SKILL.md     # Skill: Open Interpreter installieren/nutzen
 └── README.md
 ```
+
+## Lokale PC-Aufgaben: Open Interpreter (optional)
+
+Fuer Auftraege, die eine eigenstaendige Aktion auf dem lokalen Rechner
+brauchen — also ausserhalb des aktuellen Projekts/Repos, z. B. den PC
+selbst steuern oder lokale Programme starten — bringt JARVIS zwei
+zusaetzliche Bausteine mit:
+
+- **Skill `open-interpreter`**: greift, sobald Open Interpreter
+  installiert/konfiguriert werden soll oder der Nutzer "Interpreter" /
+  "Open Interpreter" erwaehnt. Erklaert Verfuegbarkeitspruefung,
+  Installation, API-Key-Voraussetzung, Nutzung und die Sicherheitsregeln.
+- **Agent `oi-hands`**: uebernimmt die eigentliche Ausfuehrung, wenn Open
+  Interpreter bereits installiert ist und eine klar umrissene lokale
+  Aufgabe delegiert wird. Prueft vorher Verfuegbarkeit und API-Key,
+  fuehrt nur eindeutig harmlose Auftraege selbststaendig aus (`-y`) und
+  gibt destruktive/risikoreiche Auftraege mit Begruendung an den
+  Orchestrator zurueck statt sie auszufuehren.
+
+Innerhalb eines Projekts bleiben die normalen Werkzeuge und
+`fable-baton`-Agenten die erste Wahl — Open Interpreter kommt nur zum
+Einsatz, wenn der Nutzer es ausdruecklich will oder die Aufgabe wirklich
+lokale Automatisierung ausserhalb der Session ist.
