@@ -42,6 +42,8 @@ recordings/
 *.mp3
 *.m4a
 *.screenshot
+# Ausnahme: fest eingebaute JARVIS-Stimm-Assets (bewusst versioniert)
+!dashboard/assets/voices/*.mp3
 
 # Build and release output
 build/
