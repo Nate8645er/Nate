@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JARVIS // WERKZEUGE</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <h1>JARVIS <span style="color:var(--dim)">//</span> WERKZEUGE &amp; SKILLS</h1>
+  <nav><a href="/">START</a><a href="/uebersicht">ÜBERSICHT</a><a href="/gehirn">GEHIRN</a><a href="/mitarbeiter">MITARBEITER</a><a class="here" href="/werkzeuge">WERKZEUGE</a></nav>
+  <button id="fable" onclick="fableKey()" style="margin-left:10px">FABLE 5</button>
+  <span class="sys mono" id="clock"></span>
+  <span class="sys"><span class="dot"></span><span id="mode">ONLINE</span></span>
+</header>
+<div class="tickerwrap"><div class="ticker mono" id="ticker">WERKZEUGE WERDEN GELADEN …</div></div>
+
+<div class="grid2">
+  <div>
+    <div class="panel">
+      <h2><b>TOOLS</b> // AKTIVE WERKZEUGE (CLAUDE-CODE-STIL)</h2>
+      <div id="tools"></div>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>CLAUDE CODE</b> // AGENT-BRÜCKE MIT FABLE 5</h2>
+      <div id="codebox" style="font-size:12px; color:var(--dim)"></div>
+      <form onsubmit="return runCode(event)" style="margin-top:8px">
+        <input id="codeprompt" placeholder="Prompt an Claude Code / Claw (Fable 5)…" autocomplete="off">
+        <button>AUSFÜHREN</button>
+      </form>
+      <div id="coderes" class="logs mono" style="max-height:200px; margin-top:8px"></div>
+    </div>
+  </div>
+  <div>
+    <div class="panel">
+      <h2><b>SKILLS</b> // FÄHIGKEITEN (WIE CLAUDE.AI SKILLS)</h2>
+      <div id="skills"></div>
+      <form onsubmit="return runSkill(event)" style="margin-top:8px">
+        <input id="skillname" placeholder="Skill-Name" style="flex:0 0 130px" autocomplete="off">
+        <input id="skilltask" placeholder="Aufgabentext…" autocomplete="off">
+        <button>ANWENDEN</button>
+      </form>
+      <div id="skillres" class="logs mono" style="max-height:200px; margin-top:8px"></div>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>WERKZEUG</b> // DIREKT AUSFÜHREN</h2>
+      <div style="font-size:11px; color:var(--dim); margin-bottom:6px">
+        Syntax: <span class="mono">!plugin &lt;tool&gt; &lt;aktion&gt; key=wert</span> — Werte dürfen Leerzeichen enthalten.
+      </div>
+      <form onsubmit="return runTool(event)">
+        <input id="toolcmd" placeholder="z. B. !plugin shell run command=echo hallo" autocomplete="off">
+        <button>SENDEN</button>
+      </form>
+      <div id="toolres" class="logs mono" style="max-height:200px; margin-top:8px"></div>
+    </div>
+  </div>
+</div>
+
+<div class="honest"><b>EHRLICHKEITS-PROTOKOLL:</b> Diese Werkzeuge sind real umgesetzt und laufen lokal
+(Dateizugriff auf den Arbeitsbereich gesandboxt, Shell mit Timeout). „Alle Tools von Claude.ai" umfasst
+auch serverseitige, proprietäre Fähigkeiten, die außerhalb dieser Umgebung nicht nachgebaut werden können —
+die Claude-Code-Brücke ruft dafür den echten Agenten-Binary mit Fable 5 auf, wenn installiert.</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const fmt = n => Number(n).toLocaleString('de-CH');
+setInterval(() => $('clock').textContent = new Date().toLocaleString('de-CH'), 1000);
+
+async function poll(id) {
+  for (let i = 0; i < 90; i++) {
+    await new Promise(r => setTimeout(r, 1200));
+    const t = await (await fetch('/api/task/' + id)).json();
+    if (t.status === 'fertig' || t.status === 'fehler') return t;
+  }
+  return { ergebnis: '(Zeitüberschreitung)', agent: '' };
+}
+async function submit(desc) {
+  const r = await fetch('/api/task', { method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ beschreibung: desc }) });
+  return poll((await r.json()).id);
+}
+
+async function load() {
+  try {
+    const s = await (await fetch('/api/state')).json();
+    $('mode').textContent = 'ONLINE // ' + s.modell_modus.toUpperCase();
+    $('tools').innerHTML = s.plugins.map(p =>
+      `<div style="padding:4px 0; border-bottom:1px dashed #241609; font-size:12px">
+         ◈ <b style="color:var(--amber2)">${p.name}</b> — ${p.description}
+         <span class="demo">(${p.allowed_teams === 'alle' ? 'alle Teams' : p.allowed_teams})</span></div>`).join('');
+    const code = s.plugins.find(p => p.name === 'code');
+    $('codebox').innerHTML = code
+      ? `Binary: <b style="color:var(--amber2)">${code.binary || '—'}</b><br>` +
+        `Modell: <b style="color:var(--amber2)">${s.modell}</b> · Modus: ${s.modell_modus}<br>` +
+        (s.modell_modus === 'api' ? 'Aktiv: nutzt den echten Agenten mit Fable 5.'
+          : 'Ohne API-Key: Fallback auf das JARVIS-Gehirn. FABLE 5 oben aktivieren.')
+      : '';
+    $('skills').innerHTML = (s.skills || []).map(sk =>
+      `<div style="padding:4px 0; border-bottom:1px dashed #241609; font-size:12px">
+         ✦ <b style="color:var(--amber2)">${sk.name}</b> — ${sk.description}</div>`).join('');
+    $('ticker').textContent = (` ▲ ${s.plugins.length} WERKZEUGE AKTIV: ${s.plugins.map(p => p.name).join(', ')} ` +
+      `● ${(s.skills || []).length} SKILLS ● CLAUDE-CODE-BRÜCKE: ${code && code.binary ? 'BEREIT' : 'FALLBACK'} ` +
+      `● MODELL ${s.modell} [${s.modell_modus.toUpperCase()}] ● `).repeat(2);
+  } catch (e) { $('mode').textContent = 'VERBINDUNG GETRENNT'; }
+}
+setInterval(load, 3000); load();
+
+async function runTool(ev) { ev.preventDefault();
+  const v = $('toolcmd').value.trim(); if (!v) return false;
+  $('toolres').textContent = '… läuft'; const t = await submit(v);
+  $('toolres').textContent = (t.agent ? t.agent + '\n' : '') + t.ergebnis; return false; }
+async function runSkill(ev) { ev.preventDefault();
+  const n = $('skillname').value.trim(), a = $('skilltask').value.trim();
+  if (!n || !a) return false; $('skillres').textContent = '… läuft';
+  const t = await submit('!skill ' + n + ' ' + a);
+  $('skillres').textContent = t.ergebnis; return false; }
+async function runCode(ev) { ev.preventDefault();
+  const p = $('codeprompt').value.trim(); if (!p) return false;
+  $('coderes').textContent = '… läuft (Claude Code / Fable 5)';
+  const t = await submit('!plugin code prompt prompt=' + p);
+  $('coderes').textContent = t.ergebnis; return false; }
+
+async function fableCheck(){
+  try{ const b = await (await fetch('/api/brain')).json();
+    const el = $('fable'); if(!el) return;
+    el.classList.toggle('on', b.modus==='api');
+    el.textContent = b.modus==='api' ? '⚡ FABLE 5 AKTIV' : 'FABLE 5 AKTIVIEREN';
+  }catch(e){}
+}
+async function fableKey(){
+  const b = await (await fetch('/api/brain')).json();
+  if(b.modus==='api'){ alert('Fable 5 ist aktiv: '+b.modell); return; }
+  const key = prompt('Anthropic API-Key (sk-ant-…). Nur lokal gespeichert:');
+  if(!key) return;
+  const r = await fetch('/api/brain/key', {method:'POST', headers:{'content-type':'application/json'},
+    body: JSON.stringify({schluessel:key.trim()})});
+  alert(r.ok ? 'Fable 5 aktiviert!' : 'Key nicht akzeptiert.'); fableCheck();
+}
+setInterval(fableCheck, 3000); fableCheck();
+</script>
+</body>
+</html>

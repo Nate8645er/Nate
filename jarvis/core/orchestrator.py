@@ -28,6 +28,20 @@ from .identity import ADDRESS_SPACE, address_for_task, materialize
 from .plugins import PluginManager
 
 
+def _parse_kwargs(rest: str) -> dict[str, str]:
+    """Parst 'key=value key2=value mit leerzeichen' — Wert läuft bis zum nächsten key=."""
+    import re
+    if not rest.strip():
+        return {}
+    keys = list(re.finditer(r"(?:^|\s)([a-zA-Z_]\w*)=", rest))
+    kwargs: dict[str, str] = {}
+    for i, m in enumerate(keys):
+        start = m.end()
+        end = keys[i + 1].start() if i + 1 < len(keys) else len(rest)
+        kwargs[m.group(1)] = rest[start:end].strip()
+    return kwargs
+
+
 def hardware_limit() -> int:
     """Wie viele Agenten kann diese Maschine gleichzeitig sinnvoll ausführen?"""
     cpu = os.cpu_count() or 4
@@ -100,7 +114,15 @@ class Orchestrator:
         self.activated_agents = 0
         self._task_ids = itertools.count(1)
         self._workers: list[asyncio.Task] = []
-        self.plugins = PluginManager(data_dir / "workspace")
+        workspace = data_dir / "workspace"
+        self.plugins = PluginManager(workspace)
+        # Claude-Code-artige Tool-Suite + Claude-Code-Brücke registrieren
+        from . import code_agent, tools
+        tools.register_all(self.plugins, workspace)
+        self.plugins.plugins["code"] = code_agent.CodeAgentPlugin(workspace)
+        # Skills-System (wie Claude Code / Claude.ai Skills)
+        from .skills import SkillRegistry
+        self.skills = SkillRegistry(data_dir / "skills")
         self.memory = Memory(data_dir / "memory.db")
         self.started = time.time()
 
@@ -111,12 +133,22 @@ class Orchestrator:
     # -- Aufgaben -----------------------------------------------------------
     def submit(self, description: str, address: str | None = None,
                is_demo: bool = False) -> Task:
-        addr = address or address_for_task(description)
+        addr = address or self._route(description)
         task = Task(id=next(self._task_ids), description=description,
                     address=addr, is_demo=is_demo)
         self.queue.put_nowait(task)
         self.log("info", f"Aufgabe #{task.id} eingereiht -> Adresse {addr}")
         return task
+
+    def _route(self, description: str) -> str:
+        """Wählt eine Adresse. Tool-Aufgaben gehen an ein berechtigtes Team."""
+        if description.startswith("!plugin"):
+            parts = description.split()
+            if len(parts) >= 2:
+                plugin = self.plugins.plugins.get(parts[1])
+                if plugin is not None and plugin.allowed_teams:
+                    return address_for_task(description, team_hint=plugin.allowed_teams[0])
+        return address_for_task(description)
 
     async def _run_task(self, task: Task) -> None:
         employee = materialize(task.address)
@@ -129,10 +161,18 @@ class Orchestrator:
         try:
             if task.description.startswith("!plugin"):
                 # Syntax: !plugin <name> <aktion> [key=value ...]
-                parts = task.description.split()
-                kwargs = dict(p.split("=", 1) for p in parts[3:] if "=" in p)
-                result = self.plugins.run(employee.team, parts[1], parts[2], **kwargs)
+                # Werte dürfen Leerzeichen enthalten (bis zum nächsten key=).
+                parts = task.description.split(maxsplit=3)
+                name, action = parts[1], parts[2]
+                kwargs = _parse_kwargs(parts[3] if len(parts) > 3 else "")
+                result = await asyncio.to_thread(
+                    self.plugins.run, employee.team, name, action, **kwargs)
                 task.result = str(result)
+            elif task.description.startswith("!skill"):
+                # Syntax: !skill <name> <aufgabentext...>
+                parts = task.description.split(maxsplit=2)
+                prompt = self.skills.apply(parts[1], parts[2] if len(parts) > 2 else "")
+                task.result = await asyncio.to_thread(brain.answer, employee, prompt)
             else:
                 task.result = await asyncio.to_thread(brain.answer, employee, task.description)
             task.status = "fertig"
@@ -211,4 +251,5 @@ class Orchestrator:
             "letzte_aufgaben": [t.as_dict() for t in list(self.recent)[:30]],
             "logs": list(self.logs)[:60],
             "plugins": self.plugins.status(),
+            "skills": [{"name": s.name, "description": s.description} for s in self.skills.all()],
         }

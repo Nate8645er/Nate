@@ -86,3 +86,39 @@ def test_tasks_plugin(tmp_path: Path):
     assert len(offen) == 1 and offen[0]["text"] == "JARVIS testen"
     pm.run("Führung", "aufgaben", "done", id="1")
     assert pm.run("Führung", "aufgaben", "list") == "Keine offenen Aufgaben."
+
+
+def test_kwargs_parser_handles_spaces():
+    from jarvis.core.orchestrator import _parse_kwargs
+    assert _parse_kwargs("command=echo hi && pwd") == {"command": "echo hi && pwd"}
+    assert _parse_kwargs("betrag=250 notiz=Kunde A") == {"betrag": "250", "notiz": "Kunde A"}
+    assert _parse_kwargs("") == {}
+
+
+def test_code_style_tools_registered(tmp_path: Path):
+    from jarvis.core import tools
+    pm = PluginManager(tmp_path)
+    tools.register_all(pm, tmp_path)
+    for name in ("shell", "read", "edit", "glob", "grep", "webfetch"):
+        assert name in pm.plugins
+    (tmp_path / "a.txt").write_text("hallo welt\nzeile zwei", encoding="utf-8")
+    assert "a.txt" in pm.run("Führung", "glob", "glob", pattern="*.txt")
+    hits = pm.run("Führung", "grep", "grep", pattern="zwei")
+    assert any("zeile zwei" in h for h in hits)
+
+
+def test_skills_registry(tmp_path: Path):
+    from jarvis.core.skills import SkillRegistry
+    reg = SkillRegistry(tmp_path / "skills")
+    names = [s.name for s in reg.all()]
+    assert "zusammenfassen" in names
+    prompt = reg.apply("zusammenfassen", "Langer Text hier.")
+    assert "# Skill: zusammenfassen" in prompt and "Langer Text hier." in prompt
+
+
+def test_code_agent_finds_binary_or_falls_back(tmp_path: Path):
+    from jarvis.core.code_agent import CodeAgentPlugin
+    plugin = CodeAgentPlugin(tmp_path)
+    # ohne API-Key: ehrlicher Fallback, kein Absturz
+    out = plugin.run("prompt", prompt="Test")
+    assert isinstance(out, str) and len(out) > 0

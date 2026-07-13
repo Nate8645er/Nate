@@ -73,12 +73,43 @@ API-Guthaben — genau deshalb ist der aktive Pool hart begrenzt und niemals
 | `POST /api/task` | Aufgabe einreihen `{"beschreibung": "..."}` |
 | `GET /api/business` | nur echte Kennzahlen, keine Simulationen als real |
 
-## Plugins
+## Werkzeuge, Plugins & Skills (alle aktiv)
 
-Eingebaut: `system` (CPU/RAM), `files` (Sandbox-Dateizugriff), `calc`
-(sicherer Rechner), `clock`. Eigene Plugins: `.py`-Datei in `jarvis/plugins/`
-mit einer `PLUGIN`-Instanz ablegen — Autorisierung pro Team über
-`allowed_teams`. Aufgaben-Syntax im Dashboard: `!plugin <name> <aktion> key=wert`
+**14 eingebaute Tools** — sichtbar und bedienbar auf der Seite `/werkzeuge`:
+
+| Tool | Zweck |
+|---|---|
+| `system` | CPU/RAM/Plattform |
+| `files` | Dateien im Arbeitsbereich (Sandbox) |
+| `calc` | sicherer Rechner |
+| `clock` | Datum/Uhrzeit |
+| `aufgaben` | Aufgaben & Erinnerungen (echte Liste) |
+| `finanzen` | echte Einnahmen/Ausgaben (kein simuliertes Geld) |
+| `web` | Internet-Suche (DuckDuckGo) |
+| `shell` | Terminal-Befehle (wie Claude Code Bash) |
+| `read` | Datei lesen mit Zeilennummern (Claude Code Read) |
+| `edit` | Text in Datei ersetzen (Claude Code Edit) |
+| `glob` | Dateien per Muster finden (Claude Code Glob) |
+| `grep` | in Dateien suchen (Claude Code Grep) |
+| `webfetch` | URL abrufen und als Text zurückgeben (Claude Code WebFetch) |
+| `code` | **Claude Code / Claw als Werkzeug — mit Fable 5** |
+
+Aufgaben-Syntax: `!plugin <name> <aktion> key=wert` (Werte dürfen Leerzeichen
+enthalten). Jedes Tool ist pro Team autorisiert; Tool-Aufgaben werden
+automatisch an ein berechtigtes Team geroutet.
+
+**Claude-Code-Brücke:** Das `code`-Tool findet automatisch einen installierten
+Agenten-Binary (`claw`, `claude` oder `agent` im PATH oder unter
+`%LOCALAPPDATA%\Programs\ClawCode`) und ruft ihn mit `--model claude-fable-5`
+auf. Ohne Binary oder API-Key fällt es ehrlich auf das JARVIS-Gehirn zurück.
+
+**Skills** (`/werkzeuge`, wie Claude.ai/Claude-Code-Skills): Markdown-Dateien in
+`~/.jarvis/skills/` — mitgeliefert: `zusammenfassen`, `code-review`,
+`recherche`, `projektplan`. Anwenden: `!skill <name> <aufgabentext>`. Neue
+Skills einfach als `.md` mit Front-Matter (`name`, `description`) ablegen.
+
+**Eigene Plugins:** `.py`-Datei in `jarvis/plugins/` mit einer `PLUGIN`-Instanz
+ablegen — Autorisierung pro Team über `allowed_teams`.
 
 ## Tests
 

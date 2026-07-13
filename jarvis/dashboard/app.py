@@ -101,6 +101,11 @@ async def mitarbeiter_page() -> FileResponse:
     return FileResponse(STATIC / "mitarbeiter.html")
 
 
+@app.get("/werkzeuge")
+async def werkzeuge_page() -> FileResponse:
+    return FileResponse(STATIC / "werkzeuge.html")
+
+
 @app.get("/api/memory")
 async def memory(limit: int = 25) -> JSONResponse:
     import time as _t
@@ -185,6 +190,17 @@ class KeyIn(BaseModel):
 async def brain_status() -> JSONResponse:
     from jarvis.core import brain
     return JSONResponse({"modus": brain.mode(), "modell": brain.DEFAULT_MODEL})
+
+
+@app.get("/api/skills")
+async def skills() -> JSONResponse:
+    return JSONResponse({"skills": [
+        {"name": s.name, "description": s.description} for s in orchestrator.skills.all()]})
+
+
+@app.get("/api/tools")
+async def tools() -> JSONResponse:
+    return JSONResponse({"tools": orchestrator.plugins.status()})
 
 
 @app.post("/api/brain/key")
