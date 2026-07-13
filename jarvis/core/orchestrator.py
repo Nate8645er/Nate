@@ -162,6 +162,14 @@ class Orchestrator:
             w.cancel()
         self._workers.clear()
 
+    def find_task(self, task_id: int) -> Task | None:
+        if task_id in self.active:
+            return self.active[task_id]
+        for t in self.recent:
+            if t.id == task_id:
+                return t
+        return None
+
     # -- Zustand für das Dashboard -------------------------------------------
     def state(self) -> dict[str, Any]:
         vm = psutil.virtual_memory()

@@ -3,125 +3,350 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JARVIS HyperScale — Live</title>
+<title>JARVIS // COMMAND CENTER</title>
 <style>
-  :root { --bg:#0b0f14; --panel:#121924; --line:#1f2c3d; --txt:#d7e2ee;
-          --dim:#8fa3b8; --ok:#3ddc84; --warn:#ffb454; --err:#ff6b6b; --acc:#4da3ff; }
+  :root { --bg:#070605; --panel:#0f0c09; --line:#2a1c10; --line2:#3d2814;
+          --amber:#ff7a1a; --amber2:#ffb454; --red:#ff3b30; --green:#3ddc84;
+          --txt:#f3e2cf; --dim:#a08363; }
   * { box-sizing:border-box; margin:0; }
-  body { background:var(--bg); color:var(--txt); font:14px/1.45 system-ui, "Segoe UI", sans-serif; padding:16px; }
-  h1 { font-size:20px; letter-spacing:.06em; }
-  h1 span { color:var(--acc); }
-  .sub { color:var(--dim); margin:2px 0 14px; font-size:12px; }
-  .grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); }
-  .card { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 14px; }
-  .kpi .v { font-size:26px; font-weight:700; margin-top:2px; font-variant-numeric:tabular-nums; }
-  .kpi .l { color:var(--dim); font-size:11px; text-transform:uppercase; letter-spacing:.08em; }
-  .cols { display:grid; gap:12px; grid-template-columns:2fr 1fr; margin-top:12px; }
-  @media (max-width:900px){ .cols { grid-template-columns:1fr; } }
-  table { width:100%; border-collapse:collapse; font-size:12.5px; }
-  th { text-align:left; color:var(--dim); font-weight:600; padding:4px 6px; border-bottom:1px solid var(--line); }
-  td { padding:4px 6px; border-bottom:1px solid var(--line); vertical-align:top; }
-  .tag { display:inline-block; padding:1px 7px; border-radius:99px; font-size:11px; }
-  .aktiv { background:#123a5e; color:var(--acc); }
-  .fertig { background:#11341f; color:var(--ok); }
-  .fehler, .warn { background:#3a1d1d; color:var(--err); }
-  .wartend { background:#33301a; color:var(--warn); }
-  .demo { color:var(--dim); font-size:10px; }
-  .logs { max-height:260px; overflow-y:auto; font:11.5px/1.5 ui-monospace, Consolas, monospace; }
-  .bar { height:8px; background:#0e1520; border-radius:99px; overflow:hidden; margin-top:6px; }
-  .bar i { display:block; height:100%; background:var(--acc); transition:width .6s; }
-  form { display:flex; gap:8px; margin-top:12px; }
-  input { flex:1; background:#0e1520; border:1px solid var(--line); border-radius:8px; padding:9px 12px; color:var(--txt); }
-  button { background:var(--acc); border:0; border-radius:8px; padding:9px 16px; color:#04121f; font-weight:700; cursor:pointer; }
-  .honest { border-color:#4d3b18; background:#191307; color:#e8c98a; font-size:12px; }
+  body { background:var(--bg); color:var(--txt);
+         font:13px/1.4 "Segoe UI", system-ui, sans-serif; overflow-x:hidden; }
+  body::after { content:""; position:fixed; inset:0; pointer-events:none;
+    background:repeating-linear-gradient(0deg, rgba(255,122,26,.025) 0 1px, transparent 1px 3px); }
+  .mono { font-family:ui-monospace, Consolas, monospace; }
+
+  header { display:flex; align-items:center; gap:14px; padding:10px 16px;
+           border-bottom:1px solid var(--line2); background:linear-gradient(180deg,#140d07,#0a0705); }
+  header h1 { font-size:16px; letter-spacing:.28em; color:var(--amber);
+              text-shadow:0 0 12px rgba(255,122,26,.6); font-weight:800; }
+  header .sys { margin-left:auto; color:var(--dim); font-size:11px; letter-spacing:.12em; }
+  .dot { display:inline-block; width:8px; height:8px; border-radius:50%;
+         background:var(--green); box-shadow:0 0 8px var(--green); margin-right:6px; }
+
+  .tickerwrap { border-bottom:1px solid var(--line); background:#0b0806; overflow:hidden; white-space:nowrap; }
+  .ticker { display:inline-block; padding:5px 0; animation:scroll 40s linear infinite;
+            color:var(--amber2); font-size:11.5px; letter-spacing:.08em; }
+  @keyframes scroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+  .grid { display:grid; gap:10px; padding:12px 16px;
+          grid-template-columns:290px 1fr 330px; }
+  @media (max-width:1100px){ .grid { grid-template-columns:1fr; } }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:10px 12px; position:relative; }
+  .panel::before { content:""; position:absolute; top:0; left:0; right:0; height:2px;
+                   background:linear-gradient(90deg, transparent, var(--amber), transparent); opacity:.5; }
+  .panel h2 { font-size:10.5px; letter-spacing:.22em; color:var(--dim); margin-bottom:8px;
+              text-transform:uppercase; }
+  .panel h2 b { color:var(--amber); }
+
+  canvas.globe { width:100%; height:210px; display:block; }
+  .reactorwrap { display:flex; align-items:center; justify-content:center; padding:6px 0; }
+  .kv { display:flex; justify-content:space-between; font-size:11.5px; padding:2.5px 0;
+        border-bottom:1px dashed #241609; }
+  .kv b { color:var(--amber2); font-variant-numeric:tabular-nums; }
+
+  .bars .row { margin:7px 0; }
+  .bars label { font-size:10px; color:var(--dim); letter-spacing:.15em; display:flex; justify-content:space-between; }
+  .bar { height:9px; background:#160e07; border:1px solid var(--line); border-radius:2px; overflow:hidden; margin-top:3px; }
+  .bar i { display:block; height:100%; background:linear-gradient(90deg,#7a2f08,var(--amber));
+           box-shadow:0 0 10px rgba(255,122,26,.5); transition:width .7s; }
+
+  .tiles { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .tile { background:#120c07; border:1px solid var(--line); border-radius:4px; padding:8px 10px; }
+  .tile .l { font-size:9.5px; color:var(--dim); letter-spacing:.14em; text-transform:uppercase; }
+  .tile .v { font-size:21px; font-weight:800; color:var(--amber2); font-variant-numeric:tabular-nums;
+             text-shadow:0 0 10px rgba(255,180,84,.35); }
+  .tile.ok .v { color:var(--green); } .tile.err .v { color:var(--red); }
+
+  canvas.chart { width:100%; height:90px; display:block; }
+
+  table { width:100%; border-collapse:collapse; font-size:11.5px; }
+  th { text-align:left; color:var(--dim); font-weight:600; padding:3px 5px;
+       border-bottom:1px solid var(--line2); font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; }
+  td { padding:3.5px 5px; border-bottom:1px solid #1c1209; vertical-align:top; }
+  .tag { padding:1px 7px; border-radius:2px; font-size:10px; letter-spacing:.08em; }
+  .aktiv { background:#2a1607; color:var(--amber); border:1px solid #4d2a0e; }
+  .fertig { background:#0d2416; color:var(--green); }
+  .fehler { background:#2d0f0d; color:var(--red); }
+  .wartend { background:#241d0b; color:var(--amber2); }
+  .demo { color:var(--dim); font-size:9px; }
+
+  .logs { max-height:180px; overflow-y:auto; font-size:11px; }
+  .logs div { padding:1.5px 0; border-bottom:1px dotted #1c1209; }
+  .logs .warn { color:var(--red); }
+
+  .chat { display:flex; flex-direction:column; gap:6px; max-height:300px; overflow-y:auto; padding:4px 0; }
+  .msg { padding:7px 10px; border-radius:4px; max-width:95%; font-size:12px; white-space:pre-wrap; }
+  .me { background:#231409; border:1px solid var(--line2); align-self:flex-end; }
+  .jv { background:#120e0a; border:1px solid var(--line); border-left:2px solid var(--amber); }
+  .jv .who { color:var(--amber); font-size:9.5px; letter-spacing:.2em; margin-bottom:3px; }
+
+  form { display:flex; gap:6px; margin-top:8px; }
+  input { flex:1; background:#0b0806; border:1px solid var(--line2); border-radius:4px;
+          padding:9px 10px; color:var(--txt); font-size:12.5px; }
+  input:focus { outline:none; border-color:var(--amber); box-shadow:0 0 8px rgba(255,122,26,.3); }
+  button { background:linear-gradient(180deg,#5c2c0b,#3a1c07); border:1px solid var(--amber);
+           border-radius:4px; padding:8px 13px; color:var(--amber2); font-weight:700;
+           cursor:pointer; letter-spacing:.1em; font-size:11px; }
+  button.on { background:linear-gradient(180deg,#8a3d0c,#5c2c0b); box-shadow:0 0 14px rgba(255,122,26,.55); }
+
+  .honest { margin:0 16px 12px; border:1px solid #4d3b18; background:#151006; color:#e8c98a;
+            font-size:11px; padding:8px 12px; border-radius:4px; }
 </style>
 </head>
 <body>
-  <h1>JARVIS <span>HyperScale</span> — Live-Ticker</h1>
-  <div class="sub" id="meta">verbinde…</div>
+<header>
+  <h1>JARVIS <span style="color:var(--dim)">//</span> COMMAND CENTER</h1>
+  <span class="sys mono" id="clock"></span>
+  <span class="sys"><span class="dot"></span><span id="mode">ONLINE</span></span>
+</header>
+<div class="tickerwrap"><div class="ticker mono" id="ticker">SYSTEM WIRD INITIALISIERT …</div></div>
 
-  <div class="grid" id="kpis"></div>
-
-  <div class="card honest" style="margin-top:12px">
-    <b>Ehrlichkeits-Hinweis:</b> Dieses Dashboard zeigt ausschließlich real gemessene Daten.
-    Es gibt keine Geld-Generierung — Finanzfelder bleiben 0.00 CHF, bis eine echte Datenquelle
-    angebunden ist. Als <i>Demo</i> markierte Aufgaben sind Beispiel-Aufgaben, keine echten Aufträge.
+<div class="grid">
+  <!-- linke Spalte -->
+  <div>
+    <div class="panel">
+      <h2><b>ORBITAL</b> // NETZSTRUKTUR</h2>
+      <canvas class="globe" id="globe"></canvas>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>SYSTEM</b> // KERNWERTE</h2>
+      <div class="bars">
+        <div class="row"><label>CPU <span id="cpuv">–</span></label><div class="bar"><i id="cpu"></i></div></div>
+        <div class="row"><label>RAM <span id="ramv">–</span></label><div class="bar"><i id="ram"></i></div></div>
+        <div class="row"><label>AGENT-SLOTS <span id="slotv">–</span></label><div class="bar"><i id="slots"></i></div></div>
+      </div>
+      <div style="margin-top:8px">
+        <div class="kv"><span>Adressraum / Ebene</span><b id="space">–</b></div>
+        <div class="kv"><span>Aktivierungen gesamt</span><b id="acts">–</b></div>
+        <div class="kv"><span>Gedächtnis-Einträge</span><b id="mem">–</b></div>
+        <div class="kv"><span>Modell</span><b id="model">–</b></div>
+        <div class="kv"><span>Modus</span><b id="mmode">–</b></div>
+        <div class="kv"><span>Laufzeit</span><b id="uptime">–</b></div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>MODULE</b> // PLUGINS &amp; SKILLS</h2>
+      <div id="plugins" style="font-size:11.5px; color:var(--dim)"></div>
+    </div>
   </div>
 
-  <form onsubmit="return submitTask(event)">
-    <input id="task" placeholder='Aufgabe eingeben… (z. B. "!plugin system info" oder freier Text)'>
-    <button>An Organisation übergeben</button>
-  </form>
-
-  <div class="cols">
-    <div class="card">
-      <h3>Aktive Agenten &amp; letzte Aufgaben</h3>
-      <table><thead><tr><th>#</th><th>Agent (Mitarbeiter)</th><th>Team</th><th>Aufgabe</th><th>Status</th></tr></thead>
+  <!-- Mitte -->
+  <div>
+    <div class="panel">
+      <h2><b>OPERATIONS</b> // LIVE-KENNZAHLEN (ECHTE DATEN)</h2>
+      <div class="tiles">
+        <div class="tile"><div class="l">Aktive Agenten</div><div class="v" id="t_act">0</div></div>
+        <div class="tile"><div class="l">Warteschlange</div><div class="v" id="t_wait">0</div></div>
+        <div class="tile ok"><div class="l">Erledigt</div><div class="v" id="t_done">0</div></div>
+        <div class="tile err"><div class="l">Fehler</div><div class="v" id="t_err">0</div></div>
+        <div class="tile"><div class="l">Ø Auslastung</div><div class="v" id="t_util">0%</div></div>
+        <div class="tile"><div class="l">Finanzen (real)</div><div class="v" style="font-size:15px">0.00 CHF</div></div>
+      </div>
+      <canvas class="chart" id="chart" style="margin-top:10px"></canvas>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>EINSATZ</b> // AKTIVE AGENTEN &amp; AUFGABEN</h2>
+      <table><thead><tr><th>#</th><th>Mitarbeiter</th><th>Team</th><th>Aufgabe</th><th>Status</th></tr></thead>
       <tbody id="tasks"></tbody></table>
     </div>
-    <div>
-      <div class="card">
-        <h3>System</h3>
-        <div class="l" style="color:var(--dim);font-size:11px">CPU</div><div class="bar"><i id="cpu"></i></div>
-        <div class="l" style="color:var(--dim);font-size:11px;margin-top:8px">RAM</div><div class="bar"><i id="ram"></i></div>
-        <div id="sys" class="sub" style="margin-top:8px"></div>
-      </div>
-      <div class="card" style="margin-top:12px">
-        <h3>Plugins / Skills / Tools</h3>
-        <div id="plugins" class="sub"></div>
-      </div>
-      <div class="card" style="margin-top:12px">
-        <h3>Logs</h3>
-        <div class="logs" id="logs"></div>
-      </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>FEED</b> // SYSTEMLOG</h2>
+      <div class="logs mono" id="logs"></div>
     </div>
   </div>
 
+  <!-- rechte Spalte -->
+  <div>
+    <div class="panel">
+      <h2><b>REAKTOR</b> // SYSTEMZUSTAND</h2>
+      <div class="reactorwrap">
+        <svg width="190" height="190" viewBox="0 0 190 190">
+          <circle cx="95" cy="95" r="86" fill="none" stroke="#231409" stroke-width="4"/>
+          <circle cx="95" cy="95" r="86" fill="none" stroke="var(--amber)" stroke-width="4"
+                  stroke-linecap="round" id="ring" stroke-dasharray="540 540"
+                  transform="rotate(-90 95 95)" style="filter:drop-shadow(0 0 8px rgba(255,122,26,.8)); transition:stroke-dasharray .8s"/>
+          <circle cx="95" cy="95" r="66" fill="none" stroke="#2a1c10" stroke-width="1"/>
+          <circle cx="95" cy="95" r="54" fill="rgba(255,122,26,.06)" stroke="#3d2814" stroke-width="1"/>
+          <text x="95" y="90" text-anchor="middle" font-size="30" font-weight="800"
+                fill="var(--amber2)" id="health" style="text-shadow:0 0 12px var(--amber)">–</text>
+          <text x="95" y="112" text-anchor="middle" font-size="8.5" letter-spacing="2.5" fill="var(--dim)">SYSTEMZUSTAND</text>
+        </svg>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>SPRACHE</b> // „HEY JARVIS"</h2>
+      <div style="display:flex; gap:6px">
+        <button id="wake" onclick="toggleWake()">🎤 WAKE WORD AUS</button>
+        <button onclick="listenOnce()">EINMAL ZUHÖREN</button>
+      </div>
+      <div id="voicestat" style="font-size:11px; color:var(--dim); margin-top:6px">
+        Browser-Spracherkennung (Edge/Chrome). Sage „Hey Jarvis", dann deinen Befehl.
+      </div>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>KOMM</b> // CHAT MIT DER ORGANISATION</h2>
+      <div class="chat" id="chat"></div>
+      <form onsubmit="return sendTask(event)">
+        <input id="task" placeholder="Befehl an JARVIS…" autocomplete="off">
+        <button>SENDEN</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="honest"><b>EHRLICHKEITS-PROTOKOLL:</b> Alle Kennzahlen sind real gemessen (Agenten, Aufgaben, CPU/RAM).
+Es gibt keine Geld-Generierung — die Finanz-Kachel bleibt 0.00 CHF, bis eine echte Datenquelle angebunden ist.
+<span class="demo">DEMO</span>-markierte Aufgaben sind Beispiel-Aufgaben.</div>
+
 <script>
+const $ = id => document.getElementById(id);
 const fmt = n => Number(n).toLocaleString('de-CH');
-async function tick(){
-  try{
+
+// ---- Globus (rotierende Drahtgitter-Sphäre) --------------------------------
+const gc = $('globe'), gx = gc.getContext('2d');
+let P = [];
+for (let i = 0; i < 320; i++) {
+  const t = Math.acos(1 - 2 * (i + .5) / 320), p = Math.PI * (1 + 5 ** .5) * i;
+  P.push([Math.sin(t) * Math.cos(p), Math.sin(t) * Math.sin(p), Math.cos(t)]);
+}
+let rot = 0;
+function globe() {
+  const w = gc.width = gc.clientWidth, h = gc.height = gc.clientHeight, R = Math.min(w, h) * .42;
+  gx.clearRect(0, 0, w, h); rot += .004;
+  const pts = P.map(([x, y, z]) => {
+    const X = x * Math.cos(rot) - z * Math.sin(rot), Z = x * Math.sin(rot) + z * Math.cos(rot);
+    return [w / 2 + X * R, h / 2 + y * R, Z];
+  });
+  gx.strokeStyle = 'rgba(255,122,26,.18)';
+  for (let i = 0; i < pts.length; i += 4) for (let j = i + 4; j < Math.min(i + 40, pts.length); j += 8) {
+    gx.beginPath(); gx.moveTo(pts[i][0], pts[i][1]); gx.lineTo(pts[j][0], pts[j][1]); gx.stroke();
+  }
+  for (const [x, y, z] of pts) {
+    gx.fillStyle = z > 0 ? 'rgba(255,180,84,.9)' : 'rgba(255,122,26,.25)';
+    gx.beginPath(); gx.arc(x, y, z > 0 ? 1.6 : 1, 0, 7); gx.fill();
+  }
+  requestAnimationFrame(globe);
+}
+globe();
+
+// ---- Verlaufs-Chart (echte CPU/RAM-Historie) --------------------------------
+const hist = { cpu: [], ram: [] };
+function chart() {
+  const c = $('chart'), x = c.getContext('2d');
+  const w = c.width = c.clientWidth, h = c.height = c.clientHeight;
+  x.clearRect(0, 0, w, h);
+  x.strokeStyle = '#241609'; for (let i = 1; i < 4; i++) { x.beginPath(); x.moveTo(0, h * i / 4); x.lineTo(w, h * i / 4); x.stroke(); }
+  const draw = (arr, col) => {
+    if (arr.length < 2) return;
+    x.strokeStyle = col; x.lineWidth = 1.6; x.beginPath();
+    arr.forEach((v, i) => { const px = i / (arr.length - 1) * w, py = h - v / 100 * h; i ? x.lineTo(px, py) : x.moveTo(px, py); });
+    x.stroke();
+  };
+  draw(hist.cpu, '#ff7a1a'); draw(hist.ram, '#ffb454');
+}
+
+// ---- Live-Ticker -------------------------------------------------------------
+async function tick() {
+  try {
     const s = await (await fetch('/api/state')).json();
-    document.getElementById('meta').textContent =
-      `Adressraum: ${fmt(s.adressraum_pro_ebene)} Mitarbeiter pro Ebene (rekursiv, prozedural) · ` +
-      `Modell: ${s.modell} · Modus: ${s.modell_modus} · Laufzeit: ${s.laufzeit_s}s`;
-    const k = [
-      ['Adressierbar / Ebene', fmt(s.adressraum_pro_ebene)],
-      ['Aktive Agenten', `${s.aktive_agenten} / ${s.max_parallel}`],
-      ['Wartende Aufgaben', fmt(s.wartende_aufgaben)],
-      ['Aktivierungen gesamt', fmt(s.aktivierte_agenten_gesamt)],
-      ['Erledigt', fmt(s.fertig)],
-      ['Fehler', fmt(s.fehler)],
-      ['Gedächtnis-Einträge', fmt(s.gedaechtnis_eintraege)],
-    ];
-    document.getElementById('kpis').innerHTML = k.map(([l,v]) =>
-      `<div class="card kpi"><div class="l">${l}</div><div class="v">${v}</div></div>`).join('');
-    document.getElementById('cpu').style.width = s.cpu_prozent + '%';
-    document.getElementById('ram').style.width = s.ram_prozent + '%';
-    document.getElementById('sys').textContent =
-      `CPU ${s.cpu_prozent}% · RAM ${s.ram_prozent}% (${fmt(s.ram_frei_mb)} MB frei) · max. parallel: ${s.max_parallel} (Hardware-Limit)`;
-    const rows = [...s.aktive, ...s.letzte_aufgaben].slice(0, 25).map(t =>
-      `<tr><td>${t.id}</td><td>${t.agent || '—'}${t.demo ? ' <span class="demo">DEMO</span>' : ''}</td>` +
-      `<td>${t.team || ''}</td><td>${t.beschreibung}</td>` +
-      `<td><span class="tag ${t.status}">${t.status}</span></td></tr>`);
-    document.getElementById('tasks').innerHTML = rows.join('');
-    document.getElementById('plugins').innerHTML = s.plugins.map(p =>
-      `<div>• <b>${p.name}</b> — ${p.description} <span class="demo">(${p.allowed_teams === 'alle' ? 'alle Teams' : p.allowed_teams})</span></div>`).join('');
-    document.getElementById('logs').innerHTML = s.logs.map(l =>
-      `<div>[${l.ts}] <span class="${l.level}">${l.level}</span> ${l.msg}</div>`).join('');
-  }catch(e){ document.getElementById('meta').textContent = 'Verbindung unterbrochen — neuer Versuch…'; }
+    $('mode').textContent = 'ONLINE // ' + s.modell_modus.toUpperCase();
+    $('cpu').style.width = s.cpu_prozent + '%'; $('cpuv').textContent = s.cpu_prozent + '%';
+    $('ram').style.width = s.ram_prozent + '%'; $('ramv').textContent = s.ram_prozent + '%';
+    const util = Math.round(s.aktive_agenten / s.max_parallel * 100);
+    $('slots').style.width = util + '%'; $('slotv').textContent = `${s.aktive_agenten}/${s.max_parallel}`;
+    $('space').textContent = fmt(s.adressraum_pro_ebene);
+    $('acts').textContent = fmt(s.aktivierte_agenten_gesamt);
+    $('mem').textContent = fmt(s.gedaechtnis_eintraege);
+    $('model').textContent = s.modell; $('mmode').textContent = s.modell_modus;
+    $('uptime').textContent = s.laufzeit_s + ' s';
+    $('t_act').textContent = s.aktive_agenten; $('t_wait').textContent = s.wartende_aufgaben;
+    $('t_done').textContent = fmt(s.fertig); $('t_err').textContent = s.fehler;
+    $('t_util').textContent = util + '%';
+    const health = Math.max(0, 100 - Math.max(s.cpu_prozent, s.ram_prozent) / 2 - s.fehler);
+    $('health').textContent = Math.round(health) + '%';
+    $('ring').setAttribute('stroke-dasharray', `${540 * health / 100} 540`);
+    hist.cpu.push(s.cpu_prozent); hist.ram.push(s.ram_prozent);
+    if (hist.cpu.length > 120) { hist.cpu.shift(); hist.ram.shift(); }
+    chart();
+    $('ticker').textContent = (` ▲ AGENTEN AKTIV ${s.aktive_agenten}/${s.max_parallel} ` +
+      `● QUEUE ${s.wartende_aufgaben} ● ERLEDIGT ${fmt(s.fertig)} ● FEHLER ${s.fehler} ` +
+      `● ADRESSRAUM ${fmt(s.adressraum_pro_ebene)}/EBENE (REKURSIV) ● CPU ${s.cpu_prozent}% ● RAM ${s.ram_prozent}% ` +
+      `● GEDÄCHTNIS ${fmt(s.gedaechtnis_eintraege)} ● MODELL ${s.modell} [${s.modell_modus.toUpperCase()}] ● FINANZEN REAL 0.00 CHF ● `).repeat(2);
+    $('tasks').innerHTML = [...s.aktive, ...s.letzte_aufgaben].slice(0, 14).map(t =>
+      `<tr><td class="mono">${t.id}</td><td>${t.agent || '—'}${t.demo ? ' <span class="demo">DEMO</span>' : ''}</td>` +
+      `<td>${t.team || ''}</td><td>${t.beschreibung.slice(0, 60)}</td>` +
+      `<td><span class="tag ${t.status}">${t.status.toUpperCase()}</span></td></tr>`).join('');
+    $('logs').innerHTML = s.logs.slice(0, 40).map(l =>
+      `<div>[${l.ts}] <span class="${l.level}">${l.level.toUpperCase()}</span> ${l.msg}</div>`).join('');
+    $('plugins').innerHTML = s.plugins.map(p =>
+      `<div>◈ <b style="color:var(--amber2)">${p.name}</b> — ${p.description}</div>`).join('');
+  } catch (e) { $('mode').textContent = 'VERBINDUNG GETRENNT'; }
 }
-async function submitTask(ev){
-  ev.preventDefault();
-  const input = document.getElementById('task');
-  if(!input.value.trim()) return false;
-  await fetch('/api/task', {method:'POST', headers:{'content-type':'application/json'},
-    body: JSON.stringify({beschreibung: input.value.trim()})});
-  input.value = '';
-  tick();
-  return false;
+setInterval(tick, 1500); tick();
+setInterval(() => $('clock').textContent = new Date().toLocaleString('de-CH'), 1000);
+
+// ---- Chat + Aufgaben ----------------------------------------------------------
+function addMsg(cls, who, text) {
+  const d = document.createElement('div'); d.className = 'msg ' + cls;
+  d.innerHTML = (who ? `<div class="who">${who}</div>` : '') + text;
+  $('chat').appendChild(d); $('chat').scrollTop = 1e9;
+  return d;
 }
-tick(); setInterval(tick, 1500);
+async function dispatch(text) {
+  addMsg('me', '', text);
+  const r = await fetch('/api/task', { method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ beschreibung: text }) });
+  const { id } = await r.json();
+  const d = addMsg('jv', 'JARVIS // AGENT WIRD ZUGEWIESEN', '…');
+  for (let i = 0; i < 120; i++) {
+    await new Promise(res => setTimeout(res, 1200));
+    const t = await (await fetch('/api/task/' + id)).json();
+    if (t.status === 'fertig' || t.status === 'fehler') {
+      d.querySelector('.who').textContent = 'JARVIS // ' + (t.agent || 'SYSTEM');
+      d.childNodes[1].textContent = t.ergebnis || '(kein Ergebnis)';
+      speak(t.ergebnis); return;
+    }
+  }
+  d.childNodes[1].textContent = '(Zeitüberschreitung)';
+}
+function sendTask(ev) { ev.preventDefault(); const v = $('task').value.trim();
+  if (v) { dispatch(v); $('task').value = ''; } return false; }
+
+// ---- Sprache: Wake Word "Hey Jarvis" + Sprachausgabe ---------------------------
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null, wakeOn = false;
+function speak(text) {
+  if (!window.speechSynthesis || !text) return;
+  const u = new SpeechSynthesisUtterance(text.slice(0, 300));
+  u.lang = 'de-DE'; u.rate = 1.05; speechSynthesis.speak(u);
+}
+function startRec(continuous) {
+  if (!SR) { $('voicestat').textContent = 'Dieser Browser unterstützt keine Spracherkennung — bitte Edge oder Chrome nutzen.'; return; }
+  if (rec) rec.stop();
+  rec = new SR(); rec.lang = 'de-DE'; rec.continuous = continuous; rec.interimResults = false;
+  rec.onresult = e => {
+    const said = e.results[e.results.length - 1][0].transcript.trim();
+    $('voicestat').textContent = 'Gehört: „' + said + '"';
+    const lower = said.toLowerCase();
+    if (!wakeOn) { dispatch(said); return; }
+    const m = lower.match(/(?:hey|he|ok)?\s*(?:jarvis|dschárwis|jarwis|charvis)[,.!?]?\s*(.*)/);
+    if (m) { const cmd = m[1].trim();
+      if (cmd) dispatch(cmd); else { speak('Ja? Ich höre.'); $('voicestat').textContent = 'Wake Word erkannt — sprich deinen Befehl…'; } }
+  };
+  rec.onend = () => { if (wakeOn) try { rec.start(); } catch (e) {} };
+  rec.onerror = e => { $('voicestat').textContent = 'Mikrofon: ' + e.error +
+    (e.error === 'not-allowed' ? ' — bitte Mikrofon-Zugriff erlauben' : ''); };
+  try { rec.start(); } catch (e) {}
+}
+function toggleWake() {
+  wakeOn = !wakeOn;
+  $('wake').classList.toggle('on', wakeOn);
+  $('wake').textContent = wakeOn ? '🎤 WAKE WORD AN' : '🎤 WAKE WORD AUS';
+  if (wakeOn) { startRec(true); $('voicestat').textContent = 'Lausche dauerhaft auf „Hey Jarvis"…'; speak('Jarvis online.'); }
+  else if (rec) { rec.onend = null; rec.stop(); $('voicestat').textContent = 'Wake Word deaktiviert.'; }
+}
+function listenOnce() { wakeOn = false; $('wake').classList.remove('on');
+  $('voicestat').textContent = 'Ich höre — sprich jetzt…'; startRec(false); }
 </script>
 </body>
 </html>

@@ -128,6 +128,14 @@ async def business() -> JSONResponse:
     })
 
 
+@app.get("/api/task/{task_id}")
+async def get_task(task_id: int) -> JSONResponse:
+    t = orchestrator.find_task(task_id)
+    if t is None:
+        raise HTTPException(404, "Aufgabe nicht (mehr) vorhanden")
+    return JSONResponse(t.as_dict())
+
+
 @app.post("/api/task")
 async def create_task(task: TaskIn) -> JSONResponse:
     if not task.beschreibung.strip():
