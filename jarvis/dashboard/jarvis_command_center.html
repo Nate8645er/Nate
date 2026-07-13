@@ -668,7 +668,7 @@
   /* ---------------- Befehl direkt aus dem Link (fuer Siri-Kurzbefehl) ----------------
      Beispiel: …/command-center#cmd=wie%20spät%20ist%20es
      Siri diktiert den Satz, oeffnet JARVIS mit #cmd=… und JARVIS fuehrt ihn sofort aus. */
-  (function autoCommandFromUrl() {
+  function autoCommandFromUrl() {
     var raw = (location.hash || "").replace(/^#/, "") || (location.search || "").replace(/^\?/, "");
     var m = /(?:^|&)cmd=([^&]*)/.exec(raw);
     if (!m || !m[1]) { return; }
@@ -677,8 +677,11 @@
     cmd = cmd.trim();
     if (!cmd) { return; }
     $("text").value = cmd;
+    answer("🎙️ Befehl empfangen: " + cmd);
     // kurz warten, damit Stimmen/Bruecke geladen sind, dann ausfuehren
     setTimeout(function () { route(cmd); $("text").value = ""; }, 900);
-  })();
+  }
+  autoCommandFromUrl();                                   // beim Laden
+  window.addEventListener("hashchange", autoCommandFromUrl); // falls Seite schon offen ist
 })();
 </script>
