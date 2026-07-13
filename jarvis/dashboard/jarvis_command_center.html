@@ -209,6 +209,7 @@
         </select>
       </label>
       <button class="send" id="batmanBtn" title="Eingebaute Batman-Ansage abspielen">🦇 Ansage</button>
+      <label class="mute" title="Freihändig: JARVIS hört zu und aktiviert sich, wenn du „Jarvis“ sagst (nur lokal in Chrome/Edge)"><input type="checkbox" id="wake"> 🎧 Freihändig („Jarvis“)</label>
       <label class="mute"><input type="checkbox" id="mute"> Stimme aus</label>
       <label class="mute" title="Wenn die Agent-Brücke läuft: Dateien/Shop-Bauplan wirklich schreiben"><input type="checkbox" id="exec"> Echt ausführen</label>
     </div>
@@ -298,8 +299,8 @@
       var v = pickVoice(p.deep);
       if (v) u.voice = v;
       var isBat = voiceProfile === "batman";
-      u.onstart = function () { body.classList.add("speaking"); if (isBat) body.classList.add("batman"); setCore(isBat ? "🦇 BATMAN" : "SPRICHT"); };
-      u.onend = function () { body.classList.remove("speaking"); body.classList.remove("batman"); setCore("BEREIT"); setState("STANDBY — bereit für deinen Befehl"); };
+      u.onstart = function () { jarvisSpeaking = true; body.classList.add("speaking"); if (isBat) body.classList.add("batman"); setCore(isBat ? "🦇 BATMAN" : "SPRICHT"); };
+      u.onend = function () { jarvisSpeaking = false; body.classList.remove("speaking"); body.classList.remove("batman"); setCore(wakeOn ? "HÖRT MIT" : "BEREIT"); setState(wakeOn ? "🎧 Freihändig aktiv — sag einfach Jarvis" : "STANDBY — bereit für deinen Befehl"); };
       synth.speak(u);
     } catch (e) { /* ignorieren */ }
   }
@@ -315,8 +316,8 @@
       if (!batmanAudio) batmanAudio = new Audio(BATMAN_CLIP);
       if ($("mute").checked) return true;
       batmanAudio.currentTime = 0;
-      body.classList.add("speaking"); body.classList.add("batman"); setCore("🦇 BATMAN");
-      batmanAudio.onended = function () { body.classList.remove("speaking"); body.classList.remove("batman"); setCore("BEREIT"); setState("STANDBY — bereit für deinen Befehl"); };
+      jarvisSpeaking = true; body.classList.add("speaking"); body.classList.add("batman"); setCore("🦇 BATMAN");
+      batmanAudio.onended = function () { jarvisSpeaking = false; body.classList.remove("speaking"); body.classList.remove("batman"); setCore(wakeOn ? "HÖRT MIT" : "BEREIT"); setState(wakeOn ? "🎧 Freihändig aktiv — sag einfach Jarvis" : "STANDBY — bereit für deinen Befehl"); };
       batmanAudio.play();
       return true;
     } catch (e) { return false; }
@@ -511,6 +512,80 @@
     $("hint").innerHTML = "Dein Browser unterstützt keine Sprach­erkennung — nutze das Textfeld. (Am besten Chrome/Edge.)";
   }
 
+  /* ---------------- Freihändig: Wake-Word „Jarvis" ---------------- */
+  var jarvisSpeaking = false;   // wird von speak()/Batman-Clip gesetzt (Rückkopplung vermeiden)
+  var wakeRecog = null, wakeOn = false, awaitingCommand = false, awaitTimer = null;
+
+  function initWake() {
+    if (!SR || wakeRecog) return;
+    wakeRecog = new SR();
+    wakeRecog.lang = "de-DE"; wakeRecog.interimResults = false; wakeRecog.continuous = true;
+    wakeRecog.onresult = onWakeResult;
+    wakeRecog.onerror = function (e) {
+      var err = e.error || "unbekannt";
+      if (err === "not-allowed" || err === "service-not-allowed" || err === "audio-capture") {
+        wakeOn = false; if ($("wake")) $("wake").checked = false;
+        var m = "🎤 Mikrofon gesperrt — Freihändig geht nur lokal in Chrome/Edge. Am Handy bitte tippen.";
+        setState(m); answer(m); log("Freihändig: " + err);
+      }
+      // no-speech/aborted: onend startet neu
+    };
+    wakeRecog.onend = function () { if (wakeOn) { try { wakeRecog.start(); } catch (e) {} } };
+  }
+
+  function onWakeResult(ev) {
+    if (jarvisSpeaking) { return; }                 // eigene Stimme ignorieren
+    var res = ev.results[ev.results.length - 1];
+    if (!res || !res.isFinal) { return; }
+    var txt = (res[0].transcript || "").trim();
+    var low = txt.toLowerCase();
+    if (awaitingCommand) {                           // wir warten schon auf den Befehl
+      awaitingCommand = false; if (awaitTimer) { clearTimeout(awaitTimer); }
+      if (txt) { route(txt); }
+      return;
+    }
+    var idx = low.lastIndexOf("jarvis");
+    if (idx === -1) { return; }                      // Weckwort nicht dabei -> ignorieren
+    body.classList.add("listening"); setCore("HÖRT ZU");
+    var after = txt.slice(idx + 6).replace(/^[\s,.:!?-]+/, "").trim();
+    if (after.length >= 2) {                         // Befehl steht schon dahinter
+      route(after);
+    } else {                                         // nur „Jarvis" -> nachfragen und auf Befehl warten
+      answer("Ja, Sir?"); speak("Ja, Sir?");
+      awaitingCommand = true;
+      awaitTimer = setTimeout(function () { awaitingCommand = false; setCore(wakeOn ? "HÖRT MIT" : "BEREIT"); }, 9000);
+    }
+  }
+
+  function setWake(on) {
+    if (on && !SR) {
+      if ($("wake")) $("wake").checked = false;
+      setState("Spracherkennung wird hier nicht unterstützt — bitte tippe deinen Befehl."); return;
+    }
+    wakeOn = on;
+    if (on) {
+      initWake();
+      var go = function () {
+        try { wakeRecog.start(); } catch (e) {}
+        setCore("HÖRT MIT");
+        var m = "🎧 Freihändig aktiv — sag einfach: Jarvis, wie spät ist es?";
+        setState(m); answer(m); log("Freihändig aktiviert.");
+      };
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(function (s) {
+          s.getTracks().forEach(function (t) { t.stop(); }); go();
+        }).catch(function () {
+          wakeOn = false; if ($("wake")) $("wake").checked = false;
+          var m = "🎤 Mikrofon gesperrt — Freihändig geht nur lokal in Chrome/Edge. Am Handy bitte tippen.";
+          setState(m); answer(m);
+        });
+      } else { go(); }
+    } else {
+      if (wakeRecog) { try { wakeRecog.stop(); } catch (e) {} }
+      setCore("BEREIT"); setState("STANDBY — bereit für deinen Befehl");
+    }
+  }
+
   function startRecognition() { try { recog.start(); } catch (e) { /* schon aktiv */ } }
   function toggleMic() {
     if (!recog) {
@@ -557,6 +632,9 @@
 
   // Echt-ausfuehren-Schalter
   $("exec").addEventListener("change", function () { agentExecute = $("exec").checked; });
+
+  // Freihändig-Modus (Wake-Word „Jarvis")
+  if ($("wake")) { $("wake").addEventListener("change", function () { setWake($("wake").checked); }); }
 
   // Stimm-Profil (inkl. Batman / Bruce Wayne)
   $("voiceSel").addEventListener("change", function () {
