@@ -52,6 +52,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--port", type=int, default=8765, help="Port fuer --serve (Standard 8765).")
     parser.add_argument("--architecture", action="store_true", help="Systemarchitektur (Gehirn = Fable 5) als JSON ausgeben.")
     parser.add_argument("--activate-all", action="store_true", help="Alle mitgelieferten JARVIS-Plugins aktivieren und Status zeigen.")
+    parser.add_argument("--activate-everything", action="store_true", help="ALLES aktivieren: Plugins + komplette 10^12-Workforce samt aller Faehigkeiten.")
     args = parser.parse_args(argv)
 
     if args.list_models:
@@ -68,6 +69,12 @@ def main(argv: list[str] | None = None) -> int:
 
         activate_all_plugins()
         print(render_activation(activation_report()))
+        return 0
+
+    if args.activate_everything:
+        from open_jarvis.agent.activate import full_activation, render_full_activation
+
+        print(render_full_activation(full_activation()))
         return 0
 
     if args.serve:

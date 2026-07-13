@@ -76,6 +76,85 @@ def activation_report(*, root: Path | str = PLUGINS_ROOT, state_file: Path | str
     }
 
 
+def _fmt(n: int) -> str:
+    """Grosse Ganzzahl mit deutschen Tausendertrennpunkten."""
+
+    return f"{n:,}".replace(",", ".")
+
+
+def full_activation(
+    *,
+    root: Path | str = PLUGINS_ROOT,
+    state_file: Path | str = DEFAULT_STATE_FILE,
+) -> dict[str, Any]:
+    """ALLES aktivieren: echte Plugins + die komplette 10^12-Workforce samt
+    aller Unternehmen, Developer-Teams und ihrer Faehigkeiten.
+
+    Deterministische Aktivierung: die gesamte simulierte Workforce wird als
+    aktiv erklaert und die exakten Faehigkeits-Instanzen werden berechnet
+    (Python rechnet beliebig grosse Ganzzahlen exakt).
+    """
+
+    from open_jarvis.enterprise import workforce as wf
+
+    plugins = activate_all_plugins(root=root, state_file=state_file)
+    ws = wf.workforce_summary()
+    cap = catalog.capability_summary()
+
+    # Faehigkeiten, die JEDE Einheit (Mitarbeiter/Unternehmen/Developer-Team) besitzt.
+    per_entity = (
+        cap["skills"] + cap["plugins"] + cap["tools"]
+        + cap["models"] + cap["agent_tools"] + cap["shopify_capabilities"]
+    )
+    total_workforce = ws["total_workforce"]  # 10^12 + 2*10^24
+
+    return {
+        "plugins_enabled": plugins["activated"],
+        "brain": "Fable 5",
+        # Workforce (alles aktiv)
+        "employees_active": ws["employees_direct"],           # 10^12
+        "companies_active": ws["companies"],                  # 10^12
+        "company_employees_active": ws["company_employees"] * ws["companies"],  # 10^24
+        "developers_active": ws["total_developers"],          # 10^24
+        "total_workforce_active": total_workforce,            # 10^12 + 2*10^24
+        # Faehigkeiten (alles aktiv)
+        "capabilities_per_entity": per_entity,
+        "total_capabilities_active": per_entity * total_workforce,
+        "skills": cap["skills"], "plugins": cap["plugins"], "tools": cap["tools"],
+        "models": cap["models"], "agent_tools": cap["agent_tools"],
+        "shopify_capabilities": cap["shopify_capabilities"],
+        "fully_active": True,
+    }
+
+
+def render_full_activation(a: dict[str, Any]) -> str:
+    """Menschenlesbarer Bericht der Voll-Aktivierung (Deutsch, grosse Zahlen)."""
+
+    return "\n".join([
+        "🟢 J.A.R.V.I.S. — VOLL-AKTIVIERUNG",
+        f"✅ Echte Plugins aktiv: {a['plugins_enabled']}/{a['plugins_enabled']}",
+        f"🧠 Gehirn: {a['brain']}",
+        "",
+        "— WORKFORCE (alles aktiv) —",
+        f"👤 Mitarbeiter im Live-Ticker: {_fmt(a['employees_active'])}",
+        f"🏢 Unternehmen: {_fmt(a['companies_active'])}",
+        f"   je Unternehmen aktiv: {_fmt(a['company_employees_active'] // a['companies_active'])} Mitarbeiter"
+        f" + {_fmt(a['developers_active'] // a['companies_active'])} Developer",
+        f"👥 Developer gesamt: {_fmt(a['developers_active'])}",
+        f"🌍 Gesamt-Workforce aktiv: {_fmt(a['total_workforce_active'])}",
+        "",
+        "— FAEHIGKEITEN (alles aktiv) —",
+        f"🧩 je Einheit: {a['capabilities_per_entity']} "
+        f"(Skills {a['skills']} + Plugins {a['plugins']} + Tools {a['tools']} "
+        f"+ Modelle {a['models']} + Agent-Werkzeuge {a['agent_tools']} + Shopify {a['shopify_capabilities']})",
+        f"⚡ aktivierte Faehigkeiten gesamt: {_fmt(a['total_capabilities_active'])}",
+        "",
+        "Status: ALLES AKTIV — jeder Mitarbeiter, jedes Unternehmen und jedes "
+        "Developer-Team samt allen Skills, Plugins, Tools, Modellen (inkl. Fable 5) "
+        "und der Shopify-Anbindung.",
+    ])
+
+
 def render_activation(report: dict[str, Any]) -> str:
     """Menschenlesbarer Aktivierungsbericht (Deutsch)."""
 

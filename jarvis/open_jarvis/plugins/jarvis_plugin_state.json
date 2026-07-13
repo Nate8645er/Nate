@@ -5,6 +5,12 @@
       "approved_by": "local-user",
       "count": 129,
       "plugin": "*"
+    },
+    {
+      "action": "activate-all",
+      "approved_by": "local-user",
+      "count": 129,
+      "plugin": "*"
     }
   ],
   "plugins": {

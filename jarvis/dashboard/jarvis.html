@@ -36,7 +36,8 @@
 
   .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0;}
   .stat{border:1px solid var(--edge);border-radius:12px;padding:14px;background:var(--panel);text-align:center;}
-  .stat .v{font-family:var(--mono);font-size:clamp(20px,3.4vw,28px);color:var(--accent-2);text-shadow:0 0 14px rgba(255,120,20,0.4);}
+  .stat .v{font-family:var(--mono);font-size:clamp(20px,3.4vw,28px);color:var(--accent-2);text-shadow:0 0 14px rgba(255,120,20,0.4);line-height:1.2;}
+  .stats.wf .v{font-size:clamp(13px,1.7vw,18px);letter-spacing:-0.5px;white-space:nowrap;}
   .stat .l{font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-top:4px;}
   .stat .ok{color:var(--ok);}
 
@@ -80,6 +81,25 @@
     <div class="stat"><div class="v">20</div><div class="l">Shopify</div></div>
     <div class="stat"><div class="v">2·10²⁴</div><div class="l">Workforce</div></div>
     <div class="stat"><div class="v ok">Fable 5</div><div class="l">Gehirn</div></div>
+  </div>
+
+  <div class="caps" style="border-color:var(--ok);box-shadow:0 0 30px rgba(55,240,160,0.10) inset">
+    <h3 style="color:var(--ok)">🌍 Workforce — alles aktiviert</h3>
+    <div class="stats wf" style="margin:0">
+      <div class="stat"><div class="v ok">1.000.000.000.000</div><div class="l">Mitarbeiter aktiv</div></div>
+      <div class="stat"><div class="v ok">1.000.000.000.000</div><div class="l">Unternehmen aktiv</div></div>
+      <div class="stat"><div class="v ok">10²⁴</div><div class="l">Developer aktiv</div></div>
+      <div class="stat"><div class="v ok">2·10²⁴+10¹²</div><div class="l">Gesamt-Workforce</div></div>
+    </div>
+    <div class="chips" style="margin-top:12px">
+      <span class="chip">561 Fähigkeiten je Einheit</span>
+      <span class="chip brain">⚡ 1.122.000.000.000.561.000.000.000.000 Fähigkeiten aktiv</span>
+    </div>
+    <div class="d" style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:8px">
+      Jeder Mitarbeiter, jedes Unternehmen &amp; jedes 10¹²-Developer-Team — samt allen
+      Skills, Plugins, Tools, Modellen (inkl. Fable 5) und Shopify — ist aktiv.
+      Aktivieren: <code>python3 -m open_jarvis.agent --activate-everything</code>
+    </div>
   </div>
 
   <h2 class="section">▶ Öffnen</h2>
