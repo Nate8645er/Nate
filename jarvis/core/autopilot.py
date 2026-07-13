@@ -45,11 +45,35 @@ class Autopilot:
         self.recent: deque[dict[str, Any]] = deque(maxlen=30)
         self._thread: threading.Thread | None = None
         self._log = None  # optionaler Logger-Callback
+        # In-Memory-Cache für heutige Ideen (kein wiederholtes Datei-Lesen im Betrieb)
+        self._today_date = time.strftime("%Y-%m-%d")
+        self._today: list[dict[str, Any]] = self._load_today()
 
     def _count_file(self) -> int:
         if not self.store.exists():
             return 0
         return sum(1 for _ in self.store.open(encoding="utf-8"))
+
+    def _load_today(self) -> list[dict[str, Any]]:
+        """Liest die heutigen Ideen EINMAL beim Start aus der Datei."""
+        heute = time.strftime("%Y-%m-%d")
+        out: list[dict[str, Any]] = []
+        if self.store.exists():
+            for line in self.store.open(encoding="utf-8"):
+                try:
+                    e = json.loads(line)
+                except Exception:
+                    continue
+                if e.get("zeit", "").startswith(heute):
+                    out.append(e)
+        return out
+
+    def _roll_day(self) -> None:
+        """Bei Tageswechsel den heutigen Cache zurücksetzen."""
+        heute = time.strftime("%Y-%m-%d")
+        if heute != self._today_date:
+            self._today_date = heute
+            self._today = []
 
     def set_logger(self, fn: Any) -> None:
         self._log = fn
@@ -69,6 +93,8 @@ class Autopilot:
                 f.write(json.dumps(entry, ensure_ascii=False) + "\n")
             self.count_total += 1
             self.recent.appendleft(entry)
+            self._roll_day()
+            self._today.append(entry)
             if self._log:
                 self._log("info", f"Autopilot: neue Idee von {emp.display}")
             # Intervall in kleinen Schritten, damit Stop schnell greift
@@ -89,25 +115,16 @@ class Autopilot:
         self._thread = None
 
     def today(self) -> list[dict[str, Any]]:
-        heute = time.strftime("%Y-%m-%d")
-        out = []
-        if self.store.exists():
-            for line in self.store.open(encoding="utf-8"):
-                try:
-                    e = json.loads(line)
-                except Exception:
-                    continue
-                if e.get("zeit", "").startswith(heute):
-                    out.append(e)
-        return out
+        """Heutige Ideen aus dem In-Memory-Cache (kein Datei-Read im Betrieb)."""
+        self._roll_day()
+        return list(self._today)
 
     def stats(self) -> dict[str, Any]:
-        heute = self.today()
         return {
             "laeuft": self.on,
             "intervall_s": self.interval,
             "ideen_gesamt": self.count_total,
-            "ideen_heute": len(heute),
+            "ideen_heute": len(self.today()),
             "modus": brain.mode(),
             "letzte": [
                 {"zeit": e["zeit"], "von": e["von"], "team": e.get("team", ""),

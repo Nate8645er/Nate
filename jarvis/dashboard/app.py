@@ -15,7 +15,7 @@ import os
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -79,6 +79,15 @@ async def _demo_loop() -> None:
 
 
 app.mount("/static", StaticFiles(directory=STATIC), name="static")
+
+
+@app.get("/favicon.ico")
+async def favicon() -> Response:
+    # Kleines SVG-Favicon (Krabbe/Kern), vermeidet 404 im Browser.
+    svg = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">'
+           '<circle cx="16" cy="16" r="13" fill="#0b0806" stroke="#ff7a1a" stroke-width="2"/>'
+           '<circle cx="16" cy="16" r="5" fill="#ffb454"/></svg>')
+    return Response(content=svg, media_type="image/svg+xml")
 
 
 @app.get("/")
