@@ -189,7 +189,18 @@ class KeyIn(BaseModel):
 @app.get("/api/brain")
 async def brain_status() -> JSONResponse:
     from jarvis.core import brain
-    return JSONResponse({"modus": brain.mode(), "modell": brain.DEFAULT_MODEL})
+    return JSONResponse({"modus": brain.mode(), "modell": brain.active_model()})
+
+
+@app.post("/api/brain/verify")
+async def brain_verify() -> JSONResponse:
+    """Echter Test-Aufruf: prüft, ob Key + Modell wirklich antworten."""
+    import asyncio
+    from jarvis.core import brain
+    result = await asyncio.to_thread(brain.verify)
+    if result.get("ok"):
+        orchestrator.log("info", f"Fable 5 verifiziert: Modell {result['modell']} antwortet")
+    return JSONResponse(result)
 
 
 @app.get("/api/skills")
@@ -213,9 +224,15 @@ async def brain_key(k: KeyIn) -> JSONResponse:
     os.environ["ANTHROPIC_API_KEY"] = key
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     (DATA_DIR / "config.json").write_text(json.dumps({"anthropic_api_key": key}))
+    import asyncio
+
     from jarvis.core import brain
-    orchestrator.log("info", "Fable-5-Button: API-Key gesetzt — Gehirn im API-Modus")
-    return JSONResponse({"modus": brain.mode(), "modell": brain.DEFAULT_MODEL})
+    result = await asyncio.to_thread(brain.verify)
+    if result.get("ok"):
+        orchestrator.log("info", f"Fable 5 aktiviert & verifiziert: {result['modell']}")
+    else:
+        orchestrator.log("warn", f"Key gesetzt, aber Verify fehlgeschlagen: {result.get('grund')}")
+    return JSONResponse({"modus": brain.mode(), "modell": brain.active_model(), "verify": result})
 
 
 @app.get("/api/task/{task_id}")

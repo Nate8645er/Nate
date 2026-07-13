@@ -168,26 +168,8 @@ async function boot() {
 }
 boot();
 
-async function fableCheck(){
-  try{ const b = await (await fetch('/api/brain')).json();
-    const el = document.getElementById('fable');
-    if(!el) return;
-    el.classList.toggle('on', b.modus==='api');
-    el.textContent = b.modus==='api' ? '⚡ FABLE 5 AKTIV' : 'FABLE 5 AKTIVIEREN';
-  }catch(e){}
-}
-async function fableKey(){
-  const b = await (await fetch('/api/brain')).json();
-  if(b.modus==='api'){ alert('Fable 5 ist aktiv: '+b.modell+'\nJede Antwort kostet echtes API-Guthaben.'); return; }
-  const key = prompt('Anthropic API-Key eingeben (sk-ant-…).\nWird nur lokal auf diesem PC gespeichert:');
-  if(!key) return;
-  const r = await fetch('/api/brain/key', {method:'POST', headers:{'content-type':'application/json'},
-    body: JSON.stringify({schluessel:key.trim()})});
-  if(r.ok){ alert('Fable 5 aktiviert! Aktive Agenten antworten jetzt mit echtem Modell.'); }
-  else { alert('Key wurde nicht akzeptiert.'); }
-  fableCheck();
-}
-setInterval(fableCheck, 3000); fableCheck();
+
 </script>
+<script src="/static/fable.js"></script>
 </body>
 </html>
