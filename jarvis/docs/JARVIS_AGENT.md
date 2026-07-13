@@ -63,6 +63,26 @@ python3 -m open_jarvis.agent --execute --workspace ./mein_ordner --json "..."
 
 Standard-Arbeitsbereich: `~/.jarvis/agent_workspace`.
 
+### Sprach-HUD mit dem Agenten verbinden (lokale Brücke)
+
+Damit das **Command Center** (`dashboard/jarvis_command_center.html`) Befehle
+nicht nur simuliert, sondern **wirklich** ausführt, startest du die lokale Brücke:
+
+```bash
+cd jarvis
+python3 -m open_jarvis.agent --serve          # lauscht nur auf 127.0.0.1:8765
+# dann im Browser öffnen:  http://127.0.0.1:8765/
+```
+
+- Der Server bindet **ausschließlich an localhost**, nutzt nur die Standardbibliothek
+  und führt nur die sicheren Agent-Werkzeuge aus (keine beliebige Shell).
+- Das HUD zeigt dann **Agent-Brücke: verbunden**. Aktivierst du „Echt ausführen",
+  schreibt der Agent Dateien/Shop-Baupläne wirklich (sonst Vorschau).
+- Endpunkte: `GET /health`, `GET /` (HUD), `POST /agent` mit
+  `{"task": "...", "model": "fable-5", "execute": true|false}`.
+- Ohne laufende Brücke bleibt das HUD im **Demo-Modus** (Befehle werden im Browser
+  erkannt und beantwortet, aber nicht real ausgeführt).
+
 **Vorschau vs. Ausführen:** Ohne `--execute` läuft ein gefahrloser Trockenlauf
 (du siehst, *was* passieren würde). Erst mit `--execute` werden Dateien/Shop-Baupläne
 wirklich geschrieben.

@@ -154,6 +154,7 @@
       <div class="stat"><span>Tools</span><b>192</b></div>
       <div class="stat"><span>Workforce</span><b id="wf">2.0e24</b></div>
       <div class="stat"><span>Sprachmotor</span><b id="voiceStat">prüfe…</b></div>
+      <div class="stat"><span>Agent-Brücke</span><b id="voiceStat2">Demo</b></div>
       <div class="stat"><span>Modus</span><b>Fable 5 / lokal</b></div>
     </section>
 
@@ -187,6 +188,7 @@
       <input class="text" id="text" placeholder="… oder Befehl eintippen und Enter drücken" autocomplete="off">
       <button class="send" id="send">Ausführen</button>
       <label class="mute"><input type="checkbox" id="mute"> Stimme aus</label>
+      <label class="mute" title="Wenn die Agent-Brücke läuft: Dateien/Shop-Bauplan wirklich schreiben"><input type="checkbox" id="exec"> Echt ausführen</label>
     </div>
     <div class="heard" id="heard">Sag oder tippe z. B.: „Jarvis, baue mir einen Shop für Kaffee namens Bergbohne"</div>
     <div class="answer" id="answer">Bereit. Ich höre auf deine Befehle, Sir.</div>
@@ -259,6 +261,47 @@
   function setCore(s) { $("coreLabel").textContent = s; }
   function answer(text) { $("answer").textContent = text; }
 
+  /* ---------------- Bruecke zum echten Agenten ---------------- */
+  // Wenn die HTML-Seite ueber den lokalen Server laeuft (http://127.0.0.1:PORT),
+  // ist die Bruecke gleicher Herkunft. Bei file:// versuchen wir localhost:8765.
+  var BRIDGE = (location.protocol.indexOf("http") === 0) ? "" : "http://127.0.0.1:8765";
+  var bridgeConnected = false, agentExecute = false;
+  function checkBridge() {
+    try {
+      fetch(BRIDGE + "/health", { method: "GET" }).then(function (r) { return r.json(); })
+        .then(function (h) {
+          if (h && h.ok) {
+            bridgeConnected = true;
+            $("voiceStat2").textContent = "verbunden";
+            $("voiceStat2").style.color = "var(--ok)";
+            log("Agent-Bruecke verbunden — Befehle werden echt ausgefuehrt.");
+          }
+        })
+        .catch(function () { /* keine Bruecke -> Demo-Modus */ });
+    } catch (e) { /* ignorieren */ }
+  }
+
+  function runViaBridge(task) {
+    setState("AGENT ARBEITET …"); setCore("AGENT");
+    fetch(BRIDGE + "/agent", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ task: task, model: "fable-5", execute: agentExecute })
+    }).then(function (r) { return r.json(); }).then(function (res) {
+      if (!res || !res.ok) { var e = (res && res.error) || "unbekannt"; answer("Agent-Fehler: " + e); speak("Es gab einen Fehler: " + e); return; }
+      answer(res.final || "Erledigt.");
+      speak(res.final || "Erledigt.");
+      if (res.note) log("Hinweis: " + res.note);
+      (res.steps || []).forEach(function (s) {
+        var r2 = s.result || {}; var icon = r2.ok ? "✅" : "❌";
+        log(icon + " " + s.tool + " — " + (r2.summary || ""));
+      });
+      setState("STANDBY — bereit für deinen Befehl"); setCore("BEREIT");
+    }).catch(function (err) {
+      bridgeConnected = false; $("voiceStat2").textContent = "Demo"; $("voiceStat2").style.color = "var(--muted)";
+      log("Bruecke verloren — zurueck im Demo-Modus."); routeDemo(task);
+    });
+  }
+
   /* ---------------- Shop-Bauplan (deterministisch, wie Python) ---------------- */
   var MASK = 0xFFFFFFFFFFFFFFFFn;
   function mix64(x) {
@@ -300,9 +343,16 @@
   function route(raw) {
     var text = (raw || "").trim();
     if (!text) return;
-    var low = text.toLowerCase().replace(/^jarvis[,!\s]+/i, "");
     $("heard").innerHTML = "Verstanden: <b>" + text + "</b>";
     log("Befehl: " + text);
+    if (bridgeConnected) { runViaBridge(text); return; }
+    routeDemo(text);
+  }
+
+  function routeDemo(raw) {
+    var text = (raw || "").trim();
+    if (!text) return;
+    var low = text.toLowerCase().replace(/^jarvis[,!\s]+/i, "");
 
     // Begrüßung
     if (/\b(hallo|hey|guten (tag|morgen|abend)|hi)\b/.test(low)) {
@@ -410,8 +460,12 @@
     $("chips").appendChild(c);
   });
 
+  // Echt-ausfuehren-Schalter
+  $("exec").addEventListener("change", function () { agentExecute = $("exec").checked; });
+
   // Stimmen vorladen (manche Browser laden asynchron)
   if (synth) { synth.onvoiceschanged = function () {}; }
   log("JARVIS Command Center gestartet.");
+  checkBridge();
 })();
 </script>

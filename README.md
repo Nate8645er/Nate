@@ -208,8 +208,18 @@ einfach im Browser öffnen (am besten **Chrome/Edge**, Mikrofon erlauben).
   *„suche nach …"*, *„was kannst du?"*, *„wie spät ist es?"*
 - Zeigt live das Aktionsprotokoll und **welchen echten Agenten-Befehl** der Sprachbefehl auslöst
 
-> Für echte Shopify-/Datei-Aktionen führt der Python-Agent den Befehl im Hintergrund aus.
-> Das HUD ist die Sprach-/Anzeige-Schicht; die Ausführung übernimmt `open_jarvis.agent`.
+**Wirklich ausführen (lokale Brücke):** Damit Sprachbefehle echt laufen (nicht nur
+Demo), die Brücke starten und das HUD über den Server öffnen:
+
+```bash
+cd jarvis
+python3 -m open_jarvis.agent --serve      # nur 127.0.0.1:8765
+# Browser:  http://127.0.0.1:8765/
+```
+
+Dann zeigt das HUD **Agent-Brücke: verbunden**; mit „Echt ausführen" schreibt der
+Agent Dateien/Shop-Baupläne wirklich. Ohne Brücke läuft das HUD im Demo-Modus.
+Der Server bindet nur an localhost und nutzt nur die sicheren Agent-Werkzeuge.
 
 ### JARVIS-Agent — Befehle wirklich ausführen (wie Claude Code)
 

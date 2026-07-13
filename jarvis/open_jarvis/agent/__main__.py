@@ -48,10 +48,18 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--workspace", "-w", default=None, help="Arbeitsbereich fuer Dateien/Shops.")
     parser.add_argument("--json", action="store_true", help="Ergebnis als JSON ausgeben.")
     parser.add_argument("--list-models", action="store_true", help="Verfuegbare Modelle anzeigen und beenden.")
+    parser.add_argument("--serve", action="store_true", help="Lokale Bruecke fuer das Command-Center-HUD starten (nur localhost).")
+    parser.add_argument("--port", type=int, default=8765, help="Port fuer --serve (Standard 8765).")
     args = parser.parse_args(argv)
 
     if args.list_models:
         return _print_models()
+
+    if args.serve:
+        from open_jarvis.agent.server import serve
+
+        serve(port=args.port, workspace=args.workspace or DEFAULT_WORKSPACE)
+        return 0
 
     task = " ".join(args.task).strip()
     if not task:
