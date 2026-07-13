@@ -76,6 +76,10 @@
   body.listening .core { animation: pulseFast 0.8s ease-in-out infinite; }
   body.speaking .core { animation: pulseFast 0.5s ease-in-out infinite; }
   @keyframes pulseFast { 0%,100%{ transform: scale(1);} 50%{ transform: scale(1.12); filter: brightness(1.4);} }
+  /* Batman-Modus: Kern wird dunkler/blau-grau, kaelter (Bruce-Wayne-Stimmung) */
+  body.batman .core { background: radial-gradient(circle at 50% 45%, #cfe0ff 0%, #6b7c99 22%, #2b3a55 55%, #10182b 82%, #05070d 100%) !important;
+    box-shadow: 0 0 50px rgba(90,140,220,0.55), 0 0 110px rgba(40,70,130,0.35) !important; }
+  body.batman .core span { color: #cfe0ff !important; }
   .core span { font-family: var(--mono); font-weight: 800; letter-spacing: 2px; color: #2a0a02; font-size: 13px; text-shadow: 0 1px 0 rgba(255,255,255,.3); }
 
   .state-line { font-family: var(--mono); font-size: 13px; color: var(--accent-2); letter-spacing: 2px; min-height: 20px; text-align:center; }
@@ -156,6 +160,7 @@
       <div class="stat"><span>Sprachmotor</span><b id="voiceStat">prüfe…</b></div>
       <div class="stat"><span>Agent-Brücke</span><b id="voiceStat2">Demo</b></div>
       <div class="stat"><span>Gehirn</span><b>Fable 5</b></div>
+      <div class="stat"><span>Stimme</span><b id="voiceProfileStat">Standard</b></div>
       <div class="stat"><span>Modus</span><b>Fable 5 / lokal</b></div>
     </section>
 
@@ -188,6 +193,12 @@
       </div>
       <input class="text" id="text" placeholder="… oder Befehl eintippen und Enter drücken" autocomplete="off">
       <button class="send" id="send">Ausführen</button>
+      <label class="mute" title="Stimm-Profil von JARVIS">🎙️
+        <select id="voiceSel" style="background:rgba(0,0,0,.35);border:1px solid var(--edge);color:var(--text);border-radius:8px;padding:6px 8px;font-family:var(--mono);font-size:12px;">
+          <option value="standard">Standard</option>
+          <option value="batman">🦇 Batman / Bruce Wayne</option>
+        </select>
+      </label>
       <label class="mute"><input type="checkbox" id="mute"> Stimme aus</label>
       <label class="mute" title="Wenn die Agent-Brücke läuft: Dateien/Shop-Bauplan wirklich schreiben"><input type="checkbox" id="exec"> Echt ausführen</label>
     </div>
@@ -241,19 +252,44 @@
     while ($("log").children.length > 40) { $("log").removeChild($("log").lastChild); }
   }
 
-  /* ---------------- Stimme (TTS) ---------------- */
+  /* ---------------- Stimme (TTS) mit Profilen ---------------- */
   var synth = window.speechSynthesis || null;
+  // Stimm-Profile. "batman" = Bruce-Wayne-Modus: tief, gravelig, langsam-dramatisch.
+  // Hinweis: kein Klon des echten Schauspielers, sondern ein Stil ueber Tonhoehe/Tempo.
+  var VOICE_PROFILES = {
+    standard: { rate: 1.02, pitch: 0.95, deep: false, label: "Standard" },
+    batman:   { rate: 0.86, pitch: 0.30, deep: true,  label: "Batman / Bruce Wayne" }
+  };
+  var voiceProfile = "standard";
+
+  function pickVoice(deep) {
+    var voices = synth ? synth.getVoices() : [];
+    if (!voices.length) return null;
+    var de = voices.filter(function (v) { return /de(-|_)/i.test(v.lang); });
+    var pool = de.length ? de : voices;
+    if (deep) {
+      // Tiefe/maennliche Stimme bevorzugen (heuristisch nach Namen).
+      var male = pool.filter(function (v) {
+        return /male|mann|man|deep|bass|conrad|stefan|markus|google deutsch|david|george|daniel/i.test(v.name)
+          && !/female|frau|woman|hedda|katja|petra|anna|zira/i.test(v.name);
+      });
+      if (male.length) return male[0];
+    }
+    return pool[0];
+  }
+
   function speak(text) {
     if (!synth || $("mute").checked) return;
     try {
       synth.cancel();
+      var p = VOICE_PROFILES[voiceProfile] || VOICE_PROFILES.standard;
       var u = new SpeechSynthesisUtterance(text);
-      u.lang = "de-DE"; u.rate = 1.02; u.pitch = 0.95;
-      var voices = synth.getVoices();
-      var de = voices.filter(function (v) { return /de(-|_)/i.test(v.lang); });
-      if (de.length) u.voice = de[0];
-      u.onstart = function () { body.classList.add("speaking"); setCore("SPRICHT"); };
-      u.onend = function () { body.classList.remove("speaking"); setCore("BEREIT"); setState("STANDBY — bereit für deinen Befehl"); };
+      u.lang = "de-DE"; u.rate = p.rate; u.pitch = p.pitch;
+      var v = pickVoice(p.deep);
+      if (v) u.voice = v;
+      var isBat = voiceProfile === "batman";
+      u.onstart = function () { body.classList.add("speaking"); if (isBat) body.classList.add("batman"); setCore(isBat ? "🦇 BATMAN" : "SPRICHT"); };
+      u.onend = function () { body.classList.remove("speaking"); body.classList.remove("batman"); setCore("BEREIT"); setState("STANDBY — bereit für deinen Befehl"); };
       synth.speak(u);
     } catch (e) { /* ignorieren */ }
   }
@@ -463,6 +499,20 @@
 
   // Echt-ausfuehren-Schalter
   $("exec").addEventListener("change", function () { agentExecute = $("exec").checked; });
+
+  // Stimm-Profil (inkl. Batman / Bruce Wayne)
+  $("voiceSel").addEventListener("change", function () {
+    voiceProfile = $("voiceSel").value;
+    var p = VOICE_PROFILES[voiceProfile] || VOICE_PROFILES.standard;
+    $("voiceProfileStat").textContent = p.label;
+    if (voiceProfile === "batman") {
+      answer("🦇 Batman-Modus aktiv. Ich bin die Nacht, Sir.");
+      speak("Batman-Modus aktiviert. Ich bin die Nacht. Wie kann ich helfen, Sir?");
+    } else {
+      answer("Stimm-Profil: " + p.label + ".");
+      speak("Standard-Stimme aktiv, Sir.");
+    }
+  });
 
   // Stimmen vorladen (manche Browser laden asynchron)
   if (synth) { synth.onvoiceschanged = function () {}; }
