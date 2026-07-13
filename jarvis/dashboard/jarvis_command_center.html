@@ -483,7 +483,21 @@
     recog = new SR();
     recog.lang = "de-DE"; recog.interimResults = true; recog.continuous = false;
     recog.onstart = function () { listening = true; waveActive = true; body.classList.add("listening"); setCore("HÖRT ZU"); setState("HÖRE ZU …"); $("micLabel").textContent = "HÖRT…"; };
-    recog.onerror = function (e) { setState("Mikrofon-Fehler: " + (e.error || "unbekannt")); log("Spracherkennung-Fehler: " + (e.error||"?")); };
+    recog.onerror = function (e) {
+      var err = e.error || "unbekannt";
+      var msg;
+      if (err === "not-allowed" || err === "service-not-allowed") {
+        msg = "🎤 Mikrofon ist hier gesperrt (im gehosteten Link nicht erlaubt). Tippe deinen Befehl — oder öffne JARVIS lokal in Chrome/Edge zum Sprechen.";
+        $("text").focus();
+      } else if (err === "no-speech") {
+        msg = "Nichts gehört, Sir. Tippe erneut auf SPRECHEN.";
+      } else if (err === "audio-capture") {
+        msg = "Kein Mikrofon gefunden — bitte tippe deinen Befehl.";
+      } else {
+        msg = "Mikrofon-Fehler (" + err + ") — bitte tippe deinen Befehl.";
+      }
+      setState(msg); answer(msg); log("Spracherkennung: " + err);
+    };
     recog.onend = function () { listening = false; waveActive = false; body.classList.remove("listening"); setCore("BEREIT"); $("micLabel").textContent = "SPRECHEN"; };
     recog.onresult = function (ev) {
       var txt = "";
@@ -497,10 +511,26 @@
     $("hint").innerHTML = "Dein Browser unterstützt keine Sprach­erkennung — nutze das Textfeld. (Am besten Chrome/Edge.)";
   }
 
+  function startRecognition() { try { recog.start(); } catch (e) { /* schon aktiv */ } }
   function toggleMic() {
-    if (!recog) { $("text").focus(); return; }
+    if (!recog) {
+      setState("Spracherkennung wird hier nicht unterstützt — bitte tippe deinen Befehl.");
+      $("text").focus(); return;
+    }
     if (listening) { recog.stop(); return; }
-    try { recog.start(); } catch (e) { /* schon aktiv */ }
+    // Mikrofon-Freigabe aktiv anfordern: loest lokal den Berechtigungs-Dialog aus;
+    // im gehosteten iframe schlaegt es sauber fehl -> Hinweis aufs Tippen.
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+        stream.getTracks().forEach(function (t) { t.stop(); });
+        startRecognition();
+      }).catch(function () {
+        var msg = "🎤 Mikrofon ist hier gesperrt (z. B. im gehosteten Link). Tippe deinen Befehl — oder öffne JARVIS lokal in Chrome/Edge zum Sprechen.";
+        setState(msg); answer(msg); $("text").focus();
+      });
+    } else {
+      startRecognition();
+    }
   }
   $("mic").addEventListener("click", toggleMic);
   $("mic").addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleMic(); } });
