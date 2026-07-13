@@ -127,6 +127,10 @@ class Orchestrator:
         # Belegschaft-Betrieb: kontinuierliche Aktivierung des GESAMTEN Adressraums
         from .workforce import WorkforceEngine
         self.workforce = WorkforceEngine(waves=self.max_active)
+        # 24/7-Autopilot: Mitarbeiter erfinden fortlaufend Geschäftsideen
+        from .autopilot import Autopilot
+        self.autopilot = Autopilot(data_dir)
+        self.autopilot.set_logger(self.log)
         self.started = time.time()
 
     # -- Logging ------------------------------------------------------------
@@ -207,6 +211,7 @@ class Orchestrator:
 
     async def stop(self) -> None:
         self.workforce.stop()
+        self.autopilot.stop()
         for w in self._workers:
             w.cancel()
         self._workers.clear()
@@ -257,4 +262,5 @@ class Orchestrator:
             "plugins": self.plugins.status(),
             "skills": [{"name": s.name, "description": s.description} for s in self.skills.all()],
             "belegschaft": self.workforce.stats(),
+            "autopilot": self.autopilot.stats(),
         }

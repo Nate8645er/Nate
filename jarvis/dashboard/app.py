@@ -235,6 +235,43 @@ async def brain_key(k: KeyIn) -> JSONResponse:
     return JSONResponse({"modus": brain.mode(), "modell": brain.active_model(), "verify": result})
 
 
+@app.get("/autopilot")
+async def autopilot_page() -> FileResponse:
+    return FileResponse(STATIC / "autopilot.html")
+
+
+@app.post("/api/autopilot/start")
+async def autopilot_start() -> JSONResponse:
+    orchestrator.autopilot.start()
+    orchestrator.log("info", "24/7-Autopilot GESTARTET — Mitarbeiter erfinden Ideen")
+    return JSONResponse(orchestrator.autopilot.stats())
+
+
+@app.post("/api/autopilot/stop")
+async def autopilot_stop() -> JSONResponse:
+    orchestrator.autopilot.stop()
+    orchestrator.log("info", "24/7-Autopilot gestoppt")
+    return JSONResponse(orchestrator.autopilot.stats())
+
+
+@app.get("/api/autopilot/briefing")
+async def autopilot_briefing() -> JSONResponse:
+    """Tages-Briefing: was die Mitarbeiter heute erarbeitet haben (echte Daten)."""
+    ideen = orchestrator.autopilot.today()
+    fin = orchestrator.finanzen()
+    return JSONResponse({
+        "datum": __import__("time").strftime("%Y-%m-%d"),
+        "ideen_heute": len(ideen),
+        "ideen": [{"zeit": e["zeit"], "von": e["von"], "team": e.get("team", ""),
+                   "text": e["text"]} for e in ideen[-50:]],
+        "erledigte_aufgaben_gesamt": orchestrator.completed,
+        "profit_heute_chf_real": fin["einnahmen_chf"],
+        "hinweis": ("Ideen sind echte Vorarbeit, kein Geld. Profit zeigt nur real "
+                    "über das finanzen-Plugin erfasste Einnahmen — 0.00, bis du echte "
+                    "Verkäufe einträgst."),
+    })
+
+
 @app.post("/api/workforce/start")
 async def workforce_start() -> JSONResponse:
     """Belegschaft-Betrieb starten: gesamte Organisation kontinuierlich aktivieren."""

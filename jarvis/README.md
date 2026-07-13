@@ -34,6 +34,21 @@ Logik). Der Betrieb macht einen leichten „Roll-Call" (Identität materialisier
 ruinös. Echte Fable-5-Denkarbeit bleibt den Aufgaben vorbehalten, die du gezielt
 abschickst.
 
+## 24/7-Autopilot (Seite `/autopilot`)
+
+Der Autopilot lässt die Business-Mitarbeiter **rund um die Uhr eigene
+Geschäftsideen erfinden** — jede mit Titel, Idee, Zielgruppe und konkretem
+erstem Schritt. Wenn du wieder online kommst, zeigt das **Tages-Briefing**,
+was heute erarbeitet wurde, plus „Profit heute (real)".
+
+Ehrlich und wichtig: Der Autopilot erzeugt echte **Vorarbeit** (Ideen,
+Konzepte, Entwürfe) — er verdient **kein Geld von allein**. „Profit heute"
+zeigt ausschließlich real über das `finanzen`-Plugin erfasste Einnahmen und
+bleibt 0.00 CHF, bis du echte Verkäufe einträgst. Aus einer Idee echtes Geld
+zu machen, verlangt einen Menschen, der sie umsetzt (Shop, Zahlung, Verkauf).
+Der Autopilot läuft nur, solange dein PC an ist; im Fable-5-Modus kostet jede
+Idee einen echten Modell-Aufruf (Intervall daher gemächlich, Standard 180s).
+
 **Was dieses System NICHT tut:** Geld generieren. Es gibt keine
 Geld-Generier-Funktion und keinen simulierten Umsatz-Ticker — das
 Business-Panel zeigt ausschließlich echte Betriebsdaten (0.00 CHF, bis eine

@@ -135,3 +135,18 @@ def test_workforce_engine_activates(tmp_path: Path):
     s = eng.stats()
     assert eng.activated > 0            # es wurden echt Mitarbeiter durchlaufen
     assert s["durchlaufen"] > 0
+
+
+def test_autopilot_generates_ideas(tmp_path: Path):
+    import time
+    from jarvis.core.autopilot import Autopilot
+    ap = Autopilot(tmp_path, interval_s=20)
+    assert ap.stats()["laeuft"] is False
+    ap.start()
+    time.sleep(1.5)          # erste Idee wird sofort erzeugt
+    ap.stop()
+    s = ap.stats()
+    assert s["ideen_gesamt"] >= 1
+    assert s["letzte"] and "von" in s["letzte"][0]
+    # heutige Ideen werden erfasst
+    assert len(ap.today()) >= 1
