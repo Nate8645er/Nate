@@ -34,6 +34,22 @@
       </div>
     </div>
     <div class="panel" style="margin-top:10px">
+      <h2><b>BELEGSCHAFT-BETRIEB</b> // GESAMTE ORGANISATION AKTIVIEREN</h2>
+      <div style="display:flex; gap:8px; align-items:center">
+        <button id="wfbtn" onclick="toggleWorkforce()">▶ GANZE BELEGSCHAFT AKTIVIEREN</button>
+        <span id="wfstate" style="font-size:11px; color:var(--dim)">gestoppt</span>
+      </div>
+      <div class="tiles" style="margin-top:8px; grid-template-columns:repeat(4,1fr)">
+        <div class="tile"><div class="l">Durchlaufen</div><div class="v" style="font-size:15px" id="wf_total">0</div></div>
+        <div class="tile"><div class="l">Rate / Sek.</div><div class="v" style="font-size:15px" id="wf_rate">0</div></div>
+        <div class="tile"><div class="l">Wellen (parallel)</div><div class="v" style="font-size:15px" id="wf_waves">0</div></div>
+        <div class="tile"><div class="l">Abdeckung</div><div class="v" style="font-size:13px" id="wf_cov">0%</div></div>
+      </div>
+      <div style="font-size:10.5px; color:var(--dim); margin-top:6px" id="wf_hint">
+        Startet einen kontinuierlichen Betrieb, der in rollenden Wellen durch alle 100 Mrd. Mitarbeiter fegt.
+      </div>
+    </div>
+    <div class="panel" style="margin-top:10px">
       <h2><b>LIVE</b> // WER ARBEITET GERADE WO</h2>
       <table><thead><tr><th>#</th><th>Mitarbeiter</th><th>Team</th><th>Adresse</th><th>Aufgabe</th><th>Status</th></tr></thead>
       <tbody id="tasks"></tbody></table>
@@ -97,12 +113,33 @@ async function tick() {
     $('teams').innerHTML = Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([team, c]) =>
       `<div class="teamcard${activeTeams.has(team) ? ' hot' : ''}"><div class="n">${team}</div><div class="c">${c}</div></div>`).join('')
       || '<div style="color:var(--dim)">Noch keine Aktivität.</div>';
+    const wf = s.belegschaft || {};
+    $('wf_total').textContent = fmt(wf.durchlaufen || 0);
+    $('wf_rate').textContent = fmt(wf.rate_pro_s || 0);
+    $('wf_waves').textContent = wf.wellen || 0;
+    $('wf_cov').textContent = (wf.abdeckung_prozent || 0) + '%';
+    const btn = $('wfbtn');
+    btn.classList.toggle('on', !!wf.in_betrieb);
+    btn.textContent = wf.in_betrieb ? '⏹ BELEGSCHAFT-BETRIEB STOPPEN' : '▶ GANZE BELEGSCHAFT AKTIVIEREN';
+    $('wfstate').textContent = wf.in_betrieb
+      ? `IN BETRIEB · ${fmt(wf.durchlaufen)} durchlaufen · ETA für 100 Mrd: ${wf.eta_tage} Tage`
+      : 'gestoppt';
+    if (wf.in_betrieb && wf.stichprobe && wf.stichprobe.length)
+      $('wf_hint').innerHTML = 'Gerade aktiviert: ' + wf.stichprobe.slice(0, 3).map(e =>
+        `<b style="color:var(--amber2)">${e.name}</b> (${e.team})`).join(' · ');
     $('ticker').textContent = (` ▲ TRACKER: ${s.aktive_agenten} AKTIV ● ${s.wartende_aufgaben} WARTEND ` +
       `● ${fmt(s.aktivierte_agenten_gesamt)} AKTIVIERUNGEN GESAMT ● ADRESSRAUM ${fmt(s.adressraum_pro_ebene)}/EBENE ` +
       `● TEAMS AKTIV: ${[...activeTeams].join(', ') || 'KEINE'} ● ZIEL ${fmt(s.finanzen.ziel_chf)} CHF · REAL ${s.finanzen.einnahmen_chf.toFixed(2)} CHF ● `).repeat(3);
   } catch (e) { $('mode').textContent = 'VERBINDUNG GETRENNT'; }
 }
 setInterval(tick, 1500); tick();
+
+async function toggleWorkforce() {
+  const s = await (await fetch('/api/state')).json();
+  const on = s.belegschaft && s.belegschaft.in_betrieb;
+  await fetch('/api/workforce/' + (on ? 'stop' : 'start'), { method: 'POST' });
+  tick();
+}
 
 async function lookup(ev) {
   ev.preventDefault();

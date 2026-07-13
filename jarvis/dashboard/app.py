@@ -235,6 +235,21 @@ async def brain_key(k: KeyIn) -> JSONResponse:
     return JSONResponse({"modus": brain.mode(), "modell": brain.active_model(), "verify": result})
 
 
+@app.post("/api/workforce/start")
+async def workforce_start() -> JSONResponse:
+    """Belegschaft-Betrieb starten: gesamte Organisation kontinuierlich aktivieren."""
+    orchestrator.workforce.start()
+    orchestrator.log("info", "Belegschaft-Betrieb GESTARTET — gesamte Organisation läuft")
+    return JSONResponse(orchestrator.workforce.stats())
+
+
+@app.post("/api/workforce/stop")
+async def workforce_stop() -> JSONResponse:
+    orchestrator.workforce.stop()
+    orchestrator.log("info", "Belegschaft-Betrieb gestoppt")
+    return JSONResponse(orchestrator.workforce.stats())
+
+
 @app.get("/api/task/{task_id}")
 async def get_task(task_id: int) -> JSONResponse:
     t = orchestrator.find_task(task_id)

@@ -124,6 +124,9 @@ class Orchestrator:
         from .skills import SkillRegistry
         self.skills = SkillRegistry(data_dir / "skills")
         self.memory = Memory(data_dir / "memory.db")
+        # Belegschaft-Betrieb: kontinuierliche Aktivierung des GESAMTEN Adressraums
+        from .workforce import WorkforceEngine
+        self.workforce = WorkforceEngine(waves=self.max_active)
         self.started = time.time()
 
     # -- Logging ------------------------------------------------------------
@@ -203,6 +206,7 @@ class Orchestrator:
                          f"Agenten-Slots (Hardware-Limit), Modellmodus: {brain.mode()}")
 
     async def stop(self) -> None:
+        self.workforce.stop()
         for w in self._workers:
             w.cancel()
         self._workers.clear()
@@ -252,4 +256,5 @@ class Orchestrator:
             "logs": list(self.logs)[:60],
             "plugins": self.plugins.status(),
             "skills": [{"name": s.name, "description": s.description} for s in self.skills.all()],
+            "belegschaft": self.workforce.stats(),
         }

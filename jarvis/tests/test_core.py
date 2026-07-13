@@ -122,3 +122,16 @@ def test_code_agent_finds_binary_or_falls_back(tmp_path: Path):
     # ohne API-Key: ehrlicher Fallback, kein Absturz
     out = plugin.run("prompt", prompt="Test")
     assert isinstance(out, str) and len(out) > 0
+
+
+def test_workforce_engine_activates(tmp_path: Path):
+    import time
+    from jarvis.core.workforce import WorkforceEngine
+    eng = WorkforceEngine(waves=4)
+    assert eng.stats()["in_betrieb"] is False
+    eng.start()
+    time.sleep(1.0)
+    eng.stop()
+    s = eng.stats()
+    assert eng.activated > 0            # es wurden echt Mitarbeiter durchlaufen
+    assert s["durchlaufen"] > 0

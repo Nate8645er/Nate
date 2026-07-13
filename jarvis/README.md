@@ -18,6 +18,22 @@ Adressen sind hierarchisch: `17` → Mitarbeiter 17, `17/423` → Mitarbeiter 42
 im Unternehmen von Nr. 17, beliebig tief. Damit ist die Organisation
 theoretisch unbegrenzt — ohne dass je etwas „gespeichert" werden muss.
 
+## Belegschaft-Betrieb (ganze Organisation aktivieren)
+
+Auf der Seite `/mitarbeiter` startet der Button **„GANZE BELEGSCHAFT AKTIVIEREN"**
+einen kontinuierlichen Betrieb: ein Hintergrund-Scheduler fegt in rollenden
+Wellen durch den **gesamten** 100-Milliarden-Adressraum, materialisiert und
+aktiviert die Mitarbeiter fortlaufend (real gemessen ~1,5 Mio./Sekunde). Damit
+ist die komplette Organisation *in Betrieb*. Das Dashboard zeigt live:
+durchlaufene Mitarbeiter, Rate/Sekunde, Wellen und Abdeckung des Adressraums.
+
+Ehrlich dabei: Zu jedem Zeitpunkt rechnen nur so viele *gleichzeitig*, wie die
+Hardware zulässt — der Rest wird laufend durchgeschleust (echte HyperScale-
+Logik). Der Betrieb macht einen leichten „Roll-Call" (Identität materialisieren),
+**kein** bezahlter Modell-Aufruf pro Mitarbeiter — das wäre bei Milliarden
+ruinös. Echte Fable-5-Denkarbeit bleibt den Aufgaben vorbehalten, die du gezielt
+abschickst.
+
 **Was dieses System NICHT tut:** Geld generieren. Es gibt keine
 Geld-Generier-Funktion und keinen simulierten Umsatz-Ticker — das
 Business-Panel zeigt ausschließlich echte Betriebsdaten (0.00 CHF, bis eine
