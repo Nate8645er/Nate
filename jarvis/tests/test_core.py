@@ -150,3 +150,41 @@ def test_autopilot_generates_ideas(tmp_path: Path):
     assert s["letzte"] and "von" in s["letzte"][0]
     # heutige Ideen werden erfasst
     assert len(ap.today()) >= 1
+
+
+def test_security_sandbox_blocks_sibling_prefix(tmp_path: Path):
+    """_safe darf nicht in einen Geschwister-Ordner mit gleichem Präfix schreiben/lesen."""
+    from jarvis.core import tools
+    ws = tmp_path / "workspace"
+    pm = PluginManager(ws)
+    tools.register_all(pm, ws)
+    (tmp_path / "workspace-backup").mkdir()
+    (tmp_path / "workspace-backup" / "geheim.txt").write_text("secret", encoding="utf-8")
+    with pytest.raises(PermissionError):
+        pm.run("Führung", "read", "read", path="../workspace-backup/geheim.txt")
+
+
+def test_security_dangerous_tools_gated(tmp_path: Path, monkeypatch):
+    from jarvis.core import tools
+    pm = PluginManager(tmp_path)
+    tools.register_all(pm, tmp_path)
+    monkeypatch.delenv("JARVIS_ALLOW_DANGEROUS", raising=False)
+    with pytest.raises(PermissionError):
+        pm.run("Führung", "shell", "run", command="echo x")
+    monkeypatch.setenv("JARVIS_ALLOW_DANGEROUS", "1")
+    assert "exit 0" in pm.run("Führung", "shell", "run", command="echo x")
+
+
+def test_security_ssrf_blocked(tmp_path: Path):
+    from jarvis.core import tools
+    pm = PluginManager(tmp_path)
+    tools.register_all(pm, tmp_path)
+    for url in ("http://169.254.169.254/latest/meta-data/", "http://127.0.0.1:80/"):
+        assert "verweigert" in pm.run("Führung", "webfetch", "fetch", url=url)
+
+
+def test_security_calc_pow_limit(tmp_path: Path):
+    pm = PluginManager(tmp_path)
+    assert pm.run("Führung", "calc", "eval", expression="2**10") == 1024
+    with pytest.raises(ValueError):
+        pm.run("Führung", "calc", "eval", expression="9**99999")

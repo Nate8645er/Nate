@@ -11,16 +11,26 @@ from __future__ import annotations
 import ast
 import importlib
 import operator
+import os
 import pkgutil
 import time
 from pathlib import Path
 from typing import Any
 
 
+def dangerous_allowed() -> bool:
+    """Gefährliche Werkzeuge (Shell, Code) sind standardmäßig gesperrt.
+
+    Freischalten nur bewusst auf dem eigenen PC via JARVIS_ALLOW_DANGEROUS=1.
+    """
+    return os.environ.get("JARVIS_ALLOW_DANGEROUS") == "1"
+
+
 class Plugin:
     name: str = "base"
     description: str = ""
     allowed_teams: list[str] | None = None  # None = alle
+    dangerous: bool = False                  # True = OS-weitreichend, Opt-in nötig
 
     def authorized(self, team: str) -> bool:
         return self.allowed_teams is None or team in self.allowed_teams
@@ -64,8 +74,9 @@ class FilesPlugin(Plugin):
         self.workspace.mkdir(parents=True, exist_ok=True)
 
     def _safe(self, rel: str) -> Path:
-        p = (self.workspace / rel).resolve()
-        if not str(p).startswith(str(self.workspace.resolve())):
+        ws = self.workspace.resolve()
+        p = (ws / rel).resolve()
+        if not p.is_relative_to(ws):     # verhindert ../ UND Präfix-Kollision (workspace-backup)
             raise PermissionError("Zugriff außerhalb des Arbeitsbereichs verweigert")
         return p
 
@@ -96,7 +107,10 @@ class CalculatorPlugin(Plugin):
         if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
             return node.value
         if isinstance(node, ast.BinOp) and type(node.op) in self._OPS:
-            return self._OPS[type(node.op)](self._eval(node.left), self._eval(node.right))
+            left, right = self._eval(node.left), self._eval(node.right)
+            if isinstance(node.op, ast.Pow) and (abs(right) > 1000 or abs(left) > 1_000_000):
+                raise ValueError("Potenz zu groß (Schutz vor Ressourcen-Erschöpfung)")
+            return self._OPS[type(node.op)](left, right)
         if isinstance(node, ast.UnaryOp) and type(node.op) in self._OPS:
             return self._OPS[type(node.op)](self._eval(node.operand))
         raise ValueError("Nur arithmetische Ausdrücke erlaubt")
@@ -259,6 +273,11 @@ class PluginManager:
             raise KeyError(f"Plugin nicht gefunden: {name}")
         if not plugin.authorized(team):
             raise PermissionError(f"Team {team!r} ist für Plugin {name!r} nicht autorisiert")
+        if getattr(plugin, "dangerous", False) and not dangerous_allowed():
+            raise PermissionError(
+                f"Werkzeug {name!r} ist gesperrt (erreicht das Betriebssystem). "
+                f"Zum bewussten Freischalten auf deinem eigenen PC: "
+                f"Umgebungsvariable JARVIS_ALLOW_DANGEROUS=1 setzen und neu starten.")
         return plugin.run(action, **kwargs)
 
     def status(self) -> list[dict[str, Any]]:

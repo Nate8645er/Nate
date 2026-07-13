@@ -13,17 +13,40 @@ Brücke (code.py) ruft den echten Agenten-Binary auf, wenn vorhanden.
 from __future__ import annotations
 
 import fnmatch
+import ipaddress
 import re
+import socket
 import subprocess
+import urllib.parse
 from pathlib import Path
 from typing import Any
 
 from .plugins import Plugin
 
 
+def _host_is_blocked(host: str) -> bool:
+    """SSRF-Schutz: löst den Host auf und blockt private/loopback/link-local-Ziele."""
+    if not host:
+        return True
+    try:
+        infos = socket.getaddrinfo(host, None)
+    except Exception:
+        return True
+    for info in infos:
+        try:
+            ip = ipaddress.ip_address(info[4][0])
+        except ValueError:
+            return True
+        if (ip.is_private or ip.is_loopback or ip.is_link_local
+                or ip.is_reserved or ip.is_multicast or ip.is_unspecified):
+            return True
+    return False
+
+
 class ShellPlugin(Plugin):
     name = "shell"
     description = "Shell-/Terminal-Befehle im Arbeitsbereich ausführen (wie Claude Code Bash)"
+    dangerous = True                     # erreicht das ganze Betriebssystem — Opt-in nötig
     allowed_teams = ["Führung", "DevOps", "Softwareentwicklung", "Automatisierung",
                      "Cloud", "KI-Entwicklung", "Qualitätsmanagement"]
 
@@ -51,8 +74,9 @@ class ReadPlugin(Plugin):
         self.workspace = workspace
 
     def _safe(self, rel: str) -> Path:
-        p = (self.workspace / rel).resolve()
-        if not str(p).startswith(str(self.workspace.resolve())):
+        ws = self.workspace.resolve()
+        p = (ws / rel).resolve()
+        if not p.is_relative_to(ws):     # verhindert ../ UND Präfix-Kollision (workspace-backup)
             raise PermissionError("Zugriff außerhalb des Arbeitsbereichs verweigert")
         return p
 
@@ -70,8 +94,9 @@ class EditPlugin(Plugin):
         self.workspace = workspace
 
     def _safe(self, rel: str) -> Path:
-        p = (self.workspace / rel).resolve()
-        if not str(p).startswith(str(self.workspace.resolve())):
+        ws = self.workspace.resolve()
+        p = (ws / rel).resolve()
+        if not p.is_relative_to(ws):     # verhindert ../ UND Präfix-Kollision (workspace-backup)
             raise PermissionError("Zugriff außerhalb des Arbeitsbereichs verweigert")
         return p
 
@@ -95,7 +120,7 @@ class GlobPlugin(Plugin):
     def run(self, action: str = "glob", pattern: str = "*", **kwargs: Any) -> Any:
         hits = [str(p.relative_to(self.workspace))
                 for p in self.workspace.rglob("*")
-                if fnmatch.fnmatch(p.name, pattern)]
+                if not p.is_symlink() and fnmatch.fnmatch(p.name, pattern)]
         return sorted(hits)[:100] or "Keine Treffer."
 
 
@@ -112,6 +137,8 @@ class GrepPlugin(Plugin):
         rx = re.compile(pattern)
         out = []
         for p in self.workspace.rglob("*"):
+            if p.is_symlink():           # keine Symlinks aus der Sandbox heraus folgen
+                continue
             if p.is_file() and fnmatch.fnmatch(p.name, glob):
                 try:
                     for n, ln in enumerate(p.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
@@ -132,6 +159,10 @@ class WebFetchPlugin(Plugin):
         import urllib.request
         if not url.startswith(("http://", "https://")):
             raise ValueError("url= muss mit http(s):// beginnen")
+        host = urllib.parse.urlparse(url).hostname or ""
+        if _host_is_blocked(host):       # SSRF: interne/loopback/metadaten-Ziele blocken
+            return ("Abruf verweigert: interne/private Adressen sind aus "
+                    "Sicherheitsgründen gesperrt (SSRF-Schutz).")
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (JARVIS)"})
         try:
             with urllib.request.urlopen(req, timeout=25) as resp:

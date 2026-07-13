@@ -29,6 +29,20 @@ app = FastAPI(title="JARVIS HyperScale", version="0.1.0")
 orchestrator = Orchestrator(DATA_DIR)
 
 
+@app.middleware("http")
+async def _host_guard(request, call_next):
+    """Schutz vor DNS-Rebinding: nur Loopback-Hostnamen (oder ausdrücklich erlaubte)."""
+    host = (request.headers.get("host") or "").split(":")[0].lower()
+    allowed = {"127.0.0.1", "localhost", "::1", ""}
+    extra = os.environ.get("JARVIS_ALLOWED_HOSTS", "")
+    if extra:
+        allowed |= {h.strip().lower() for h in extra.split(",") if h.strip()}
+    if host not in allowed:
+        return Response("Host nicht erlaubt (Schutz vor DNS-Rebinding). "
+                        "Für LAN-Zugriff JARVIS_ALLOWED_HOSTS setzen.", status_code=403)
+    return await call_next(request)
+
+
 class TaskIn(BaseModel):
     beschreibung: str
     adresse: str | None = None
@@ -232,7 +246,15 @@ async def brain_key(k: KeyIn) -> JSONResponse:
         raise HTTPException(400, "Key sieht ungültig aus (zu kurz)")
     os.environ["ANTHROPIC_API_KEY"] = key
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-    (DATA_DIR / "config.json").write_text(json.dumps({"anthropic_api_key": key}))
+    # Key mit restriktiven Rechten (0600) schreiben — nicht weltlesbar.
+    cfg = DATA_DIR / "config.json"
+    fd = os.open(cfg, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
+        json.dump({"anthropic_api_key": key}, f)
+    try:
+        os.chmod(cfg, 0o600)
+    except OSError:
+        pass
     import asyncio
 
     from jarvis.core import brain

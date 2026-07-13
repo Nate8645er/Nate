@@ -43,6 +43,7 @@ def find_binary() -> str | None:
 class CodeAgentPlugin(Plugin):
     name = "code"
     description = "Claude Code / Claw als Werkzeug: Prompt an den echten Agenten (Fable 5)"
+    dangerous = True                     # startet einen Agenten mit vollem Tool-Zugriff
     allowed_teams = ["Führung", "Softwareentwicklung", "KI-Entwicklung", "DevOps",
                      "Python-Team", "Rust-Team", "Web-Team", "Automatisierung",
                      "Qualitätsmanagement"]

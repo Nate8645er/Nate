@@ -66,6 +66,7 @@ jeder Aufruf kostet dann echtes API-Guthaben.</div>
 <script>
 const $ = id => document.getElementById(id);
 const fmt = n => Number(n).toLocaleString('de-CH');
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 setInterval(() => $('clock').textContent = new Date().toLocaleString('de-CH'), 1000);
 
 async function tick() {
@@ -84,15 +85,15 @@ async function tick() {
       `● GEDÄCHTNIS ${fmt(s.gedaechtnis_eintraege)} EINTRÄGE ● CPU ${s.cpu_prozent}% ● RAM ${s.ram_prozent}% ● `).repeat(3);
     const mem = await (await fetch('/api/memory?limit=25')).json();
     $('memory').innerHTML = mem.eintraege.map(m =>
-      `<div>[${m.zeit}] <span style="color:var(--amber2)">${m.adresse}</span> ${m.aufgabe.slice(0,70)}<br>` +
-      `<span style="color:var(--dim)">→ ${m.ergebnis.slice(0,110)}</span></div>`).join('') || '<div>Noch keine Einträge.</div>';
+      `<div>[${m.zeit}] <span style="color:var(--amber2)">${esc(m.adresse)}</span> ${esc((m.aufgabe||'').slice(0,70))}<br>` +
+      `<span style="color:var(--dim)">→ ${esc((m.ergebnis||'').slice(0,110))}</span></div>`).join('') || '<div>Noch keine Einträge.</div>';
   } catch (e) { $('mode').textContent = 'VERBINDUNG GETRENNT'; }
 }
 setInterval(tick, 2000); tick();
 
 function addMsg(cls, who, text) {
   const d = document.createElement('div'); d.className = 'msg ' + cls;
-  d.innerHTML = (who ? `<div class="who">${who}</div>` : '') + text;
+  d.innerHTML = (who ? `<div class="who">${esc(who)}</div>` : '') + esc(text);
   $('chat').appendChild(d); $('chat').scrollTop = 1e9;
   return d;
 }

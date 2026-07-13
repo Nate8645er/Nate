@@ -116,6 +116,7 @@ Es gibt keine Geld-Generierung — die Finanz-Kachel bleibt 0.00 CHF, bis eine e
 <script>
 const $ = id => document.getElementById(id);
 const fmt = n => Number(n).toLocaleString('de-CH');
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 // ---- Globus (rotierende Drahtgitter-Sphäre) --------------------------------
 const gc = $('globe'), gx = gc.getContext('2d');
@@ -189,11 +190,11 @@ async function tick() {
       `● ADRESSRAUM ${fmt(s.adressraum_pro_ebene)}/EBENE (REKURSIV) ● CPU ${s.cpu_prozent}% ● RAM ${s.ram_prozent}% ` +
       `● GEDÄCHTNIS ${fmt(s.gedaechtnis_eintraege)} ● MODELL ${s.modell} [${s.modell_modus.toUpperCase()}] ● ZIEL ${fmt(s.finanzen.ziel_chf)} CHF · REAL ERFASST ${s.finanzen.einnahmen_chf.toFixed(2)} CHF (${s.finanzen.fortschritt_prozent}%) ● `).repeat(2);
     $('tasks').innerHTML = [...s.aktive, ...s.letzte_aufgaben].slice(0, 14).map(t =>
-      `<tr><td class="mono">${t.id}</td><td>${t.agent || '—'}${t.demo ? ' <span class="demo">DEMO</span>' : ''}</td>` +
-      `<td>${t.team || ''}</td><td>${t.beschreibung.slice(0, 60)}</td>` +
+      `<tr><td class="mono">${t.id}</td><td>${esc(t.agent || '—')}${t.demo ? ' <span class="demo">DEMO</span>' : ''}</td>` +
+      `<td>${esc(t.team || '')}</td><td>${esc((t.beschreibung||'').slice(0, 60))}</td>` +
       `<td><span class="tag ${t.status}">${t.status.toUpperCase()}</span></td></tr>`).join('');
     $('logs').innerHTML = s.logs.slice(0, 40).map(l =>
-      `<div>[${l.ts}] <span class="${l.level}">${l.level.toUpperCase()}</span> ${l.msg}</div>`).join('');
+      `<div>[${l.ts}] <span class="${l.level}">${l.level.toUpperCase()}</span> ${esc(l.msg)}</div>`).join('');
     $('plugins').innerHTML = s.plugins.map(p =>
       `<div>◈ <b style="color:var(--amber2)">${p.name}</b> — ${p.description}</div>`).join('');
   } catch (e) { $('mode').textContent = 'VERBINDUNG GETRENNT'; }
@@ -204,7 +205,7 @@ setInterval(() => $('clock').textContent = new Date().toLocaleString('de-CH'), 1
 // ---- Chat + Aufgaben ----------------------------------------------------------
 function addMsg(cls, who, text) {
   const d = document.createElement('div'); d.className = 'msg ' + cls;
-  d.innerHTML = (who ? `<div class="who">${who}</div>` : '') + text;
+  d.innerHTML = (who ? `<div class="who">${esc(who)}</div>` : '') + esc(text);
   $('chat').appendChild(d); $('chat').scrollTop = 1e9;
   return d;
 }

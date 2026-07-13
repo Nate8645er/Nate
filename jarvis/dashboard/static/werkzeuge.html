@@ -52,6 +52,11 @@
         <input id="toolcmd" placeholder="z. B. !plugin shell run command=echo hallo" autocomplete="off">
         <button>SENDEN</button>
       </form>
+      <div style="font-size:10px; color:#e8c98a; margin-top:5px">
+        Hinweis: <b>shell</b> und <b>code</b> erreichen dein Betriebssystem und sind aus
+        Sicherheitsgründen standardmäßig gesperrt. Freischalten (bewusst, nur auf deinem PC):
+        <span class="mono">setx JARVIS_ALLOW_DANGEROUS 1</span>, dann neu starten.
+      </div>
       <div id="toolres" class="logs mono" style="max-height:200px; margin-top:8px"></div>
     </div>
   </div>

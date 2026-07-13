@@ -23,6 +23,12 @@ def main() -> None:
     if args.demo:
         os.environ["JARVIS_DEMO"] = "1"
 
+    if args.host not in ("127.0.0.1", "localhost", "::1"):
+        print("\n  ⚠  WARNUNG: JARVIS wird an eine NICHT-lokale Adresse gebunden "
+              f"({args.host}).\n     Damit ist die Steuer-API im Netzwerk erreichbar. "
+              "Nur in vertrauenswürdigen\n     Netzen tun und JARVIS_ALLOWED_HOSTS setzen. "
+              "Standard ist das sichere 127.0.0.1.\n")
+
     import uvicorn
     uvicorn.run("jarvis.dashboard.app:app", host=args.host, port=args.port, log_level="warning")
 

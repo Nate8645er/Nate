@@ -91,6 +91,7 @@ diese Zahl steht unter „Jetzt aktiv".</div>
 <script>
 const $ = id => document.getElementById(id);
 const fmt = n => Number(n).toLocaleString('de-CH');
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 setInterval(() => $('clock').textContent = new Date().toLocaleString('de-CH'), 1000);
 
 async function tick() {
@@ -103,9 +104,9 @@ async function tick() {
     $('t_done').textContent = fmt(s.fertig); $('t_err').textContent = s.fehler;
     const all = [...s.aktive, ...s.letzte_aufgaben];
     $('tasks').innerHTML = all.slice(0, 18).map(t =>
-      `<tr><td class="mono">${t.id}</td><td>${t.agent || '—'}${t.demo ? ' <span class="demo">DEMO</span>' : ''}</td>` +
-      `<td>${t.team || ''}</td><td class="mono" style="color:var(--dim)">${t.adresse}</td>` +
-      `<td>${t.beschreibung.slice(0, 42)}</td>` +
+      `<tr><td class="mono">${t.id}</td><td>${esc(t.agent || '—')}${t.demo ? ' <span class="demo">DEMO</span>' : ''}</td>` +
+      `<td>${esc(t.team || '')}</td><td class="mono" style="color:var(--dim)">${esc(t.adresse)}</td>` +
+      `<td>${esc((t.beschreibung||'').slice(0, 42))}</td>` +
       `<td><span class="tag ${t.status}">${t.status.toUpperCase()}</span></td></tr>`).join('');
     const counts = {};
     for (const t of all) if (t.team) counts[t.team] = (counts[t.team] || 0) + 1;

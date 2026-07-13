@@ -142,6 +142,27 @@ Skills einfach als `.md` mit Front-Matter (`name`, `description`) ablegen.
 **Eigene Plugins:** `.py`-Datei in `jarvis/plugins/` mit einer `PLUGIN`-Instanz
 ablegen — Autorisierung pro Team über `allowed_teams`.
 
+## Sicherheit
+
+JARVIS wurde einem Security-Review unterzogen; folgende Schutzmaßnahmen sind aktiv:
+
+- **Server bindet standardmäßig nur an `127.0.0.1`** (nur lokal). Bei Bindung an
+  eine Netzwerk-Adresse (`--host 0.0.0.0`) erscheint eine Warnung.
+- **Host-Header-Schutz** gegen DNS-Rebinding: Anfragen mit fremdem Host werden
+  mit 403 abgewiesen. Für LAN-Zugriff `JARVIS_ALLOWED_HOSTS` setzen.
+- **Gefährliche Werkzeuge (`shell`, `code`) sind standardmäßig gesperrt.** Sie
+  erreichen das Betriebssystem und werden nur mit ausdrücklichem Opt-in
+  freigeschaltet: `setx JARVIS_ALLOW_DANGEROUS 1` (Windows) bzw.
+  `export JARVIS_ALLOW_DANGEROUS=1`, dann neu starten.
+- **Datei-Sandbox** (`files`, `read`, `edit`, `glob`, `grep`): Zugriff strikt auf
+  den Arbeitsbereich begrenzt (`is_relative_to`-Prüfung, keine Symlinks nach außen).
+- **SSRF-Schutz** in `webfetch`: interne/private/loopback-Adressen (inkl. Cloud-
+  Metadaten `169.254.169.254`) werden blockiert.
+- **API-Key** wird mit Dateirechten `0600` gespeichert (nicht weltlesbar) und nie
+  geloggt oder in Antworten zurückgegeben.
+- **XSS-Schutz**: nutzer-/modellgenerierter Text wird im Dashboard escaped.
+- **Rechner** (`calc`) mit Limit gegen Ressourcen-Erschöpfung (`**`).
+
 ## Tests
 
 ```bash
