@@ -53,6 +53,15 @@
 
   .grid { display: grid; grid-template-columns: 1fr 1.25fr 1fr; gap: 14px; margin-top: 14px; }
   @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  @media (max-width: 640px) {
+    .wrap { padding: 12px 10px 32px; }
+    header.top { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .brand h1 { font-size: 22px; letter-spacing: 3px; }
+    .clock { font-size: 24px; }
+    .reactor { width: min(240px, 66vw); }
+    .cmd-row { gap: 8px; }
+    input.text { min-width: 100%; order: 4; }
+  }
 
   .panel { border: 1px solid var(--edge); border-radius: 14px; background: var(--panel); padding: 14px; }
   .panel h2 { font-family: var(--mono); font-size: 12px; letter-spacing: 2px; color: var(--accent); margin: 0 0 10px; text-transform: uppercase; }
