@@ -290,6 +290,7 @@
   }
 
   function speak(text) {
+    lastSpeakText = text || "";   // gemerkt fuers Antippen (iPhone: Auto-Ton blockiert)
     if (!synth || $("mute").checked) return;
     try {
       synth.cancel();
@@ -632,6 +633,12 @@
 
   // Echt-ausfuehren-Schalter
   $("exec").addEventListener("change", function () { agentExecute = $("exec").checked; });
+
+  // Antwort antippen = vorlesen (iPhone/Safari erlaubt Ton erst nach Tipp).
+  var lastSpeakText = "";
+  $("answer").style.cursor = "pointer";
+  $("answer").setAttribute("title", "Tippen, um die Antwort zu hören");
+  $("answer").addEventListener("click", function () { if (lastSpeakText) { speak(lastSpeakText); } });
 
   // Freihändig-Modus (Wake-Word „Jarvis")
   if ($("wake")) { $("wake").addEventListener("change", function () { setWake($("wake").checked); }); }
