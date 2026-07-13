@@ -210,13 +210,21 @@ python3 -m open_jarvis.agent --model fable-5 "suche nach günstigen Flügen"
 ```
 
 Werkzeuge u. a.: `shop_bauen` (kompletter, verkaufsfertiger Shop-Bauplan mit
-Produkten & CHF-Preisen), `web_suche`, `webseite`, `app_starten`, `datei_schreiben`,
-`notiz`, `plugins`. Ohne `--execute` läuft eine gefahrlose Vorschau.
+Produkten & CHF-Preisen), `shop_veroeffentlichen` (Shop **live in Shopify** anlegen),
+`web_suche`, `webseite`, `app_starten`, `datei_schreiben`, `notiz`, `plugins`.
+Ohne `--execute` läuft eine gefahrlose Vorschau.
+
+```bash
+# Shop wirklich live in Shopify anlegen (Produkte als Entwurf):
+export SHOPIFY_STORE="mein-shop"  SHOPIFY_ADMIN_TOKEN="shpat_..."
+python3 -m open_jarvis.agent --execute "stelle einen Shop für Kaffee namens Bergbohne live auf Shopify online"
+```
 
 > **Ehrlich:** Für Planung mit **Fable 5 / Claude** brauchst du einen Anthropic-Schlüssel
-> in `ANTHROPIC_API_KEY`. Ohne Schlüssel plant der **lokale, kostenlose** Motor —
-> JARVIS bleibt immer bedienbar. `shop_bauen` erzeugt einen **Bauplan** (kein live
-> erstellter Shopify-Shop). Details: [`jarvis/docs/JARVIS_AGENT.md`](jarvis/docs/JARVIS_AGENT.md).
+> in `ANTHROPIC_API_KEY`; ohne Schlüssel plant der **lokale, kostenlose** Motor.
+> Für `shop_veroeffentlichen` brauchst du `SHOPIFY_STORE` + `SHOPIFY_ADMIN_TOKEN`;
+> ohne sie bleibt es beim **Bauplan** (`shop_bauen`). JARVIS bleibt immer bedienbar.
+> Details: [`jarvis/docs/JARVIS_AGENT.md`](jarvis/docs/JARVIS_AGENT.md).
 
 ### Tests
 

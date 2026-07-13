@@ -60,10 +60,11 @@ class LocalPlanner:
         steps: list[dict[str, Any]] = []
 
         if any(w in low for w in ("shop", "laden", "store", "unternehmen", "firma")):
+            wants_live = any(w in low for w in ("shopify", "live", "veroeffentlich", "veröffentlich", "online stellen", "online-stellen", "publiziere", "publizieren"))
             steps.append({
-                "tool": "shop_bauen",
+                "tool": "shop_veroeffentlichen" if wants_live else "shop_bauen",
                 "args": self._shop_args(text),
-                "why": "Kompletter Shop-Bauplan aus der Aufgabe abgeleitet.",
+                "why": "Shop live in Shopify anlegen." if wants_live else "Kompletter Shop-Bauplan aus der Aufgabe abgeleitet.",
             })
         if any(w in low for w in ("plugin", "plugins", "faehigkeit", "fähigkeit")):
             steps.append({"tool": "plugins", "args": {}, "why": "Verfuegbare Plugins auflisten."})
@@ -108,8 +109,15 @@ class LocalPlanner:
     @staticmethod
     def _shop_args(text: str) -> dict[str, Any]:
         args: dict[str, Any] = {}
-        # Name zuerst aus "namens X" / "heisst X" ziehen (und merken, um ihn aus sells zu entfernen).
-        m2 = re.search(r"(?:namens|heisst|heißt|name\s+ist)\s+([\wäöüÄÖÜ '-]+)", text, flags=re.IGNORECASE)
+        # Stoppwoerter, an denen ein Name endet (Bindewoerter / Befehlsteile).
+        stop = (r"live|auf|online|shopify|und|oder|mit|fuer|für|als|in|zum|zur|"
+                r"veroeffentlich\w*|veröffentlich\w*|publizier\w*")
+        # Name aus "namens X" / "heisst X" ziehen — hoert an einem Stoppwort auf.
+        m2 = re.search(
+            rf"(?:namens|heisst|heißt|name\s+ist)\s+((?:(?!\b(?:{stop})\b)[\wäöüÄÖÜ'-]+\s*){{1,4}})",
+            text,
+            flags=re.IGNORECASE,
+        )
         if m2:
             args["name"] = m2.group(1).strip(" .")
         # "shop fuer X" / "shop für X" -> was verkauft wird

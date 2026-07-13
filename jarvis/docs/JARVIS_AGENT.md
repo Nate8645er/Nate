@@ -74,6 +74,7 @@ wirklich geschrieben.
 | Werkzeug | Was es tut |
 |---|---|
 | `shop_bauen` | Erzeugt einen kompletten, verkaufsfertigen **Shop-Bauplan** (Name, Slogan, Farbwelt, Kollektionen, Produkte mit CHF-Preisen, Checkliste) als `.md` + `.json` |
+| `shop_veroeffentlichen` | Legt den Shop **live in Shopify** an (Produkte als Entwurf). Braucht `SHOPIFY_STORE` + `SHOPIFY_ADMIN_TOKEN` |
 | `web_suche` | Bereitet eine sichere Google-Suche vor |
 | `webseite` | Öffnet eine Webseite (nach URL-Sicherheitsprüfung) |
 | `app_starten` | Startet eine Desktop-Anwendung |
@@ -98,9 +99,27 @@ python3 -m open_jarvis.agent --execute "baue einen Shop für Bio-Tee namens Blat
 # → ~/.jarvis/agent_workspace/shops/blattgold/shop_plan.md  (+ .json)
 ```
 
+### Shop wirklich live in Shopify anlegen
+
+Mit hinterlegten Zugangsdaten legt der Agent den Shop **live** an — Produkte und
+Kollektionen werden über die Shopify-Admin-API erstellt (Produkte als **Entwurf**,
+damit nichts versehentlich sofort verkauft wird).
+
+```bash
+export SHOPIFY_STORE="mein-shop"            # oder mein-shop.myshopify.com
+export SHOPIFY_ADMIN_TOKEN="shpat_..."       # Admin-API-Zugriffstoken
+python3 -m open_jarvis.agent --execute "stelle einen Shop für Kaffee namens Bergbohne live auf Shopify online"
+```
+
+Der Agent erkennt Wörter wie *live*, *Shopify*, *veröffentlichen*, *online stellen*
+und wählt dann das Werkzeug `shop_veroeffentlichen` statt `shop_bauen`.
+**Ohne Zugangsdaten** sagt er dir klar, welche zwei Variablen fehlen, und bleibt
+im Bauplan-Modus.
+
 > **Ehrliche Einordnung:** Ein automatisch erzeugter Leer-Shop hat noch keinen
 > Marktwert. Wert entsteht durch echte Produkte, Umsatz und Kundschaft. Der Bauplan
-> ist dein Startpunkt — nicht das fertige, verkaufsfähige Unternehmen.
+> (bzw. der frisch angelegte Draft-Shop) ist dein Startpunkt — nicht das fertige,
+> verkaufsfähige Unternehmen.
 
 ---
 
@@ -129,6 +148,7 @@ open_jarvis/agent/
 ├── planner.py         LocalPlanner (keyless) + ClaudePlanner (mit Fallback)
 ├── tools.py           Werkzeug-Registry (sicher, pfadgeschützt)
 ├── shop_builder.py    deterministischer Shop-Bauplan-Generator
+├── shopify_client.py  Shopify-Admin-API-Client (Shop live anlegen), keyless-sicher
 ├── agent.py           Agenten-Schleife: Plan → Werkzeuge → Bericht
 └── __main__.py        CLI
 ```

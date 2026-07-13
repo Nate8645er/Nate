@@ -29,6 +29,7 @@ from open_jarvis.integrations.url_safety import build_google_search_url, normali
 from open_jarvis.security.path_safety import validate_path_within_root
 
 from open_jarvis.agent.shop_builder import build_shop_blueprint
+from open_jarvis.agent.shopify_client import ShopifyClient, publish_blueprint
 
 
 @dataclass(frozen=True)
@@ -56,10 +57,14 @@ class Tool:
 
 @dataclass
 class ToolContext:
-    """Laufzeit-Kontext: Arbeitsbereich + Ausfuehrungsmodus."""
+    """Laufzeit-Kontext: Arbeitsbereich + Ausfuehrungsmodus + optionaler Shopify-Client."""
 
     workspace: Path
     execute: bool = False
+    shopify: ShopifyClient | None = None
+
+    def shopify_client(self) -> ShopifyClient:
+        return self.shopify if self.shopify is not None else ShopifyClient()
 
     def safe_path(self, candidate: str) -> Path:
         result = validate_path_within_root(self.workspace, candidate)
@@ -158,6 +163,43 @@ def _tool_shop_bauen(args: dict[str, Any], ctx: ToolContext) -> ToolResult:
     return ToolResult(True, f"Shop-Bauplan '{blueprint['name']}' erstellt: {data['products']} Produkte, {data['collections']} Kollektionen.", data, executed=True)
 
 
+def _tool_shop_veroeffentlichen(args: dict[str, Any], ctx: ToolContext) -> ToolResult:
+    """Baut den Bauplan und legt den Shop live in Shopify an (Produkte als Entwurf)."""
+
+    blueprint = build_shop_blueprint(
+        name=str(args.get("name") or args.get("shop") or "Mein Shop"),
+        sells=str(args.get("sells") or args.get("produkt") or args.get("was") or ""),
+        audience=str(args.get("audience") or args.get("zielgruppe") or ""),
+        style=str(args.get("style") or args.get("stil") or ""),
+        product_count=int(args.get("product_count") or args.get("anzahl") or 8),
+    )
+    client = ctx.shopify_client()
+    data = {
+        "slug": blueprint["slug"],
+        "planned_products": len(blueprint["products"]),
+        "planned_collections": len(blueprint["collections"]),
+        "shopify_ready": client.available(),
+    }
+    if not client.available():
+        return ToolResult(
+            False,
+            "Shopify-Zugangsdaten fehlen. Setze SHOPIFY_STORE und SHOPIFY_ADMIN_TOKEN, "
+            f"dann lege ich '{blueprint['name']}' ({data['planned_products']} Produkte) live an. "
+            "Bis dahin nutze 'shop_bauen' fuer den Bauplan.",
+            data,
+        )
+    if not ctx.execute:
+        return ToolResult(
+            True,
+            f"Wuerde '{blueprint['name']}' live in Shopify anlegen: "
+            f"{data['planned_products']} Produkte, {data['planned_collections']} Kollektionen.",
+            data,
+        )
+    result = publish_blueprint(blueprint, client)
+    data.update(result.to_dict())
+    return ToolResult(result.ok, result.summary, data, executed=result.ok)
+
+
 def _tool_plugins(args: dict[str, Any], ctx: ToolContext) -> ToolResult:
     from open_jarvis.enterprise import catalog
 
@@ -179,6 +221,7 @@ def build_default_registry() -> dict[str, Tool]:
         Tool("datei_lesen", "Liest eine Datei aus dem Arbeitsbereich.", {"path": "relativer Pfad"}, _tool_datei_lesen),
         Tool("notiz", "Legt eine Notiz/Erinnerung ab.", {"note": "Notiztext"}, _tool_notiz),
         Tool("shop_bauen", "Erzeugt einen kompletten, verkaufsfertigen Shop-Bauplan.", {"name": "Shop-Name", "sells": "was verkauft wird", "audience": "Zielgruppe", "style": "Stil"}, _tool_shop_bauen),
+        Tool("shop_veroeffentlichen", "Legt den Shop live in Shopify an (Produkte als Entwurf). Braucht SHOPIFY_STORE + SHOPIFY_ADMIN_TOKEN.", {"name": "Shop-Name", "sells": "was verkauft wird", "audience": "Zielgruppe", "style": "Stil"}, _tool_shop_veroeffentlichen),
         Tool("plugins", "Listet verfuegbare JARVIS-Plugins auf.", {"query": "optionaler Filter"}, _tool_plugins),
     ]
     return {tool.name: tool for tool in tools}
