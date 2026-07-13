@@ -264,6 +264,87 @@ TOOL_CATALOG: dict[str, list[str]] = {
 }
 
 
+# ---------------------------------------------------------------------------
+# Neu installierte Faehigkeiten dieser Ausbaustufe. JARVIS UND jeder der
+# 10**12 Mitarbeiter (samt Unternehmen + Developer-Team) besitzen sie ebenfalls:
+# der Fable-5-Knopf (alle KI-Modelle), die Agent-Werkzeuge und die volle
+# Shopify-Anbindung.
+# Spiegeln: open_jarvis.agent.models (MODEL_REGISTRY) und
+# open_jarvis.agent.shopify_client (CAPABILITY_MAP) — Konsistenz per Test geprueft.
+# ---------------------------------------------------------------------------
+
+#: Auswaehlbare KI-Motoren ("Fable-5-Knopf"). Reihenfolge = Anzeige-Reihenfolge.
+AI_MODELS: list[str] = [
+    "Fable 5",
+    "Claude Opus 4.8",
+    "Claude Sonnet 5",
+    "Claude Haiku 4.5",
+    "Groq (Llama)",
+    "Lokal (keyless)",
+]
+
+#: Werkzeuge des JARVIS-Agenten (Befehle ausfuehren wie Claude Code).
+AGENT_TOOLS: list[str] = [
+    "Shop bauen",
+    "Shop veroeffentlichen (Shopify live)",
+    "Shop-Info",
+    "Produkte suchen",
+    "Bestellungen abrufen",
+    "Rabattcode anlegen",
+    "Websuche",
+    "Webseite oeffnen",
+    "App starten",
+    "Datei schreiben",
+    "Datei lesen",
+    "Notiz",
+    "Plugins auflisten",
+    "Sprachsteuerung (Command Center)",
+    "Agent-Bruecke (HUD -> Ausfuehrung)",
+]
+
+#: Shopify-Faehigkeiten (aus dem Shopify-MCP gespiegelt).
+SHOPIFY_CAPABILITIES: list[str] = [
+    "Shop-Infos",
+    "Produkte suchen",
+    "Produkt abrufen",
+    "Produkt anlegen",
+    "Produkt aendern",
+    "Produktstatus in Masse",
+    "Kollektionen suchen",
+    "Kollektion abrufen",
+    "Kollektion anlegen",
+    "Kollektion aendern",
+    "Produkt zu Kollektion",
+    "Bestellungen auflisten",
+    "Bestellung abrufen",
+    "Kunden auflisten",
+    "Lagerbestaende abrufen",
+    "Lagerbestand setzen",
+    "Rabattcode anlegen",
+    "Analytics (ShopifyQL)",
+    "GraphQL-Abfrage",
+    "GraphQL-Mutation",
+]
+
+
+def all_models() -> list[str]:
+    """Alle auswaehlbaren KI-Modelle (inkl. Fable 5)."""
+
+    return list(AI_MODELS)
+
+
+def all_agent_tools() -> list[str]:
+    """Alle Agent-Werkzeuge."""
+
+    return list(AGENT_TOOLS)
+
+
+def all_shopify_capabilities() -> list[str]:
+    """Alle Shopify-Faehigkeiten."""
+
+    return list(SHOPIFY_CAPABILITIES)
+
+
 def all_skills() -> list[str]:
     """Alle Skills als flache, deterministisch sortierte Liste."""
 
@@ -295,14 +376,35 @@ def catalog_summary() -> dict[str, int]:
     }
 
 
+def capability_summary() -> dict[str, int]:
+    """Erweiterte Zaehler inkl. der neu installierten Faehigkeiten.
+
+    (Getrennt von ``catalog_summary()``, damit dessen stabile 6-Schluessel-Form
+    erhalten bleibt.)
+    """
+
+    base = catalog_summary()
+    base.update(
+        {
+            "models": len(AI_MODELS),
+            "agent_tools": len(AGENT_TOOLS),
+            "shopify_capabilities": len(SHOPIFY_CAPABILITIES),
+        }
+    )
+    return base
+
+
 def export_catalog() -> dict[str, object]:
     """Kompletter Katalog als JSON-faehiges Objekt (fuer Dashboard und Plugins)."""
 
     return {
-        "summary": catalog_summary(),
+        "summary": capability_summary(),
         "skills": SKILL_CATALOG,
         "plugins": PLUGIN_CATALOG,
         "tools": TOOL_CATALOG,
+        "models": AI_MODELS,
+        "agent_tools": AGENT_TOOLS,
+        "shopify": SHOPIFY_CAPABILITIES,
     }
 
 

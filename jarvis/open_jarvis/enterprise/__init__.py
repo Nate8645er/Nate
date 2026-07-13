@@ -11,12 +11,19 @@ Oeffentliche API des Enterprise-Pakets:
 from __future__ import annotations
 
 from open_jarvis.enterprise.catalog import (
+    AGENT_TOOLS,
+    AI_MODELS,
     PLUGIN_CATALOG,
+    SHOPIFY_CAPABILITIES,
     SKILL_CATALOG,
     TOOL_CATALOG,
+    all_agent_tools,
+    all_models,
     all_plugins,
+    all_shopify_capabilities,
     all_skills,
     all_tools,
+    capability_summary,
     catalog_summary,
     export_catalog,
     export_catalog_json,
@@ -60,4 +67,12 @@ __all__ = [
     "catalog_summary",
     "export_catalog",
     "export_catalog_json",
+    # Neu installierte Faehigkeiten (Fable 5 & Co.)
+    "AI_MODELS",
+    "AGENT_TOOLS",
+    "SHOPIFY_CAPABILITIES",
+    "all_models",
+    "all_agent_tools",
+    "all_shopify_capabilities",
+    "capability_summary",
 ]

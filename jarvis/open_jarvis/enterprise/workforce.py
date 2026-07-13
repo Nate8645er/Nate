@@ -150,6 +150,30 @@ def _capability_block(categories: dict[str, list[str]]) -> dict[str, object]:
     }
 
 
+def _list_block(items: list[str]) -> dict[str, object]:
+    """Zaehler + Liste fuer eine flache Faehigkeiten-Liste (Modelle, Agent-Tools, Shopify)."""
+
+    return {"count": len(items), "items": list(items)}
+
+
+def _full_capabilities() -> dict[str, object]:
+    """Der komplette Faehigkeiten-Satz, den JEDER Mitarbeiter/jedes Unternehmen besitzt.
+
+    Enthaelt ALLE Skills, Plugins, Tools sowie die neu installierten Faehigkeiten:
+    alle KI-Modelle (inkl. Fable 5), alle Agent-Werkzeuge und die volle
+    Shopify-Anbindung.
+    """
+
+    return {
+        "skills": _capability_block(catalog.SKILL_CATALOG),
+        "plugins": _capability_block(catalog.PLUGIN_CATALOG),
+        "tools": _capability_block(catalog.TOOL_CATALOG),
+        "models": _list_block(catalog.AI_MODELS),
+        "agent_tools": _list_block(catalog.AGENT_TOOLS),
+        "shopify": _list_block(catalog.SHOPIFY_CAPABILITIES),
+    }
+
+
 def employee(emp_id: int) -> dict[str, object]:
     """Vollstaendiger, deterministischer Mitarbeiter-Datensatz.
 
@@ -162,8 +186,9 @@ def employee(emp_id: int) -> dict[str, object]:
     """
 
     identity = employee_identity(emp_id)
+    capabilities = _full_capabilities()
 
-    return {
+    record: dict[str, object] = {
         "id": identity["id"],
         "name": identity["name"],
         "badge": identity["badge"],
@@ -172,18 +197,22 @@ def employee(emp_id: int) -> dict[str, object]:
         "role": identity["role"],
         "department": identity["department"],
         "specialization": identity["specialization"],
-        "skills": _capability_block(catalog.SKILL_CATALOG),
-        "plugins": _capability_block(catalog.PLUGIN_CATALOG),
-        "tools": _capability_block(catalog.TOOL_CATALOG),
-        "company": {
-            "name": identity["company_name"],
-            "employees": COMPANY_EMPLOYEES,
-            "developers": COMPANY_DEVELOPERS,
-            "skills": _capability_block(catalog.SKILL_CATALOG),
-            "plugins": _capability_block(catalog.PLUGIN_CATALOG),
-            "tools": _capability_block(catalog.TOOL_CATALOG),
+    }
+    # ALLE Skills/Plugins/Tools + KI-Modelle (inkl. Fable 5) + Agent-Werkzeuge + Shopify.
+    record.update(capabilities)
+    record["company"] = {
+        "name": identity["company_name"],
+        "employees": COMPANY_EMPLOYEES,
+        "developers": COMPANY_DEVELOPERS,
+        # Das Unternehmen und sein 10**12-Developer-Team besitzen denselben
+        # kompletten Faehigkeiten-Satz wie der Mitarbeiter selbst.
+        **_full_capabilities(),
+        "developer_team": {
+            "size": COMPANY_DEVELOPERS,
+            **_full_capabilities(),
         },
     }
+    return record
 
 
 def workforce_summary() -> dict[str, int]:
@@ -207,4 +236,8 @@ def workforce_summary() -> dict[str, int]:
         "skill_categories": summary["skill_categories"],
         "plugin_categories": summary["plugin_categories"],
         "tool_categories": summary["tool_categories"],
+        # Neu installierte Faehigkeiten, die JEDER Mitarbeiter besitzt:
+        "models": len(catalog.AI_MODELS),
+        "agent_tools": len(catalog.AGENT_TOOLS),
+        "shopify_capabilities": len(catalog.SHOPIFY_CAPABILITIES),
     }

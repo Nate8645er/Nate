@@ -37,9 +37,12 @@ Dieses Repo bündelt drei Komponenten:
 
 **Single Source of Truth** für alle Fähigkeiten ist der zentrale Katalog
 [`jarvis/open_jarvis/enterprise/catalog.py`](jarvis/open_jarvis/enterprise/catalog.py):
-**200 Skills**, **128 Plugins** und **192 Tools**, jeweils in **16 Kategorien**.
-JARVIS selbst — und jeder einzelne virtuelle Mitarbeiter samt seinem Unternehmen und
-Developer-Team — besitzt **alle** davon.
+**200 Skills**, **128 Plugins** und **192 Tools**, jeweils in **16 Kategorien** — plus
+die neu installierten Fähigkeiten: **6 KI-Modelle** (inkl. **Fable 5**), **15 Agent-Werkzeuge**
+und **20 Shopify-Fähigkeiten**.
+JARVIS selbst — und **jeder** einzelne virtuelle Mitarbeiter samt seinem Unternehmen und
+**1.000.000.000.000-Developer-Team** — besitzt **alle** davon: alle Skills, Plugins, Tools,
+**den Fable-5-Knopf** (alle Modelle), die Agent-Werkzeuge und die volle Shopify-Anbindung.
 
 ### 200 Skills
 
