@@ -1,0 +1,11 @@
+{
+  "id": "produktivitaet_pomodoro_coach",
+  "name": "Pomodoro-Coach",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Pomodoro-Coach“ aus der Katalog-Kategorie „Produktivitaet“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

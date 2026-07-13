@@ -1,0 +1,11 @@
+{
+  "id": "medien_unterhaltung_musik_erkennung",
+  "name": "Musik-Erkennung",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Musik-Erkennung“ aus der Katalog-Kategorie „Medien & Unterhaltung“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

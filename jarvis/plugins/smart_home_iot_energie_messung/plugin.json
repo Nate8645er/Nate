@@ -1,0 +1,11 @@
+{
+  "id": "smart_home_iot_energie_messung",
+  "name": "Energie-Messung",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Energie-Messung“ aus der Katalog-Kategorie „Smart Home & IoT“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

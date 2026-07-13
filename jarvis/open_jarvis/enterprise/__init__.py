@@ -1,0 +1,63 @@
+"""JARVIS Enterprise OS — Workforce-Engine, Katalog und Live-Ticker.
+
+Oeffentliche API des Enterprise-Pakets:
+
+- Kennzahlen-Konstanten (``EMPLOYEES_DIRECT``, ``TOTAL_WORKFORCE``, ...)
+- :func:`employee` / :func:`workforce_summary` — deterministische Engine
+- :class:`LiveTicker` — deterministischer Event-Ticker
+- Katalog-Funktionen (``all_skills``, ``catalog_summary``, ...)
+"""
+
+from __future__ import annotations
+
+from open_jarvis.enterprise.catalog import (
+    PLUGIN_CATALOG,
+    SKILL_CATALOG,
+    TOOL_CATALOG,
+    all_plugins,
+    all_skills,
+    all_tools,
+    catalog_summary,
+    export_catalog,
+    export_catalog_json,
+)
+from open_jarvis.enterprise.live_ticker import DEFAULT_SEED, EVENT_TYPES, LiveTicker
+from open_jarvis.enterprise.workforce import (
+    COMPANY_DEVELOPERS,
+    COMPANY_EMPLOYEES,
+    EMPLOYEES_DIRECT,
+    TOTAL_DEVELOPERS,
+    TOTAL_WORKFORCE,
+    employee,
+    employee_identity,
+    mix64,
+    workforce_summary,
+)
+
+__all__ = [
+    # Kennzahlen
+    "EMPLOYEES_DIRECT",
+    "COMPANY_EMPLOYEES",
+    "COMPANY_DEVELOPERS",
+    "TOTAL_WORKFORCE",
+    "TOTAL_DEVELOPERS",
+    # Engine
+    "mix64",
+    "employee",
+    "employee_identity",
+    "workforce_summary",
+    # Live-Ticker
+    "LiveTicker",
+    "DEFAULT_SEED",
+    "EVENT_TYPES",
+    # Katalog
+    "SKILL_CATALOG",
+    "PLUGIN_CATALOG",
+    "TOOL_CATALOG",
+    "all_skills",
+    "all_plugins",
+    "all_tools",
+    "catalog_summary",
+    "export_catalog",
+    "export_catalog_json",
+]

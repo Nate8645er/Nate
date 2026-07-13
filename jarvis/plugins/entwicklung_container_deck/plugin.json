@@ -1,0 +1,11 @@
+{
+  "id": "entwicklung_container_deck",
+  "name": "Container-Deck",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Container-Deck“ aus der Katalog-Kategorie „Entwicklung“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

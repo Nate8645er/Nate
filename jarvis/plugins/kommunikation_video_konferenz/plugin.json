@@ -1,0 +1,11 @@
+{
+  "id": "kommunikation_video_konferenz",
+  "name": "Video-Konferenz",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Video-Konferenz“ aus der Katalog-Kategorie „Kommunikation“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

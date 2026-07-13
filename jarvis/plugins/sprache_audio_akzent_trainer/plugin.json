@@ -1,0 +1,11 @@
+{
+  "id": "sprache_audio_akzent_trainer",
+  "name": "Akzent-Trainer",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Akzent-Trainer“ aus der Katalog-Kategorie „Sprache & Audio“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

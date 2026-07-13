@@ -1,0 +1,11 @@
+{
+  "id": "daten_berichte_umfrage_auswerter",
+  "name": "Umfrage-Auswerter",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Umfrage-Auswerter“ aus der Katalog-Kategorie „Daten & Berichte“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

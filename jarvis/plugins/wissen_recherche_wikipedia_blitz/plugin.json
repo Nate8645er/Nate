@@ -1,0 +1,11 @@
+{
+  "id": "wissen_recherche_wikipedia_blitz",
+  "name": "Wikipedia-Blitz",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Wikipedia-Blitz“ aus der Katalog-Kategorie „Wissen & Recherche“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

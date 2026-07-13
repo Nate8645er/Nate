@@ -1,0 +1,11 @@
+{
+  "id": "system_desktop_system_monitor",
+  "name": "System-Monitor",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „System-Monitor“ aus der Katalog-Kategorie „System & Desktop“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

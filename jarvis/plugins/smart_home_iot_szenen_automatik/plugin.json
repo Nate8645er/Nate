@@ -1,0 +1,11 @@
+{
+  "id": "smart_home_iot_szenen_automatik",
+  "name": "Szenen-Automatik",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Szenen-Automatik“ aus der Katalog-Kategorie „Smart Home & IoT“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

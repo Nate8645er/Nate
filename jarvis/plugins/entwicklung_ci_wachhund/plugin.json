@@ -1,0 +1,11 @@
+{
+  "id": "entwicklung_ci_wachhund",
+  "name": "CI-Wachhund",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „CI-Wachhund“ aus der Katalog-Kategorie „Entwicklung“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}
