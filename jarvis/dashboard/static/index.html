@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JARVIS HyperScale — Live</title>
+<style>
+  :root { --bg:#0b0f14; --panel:#121924; --line:#1f2c3d; --txt:#d7e2ee;
+          --dim:#8fa3b8; --ok:#3ddc84; --warn:#ffb454; --err:#ff6b6b; --acc:#4da3ff; }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--bg); color:var(--txt); font:14px/1.45 system-ui, "Segoe UI", sans-serif; padding:16px; }
+  h1 { font-size:20px; letter-spacing:.06em; }
+  h1 span { color:var(--acc); }
+  .sub { color:var(--dim); margin:2px 0 14px; font-size:12px; }
+  .grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 14px; }
+  .kpi .v { font-size:26px; font-weight:700; margin-top:2px; font-variant-numeric:tabular-nums; }
+  .kpi .l { color:var(--dim); font-size:11px; text-transform:uppercase; letter-spacing:.08em; }
+  .cols { display:grid; gap:12px; grid-template-columns:2fr 1fr; margin-top:12px; }
+  @media (max-width:900px){ .cols { grid-template-columns:1fr; } }
+  table { width:100%; border-collapse:collapse; font-size:12.5px; }
+  th { text-align:left; color:var(--dim); font-weight:600; padding:4px 6px; border-bottom:1px solid var(--line); }
+  td { padding:4px 6px; border-bottom:1px solid var(--line); vertical-align:top; }
+  .tag { display:inline-block; padding:1px 7px; border-radius:99px; font-size:11px; }
+  .aktiv { background:#123a5e; color:var(--acc); }
+  .fertig { background:#11341f; color:var(--ok); }
+  .fehler, .warn { background:#3a1d1d; color:var(--err); }
+  .wartend { background:#33301a; color:var(--warn); }
+  .demo { color:var(--dim); font-size:10px; }
+  .logs { max-height:260px; overflow-y:auto; font:11.5px/1.5 ui-monospace, Consolas, monospace; }
+  .bar { height:8px; background:#0e1520; border-radius:99px; overflow:hidden; margin-top:6px; }
+  .bar i { display:block; height:100%; background:var(--acc); transition:width .6s; }
+  form { display:flex; gap:8px; margin-top:12px; }
+  input { flex:1; background:#0e1520; border:1px solid var(--line); border-radius:8px; padding:9px 12px; color:var(--txt); }
+  button { background:var(--acc); border:0; border-radius:8px; padding:9px 16px; color:#04121f; font-weight:700; cursor:pointer; }
+  .honest { border-color:#4d3b18; background:#191307; color:#e8c98a; font-size:12px; }
+</style>
+</head>
+<body>
+  <h1>JARVIS <span>HyperScale</span> — Live-Ticker</h1>
+  <div class="sub" id="meta">verbinde…</div>
+
+  <div class="grid" id="kpis"></div>
+
+  <div class="card honest" style="margin-top:12px">
+    <b>Ehrlichkeits-Hinweis:</b> Dieses Dashboard zeigt ausschließlich real gemessene Daten.
+    Es gibt keine Geld-Generierung — Finanzfelder bleiben 0.00 CHF, bis eine echte Datenquelle
+    angebunden ist. Als <i>Demo</i> markierte Aufgaben sind Beispiel-Aufgaben, keine echten Aufträge.
+  </div>
+
+  <form onsubmit="return submitTask(event)">
+    <input id="task" placeholder='Aufgabe eingeben… (z. B. "!plugin system info" oder freier Text)'>
+    <button>An Organisation übergeben</button>
+  </form>
+
+  <div class="cols">
+    <div class="card">
+      <h3>Aktive Agenten &amp; letzte Aufgaben</h3>
+      <table><thead><tr><th>#</th><th>Agent (Mitarbeiter)</th><th>Team</th><th>Aufgabe</th><th>Status</th></tr></thead>
+      <tbody id="tasks"></tbody></table>
+    </div>
+    <div>
+      <div class="card">
+        <h3>System</h3>
+        <div class="l" style="color:var(--dim);font-size:11px">CPU</div><div class="bar"><i id="cpu"></i></div>
+        <div class="l" style="color:var(--dim);font-size:11px;margin-top:8px">RAM</div><div class="bar"><i id="ram"></i></div>
+        <div id="sys" class="sub" style="margin-top:8px"></div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <h3>Plugins / Skills / Tools</h3>
+        <div id="plugins" class="sub"></div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <h3>Logs</h3>
+        <div class="logs" id="logs"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const fmt = n => Number(n).toLocaleString('de-CH');
+async function tick(){
+  try{
+    const s = await (await fetch('/api/state')).json();
+    document.getElementById('meta').textContent =
+      `Adressraum: ${fmt(s.adressraum_pro_ebene)} Mitarbeiter pro Ebene (rekursiv, prozedural) · ` +
+      `Modell: ${s.modell} · Modus: ${s.modell_modus} · Laufzeit: ${s.laufzeit_s}s`;
+    const k = [
+      ['Adressierbar / Ebene', fmt(s.adressraum_pro_ebene)],
+      ['Aktive Agenten', `${s.aktive_agenten} / ${s.max_parallel}`],
+      ['Wartende Aufgaben', fmt(s.wartende_aufgaben)],
+      ['Aktivierungen gesamt', fmt(s.aktivierte_agenten_gesamt)],
+      ['Erledigt', fmt(s.fertig)],
+      ['Fehler', fmt(s.fehler)],
+      ['Gedächtnis-Einträge', fmt(s.gedaechtnis_eintraege)],
+    ];
+    document.getElementById('kpis').innerHTML = k.map(([l,v]) =>
+      `<div class="card kpi"><div class="l">${l}</div><div class="v">${v}</div></div>`).join('');
+    document.getElementById('cpu').style.width = s.cpu_prozent + '%';
+    document.getElementById('ram').style.width = s.ram_prozent + '%';
+    document.getElementById('sys').textContent =
+      `CPU ${s.cpu_prozent}% · RAM ${s.ram_prozent}% (${fmt(s.ram_frei_mb)} MB frei) · max. parallel: ${s.max_parallel} (Hardware-Limit)`;
+    const rows = [...s.aktive, ...s.letzte_aufgaben].slice(0, 25).map(t =>
+      `<tr><td>${t.id}</td><td>${t.agent || '—'}${t.demo ? ' <span class="demo">DEMO</span>' : ''}</td>` +
+      `<td>${t.team || ''}</td><td>${t.beschreibung}</td>` +
+      `<td><span class="tag ${t.status}">${t.status}</span></td></tr>`);
+    document.getElementById('tasks').innerHTML = rows.join('');
+    document.getElementById('plugins').innerHTML = s.plugins.map(p =>
+      `<div>• <b>${p.name}</b> — ${p.description} <span class="demo">(${p.allowed_teams === 'alle' ? 'alle Teams' : p.allowed_teams})</span></div>`).join('');
+    document.getElementById('logs').innerHTML = s.logs.map(l =>
+      `<div>[${l.ts}] <span class="${l.level}">${l.level}</span> ${l.msg}</div>`).join('');
+  }catch(e){ document.getElementById('meta').textContent = 'Verbindung unterbrochen — neuer Versuch…'; }
+}
+async function submitTask(ev){
+  ev.preventDefault();
+  const input = document.getElementById('task');
+  if(!input.value.trim()) return false;
+  await fetch('/api/task', {method:'POST', headers:{'content-type':'application/json'},
+    body: JSON.stringify({beschreibung: input.value.trim()})});
+  input.value = '';
+  tick();
+  return false;
+}
+tick(); setInterval(tick, 1500);
+</script>
+</body>
+</html>
