@@ -59,13 +59,27 @@ class LocalPlanner:
         low = text.lower()
         steps: list[dict[str, Any]] = []
 
-        if any(w in low for w in ("shop", "laden", "store", "unternehmen", "firma")):
-            wants_live = any(w in low for w in ("shopify", "live", "veroeffentlich", "veröffentlich", "online stellen", "online-stellen", "publiziere", "publizieren"))
+        mentions_shop = any(w in low for w in ("shop", "laden", "store", "unternehmen", "firma"))
+        wants_live = any(w in low for w in ("shopify", " live", "veroeffentlich", "veröffentlich", "online stellen", "online-stellen", "online", "publiziere", "publizieren"))
+        build_verb = any(w in low for w in ("bau", "erstell", "gründ", "gruend", "eröffne", "eroeffne", "stelle einen", "stell einen", "neuer shop", "neuen shop", "neues unternehmen", "leg mir einen", "mach mir einen"))
+        if mentions_shop and (build_verb or wants_live):
             steps.append({
                 "tool": "shop_veroeffentlichen" if wants_live else "shop_bauen",
                 "args": self._shop_args(text),
                 "why": "Shop live in Shopify anlegen." if wants_live else "Kompletter Shop-Bauplan aus der Aufgabe abgeleitet.",
             })
+        # Shopify-Store-Abfragen/Aktionen (echte MCP-gespiegelte Faehigkeiten).
+        if any(w in low for w in ("rabatt", "gutschein", "discount", "code")) and "shop" not in low[:5]:
+            code = self._discount_code(text)
+            if code:
+                steps.append({"tool": "shop_rabatt", "args": {"code": code, "percentage": self._percentage(text)}, "why": "Rabattcode in Shopify anlegen."})
+        if any(w in low for w in ("bestellung", "bestellungen", "orders", "verkauf", "umsatz")):
+            steps.append({"tool": "shop_bestellungen", "args": {}, "why": "Bestellungen aus Shopify abrufen."})
+        if any(w in low for w in ("meine produkte", "produkte im shop", "produkte anzeigen", "welche produkte", "katalog")):
+            steps.append({"tool": "shop_produkte", "args": {}, "why": "Produkte aus Shopify abrufen."})
+        if any(w in low for w in ("store info", "shop info", "welcher store", "welcher shop", "verbundener")):
+            steps.append({"tool": "shop_info", "args": {}, "why": "Store-Info abrufen."})
+
         if any(w in low for w in ("plugin", "plugins", "faehigkeit", "fähigkeit")):
             steps.append({"tool": "plugins", "args": {}, "why": "Verfuegbare Plugins auflisten."})
         if any(w in low for w in ("such", "google", "finde ", "recherch")):
@@ -95,6 +109,19 @@ class LocalPlanner:
     @staticmethod
     def _strip_verb(text: str) -> str:
         return re.sub(r"^(such[e]?|finde|google|recherchiere)\s+(nach\s+)?", "", text, flags=re.IGNORECASE).strip() or text
+
+    @staticmethod
+    def _discount_code(text: str) -> str | None:
+        m = re.search(r"\bcode\s+([A-Za-z0-9]{3,})", text, flags=re.IGNORECASE)
+        if m:
+            return m.group(1).upper()
+        m2 = re.search(r"\b([A-Z][A-Z0-9]{3,})\b", text)  # z. B. SOMMER10
+        return m2.group(1) if m2 else None
+
+    @staticmethod
+    def _percentage(text: str) -> int:
+        m = re.search(r"(\d{1,2})\s*%", text)
+        return int(m.group(1)) if m else 10
 
     @staticmethod
     def _find_url(text: str) -> str | None:

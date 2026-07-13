@@ -293,6 +293,9 @@ Nate/
   Event-Typen, Plugin-Katalog, FAQ.
 - **JARVIS-Agent (Befehle ausführen, Fable 5):** [`jarvis/docs/JARVIS_AGENT.md`](jarvis/docs/JARVIS_AGENT.md)
   — Modell-Auswahl inkl. Fable 5, Werkzeuge, Shop-Bauplan, Sicherheit, Python-API.
+- **JARVIS ↔ Shopify (aus dem Shopify-MCP gespiegelt):** [`jarvis/docs/JARVIS_SHOPIFY.md`](jarvis/docs/JARVIS_SHOPIFY.md)
+  — Produkte, Kollektionen, Bestellungen, Kunden, Inventar, Rabatte, Analytics,
+  GraphQL; Zuordnung jedes MCP-Werkzeugs zur JARVIS-Methode.
 - **Open.Jarvis-Assistent:** [`jarvis/README.md`](jarvis/README.md) und [`jarvis/docs/`](jarvis/docs/)
 - **Plugin-Verzeichnis:** [`jarvis/plugins/README.md`](jarvis/plugins/README.md)
 - **ULTRA AI ENTERPRISE OS:** [`ultra-enterprise-os/README.md`](ultra-enterprise-os/README.md)

@@ -200,6 +200,60 @@ def _tool_shop_veroeffentlichen(args: dict[str, Any], ctx: ToolContext) -> ToolR
     return ToolResult(result.ok, result.summary, data, executed=result.ok)
 
 
+def _tool_shop_info(args: dict[str, Any], ctx: ToolContext) -> ToolResult:
+    client = ctx.shopify_client()
+    if not client.available():
+        return ToolResult(False, "Shopify-Zugangsdaten fehlen (SHOPIFY_STORE + SHOPIFY_ADMIN_TOKEN).", {"shopify_ready": False})
+    try:
+        shop = client.get_shop()
+    except Exception as exc:
+        return ToolResult(False, f"Shop-Info nicht abrufbar: {exc}")
+    info = {k: shop.get(k) for k in ("name", "domain", "email", "currency", "plan_name", "country_name") if k in shop}
+    return ToolResult(True, f"Store: {shop.get('name', '?')} ({shop.get('domain', '?')})", {"shop": info}, executed=True)
+
+
+def _tool_shop_produkte(args: dict[str, Any], ctx: ToolContext) -> ToolResult:
+    client = ctx.shopify_client()
+    if not client.available():
+        return ToolResult(False, "Shopify-Zugangsdaten fehlen.", {"shopify_ready": False})
+    try:
+        products = client.search_products(query=str(args.get("query") or ""), first=int(args.get("first") or 10))
+    except Exception as exc:
+        return ToolResult(False, f"Produkte nicht abrufbar: {exc}")
+    names = [p.get("title") for p in products]
+    return ToolResult(True, f"{len(products)} Produkte gefunden.", {"products": names}, executed=True)
+
+
+def _tool_shop_bestellungen(args: dict[str, Any], ctx: ToolContext) -> ToolResult:
+    client = ctx.shopify_client()
+    if not client.available():
+        return ToolResult(False, "Shopify-Zugangsdaten fehlen.", {"shopify_ready": False})
+    try:
+        orders = client.list_orders(first=int(args.get("first") or 10))
+    except Exception as exc:
+        return ToolResult(False, f"Bestellungen nicht abrufbar: {exc}")
+    return ToolResult(True, f"{len(orders)} Bestellungen abgerufen.", {"orders": len(orders)}, executed=True)
+
+
+def _tool_shop_rabatt(args: dict[str, Any], ctx: ToolContext) -> ToolResult:
+    code = str(args.get("code") or "").strip().upper()
+    percentage = args.get("percentage") or args.get("prozent") or 10
+    if not code:
+        return ToolResult(False, "Kein Rabattcode angegeben (z. B. code=SOMMER10).")
+    client = ctx.shopify_client()
+    if not client.available():
+        return ToolResult(False, "Shopify-Zugangsdaten fehlen (SHOPIFY_STORE + SHOPIFY_ADMIN_TOKEN).", {"shopify_ready": False})
+    data = {"code": code, "percentage": float(percentage)}
+    if not ctx.execute:
+        return ToolResult(True, f"Wuerde Rabattcode '{code}' ({percentage}%) anlegen.", data)
+    try:
+        created = client.create_discount(code=code, percentage=float(percentage))
+    except Exception as exc:
+        return ToolResult(False, f"Rabatt nicht angelegt: {exc}", data)
+    data["discount_code_id"] = created.get("discount_code", {}).get("id")
+    return ToolResult(True, f"Rabattcode '{code}' ({percentage}%) angelegt.", data, executed=True)
+
+
 def _tool_plugins(args: dict[str, Any], ctx: ToolContext) -> ToolResult:
     from open_jarvis.enterprise import catalog
 
@@ -222,6 +276,10 @@ def build_default_registry() -> dict[str, Tool]:
         Tool("notiz", "Legt eine Notiz/Erinnerung ab.", {"note": "Notiztext"}, _tool_notiz),
         Tool("shop_bauen", "Erzeugt einen kompletten, verkaufsfertigen Shop-Bauplan.", {"name": "Shop-Name", "sells": "was verkauft wird", "audience": "Zielgruppe", "style": "Stil"}, _tool_shop_bauen),
         Tool("shop_veroeffentlichen", "Legt den Shop live in Shopify an (Produkte als Entwurf). Braucht SHOPIFY_STORE + SHOPIFY_ADMIN_TOKEN.", {"name": "Shop-Name", "sells": "was verkauft wird", "audience": "Zielgruppe", "style": "Stil"}, _tool_shop_veroeffentlichen),
+        Tool("shop_info", "Zeigt Infos zum verbundenen Shopify-Store (Name, Domain, Waehrung).", {}, _tool_shop_info),
+        Tool("shop_produkte", "Sucht/listet Produkte im Shopify-Store.", {"query": "optionaler Suchbegriff", "first": "Anzahl"}, _tool_shop_produkte),
+        Tool("shop_bestellungen", "Ruft die letzten Bestellungen aus Shopify ab.", {"first": "Anzahl"}, _tool_shop_bestellungen),
+        Tool("shop_rabatt", "Legt einen Prozent-Rabattcode in Shopify an.", {"code": "Rabattcode", "percentage": "Prozent"}, _tool_shop_rabatt),
         Tool("plugins", "Listet verfuegbare JARVIS-Plugins auf.", {"query": "optionaler Filter"}, _tool_plugins),
     ]
     return {tool.name: tool for tool in tools}
