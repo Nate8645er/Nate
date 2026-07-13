@@ -88,3 +88,33 @@ python3 -m open_jarvis.agent --list-models        # Fable 5 ist mit ★ markiert
 
 Nutzer spricht → **Sprache-zu-Text** → **Systemprompt** → **Fable 5 denkt** →
 **Aktions-System** führt Werkzeuge aus → **Text-to-Speech** → JARVIS antwortet hörbar.
+
+## Implementierung — die Architektur ist echt in JARVIS eingebaut
+
+Die Architektur ist nicht nur ein Bild, sondern als lauffähiges System zusammengesetzt:
+`open_jarvis/agent/system.py` → **`JarvisSystem`**.
+
+- **Systemprompt / Persönlichkeit** (der lila Kasten „…die Persönlichkeit von JARVIS
+  und seine Anweisungen") lebt in `SYSTEM_PROMPT`.
+- **`JarvisSystem.handle(befehl)`** schickt einen Befehl durch das ganze System:
+  Systemprompt → **Gehirn (Fable 5)** denkt → Aktions-System führt Werkzeuge aus →
+  liefert eine in JARVIS-Persönlichkeit formulierte Sprachantwort (`spoken`, „…Sir.").
+- **`JarvisSystem.architecture()`** liefert die Architektur als Daten — die
+  Single Source of Truth für Diagramm, CLI und Server.
+
+Abrufen:
+
+```bash
+cd jarvis
+python3 -m open_jarvis.agent --architecture        # Architektur als JSON (Gehirn = Fable 5)
+python3 -c "from open_jarvis.agent import JarvisSystem; print(JarvisSystem().handle('baue einen Shop für Kaffee namens Bergbohne').spoken)"
+```
+
+Über die laufende Brücke (`--serve`) zusätzlich als HTTP-Endpunkt:
+
+```
+GET /architecture   -> {"ok": true, "architecture": { "brain": {"label": "Fable 5", ...}, "layers": [...] }}
+POST /agent         -> Antwort enthält jetzt auch "spoken" (JARVIS-Persönlichkeit)
+```
+
+Visuelle Grafik: [`../dashboard/jarvis_architektur.html`](../dashboard/jarvis_architektur.html).

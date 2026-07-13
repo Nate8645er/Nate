@@ -16,9 +16,16 @@ from __future__ import annotations
 from open_jarvis.agent.agent import AgentRun, JarvisAgent, StepOutcome, render_run
 from open_jarvis.agent.models import (
     AgentModel,
+    brain_model,
     default_model,
     list_models,
     resolve_model,
+)
+from open_jarvis.agent.system import (
+    SYSTEM_PROMPT,
+    JarvisSystem,
+    SystemResponse,
+    architecture,
 )
 from open_jarvis.agent.tools import Tool, ToolContext, ToolResult, build_default_registry
 
@@ -26,10 +33,15 @@ __all__ = [
     "AgentModel",
     "AgentRun",
     "JarvisAgent",
+    "JarvisSystem",
+    "SystemResponse",
+    "SYSTEM_PROMPT",
     "StepOutcome",
     "Tool",
     "ToolContext",
     "ToolResult",
+    "architecture",
+    "brain_model",
     "build_default_registry",
     "default_model",
     "list_models",

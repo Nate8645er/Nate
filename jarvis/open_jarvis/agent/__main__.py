@@ -50,10 +50,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--list-models", action="store_true", help="Verfuegbare Modelle anzeigen und beenden.")
     parser.add_argument("--serve", action="store_true", help="Lokale Bruecke fuer das Command-Center-HUD starten (nur localhost).")
     parser.add_argument("--port", type=int, default=8765, help="Port fuer --serve (Standard 8765).")
+    parser.add_argument("--architecture", action="store_true", help="Systemarchitektur (Gehirn = Fable 5) als JSON ausgeben.")
     args = parser.parse_args(argv)
 
     if args.list_models:
         return _print_models()
+
+    if args.architecture:
+        from open_jarvis.agent.system import architecture
+
+        print(json.dumps(architecture(), ensure_ascii=False, indent=2))
+        return 0
 
     if args.serve:
         from open_jarvis.agent.server import serve

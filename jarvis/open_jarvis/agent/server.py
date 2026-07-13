@@ -23,8 +23,9 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
 
-from open_jarvis.agent.agent import DEFAULT_WORKSPACE, JarvisAgent, render_run
+from open_jarvis.agent.agent import DEFAULT_WORKSPACE, render_run
 from open_jarvis.agent.models import list_models, resolve_model
+from open_jarvis.agent.system import JarvisSystem, architecture
 
 MAX_BODY = 64 * 1024
 HUD_PATH = Path(__file__).resolve().parents[2] / "dashboard" / "jarvis_command_center.html"
@@ -41,11 +42,12 @@ def run_task(payload: dict[str, Any], *, workspace: Path | str = DEFAULT_WORKSPA
     except ValueError as exc:
         return {"ok": False, "error": str(exc)}
     execute = bool(payload.get("execute", False))
-    agent = JarvisAgent(model=model, workspace=workspace, execute=execute)
-    run = agent.run(task)
-    result = run.to_dict()
+    # Durch das komplette JARVIS-System schicken (Systemprompt -> Gehirn -> Aktionen).
+    system = JarvisSystem(model=model, workspace=workspace, execute=execute)
+    response = system.handle(task)
+    result = response.to_dict()
     result["ok"] = True
-    result["text"] = render_run(run)
+    result["text"] = render_run(response.run)
     return result
 
 
@@ -81,6 +83,9 @@ class _Handler(BaseHTTPRequestHandler):
             return
         if path == "/health":
             self._send(200, _health())
+            return
+        if path == "/architecture":
+            self._send(200, {"ok": True, "architecture": architecture()})
             return
         if path == "":
             if HUD_PATH.is_file():
