@@ -51,6 +51,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--serve", action="store_true", help="Lokale Bruecke fuer das Command-Center-HUD starten (nur localhost).")
     parser.add_argument("--port", type=int, default=8765, help="Port fuer --serve (Standard 8765).")
     parser.add_argument("--architecture", action="store_true", help="Systemarchitektur (Gehirn = Fable 5) als JSON ausgeben.")
+    parser.add_argument("--activate-all", action="store_true", help="Alle mitgelieferten JARVIS-Plugins aktivieren und Status zeigen.")
     args = parser.parse_args(argv)
 
     if args.list_models:
@@ -60,6 +61,13 @@ def main(argv: list[str] | None = None) -> int:
         from open_jarvis.agent.system import architecture
 
         print(json.dumps(architecture(), ensure_ascii=False, indent=2))
+        return 0
+
+    if args.activate_all:
+        from open_jarvis.agent.activate import activate_all_plugins, activation_report, render_activation
+
+        activate_all_plugins()
+        print(render_activation(activation_report()))
         return 0
 
     if args.serve:

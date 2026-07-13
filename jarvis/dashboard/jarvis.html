@@ -1,0 +1,133 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>J.A.R.V.I.S. — Kontrollzentrum</title>
+<meta name="description" content="JARVIS Kontrollzentrum — alles aktiviert. Startseite zu Command Center, Live-Ticker, Architektur.">
+<style>
+  :root{
+    --bg:#08060a; --panel:rgba(30,8,8,0.42); --edge:rgba(255,90,40,0.35);
+    --accent:#ff5a28; --accent-2:#ffb020; --hot:#ff2d2d; --text:#ffd9c7; --muted:#b07a68; --ok:#37f0a0;
+    --mono:"SFMono-Regular","Consolas","Roboto Mono",ui-monospace,monospace;
+    --sans:"Segoe UI",system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box;} html,body{margin:0;}
+  body{
+    background:
+      radial-gradient(1100px 700px at 50% -10%, rgba(255,70,30,0.18), transparent 60%),
+      radial-gradient(900px 600px at 50% 120%, rgba(255,130,20,0.10), transparent 60%), var(--bg);
+    color:var(--text); font-family:var(--sans); min-height:100vh; padding:22px 16px 60px;
+  }
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;
+    background:repeating-linear-gradient(to bottom,rgba(255,255,255,0.02) 0 1px,transparent 1px 3px);mix-blend-mode:overlay;opacity:.5;}
+  .wrap{max-width:1080px;margin:0 auto;position:relative;z-index:1;}
+
+  header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    border:1px solid var(--edge);border-radius:16px;padding:20px 22px;
+    background:linear-gradient(180deg,rgba(255,70,30,0.12),rgba(0,0,0,0.20));box-shadow:0 0 40px rgba(255,70,30,0.12) inset;}
+  .hbrand{display:flex;align-items:center;gap:16px;}
+  .core{width:60px;height:60px;border-radius:50%;
+    background:radial-gradient(circle at 50% 45%,#fff2d0 0%,var(--accent-2) 22%,var(--accent) 50%,var(--hot) 80%,#5a0d05 100%);
+    box-shadow:0 0 40px rgba(255,90,30,0.6);animation:pulse 2.4s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{transform:scale(1);filter:brightness(1);}50%{transform:scale(1.06);filter:brightness(1.2);}}
+  h1{margin:0;letter-spacing:6px;font-size:clamp(20px,4vw,32px);}
+  .sub{font-family:var(--mono);color:var(--muted);font-size:12px;letter-spacing:2px;margin-top:4px;}
+  .allactive{display:flex;align-items:center;gap:10px;font-family:var(--mono);color:var(--ok);font-weight:800;letter-spacing:2px;}
+  .dot{width:12px;height:12px;border-radius:50%;background:var(--ok);box-shadow:0 0 12px var(--ok);animation:blink 1.5s infinite;}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0;}
+  .stat{border:1px solid var(--edge);border-radius:12px;padding:14px;background:var(--panel);text-align:center;}
+  .stat .v{font-family:var(--mono);font-size:clamp(20px,3.4vw,28px);color:var(--accent-2);text-shadow:0 0 14px rgba(255,120,20,0.4);}
+  .stat .l{font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-top:4px;}
+  .stat .ok{color:var(--ok);}
+
+  h2.section{font-family:var(--mono);font-size:12px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;margin:22px 0 10px;}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;}
+  a.card{display:block;text-decoration:none;color:inherit;border:1px solid var(--edge);border-radius:14px;padding:18px;
+    background:var(--panel);transition:transform .1s, box-shadow .1s, border-color .1s;}
+  a.card:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 0 26px rgba(255,90,30,0.25);}
+  a.card .ic{font-size:26px;}
+  a.card .t{font-weight:800;font-size:17px;margin-top:8px;}
+  a.card .d{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;}
+  a.card .go{margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--accent-2);}
+
+  .caps{border:1px solid var(--edge);border-radius:14px;background:var(--panel);padding:16px;margin-top:14px;}
+  .caps h3{font-family:var(--mono);font-size:12px;letter-spacing:2px;color:var(--accent);margin:0 0 10px;text-transform:uppercase;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .chip{font-family:var(--mono);font-size:11px;color:var(--accent-2);border:1px solid var(--edge);border-radius:999px;padding:4px 10px;}
+  .chip.brain{color:#1a0603;background:var(--accent-2);font-weight:800;}
+  footer{text-align:center;color:var(--muted);font-size:11px;margin-top:24px;line-height:1.6;}
+  code{color:var(--accent-2);}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="hbrand">
+      <div class="core"></div>
+      <div>
+        <h1>J.A.R.V.I.S.</h1>
+        <div class="sub">KONTROLLZENTRUM · ALLES AKTIVIERT</div>
+      </div>
+    </div>
+    <div class="allactive"><span class="dot"></span> ALLES AKTIV</div>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><div class="v ok">129/129</div><div class="l">Plugins aktiv</div></div>
+    <div class="stat"><div class="v">200</div><div class="l">Skills</div></div>
+    <div class="stat"><div class="v">192</div><div class="l">Tools</div></div>
+    <div class="stat"><div class="v">6</div><div class="l">KI-Modelle</div></div>
+    <div class="stat"><div class="v">15</div><div class="l">Agent-Werkzeuge</div></div>
+    <div class="stat"><div class="v">20</div><div class="l">Shopify</div></div>
+    <div class="stat"><div class="v">2·10²⁴</div><div class="l">Workforce</div></div>
+    <div class="stat"><div class="v ok">Fable 5</div><div class="l">Gehirn</div></div>
+  </div>
+
+  <h2 class="section">▶ Öffnen</h2>
+  <div class="cards">
+    <a class="card" href="jarvis_command_center.html">
+      <div class="ic">🎙️</div>
+      <div class="t">Command Center</div>
+      <div class="d">Sprich mit JARVIS — hört zu, antwortet, führt Befehle aus.</div>
+      <div class="go">Öffnen →</div>
+    </a>
+    <a class="card" href="jarvis_live_ticker.html">
+      <div class="ic">📊</div>
+      <div class="t">Enterprise Live-Ticker</div>
+      <div class="d">10¹² Mitarbeiter, zentraler Kern, Mitarbeiter-Inspektor, Katalog.</div>
+      <div class="go">Öffnen →</div>
+    </a>
+    <a class="card" href="jarvis_architektur.html">
+      <div class="ic">🏗️</div>
+      <div class="t">Systemarchitektur</div>
+      <div class="d">Nutzer → Fable 5 denkt → Aktionen → Stimme. Gehirn = Fable 5.</div>
+      <div class="go">Öffnen →</div>
+    </a>
+  </div>
+
+  <div class="caps">
+    <h3>🧠 KI-Motoren (Fable 5 = Gehirn)</h3>
+    <div class="chips">
+      <span class="chip brain">Fable 5 · GEHIRN</span>
+      <span class="chip">Claude Opus 4.8</span>
+      <span class="chip">Claude Sonnet 5</span>
+      <span class="chip">Claude Haiku 4.5</span>
+      <span class="chip">Groq (Llama)</span>
+      <span class="chip">Lokal (keyless)</span>
+    </div>
+  </div>
+
+  <div class="caps">
+    <h3>🛒 Shopify · verbunden</h3>
+    <div class="chips">
+      <span class="chip">Produkte</span><span class="chip">Kollektionen</span><span class="chip">Bestellungen</span>
+      <span class="chip">Kunden</span><span class="chip">Inventar</span><span class="chip">Rabatte</span>
+      <span class="chip">Analytics</span><span class="chip">GraphQL</span>
+    </div>
+  </div>
+
+  <footer>
+    Jeder Mitarbeiter, jedes Unternehmen &amp; Developer-Team besitzt ALLE Skills, Plugins, Tools,
+    alle KI-Modelle (inkl. Fable 5) und die volle Shopify-Anbindung.<br>
+    Aktivierung: <code>python3 -m open_jarvis.agent --activate-all</code> · Brücke: <code>python3 -m open_jarvis.agent --serve</code>
+  </footer>
+</div>

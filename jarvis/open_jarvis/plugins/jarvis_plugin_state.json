@@ -1,0 +1,915 @@
+{
+  "audit": [
+    {
+      "action": "activate-all",
+      "approved_by": "local-user",
+      "count": 129,
+      "plugin": "*"
+    }
+  ],
+  "plugins": {
+    "agent_jarvis_agent": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/agent_jarvis_agent",
+      "version": "1.0.0"
+    },
+    "bildung_lernen_code_dojo": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/bildung_lernen_code_dojo",
+      "version": "1.0.0"
+    },
+    "bildung_lernen_lernkarten_coach": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/bildung_lernen_lernkarten_coach",
+      "version": "1.0.0"
+    },
+    "bildung_lernen_mathe_loeser": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/bildung_lernen_mathe_loeser",
+      "version": "1.0.0"
+    },
+    "bildung_lernen_quiz_meister": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/bildung_lernen_quiz_meister",
+      "version": "1.0.0"
+    },
+    "bildung_lernen_sprachkurs_begleiter": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/bildung_lernen_sprachkurs_begleiter",
+      "version": "1.0.0"
+    },
+    "bildung_lernen_studienplaner": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/bildung_lernen_studienplaner",
+      "version": "1.0.0"
+    },
+    "bildung_lernen_vokabel_trainer": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/bildung_lernen_vokabel_trainer",
+      "version": "1.0.0"
+    },
+    "bildung_lernen_wissens_checks": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/bildung_lernen_wissens_checks",
+      "version": "1.0.0"
+    },
+    "business_finanzen_ausgaben_scanner": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/business_finanzen_ausgaben_scanner",
+      "version": "1.0.0"
+    },
+    "business_finanzen_boersen_ticker": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/business_finanzen_boersen_ticker",
+      "version": "1.0.0"
+    },
+    "business_finanzen_budget_waechter": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/business_finanzen_budget_waechter",
+      "version": "1.0.0"
+    },
+    "business_finanzen_crm_anbindung": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/business_finanzen_crm_anbindung",
+      "version": "1.0.0"
+    },
+    "business_finanzen_portfolio_tracker": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/business_finanzen_portfolio_tracker",
+      "version": "1.0.0"
+    },
+    "business_finanzen_rechnungs_generator": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/business_finanzen_rechnungs_generator",
+      "version": "1.0.0"
+    },
+    "business_finanzen_steuer_helfer": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/business_finanzen_steuer_helfer",
+      "version": "1.0.0"
+    },
+    "business_finanzen_umsatz_dashboard": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/business_finanzen_umsatz_dashboard",
+      "version": "1.0.0"
+    },
+    "daten_berichte_daten_bereiniger": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/daten_berichte_daten_bereiniger",
+      "version": "1.0.0"
+    },
+    "daten_berichte_diagramm_schmiede": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/daten_berichte_diagramm_schmiede",
+      "version": "1.0.0"
+    },
+    "daten_berichte_export_zentrale": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/daten_berichte_export_zentrale",
+      "version": "1.0.0"
+    },
+    "daten_berichte_metriken_sammler": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/daten_berichte_metriken_sammler",
+      "version": "1.0.0"
+    },
+    "daten_berichte_prognose_modul": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/daten_berichte_prognose_modul",
+      "version": "1.0.0"
+    },
+    "daten_berichte_report_fabrik": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/daten_berichte_report_fabrik",
+      "version": "1.0.0"
+    },
+    "daten_berichte_tabellen_import": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/daten_berichte_tabellen_import",
+      "version": "1.0.0"
+    },
+    "daten_berichte_umfrage_auswerter": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/daten_berichte_umfrage_auswerter",
+      "version": "1.0.0"
+    },
+    "enterprise_compliance_radar": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/enterprise_compliance_radar",
+      "version": "1.0.0"
+    },
+    "enterprise_enterprise_live_ticker": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/enterprise_enterprise_live_ticker",
+      "version": "1.0.0"
+    },
+    "enterprise_flotten_manager": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/enterprise_flotten_manager",
+      "version": "1.0.0"
+    },
+    "enterprise_kpi_zentrale": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/enterprise_kpi_zentrale",
+      "version": "1.0.0"
+    },
+    "enterprise_lieferketten_blick": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/enterprise_lieferketten_blick",
+      "version": "1.0.0"
+    },
+    "enterprise_org_chart_navigator": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/enterprise_org_chart_navigator",
+      "version": "1.0.0"
+    },
+    "enterprise_schicht_planer": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/enterprise_schicht_planer",
+      "version": "1.0.0"
+    },
+    "enterprise_workforce_monitor": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/enterprise_workforce_monitor",
+      "version": "1.0.0"
+    },
+    "entwicklung_api_tester": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/entwicklung_api_tester",
+      "version": "1.0.0"
+    },
+    "entwicklung_ci_wachhund": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/entwicklung_ci_wachhund",
+      "version": "1.0.0"
+    },
+    "entwicklung_container_deck": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/entwicklung_container_deck",
+      "version": "1.0.0"
+    },
+    "entwicklung_datenbank_konsole": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/entwicklung_datenbank_konsole",
+      "version": "1.0.0"
+    },
+    "entwicklung_dependency_radar": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/entwicklung_dependency_radar",
+      "version": "1.0.0"
+    },
+    "entwicklung_deploy_pilot": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/entwicklung_deploy_pilot",
+      "version": "1.0.0"
+    },
+    "entwicklung_git_kommandant": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/entwicklung_git_kommandant",
+      "version": "1.0.0"
+    },
+    "entwicklung_log_lupe": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/entwicklung_log_lupe",
+      "version": "1.0.0"
+    },
+    "integrationen_github_bruecke": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/integrationen_github_bruecke",
+      "version": "1.0.0"
+    },
+    "integrationen_google_drive_anschluss": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/integrationen_google_drive_anschluss",
+      "version": "1.0.0"
+    },
+    "integrationen_notion_sync": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/integrationen_notion_sync",
+      "version": "1.0.0"
+    },
+    "integrationen_rest_adapter": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/integrationen_rest_adapter",
+      "version": "1.0.0"
+    },
+    "integrationen_shopify_cockpit": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/integrationen_shopify_cockpit",
+      "version": "1.0.0"
+    },
+    "integrationen_slack_bruecke": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/integrationen_slack_bruecke",
+      "version": "1.0.0"
+    },
+    "integrationen_webhook_zentrale": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/integrationen_webhook_zentrale",
+      "version": "1.0.0"
+    },
+    "integrationen_zapier_verbinder": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/integrationen_zapier_verbinder",
+      "version": "1.0.0"
+    },
+    "ki_assistenz_agenten_fabrik": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/ki_assistenz_agenten_fabrik",
+      "version": "1.0.0"
+    },
+    "ki_assistenz_bild_generator": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/ki_assistenz_bild_generator",
+      "version": "1.0.0"
+    },
+    "ki_assistenz_code_copilot": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/ki_assistenz_code_copilot",
+      "version": "1.0.0"
+    },
+    "ki_assistenz_llm_router": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/ki_assistenz_llm_router",
+      "version": "1.0.0"
+    },
+    "ki_assistenz_prompt_bibliothek": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/ki_assistenz_prompt_bibliothek",
+      "version": "1.0.0"
+    },
+    "ki_assistenz_uebersetzer_live": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/ki_assistenz_uebersetzer_live",
+      "version": "1.0.0"
+    },
+    "ki_assistenz_wissens_rag": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/ki_assistenz_wissens_rag",
+      "version": "1.0.0"
+    },
+    "ki_assistenz_zusammenfasser": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/ki_assistenz_zusammenfasser",
+      "version": "1.0.0"
+    },
+    "kommunikation_chat_hub": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/kommunikation_chat_hub",
+      "version": "1.0.0"
+    },
+    "kommunikation_kalender_einladungen": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/kommunikation_kalender_einladungen",
+      "version": "1.0.0"
+    },
+    "kommunikation_kontakt_sync": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/kommunikation_kontakt_sync",
+      "version": "1.0.0"
+    },
+    "kommunikation_sms_gateway": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/kommunikation_sms_gateway",
+      "version": "1.0.0"
+    },
+    "kommunikation_status_melder": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/kommunikation_status_melder",
+      "version": "1.0.0"
+    },
+    "kommunikation_team_broadcast": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/kommunikation_team_broadcast",
+      "version": "1.0.0"
+    },
+    "kommunikation_video_konferenz": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/kommunikation_video_konferenz",
+      "version": "1.0.0"
+    },
+    "kommunikation_voicemail_transkription": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/kommunikation_voicemail_transkription",
+      "version": "1.0.0"
+    },
+    "medien_unterhaltung_ambient_sounds": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/medien_unterhaltung_ambient_sounds",
+      "version": "1.0.0"
+    },
+    "medien_unterhaltung_kino_modus": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/medien_unterhaltung_kino_modus",
+      "version": "1.0.0"
+    },
+    "medien_unterhaltung_musik_erkennung": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/medien_unterhaltung_musik_erkennung",
+      "version": "1.0.0"
+    },
+    "medien_unterhaltung_playlist_kurator": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/medien_unterhaltung_playlist_kurator",
+      "version": "1.0.0"
+    },
+    "medien_unterhaltung_podcast_player": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/medien_unterhaltung_podcast_player",
+      "version": "1.0.0"
+    },
+    "medien_unterhaltung_radio_streams": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/medien_unterhaltung_radio_streams",
+      "version": "1.0.0"
+    },
+    "medien_unterhaltung_spotify_steuerung": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/medien_unterhaltung_spotify_steuerung",
+      "version": "1.0.0"
+    },
+    "medien_unterhaltung_video_bibliothek": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/medien_unterhaltung_video_bibliothek",
+      "version": "1.0.0"
+    },
+    "produktivitaet_aufgaben_planer": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/produktivitaet_aufgaben_planer",
+      "version": "1.0.0"
+    },
+    "produktivitaet_dokumenten_scanner": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/produktivitaet_dokumenten_scanner",
+      "version": "1.0.0"
+    },
+    "produktivitaet_e_mail_assistent": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/produktivitaet_e_mail_assistent",
+      "version": "1.0.0"
+    },
+    "produktivitaet_kalender_sync": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/produktivitaet_kalender_sync",
+      "version": "1.0.0"
+    },
+    "produktivitaet_meeting_protokollant": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/produktivitaet_meeting_protokollant",
+      "version": "1.0.0"
+    },
+    "produktivitaet_notizen_vault": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/produktivitaet_notizen_vault",
+      "version": "1.0.0"
+    },
+    "produktivitaet_pdf_werkstatt": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/produktivitaet_pdf_werkstatt",
+      "version": "1.0.0"
+    },
+    "produktivitaet_pomodoro_coach": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/produktivitaet_pomodoro_coach",
+      "version": "1.0.0"
+    },
+    "reisen_alltag_bahn_auskunft": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/reisen_alltag_bahn_auskunft",
+      "version": "1.0.0"
+    },
+    "reisen_alltag_einkaufslisten": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/reisen_alltag_einkaufslisten",
+      "version": "1.0.0"
+    },
+    "reisen_alltag_fitness_coach": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/reisen_alltag_fitness_coach",
+      "version": "1.0.0"
+    },
+    "reisen_alltag_flug_radar": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/reisen_alltag_flug_radar",
+      "version": "1.0.0"
+    },
+    "reisen_alltag_hotel_finder": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/reisen_alltag_hotel_finder",
+      "version": "1.0.0"
+    },
+    "reisen_alltag_navigations_copilot": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/reisen_alltag_navigations_copilot",
+      "version": "1.0.0"
+    },
+    "reisen_alltag_rezept_koch": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/reisen_alltag_rezept_koch",
+      "version": "1.0.0"
+    },
+    "reisen_alltag_schlaf_analyse": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/reisen_alltag_schlaf_analyse",
+      "version": "1.0.0"
+    },
+    "sicherheit_2fa_verwalter": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/sicherheit_2fa_verwalter",
+      "version": "1.0.0"
+    },
+    "sicherheit_backup_kommandant": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/sicherheit_backup_kommandant",
+      "version": "1.0.0"
+    },
+    "sicherheit_berechtigungs_auditor": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/sicherheit_berechtigungs_auditor",
+      "version": "1.0.0"
+    },
+    "sicherheit_datenschutz_cockpit": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/sicherheit_datenschutz_cockpit",
+      "version": "1.0.0"
+    },
+    "sicherheit_netzwerk_scanner_defensiv": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/sicherheit_netzwerk_scanner_defensiv",
+      "version": "1.0.0"
+    },
+    "sicherheit_passwort_tresor": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/sicherheit_passwort_tresor",
+      "version": "1.0.0"
+    },
+    "sicherheit_phishing_filter": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/sicherheit_phishing_filter",
+      "version": "1.0.0"
+    },
+    "sicherheit_update_waechter": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/sicherheit_update_waechter",
+      "version": "1.0.0"
+    },
+    "smart_home_iot_bewaesserung": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/smart_home_iot_bewaesserung",
+      "version": "1.0.0"
+    },
+    "smart_home_iot_energie_messung": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/smart_home_iot_energie_messung",
+      "version": "1.0.0"
+    },
+    "smart_home_iot_kamera_wachdienst": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/smart_home_iot_kamera_wachdienst",
+      "version": "1.0.0"
+    },
+    "smart_home_iot_licht_steuerung": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/smart_home_iot_licht_steuerung",
+      "version": "1.0.0"
+    },
+    "smart_home_iot_roboter_staubsauger": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/smart_home_iot_roboter_staubsauger",
+      "version": "1.0.0"
+    },
+    "smart_home_iot_szenen_automatik": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/smart_home_iot_szenen_automatik",
+      "version": "1.0.0"
+    },
+    "smart_home_iot_thermostat_regler": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/smart_home_iot_thermostat_regler",
+      "version": "1.0.0"
+    },
+    "smart_home_iot_tuer_sensorik": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/smart_home_iot_tuer_sensorik",
+      "version": "1.0.0"
+    },
+    "sprache_audio_akzent_trainer": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/sprache_audio_akzent_trainer",
+      "version": "1.0.0"
+    },
+    "sprache_audio_audio_mixer": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/sprache_audio_audio_mixer",
+      "version": "1.0.0"
+    },
+    "sprache_audio_diktier_modus": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/sprache_audio_diktier_modus",
+      "version": "1.0.0"
+    },
+    "sprache_audio_geraeusch_filter": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/sprache_audio_geraeusch_filter",
+      "version": "1.0.0"
+    },
+    "sprache_audio_sprachbefehl_makros": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/sprache_audio_sprachbefehl_makros",
+      "version": "1.0.0"
+    },
+    "sprache_audio_stimmen_studio": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/sprache_audio_stimmen_studio",
+      "version": "1.0.0"
+    },
+    "sprache_audio_vorlese_dienst": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/sprache_audio_vorlese_dienst",
+      "version": "1.0.0"
+    },
+    "sprache_audio_wake_word_tuner": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/sprache_audio_wake_word_tuner",
+      "version": "1.0.0"
+    },
+    "system_desktop_autostart_manager": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/system_desktop_autostart_manager",
+      "version": "1.0.0"
+    },
+    "system_desktop_datei_explorer": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/system_desktop_datei_explorer",
+      "version": "1.0.0"
+    },
+    "system_desktop_energie_profile": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/system_desktop_energie_profile",
+      "version": "1.0.0"
+    },
+    "system_desktop_fenster_organizer": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/system_desktop_fenster_organizer",
+      "version": "1.0.0"
+    },
+    "system_desktop_prozess_manager": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/system_desktop_prozess_manager",
+      "version": "1.0.0"
+    },
+    "system_desktop_screenshot_studio": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/system_desktop_screenshot_studio",
+      "version": "1.0.0"
+    },
+    "system_desktop_system_monitor": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/system_desktop_system_monitor",
+      "version": "1.0.0"
+    },
+    "system_desktop_zwischenablage_manager": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/system_desktop_zwischenablage_manager",
+      "version": "1.0.0"
+    },
+    "wissen_recherche_boersen_news": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/wissen_recherche_boersen_news",
+      "version": "1.0.0"
+    },
+    "wissen_recherche_gesetzes_suche": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/wissen_recherche_gesetzes_suche",
+      "version": "1.0.0"
+    },
+    "wissen_recherche_nachrichten_digest": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/wissen_recherche_nachrichten_digest",
+      "version": "1.0.0"
+    },
+    "wissen_recherche_web_recherche": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/wissen_recherche_web_recherche",
+      "version": "1.0.0"
+    },
+    "wissen_recherche_wetter_zentrale": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/wissen_recherche_wetter_zentrale",
+      "version": "1.0.0"
+    },
+    "wissen_recherche_wikipedia_blitz": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/wissen_recherche_wikipedia_blitz",
+      "version": "1.0.0"
+    },
+    "wissen_recherche_wissenschafts_feed": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/wissen_recherche_wissenschafts_feed",
+      "version": "1.0.0"
+    },
+    "wissen_recherche_zitate_archiv": {
+      "approval_reason": "activate-all (mitgeliefertes Katalog-Plugin)",
+      "approved_by": "local-user",
+      "enabled": true,
+      "path": "/home/user/Nate/jarvis/plugins/wissen_recherche_zitate_archiv",
+      "version": "1.0.0"
+    }
+  }
+}

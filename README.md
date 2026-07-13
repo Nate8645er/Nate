@@ -154,7 +154,20 @@ JavaScript-Dashboard exakt denselben Datensatz.
 
 ## Schnellstart
 
-### Dashboard (empfohlen)
+### Kontrollzentrum (Startseite)
+
+Alles aktivieren und den Überblick öffnen:
+
+```bash
+cd jarvis
+python3 -m open_jarvis.agent --activate-all      # 129/129 Plugins aktiv, Gehirn Fable 5
+```
+
+Dann [`jarvis/dashboard/jarvis.html`](jarvis/dashboard/jarvis.html) im Browser öffnen —
+die JARVIS-Startseite („ALLES AKTIV") mit Links zu Command Center, Live-Ticker und
+Architektur.
+
+### Dashboard
 
 Die Datei [`jarvis/dashboard/jarvis_live_ticker.html`](jarvis/dashboard/jarvis_live_ticker.html)
 einfach im Browser öffnen — keine Installation, kein Server, kein Internet nötig:
