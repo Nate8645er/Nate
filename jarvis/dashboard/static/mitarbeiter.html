@@ -10,6 +10,7 @@
 <header>
   <h1>JARVIS <span style="color:var(--dim)">//</span> MITARBEITER-TRACKER</h1>
   <nav><a href="/">START</a><a href="/uebersicht">ÜBERSICHT</a><a href="/gehirn">GEHIRN</a><a class="here" href="/mitarbeiter">MITARBEITER</a></nav>
+  <button id="fable" onclick="fableKey()" style="margin-left:10px">FABLE 5</button>
   <span class="sys mono" id="clock"></span>
   <span class="sys"><span class="dot"></span><span id="mode">ONLINE</span></span>
 </header>
@@ -98,7 +99,7 @@ async function tick() {
       || '<div style="color:var(--dim)">Noch keine Aktivität.</div>';
     $('ticker').textContent = (` ▲ TRACKER: ${s.aktive_agenten} AKTIV ● ${s.wartende_aufgaben} WARTEND ` +
       `● ${fmt(s.aktivierte_agenten_gesamt)} AKTIVIERUNGEN GESAMT ● ADRESSRAUM ${fmt(s.adressraum_pro_ebene)}/EBENE ` +
-      `● TEAMS AKTIV: ${[...activeTeams].join(', ') || 'KEINE'} ● `).repeat(3);
+      `● TEAMS AKTIV: ${[...activeTeams].join(', ') || 'KEINE'} ● ZIEL ${fmt(s.finanzen.ziel_chf)} CHF · REAL ${s.finanzen.einnahmen_chf.toFixed(2)} CHF ● `).repeat(3);
   } catch (e) { $('mode').textContent = 'VERBINDUNG GETRENNT'; }
 }
 setInterval(tick, 1500); tick();
@@ -141,6 +142,27 @@ async function exploreOrg(ev) {
   </div>`;
   return false;
 }
+
+async function fableCheck(){
+  try{ const b = await (await fetch('/api/brain')).json();
+    const el = document.getElementById('fable');
+    if(!el) return;
+    el.classList.toggle('on', b.modus==='api');
+    el.textContent = b.modus==='api' ? '⚡ FABLE 5 AKTIV' : 'FABLE 5 AKTIVIEREN';
+  }catch(e){}
+}
+async function fableKey(){
+  const b = await (await fetch('/api/brain')).json();
+  if(b.modus==='api'){ alert('Fable 5 ist aktiv: '+b.modell+'\nJede Antwort kostet echtes API-Guthaben.'); return; }
+  const key = prompt('Anthropic API-Key eingeben (sk-ant-…).\nWird nur lokal auf diesem PC gespeichert:');
+  if(!key) return;
+  const r = await fetch('/api/brain/key', {method:'POST', headers:{'content-type':'application/json'},
+    body: JSON.stringify({schluessel:key.trim()})});
+  if(r.ok){ alert('Fable 5 aktiviert! Aktive Agenten antworten jetzt mit echtem Modell.'); }
+  else { alert('Key wurde nicht akzeptiert.'); }
+  fableCheck();
+}
+setInterval(fableCheck, 3000); fableCheck();
 </script>
 </body>
 </html>

@@ -10,6 +10,7 @@
 <header>
   <h1>JARVIS <span style="color:var(--dim)">//</span> COMMAND CENTER</h1>
   <nav><a href="/">START</a><a class="here" href="/uebersicht">ÜBERSICHT</a><a href="/gehirn">GEHIRN</a><a href="/mitarbeiter">MITARBEITER</a></nav>
+  <button id="fable" onclick="fableKey()" style="margin-left:10px">FABLE 5</button>
   <span class="sys mono" id="clock"></span>
   <span class="sys"><span class="dot"></span><span id="mode">ONLINE</span></span>
 </header>
@@ -54,7 +55,7 @@
         <div class="tile ok"><div class="l">Erledigt</div><div class="v" id="t_done">0</div></div>
         <div class="tile err"><div class="l">Fehler</div><div class="v" id="t_err">0</div></div>
         <div class="tile"><div class="l">Ø Auslastung</div><div class="v" id="t_util">0%</div></div>
-        <div class="tile"><div class="l">Finanzen (real)</div><div class="v" style="font-size:15px">0.00 CHF</div></div>
+        <div class="tile"><div class="l">Ziel 1 Mrd. CHF — real erfasst</div><div class="v" style="font-size:15px" id="t_fin">0.00 CHF (0%)</div></div>
       </div>
       <canvas class="chart" id="chart" style="margin-top:10px"></canvas>
     </div>
@@ -176,6 +177,7 @@ async function tick() {
     $('t_act').textContent = s.aktive_agenten; $('t_wait').textContent = s.wartende_aufgaben;
     $('t_done').textContent = fmt(s.fertig); $('t_err').textContent = s.fehler;
     $('t_util').textContent = util + '%';
+    $('t_fin').textContent = s.finanzen.einnahmen_chf.toFixed(2) + ' CHF (' + s.finanzen.fortschritt_prozent + '%)';
     const health = Math.max(0, 100 - Math.max(s.cpu_prozent, s.ram_prozent) / 2 - s.fehler);
     $('health').textContent = Math.round(health) + '%';
     $('ring').setAttribute('stroke-dasharray', `${540 * health / 100} 540`);
@@ -185,7 +187,7 @@ async function tick() {
     $('ticker').textContent = (` ▲ AGENTEN AKTIV ${s.aktive_agenten}/${s.max_parallel} ` +
       `● QUEUE ${s.wartende_aufgaben} ● ERLEDIGT ${fmt(s.fertig)} ● FEHLER ${s.fehler} ` +
       `● ADRESSRAUM ${fmt(s.adressraum_pro_ebene)}/EBENE (REKURSIV) ● CPU ${s.cpu_prozent}% ● RAM ${s.ram_prozent}% ` +
-      `● GEDÄCHTNIS ${fmt(s.gedaechtnis_eintraege)} ● MODELL ${s.modell} [${s.modell_modus.toUpperCase()}] ● FINANZEN REAL 0.00 CHF ● `).repeat(2);
+      `● GEDÄCHTNIS ${fmt(s.gedaechtnis_eintraege)} ● MODELL ${s.modell} [${s.modell_modus.toUpperCase()}] ● ZIEL ${fmt(s.finanzen.ziel_chf)} CHF · REAL ERFASST ${s.finanzen.einnahmen_chf.toFixed(2)} CHF (${s.finanzen.fortschritt_prozent}%) ● `).repeat(2);
     $('tasks').innerHTML = [...s.aktive, ...s.letzte_aufgaben].slice(0, 14).map(t =>
       `<tr><td class="mono">${t.id}</td><td>${t.agent || '—'}${t.demo ? ' <span class="demo">DEMO</span>' : ''}</td>` +
       `<td>${t.team || ''}</td><td>${t.beschreibung.slice(0, 60)}</td>` +
@@ -261,6 +263,27 @@ function toggleWake() {
 }
 function listenOnce() { wakeOn = false; $('wake').classList.remove('on');
   $('voicestat').textContent = 'Ich höre — sprich jetzt…'; startRec(false); }
+
+async function fableCheck(){
+  try{ const b = await (await fetch('/api/brain')).json();
+    const el = document.getElementById('fable');
+    if(!el) return;
+    el.classList.toggle('on', b.modus==='api');
+    el.textContent = b.modus==='api' ? '⚡ FABLE 5 AKTIV' : 'FABLE 5 AKTIVIEREN';
+  }catch(e){}
+}
+async function fableKey(){
+  const b = await (await fetch('/api/brain')).json();
+  if(b.modus==='api'){ alert('Fable 5 ist aktiv: '+b.modell+'\nJede Antwort kostet echtes API-Guthaben.'); return; }
+  const key = prompt('Anthropic API-Key eingeben (sk-ant-…).\nWird nur lokal auf diesem PC gespeichert:');
+  if(!key) return;
+  const r = await fetch('/api/brain/key', {method:'POST', headers:{'content-type':'application/json'},
+    body: JSON.stringify({schluessel:key.trim()})});
+  if(r.ok){ alert('Fable 5 aktiviert! Aktive Agenten antworten jetzt mit echtem Modell.'); }
+  else { alert('Key wurde nicht akzeptiert.'); }
+  fableCheck();
+}
+setInterval(fableCheck, 3000); fableCheck();
 </script>
 </body>
 </html>

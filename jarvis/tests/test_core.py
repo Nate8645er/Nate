@@ -67,3 +67,22 @@ def test_orchestrator_bounded_and_processes(tmp_path: Path):
     assert orch.completed == 9
     assert orch.failed == 0
     assert orch.memory.count() == 9
+
+
+def test_finance_plugin_real_ledger(tmp_path: Path):
+    pm = PluginManager(tmp_path)
+    pm.run("Führung", "finanzen", "einnahme", betrag="150.50", notiz="Testrechnung")
+    pm.run("Führung", "finanzen", "ausgabe", betrag="50.50", notiz="Material")
+    s = pm.run("Führung", "finanzen", "summe")
+    assert s["einnahmen"] == 150.5 and s["ausgaben"] == 50.5 and s["saldo"] == 100.0
+    with pytest.raises(ValueError):
+        pm.run("Führung", "finanzen", "einnahme", betrag="-5")
+
+
+def test_tasks_plugin(tmp_path: Path):
+    pm = PluginManager(tmp_path)
+    pm.run("Führung", "aufgaben", "add", text="JARVIS testen")
+    offen = pm.run("Führung", "aufgaben", "list")
+    assert len(offen) == 1 and offen[0]["text"] == "JARVIS testen"
+    pm.run("Führung", "aufgaben", "done", id="1")
+    assert pm.run("Führung", "aufgaben", "list") == "Keine offenen Aufgaben."

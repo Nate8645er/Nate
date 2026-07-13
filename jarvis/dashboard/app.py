@@ -34,8 +34,22 @@ class TaskIn(BaseModel):
     adresse: str | None = None
 
 
+def _load_persisted_key() -> None:
+    """Lädt einen über den Fable-5-Button gespeicherten API-Key (lokale Datei)."""
+    import json
+    cfg = DATA_DIR / "config.json"
+    if cfg.exists() and not os.environ.get("ANTHROPIC_API_KEY"):
+        try:
+            key = json.loads(cfg.read_text()).get("anthropic_api_key", "")
+            if key:
+                os.environ["ANTHROPIC_API_KEY"] = key
+        except Exception:
+            pass
+
+
 @app.on_event("startup")
 async def _startup() -> None:
+    _load_persisted_key()
     await orchestrator.start()
     if os.environ.get("JARVIS_DEMO") == "1":
         import asyncio
@@ -52,6 +66,8 @@ async def _demo_loop() -> None:
         "!plugin calc eval expression=(17*3)+8",
         "!plugin files write path=notiz.txt content=JARVIS-Demo",
         "!plugin files list",
+        "!plugin aufgaben list",
+        "!plugin finanzen summe",
         "Erstelle eine Kurzzusammenfassung des Projektstatus",
         "Prüfe die Aufgabenliste des Qualitätsmanagement-Teams",
         "Recherche: aktuelle Best Practices für Plugin-Architekturen",
@@ -143,18 +159,47 @@ async def business() -> JSONResponse:
     real gemessene Betriebsdaten; Finanzfelder bleiben 0, bis echte,
     belegbare Datenquellen (z. B. Buchhaltungs-Export) angebunden sind.
     """
+    fin = orchestrator.finanzen()
     return JSONResponse({
-        "hinweis": ("Keine simulierten Umsätze. Felder bleiben 0.00, bis eine echte "
-                    "Datenquelle angebunden ist. Kein System generiert Geld auf Knopfdruck."),
-        "umsatz_chf_real": 0.0,
-        "kosten_chf_real": 0.0,
-        "datenquelle": "keine angebunden",
+        "hinweis": ("Keine simulierten Umsätze. Angezeigt wird nur, was real über das "
+                    "finanzen-Plugin erfasst wurde. Kein System generiert Geld auf Knopfdruck."),
+        "ziel_chf": fin["ziel_chf"],
+        "umsatz_chf_real": fin["einnahmen_chf"],
+        "kosten_chf_real": fin["ausgaben_chf"],
+        "saldo_chf_real": fin["saldo_chf"],
+        "fortschritt_zum_ziel_prozent": fin["fortschritt_prozent"],
+        "datenquelle": f"finanzen-Plugin ({fin['eintraege']} manuell erfasste Einträge)",
         "betriebsdaten_real": {
             "erledigte_aufgaben": orchestrator.completed,
             "fehlgeschlagene_aufgaben": orchestrator.failed,
             "aktivierte_agenten": orchestrator.activated_agents,
         },
     })
+
+
+class KeyIn(BaseModel):
+    schluessel: str
+
+
+@app.get("/api/brain")
+async def brain_status() -> JSONResponse:
+    from jarvis.core import brain
+    return JSONResponse({"modus": brain.mode(), "modell": brain.DEFAULT_MODEL})
+
+
+@app.post("/api/brain/key")
+async def brain_key(k: KeyIn) -> JSONResponse:
+    """Fable-5-Button: API-Key lokal setzen und persistieren (nur auf diesem PC)."""
+    import json
+    key = k.schluessel.strip()
+    if len(key) < 12:
+        raise HTTPException(400, "Key sieht ungültig aus (zu kurz)")
+    os.environ["ANTHROPIC_API_KEY"] = key
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    (DATA_DIR / "config.json").write_text(json.dumps({"anthropic_api_key": key}))
+    from jarvis.core import brain
+    orchestrator.log("info", "Fable-5-Button: API-Key gesetzt — Gehirn im API-Modus")
+    return JSONResponse({"modus": brain.mode(), "modell": brain.DEFAULT_MODEL})
 
 
 @app.get("/api/task/{task_id}")

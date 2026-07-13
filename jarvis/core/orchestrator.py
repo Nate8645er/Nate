@@ -176,9 +176,22 @@ class Orchestrator:
         return None
 
     # -- Zustand für das Dashboard -------------------------------------------
+    def finanzen(self) -> dict[str, Any]:
+        """Ziel-Tracker: Ziel vs. real erfasste Einnahmen (keine Simulation)."""
+        ziel = float(os.environ.get("JARVIS_ZIEL_CHF", 1_000_000_000))
+        try:
+            s = self.plugins.plugins["finanzen"].run("summe")
+        except Exception:
+            s = {"einnahmen": 0.0, "ausgaben": 0.0, "saldo": 0.0, "eintraege": 0}
+        return {"ziel_chf": ziel, "einnahmen_chf": s["einnahmen"],
+                "ausgaben_chf": s["ausgaben"], "saldo_chf": s["saldo"],
+                "eintraege": s["eintraege"],
+                "fortschritt_prozent": round(s["einnahmen"] / ziel * 100, 8)}
+
     def state(self) -> dict[str, Any]:
         vm = psutil.virtual_memory()
         return {
+            "finanzen": self.finanzen(),
             "adressraum_pro_ebene": ADDRESS_SPACE,
             "adressierbare_mitarbeiter": "100 Mrd. pro Ebene, rekursiv (prozedural, 0 Byte/inaktiv)",
             "aktivierte_agenten_gesamt": self.activated_agents,
