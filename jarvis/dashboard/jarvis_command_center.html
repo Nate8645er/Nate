@@ -664,5 +664,21 @@
   if (synth) { synth.onvoiceschanged = function () {}; }
   log("JARVIS Command Center gestartet.");
   checkBridge();
+
+  /* ---------------- Befehl direkt aus dem Link (fuer Siri-Kurzbefehl) ----------------
+     Beispiel: …/command-center#cmd=wie%20spät%20ist%20es
+     Siri diktiert den Satz, oeffnet JARVIS mit #cmd=… und JARVIS fuehrt ihn sofort aus. */
+  (function autoCommandFromUrl() {
+    var raw = (location.hash || "").replace(/^#/, "") || (location.search || "").replace(/^\?/, "");
+    var m = /(?:^|&)cmd=([^&]*)/.exec(raw);
+    if (!m || !m[1]) { return; }
+    var cmd = "";
+    try { cmd = decodeURIComponent(m[1].replace(/\+/g, " ")); } catch (e) { cmd = m[1]; }
+    cmd = cmd.trim();
+    if (!cmd) { return; }
+    $("text").value = cmd;
+    // kurz warten, damit Stimmen/Bruecke geladen sind, dann ausfuehren
+    setTimeout(function () { route(cmd); $("text").value = ""; }, 900);
+  })();
 })();
 </script>
