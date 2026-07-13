@@ -196,6 +196,21 @@ python jarvis.py
 > API-Keys läuft die App im lokalen „keyless degraded mode". Details:
 > [`jarvis/README.md`](jarvis/README.md).
 
+### Sprach-Command-Center (cinematisches HUD)
+
+Ein sprachgesteuertes JARVIS-HUD im Iron-Man-Look (glühender Arc-Reactor-Kern):
+[`jarvis/dashboard/jarvis_command_center.html`](jarvis/dashboard/jarvis_command_center.html)
+einfach im Browser öffnen (am besten **Chrome/Edge**, Mikrofon erlauben).
+
+- 🎙️ **Sprich** mit „SPRECHEN" (Web-Speech-API, Deutsch) — JARVIS **antwortet mit Stimme**
+- ⌨️ oder Befehl eintippen; Beispiele als Klick-Chips
+- Erkennt u. a.: *„baue mir einen Shop für …"*, *„zeig mir meine Bestellungen"*,
+  *„suche nach …"*, *„was kannst du?"*, *„wie spät ist es?"*
+- Zeigt live das Aktionsprotokoll und **welchen echten Agenten-Befehl** der Sprachbefehl auslöst
+
+> Für echte Shopify-/Datei-Aktionen führt der Python-Agent den Befehl im Hintergrund aus.
+> Das HUD ist die Sprach-/Anzeige-Schicht; die Ausführung übernimmt `open_jarvis.agent`.
+
 ### JARVIS-Agent — Befehle wirklich ausführen (wie Claude Code)
 
 JARVIS kann Befehle entgegennehmen und **ausführen** — Aufgabe planen, Werkzeuge
