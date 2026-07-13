@@ -1,0 +1,11 @@
+{
+  "id": "medien_unterhaltung_kino_modus",
+  "name": "Kino-Modus",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Kino-Modus“ aus der Katalog-Kategorie „Medien & Unterhaltung“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "entwicklung_deploy_pilot",
+  "name": "Deploy-Pilot",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Deploy-Pilot“ aus der Katalog-Kategorie „Entwicklung“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

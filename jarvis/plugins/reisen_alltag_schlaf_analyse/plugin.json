@@ -1,0 +1,11 @@
+{
+  "id": "reisen_alltag_schlaf_analyse",
+  "name": "Schlaf-Analyse",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Schlaf-Analyse“ aus der Katalog-Kategorie „Reisen & Alltag“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

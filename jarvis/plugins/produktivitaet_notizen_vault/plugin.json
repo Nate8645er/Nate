@@ -1,0 +1,11 @@
+{
+  "id": "produktivitaet_notizen_vault",
+  "name": "Notizen-Vault",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Notizen-Vault“ aus der Katalog-Kategorie „Produktivitaet“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

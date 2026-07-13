@@ -1,0 +1,178 @@
+# JARVIS-Agent — Befehle wirklich ausführen (wie Claude Code)
+
+Der **JARVIS-Agent** gibt Jarvis die Fähigkeit, gesprochene oder getippte Befehle
+tatsächlich auszuführen — nach demselben Prinzip wie Claude Code:
+
+```
+Befehl  →  Planen (KI-Modell oder lokal)  →  Werkzeuge ausführen  →  Ergebnis berichten
+```
+
+Du sagst z. B. *„baue mir einen Shop für Kaffee namens Bergbohne"*, und der Agent
+plant die Schritte, ruft das passende Werkzeug auf und liefert dir einen fertigen
+Shop-Bauplan.
+
+---
+
+## Der Modell-Auswahlknopf (inkl. Fable 5)
+
+Der Agent kann mit verschiedenen KI-Motoren planen. **Fable 5 ist das Standardmodell.**
+
+| Modell | ID | Motor | Schlüssel |
+|---|---|---|---|
+| **Fable 5** ★ | `claude-fable-5` | Claude | `ANTHROPIC_API_KEY` |
+| Claude Opus 4.8 | `claude-opus-4-8` | Claude | `ANTHROPIC_API_KEY` |
+| Claude Sonnet 5 | `claude-sonnet-5` | Claude | `ANTHROPIC_API_KEY` |
+| Claude Haiku 4.5 | `claude-haiku-4-5-20251001` | Claude | `ANTHROPIC_API_KEY` |
+| Groq (Llama) | `llama-3.1-8b-instant` | Groq | `GROQ_API_KEY` |
+| **Lokal** | – | keyless | keiner |
+
+```bash
+python3 -m open_jarvis.agent --list-models      # alle Motoren anzeigen
+python3 -m open_jarvis.agent --model fable-5 "..."   # mit Fable 5 planen
+```
+
+> **Ehrlich:** Damit der Agent wirklich mit Fable 5 / Claude plant, brauchst du einen
+> Anthropic-API-Schlüssel in der Umgebungsvariable `ANTHROPIC_API_KEY`.
+> **Ohne Schlüssel** fällt der Agent automatisch auf den **lokalen, kostenlosen Planer**
+> zurück — Jarvis bleibt also immer bedienbar.
+
+Schlüssel setzen:
+
+```bash
+export ANTHROPIC_API_KEY="dein-schluessel"     # Linux/macOS
+setx ANTHROPIC_API_KEY "dein-schluessel"        # Windows
+```
+
+---
+
+## Benutzung
+
+```bash
+# Vorschau (nichts wird verändert — zeigt nur den Plan):
+python3 -m open_jarvis.agent "baue mir einen Shop für handgemachte Kerzen namens Wachswerk"
+
+# Echt ausführen (schreibt Dateien / Shop-Bauplan):
+python3 -m open_jarvis.agent --execute "baue mir einen Shop für Sneaker"
+
+# Anderes Modell:
+python3 -m open_jarvis.agent --model opus-4.8 --execute "..."
+
+# Eigener Arbeitsbereich + JSON-Ausgabe:
+python3 -m open_jarvis.agent --execute --workspace ./mein_ordner --json "..."
+```
+
+Standard-Arbeitsbereich: `~/.jarvis/agent_workspace`.
+
+### Sprach-HUD mit dem Agenten verbinden (lokale Brücke)
+
+Damit das **Command Center** (`dashboard/jarvis_command_center.html`) Befehle
+nicht nur simuliert, sondern **wirklich** ausführt, startest du die lokale Brücke:
+
+```bash
+cd jarvis
+python3 -m open_jarvis.agent --serve          # lauscht nur auf 127.0.0.1:8765
+# dann im Browser öffnen:  http://127.0.0.1:8765/
+```
+
+- Der Server bindet **ausschließlich an localhost**, nutzt nur die Standardbibliothek
+  und führt nur die sicheren Agent-Werkzeuge aus (keine beliebige Shell).
+- Das HUD zeigt dann **Agent-Brücke: verbunden**. Aktivierst du „Echt ausführen",
+  schreibt der Agent Dateien/Shop-Baupläne wirklich (sonst Vorschau).
+- Endpunkte: `GET /health`, `GET /` (HUD), `POST /agent` mit
+  `{"task": "...", "model": "fable-5", "execute": true|false}`.
+- Ohne laufende Brücke bleibt das HUD im **Demo-Modus** (Befehle werden im Browser
+  erkannt und beantwortet, aber nicht real ausgeführt).
+
+**Vorschau vs. Ausführen:** Ohne `--execute` läuft ein gefahrloser Trockenlauf
+(du siehst, *was* passieren würde). Erst mit `--execute` werden Dateien/Shop-Baupläne
+wirklich geschrieben.
+
+---
+
+## Werkzeuge des Agenten
+
+| Werkzeug | Was es tut |
+|---|---|
+| `shop_bauen` | Erzeugt einen kompletten, verkaufsfertigen **Shop-Bauplan** (Name, Slogan, Farbwelt, Kollektionen, Produkte mit CHF-Preisen, Checkliste) als `.md` + `.json` |
+| `shop_veroeffentlichen` | Legt den Shop **live in Shopify** an (Produkte als Entwurf). Braucht `SHOPIFY_STORE` + `SHOPIFY_ADMIN_TOKEN` |
+| `web_suche` | Bereitet eine sichere Google-Suche vor |
+| `webseite` | Öffnet eine Webseite (nach URL-Sicherheitsprüfung) |
+| `app_starten` | Startet eine Desktop-Anwendung |
+| `datei_schreiben` / `datei_lesen` | Dateien im Arbeitsbereich (streng pfadsicher) |
+| `notiz` | Legt eine Notiz/Erinnerung ab |
+| `plugins` | Listet die 128 verfügbaren Jarvis-Plugins auf |
+
+**Sicherheit:** Datei-Werkzeuge bleiben strikt im Arbeitsbereich (`path_safety`), es gibt
+**keine** beliebige Shell-Ausführung, und URLs werden geprüft. Vom KI-Modell
+vorgeschlagene, unbekannte Werkzeuge werden verworfen.
+
+---
+
+## Shops & Unternehmen bauen
+
+Das Werkzeug `shop_bauen` erzeugt einen **vollständigen Bauplan** — kein live auf
+Shopify erstellter Shop. Den Bauplan (Produkte, Preise, Kollektionen, Farbwelt,
+Umsetzungs-Checkliste) kannst du 1:1 in Shopify umsetzen.
+
+```bash
+python3 -m open_jarvis.agent --execute "baue einen Shop für Bio-Tee namens Blattgold"
+# → ~/.jarvis/agent_workspace/shops/blattgold/shop_plan.md  (+ .json)
+```
+
+### Shop wirklich live in Shopify anlegen
+
+Mit hinterlegten Zugangsdaten legt der Agent den Shop **live** an — Produkte und
+Kollektionen werden über die Shopify-Admin-API erstellt (Produkte als **Entwurf**,
+damit nichts versehentlich sofort verkauft wird).
+
+```bash
+export SHOPIFY_STORE="mein-shop"            # oder mein-shop.myshopify.com
+export SHOPIFY_ADMIN_TOKEN="shpat_..."       # Admin-API-Zugriffstoken
+python3 -m open_jarvis.agent --execute "stelle einen Shop für Kaffee namens Bergbohne live auf Shopify online"
+```
+
+Der Agent erkennt Wörter wie *live*, *Shopify*, *veröffentlichen*, *online stellen*
+und wählt dann das Werkzeug `shop_veroeffentlichen` statt `shop_bauen`.
+**Ohne Zugangsdaten** sagt er dir klar, welche zwei Variablen fehlen, und bleibt
+im Bauplan-Modus.
+
+> **Ehrliche Einordnung:** Ein automatisch erzeugter Leer-Shop hat noch keinen
+> Marktwert. Wert entsteht durch echte Produkte, Umsatz und Kundschaft. Der Bauplan
+> (bzw. der frisch angelegte Draft-Shop) ist dein Startpunkt — nicht das fertige,
+> verkaufsfähige Unternehmen.
+
+---
+
+## Python-API
+
+```python
+from open_jarvis.agent import JarvisAgent
+
+agent = JarvisAgent(model="fable-5", execute=True)
+run = agent.run("baue mir einen Shop für Kaffee namens Bergbohne")
+
+print(run.plan.final)          # Abschlussnachricht
+for outcome in run.outcomes:   # einzelne Schritte
+    print(outcome.tool, outcome.result.summary)
+print(run.to_dict())           # alles als JSON-fähiges dict
+```
+
+---
+
+## Architektur
+
+```
+open_jarvis/agent/
+├── models.py          Modell-Registry (Fable 5, Opus, Sonnet, Haiku, Groq, lokal)
+├── claude_provider.py Anthropic-Messages-API-Client (Fable 5 / Claude), keyless-sicher
+├── planner.py         LocalPlanner (keyless) + ClaudePlanner (mit Fallback)
+├── tools.py           Werkzeug-Registry (sicher, pfadgeschützt)
+├── shop_builder.py    deterministischer Shop-Bauplan-Generator
+├── shopify_client.py  Shopify-Admin-API-Client (Shop live anlegen), keyless-sicher
+├── agent.py           Agenten-Schleife: Plan → Werkzeuge → Bericht
+└── __main__.py        CLI
+```
+
+Der lokale Planer ist **deterministisch** und **offline** — dieselbe Aufgabe ergibt
+denselben Plan. Der Claude-/Fable-Planer nutzt bei vorhandenem Schlüssel das Modell
+und fällt bei jedem Problem sauber auf den lokalen Planer zurück.

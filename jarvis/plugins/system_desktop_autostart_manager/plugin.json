@@ -1,0 +1,11 @@
+{
+  "id": "system_desktop_autostart_manager",
+  "name": "Autostart-Manager",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Autostart-Manager“ aus der Katalog-Kategorie „System & Desktop“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

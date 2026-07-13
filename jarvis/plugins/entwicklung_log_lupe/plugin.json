@@ -1,0 +1,11 @@
+{
+  "id": "entwicklung_log_lupe",
+  "name": "Log-Lupe",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Log-Lupe“ aus der Katalog-Kategorie „Entwicklung“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

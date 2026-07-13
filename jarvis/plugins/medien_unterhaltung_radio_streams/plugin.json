@@ -1,0 +1,11 @@
+{
+  "id": "medien_unterhaltung_radio_streams",
+  "name": "Radio-Streams",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Radio-Streams“ aus der Katalog-Kategorie „Medien & Unterhaltung“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

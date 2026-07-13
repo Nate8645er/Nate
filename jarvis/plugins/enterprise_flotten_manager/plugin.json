@@ -1,0 +1,11 @@
+{
+  "id": "enterprise_flotten_manager",
+  "name": "Flotten-Manager",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Flotten-Manager“ aus der Katalog-Kategorie „Enterprise“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "ki_assistenz_prompt_bibliothek",
+  "name": "Prompt-Bibliothek",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Prompt-Bibliothek“ aus der Katalog-Kategorie „KI & Assistenz“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

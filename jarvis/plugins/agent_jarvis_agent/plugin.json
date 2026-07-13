@@ -1,0 +1,8 @@
+{
+  "id": "agent_jarvis_agent",
+  "name": "JARVIS-Agent",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "Agentische Befehlsausfuehrung: nimmt Befehle entgegen und fuehrt sie mit auswaehlbarem KI-Motor (inkl. Fable 5) und echten Werkzeugen aus (z. B. Shop bauen).",
+  "permissions": ["commands.register", "ui.notify"]
+}

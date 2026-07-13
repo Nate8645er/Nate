@@ -1,0 +1,11 @@
+{
+  "id": "system_desktop_prozess_manager",
+  "name": "Prozess-Manager",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Prozess-Manager“ aus der Katalog-Kategorie „System & Desktop“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

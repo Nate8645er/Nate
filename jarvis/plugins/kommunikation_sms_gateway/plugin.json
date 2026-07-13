@@ -1,0 +1,11 @@
+{
+  "id": "kommunikation_sms_gateway",
+  "name": "SMS-Gateway",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „SMS-Gateway“ aus der Katalog-Kategorie „Kommunikation“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}
