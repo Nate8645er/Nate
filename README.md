@@ -324,6 +324,9 @@ Nate/
 - **JARVIS ↔ Shopify (aus dem Shopify-MCP gespiegelt):** [`jarvis/docs/JARVIS_SHOPIFY.md`](jarvis/docs/JARVIS_SHOPIFY.md)
   — Produkte, Kollektionen, Bestellungen, Kunden, Inventar, Rabatte, Analytics,
   GraphQL; Zuordnung jedes MCP-Werkzeugs zur JARVIS-Methode.
+- **Systemarchitektur (Gehirn = Fable 5):** [`jarvis/docs/SYSTEMARCHITEKTUR.md`](jarvis/docs/SYSTEMARCHITEKTUR.md)
+  + visuelle rote Grafik [`jarvis/dashboard/jarvis_architektur.html`](jarvis/dashboard/jarvis_architektur.html)
+  — Nutzer → Sprache → **Fable 5 denkt** → Aktionen → Stimme. Das Gehirn ist Fable 5, nicht Haiku.
 - **Open.Jarvis-Assistent:** [`jarvis/README.md`](jarvis/README.md) und [`jarvis/docs/`](jarvis/docs/)
 - **Plugin-Verzeichnis:** [`jarvis/plugins/README.md`](jarvis/plugins/README.md)
 - **ULTRA AI ENTERPRISE OS:** [`ultra-enterprise-os/README.md`](ultra-enterprise-os/README.md)

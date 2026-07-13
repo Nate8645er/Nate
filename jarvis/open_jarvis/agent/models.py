@@ -36,7 +36,7 @@ MODEL_REGISTRY: dict[str, AgentModel] = {
         model_id="claude-fable-5",
         needs_key=True,
         env_key="ANTHROPIC_API_KEY",
-        description="Claude Fable 5 — kreativ und schnell. Dein gewuenschter Fable-5-Motor.",
+        description="Claude Fable 5 — das GEHIRN von JARVIS (Standard). Denkt, plant und entscheidet.",
     ),
     "opus-4.8": AgentModel(
         key="opus-4.8",
@@ -87,6 +87,9 @@ MODEL_REGISTRY: dict[str, AgentModel] = {
 
 DEFAULT_MODEL_KEY = "fable-5"
 FALLBACK_MODEL_KEY = "local"
+#: Das "Gehirn" von JARVIS (denkt/plant/entscheidet) — laut Systemarchitektur Fable 5,
+#: NICHT Haiku.
+BRAIN_MODEL_KEY = "fable-5"
 
 # Freundliche Aliase, damit "fable", "fable5", "opus" usw. funktionieren.
 _ALIASES: dict[str, str] = {
@@ -145,3 +148,9 @@ def fallback_model() -> AgentModel:
     """Der keyless-Fallback (lokal)."""
 
     return MODEL_REGISTRY[FALLBACK_MODEL_KEY]
+
+
+def brain_model() -> AgentModel:
+    """Das GEHIRN von JARVIS (denkt/plant/entscheidet) — Fable 5, nicht Haiku."""
+
+    return MODEL_REGISTRY[BRAIN_MODEL_KEY]
