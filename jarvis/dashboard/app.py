@@ -16,6 +16,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from jarvis.core.identity import materialize, validate_address
@@ -61,9 +62,32 @@ async def _demo_loop() -> None:
         await asyncio.sleep(2.5)
 
 
+app.mount("/static", StaticFiles(directory=STATIC), name="static")
+
+
 @app.get("/")
 async def index() -> FileResponse:
     return FileResponse(STATIC / "index.html")
+
+
+@app.get("/gehirn")
+async def gehirn_page() -> FileResponse:
+    return FileResponse(STATIC / "gehirn.html")
+
+
+@app.get("/mitarbeiter")
+async def mitarbeiter_page() -> FileResponse:
+    return FileResponse(STATIC / "mitarbeiter.html")
+
+
+@app.get("/api/memory")
+async def memory(limit: int = 25) -> JSONResponse:
+    import time as _t
+    rows = orchestrator.memory.recent(max(1, min(limit, 100)))
+    return JSONResponse({"eintraege": [
+        {"adresse": a, "zeit": _t.strftime("%H:%M:%S", _t.localtime(ts)),
+         "aufgabe": task, "ergebnis": result}
+        for a, ts, task, result in rows]})
 
 
 @app.get("/api/state")

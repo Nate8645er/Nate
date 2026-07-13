@@ -82,6 +82,11 @@ class Memory:
     def count(self) -> int:
         return self.conn.execute("SELECT COUNT(*) FROM memory").fetchone()[0]
 
+    def recent(self, limit: int = 25) -> list[tuple[str, float, str, str]]:
+        return list(self.conn.execute(
+            "SELECT address, ts, task, result FROM memory ORDER BY ts DESC LIMIT ?",
+            (limit,)).fetchall())
+
 
 class Orchestrator:
     def __init__(self, data_dir: Path, max_active: int | None = None) -> None:

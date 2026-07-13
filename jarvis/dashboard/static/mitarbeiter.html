@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JARVIS // MITARBEITER</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <h1>JARVIS <span style="color:var(--dim)">//</span> MITARBEITER-TRACKER</h1>
+  <nav><a href="/">ÜBERSICHT</a><a href="/gehirn">GEHIRN</a><a class="here" href="/mitarbeiter">MITARBEITER</a></nav>
+  <span class="sys mono" id="clock"></span>
+  <span class="sys"><span class="dot"></span><span id="mode">ONLINE</span></span>
+</header>
+<div class="tickerwrap"><div class="ticker mono" id="ticker">TRACKER WIRD INITIALISIERT …</div></div>
+
+<div class="grid2">
+  <!-- linke Spalte: Live-Tracker -->
+  <div>
+    <div class="panel">
+      <h2><b>BESTAND</b> // ORGANISATION IN ZAHLEN</h2>
+      <div class="tiles">
+        <div class="tile"><div class="l">Adressierbar / Ebene</div><div class="v" style="font-size:15px" id="t_space">–</div></div>
+        <div class="tile"><div class="l">Jetzt aktiv</div><div class="v" id="t_act">0</div></div>
+        <div class="tile"><div class="l">Wartend</div><div class="v" id="t_wait">0</div></div>
+        <div class="tile"><div class="l">Aktivierungen gesamt</div><div class="v" id="t_total">0</div></div>
+        <div class="tile ok"><div class="l">Erledigt</div><div class="v" id="t_done">0</div></div>
+        <div class="tile err"><div class="l">Fehler</div><div class="v" id="t_err">0</div></div>
+      </div>
+      <div style="font-size:10.5px; color:var(--dim); margin-top:6px">
+        Rekursiv: jeder Mitarbeiter führt ein eigenes Unternehmen mit wieder 100 Mrd. adressierbaren Mitarbeitern.
+      </div>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>LIVE</b> // WER ARBEITET GERADE WO</h2>
+      <table><thead><tr><th>#</th><th>Mitarbeiter</th><th>Team</th><th>Adresse</th><th>Aufgabe</th><th>Status</th></tr></thead>
+      <tbody id="tasks"></tbody></table>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>TEAMS</b> // AKTIVITÄT NACH ABTEILUNG (LETZTE AUFGABEN)</h2>
+      <div class="teamgrid" id="teams"></div>
+    </div>
+  </div>
+
+  <!-- rechte Spalte: Suche + Explorer -->
+  <div>
+    <div class="panel">
+      <h2><b>SUCHE</b> // MITARBEITER IM ADRESSRAUM AUFRUFEN</h2>
+      <form onsubmit="return lookup(event)">
+        <input id="addr" placeholder="Adresse, z. B. 42 oder 42/777/31337" autocomplete="off">
+        <button>AUFRUFEN</button>
+      </form>
+      <div style="font-size:10.5px; color:var(--dim); margin-top:5px">
+        Jede Zahl von 0 bis 99'999'999'999, mit „/" beliebig tief in Unternehmen hinein.
+      </div>
+      <div id="emp"></div>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>EXPLORER</b> // VIRTUELLES UNTERNEHMEN ANSEHEN</h2>
+      <form onsubmit="return exploreOrg(event)">
+        <input id="orgaddr" placeholder="Chef-Adresse, z. B. 7" autocomplete="off">
+        <button>ÖFFNEN</button>
+      </form>
+      <div id="org"></div>
+    </div>
+  </div>
+</div>
+
+<div class="honest"><b>EHRLICHKEITS-PROTOKOLL:</b> „Adressierbar" heißt: prozedural berechenbar (0 Byte Speicher
+pro inaktivem Mitarbeiter). Wirklich gleichzeitig arbeiten können nur so viele Agenten, wie die Hardware zulässt —
+diese Zahl steht unter „Jetzt aktiv".</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const fmt = n => Number(n).toLocaleString('de-CH');
+setInterval(() => $('clock').textContent = new Date().toLocaleString('de-CH'), 1000);
+
+async function tick() {
+  try {
+    const s = await (await fetch('/api/state')).json();
+    $('mode').textContent = 'ONLINE // ' + s.modell_modus.toUpperCase();
+    $('t_space').textContent = fmt(s.adressraum_pro_ebene);
+    $('t_act').textContent = s.aktive_agenten; $('t_wait').textContent = s.wartende_aufgaben;
+    $('t_total').textContent = fmt(s.aktivierte_agenten_gesamt);
+    $('t_done').textContent = fmt(s.fertig); $('t_err').textContent = s.fehler;
+    const all = [...s.aktive, ...s.letzte_aufgaben];
+    $('tasks').innerHTML = all.slice(0, 18).map(t =>
+      `<tr><td class="mono">${t.id}</td><td>${t.agent || '—'}${t.demo ? ' <span class="demo">DEMO</span>' : ''}</td>` +
+      `<td>${t.team || ''}</td><td class="mono" style="color:var(--dim)">${t.adresse}</td>` +
+      `<td>${t.beschreibung.slice(0, 42)}</td>` +
+      `<td><span class="tag ${t.status}">${t.status.toUpperCase()}</span></td></tr>`).join('');
+    const counts = {};
+    for (const t of all) if (t.team) counts[t.team] = (counts[t.team] || 0) + 1;
+    const activeTeams = new Set(s.aktive.map(t => t.team));
+    $('teams').innerHTML = Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([team, c]) =>
+      `<div class="teamcard${activeTeams.has(team) ? ' hot' : ''}"><div class="n">${team}</div><div class="c">${c}</div></div>`).join('')
+      || '<div style="color:var(--dim)">Noch keine Aktivität.</div>';
+    $('ticker').textContent = (` ▲ TRACKER: ${s.aktive_agenten} AKTIV ● ${s.wartende_aufgaben} WARTEND ` +
+      `● ${fmt(s.aktivierte_agenten_gesamt)} AKTIVIERUNGEN GESAMT ● ADRESSRAUM ${fmt(s.adressraum_pro_ebene)}/EBENE ` +
+      `● TEAMS AKTIV: ${[...activeTeams].join(', ') || 'KEINE'} ● `).repeat(3);
+  } catch (e) { $('mode').textContent = 'VERBINDUNG GETRENNT'; }
+}
+setInterval(tick, 1500); tick();
+
+async function lookup(ev) {
+  ev.preventDefault();
+  const a = $('addr').value.trim().replace(/\s/g, '');
+  if (!a) return false;
+  const r = await fetch('/api/employee/' + encodeURIComponent(a));
+  if (!r.ok) { $('emp').innerHTML = `<div class="empcard">Ungültige Adresse.</div>`; return false; }
+  const e = await r.json();
+  $('emp').innerHTML = `<div class="empcard">
+    <b>${e.name}</b> — ${e.rolle}, Team ${e.team} (Ebene ${e.ebene})<br>
+    Spezialisierung: ${e.spezialisierung}<br>
+    Skills: ${e.skills.join(', ')}<br>
+    Ziele: ${e.ziele.join(' · ')}<br>
+    Priorität: ${e.prioritaet} · Plugins: ${e.plugins_autorisiert.join(', ')}<br>
+    Eigenes Unternehmen: <b>${e.eigenes_unternehmen}</b>
+    (${fmt(e.adressierbare_mitarbeiter_im_eigenen_unternehmen)} adressierbare Mitarbeiter)
+    <div style="margin-top:6px"><button onclick="$('orgaddr').value='${e.adresse}';exploreOrg(event)">UNTERNEHMEN ÖFFNEN</button></div>
+  </div>`;
+  return false;
+}
+async function exploreOrg(ev) {
+  if (ev) ev.preventDefault();
+  const a = $('orgaddr').value.trim().replace(/\s/g, '');
+  if (!a) return false;
+  const r = await fetch('/api/org/' + encodeURIComponent(a) + '?count=12');
+  if (!r.ok) { $('org').innerHTML = `<div class="empcard">Ungültige Adresse.</div>`; return false; }
+  const o = await r.json();
+  $('org').innerHTML = `<div class="empcard">
+    <b>${o.unternehmen}</b> — Leitung: ${o.leitung}<br>
+    ${fmt(o.adressierbar)} adressierbare Mitarbeiter · Auszug:
+    <table style="margin-top:6px"><thead><tr><th>Adresse</th><th>Name</th><th>Rolle</th><th>Team</th></tr></thead><tbody>
+    ${o.mitarbeiter_auszug.map(m => `<tr><td class="mono" style="color:var(--dim)">${m.adresse}</td>` +
+      `<td>${m.name}</td><td>${m.rolle}</td><td>${m.team}</td></tr>`).join('')}
+    </tbody></table>
+    <div style="font-size:10px; color:var(--dim); margin-top:4px">Tipp: Adresse eines Mitarbeiters oben in die Suche
+    eingeben — auch er führt wieder ein eigenes Unternehmen.</div>
+  </div>`;
+  return false;
+}
+</script>
+</body>
+</html>

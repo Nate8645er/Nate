@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JARVIS // GEHIRN</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <h1>JARVIS <span style="color:var(--dim)">//</span> GEHIRN</h1>
+  <nav><a href="/">ÜBERSICHT</a><a class="here" href="/gehirn">GEHIRN</a><a href="/mitarbeiter">MITARBEITER</a></nav>
+  <span class="sys mono" id="clock"></span>
+  <span class="sys"><span class="dot"></span><span id="mode">ONLINE</span></span>
+</header>
+<div class="tickerwrap"><div class="ticker mono" id="ticker">GEHIRN WIRD INITIALISIERT …</div></div>
+
+<div class="grid2">
+  <!-- linke Spalte: Chat + Sprache -->
+  <div>
+    <div class="panel">
+      <h2><b>KOMM</b> // DIREKTER KANAL ZUM GEHIRN</h2>
+      <div class="chat bigchat" id="chat"></div>
+      <form onsubmit="return sendTask(event)">
+        <input id="task" placeholder="Sprich mit JARVIS…" autocomplete="off">
+        <button>SENDEN</button>
+      </form>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>SPRACHE</b> // „HEY JARVIS"</h2>
+      <div style="display:flex; gap:6px">
+        <button id="wake" onclick="toggleWake()">🎤 WAKE WORD AUS</button>
+        <button onclick="listenOnce()">EINMAL ZUHÖREN</button>
+      </div>
+      <div id="voicestat" style="font-size:11px; color:var(--dim); margin-top:6px">
+        Browser-Spracherkennung (Edge/Chrome). Sage „Hey Jarvis", dann deinen Befehl.
+        JARVIS antwortet mit Sprachausgabe.
+      </div>
+    </div>
+  </div>
+
+  <!-- rechte Spalte: Modellzustand + Gedächtnis -->
+  <div>
+    <div class="panel">
+      <h2><b>KERN</b> // MODELLZUSTAND</h2>
+      <div class="kv"><span>Modell</span><b id="model">–</b></div>
+      <div class="kv"><span>Modus</span><b id="mmode">–</b></div>
+      <div class="kv"><span>Denk-Slots (parallel)</span><b id="slots">–</b></div>
+      <div class="kv"><span>Gedanken verarbeitet (Aufgaben)</span><b id="done">–</b></div>
+      <div class="kv"><span>Fehlversuche</span><b id="err">–</b></div>
+      <div class="kv"><span>Gedächtnis-Einträge</span><b id="memc">–</b></div>
+      <div id="modehint" style="font-size:11px; color:var(--dim); margin-top:8px"></div>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>SPEICHER</b> // LANGZEITGEDÄCHTNIS (LETZTE EINTRÄGE)</h2>
+      <div id="memory" class="logs mono" style="max-height:340px"></div>
+    </div>
+  </div>
+</div>
+
+<div class="honest"><b>EHRLICHKEITS-PROTOKOLL:</b> Im Modus <b>offline</b> antwortet das Gehirn regelbasiert und
+kennzeichnet das in jeder Antwort. Echte KI-Antworten (Fable 5) erfordern einen gesetzten ANTHROPIC_API_KEY —
+jeder Aufruf kostet dann echtes API-Guthaben.</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const fmt = n => Number(n).toLocaleString('de-CH');
+setInterval(() => $('clock').textContent = new Date().toLocaleString('de-CH'), 1000);
+
+async function tick() {
+  try {
+    const s = await (await fetch('/api/state')).json();
+    $('mode').textContent = 'ONLINE // ' + s.modell_modus.toUpperCase();
+    $('model').textContent = s.modell; $('mmode').textContent = s.modell_modus;
+    $('slots').textContent = `${s.aktive_agenten}/${s.max_parallel}`;
+    $('done').textContent = fmt(s.fertig); $('err').textContent = s.fehler;
+    $('memc').textContent = fmt(s.gedaechtnis_eintraege);
+    $('modehint').textContent = s.modell_modus === 'api'
+      ? '✔ API-Key erkannt — aktive Agenten denken mit ' + s.modell + '.'
+      : '⚠ Kein API-Key gefunden — Offline-Modus (regelbasiert, kostenlos). ANTHROPIC_API_KEY setzen und neu starten.';
+    $('ticker').textContent = (` ▲ GEHIRN ${s.modell} [${s.modell_modus.toUpperCase()}] ` +
+      `● DENK-SLOTS ${s.aktive_agenten}/${s.max_parallel} ● VERARBEITET ${fmt(s.fertig)} ` +
+      `● GEDÄCHTNIS ${fmt(s.gedaechtnis_eintraege)} EINTRÄGE ● CPU ${s.cpu_prozent}% ● RAM ${s.ram_prozent}% ● `).repeat(3);
+    const mem = await (await fetch('/api/memory?limit=25')).json();
+    $('memory').innerHTML = mem.eintraege.map(m =>
+      `<div>[${m.zeit}] <span style="color:var(--amber2)">${m.adresse}</span> ${m.aufgabe.slice(0,70)}<br>` +
+      `<span style="color:var(--dim)">→ ${m.ergebnis.slice(0,110)}</span></div>`).join('') || '<div>Noch keine Einträge.</div>';
+  } catch (e) { $('mode').textContent = 'VERBINDUNG GETRENNT'; }
+}
+setInterval(tick, 2000); tick();
+
+function addMsg(cls, who, text) {
+  const d = document.createElement('div'); d.className = 'msg ' + cls;
+  d.innerHTML = (who ? `<div class="who">${who}</div>` : '') + text;
+  $('chat').appendChild(d); $('chat').scrollTop = 1e9;
+  return d;
+}
+async function dispatch(text) {
+  addMsg('me', '', text);
+  const r = await fetch('/api/task', { method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ beschreibung: text }) });
+  const { id } = await r.json();
+  const d = addMsg('jv', 'JARVIS // AGENT WIRD ZUGEWIESEN', '…');
+  for (let i = 0; i < 120; i++) {
+    await new Promise(res => setTimeout(res, 1200));
+    const t = await (await fetch('/api/task/' + id)).json();
+    if (t.status === 'fertig' || t.status === 'fehler') {
+      d.querySelector('.who').textContent = 'JARVIS // ' + (t.agent || 'SYSTEM');
+      d.childNodes[1].textContent = t.ergebnis || '(kein Ergebnis)';
+      speak(t.ergebnis); return;
+    }
+  }
+  d.childNodes[1].textContent = '(Zeitüberschreitung)';
+}
+function sendTask(ev) { ev.preventDefault(); const v = $('task').value.trim();
+  if (v) { dispatch(v); $('task').value = ''; } return false; }
+
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null, wakeOn = false;
+function speak(text) {
+  if (!window.speechSynthesis || !text) return;
+  const u = new SpeechSynthesisUtterance(text.slice(0, 300));
+  u.lang = 'de-DE'; u.rate = 1.05; speechSynthesis.speak(u);
+}
+function startRec(continuous) {
+  if (!SR) { $('voicestat').textContent = 'Dieser Browser unterstützt keine Spracherkennung — bitte Edge oder Chrome nutzen.'; return; }
+  if (rec) rec.stop();
+  rec = new SR(); rec.lang = 'de-DE'; rec.continuous = continuous; rec.interimResults = false;
+  rec.onresult = e => {
+    const said = e.results[e.results.length - 1][0].transcript.trim();
+    $('voicestat').textContent = 'Gehört: „' + said + '"';
+    const lower = said.toLowerCase();
+    if (!wakeOn) { dispatch(said); return; }
+    const m = lower.match(/(?:hey|he|ok)?\s*(?:jarvis|dschárwis|jarwis|charvis)[,.!?]?\s*(.*)/);
+    if (m) { const cmd = m[1].trim();
+      if (cmd) dispatch(cmd); else { speak('Ja? Ich höre.'); $('voicestat').textContent = 'Wake Word erkannt — sprich deinen Befehl…'; } }
+  };
+  rec.onend = () => { if (wakeOn) try { rec.start(); } catch (e) {} };
+  rec.onerror = e => { $('voicestat').textContent = 'Mikrofon: ' + e.error +
+    (e.error === 'not-allowed' ? ' — bitte Mikrofon-Zugriff erlauben' : ''); };
+  try { rec.start(); } catch (e) {}
+}
+function toggleWake() {
+  wakeOn = !wakeOn;
+  $('wake').classList.toggle('on', wakeOn);
+  $('wake').textContent = wakeOn ? '🎤 WAKE WORD AN' : '🎤 WAKE WORD AUS';
+  if (wakeOn) { startRec(true); $('voicestat').textContent = 'Lausche dauerhaft auf „Hey Jarvis"…'; speak('Jarvis online.'); }
+  else if (rec) { rec.onend = null; rec.stop(); $('voicestat').textContent = 'Wake Word deaktiviert.'; }
+}
+function listenOnce() { wakeOn = false; $('wake').classList.remove('on');
+  $('voicestat').textContent = 'Ich höre — sprich jetzt…'; startRec(false); }
+</script>
+</body>
+</html>
