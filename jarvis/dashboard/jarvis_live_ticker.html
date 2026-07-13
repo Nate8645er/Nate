@@ -416,6 +416,24 @@ body::before {
 .log-entry[data-type="partnerschaft"]  { border-left-color: var(--ok); }
 .log-entry[data-type="auszeichnung"]   { border-left-color: #ffd76b; }
 .log-entry[data-type="sync"]           { border-left-color: var(--accent-2); }
+/* ===== Mitarbeiter-Typen — Balkendiagramm ===== */
+.types-panel .panel-body { padding-top: 6px; }
+.type-legend { font-family: var(--font-mono); font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+.type-legend b { color: var(--accent-2); }
+.type-row { display: grid; grid-template-columns: 150px 1fr auto; align-items: center; gap: 12px; margin-bottom: 10px; }
+@media (max-width: 620px) { .type-row { grid-template-columns: 110px 1fr; } .type-row .type-count { grid-column: 2; text-align: right; } }
+.type-name { font-family: var(--font-mono); font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 7px; }
+.type-name .ic { font-size: 15px; }
+.type-bar { position: relative; height: 20px; border-radius: 6px; background: rgba(255,90,40,0.10); border: 1px solid var(--border); overflow: hidden; }
+.type-bar > span { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 6px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2)); box-shadow: 0 0 12px rgba(255,90,30,0.4);
+  width: 0; transition: width 1.1s cubic-bezier(.2,.7,.2,1); }
+.type-bar .pct { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-family: var(--font-mono); font-size: 11px; color: var(--text); text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+.type-count { font-family: var(--font-mono); font-size: 13px; color: var(--accent-2); text-align: right; min-width: 130px; }
+.type-count .obs { display: block; font-size: 10px; color: var(--muted); }
+.type-live { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11px; color: var(--ok); }
+.type-live .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 8px var(--ok); animation: statusPulse 1.5s infinite; }
+
 /* ===== Zentraler Arc-Reactor-Kern (Ueberblick in der Mitte) ===== */
 .core-hero {
   margin: var(--gap) 0;
@@ -782,6 +800,22 @@ body::before {
     </div>
   </section>
 
+  <!-- ================= Mitarbeiter-Typen (Balken) ================= -->
+  <section class="panel types-panel" aria-label="Mitarbeiter-Typen">
+    <div class="panel-head">
+      <h2>Mitarbeiter-Typen — aktiv</h2>
+      <span class="type-live"><span class="dot"></span> LIVE</span>
+    </div>
+    <div class="panel-body">
+      <div class="type-legend">
+        Alle <b id="typTotal">1.000.000.000.000</b> Mitarbeiter sind aktiv — verteilt auf
+        <b id="typCount">8</b> Typen (Agenten, Assistenten, Berater …). Balken = Anteil,
+        rechts die aktive Zahl; „beob." zählt live die im Ticker gesehenen.
+      </div>
+      <div id="typeBars"></div>
+    </div>
+  </section>
+
   <div class="main-col">
     <div class="main-grid">
 
@@ -831,6 +865,7 @@ body::before {
             <h3 class="card-title" id="pName">—</h3>
             <div class="card-badge" id="pBadge">—</div>
             <dl class="kv">
+              <dt>Typ</dt><dd id="pType">—</dd>
               <dt>Rolle</dt><dd id="pRole">—</dd>
               <dt>Abteilung</dt><dd id="pDepartment">—</dd>
               <dt>Spezialisierung</dt><dd id="pSpecialization">—</dd>
@@ -983,6 +1018,20 @@ body::before {
     return id;
   }
 
+  /* Mitarbeiter-Typen (EXAKT wie Python: Name + Promille, Summe 1000). */
+  var EMPLOYEE_TYPES = [
+    ["Agenten", 240], ["Assistenten", 210], ["Entwickler", 180], ["Berater", 150],
+    ["Analysten", 90], ["Spezialisten", 70], ["Automatisierung", 40], ["Sonstige", 20]
+  ];
+  function typeForPermille(v) {
+    var cum = 0;
+    for (var i = 0; i < EMPLOYEE_TYPES.length; i++) {
+      cum += EMPLOYEE_TYPES[i][1];
+      if (v < cum) { return EMPLOYEE_TYPES[i][0]; }
+    }
+    return EMPLOYEE_TYPES[EMPLOYEE_TYPES.length - 1][0];
+  }
+
   function employeeIdentity(idBig) {
     var h1 = mix64(idBig);
     var h2 = mix64(h1);
@@ -990,6 +1039,7 @@ body::before {
     var h4 = mix64(h3);
     var h5 = mix64(h4);
     var h6 = mix64(h5);
+    var h7 = mix64(h6);
     var first = FIRST_NAMES[Number(h1 % 32n)];
     var last = LAST_NAMES[Number(h2 % 32n)];
     return {
@@ -1001,7 +1051,8 @@ body::before {
       role: ROLES[Number(h3 % 24n)],
       department: DEPARTMENTS[Number(h4 % 16n)],
       companyName: first + " " + last + " " + COMPANY_SUFFIXES[Number(h5 % 16n)],
-      specialization: ALL_SKILLS[Number(h6 % 200n)]
+      specialization: ALL_SKILLS[Number(h6 % 200n)],
+      type: typeForPermille(Number(h7 % 1000n))
     };
   }
 
@@ -1015,6 +1066,7 @@ body::before {
       role: emp.role,
       department: emp.department,
       specialization: emp.specialization,
+      type: emp.type,
       skills: ALL_SKILLS.length,
       plugins: ALL_PLUGINS.length,
       tools: ALL_TOOLS.length,
@@ -1151,6 +1203,7 @@ body::before {
     $("empIdInput").value = emp.id.toString();
     $("pName").textContent = emp.name;
     $("pBadge").textContent = emp.badge + " · ID " + fmtDE(emp.id);
+    if ($("pType")) $("pType").textContent = emp.type;
     $("pRole").textContent = emp.role;
     $("pDepartment").textContent = emp.department;
     $("pSpecialization").textContent = emp.specialization;
@@ -1234,6 +1287,7 @@ body::before {
     if (orb) { orb.classList.remove("tick"); void orb.offsetWidth; orb.classList.add("tick"); }
     if ($("coreObserved")) $("coreObserved").textContent = fmtDE(totalEvents);
     if ($("coreBadge")) $("coreBadge").textContent = ev.badge;
+    noteType(ev.employeeId);   /* Live-Zaehler je Mitarbeiter-Typ */
   }
 
   function applySpeed(speed) {
@@ -1350,6 +1404,53 @@ body::before {
   buildCatalogPanel("skills");
   buildCatalogPanel("plugins");
   buildCatalogPanel("tools");
+
+  /* ---------------- Mitarbeiter-Typen — Balkendiagramm ------------------ */
+  var TYPE_ICON = {
+    "Agenten": "🤖", "Assistenten": "🧑‍💼", "Entwickler": "👨‍💻", "Berater": "🧠",
+    "Analysten": "📊", "Spezialisten": "🛠️", "Automatisierung": "⚙️", "Sonstige": "✨"
+  };
+  var PERMILLE_UNIT = 10n ** 9n;           /* 10^12 / 1000 */
+  var typeObserved = {};                    /* Typ -> live gesehene Anzahl */
+  var typeBarEls = {};                      /* Typ -> {bar, obs} */
+  var maxPermille = EMPLOYEE_TYPES.reduce(function (m, t) { return Math.max(m, t[1]); }, 1);
+
+  function buildTypeBars() {
+    var host = $("typeBars");
+    host.innerHTML = "";
+    $("typCount").textContent = EMPLOYEE_TYPES.length.toString();
+    EMPLOYEE_TYPES.forEach(function (t) {
+      var name = t[0], permille = t[1];
+      var count = BigInt(permille) * PERMILLE_UNIT;
+      typeObserved[name] = 0;
+
+      var row = document.createElement("div"); row.className = "type-row";
+      var nm = document.createElement("div"); nm.className = "type-name";
+      nm.innerHTML = '<span class="ic">' + (TYPE_ICON[name] || "•") + '</span>' + name;
+      var barWrap = document.createElement("div"); barWrap.className = "type-bar";
+      var fill = document.createElement("span");
+      var pct = document.createElement("span"); pct.className = "pct"; pct.textContent = (permille / 10) + "%";
+      barWrap.appendChild(fill); barWrap.appendChild(pct);
+      var cnt = document.createElement("div"); cnt.className = "type-count";
+      cnt.innerHTML = fmtDE(count) + '<span class="obs" data-obs="' + name + '">beob.: 0</span>';
+
+      row.appendChild(nm); row.appendChild(barWrap); row.appendChild(cnt);
+      host.appendChild(row);
+      typeBarEls[name] = { fill: fill, obs: cnt.querySelector(".obs") };
+      /* Breite relativ zum groessten Typ (Agenten = 100%). */
+      requestAnimationFrame(function () { fill.style.width = (permille / maxPermille * 100) + "%"; });
+    });
+  }
+  buildTypeBars();
+
+  function noteType(empIdBig) {
+    if (!typeBarEls) { return; }               /* Balken noch nicht gebaut */
+    var t = employeeIdentity(empIdBig).type;
+    typeObserved[t] = (typeObserved[t] || 0) + 1;
+    var el = typeBarEls[t];
+    if (el) { el.obs.textContent = "beob.: " + fmtDE(BigInt(typeObserved[t])); }
+  }
+  window.jarvisTypeObserved = function () { return typeObserved; };
 
   var activePanelId = "panelSkills";
   function updateCatalogCount() {

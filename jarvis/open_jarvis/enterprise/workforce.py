@@ -82,6 +82,26 @@ COMPANY_SUFFIXES: list[str] = [
     "Aerospace", "Digital", "Werke", "Group",
 ]
 
+# ---------------------------------------------------------------------------
+# Mitarbeiter-Typen: Jeder der 10**12 Mitarbeiter ist ein Agent, Assistent,
+# Berater usw. Die Gewichte sind Promille (‰) und summieren sich auf 1000,
+# sodass die aktiven Zahlen exakt aufgehen: count = permille * 10**9
+# (denn 10**12 / 1000 = 10**9). Summe aller Typen = 10**12.
+# ---------------------------------------------------------------------------
+EMPLOYEE_TYPES: list[tuple[str, int]] = [
+    ("Agenten", 240),
+    ("Assistenten", 210),
+    ("Entwickler", 180),
+    ("Berater", 150),
+    ("Analysten", 90),
+    ("Spezialisten", 70),
+    ("Automatisierung", 40),
+    ("Sonstige", 20),
+]
+
+#: Einheit pro Promille bei 10**12 Mitarbeitern.
+_PERMILLE_UNIT: int = EMPLOYEES_DIRECT // 1000  # = 10**9
+
 
 def mix64(x: int) -> int:
     """SplitMix64-Finalizer: deterministischer 64-Bit-Hash (siehe SPEC)."""
@@ -91,6 +111,40 @@ def mix64(x: int) -> int:
     z = ((z ^ (z >> 30)) * 0xBF58476D1CE4E5B9) & MASK
     z = ((z ^ (z >> 27)) * 0x94D049BB133111EB) & MASK
     return (z ^ (z >> 31)) & MASK
+
+
+def _type_for_permille(value: int) -> str:
+    """Ordnet einen Wert 0..999 deterministisch einem Mitarbeiter-Typ zu (kumulativ)."""
+
+    cumulative = 0
+    for name, permille in EMPLOYEE_TYPES:
+        cumulative += permille
+        if value < cumulative:
+            return name
+    return EMPLOYEE_TYPES[-1][0]
+
+
+def employee_type(emp_id: int) -> str:
+    """Deterministischer Mitarbeiter-Typ (Agent, Assistent, Berater, …)."""
+
+    return str(employee_identity(emp_id)["type"])
+
+
+def type_distribution() -> list[dict[str, object]]:
+    """Verteilung der Mitarbeiter-Typen als exakte aktive Zahlen.
+
+    Alle Mitarbeiter sind aktiv; die Summe der Zahlen ist genau 10**12.
+    """
+
+    return [
+        {
+            "type": name,
+            "permille": permille,
+            "percent": permille / 10,
+            "count": permille * _PERMILLE_UNIT,
+        }
+        for name, permille in EMPLOYEE_TYPES
+    ]
 
 
 def _validate_employee_id(emp_id: int) -> None:
@@ -120,6 +174,7 @@ def employee_identity(emp_id: int) -> dict[str, object]:
     h4 = mix64(h3)
     h5 = mix64(h4)
     h6 = mix64(h5)
+    h7 = mix64(h6)
 
     first = FIRST_NAMES[h1 % 32]
     last = LAST_NAMES[h2 % 32]
@@ -127,6 +182,7 @@ def employee_identity(emp_id: int) -> dict[str, object]:
     department = DEPARTMENTS[h4 % 16]
     company_suffix = COMPANY_SUFFIXES[h5 % 16]
     specialization = catalog.all_skills()[h6 % 200]
+    emp_type = _type_for_permille(h7 % 1000)
 
     return {
         "id": emp_id,
@@ -137,6 +193,7 @@ def employee_identity(emp_id: int) -> dict[str, object]:
         "role": role,
         "department": department,
         "specialization": specialization,
+        "type": emp_type,
         "company_name": f"{first} {last} {company_suffix}",
     }
 
@@ -197,6 +254,7 @@ def employee(emp_id: int) -> dict[str, object]:
         "role": identity["role"],
         "department": identity["department"],
         "specialization": identity["specialization"],
+        "type": identity["type"],
     }
     # ALLE Skills/Plugins/Tools + KI-Modelle (inkl. Fable 5) + Agent-Werkzeuge + Shopify.
     record.update(capabilities)

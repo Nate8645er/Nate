@@ -164,6 +164,40 @@ class TestWorkforceSummary:
             assert isinstance(value, int)
 
 
+class TestMitarbeiterTypen:
+    def test_verteilung_summiert_auf_10_hoch_12(self) -> None:
+        from open_jarvis.enterprise import type_distribution
+
+        dist = type_distribution()
+        assert len(dist) == 8
+        assert sum(d["count"] for d in dist) == 10**12
+        # count = permille * 10**9
+        for d in dist:
+            assert d["count"] == d["permille"] * 10**9
+
+    def test_typen_namen_und_agenten_anteil(self) -> None:
+        from open_jarvis.enterprise import type_distribution
+
+        by_type = {d["type"]: d for d in type_distribution()}
+        assert "Agenten" in by_type and "Assistenten" in by_type and "Berater" in by_type
+        assert by_type["Agenten"]["count"] == 240_000_000_000
+
+    def test_employee_type_ist_deterministisch_und_gueltig(self) -> None:
+        from open_jarvis.enterprise import EMPLOYEE_TYPES, employee, employee_type
+
+        namen = {name for name, _ in EMPLOYEE_TYPES}
+        for emp_id in (1, 42, 123456789, 10**12):
+            t = employee_type(emp_id)
+            assert t in namen
+            assert employee(emp_id)["type"] == t
+
+    def test_type_fixpunkte(self) -> None:
+        from open_jarvis.enterprise import employee_type
+
+        assert employee_type(42) == "Assistenten"
+        assert employee_type(123456789) == "Analysten"
+
+
 class TestKatalogKonsistenz:
     def test_flache_listen(self) -> None:
         assert len(all_skills()) == 200

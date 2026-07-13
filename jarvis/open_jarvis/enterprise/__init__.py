@@ -32,12 +32,15 @@ from open_jarvis.enterprise.live_ticker import DEFAULT_SEED, EVENT_TYPES, LiveTi
 from open_jarvis.enterprise.workforce import (
     COMPANY_DEVELOPERS,
     COMPANY_EMPLOYEES,
+    EMPLOYEE_TYPES,
     EMPLOYEES_DIRECT,
     TOTAL_DEVELOPERS,
     TOTAL_WORKFORCE,
     employee,
     employee_identity,
+    employee_type,
     mix64,
+    type_distribution,
     workforce_summary,
 )
 
@@ -52,6 +55,9 @@ __all__ = [
     "mix64",
     "employee",
     "employee_identity",
+    "employee_type",
+    "type_distribution",
+    "EMPLOYEE_TYPES",
     "workforce_summary",
     # Live-Ticker
     "LiveTicker",
