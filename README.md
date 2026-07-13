@@ -196,14 +196,36 @@ python jarvis.py
 > API-Keys läuft die App im lokalen „keyless degraded mode". Details:
 > [`jarvis/README.md`](jarvis/README.md).
 
+### JARVIS-Agent — Befehle wirklich ausführen (wie Claude Code)
+
+JARVIS kann Befehle entgegennehmen und **ausführen** — Aufgabe planen, Werkzeuge
+benutzen, Ergebnis liefern. Mit **Modell-Auswahl inkl. Fable 5** (Standard).
+
+```bash
+cd jarvis
+python3 -m open_jarvis.agent --list-models                 # KI-Motoren (Fable 5, Opus, …)
+python3 -m open_jarvis.agent "baue mir einen Shop für Kaffee namens Bergbohne"
+python3 -m open_jarvis.agent --execute "baue einen Shop für Sneaker"   # echt schreiben
+python3 -m open_jarvis.agent --model fable-5 "suche nach günstigen Flügen"
+```
+
+Werkzeuge u. a.: `shop_bauen` (kompletter, verkaufsfertiger Shop-Bauplan mit
+Produkten & CHF-Preisen), `web_suche`, `webseite`, `app_starten`, `datei_schreiben`,
+`notiz`, `plugins`. Ohne `--execute` läuft eine gefahrlose Vorschau.
+
+> **Ehrlich:** Für Planung mit **Fable 5 / Claude** brauchst du einen Anthropic-Schlüssel
+> in `ANTHROPIC_API_KEY`. Ohne Schlüssel plant der **lokale, kostenlose** Motor —
+> JARVIS bleibt immer bedienbar. `shop_bauen` erzeugt einen **Bauplan** (kein live
+> erstellter Shopify-Shop). Details: [`jarvis/docs/JARVIS_AGENT.md`](jarvis/docs/JARVIS_AGENT.md).
+
 ### Tests
 
 ```bash
 cd jarvis
-python3 -m pytest tests/test_enterprise_*.py
+python3 -m pytest tests/test_enterprise_*.py tests/test_agent_*.py
 ```
 
-Deckt Workforce-Engine, Live-Ticker und alle 128 Plugins ab.
+Deckt Workforce-Engine, Live-Ticker, alle 128 Plugins und den JARVIS-Agenten ab.
 
 ---
 
@@ -223,8 +245,15 @@ Nate/
 │   │   │   ├── workforce.py         ← deterministische Mitarbeiter-Ableitung (SplitMix64)
 │   │   │   ├── live_ticker.py       ← Event-Engine (10 Event-Typen)
 │   │   │   └── __main__.py          ← Terminal-Ticker: python3 -m open_jarvis.enterprise
+│   │   ├── agent/                   ← NEU: JARVIS-Agent (Befehle ausführen, wie Claude Code)
+│   │   │   ├── models.py            ← Modell-Registry (Fable 5, Opus, Sonnet, Haiku, Groq, lokal)
+│   │   │   ├── claude_provider.py   ← Anthropic-API-Client (Fable 5 / Claude)
+│   │   │   ├── planner.py           ← lokaler + Claude-Planer (mit Fallback)
+│   │   │   ├── tools.py             ← sichere Werkzeug-Registry
+│   │   │   ├── shop_builder.py      ← Shop-Bauplan-Generator
+│   │   │   └── __main__.py          ← CLI: python3 -m open_jarvis.agent "<befehl>"
 │   │   └── …                        ← bestehender Assistent (app, audio, memory, plugins, …)
-│   ├── plugins/                     ← 128 echt installierte Katalog-Plugins
+│   ├── plugins/                     ← 128 Katalog-Plugins + JARVIS-Agent-Plugin
 │   │   └── <plugin_id>/
 │   │       ├── plugin.json          ← Manifest
 │   │       └── main.py              ← Entrypoint (nur Standardbibliothek)
@@ -232,11 +261,13 @@ Nate/
 │   │   └── jarvis_live_ticker.html  ← Live-Dashboard (eigenständig, offline)
 │   ├── docs/
 │   │   ├── ENTERPRISE_LIVE_TICKER.md ← ausführliche Anleitung zum Enterprise-Modul
+│   │   ├── JARVIS_AGENT.md          ← Anleitung zum JARVIS-Agenten (Fable 5, Werkzeuge)
 │   │   └── …                        ← bestehende Open.Jarvis-Doku
 │   └── tests/
 │       ├── test_enterprise_workforce.py
 │       ├── test_enterprise_live_ticker.py
-│       └── test_enterprise_plugins.py
+│       ├── test_enterprise_plugins.py
+│       └── test_agent_*.py
 └── ultra-enterprise-os/             ← Claude-Code-Plugin (Multi-Agent-Orchestrierung)
     ├── .claude-plugin/plugin.json   ← Plugin-Manifest
     ├── skills/ultra-enterprise-os/  ← Meta-Skill (Orchestrator)
@@ -252,6 +283,8 @@ Nate/
 - **Enterprise Live-Ticker im Detail:** [`jarvis/docs/ENTERPRISE_LIVE_TICKER.md`](jarvis/docs/ENTERPRISE_LIVE_TICKER.md)
   — Architektur, deterministisches Prinzip, CLI-Referenz, Dashboard-Funktionen,
   Event-Typen, Plugin-Katalog, FAQ.
+- **JARVIS-Agent (Befehle ausführen, Fable 5):** [`jarvis/docs/JARVIS_AGENT.md`](jarvis/docs/JARVIS_AGENT.md)
+  — Modell-Auswahl inkl. Fable 5, Werkzeuge, Shop-Bauplan, Sicherheit, Python-API.
 - **Open.Jarvis-Assistent:** [`jarvis/README.md`](jarvis/README.md) und [`jarvis/docs/`](jarvis/docs/)
 - **Plugin-Verzeichnis:** [`jarvis/plugins/README.md`](jarvis/plugins/README.md)
 - **ULTRA AI ENTERPRISE OS:** [`ultra-enterprise-os/README.md`](ultra-enterprise-os/README.md)

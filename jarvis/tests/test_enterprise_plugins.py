@@ -14,6 +14,8 @@ PLUGINS_ROOT = REPO_ROOT / "plugins"
 REQUIRED_MANIFEST_FIELDS = {"id", "name", "version", "entrypoint", "description", "permissions"}
 EXPECTED_PERMISSIONS = ["commands.register", "ui.notify"]
 EXAMPLE_PLUGIN_ID = "enterprise_enterprise_live_ticker"
+# Zusaetzliche, nicht aus dem Katalog generierte Plugins (echte Funktions-Plugins).
+EXTRA_PLUGIN_IDS = {"agent_jarvis_agent"}
 
 
 class EnterprisePluginsTest(TestCase):
@@ -21,10 +23,15 @@ class EnterprisePluginsTest(TestCase):
     def setUpClass(cls):
         cls.registry = build_plugin_registry(PLUGINS_ROOT)
         cls.entries = cls.registry["plugins"]
+        # Nur die 128 aus dem Katalog generierten Plugins.
+        cls.catalog_entries = [e for e in cls.entries if e["id"] not in EXTRA_PLUGIN_IDS]
 
-    def test_registry_contains_exactly_128_plugins(self):
-        self.assertEqual(len(self.entries), 128)
-        self.assertEqual(self.registry["summary"]["total"], 128)
+    def test_registry_contains_128_catalog_plugins_plus_extras(self):
+        self.assertEqual(len(self.catalog_entries), 128)
+        self.assertEqual(len(self.entries), 128 + len(EXTRA_PLUGIN_IDS))
+        self.assertEqual(self.registry["summary"]["total"], 128 + len(EXTRA_PLUGIN_IDS))
+        for extra_id in EXTRA_PLUGIN_IDS:
+            self.assertIn(extra_id, {e["id"] for e in self.entries})
 
     def test_registry_has_zero_issues_across_all_entries(self):
         problems = {entry["id"]: entry["issues"] for entry in self.entries if entry["issues"]}
@@ -72,7 +79,7 @@ class EnterprisePluginsTest(TestCase):
 
     def test_manifest_names_match_catalog_plugins_exactly(self):
         catalog_names = all_plugins()
-        manifest_names = [entry["manifest"]["name"] for entry in self.entries]
+        manifest_names = [entry["manifest"]["name"] for entry in self.catalog_entries]
         self.assertEqual(len(catalog_names), 128)
         self.assertEqual(len(manifest_names), len(set(manifest_names)))
         self.assertEqual(set(manifest_names), set(catalog_names))

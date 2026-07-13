@@ -7,6 +7,12 @@ installiert** — dieselben 128 Plugins, die auch jeder der 1.000.000.000.000
 virtuellen Mitarbeiter (und jedes Mitarbeiter-Unternehmen samt Developer-Team)
 im Enterprise Live-Ticker besitzt.
 
+Zusätzlich liegt hier das echte Funktions-Plugin **`agent_jarvis_agent`**
+(JARVIS-Agent) — es meldet die Befehle des agentischen Modus (Befehle ausführen,
+Shop bauen, Modell wählen inkl. Fable 5). Die Registry lädt also **129 Plugins**
+(128 Katalog-Plugins + JARVIS-Agent), alle mit 0 Issues. Siehe
+[`../docs/JARVIS_AGENT.md`](../docs/JARVIS_AGENT.md).
+
 ## Aufbau
 
 Jedes Plugin ist ein eigener Ordner `plugins/<plugin_id>/` mit genau zwei Dateien:
