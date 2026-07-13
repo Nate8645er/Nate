@@ -57,7 +57,11 @@ claw prompt "hallo"  # Einzel-Prompt
 ```
 
 **Wichtig:** Claw Code benötigt für Live-Antworten einen **Anthropic API-Key**
-(`sk-ant-...`, von https://console.anthropic.com – ein Claude-Abo reicht nicht):
+(`sk-ant-...`, von https://console.anthropic.com – ein Claude-Abo reicht nicht).
+
+Am einfachsten: **`Set-ClawApiKey.cmd` doppelklicken** – das Skript fragt den Key ab,
+speichert ihn dauerhaft und prüft sofort mit `claw doctor`, ob alles aktiv ist.
+Alternativ manuell:
 
 ```powershell
 setx ANTHROPIC_API_KEY "sk-ant-..."
