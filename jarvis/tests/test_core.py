@@ -314,3 +314,29 @@ def test_vision_commands_and_offline(monkeypatch):
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
     out = brain.describe_image("x", "image/png", "was ist das")
     assert "OFFLINE" in out or "Fable 5" in out
+
+
+def test_all_employees_connected(tmp_path):
+    """Verbindungs-Check: Mitarbeiter quer durch den Adressraum haben Identität + Werkzeuge."""
+    import asyncio
+    from jarvis.core.orchestrator import Orchestrator
+    from jarvis.core.identity import materialize, ADDRESS_SPACE
+
+    async def scenario():
+        o = Orchestrator(tmp_path, max_active=4)
+        await o.start()
+        for a in ["0", "42", "777", "12345678901", str(ADDRESS_SPACE - 1), "42/777/31337"]:
+            e = materialize(a)
+            assert e.name and e.team and e.skills
+            assert o.plugins.for_team(e.team), f"Mitarbeiter {a} ohne Werkzeuge"
+        t = o.submit("!plugin calc eval expression=6*7")
+        await o.queue.join()
+        st = o.state()
+        await o.stop()
+        return t, st
+
+    t, st = asyncio.run(scenario())
+    assert t.status == "fertig" and t.result == "42" and t.agent
+    # alle Subsysteme im State verbunden
+    for key in ("plugins", "skills", "belegschaft", "autopilot", "sicherheit", "bodyguards"):
+        assert key in st, f"Subsystem {key} nicht verbunden"
