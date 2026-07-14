@@ -150,9 +150,21 @@ class PCControlPlugin(Plugin):
             img = gui.screenshot()
             img.save(path)
             return {"gespeichert": str(path), "groesse": list(img.size)}
+        if action == "sehen":
+            # Bildschirm aufnehmen und von Fable 5 beschreiben lassen (Vision)
+            import base64
+            import io
+
+            from . import brain
+            img = gui.screenshot()
+            buf = io.BytesIO()
+            img.save(buf, format="PNG")
+            b64 = base64.b64encode(buf.getvalue()).decode()
+            return brain.describe_image(b64, "image/png",
+                                        kwargs.get("frage", "Was ist auf dem Bildschirm zu sehen?"))
 
         raise ValueError(f"Unbekannte Aktion: {action} "
-                         "(open|close|apps|move|click|type|key|screenshot)")
+                         "(open|close|apps|move|click|type|key|screenshot|sehen)")
 
 
 def register(manager: Any, workspace: Path) -> None:

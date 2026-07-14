@@ -61,6 +61,49 @@ def _call(model: str, system: str, user: str, max_tokens: int = 600) -> str:
     return "".join(block.get("text", "") for block in data.get("content", []))
 
 
+def describe_image(image_b64: str, media_type: str, frage: str) -> str:
+    """Bildschirm-/Bild-Verstehen: schickt ein Bild an das Modell und fragt danach."""
+    if mode() == "offline":
+        return ("[OFFLINE-Modus] Bildschirm-Analyse braucht Fable 5 (API-Key). "
+                "FABLE 5 aktivieren, dann sieht und beschreibt JARVIS deinen Bildschirm.")
+    system = ("Du bist JARVIS und beschreibst, was auf dem Bildschirm/Bild zu sehen ist. "
+              "Antworte knapp und konkret auf Deutsch. Erfinde nichts, was nicht sichtbar ist.")
+    content = [
+        {"type": "image", "source": {"type": "base64", "media_type": media_type,
+                                     "data": image_b64}},
+        {"type": "text", "text": frage or "Was ist auf dem Bildschirm zu sehen?"},
+    ]
+    global _active_model
+    order = ([_active_model] if _active_model else []) + \
+            [m for m in _candidates() if m != _active_model]
+    last_err = None
+    for model in order:
+        payload = {"model": model, "max_tokens": 700, "system": system,
+                   "messages": [{"role": "user", "content": content}]}
+        req = urllib.request.Request(
+            API_URL, data=json.dumps(payload).encode(),
+            headers={"x-api-key": os.environ["ANTHROPIC_API_KEY"],
+                     "anthropic-version": "2023-06-01", "content-type": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=120) as resp:
+                data = json.loads(resp.read())
+            _active_model = model
+            return "".join(b.get("text", "") for b in data.get("content", []))
+        except urllib.error.HTTPError as e:
+            body = ""
+            try:
+                body = e.read().decode("utf-8", "ignore")
+            except Exception:
+                pass
+            if e.code == 404 or "model" in body.lower():
+                last_err = f"[Modell {model} abgelehnt: {e.code}]"
+                continue
+            return f"[Bild-Analyse-Fehler {e.code}] {e.reason}"
+        except Exception as e:
+            return f"[Bild-Analyse nicht erreichbar: {type(e).__name__}]"
+    return last_err or "[Bild-Analyse: kein gültiges Modell]"
+
+
 def _call_with_fallback(system: str, user: str, max_tokens: int = 600) -> str:
     """Ruft das Modell; bei 404/model-not-found nächste ID der Kette probieren."""
     global _active_model

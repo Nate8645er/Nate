@@ -187,6 +187,8 @@ absenden, Screenshot. Sprachbefehle:
 
 - „**navigiere zu wikipedia**" / „surfe zu github.com" → öffnet die Seite im gesteuerten Browser
 - „**lies die Seite**" / „was steht auf der Seite" → liest den Seiteninhalt
+- „**was ist auf dem Bildschirm**" / „was siehst du" / „analysiere den Bildschirm"
+  → JARVIS macht einen Screenshot und beschreibt per Fable 5, **was** darauf zu sehen ist (Vision)
 - „**welche Links gibt es**" → listet die Links
 - „**im Browser klicke auf Anmelden**" → klickt das Element
 - direkt: `!plugin browser_auto type feld=#suche text=Wetter`, dann `!plugin browser_auto press taste=Enter`

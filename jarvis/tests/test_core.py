@@ -303,3 +303,14 @@ def test_bodyguard_squad(tmp_path, monkeypatch):
     assert sq.patrols >= 1
     # ohne Freischaltung nur melden, keine Selbstheilung
     assert "nur melden" in sq.stats()["selbstheilung"]
+
+
+def test_vision_commands_and_offline(monkeypatch):
+    from jarvis.core.commands import interpret
+    assert interpret("was ist auf dem bildschirm") == "!plugin pc sehen"
+    assert interpret("was siehst du") == "!plugin pc sehen"
+    assert interpret("analysiere den bildschirm") == "!plugin pc sehen"
+    from jarvis.core import brain
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    out = brain.describe_image("x", "image/png", "was ist das")
+    assert "OFFLINE" in out or "Fable 5" in out

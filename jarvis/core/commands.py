@@ -107,6 +107,12 @@ def interpret(text: str) -> str | None:
     if not s or s.startswith("!"):
         return None
 
+    # Bildschirm-Verstehen (Vision): "was ist auf dem bildschirm", "was siehst du", "analysiere den bildschirm"
+    if re.search(r"was\s+(ist|siehst\s+du|steht)\s+.*(bildschirm|screen|bild)|"
+                 r"analysiere\s+(den\s+)?(bildschirm|screen)|"
+                 r"(schau|sieh)\s+(dir\s+)?(den\s+)?bildschirm|was\s+siehst\s+du",
+                 s, re.IGNORECASE):
+        return "!plugin pc sehen"
     if _SHOT.search(s) and re.search(r"\b(mach|nimm|erstell|screenshot|foto)\b", s, re.IGNORECASE):
         return "!plugin pc screenshot"
 
