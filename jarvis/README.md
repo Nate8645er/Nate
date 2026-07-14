@@ -49,6 +49,28 @@ zu machen, verlangt einen Menschen, der sie umsetzt (Shop, Zahlung, Verkauf).
 Der Autopilot läuft nur, solange dein PC an ist; im Fable-5-Modus kostet jede
 Idee einen echten Modell-Aufruf (Intervall daher gemächlich, Standard 180s).
 
+### Echter 24/7-Dauerbetrieb (Windows)
+
+Damit JARVIS im Hintergrund läuft — automatisch bei jedem Windows-Start, mit
+aktivem Autopilot und Selbst-Neustart bei Absturz:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\jarvis\Install-Jarvis-Service.ps1
+```
+
+Das registriert eine geplante Aufgabe „JARVIS 24/7", die sich bei jeder Anmeldung
+unsichtbar startet. Dashboard jederzeit unter http://127.0.0.1:8787. Wieder
+entfernen:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\jarvis\Install-Jarvis-Service.ps1 -Uninstall
+```
+
+Alternativ manuell mit Autopilot starten: `python -m jarvis.run --autopilot`.
+Ehrlich: „24/7" gilt, solange dein PC eingeschaltet ist. Für Dauerbetrieb rund
+um die Uhr auch bei ausgeschaltetem PC bräuchte es einen immer laufenden
+Rechner oder kleinen Server.
+
 **Was dieses System NICHT tut:** Geld generieren. Es gibt keine
 Geld-Generier-Funktion und keinen simulierten Umsatz-Ticker — das
 Business-Panel zeigt ausschließlich echte Betriebsdaten (0.00 CHF, bis eine

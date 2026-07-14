@@ -65,6 +65,9 @@ def _load_persisted_key() -> None:
 async def _startup() -> None:
     _load_persisted_key()
     await orchestrator.start()
+    if os.environ.get("JARVIS_AUTOPILOT") == "1":
+        orchestrator.autopilot.start()
+        orchestrator.log("info", "24/7-Autopilot automatisch gestartet (JARVIS_AUTOPILOT=1)")
     if os.environ.get("JARVIS_DEMO") == "1":
         import asyncio
         asyncio.create_task(_demo_loop())

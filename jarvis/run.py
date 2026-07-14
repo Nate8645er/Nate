@@ -18,10 +18,14 @@ def main() -> None:
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--demo", action="store_true",
                         help="markierte Demo-Aufgaben erzeugen, damit der Ticker lebt")
+    parser.add_argument("--autopilot", action="store_true",
+                        help="24/7-Autopilot beim Start automatisch aktivieren")
     args = parser.parse_args()
 
     if args.demo:
         os.environ["JARVIS_DEMO"] = "1"
+    if args.autopilot:
+        os.environ["JARVIS_AUTOPILOT"] = "1"
 
     if args.host not in ("127.0.0.1", "localhost", "::1"):
         print("\n  ⚠  WARNUNG: JARVIS wird an eine NICHT-lokale Adresse gebunden "
