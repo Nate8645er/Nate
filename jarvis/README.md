@@ -179,6 +179,23 @@ Freie Sätze im Chat oder per „Hey Jarvis" werden erkannt und wirklich ausgef�
 
 Wird kein Kommando erkannt (z. B. eine echte Frage), antwortet normal das Gehirn.
 
+### Browser-Automatisierung (JARVIS arbeitet selbst im Web)
+
+Über das `browser_auto`-Werkzeug (Playwright) steuert JARVIS einen echten
+Browser: navigieren, Inhalt lesen, Links auflisten, klicken, in Felder tippen,
+absenden, Screenshot. Sprachbefehle:
+
+- „**navigiere zu wikipedia**" / „surfe zu github.com" → öffnet die Seite im gesteuerten Browser
+- „**lies die Seite**" / „was steht auf der Seite" → liest den Seiteninhalt
+- „**welche Links gibt es**" → listet die Links
+- „**im Browser klicke auf Anmelden**" → klickt das Element
+- direkt: `!plugin browser_auto type feld=#suche text=Wetter`, dann `!plugin browser_auto press taste=Enter`
+
+Nutzt bevorzugt dein installiertes Chrome/Edge (kein Extra-Download); sonst
+`playwright install chromium`. Auf Windows läuft der Browser **sichtbar** (du
+siehst JARVIS arbeiten), Override per `JARVIS_BROWSER_HEADLESS=1`. Gleicher
+Schalter wie die PC-Steuerung: `JARVIS_ALLOW_PC=1`.
+
 ## Sicherheit
 
 JARVIS wurde einem Security-Review unterzogen; folgende Schutzmaßnahmen sind aktiv:

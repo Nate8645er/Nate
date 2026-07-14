@@ -110,6 +110,21 @@ def interpret(text: str) -> str | None:
     if _SHOT.search(s) and re.search(r"\b(mach|nimm|erstell|screenshot|foto)\b", s, re.IGNORECASE):
         return "!plugin pc screenshot"
 
+    # --- Browser-Automatisierung (JARVIS steuert den Browser selbst) ---
+    mnav = re.match(r"^(?:bitte\s+)?(?:navigiere|surfe|browse|geh(?:e)?\s+im\s+browser)"
+                    r"\s+(?:zu|auf|nach)\s+(.+?)[.!?]?$", s, re.IGNORECASE)
+    if mnav:
+        return f"!plugin browser_auto goto url={_target_to_open(_strip_filler(mnav.group(1)))}"
+    if re.search(r"(lies|lese|zeig(?:e)?\s+mir)\s+(?:die\s+)?(web)?seite|was\s+steht\s+auf\s+der\s+seite",
+                 s, re.IGNORECASE):
+        return "!plugin browser_auto read"
+    if re.search(r"(welche|zeig(?:e)?\s+mir\s+die|liste?\s+die)\s+links", s, re.IGNORECASE):
+        return "!plugin browser_auto links"
+    mbc = re.match(r"^(?:bitte\s+)?(?:im\s+browser\s+)?klicke?\s+(?:im\s+browser\s+)?"
+                   r"(?:auf\s+)?(.+?)[.!?]?$", s, re.IGNORECASE)
+    if mbc and "browser" in s.lower():
+        return f"!plugin browser_auto click ziel=text={mbc.group(1).strip()}"
+
     # "öffne <seite> in/mit/im <browser>"  bzw. "öffne <browser> mit <seite>"
     mb = re.match(r"^(?:bitte\s+)?(?:öffne|oeffne|starte|zeig(?:e|\s+mir)?|open)\s+(.+?)"
                   r"\s+(?:in|mit|im|auf)\s+(.+?)[.!?]?$", s, re.IGNORECASE)

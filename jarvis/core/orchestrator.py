@@ -117,10 +117,11 @@ class Orchestrator:
         workspace = data_dir / "workspace"
         self.plugins = PluginManager(workspace)
         # Claude-Code-artige Tool-Suite + Claude-Code-Brücke registrieren
-        from . import code_agent, desktop, tools
+        from . import browser_auto, code_agent, desktop, tools
         tools.register_all(self.plugins, workspace)
         self.plugins.plugins["code"] = code_agent.CodeAgentPlugin(workspace)
-        desktop.register(self.plugins, workspace)   # PC-Steuerung (eigener Schalter)
+        desktop.register(self.plugins, workspace)       # PC-Steuerung (eigener Schalter)
+        browser_auto.register(self.plugins, workspace)  # Browser-Automatisierung
         # Skills-System (wie Claude Code / Claude.ai Skills)
         from .skills import SkillRegistry
         self.skills = SkillRegistry(data_dir / "skills")

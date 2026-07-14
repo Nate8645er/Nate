@@ -244,3 +244,24 @@ def test_browser_commands():
     assert interpret("öffne chrome mit youtube") == \
         "!plugin pc browser browser=chrome url=https://www.youtube.com"
     assert interpret("schließe chrome") == "!plugin pc close name=chrome.exe"
+
+
+def test_browser_auto_registered_and_gated(tmp_path: Path, monkeypatch):
+    from jarvis.core import browser_auto
+    pm = PluginManager(tmp_path)
+    browser_auto.register(pm, tmp_path)
+    assert "browser_auto" in pm.plugins
+    monkeypatch.delenv("JARVIS_ALLOW_PC", raising=False)
+    monkeypatch.delenv("JARVIS_ALLOW_DANGEROUS", raising=False)
+    with pytest.raises(PermissionError):
+        pm.run("Führung", "browser_auto", "read")
+
+
+def test_browser_auto_commands():
+    from jarvis.core.commands import interpret
+    assert interpret("navigiere zu youtube") == \
+        "!plugin browser_auto goto url=https://www.youtube.com"
+    assert interpret("lies die seite") == "!plugin browser_auto read"
+    assert interpret("welche links gibt es") == "!plugin browser_auto links"
+    assert interpret("im browser klicke auf Anmelden") == \
+        "!plugin browser_auto click ziel=text=Anmelden"
