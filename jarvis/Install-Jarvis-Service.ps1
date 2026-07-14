@@ -134,6 +134,16 @@ try {
     Warn "Dashboard noch nicht erreichbar - gib ihm 10-20s beim ersten Start und oeffne dann http://127.0.0.1:$Port"
 }
 
+# ---------------------------------------------------------------------------
+# 5. Desktop-Verknuepfung zum Dashboard (zum Oeffnen ohne PowerShell)
+# ---------------------------------------------------------------------------
+try {
+    $desktop = [Environment]::GetFolderPath('Desktop')
+    $url = Join-Path $desktop 'JARVIS Dashboard.url'
+    "[InternetShortcut]`r`nURL=http://127.0.0.1:$Port`r`n" | Set-Content -Path $url -Encoding ASCII
+    Ok "Desktop-Verknuepfung 'JARVIS Dashboard' erstellt."
+} catch { Warn "Desktop-Verknuepfung konnte nicht erstellt werden (unkritisch)." }
+
 Write-Host @"
 
   =====================================================================

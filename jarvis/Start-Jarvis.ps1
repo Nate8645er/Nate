@@ -1,7 +1,7 @@
 # JARVIS HyperScale - Windows-Starter
 # Installiert die Python-Abhaengigkeiten (einmalig) und startet das Dashboard.
 # Aufruf:  powershell -ExecutionPolicy Bypass -File .\Start-Jarvis.ps1 [-Demo]
-param([switch]$Demo)
+param([switch]$Demo, [switch]$Autopilot)
 
 $ErrorActionPreference = 'Stop'
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -24,6 +24,7 @@ if (-not (Test-Path $venv)) {
 $env:PYTHONPATH = $repo
 $args = @('-m', 'jarvis.run')
 if ($Demo) { $args += '--demo' }
+if ($Autopilot) { $args += '--autopilot' }
 
 Write-Host ""
 Write-Host "JARVIS startet - Dashboard: http://127.0.0.1:8787" -ForegroundColor Green
