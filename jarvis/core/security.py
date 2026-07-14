@@ -133,6 +133,130 @@ class SecurityPlugin(Plugin):
         raise ValueError(f"Unbekannte Aktion: {action} (check|signatures|scan|update)")
 
 
+class BodyguardSquad:
+    """24/7-Wächter: benannte Bodyguard-Agenten patrouillieren im Kurztakt,
+    beheben sichere Probleme automatisch und alarmieren bei Bedrohungen.
+
+    Ehrlich: Das echte Erkennen/Blocken von Viren & Angriffen leistet Microsoft
+    Defender in Echtzeit. Die Wächter kontrollieren laufend, halten den Schutz
+    scharf (Firewall/Echtzeitschutz reaktivieren, Signaturen aktuell) und lösen
+    bei einer Bedrohung sofort einen Defender-Scan aus.
+    """
+
+    GUARDS = [
+        ("Titan Vega-01", "DEFENDER"),
+        ("Rex Stein-02", "FIREWALL"),
+        ("Nova Falk-03", "PROZESSE"),
+        ("Atlas Kern-04", "SIGNATUREN"),
+        ("Orion Wolf-05", "NETZWERK"),
+        ("Vega Sturm-06", "UPDATES"),
+    ]
+
+    def __init__(self, plugin: SecurityPlugin, interval_s: int = 300) -> None:
+        self.plugin = plugin
+        self.interval = max(30, interval_s)
+        self.on = False
+        self.patrols = 0
+        self.last_findings: list[str] = []
+        self.last_fixes: list[str] = []
+        self.last_patrol = "–"
+        self.guards = [{"name": n, "posten": p, "status": "bereit"} for n, p in self.GUARDS]
+        self._thread: threading.Thread | None = None
+        self._log = None
+
+    def set_logger(self, fn: Any) -> None:
+        self._log = fn
+
+    def _may_act(self) -> bool:
+        return os.name == "nt" and (
+            os.environ.get("JARVIS_ALLOW_PC") == "1" or dangerous_allowed())
+
+    def _remediate(self, report: dict[str, Any]) -> list[str]:
+        """Sichere Selbstheilung — nur bei echten Problemen und mit Freischaltung."""
+        fixes: list[str] = []
+        if not self._may_act():
+            return fixes
+        try:
+            if report.get("echtzeitschutz") is False:
+                _pwsh("Set-MpPreference -DisableRealtimeMonitoring $false")
+                fixes.append("Echtzeitschutz reaktiviert")
+            if report.get("firewall_alle_an") is False:
+                _pwsh("Set-NetFirewallProfile -All -Enabled True")
+                fixes.append("Firewall reaktiviert")
+            if (report.get("signatur_alter_tage") or 0) > 1:
+                _pwsh("Update-MpSignature")
+                fixes.append("Virensignaturen aktualisiert")
+            if (report.get("bedrohungen") or 0) > 0:
+                _pwsh("Start-MpScan -ScanType QuickScan", timeout=15)
+                fixes.append("Quick-Scan gegen erkannte Bedrohung gestartet")
+        except Exception:
+            pass
+        return fixes
+
+    def _patrol(self) -> None:
+        report = self.plugin.check()
+        self.patrols += 1
+        self.last_patrol = report.get("zeit", "–")
+        probleme = report.get("probleme", []) if isinstance(report, dict) else []
+        self.last_findings = probleme
+        # Posten-Status je Wächter setzen
+        def post_ok(posten: str) -> bool:
+            if posten == "DEFENDER":
+                return report.get("defender_an") is not False and report.get("echtzeitschutz") is not False
+            if posten == "FIREWALL":
+                return report.get("firewall_alle_an") is not False
+            if posten == "SIGNATUREN":
+                return (report.get("signatur_alter_tage") or 0) <= 3
+            if posten in ("PROZESSE", "NETZWERK"):
+                return (report.get("bedrohungen") or 0) == 0
+            return True
+        for g in self.guards:
+            g["status"] = "WACHSAM" if post_ok(g["posten"]) else "ALARM"
+        # Selbstheilung
+        self.last_fixes = self._remediate(report) if probleme else []
+        if self._log:
+            if probleme:
+                self._log("warn", "BODYGUARD-ALARM: " + "; ".join(probleme)
+                          + (" | behoben: " + "; ".join(self.last_fixes) if self.last_fixes else ""))
+            else:
+                self._log("info", "Bodyguard-Patrouille ok")
+
+    def _run(self) -> None:
+        while self.on:
+            try:
+                self._patrol()
+            except Exception:
+                pass
+            for _ in range(self.interval):
+                if not self.on:
+                    return
+                time.sleep(1)
+
+    def start(self) -> None:
+        if self.on:
+            return
+        self.on = True
+        self._thread = threading.Thread(target=self._run, daemon=True)
+        self._thread.start()
+
+    def stop(self) -> None:
+        self.on = False
+        self._thread = None
+
+    def stats(self) -> dict[str, Any]:
+        return {
+            "aktiv": self.on,
+            "anzahl": len(self.guards),
+            "intervall_min": round(self.interval / 60, 1),
+            "patrouillen": self.patrols,
+            "letzte_patrouille": self.last_patrol,
+            "letzte_funde": self.last_findings,
+            "letzte_fixes": self.last_fixes,
+            "selbstheilung": "aktiv" if self._may_act() else "nur melden (JARVIS_ALLOW_PC=0)",
+            "waechter": self.guards,
+        }
+
+
 class SecurityMonitor:
     """Läuft alle 30 Minuten: Check + Signaturen aktualisieren + Alarm bei Problemen."""
 

@@ -71,7 +71,8 @@ async def _startup() -> None:
     # Sicherheits-Monitor standardmäßig an (alle 30 Min); mit JARVIS_SECURITY=0 abschaltbar.
     if os.environ.get("JARVIS_SECURITY", "1") != "0":
         orchestrator.security.start()
-        orchestrator.log("info", "Sicherheits-Monitor gestartet: Check alle 30 Minuten")
+        orchestrator.bodyguards.start()
+        orchestrator.log("info", "Sicherheits-Monitor + 24/7-Bodyguards gestartet")
     if os.environ.get("JARVIS_DEMO") == "1":
         import asyncio
         asyncio.create_task(_demo_loop())

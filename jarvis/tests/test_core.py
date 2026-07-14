@@ -289,3 +289,17 @@ def test_security_actions_gated_without_pc(monkeypatch):
     # auf nicht-Windows kommt der Windows-Hinweis. Beides ist ein klarer String, kein Absturz.
     out = p.run("scan")
     assert isinstance(out, str) and len(out) > 0
+
+
+def test_bodyguard_squad(tmp_path, monkeypatch):
+    import time
+    from jarvis.core.security import BodyguardSquad, SecurityPlugin
+    monkeypatch.delenv("JARVIS_ALLOW_PC", raising=False)
+    sq = BodyguardSquad(SecurityPlugin(), interval_s=60)
+    st = sq.stats()
+    assert st["anzahl"] == 6 and st["aktiv"] is False
+    assert all("posten" in g for g in st["waechter"])
+    sq.start(); time.sleep(1.2); sq.stop()
+    assert sq.patrols >= 1
+    # ohne Freischaltung nur melden, keine Selbstheilung
+    assert "nur melden" in sq.stats()["selbstheilung"]

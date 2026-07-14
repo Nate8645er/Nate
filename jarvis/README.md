@@ -211,6 +211,15 @@ Buttons auf der Seite: „Jetzt prüfen", „Signaturen aktualisieren", „Viren
 (abschaltbar mit `JARVIS_SECURITY=0`). Scan/Update/Signaturen greifen ins System
 ein und brauchen `JARVIS_ALLOW_PC=1`.
 
+### Bodyguards (24/7-Wächter-Truppe)
+
+Sechs benannte Wächter-Agenten patrouillieren **rund um die Uhr** (alle 5 Min),
+jeder auf einem Posten: **Defender, Firewall, Prozesse, Signaturen, Netzwerk,
+Updates**. Sie kontrollieren laufend, zeigen ihren Status (WACHSAM/ALARM) und
+**beheben sichere Probleme automatisch** (Firewall/Echtzeitschutz reaktivieren,
+Signaturen aktualisieren, bei Bedrohung sofort Defender-Scan) — sofern
+`JARVIS_ALLOW_PC=1` gesetzt ist; sonst melden sie nur. Sichtbar auf `/sicherheit`.
+
 **Ehrlich:** JARVIS ist kein eigener Virenscanner. Echtzeit-Erkennung und
 -Blockade von Viren/Angriffen leistet **Microsoft Defender** selbst — JARVIS
 orchestriert, überwacht, alarmiert und kann Scans/Updates auslösen. „Sofort auf
