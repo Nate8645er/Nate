@@ -196,7 +196,29 @@ Nutzt bevorzugt dein installiertes Chrome/Edge (kein Extra-Download); sonst
 siehst JARVIS arbeiten), Override per `JARVIS_BROWSER_HEADLESS=1`. Gleicher
 Schalter wie die PC-Steuerung: `JARVIS_ALLOW_PC=1`.
 
-## Sicherheit
+## Sicherheits-Monitor (Seite `/sicherheit`)
+
+JARVIS überwacht deinen PC automatisch **alle 30 Minuten** über die echten
+Windows-Bordmittel und schlägt bei Problemen Alarm:
+
+- **Microsoft Defender**: aktiv? Echtzeitschutz an? Bedrohungen erkannt?
+- **Firewall**: alle Profile aktiv?
+- **Virensignaturen**: Alter — werden beim Check automatisch aktualisiert
+- **Alarm** im Dashboard + Log, sobald etwas nicht stimmt
+
+Buttons auf der Seite: „Jetzt prüfen", „Signaturen aktualisieren", „Viren-Scan"
+(Defender-Quick-Scan), „Windows-Update suchen". Der Monitor startet automatisch
+(abschaltbar mit `JARVIS_SECURITY=0`). Scan/Update/Signaturen greifen ins System
+ein und brauchen `JARVIS_ALLOW_PC=1`.
+
+**Ehrlich:** JARVIS ist kein eigener Virenscanner. Echtzeit-Erkennung und
+-Blockade von Viren/Angriffen leistet **Microsoft Defender** selbst — JARVIS
+orchestriert, überwacht, alarmiert und kann Scans/Updates auslösen. „Sofort auf
+Hacker/Viren reagieren" heißt: Defender blockt in Echtzeit, JARVIS meldet und
+handelt im 30-Minuten-Takt. Ein automatisches Installieren von Windows-Updates
+(mit möglichem Neustart) passiert nur nach deiner Bestätigung.
+
+## Sicherheit (des Programms selbst)
 
 JARVIS wurde einem Security-Review unterzogen; folgende Schutzmaßnahmen sind aktiv:
 

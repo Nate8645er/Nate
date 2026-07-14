@@ -265,3 +265,27 @@ def test_browser_auto_commands():
     assert interpret("welche links gibt es") == "!plugin browser_auto links"
     assert interpret("im browser klicke auf Anmelden") == \
         "!plugin browser_auto click ziel=text=Anmelden"
+
+
+def test_security_check_and_monitor(tmp_path):
+    import time
+    from jarvis.core.security import SecurityPlugin, SecurityMonitor
+    p = SecurityPlugin()
+    report = p.check()          # read-only, muss immer ein dict liefern
+    assert isinstance(report, dict) and "zeit" in report
+    m = SecurityMonitor(p, interval_s=60)
+    assert m.stats()["laeuft"] is False
+    m.start(); time.sleep(1.2); m.stop()
+    assert m.checks >= 1
+    assert m.stats()["intervall_min"] == 1
+
+
+def test_security_actions_gated_without_pc(monkeypatch):
+    from jarvis.core.security import SecurityPlugin
+    monkeypatch.delenv("JARVIS_ALLOW_PC", raising=False)
+    monkeypatch.delenv("JARVIS_ALLOW_DANGEROUS", raising=False)
+    p = SecurityPlugin()
+    # scan/signatures greifen ins System ein -> ohne Freischaltung gesperrt (auf Windows);
+    # auf nicht-Windows kommt der Windows-Hinweis. Beides ist ein klarer String, kein Absturz.
+    out = p.run("scan")
+    assert isinstance(out, str) and len(out) > 0

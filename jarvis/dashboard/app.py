@@ -68,6 +68,10 @@ async def _startup() -> None:
     if os.environ.get("JARVIS_AUTOPILOT") == "1":
         orchestrator.autopilot.start()
         orchestrator.log("info", "24/7-Autopilot automatisch gestartet (JARVIS_AUTOPILOT=1)")
+    # Sicherheits-Monitor standardmäßig an (alle 30 Min); mit JARVIS_SECURITY=0 abschaltbar.
+    if os.environ.get("JARVIS_SECURITY", "1") != "0":
+        orchestrator.security.start()
+        orchestrator.log("info", "Sicherheits-Monitor gestartet: Check alle 30 Minuten")
     if os.environ.get("JARVIS_DEMO") == "1":
         import asyncio
         asyncio.create_task(_demo_loop())
@@ -130,6 +134,41 @@ async def mitarbeiter_page() -> FileResponse:
 @app.get("/werkzeuge")
 async def werkzeuge_page() -> FileResponse:
     return FileResponse(STATIC / "werkzeuge.html")
+
+
+@app.get("/sicherheit")
+async def sicherheit_page() -> FileResponse:
+    return FileResponse(STATIC / "sicherheit.html")
+
+
+@app.post("/api/security/check")
+async def security_check() -> JSONResponse:
+    import asyncio
+    report = await asyncio.to_thread(orchestrator.plugins.plugins["security"].check)
+    orchestrator.security.last = report
+    orchestrator.security.reports.appendleft(report)
+    return JSONResponse(report)
+
+
+@app.post("/api/security/scan")
+async def security_scan() -> JSONResponse:
+    import asyncio
+    r = await asyncio.to_thread(orchestrator.plugins.plugins["security"].run, "scan")
+    return JSONResponse({"ergebnis": str(r)})
+
+
+@app.post("/api/security/signatures")
+async def security_signatures() -> JSONResponse:
+    import asyncio
+    r = await asyncio.to_thread(orchestrator.plugins.plugins["security"].run, "signatures")
+    return JSONResponse({"ergebnis": str(r)})
+
+
+@app.post("/api/security/update")
+async def security_update() -> JSONResponse:
+    import asyncio
+    r = await asyncio.to_thread(orchestrator.plugins.plugins["security"].run, "update")
+    return JSONResponse({"ergebnis": str(r)})
 
 
 @app.get("/api/memory")

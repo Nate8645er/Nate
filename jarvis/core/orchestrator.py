@@ -122,6 +122,12 @@ class Orchestrator:
         self.plugins.plugins["code"] = code_agent.CodeAgentPlugin(workspace)
         desktop.register(self.plugins, workspace)       # PC-Steuerung (eigener Schalter)
         browser_auto.register(self.plugins, workspace)  # Browser-Automatisierung
+        # Sicherheits-Modul + 30-Minuten-Monitor
+        from .security import SecurityMonitor, SecurityPlugin
+        sec = SecurityPlugin()
+        self.plugins.plugins["security"] = sec
+        self.security = SecurityMonitor(sec, interval_s=1800)
+        self.security.set_logger(self.log)
         # Skills-System (wie Claude Code / Claude.ai Skills)
         from .skills import SkillRegistry
         self.skills = SkillRegistry(data_dir / "skills")
@@ -228,6 +234,7 @@ class Orchestrator:
     async def stop(self) -> None:
         self.workforce.stop()
         self.autopilot.stop()
+        self.security.stop()
         for w in self._workers:
             w.cancel()
         self._workers.clear()
@@ -279,4 +286,5 @@ class Orchestrator:
             "skills": [{"name": s.name, "description": s.description} for s in self.skills.all()],
             "belegschaft": self.workforce.stats(),
             "autopilot": self.autopilot.stats(),
+            "sicherheit": self.security.stats(),
         }
