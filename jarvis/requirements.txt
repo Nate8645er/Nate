@@ -2,3 +2,6 @@ fastapi>=0.110
 uvicorn>=0.29
 psutil>=5.9
 pydantic>=2.6
+# Optional, nur für die PC-Steuerung (Maus/Tastatur/Screenshot) auf einem echten Desktop:
+pyautogui>=0.9.54; platform_system == "Windows"
+pillow>=10.0; platform_system == "Windows"

@@ -39,8 +39,14 @@ class Plugin:
         raise NotImplementedError
 
     def status(self) -> dict[str, Any]:
+        locked = False
+        if getattr(self, "dangerous", False):
+            envs = getattr(self, "allow_env", ["JARVIS_ALLOW_DANGEROUS"])
+            locked = not any(os.environ.get(e) == "1" for e in envs)
         return {"name": self.name, "description": self.description,
-                "allowed_teams": self.allowed_teams or "alle", "ok": True}
+                "allowed_teams": self.allowed_teams or "alle",
+                "gefaehrlich": bool(getattr(self, "dangerous", False)),
+                "gesperrt": locked, "ok": True}
 
 
 # ---------------------------------------------------------------------------
@@ -273,11 +279,13 @@ class PluginManager:
             raise KeyError(f"Plugin nicht gefunden: {name}")
         if not plugin.authorized(team):
             raise PermissionError(f"Team {team!r} ist für Plugin {name!r} nicht autorisiert")
-        if getattr(plugin, "dangerous", False) and not dangerous_allowed():
-            raise PermissionError(
-                f"Werkzeug {name!r} ist gesperrt (erreicht das Betriebssystem). "
-                f"Zum bewussten Freischalten auf deinem eigenen PC: "
-                f"Umgebungsvariable JARVIS_ALLOW_DANGEROUS=1 setzen und neu starten.")
+        if getattr(plugin, "dangerous", False):
+            envs = getattr(plugin, "allow_env", ["JARVIS_ALLOW_DANGEROUS"])
+            if not any(os.environ.get(e) == "1" for e in envs):
+                raise PermissionError(
+                    f"Werkzeug {name!r} ist gesperrt (erreicht das Betriebssystem). "
+                    f"Zum bewussten Freischalten auf deinem eigenen PC: "
+                    f"Umgebungsvariable {envs[0]}=1 setzen und neu starten.")
         return plugin.run(action, **kwargs)
 
     def status(self) -> list[dict[str, Any]]:

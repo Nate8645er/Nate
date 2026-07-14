@@ -176,6 +176,12 @@ JARVIS wurde einem Security-Review unterzogen; folgende Schutzmaßnahmen sind ak
   erreichen das Betriebssystem und werden nur mit ausdrücklichem Opt-in
   freigeschaltet: `setx JARVIS_ALLOW_DANGEROUS 1` (Windows) bzw.
   `export JARVIS_ALLOW_DANGEROUS=1`, dann neu starten.
+- **PC-Steuerung (`pc`) hat einen EIGENEN Schalter** — Programme öffnen/schließen,
+  Maus, Tastatur, Screenshot. Standardmäßig aus; getrennt von Shell/Code
+  freischaltbar: `setx JARVIS_ALLOW_PC 1`, dann neu starten. Aktionen:
+  `open`, `close`, `apps`, `move`, `click`, `type`, `key`, `screenshot`.
+  Maus/Tastatur/Screenshot brauchen `pyautogui` (unter Windows automatisch mit
+  installiert) und einen echten Desktop.
 - **Datei-Sandbox** (`files`, `read`, `edit`, `glob`, `grep`): Zugriff strikt auf
   den Arbeitsbereich begrenzt (`is_relative_to`-Prüfung, keine Symlinks nach außen).
 - **SSRF-Schutz** in `webfetch`: interne/private/loopback-Adressen (inkl. Cloud-

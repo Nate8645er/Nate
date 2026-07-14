@@ -59,6 +59,27 @@
       </div>
       <div id="toolres" class="logs mono" style="max-height:200px; margin-top:8px"></div>
     </div>
+
+    <div class="panel" style="margin-top:10px">
+      <h2><b>PC-STEUERUNG</b> // PROGRAMME, MAUS, TASTATUR, BILDSCHIRM</h2>
+      <div id="pcstatus" style="font-size:11px; margin-bottom:8px">Status wird geladen…</div>
+      <div style="display:flex; gap:6px; flex-wrap:wrap">
+        <input id="pcprog" placeholder="Programm/URL, z. B. notepad" style="flex:1; min-width:150px" autocomplete="off">
+        <button onclick="pc('open','program='+encodeURIComponent(v('pcprog')))">ÖFFNEN</button>
+        <button onclick="pc('close','name='+encodeURIComponent(v('pcprog')))">SCHLIESSEN</button>
+      </div>
+      <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px">
+        <input id="pctext" placeholder="Text zum Tippen" style="flex:1; min-width:150px" autocomplete="off">
+        <button onclick="pc('type','text='+encodeURIComponent(v('pctext')))">TIPPEN</button>
+        <button onclick="pc('screenshot','')">SCREENSHOT</button>
+        <button onclick="pc('apps','')">PROGRAMME</button>
+      </div>
+      <div style="font-size:10px; color:#e8c98a; margin-top:5px">
+        Volle Rechnersteuerung — <b>eigener</b> Schalter, standardmäßig aus. Freischalten (bewusst, nur auf deinem PC):
+        <span class="mono">setx JARVIS_ALLOW_PC 1</span>, dann neu starten. Maus/Tastatur brauchen einen echten Desktop.
+      </div>
+      <div id="pcres" class="logs mono" style="max-height:180px; margin-top:8px"></div>
+    </div>
   </div>
 </div>
 
@@ -125,6 +146,24 @@ async function runCode(ev) { ev.preventDefault();
   $('coderes').textContent = '… läuft (Claude Code / Fable 5)';
   const t = await submit('!plugin code prompt prompt=' + p);
   $('coderes').textContent = t.ergebnis; return false; }
+
+const v = id => $(id).value.trim();
+async function pc(action, args) {
+  $('pcres').textContent = '… läuft';
+  const cmd = ('!plugin pc ' + action + ' ' + (args || '')).trim();
+  const t = await submit(cmd);
+  $('pcres').textContent = t.ergebnis;
+}
+async function pcStatus() {
+  try {
+    const s = await (await fetch('/api/state')).json();
+    const pcp = (s.plugins || []).find(p => p.name === 'pc');
+    const el = $('pcstatus'); if (!el || !pcp) return;
+    if (pcp.gesperrt) el.innerHTML = '🔒 <b style="color:#e8c98a">GESPERRT</b> — mit <span class="mono">setx JARVIS_ALLOW_PC 1</span> freischalten und neu starten.';
+    else el.innerHTML = '✅ <b style="color:var(--green)">FREIGESCHALTET</b> — JARVIS kann deinen PC bedienen.';
+  } catch (e) {}
+}
+setInterval(pcStatus, 3000); pcStatus();
 
 
 </script>

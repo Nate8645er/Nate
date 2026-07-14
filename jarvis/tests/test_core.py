@@ -188,3 +188,18 @@ def test_security_calc_pow_limit(tmp_path: Path):
     assert pm.run("Führung", "calc", "eval", expression="2**10") == 1024
     with pytest.raises(ValueError):
         pm.run("Führung", "calc", "eval", expression="9**99999")
+
+
+def test_pc_control_separate_switch(tmp_path: Path, monkeypatch):
+    from jarvis.core import desktop
+    pm = PluginManager(tmp_path)
+    desktop.register(pm, tmp_path)
+    assert "pc" in pm.plugins
+    monkeypatch.delenv("JARVIS_ALLOW_PC", raising=False)
+    monkeypatch.delenv("JARVIS_ALLOW_DANGEROUS", raising=False)
+    with pytest.raises(PermissionError):
+        pm.run("Führung", "pc", "apps")
+    # eigener Schalter aktiviert PC, aber nicht Shell
+    monkeypatch.setenv("JARVIS_ALLOW_PC", "1")
+    apps = pm.run("Führung", "pc", "apps")
+    assert isinstance(apps, list) and len(apps) > 0
