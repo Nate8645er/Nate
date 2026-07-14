@@ -80,6 +80,14 @@ sind im Ticker klar als `DEMO` markiert.
 
 ## Start (Windows)
 
+**Einfachster Weg — für den eigenen PC (empfohlen):** Einmal `JARVIS-PC-Einrichten.cmd`
+doppelklicken. Das installiert alles, schaltet die PC-Steuerung frei (Programme,
+Maus, Tastatur, Bildschirm, Browser), legt ein Desktop-Symbol **„JARVIS starten"**
+an und startet JARVIS. Danach genügt der Doppelklick auf das Desktop-Symbol (oder
+`JARVIS-Starten.cmd`).
+
+Nur starten (ohne Neu-Einrichtung):
+
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\jarvis\Start-Jarvis.ps1 -Demo
 ```
