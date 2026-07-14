@@ -233,3 +233,14 @@ def test_natural_command_routed_and_gated(tmp_path: Path, monkeypatch):
     task = asyncio.run(scenario())
     # ohne PC-Freischaltung: sauber gesperrt (kein Absturz), Befehl wurde erkannt+geroutet
     assert "gesperrt" in task.result.lower()
+
+
+def test_browser_commands():
+    from jarvis.core.commands import interpret
+    assert interpret("öffne chrome") == "!plugin pc browser browser=chrome"
+    assert interpret("starte edge") == "!plugin pc browser browser=edge"
+    assert interpret("öffne youtube in chrome") == \
+        "!plugin pc browser browser=chrome url=https://www.youtube.com"
+    assert interpret("öffne chrome mit youtube") == \
+        "!plugin pc browser browser=chrome url=https://www.youtube.com"
+    assert interpret("schließe chrome") == "!plugin pc close name=chrome.exe"

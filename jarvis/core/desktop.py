@@ -84,10 +84,29 @@ class PCControlPlugin(Plugin):
                     pass
         return f"{killed} Prozess(e) beendet: {name}"
 
+    def _browser(self, browser: str, url: str = "") -> str:
+        browsers = {"chrome": "chrome", "google chrome": "chrome", "firefox": "firefox",
+                    "edge": "msedge", "microsoft edge": "msedge", "brave": "brave",
+                    "opera": "opera", "vivaldi": "vivaldi"}
+        b = browsers.get(browser.strip().lower(), browser.strip())
+        try:
+            if os.name == "nt":
+                args = ["cmd", "/c", "start", "", b]
+                if url:
+                    args.append(url)
+                subprocess.Popen(args, shell=False)
+            else:
+                subprocess.Popen([b, url] if url else [b])
+            return f"{browser} geöffnet" + (f" mit {url}" if url else "")
+        except Exception as e:
+            return f"konnte {browser} nicht öffnen ({type(e).__name__})"
+
     # -- Maus / Tastatur / Bildschirm ---------------------------------------
     def run(self, action: str = "screenshot", **kwargs: Any) -> Any:
         if action == "open":
             return self._open(kwargs.get("program", ""))
+        if action == "browser":
+            return self._browser(kwargs.get("browser", "chrome"), kwargs.get("url", ""))
         if action == "close":
             return self._close(kwargs.get("name", ""))
         if action == "apps":

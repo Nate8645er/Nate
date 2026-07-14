@@ -47,7 +47,12 @@ PROGRAMS = {
     "einstellungen": "ms-settings:", "systemsteuerung": "control",
     "aufgabenmanager": "taskmgr", "task manager": "taskmgr",
     "cmd": "cmd", "eingabeaufforderung": "cmd", "word": "winword", "excel": "excel",
+    "chrome": "chrome", "google chrome": "chrome", "firefox": "firefox",
+    "edge": "msedge", "microsoft edge": "msedge", "brave": "brave", "opera": "opera",
 }
+
+BROWSERS = {"chrome", "google chrome", "firefox", "edge", "microsoft edge",
+            "brave", "opera", "vivaldi"}
 
 # "mach X auf" — Ziel steht zwischen mach und auf
 _OPEN_MACH = re.compile(r"^(?:bitte\s+)?mach\s+(?:mir\s+)?(.+?)\s+auf[.!?]?$", re.IGNORECASE)
@@ -105,9 +110,30 @@ def interpret(text: str) -> str | None:
     if _SHOT.search(s) and re.search(r"\b(mach|nimm|erstell|screenshot|foto)\b", s, re.IGNORECASE):
         return "!plugin pc screenshot"
 
+    # "öffne <seite> in/mit/im <browser>"  bzw. "öffne <browser> mit <seite>"
+    mb = re.match(r"^(?:bitte\s+)?(?:öffne|oeffne|starte|zeig(?:e|\s+mir)?|open)\s+(.+?)"
+                  r"\s+(?:in|mit|im|auf)\s+(.+?)[.!?]?$", s, re.IGNORECASE)
+    if mb:
+        a, b = _strip_filler(mb.group(1)).strip().lower(), mb.group(2).strip().lower()
+        site, browser = (None, None)
+        if b in BROWSERS:        # "youtube in chrome"
+            site, browser = a, b
+        elif a in BROWSERS:      # "chrome mit youtube"
+            site, browser = b, a
+        if browser:
+            url = SITES.get(site, "")
+            if not url and site:
+                url = _target_to_open(site)
+                if not url.startswith("http"):
+                    url = "https://www.google.com/search?q=" + site.replace(" ", "+")
+            return f"!plugin pc browser browser={browser} url={url}"
+
     m = _OPEN_MACH.match(s) or _OPEN.match(s)
     if m:
-        target = _target_to_open(_strip_filler(m.group(1)))
+        raw = _strip_filler(m.group(1)).strip()
+        if raw.lower() in BROWSERS:        # "öffne chrome" → Browser starten
+            return f"!plugin pc browser browser={raw.lower()}"
+        target = _target_to_open(raw)
         return f"!plugin pc open program={target}"
 
     m = _CLOSE.match(s)
