@@ -151,10 +151,13 @@ Aufgaben-Syntax: `!plugin <name> <aktion> key=wert` (Werte dürfen Leerzeichen
 enthalten). Jedes Tool ist pro Team autorisiert; Tool-Aufgaben werden
 automatisch an ein berechtigtes Team geroutet.
 
-**Claude-Code-Brücke:** Das `code`-Tool findet automatisch einen installierten
-Agenten-Binary (`claw`, `claude` oder `agent` im PATH oder unter
-`%LOCALAPPDATA%\Programs\ClawCode`) und ruft ihn mit `--model claude-fable-5`
-auf. Ohne Binary oder API-Key fällt es ehrlich auf das JARVIS-Gehirn zurück.
+**Claw Code / Claude Code integriert:** Das `code`-Tool findet automatisch einen
+installierten Agenten-Binary (`claw.exe`, `claude`, `agent` im PATH, unter
+`%LOCALAPPDATA%\Programs\ClawCode` oder im Downloads-Build) und ruft ihn mit
+`--model claude-fable-5` auf. Ansprechen per Sprache/Chat: **„claw code …"**,
+**„clawcode …"** oder **„claude code …"**. Liegt deine `claw.exe` woanders,
+verbinde sie mit `JARVIS-ClawCode-Verbinden.cmd` (setzt `JARVIS_CLAW_PATH`).
+Ohne Binary oder API-Key fällt es ehrlich auf das JARVIS-Gehirn zurück.
 
 **Skills** (`/werkzeuge`, wie Claude.ai/Claude-Code-Skills): Markdown-Dateien in
 `~/.jarvis/skills/` — mitgeliefert: `zusammenfassen`, `code-review`,

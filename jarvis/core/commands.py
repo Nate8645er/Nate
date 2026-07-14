@@ -107,6 +107,12 @@ def interpret(text: str) -> str | None:
     if not s or s.startswith("!"):
         return None
 
+    # Claw Code / Claude Code als Werkzeug: "claw code <prompt>", "clawcode <prompt>", "claude code <prompt>"
+    mcc = re.match(r"^(?:bitte\s+)?(?:claw\s?code|clawcode|claude\s?code|claw)\s*[:,]?\s+(.+)$",
+                   s, re.IGNORECASE)
+    if mcc:
+        return f"!plugin code prompt prompt={mcc.group(1).strip()}"
+
     # Bildschirm-Verstehen (Vision): "was ist auf dem bildschirm", "was siehst du", "analysiere den bildschirm"
     if re.search(r"was\s+(ist|siehst\s+du|steht)\s+.*(bildschirm|screen|bild)|"
                  r"analysiere\s+(den\s+)?(bildschirm|screen)|"

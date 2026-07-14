@@ -22,18 +22,26 @@ CANDIDATES = ["claw", "claude", "agent"]
 
 
 def find_binary() -> str | None:
+    # 0) Ausdrücklicher Pfad per Umgebungsvariable (höchste Priorität)
+    explicit = os.environ.get("JARVIS_CLAW_PATH")
+    if explicit and Path(explicit).exists():
+        return explicit
     # 1) PATH
     for name in CANDIDATES:
         found = shutil.which(name)
         if found:
             return found
-    # 2) typische Windows-Installationsorte
-    for env in ("LOCALAPPDATA", "USERPROFILE"):
-        base = os.environ.get(env)
+    # 2) typische Windows-/Linux-Installationsorte
+    bases = [os.environ.get("LOCALAPPDATA"), os.environ.get("USERPROFILE"),
+             os.environ.get("HOME"), "/usr/local/bin", "/usr/bin"]
+    rels = ("Programs/ClawCode/claw.exe", "Programs/ClawCode/claw",
+            ".cargo/bin/claw.exe", ".cargo/bin/claw", "claw", "claw.exe",
+            "Downloads/claw-code-main/rust/target/release/claw.exe",
+            "Downloads/claw-code-main/rust/target/debug/claw.exe")
+    for base in bases:
         if not base:
             continue
-        for rel in ("Programs/ClawCode/claw.exe", ".cargo/bin/claw.exe",
-                    ".cargo/bin/claw", "Programs/ClawCode/claw"):
+        for rel in rels:
             p = Path(base) / rel
             if p.exists():
                 return str(p)

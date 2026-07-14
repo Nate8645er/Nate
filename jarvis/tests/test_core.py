@@ -340,3 +340,16 @@ def test_all_employees_connected(tmp_path):
     # alle Subsysteme im State verbunden
     for key in ("plugins", "skills", "belegschaft", "autopilot", "sicherheit", "bodyguards"):
         assert key in st, f"Subsystem {key} nicht verbunden"
+
+
+def test_clawcode_commands_and_path(tmp_path, monkeypatch):
+    from jarvis.core.commands import interpret
+    assert interpret("claw code schreibe test") == "!plugin code prompt prompt=schreibe test"
+    assert interpret("clawcode hallo") == "!plugin code prompt prompt=hallo"
+    assert interpret("claude code baue x") == "!plugin code prompt prompt=baue x"
+    # expliziter Pfad-Schalter wird bevorzugt
+    f = tmp_path / "claw.exe"
+    f.write_text("x")
+    monkeypatch.setenv("JARVIS_CLAW_PATH", str(f))
+    from jarvis.core.code_agent import find_binary
+    assert find_binary() == str(f)
