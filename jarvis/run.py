@@ -20,12 +20,16 @@ def main() -> None:
                         help="markierte Demo-Aufgaben erzeugen, damit der Ticker lebt")
     parser.add_argument("--autopilot", action="store_true",
                         help="24/7-Autopilot beim Start automatisch aktivieren")
+    parser.add_argument("--no-workforce", action="store_true",
+                        help="Belegschaft-Betrieb (Roll-Call der ganzen Organisation) NICHT starten")
     args = parser.parse_args()
 
     if args.demo:
         os.environ["JARVIS_DEMO"] = "1"
     if args.autopilot:
         os.environ["JARVIS_AUTOPILOT"] = "1"
+    if args.no_workforce:
+        os.environ["JARVIS_WORKFORCE"] = "0"
 
     if args.host not in ("127.0.0.1", "localhost", "::1"):
         print("\n  ⚠  WARNUNG: JARVIS wird an eine NICHT-lokale Adresse gebunden "

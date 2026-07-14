@@ -145,6 +145,13 @@ class BrowserAutoPlugin(Plugin):
         self._worker: _BrowserWorker | None = None
         self._lock = threading.Lock()
 
+    def health(self) -> tuple[bool, str]:
+        """Browser-Automatisierung braucht das Playwright-Paket (Browser wird lazy gestartet)."""
+        import importlib.util
+        if importlib.util.find_spec("playwright") is None:
+            return False, "Playwright nicht installiert ('pip install playwright' + 'playwright install chromium')"
+        return True, ""
+
     def _ensure(self) -> _BrowserWorker | str:
         with self._lock:
             if self._worker is None or not self._worker.is_alive():

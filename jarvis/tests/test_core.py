@@ -353,3 +353,129 @@ def test_clawcode_commands_and_path(tmp_path, monkeypatch):
     monkeypatch.setenv("JARVIS_CLAW_PATH", str(f))
     from jarvis.core.code_agent import find_binary
     assert find_binary() == str(f)
+
+
+# ---------------------------------------------------------------------------
+# Audit-Regressionen (Ultracode-Runde 2): verifizierte Fund-Fixes
+# ---------------------------------------------------------------------------
+
+def test_parse_kwargs_keeps_embedded_equals():
+    """Fund 2: Freitext mit eingebettetem 'wort=' darf nicht zerhackt werden."""
+    from jarvis.core.orchestrator import _parse_kwargs, _plugin_param_names
+
+    class FakeCode:
+        def run(self, action="prompt", prompt="", model="", **kw):
+            pass
+
+    valid = _plugin_param_names(FakeCode())
+    r = _parse_kwargs("prompt=setze debug=true in der config", valid)
+    assert r["prompt"] == "setze debug=true in der config"
+    assert "debug" not in r
+    # ohne valid_keys (Rückwärtskompatibilität) splittet der Parser wie bisher
+    r2 = _parse_kwargs("a=1 b=2")
+    assert r2 == {"a": "1", "b": "2"}
+
+
+def test_commands_do_not_hijack_normal_tasks():
+    """Fund 4: normale Aufgaben dürfen NICHT ans gesperrte pc-Plugin gehen."""
+    from jarvis.core.commands import interpret
+    for t in ["zeige mir die offenen Aufgaben",
+              "Starte die Analyse des Quartalsberichts",
+              "beende die Diskussion",
+              "finde den Fehler im Code"]:
+        assert interpret(t) is None, f"{t!r} wurde fälschlich gemappt"
+    # echte Kommandos funktionieren weiter
+    assert "pc open" in interpret("öffne youtube")
+    assert "pc close" in interpret("schließe chrome")
+    assert "web suche" in interpret("suche nach docker")
+
+
+def test_workforce_restart_no_double_thread():
+    """Fund 10: der alte Sweep-Thread muss bei start/stop/start wirklich sterben."""
+    from jarvis.core.workforce import WorkforceEngine
+    wf = WorkforceEngine(waves=8)
+    wf.start()
+    t1 = wf._thread
+    wf.stop()
+    t1.join(timeout=3)
+    assert not t1.is_alive(), "alter Sweep-Thread lebt nach stop() weiter (Race)"
+    wf.start()
+    t2 = wf._thread
+    try:
+        assert t2 is not t1 and t2.is_alive()
+    finally:
+        wf.stop()
+        t2.join(timeout=3)
+
+
+def test_workforce_rate_is_honest():
+    """Fund 6: angezeigte Rate ist die reale Thread-Rate, nicht *wellen."""
+    import time
+    from jarvis.core.workforce import WorkforceEngine
+    wf = WorkforceEngine(waves=64)
+    wf.start(); time.sleep(1.5)
+    s = wf.stats(); wf.stop()
+    # 64 Wellen dürfen die Rate nicht um Faktor 64 aufblasen
+    assert 0 < s["rate_pro_s"] < 1_000_000
+
+
+def test_finanzen_robust_ziel(tmp_path, monkeypatch):
+    """Fund 9: Schweizer Format / 0 / Unsinn crasht finanzen() (und /api/state) nicht."""
+    o = Orchestrator(tmp_path, max_active=2)
+    for val in ["1'000'000", "0", "quatsch", "1000000"]:
+        monkeypatch.setenv("JARVIS_ZIEL_CHF", val)
+        f = o.finanzen()
+        assert f["ziel_chf"] > 0
+        assert isinstance(f["fortschritt_prozent"], (int, float))
+
+
+def test_plugin_without_action_gives_usage(tmp_path):
+    """Fund 21: '!plugin system' ohne Aktion -> Syntax-Hinweis, kein IndexError."""
+    import asyncio
+
+    async def scenario():
+        o = Orchestrator(tmp_path, max_active=1)
+        await o.start()
+        t = o.submit("!plugin system")
+        await asyncio.wait_for(o.queue.join(), timeout=10)
+        await o.stop()
+        return t
+
+    t = asyncio.run(scenario())
+    assert t.status == "fehler"
+    assert "Syntax" in t.result and "IndexError" not in t.result
+
+
+def test_files_list_relative_workspace(tmp_path, monkeypatch):
+    """Fund 20: FilesPlugin 'list' darf mit relativem Workspace nicht crashen."""
+    import os
+    from jarvis.core.plugins import FilesPlugin
+    monkeypatch.chdir(tmp_path)
+    p = FilesPlugin(Path("reldata/workspace/files"))
+    p.run("write", path="notiz.txt", content="x")
+    listing = p.run("list")
+    assert "notiz.txt" in listing
+
+
+def test_host_header_ipv6():
+    """Fund 11: IPv6-Loopback [::1]:port wird korrekt als '::1' erkannt."""
+    from jarvis.dashboard.app import _host_from_header
+    assert _host_from_header("[::1]:8787") == "::1"
+    assert _host_from_header("127.0.0.1:8787") == "127.0.0.1"
+    assert _host_from_header("localhost") == "localhost"
+
+
+def test_plugin_health_reported(tmp_path):
+    """Fund 12: Plugins mit fehlender Abhängigkeit melden ok=False + Hinweis."""
+    from jarvis.core.desktop import PCControlPlugin
+    st = PCControlPlugin(tmp_path).status()
+    assert "ok" in st and "verfuegbar" in st and "hinweis" in st
+
+
+def test_ssrf_redirect_handler_blocks_internal():
+    """Fund 7: SSRF-Redirect-Handler existiert und Blockliste greift für interne IPs."""
+    from jarvis.core.tools import _SafeRedirectHandler, _host_is_blocked
+    assert _SafeRedirectHandler().opener is not None
+    assert _host_is_blocked("169.254.169.254")   # Cloud-Metadaten
+    assert _host_is_blocked("127.0.0.1")
+    assert not _host_is_blocked("example.com")

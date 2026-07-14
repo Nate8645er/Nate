@@ -38,15 +38,29 @@ class Plugin:
     def run(self, action: str, **kwargs: Any) -> Any:  # pragma: no cover - Interface
         raise NotImplementedError
 
+    def health(self) -> tuple[bool, str]:
+        """Ist das Werkzeug wirklich lauffähig? (True, '') = ja.
+
+        Standard: eingebaute Plugins ohne externe Abhängigkeit sind lauffähig.
+        Plugins mit optionalen Abhängigkeiten (pyautogui, Playwright, Binary)
+        überschreiben dies und melden ehrlich, wenn etwas fehlt.
+        """
+        return True, ""
+
     def status(self) -> dict[str, Any]:
         locked = False
         if getattr(self, "dangerous", False):
             envs = getattr(self, "allow_env", ["JARVIS_ALLOW_DANGEROUS"])
             locked = not any(os.environ.get(e) == "1" for e in envs)
+        try:
+            ok, hinweis = self.health()
+        except Exception as e:      # ein kaputter Health-Check darf status() nie sprengen
+            ok, hinweis = False, f"Health-Check-Fehler: {type(e).__name__}"
         return {"name": self.name, "description": self.description,
                 "allowed_teams": self.allowed_teams or "alle",
                 "gefaehrlich": bool(getattr(self, "dangerous", False)),
-                "gesperrt": locked, "ok": True}
+                "gesperrt": locked, "ok": bool(ok),
+                "verfuegbar": bool(ok), "hinweis": hinweis}
 
 
 # ---------------------------------------------------------------------------
@@ -76,11 +90,11 @@ class FilesPlugin(Plugin):
     description = "Dateien im JARVIS-Arbeitsbereich lesen, schreiben, auflisten"
 
     def __init__(self, workspace: Path) -> None:
-        self.workspace = workspace
+        self.workspace = workspace.resolve()   # immer absolut auflösen (auch bei relativem JARVIS_DATA)
         self.workspace.mkdir(parents=True, exist_ok=True)
 
     def _safe(self, rel: str) -> Path:
-        ws = self.workspace.resolve()
+        ws = self.workspace
         p = (ws / rel).resolve()
         if not p.is_relative_to(ws):     # verhindert ../ UND Präfix-Kollision (workspace-backup)
             raise PermissionError("Zugriff außerhalb des Arbeitsbereichs verweigert")
@@ -231,7 +245,8 @@ class WebSearchPlugin(Plugin):
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (JARVIS)"})
         try:
             with urllib.request.urlopen(req, timeout=20) as resp:
-                page = resp.read().decode("utf-8", "ignore")
+                # Begrenzt lesen: ein bösartiger/endloser Body darf den Prozess nicht per OOM töten.
+                page = resp.read(3_000_000).decode("utf-8", "ignore")
         except Exception as e:
             return f"Suche fehlgeschlagen ({type(e).__name__}) — Internetzugang prüfen."
         hits = re.findall(r'class="result__a"[^>]*>(.*?)</a>', page)[:5]
@@ -248,6 +263,7 @@ class PluginManager:
 
     def __init__(self, workspace: Path) -> None:
         self.plugins: dict[str, Plugin] = {}
+        self.load_errors: list[dict[str, str]] = []   # sichtbar statt still verschluckt
         for plugin in (SystemInfoPlugin(), FilesPlugin(workspace / "files"),
                        CalculatorPlugin(), ClockPlugin(),
                        TasksPlugin(workspace / "aufgaben.json"),
@@ -257,7 +273,11 @@ class PluginManager:
         self._load_external()
 
     def _load_external(self) -> None:
-        """Lädt Zusatz-Plugins aus jarvis/plugins/*.py (Variable PLUGIN)."""
+        """Lädt Zusatz-Plugins aus jarvis/plugins/*.py (Variable PLUGIN).
+
+        Defekte Plugins stoppen das System nicht, verschwinden aber auch nicht
+        lautlos: der Fehler wird in load_errors erfasst und im Dashboard gezeigt.
+        """
         pkg_dir = Path(__file__).resolve().parent.parent / "plugins"
         if not pkg_dir.is_dir():
             return
@@ -267,8 +287,14 @@ class PluginManager:
                 plugin = getattr(mod, "PLUGIN", None)
                 if isinstance(plugin, Plugin):
                     self.plugins[plugin.name] = plugin
-            except Exception:  # defektes Plugin darf das System nicht stoppen
-                continue
+                else:
+                    self.load_errors.append({
+                        "modul": mod_info.name,
+                        "fehler": "PLUGIN fehlt oder ist keine Plugin-Instanz"})
+            except Exception as e:  # defektes Plugin darf das System nicht stoppen
+                self.load_errors.append({
+                    "modul": mod_info.name,
+                    "fehler": f"{type(e).__name__}: {e}"})
 
     def for_team(self, team: str) -> list[str]:
         return [name for name, p in self.plugins.items() if p.authorized(team)]
@@ -277,8 +303,11 @@ class PluginManager:
         plugin = self.plugins.get(name)
         if plugin is None:
             raise KeyError(f"Plugin nicht gefunden: {name}")
+        # Team-Zuordnung ist ORGANISATORISCH, keine Sicherheitsgrenze (der Router
+        # weist ohnehin ein zuständiges Team zu). Die ECHTE Schranke für
+        # OS-weitreichende Werkzeuge ist ausschließlich das Env-Gate unten.
         if not plugin.authorized(team):
-            raise PermissionError(f"Team {team!r} ist für Plugin {name!r} nicht autorisiert")
+            raise PermissionError(f"Team {team!r} ist organisatorisch nicht für {name!r} zuständig")
         if getattr(plugin, "dangerous", False):
             envs = getattr(plugin, "allow_env", ["JARVIS_ALLOW_DANGEROUS"])
             if not any(os.environ.get(e) == "1" for e in envs):

@@ -20,12 +20,13 @@ theoretisch unbegrenzt — ohne dass je etwas „gespeichert" werden muss.
 
 ## Belegschaft-Betrieb (ganze Organisation aktivieren)
 
-Auf der Seite `/mitarbeiter` startet der Button **„GANZE BELEGSCHAFT AKTIVIEREN"**
-einen kontinuierlichen Betrieb: ein Hintergrund-Scheduler fegt in rollenden
+Der Belegschaft-Betrieb startet **automatisch** beim Start (abschaltbar mit
+`JARVIS_WORKFORCE=0` bzw. `--no-workforce`); auf der Seite `/mitarbeiter` lässt
+er sich zusätzlich per Button steuern. Ein Hintergrund-Scheduler fegt in rollenden
 Wellen durch den **gesamten** 100-Milliarden-Adressraum, materialisiert und
-aktiviert die Mitarbeiter fortlaufend (real gemessen ~1,5 Mio./Sekunde). Damit
-ist die komplette Organisation *in Betrieb*. Das Dashboard zeigt live:
-durchlaufene Mitarbeiter, Rate/Sekunde, Wellen und Abdeckung des Adressraums.
+aktiviert die Mitarbeiter fortlaufend (real gemessen ~50–60 Tsd./Sekunde je
+nach CPU). Damit ist die komplette Organisation *in Betrieb*. Das Dashboard zeigt
+live: durchlaufene Mitarbeiter, echte Rate/Sekunde und Abdeckung des Adressraums.
 
 Ehrlich dabei: Zu jedem Zeitpunkt rechnen nur so viele *gleichzeitig*, wie die
 Hardware zulässt — der Rest wird laufend durchgeschleust (echte HyperScale-

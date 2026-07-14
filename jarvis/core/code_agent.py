@@ -61,6 +61,14 @@ class CodeAgentPlugin(Plugin):
         self.workspace.mkdir(parents=True, exist_ok=True)
         self.binary = find_binary()
 
+    def health(self) -> tuple[bool, str]:
+        """Voll lauffähig nur mit echtem Agenten-Binary UND API-Key; sonst Gehirn-Fallback."""
+        if not self.binary:
+            return False, "kein claw/claude-Binary gefunden — Fallback auf JARVIS-Gehirn"
+        if not os.environ.get("ANTHROPIC_API_KEY"):
+            return False, "kein API-Key gesetzt — Fallback auf JARVIS-Gehirn"
+        return True, ""
+
     def status(self) -> dict:
         s = super().status()
         s["binary"] = self.binary or "keins gefunden (Fallback: JARVIS-Gehirn)"

@@ -180,6 +180,7 @@ class BodyguardSquad:
         self.last_patrol = "–"
         self.guards = [{"name": n, "posten": p, "status": "bereit"} for n, p in self.GUARDS]
         self._thread: threading.Thread | None = None
+        self._gen = 0
         self._log = None
 
     def set_logger(self, fn: Any) -> None:
@@ -219,6 +220,15 @@ class BodyguardSquad:
         self.last_patrol = report.get("zeit", "–")
         probleme = report.get("probleme", []) if isinstance(report, dict) else []
         self.last_findings = probleme
+        # EHRLICH: Ohne Windows kann kein Posten (Defender/Firewall/…) real geprüft
+        # werden — dann nicht fälschlich "WACHSAM" melden, sondern "NUR WINDOWS".
+        if report.get("plattform") == "nicht-windows":
+            for g in self.guards:
+                g["status"] = "NUR WINDOWS"
+            self.last_fixes = []
+            if self._log:
+                self._log("info", "Bodyguards bereit — Defender/Firewall-Prüfung nur auf Windows aktiv")
+            return
         # Posten-Status je Wächter setzen
         def post_ok(posten: str) -> bool:
             if posten == "DEFENDER":
@@ -241,14 +251,14 @@ class BodyguardSquad:
             else:
                 self._log("info", "Bodyguard-Patrouille ok")
 
-    def _run(self) -> None:
-        while self.on:
+    def _run(self, gen: int) -> None:
+        while self.on and gen == self._gen:
             try:
                 self._patrol()
             except Exception:
                 pass
             for _ in range(self.interval):
-                if not self.on:
+                if not self.on or gen != self._gen:
                     return
                 time.sleep(1)
 
@@ -256,11 +266,14 @@ class BodyguardSquad:
         if self.on:
             return
         self.on = True
-        self._thread = threading.Thread(target=self._run, daemon=True)
+        self._gen += 1
+        gen = self._gen
+        self._thread = threading.Thread(target=self._run, args=(gen,), daemon=True)
         self._thread.start()
 
     def stop(self) -> None:
         self.on = False
+        self._gen += 1
         self._thread = None
 
     def stats(self) -> dict[str, Any]:
@@ -289,13 +302,14 @@ class SecurityMonitor:
         self.last: dict[str, Any] = {}
         self.checks = 0
         self._thread: threading.Thread | None = None
+        self._gen = 0
         self._log = None
 
     def set_logger(self, fn: Any) -> None:
         self._log = fn
 
-    def _run(self) -> None:
-        while self.on:
+    def _run(self, gen: int) -> None:
+        while self.on and gen == self._gen:
             report = self.plugin.check()
             self.checks += 1
             self.last = report
@@ -303,8 +317,12 @@ class SecurityMonitor:
             if self._log:
                 if report.get("status") == "alarm":
                     self._log("warn", "SICHERHEITS-ALARM: " + "; ".join(report.get("probleme", [])))
-                else:
+                elif report.get("plattform") == "nicht-windows":
+                    self._log("info", "Sicherheits-Monitor bereit — Defender-Check nur auf Windows")
+                elif report.get("status") == "sicher":
                     self._log("info", "Sicherheits-Check ok")
+                else:
+                    self._log("info", "Sicherheits-Check abgeschlossen")
             # Signaturen sicher aktualisieren (nur Windows, best effort)
             if os.name == "nt":
                 try:
@@ -312,7 +330,7 @@ class SecurityMonitor:
                 except Exception:
                     pass
             for _ in range(self.interval):
-                if not self.on:
+                if not self.on or gen != self._gen:
                     return
                 time.sleep(1)
 
@@ -320,11 +338,14 @@ class SecurityMonitor:
         if self.on:
             return
         self.on = True
-        self._thread = threading.Thread(target=self._run, daemon=True)
+        self._gen += 1
+        gen = self._gen
+        self._thread = threading.Thread(target=self._run, args=(gen,), daemon=True)
         self._thread.start()
 
     def stop(self) -> None:
         self.on = False
+        self._gen += 1
         self._thread = None
 
     def stats(self) -> dict[str, Any]:

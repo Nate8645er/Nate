@@ -44,6 +44,15 @@ class PCControlPlugin(Plugin):
         self.workspace = workspace
         self.workspace.mkdir(parents=True, exist_ok=True)
 
+    def health(self) -> tuple[bool, str]:
+        """Maus/Tastatur/Screenshot brauchen pyautogui + einen echten Desktop."""
+        import importlib.util
+        if importlib.util.find_spec("pyautogui") is None:
+            return False, "pyautogui nicht installiert (Maus/Tastatur/Screenshot deaktiviert)"
+        if os.name != "nt" and not os.environ.get("DISPLAY"):
+            return False, "kein Desktop/DISPLAY — Programme öffnen ok, aber Maus/Tastatur nicht"
+        return True, ""
+
     # -- Programme -----------------------------------------------------------
     def _open(self, target: str) -> str:
         if not target:

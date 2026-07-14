@@ -118,10 +118,13 @@ async function load() {
   try {
     const s = await (await fetch('/api/state')).json();
     $('mode').textContent = 'ONLINE // ' + s.modell_modus.toUpperCase();
-    $('tools').innerHTML = s.plugins.map(p =>
-      `<div style="padding:4px 0; border-bottom:1px dashed #241609; font-size:12px">
+    $('tools').innerHTML = s.plugins.map(p => {
+      const state = p.gesperrt ? '🔒 gesperrt' : (p.ok === false ? '⚠ ' + esc(p.hinweis || 'nicht lauffähig') : '✓ lauffähig');
+      const col = p.ok === false && !p.gesperrt ? '#c88' : 'var(--dim)';
+      return `<div style="padding:4px 0; border-bottom:1px dashed #241609; font-size:12px">
          ◈ <b style="color:var(--amber2)">${esc(p.name)}</b> — ${esc(p.description)}
-         <span class="demo">(${p.allowed_teams === 'alle' ? 'alle Teams' : esc(String(p.allowed_teams))})</span></div>`).join('');
+         <span style="color:${col}"> · ${state}</span></div>`; }).join('');
+    const lauffaehig = s.plugins.filter(p => p.ok !== false).length;
     const code = s.plugins.find(p => p.name === 'code');
     $('codebox').innerHTML = code
       ? `Binary: <b style="color:var(--amber2)">${esc(code.binary || '—')}</b><br>` +
@@ -132,7 +135,7 @@ async function load() {
     $('skills').innerHTML = (s.skills || []).map(sk =>
       `<div style="padding:4px 0; border-bottom:1px dashed #241609; font-size:12px">
          ✦ <b style="color:var(--amber2)">${esc(sk.name)}</b> — ${esc(sk.description)}</div>`).join('');
-    $('ticker').textContent = (` ▲ ${s.plugins.length} WERKZEUGE AKTIV: ${s.plugins.map(p => p.name).join(', ')} ` +
+    $('ticker').textContent = (` ▲ ${lauffaehig}/${s.plugins.length} WERKZEUGE LAUFFÄHIG: ${s.plugins.map(p => p.name).join(', ')} ` +
       `● ${(s.skills || []).length} SKILLS ● CLAUDE-CODE-BRÜCKE: ${code && code.binary ? 'BEREIT' : 'FALLBACK'} ` +
       `● MODELL ${s.modell} [${s.modell_modus.toUpperCase()}] ● `).repeat(2);
   } catch (e) { $('mode').textContent = 'VERBINDUNG GETRENNT'; }

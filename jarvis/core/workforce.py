@@ -31,22 +31,23 @@ from .identity import ADDRESS_SPACE, materialize
 
 class WorkforceEngine:
     def __init__(self, waves: int) -> None:
-        self.waves = max(1, waves)          # Hardware-Parallelität (Anzeige/Kontext)
+        self.waves = max(1, waves)          # Hardware-Parallelität (nur Kontext-Anzeige)
         self.on = False
         self.activated = 0                  # kumulativ durchlaufene Mitarbeiter
         self.cursor = 0                     # Position im Adressraum
         self.started_at = 0.0
-        self.rate = 0.0                     # Mitarbeiter/Sekunde (geglättet)
+        self.rate = 0.0                     # ECHTE Mitarbeiter/Sekunde (geglättet, gemessen)
         self.recent: deque[dict[str, Any]] = deque(maxlen=30)
         self._thread: threading.Thread | None = None
+        self._gen = 0                       # Generations-Token gegen Doppel-Threads
 
-    def _run(self) -> None:
+    def _run(self, gen: int) -> None:
         block = 20000
-        while self.on:
+        while self.on and gen == self._gen:
             start = self.cursor
             t0 = time.time()
             for i in range(block):
-                if not self.on:
+                if not self.on or gen != self._gen:
                     return
                 emp = materialize(str((start + i) % ADDRESS_SPACE))
                 if i < 2:                    # kleine Live-Stichprobe fürs Dashboard
@@ -65,18 +66,23 @@ class WorkforceEngine:
         if self.on:
             return
         self.on = True
+        self._gen += 1                       # neue Generation; alte Threads terminieren
         self.started_at = time.time()
-        self._thread = threading.Thread(target=self._run, daemon=True)
+        gen = self._gen
+        self._thread = threading.Thread(target=self._run, args=(gen,), daemon=True)
         self._thread.start()
 
     def stop(self) -> None:
         self.on = False
+        self._gen += 1                       # laufenden Thread sicher beenden
         self._thread = None
 
     def stats(self) -> dict[str, Any]:
         laufzeit = time.time() - self.started_at if self.on else 0
-        # Effektive Rate wird durch Hardware-Wellen skaliert dargestellt (Durchsatz-Ziel).
-        gesamt_rate = round(self.rate * self.waves)
+        # EHRLICH: die angezeigte Rate ist die real gemessene Sweep-Rate EINES Threads.
+        # In CPython ist materialize() CPU-/GIL-gebunden — mehr Threads brächten keine
+        # vielfache Rate. 'wellen' ist nur Hardware-Kontext, kein Rate-Multiplikator.
+        gesamt_rate = round(self.rate)
         abdeckung = min(100.0, self.activated / ADDRESS_SPACE * 100)
         rest = max(0, ADDRESS_SPACE - self.activated)
         eta_s = rest / gesamt_rate if gesamt_rate > 0 else 0

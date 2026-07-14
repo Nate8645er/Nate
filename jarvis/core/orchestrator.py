@@ -28,18 +28,39 @@ from .identity import ADDRESS_SPACE, address_for_task, materialize
 from .plugins import PluginManager
 
 
-def _parse_kwargs(rest: str) -> dict[str, str]:
-    """Parst 'key=value key2=value mit leerzeichen' — Wert läuft bis zum nächsten key=."""
+def _parse_kwargs(rest: str, valid_keys: set[str] | None = None) -> dict[str, str]:
+    """Parst 'key=value key2=value mit leerzeichen' — Wert läuft bis zum nächsten key=.
+
+    `valid_keys` (die echten Parameternamen des Ziel-Plugins) verhindert, dass
+    Freitext-Werte an einem eingebetteten 'wort=' zerhackt werden:
+    z. B. 'prompt=setze debug=true in der config' bleibt EIN Wert, weil 'debug'
+    kein gültiger Parameter ist. Ohne valid_keys splittet der Parser an jedem key=.
+    """
     import re
     if not rest.strip():
         return {}
-    keys = list(re.finditer(r"(?:^|\s)([a-zA-Z_]\w*)=", rest))
+    keys = [m for m in re.finditer(r"(?:^|\s)([a-zA-Z_]\w*)=", rest)
+            if valid_keys is None or m.group(1) in valid_keys]
     kwargs: dict[str, str] = {}
     for i, m in enumerate(keys):
         start = m.end()
         end = keys[i + 1].start() if i + 1 < len(keys) else len(rest)
         kwargs[m.group(1)] = rest[start:end].strip()
     return kwargs
+
+
+def _plugin_param_names(plugin: Any) -> set[str] | None:
+    """Echte Parameternamen der run()-Methode eines Plugins (ohne self/action/**kwargs)."""
+    if plugin is None:
+        return None
+    import inspect
+    try:
+        params = inspect.signature(plugin.run).parameters
+    except (TypeError, ValueError):
+        return None
+    return {n for n, p in params.items()
+            if n not in ("self", "action")
+            and p.kind not in (p.VAR_KEYWORD, p.VAR_POSITIONAL)}
 
 
 def hardware_limit() -> int:
@@ -159,7 +180,13 @@ class Orchestrator:
         return task
 
     def _route(self, description: str) -> str:
-        """Wählt eine Adresse. Tool-Aufgaben gehen an ein berechtigtes Team."""
+        """Wählt eine Adresse. Tool-Aufgaben gehen an ein organisatorisch zuständiges Team.
+
+        WICHTIG (Ehrlichkeit): Die Team-Zuordnung ist ORGANISATORISCH, keine
+        Sicherheitsgrenze. Die einzige echte Schranke für OS-weitreichende
+        Werkzeuge ist das Env-Gate (JARVIS_ALLOW_DANGEROUS / JARVIS_ALLOW_PC) in
+        PluginManager.run — dieses kann durch Routing NICHT umgangen werden.
+        """
         routed = description
         if not routed.startswith(("!plugin", "!skill")):
             from .commands import interpret
@@ -203,16 +230,21 @@ class Orchestrator:
 
             if command.startswith("!plugin"):
                 # Syntax: !plugin <name> <aktion> [key=value ...]
-                # Werte dürfen Leerzeichen enthalten (bis zum nächsten key=).
+                # Werte dürfen Leerzeichen enthalten (bis zum nächsten bekannten key=).
                 parts = command.split(maxsplit=3)
+                if len(parts) < 3:
+                    raise ValueError("Syntax: !plugin <name> <aktion> [key=value ...]")
                 name, action = parts[1], parts[2]
-                kwargs = _parse_kwargs(parts[3] if len(parts) > 3 else "")
+                valid = _plugin_param_names(self.plugins.plugins.get(name))
+                kwargs = _parse_kwargs(parts[3] if len(parts) > 3 else "", valid)
                 result = await asyncio.to_thread(
                     self.plugins.run, employee.team, name, action, **kwargs)
                 task.result = str(result)
             elif command.startswith("!skill"):
                 # Syntax: !skill <name> <aufgabentext...>
                 parts = command.split(maxsplit=2)
+                if len(parts) < 2:
+                    raise ValueError("Syntax: !skill <name> <aufgabentext...>")
                 prompt = self.skills.apply(parts[1], parts[2] if len(parts) > 2 else "")
                 task.result = await asyncio.to_thread(brain.answer, employee, prompt)
             else:
@@ -274,7 +306,15 @@ class Orchestrator:
     # -- Zustand für das Dashboard -------------------------------------------
     def finanzen(self) -> dict[str, Any]:
         """Ziel-Tracker: Ziel vs. real erfasste Einnahmen (keine Simulation)."""
-        ziel = float(os.environ.get("JARVIS_ZIEL_CHF", 1_000_000_000))
+        # Ziel robust parsen: Schweizer Tausenderformat (1'000'000), Kommas und
+        # ungültige/0-Werte dürfen /api/state nie mit 500 abstürzen lassen.
+        raw = str(os.environ.get("JARVIS_ZIEL_CHF", "1000000000"))
+        try:
+            ziel = float(raw.replace("'", "").replace(",", "").replace(" ", "").replace("_", ""))
+        except (ValueError, TypeError):
+            ziel = 1_000_000_000.0
+        if ziel <= 0:
+            ziel = 1_000_000_000.0
         try:
             s = self.plugins.plugins["finanzen"].run("summe")
         except Exception:
@@ -301,7 +341,7 @@ class Orchestrator:
             "ram_prozent": vm.percent,
             "ram_frei_mb": vm.available // 1_048_576,
             "modell_modus": brain.mode(),
-            "modell": brain.DEFAULT_MODEL,
+            "modell": brain.active_model(),   # tatsächlich aktives Modell (inkl. Fallback)
             "laufzeit_s": int(time.time() - self.started),
             "aktive": [t.as_dict() for t in list(self.active.values())[:50]],
             "letzte_aufgaben": [t.as_dict() for t in list(self.recent)[:30]],

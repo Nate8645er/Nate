@@ -44,6 +44,7 @@ class Autopilot:
         self.count_total = self._count_file()
         self.recent: deque[dict[str, Any]] = deque(maxlen=30)
         self._thread: threading.Thread | None = None
+        self._gen = 0     # Generations-Token: verhindert doppelte Idee-Threads bei stop()+start()
         self._log = None  # optionaler Logger-Callback
         # In-Memory-Cache für heutige Ideen (kein wiederholtes Datei-Lesen im Betrieb)
         self._today_date = time.strftime("%Y-%m-%d")
@@ -78,8 +79,8 @@ class Autopilot:
     def set_logger(self, fn: Any) -> None:
         self._log = fn
 
-    def _run(self) -> None:
-        while self.on:
+    def _run(self, gen: int) -> None:
+        while self.on and gen == self._gen:
             addr = address_for_task("business idee", team_hint="Business")
             emp = materialize(addr)
             try:
@@ -99,7 +100,7 @@ class Autopilot:
                 self._log("info", f"Autopilot: neue Idee von {emp.display}")
             # Intervall in kleinen Schritten, damit Stop schnell greift
             for _ in range(self.interval):
-                if not self.on:
+                if not self.on or gen != self._gen:
                     return
                 time.sleep(1)
 
@@ -107,11 +108,14 @@ class Autopilot:
         if self.on:
             return
         self.on = True
-        self._thread = threading.Thread(target=self._run, daemon=True)
+        self._gen += 1                       # neue Generation; ein evtl. alter Thread endet
+        gen = self._gen
+        self._thread = threading.Thread(target=self._run, args=(gen,), daemon=True)
         self._thread.start()
 
     def stop(self) -> None:
         self.on = False
+        self._gen += 1                       # laufenden Thread sicher beenden
         self._thread = None
 
     def today(self) -> list[dict[str, Any]]:

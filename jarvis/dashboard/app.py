@@ -12,6 +12,7 @@ Endpunkte:
 from __future__ import annotations
 
 import os
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -25,14 +26,33 @@ from jarvis.core.orchestrator import Orchestrator
 DATA_DIR = Path(os.environ.get("JARVIS_DATA", Path.home() / ".jarvis"))
 STATIC = Path(__file__).resolve().parent / "static"
 
-app = FastAPI(title="JARVIS HyperScale", version="0.1.0")
 orchestrator = Orchestrator(DATA_DIR)
+
+
+@asynccontextmanager
+async def _lifespan(app: FastAPI):
+    """Startet Belegschaft/Autopilot/Sicherheit und fährt beim Stop sauber herunter."""
+    await _startup_tasks()
+    yield
+    await orchestrator.stop()
+
+
+app = FastAPI(title="JARVIS HyperScale", version="1.1.0", lifespan=_lifespan)
+
+
+def _host_from_header(raw: str) -> str:
+    """Extrahiert den reinen Host aus dem Host-Header — inkl. IPv6 ('[::1]:8787')."""
+    raw = raw.strip()
+    if raw.startswith("["):                 # IPv6-Literal: [::1]:8787
+        end = raw.find("]")
+        return raw[1:end].lower() if end != -1 else raw.lower()
+    return raw.rsplit(":", 1)[0].lower() if ":" in raw else raw.lower()
 
 
 @app.middleware("http")
 async def _host_guard(request, call_next):
     """Schutz vor DNS-Rebinding: nur Loopback-Hostnamen (oder ausdrücklich erlaubte)."""
-    host = (request.headers.get("host") or "").split(":")[0].lower()
+    host = _host_from_header(request.headers.get("host") or "")
     allowed = {"127.0.0.1", "localhost", "::1", ""}
     extra = os.environ.get("JARVIS_ALLOWED_HOSTS", "")
     if extra:
@@ -61,10 +81,14 @@ def _load_persisted_key() -> None:
             pass
 
 
-@app.on_event("startup")
-async def _startup() -> None:
+async def _startup_tasks() -> None:
     _load_persisted_key()
     await orchestrator.start()
+    # Belegschaft-Betrieb standardmäßig an (Roll-Call der gesamten Organisation,
+    # kein bezahltes Modell). Mit JARVIS_WORKFORCE=0 abschaltbar.
+    if os.environ.get("JARVIS_WORKFORCE", "1") != "0":
+        orchestrator.workforce.start()
+        orchestrator.log("info", "Belegschaft-Betrieb gestartet: gesamte Organisation im Roll-Call")
     if os.environ.get("JARVIS_AUTOPILOT") == "1":
         orchestrator.autopilot.start()
         orchestrator.log("info", "24/7-Autopilot automatisch gestartet (JARVIS_AUTOPILOT=1)")
@@ -228,7 +252,8 @@ async def employee(address: str) -> JSONResponse:
 async def org(address: str, count: int = 10) -> JSONResponse:
     """Zeigt die ersten Mitarbeiter des virtuellen Unternehmens einer Adresse."""
     try:
-        validate_address(address)
+        segments = validate_address(address)
+        address = "/".join(str(s) for s in segments)   # kanonisieren (Trailing-Slash '5/' -> '5')
     except ValueError as err:
         raise HTTPException(400, str(err)) from err
     count = max(1, min(count, 50))
@@ -298,7 +323,13 @@ async def skills() -> JSONResponse:
 
 @app.get("/api/tools")
 async def tools() -> JSONResponse:
-    return JSONResponse({"tools": orchestrator.plugins.status()})
+    st = orchestrator.plugins.status()
+    return JSONResponse({
+        "tools": st,
+        "lauffaehig": sum(1 for t in st if t.get("ok")),
+        "gesamt": len(st),
+        "ladefehler": getattr(orchestrator.plugins, "load_errors", []),
+    })
 
 
 @app.post("/api/brain/key")

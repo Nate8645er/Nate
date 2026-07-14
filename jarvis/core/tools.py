@@ -43,6 +43,33 @@ def _host_is_blocked(host: str) -> bool:
     return False
 
 
+class _SafeRedirectHandler:
+    """Wendet den SSRF-Blockcheck auf JEDES Redirect-Ziel an (301/302/303/307/308).
+
+    Ohne diese Prüfung folgt urllib Redirects blind — ein externer Host könnte
+    per 'Location: http://169.254.169.254/…' auf interne/Cloud-Metadaten-Ziele
+    umleiten und den SSRF-Schutz der Start-URL aushebeln.
+    """
+
+    def __init__(self) -> None:
+        import urllib.error
+        import urllib.request
+
+        class _H(urllib.request.HTTPRedirectHandler):
+            def redirect_request(self, req, fp, code, msg, headers, newurl):  # noqa: N802
+                if not newurl.lower().startswith(("http://", "https://")):
+                    raise urllib.error.HTTPError(
+                        newurl, code, "Redirect-Schema nicht erlaubt (SSRF-Schutz)", headers, fp)
+                host = urllib.parse.urlparse(newurl).hostname or ""
+                if _host_is_blocked(host):
+                    raise urllib.error.HTTPError(
+                        newurl, code, "Redirect auf interne/private Adresse blockiert (SSRF-Schutz)",
+                        headers, fp)
+                return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+        self.opener = urllib.request.build_opener(_H())
+
+
 class ShellPlugin(Plugin):
     name = "shell"
     description = "Shell-/Terminal-Befehle im Arbeitsbereich ausführen (wie Claude Code Bash)"
@@ -165,8 +192,11 @@ class WebFetchPlugin(Plugin):
                     "Sicherheitsgründen gesperrt (SSRF-Schutz).")
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (JARVIS)"})
         try:
-            with urllib.request.urlopen(req, timeout=25) as resp:
-                raw = resp.read().decode("utf-8", "ignore")
+            # Redirects werden pro Ziel erneut gegen die SSRF-Blockliste geprüft;
+            # der Body wird begrenzt gelesen (Schutz vor Speicher-Erschöpfung).
+            opener = _SafeRedirectHandler().opener
+            with opener.open(req, timeout=25) as resp:
+                raw = resp.read(3_000_000).decode("utf-8", "ignore")
         except Exception as e:
             return f"Abruf fehlgeschlagen ({type(e).__name__}) — Netzwerk prüfen."
         text = re.sub(r"<(script|style)[^>]*>.*?</\1>", "", raw, flags=re.S | re.I)

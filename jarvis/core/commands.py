@@ -76,29 +76,40 @@ _CLOSE = re.compile(
     r"^(?:bitte\s+)?(?:schließe|schliesse|beende|schließ|close|kill|stopp(?:e)?)\s+"
     r"(?:das\s+|die\s+|den\s+)?(.+?)[.!?]?$", re.IGNORECASE)
 _SHOT = re.compile(r"(screenshot|bildschirmfoto|bildschirm\s*foto|mach.*bildschirm)", re.IGNORECASE)
+# "finde …" ist absichtlich NICHT dabei — zu breit (z. B. "finde den Fehler im Code"
+# soll ans Gehirn, nicht in die Websuche). Nur klare Such-Verben lösen eine Suche aus.
 _SEARCH = re.compile(
-    r"^(?:bitte\s+)?(?:suche|such|google|recherchiere|find(?:e)?)\s+(?:nach\s+|im internet\s+)?(.+?)[.!?]?$",
+    r"^(?:bitte\s+)?(?:suche|such|google|recherchiere)\s+(?:nach\s+|im internet\s+)?(.+?)[.!?]?$",
     re.IGNORECASE)
 
 
-def _target_to_open(target: str) -> str:
+def _resolve_open(target: str) -> str | None:
+    """Löst ein Öffnen-Ziel zu Seite/Programm/URL auf ODER gibt None zurück.
+
+    None = das Ziel ist KEIN erkennbares Programm/keine Seite (z. B. „die Analyse
+    des Quartalsberichts"). Dann darf die Aufgabe NICHT auf das gesperrte
+    pc-Plugin gemappt werden, sondern geht ans Gehirn.
+    """
     t = target.strip().strip("\"'").lower()
-    # bekannte Seite?
     if t in SITES:
         return SITES[t]
-    # bekanntes Programm?
     if t in PROGRAMS:
         return PROGRAMS[t]
-    # sieht nach Domain/URL aus?
     if t.startswith(("http://", "https://")):
         return target.strip()
-    if "." in t and " " not in t:
+    if "." in t and " " not in t:                 # sieht nach Domain aus (youtube.com)
         return "https://" + t
     if " punkt " in t or t.endswith(" com") or t.endswith(" de"):
         dom = t.replace(" punkt ", ".").replace(" com", ".com").replace(" de", ".de").replace(" ", "")
         return "https://" + dom
-    # sonst: als Programmname versuchen (Original beibehalten)
-    return target.strip()
+    if " " not in t and t.isascii() and t.isalnum():  # einzelnes Wort -> Programmname versuchen
+        return target.strip()
+    return None                                    # freier Text -> ans Gehirn, nicht ans pc-Plugin
+
+
+def _target_to_open(target: str) -> str:
+    """Wie _resolve_open, aber mit Fallback auf den Rohtext (für Browser-Navigation)."""
+    return _resolve_open(target) or target.strip()
 
 
 def interpret(text: str) -> str | None:
@@ -160,17 +171,23 @@ def interpret(text: str) -> str | None:
         raw = _strip_filler(m.group(1)).strip()
         if raw.lower() in BROWSERS:        # "öffne chrome" → Browser starten
             return f"!plugin pc browser browser={raw.lower()}"
-        target = _target_to_open(raw)
-        return f"!plugin pc open program={target}"
+        target = _resolve_open(raw)
+        if target:                          # nur echte Programme/Seiten ans pc-Plugin
+            return f"!plugin pc open program={target}"
+        # sonst: freier Text ("starte die Analyse …") -> weiter, endet am Gehirn
 
     m = _CLOSE.match(s)
     if m:
         name = m.group(1).strip()
-        # Programmnamen normalisieren (rechner -> calc.exe etc.)
-        prog = PROGRAMS.get(name.lower(), name)
-        if not prog.lower().endswith(".exe") and "/" not in prog and ":" not in prog:
-            prog = prog + ".exe"
-        return f"!plugin pc close name={prog}"
+        low = name.lower()
+        # Nur schließen, wenn es ein bekanntes Programm / ein Browser / eine .exe ist —
+        # "beende die Diskussion" darf NICHT das pc-Plugin ansteuern.
+        if low in PROGRAMS or low in BROWSERS or low.endswith(".exe"):
+            prog = PROGRAMS.get(low, name)
+            if not prog.lower().endswith(".exe") and "/" not in prog and ":" not in prog:
+                prog = prog + ".exe"
+            return f"!plugin pc close name={prog}"
+        # sonst: freier Text -> ans Gehirn
 
     m = _SEARCH.match(s)
     if m:
