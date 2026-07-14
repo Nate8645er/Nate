@@ -112,7 +112,7 @@ async function tick() {
     for (const t of all) if (t.team) counts[t.team] = (counts[t.team] || 0) + 1;
     const activeTeams = new Set(s.aktive.map(t => t.team));
     $('teams').innerHTML = Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([team, c]) =>
-      `<div class="teamcard${activeTeams.has(team) ? ' hot' : ''}"><div class="n">${team}</div><div class="c">${c}</div></div>`).join('')
+      `<div class="teamcard${activeTeams.has(team) ? ' hot' : ''}"><div class="n">${esc(team)}</div><div class="c">${c}</div></div>`).join('')
       || '<div style="color:var(--dim)">Noch keine Aktivität.</div>';
     const wf = s.belegschaft || {};
     $('wf_total').textContent = fmt(wf.durchlaufen || 0);
@@ -127,7 +127,7 @@ async function tick() {
       : 'gestoppt';
     if (wf.in_betrieb && wf.stichprobe && wf.stichprobe.length)
       $('wf_hint').innerHTML = 'Gerade aktiviert: ' + wf.stichprobe.slice(0, 3).map(e =>
-        `<b style="color:var(--amber2)">${e.name}</b> (${e.team})`).join(' · ');
+        `<b style="color:var(--amber2)">${esc(e.name)}</b> (${esc(e.team)})`).join(' · ');
     $('ticker').textContent = (` ▲ TRACKER: ${s.aktive_agenten} AKTIV ● ${s.wartende_aufgaben} WARTEND ` +
       `● ${fmt(s.aktivierte_agenten_gesamt)} AKTIVIERUNGEN GESAMT ● ADRESSRAUM ${fmt(s.adressraum_pro_ebene)}/EBENE ` +
       `● TEAMS AKTIV: ${[...activeTeams].join(', ') || 'KEINE'} ● ZIEL ${fmt(s.finanzen.ziel_chf)} CHF · REAL ${s.finanzen.einnahmen_chf.toFixed(2)} CHF ● `).repeat(3);
@@ -150,14 +150,14 @@ async function lookup(ev) {
   if (!r.ok) { $('emp').innerHTML = `<div class="empcard">Ungültige Adresse.</div>`; return false; }
   const e = await r.json();
   $('emp').innerHTML = `<div class="empcard">
-    <b>${e.name}</b> — ${e.rolle}, Team ${e.team} (Ebene ${e.ebene})<br>
-    Spezialisierung: ${e.spezialisierung}<br>
-    Skills: ${e.skills.join(', ')}<br>
-    Ziele: ${e.ziele.join(' · ')}<br>
-    Priorität: ${e.prioritaet} · Plugins: ${e.plugins_autorisiert.join(', ')}<br>
-    Eigenes Unternehmen: <b>${e.eigenes_unternehmen}</b>
+    <b>${esc(e.name)}</b> — ${esc(e.rolle)}, Team ${esc(e.team)} (Ebene ${esc(e.ebene)})<br>
+    Spezialisierung: ${esc(e.spezialisierung)}<br>
+    Skills: ${esc(e.skills.join(', '))}<br>
+    Ziele: ${esc(e.ziele.join(' · '))}<br>
+    Priorität: ${esc(e.prioritaet)} · Plugins: ${esc(e.plugins_autorisiert.join(', '))}<br>
+    Eigenes Unternehmen: <b>${esc(e.eigenes_unternehmen)}</b>
     (${fmt(e.adressierbare_mitarbeiter_im_eigenen_unternehmen)} adressierbare Mitarbeiter)
-    <div style="margin-top:6px"><button onclick="$('orgaddr').value='${e.adresse}';exploreOrg(event)">UNTERNEHMEN ÖFFNEN</button></div>
+    <div style="margin-top:6px"><button onclick="$('orgaddr').value='${esc(e.adresse)}';exploreOrg(event)">UNTERNEHMEN ÖFFNEN</button></div>
   </div>`;
   return false;
 }
@@ -169,11 +169,11 @@ async function exploreOrg(ev) {
   if (!r.ok) { $('org').innerHTML = `<div class="empcard">Ungültige Adresse.</div>`; return false; }
   const o = await r.json();
   $('org').innerHTML = `<div class="empcard">
-    <b>${o.unternehmen}</b> — Leitung: ${o.leitung}<br>
+    <b>${esc(o.unternehmen)}</b> — Leitung: ${esc(o.leitung)}<br>
     ${fmt(o.adressierbar)} adressierbare Mitarbeiter · Auszug:
     <table style="margin-top:6px"><thead><tr><th>Adresse</th><th>Name</th><th>Rolle</th><th>Team</th></tr></thead><tbody>
-    ${o.mitarbeiter_auszug.map(m => `<tr><td class="mono" style="color:var(--dim)">${m.adresse}</td>` +
-      `<td>${m.name}</td><td>${m.rolle}</td><td>${m.team}</td></tr>`).join('')}
+    ${o.mitarbeiter_auszug.map(m => `<tr><td class="mono" style="color:var(--dim)">${esc(m.adresse)}</td>` +
+      `<td>${esc(m.name)}</td><td>${esc(m.rolle)}</td><td>${esc(m.team)}</td></tr>`).join('')}
     </tbody></table>
     <div style="font-size:10px; color:var(--dim); margin-top:4px">Tipp: Adresse eines Mitarbeiters oben in die Suche
     eingeben — auch er führt wieder ein eigenes Unternehmen.</div>

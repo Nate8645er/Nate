@@ -63,7 +63,7 @@ const $ = id => document.getElementById(id);
 const fmt = n => Number(n).toLocaleString('de-CH');
 setInterval(() => $('clock').textContent = new Date().toLocaleString('de-CH'), 1000);
 
-function esc(s){ return (s||'').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 async function tick() {
   try {

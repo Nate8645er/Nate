@@ -175,7 +175,17 @@ class Orchestrator:
         return address_for_task(description)
 
     async def _run_task(self, task: Task) -> None:
-        employee = materialize(task.address)
+        try:
+            employee = materialize(task.address)
+        except ValueError as e:
+            # Ungültige Adresse darf niemals den Worker töten — sauber als Fehler beenden.
+            task.status = "fehler"
+            task.result = f"Ungültige Mitarbeiter-Adresse {task.address!r}: {e}"
+            task.finished = time.time()
+            self.failed += 1
+            self.recent.appendleft(task)
+            self.log("warn", f"#{task.id} abgelehnt: ungültige Adresse {task.address!r}")
+            return
         task.agent = employee.display
         task.team = employee.team
         task.status = "aktiv"
@@ -223,8 +233,18 @@ class Orchestrator:
     async def _worker(self) -> None:
         while True:
             task = await self.queue.get()
-            await self._run_task(task)
-            self.queue.task_done()
+            try:
+                await self._run_task(task)
+            except Exception as e:  # Sicherheitsnetz: kein Fehler darf den Worker-Slot töten
+                task.status = "fehler"
+                task.result = f"{type(e).__name__}: {e}"
+                task.finished = time.time()
+                self.failed += 1
+                self.active.pop(task.id, None)
+                self.recent.appendleft(task)
+                self.log("warn", f"#{task.id} Worker-Fehler abgefangen: {task.result[:120]}")
+            finally:
+                self.queue.task_done()
 
     async def start(self) -> None:
         if self._workers:

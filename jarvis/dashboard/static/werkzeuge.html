@@ -91,12 +91,15 @@ die Claude-Code-Brücke ruft dafür den echten Agenten-Binary mit Fable 5 auf, w
 <script>
 const $ = id => document.getElementById(id);
 const fmt = n => Number(n).toLocaleString('de-CH');
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 setInterval(() => $('clock').textContent = new Date().toLocaleString('de-CH'), 1000);
 
 async function poll(id) {
   for (let i = 0; i < 90; i++) {
     await new Promise(r => setTimeout(r, 1200));
-    const t = await (await fetch('/api/task/' + id)).json();
+    const r = await fetch('/api/task/' + id);
+    if (!r.ok) return { ergebnis: '(Aufgabe nicht mehr auffindbar)', agent: '' };
+    const t = await r.json();
     if (t.status === 'fertig' || t.status === 'fehler') return t;
   }
   return { ergebnis: '(Zeitüberschreitung)', agent: '' };
@@ -104,6 +107,10 @@ async function poll(id) {
 async function submit(desc) {
   const r = await fetch('/api/task', { method: 'POST', headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ beschreibung: desc }) });
+  if (!r.ok) {
+    const e = await r.json().catch(() => ({}));
+    return { ergebnis: 'Abgelehnt: ' + (e.detail || r.status), agent: '' };
+  }
   return poll((await r.json()).id);
 }
 
@@ -113,18 +120,18 @@ async function load() {
     $('mode').textContent = 'ONLINE // ' + s.modell_modus.toUpperCase();
     $('tools').innerHTML = s.plugins.map(p =>
       `<div style="padding:4px 0; border-bottom:1px dashed #241609; font-size:12px">
-         ◈ <b style="color:var(--amber2)">${p.name}</b> — ${p.description}
-         <span class="demo">(${p.allowed_teams === 'alle' ? 'alle Teams' : p.allowed_teams})</span></div>`).join('');
+         ◈ <b style="color:var(--amber2)">${esc(p.name)}</b> — ${esc(p.description)}
+         <span class="demo">(${p.allowed_teams === 'alle' ? 'alle Teams' : esc(String(p.allowed_teams))})</span></div>`).join('');
     const code = s.plugins.find(p => p.name === 'code');
     $('codebox').innerHTML = code
-      ? `Binary: <b style="color:var(--amber2)">${code.binary || '—'}</b><br>` +
-        `Modell: <b style="color:var(--amber2)">${s.modell}</b> · Modus: ${s.modell_modus}<br>` +
+      ? `Binary: <b style="color:var(--amber2)">${esc(code.binary || '—')}</b><br>` +
+        `Modell: <b style="color:var(--amber2)">${esc(s.modell)}</b> · Modus: ${esc(s.modell_modus)}<br>` +
         (s.modell_modus === 'api' ? 'Aktiv: nutzt den echten Agenten mit Fable 5.'
           : 'Ohne API-Key: Fallback auf das JARVIS-Gehirn. FABLE 5 oben aktivieren.')
       : '';
     $('skills').innerHTML = (s.skills || []).map(sk =>
       `<div style="padding:4px 0; border-bottom:1px dashed #241609; font-size:12px">
-         ✦ <b style="color:var(--amber2)">${sk.name}</b> — ${sk.description}</div>`).join('');
+         ✦ <b style="color:var(--amber2)">${esc(sk.name)}</b> — ${esc(sk.description)}</div>`).join('');
     $('ticker').textContent = (` ▲ ${s.plugins.length} WERKZEUGE AKTIV: ${s.plugins.map(p => p.name).join(', ')} ` +
       `● ${(s.skills || []).length} SKILLS ● CLAUDE-CODE-BRÜCKE: ${code && code.binary ? 'BEREIT' : 'FALLBACK'} ` +
       `● MODELL ${s.modell} [${s.modell_modus.toUpperCase()}] ● `).repeat(2);

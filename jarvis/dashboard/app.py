@@ -394,5 +394,11 @@ async def get_task(task_id: int) -> JSONResponse:
 async def create_task(task: TaskIn) -> JSONResponse:
     if not task.beschreibung.strip():
         raise HTTPException(400, "Beschreibung fehlt")
-    t = orchestrator.submit(task.beschreibung.strip(), task.adresse)
+    adresse = (task.adresse or "").strip() or None
+    if adresse is not None:
+        try:
+            validate_address(adresse)
+        except ValueError as err:
+            raise HTTPException(400, f"Ungültige Adresse: {err}") from err
+    t = orchestrator.submit(task.beschreibung.strip(), adresse)
     return JSONResponse({"id": t.id, "adresse": t.address, "status": t.status})
