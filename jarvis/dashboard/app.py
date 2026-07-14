@@ -172,6 +172,27 @@ async def security_update() -> JSONResponse:
     return JSONResponse({"ergebnis": str(r)})
 
 
+@app.post("/api/security/threats")
+async def security_threats() -> JSONResponse:
+    import asyncio
+    r = await asyncio.to_thread(orchestrator.plugins.plugins["security"].run, "threats")
+    return JSONResponse({"ergebnis": str(r)})
+
+
+@app.post("/api/security/remove")
+async def security_remove() -> JSONResponse:
+    import asyncio
+    r = await asyncio.to_thread(orchestrator.plugins.plugins["security"].run, "remove")
+    return JSONResponse({"ergebnis": str(r)})
+
+
+@app.post("/api/security/fullscan")
+async def security_fullscan() -> JSONResponse:
+    import asyncio
+    r = await asyncio.to_thread(orchestrator.plugins.plugins["security"].run, "fullscan")
+    return JSONResponse({"ergebnis": str(r)})
+
+
 @app.get("/api/memory")
 async def memory(limit: int = 25) -> JSONResponse:
     import time as _t

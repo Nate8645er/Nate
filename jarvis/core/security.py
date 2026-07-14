@@ -130,7 +130,25 @@ class SecurityPlugin(Plugin):
             # Windows-Update-Suche anstoßen (installiert nichts ohne dein Zutun)
             _pwsh("Start-Process -WindowStyle Hidden UsoClient StartScan", timeout=15)
             return "Windows-Update-Suche angestoßen (Installation nur mit deiner Bestätigung)."
-        raise ValueError(f"Unbekannte Aktion: {action} (check|signatures|scan|update)")
+        if action == "threats":
+            # Von Microsoft Defender gemeldete Bedrohungen abrufen
+            r = _pwsh("Get-MpThreat | Select-Object ThreatName,SeverityID | "
+                      "ConvertTo-Json -Compress")
+            out = (r.stdout or "").strip()
+            return out or "Keine von Defender gemeldeten Bedrohungen."
+        if action == "fullscan":
+            if gate:
+                return gate
+            _pwsh("Start-MpScan -ScanType FullScan", timeout=15)
+            return "Defender-Vollscan gestartet."
+        if action == "remove":
+            if gate:
+                return gate
+            # Defender die erkannten Bedrohungen entfernen/in Quarantäne schieben lassen
+            r = _pwsh("Remove-MpThreat; 'Defender: erkannte Bedrohungen entfernt/quarantäniert.'")
+            return (r.stdout or r.stderr).strip() or "Defender: Bedrohungsentfernung ausgelöst."
+        raise ValueError("Unbekannte Aktion: "
+                         "check|signatures|scan|fullscan|update|threats|remove")
 
 
 class BodyguardSquad:
@@ -187,8 +205,10 @@ class BodyguardSquad:
                 _pwsh("Update-MpSignature")
                 fixes.append("Virensignaturen aktualisiert")
             if (report.get("bedrohungen") or 0) > 0:
+                # Als Defender-Assistent: scannen UND Defender die Bedrohung entfernen lassen
                 _pwsh("Start-MpScan -ScanType QuickScan", timeout=15)
-                fixes.append("Quick-Scan gegen erkannte Bedrohung gestartet")
+                _pwsh("Remove-MpThreat")
+                fixes.append("Defender-Scan + Bedrohungsentfernung ausgelöst")
         except Exception:
             pass
         return fixes
@@ -247,6 +267,7 @@ class BodyguardSquad:
         return {
             "aktiv": self.on,
             "anzahl": len(self.guards),
+            "assistiert": "Microsoft Defender",
             "intervall_min": round(self.interval / 60, 1),
             "patrouillen": self.patrols,
             "letzte_patrouille": self.last_patrol,

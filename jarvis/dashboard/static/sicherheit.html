@@ -26,6 +26,8 @@
         <button onclick="sec('check','JETZT PRÜFEN')">🔍 JETZT PRÜFEN</button>
         <button onclick="sec('signatures','SIGNATUREN AKTUALISIEREN')">🛡 SIGNATUREN AKTUALISIEREN</button>
         <button onclick="sec('scan','SCAN STARTEN')">🦠 VIREN-SCAN</button>
+        <button onclick="sec('threats','BEDROHUNGEN ABRUFEN')">📋 BEDROHUNGEN</button>
+        <button onclick="sec('remove','BEDROHUNGEN ENTFERNEN')">🧹 ENTFERNEN</button>
         <button onclick="sec('update','WINDOWS-UPDATE')">⬇ WINDOWS-UPDATE SUCHEN</button>
       </div>
       <div id="secres" class="logs mono" style="max-height:120px; margin-top:8px"></div>
@@ -43,7 +45,7 @@
 
   <div>
     <div class="panel">
-      <h2><b>BODYGUARDS</b> // 24/7-WÄCHTER-TRUPPE</h2>
+      <h2><b>BODYGUARDS</b> // ASSISTENTEN VON MICROSOFT DEFENDER</h2>
       <div id="bgstat" style="font-size:11.5px; color:var(--dim); margin-bottom:8px"></div>
       <div class="teamgrid" id="guards"></div>
       <div id="bgfix" style="font-size:11px; color:var(--green); margin-top:8px"></div>
@@ -112,8 +114,9 @@ async function tick() {
     if (sec.letzter_bericht && sec.letzter_bericht.zeit) renderReport(sec.letzter_bericht);
     const bg = s.bodyguards || {};
     $('bgstat').innerHTML = `${bg.aktiv ? '<b style="color:var(--green)">AKTIV 24/7</b>' : 'gestoppt'} · ` +
-      `${bg.anzahl || 0} Wächter · Patrouille alle ${bg.intervall_min} Min · ` +
-      `${fmt(bg.patrouillen || 0)} Runden · Selbstheilung: ${esc(bg.selbstheilung || '')}`;
+      `${bg.anzahl || 0} Wächter · assistieren <b style="color:var(--amber2)">${esc(bg.assistiert || 'Microsoft Defender')}</b> · ` +
+      `Patrouille alle ${bg.intervall_min} Min · ${fmt(bg.patrouillen || 0)} Runden · ` +
+      `Selbstheilung: ${esc(bg.selbstheilung || '')}`;
     $('guards').innerHTML = (bg.waechter || []).map(g => {
       const al = g.status === 'ALARM';
       return `<div class="teamcard${al ? '' : ' hot'}" style="${al ? 'border-color:var(--red)' : ''}">
