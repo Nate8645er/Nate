@@ -164,6 +164,19 @@ Skills einfach als `.md` mit Front-Matter (`name`, `description`) ablegen.
 **Eigene Plugins:** `.py`-Datei in `jarvis/plugins/` mit einer `PLUGIN`-Instanz
 ablegen — Autorisierung pro Team über `allowed_teams`.
 
+## Sprachbefehle (natürliche Sprache → echte Aktion)
+
+Freie Sätze im Chat oder per „Hey Jarvis" werden erkannt und wirklich ausgeführt
+(PC-Steuerung muss dafür freigeschaltet sein, s. u.):
+
+- „**öffne YouTube**" / „mach mir YouTube auf" → öffnet die Seite im Browser
+- „**starte den Rechner**" / „öffne Notepad" → startet das Programm
+- „**schließe notepad**" → beendet das Programm
+- „**mach einen Screenshot**" → nimmt ein Bildschirmfoto auf
+- „**suche nach …**" → Internet-Suche
+
+Wird kein Kommando erkannt (z. B. eine echte Frage), antwortet normal das Gehirn.
+
 ## Sicherheit
 
 JARVIS wurde einem Security-Review unterzogen; folgende Schutzmaßnahmen sind aktiv:

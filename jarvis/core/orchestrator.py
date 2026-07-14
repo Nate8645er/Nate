@@ -150,8 +150,14 @@ class Orchestrator:
 
     def _route(self, description: str) -> str:
         """Wählt eine Adresse. Tool-Aufgaben gehen an ein berechtigtes Team."""
-        if description.startswith("!plugin"):
-            parts = description.split()
+        routed = description
+        if not routed.startswith(("!plugin", "!skill")):
+            from .commands import interpret
+            mapped = interpret(routed)
+            if mapped:
+                routed = mapped
+        if routed.startswith("!plugin"):
+            parts = routed.split()
             if len(parts) >= 2:
                 plugin = self.plugins.plugins.get(parts[1])
                 if plugin is not None and plugin.allowed_teams:
@@ -167,18 +173,26 @@ class Orchestrator:
         self.activated_agents += 1
         self.log("info", f"#{task.id} aktiv: {employee.display}")
         try:
-            if task.description.startswith("!plugin"):
+            # Freie Sätze zuerst auf ein echtes Kommando prüfen ("öffne YouTube" -> Aktion)
+            command = task.description
+            if not command.startswith(("!plugin", "!skill")):
+                from .commands import interpret
+                mapped = interpret(command)
+                if mapped:
+                    command = mapped
+
+            if command.startswith("!plugin"):
                 # Syntax: !plugin <name> <aktion> [key=value ...]
                 # Werte dürfen Leerzeichen enthalten (bis zum nächsten key=).
-                parts = task.description.split(maxsplit=3)
+                parts = command.split(maxsplit=3)
                 name, action = parts[1], parts[2]
                 kwargs = _parse_kwargs(parts[3] if len(parts) > 3 else "")
                 result = await asyncio.to_thread(
                     self.plugins.run, employee.team, name, action, **kwargs)
                 task.result = str(result)
-            elif task.description.startswith("!skill"):
+            elif command.startswith("!skill"):
                 # Syntax: !skill <name> <aufgabentext...>
-                parts = task.description.split(maxsplit=2)
+                parts = command.split(maxsplit=2)
                 prompt = self.skills.apply(parts[1], parts[2] if len(parts) > 2 else "")
                 task.result = await asyncio.to_thread(brain.answer, employee, prompt)
             else:

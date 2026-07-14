@@ -61,8 +61,11 @@ class PCControlPlugin(Plugin):
             subprocess.Popen([opener, target])
             return f"geöffnet: {target}"
         except FileNotFoundError:
-            subprocess.Popen([target], shell=False)
-            return f"gestartet: {target}"
+            try:
+                subprocess.Popen([target], shell=False)
+                return f"gestartet: {target}"
+            except Exception as e:
+                return f"konnte nicht öffnen: {target} ({type(e).__name__})"
 
     def _close(self, name: str) -> str:
         if not name:

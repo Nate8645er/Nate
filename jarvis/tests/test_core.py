@@ -203,3 +203,33 @@ def test_pc_control_separate_switch(tmp_path: Path, monkeypatch):
     monkeypatch.setenv("JARVIS_ALLOW_PC", "1")
     apps = pm.run("Führung", "pc", "apps")
     assert isinstance(apps, list) and len(apps) > 0
+
+
+def test_natural_language_commands():
+    from jarvis.core.commands import interpret
+    assert interpret("öffne YouTube") == "!plugin pc open program=https://www.youtube.com"
+    assert interpret("mach Notepad auf") == "!plugin pc open program=notepad"
+    assert interpret("starte den Rechner") == "!plugin pc open program=calc"
+    assert interpret("schließe notepad") == "!plugin pc close name=notepad.exe"
+    assert interpret("mach einen Screenshot") == "!plugin pc screenshot"
+    assert interpret("suche nach Wetter") == "!plugin web suche query=Wetter"
+    # normale Fragen bleiben Fragen (kein Kommando)
+    assert interpret("was ist die Hauptstadt von Frankreich") is None
+
+
+def test_natural_command_routed_and_gated(tmp_path: Path, monkeypatch):
+    import asyncio
+    from jarvis.core.orchestrator import Orchestrator
+    monkeypatch.delenv("JARVIS_ALLOW_PC", raising=False)
+
+    async def scenario():
+        orch = Orchestrator(tmp_path, max_active=2)
+        await orch.start()
+        t = orch.submit("öffne YouTube")     # freie Sprache
+        await orch.queue.join()
+        await orch.stop()
+        return t
+
+    task = asyncio.run(scenario())
+    # ohne PC-Freischaltung: sauber gesperrt (kein Absturz), Befehl wurde erkannt+geroutet
+    assert "gesperrt" in task.result.lower()
