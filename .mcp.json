@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "kimi-code": {
+      "command": "node",
+      "args": ["tools/kimi-code-mcp/dist/index.js"]
+    }
+  }
+}
