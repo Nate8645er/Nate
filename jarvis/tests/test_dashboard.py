@@ -193,6 +193,19 @@ def test_brain_key_too_short_rejected(client):
     assert client.post("/api/brain/key", json={"schluessel": "kurz"}).status_code == 400
 
 
+def test_openrouter_key_endpoint(client, monkeypatch):
+    """OpenRouter-Key über das Dashboard setzen: Status, Validierung, Aktivierung."""
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    # zu kurz -> 400
+    assert client.post("/api/modelle/key", json={"schluessel": "kurz"}).status_code == 400
+    # gültig -> aktiv true, Env gesetzt
+    r = client.post("/api/modelle/key", json={"schluessel": "sk-or-test-1234567890"})
+    assert r.status_code == 200 and r.json()["aktiv"] is True
+    assert os.environ.get("OPENROUTER_API_KEY") == "sk-or-test-1234567890"
+    # Status-Endpoint spiegelt das wider
+    assert client.get("/api/modelle/key").json()["aktiv"] is True
+
+
 # ---------------------------------------------------------------------------
 # Claw-Code-Route: End-to-End über das Dashboard
 # ---------------------------------------------------------------------------

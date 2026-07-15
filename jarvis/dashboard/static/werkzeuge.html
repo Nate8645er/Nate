@@ -31,6 +31,26 @@
       </form>
       <div id="coderes" class="logs mono" style="max-height:200px; margin-top:8px"></div>
     </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>MODELLE</b> // VIELE KI-MODELLE (OPENROUTER)</h2>
+      <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px">
+        <button id="orbtn" onclick="openrouterKey()">OPENROUTER-KEY EINTRAGEN</button>
+        <span id="orstate" style="font-size:11px; color:var(--dim)">Status wird geladen…</span>
+      </div>
+      <div style="font-size:11px; color:var(--dim); margin-bottom:6px">
+        Ein Modell fragen: <span class="mono">modell gpt: &lt;text&gt;</span> ·
+        vergleichen: <span class="mono">vergleiche die modelle: &lt;text&gt;</span>
+      </div>
+      <form onsubmit="return askModel(event)" style="display:flex; gap:6px">
+        <input id="ormodel" placeholder="Modell, z. B. claude / gpt / gemini / grok" style="flex:0 0 200px" autocomplete="off">
+        <input id="orprompt" placeholder="Frage / Aufgabe…" autocomplete="off">
+        <button>FRAGEN</button>
+      </form>
+      <div style="margin-top:6px">
+        <button onclick="compareModels()" style="font-size:11px">MODELLE VERGLEICHEN (Standard-Set)</button>
+      </div>
+      <div id="orres" class="logs mono" style="max-height:220px; margin-top:8px"></div>
+    </div>
   </div>
   <div>
     <div class="panel">
@@ -175,6 +195,51 @@ async function pcStatus() {
 }
 setInterval(pcStatus, 3000); pcStatus();
 
+// --- OpenRouter Multi-Modell ---
+async function orStatus() {
+  try {
+    const d = await (await fetch('/api/modelle/key')).json();
+    const el = $('orbtn'); if (!el) return;
+    el.classList.toggle('on', !!d.aktiv);
+    el.textContent = d.aktiv ? '⚡ OPENROUTER AKTIV' : 'OPENROUTER-KEY EINTRAGEN';
+    $('orstate').textContent = d.aktiv
+      ? 'Aktiv — 32 Modelle verfügbar'
+      : 'Kein Key — Multi-Modell-Zugang inaktiv';
+  } catch (e) {}
+}
+async function openrouterKey() {
+  const d = await (await fetch('/api/modelle/key')).json();
+  if (d.aktiv && !confirm('OpenRouter ist bereits aktiv. Neuen Key eintragen?')) return;
+  const key = prompt('OpenRouter-API-Key eingeben (sk-or-…).\n' +
+                     'Key holen: https://openrouter.ai/keys\n' +
+                     'Wird nur lokal auf DIESEM PC gespeichert (0600), nie gesendet:');
+  if (!key) return;
+  const r = await fetch('/api/modelle/key', {
+    method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ schluessel: key.trim() })
+  });
+  if (r.ok) { const j = await r.json();
+    alert(j.aktiv ? 'OpenRouter aktiviert! 32 Modelle stehen jetzt bereit.\n\n' +
+                    'Hinweis: Jeder Modell-Aufruf kostet echtes OpenRouter-Guthaben.'
+                  : 'Key gespeichert, aber noch nicht aktiv.'); }
+  else { alert('Key wurde nicht akzeptiert (zu kurz?).'); }
+  orStatus();
+}
+async function askModel(ev) { ev.preventDefault();
+  const m = $('ormodel').value.trim(), p = $('orprompt').value.trim();
+  if (!p) return false;
+  $('orres').textContent = '… fragt Modell';
+  const cmd = m ? ('modell ' + m + ': ' + p) : ('modell claude: ' + p);
+  const t = await submit(cmd);
+  $('orres').textContent = t.ergebnis; return false; }
+async function compareModels() {
+  const p = $('orprompt').value.trim();
+  if (!p) { alert('Bitte oben eine Frage/Aufgabe eingeben.'); return; }
+  $('orres').textContent = '… fragt mehrere Modelle parallel (kann kurz dauern)';
+  const t = await submit('vergleiche die modelle: ' + p);
+  $('orres').textContent = t.ergebnis;
+}
+setInterval(orStatus, 3000); orStatus();
 
 </script>
 <script src="/static/fable.js"></script>

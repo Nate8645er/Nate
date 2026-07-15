@@ -69,16 +69,40 @@ class TaskIn(BaseModel):
 
 
 def _load_persisted_key() -> None:
-    """Lädt einen über den Fable-5-Button gespeicherten API-Key (lokale Datei)."""
+    """Lädt über die Dashboard-Buttons gespeicherte API-Keys (lokale Datei)."""
     import json
     cfg = DATA_DIR / "config.json"
-    if cfg.exists() and not os.environ.get("ANTHROPIC_API_KEY"):
+    if not cfg.exists():
+        return
+    try:
+        data = json.loads(cfg.read_text())
+    except Exception:
+        return
+    if data.get("anthropic_api_key") and not os.environ.get("ANTHROPIC_API_KEY"):
+        os.environ["ANTHROPIC_API_KEY"] = data["anthropic_api_key"]
+    if data.get("openrouter_api_key") and not os.environ.get("OPENROUTER_API_KEY"):
+        os.environ["OPENROUTER_API_KEY"] = data["openrouter_api_key"]
+
+
+def _persist_key(field: str, value: str) -> None:
+    """Schreibt/aktualisiert einen Key in config.json mit 0600-Rechten."""
+    import json
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    cfg = DATA_DIR / "config.json"
+    data = {}
+    if cfg.exists():
         try:
-            key = json.loads(cfg.read_text()).get("anthropic_api_key", "")
-            if key:
-                os.environ["ANTHROPIC_API_KEY"] = key
+            data = json.loads(cfg.read_text())
         except Exception:
-            pass
+            data = {}
+    data[field] = value
+    fd = os.open(cfg, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
+        json.dump(data, f)
+    try:
+        os.chmod(cfg, 0o600)
+    except OSError:
+        pass
 
 
 async def _startup_tasks() -> None:
@@ -340,16 +364,7 @@ async def brain_key(k: KeyIn) -> JSONResponse:
     if len(key) < 12:
         raise HTTPException(400, "Key sieht ungültig aus (zu kurz)")
     os.environ["ANTHROPIC_API_KEY"] = key
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    # Key mit restriktiven Rechten (0600) schreiben — nicht weltlesbar.
-    cfg = DATA_DIR / "config.json"
-    fd = os.open(cfg, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-    with os.fdopen(fd, "w", encoding="utf-8") as f:
-        json.dump({"anthropic_api_key": key}, f)
-    try:
-        os.chmod(cfg, 0o600)
-    except OSError:
-        pass
+    _persist_key("anthropic_api_key", key)   # 0600, nicht weltlesbar
     import asyncio
 
     from jarvis.core import brain
@@ -359,6 +374,26 @@ async def brain_key(k: KeyIn) -> JSONResponse:
     else:
         orchestrator.log("warn", f"Key gesetzt, aber Verify fehlgeschlagen: {result.get('grund')}")
     return JSONResponse({"modus": brain.mode(), "modell": brain.active_model(), "verify": result})
+
+
+@app.get("/api/modelle/key")
+async def modelle_key_status() -> JSONResponse:
+    """Ist ein OpenRouter-Key aktiv? (verrät den Key selbst nicht)"""
+    from jarvis.core import openrouter
+    return JSONResponse({"aktiv": openrouter.available()})
+
+
+@app.post("/api/modelle/key")
+async def modelle_key(k: KeyIn) -> JSONResponse:
+    """OpenRouter-Key lokal setzen und persistieren (nur auf diesem PC)."""
+    key = k.schluessel.strip()
+    if len(key) < 12:
+        raise HTTPException(400, "Key sieht ungültig aus (zu kurz)")
+    os.environ["OPENROUTER_API_KEY"] = key
+    _persist_key("openrouter_api_key", key)   # 0600, nicht weltlesbar
+    from jarvis.core import openrouter
+    orchestrator.log("info", "OpenRouter-Key gesetzt — Multi-Modell-Zugang aktiv")
+    return JSONResponse({"aktiv": openrouter.available()})
 
 
 @app.get("/autopilot")
