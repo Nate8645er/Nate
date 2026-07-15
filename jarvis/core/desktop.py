@@ -55,8 +55,12 @@ class PCControlPlugin(Plugin):
 
     # -- Programme -----------------------------------------------------------
     def _open(self, target: str) -> str:
+        target = (target or "").strip()
         if not target:
-            raise ValueError("program= fehlt (z. B. notepad, calc, https://…, C:\\pfad)")
+            # Freundliche Rückfrage statt Absturz — z. B. wenn nur "öffne" ankam.
+            return ("Was soll ich öffnen? Sag es mir konkret, z. B. "
+                    "„öffne youtube\", „öffne notepad\", „öffne google.com\" "
+                    "oder „öffne C:\\Pfad\\zur\\Datei\".")
         if os.name == "nt":
             try:
                 os.startfile(target)  # type: ignore[attr-defined]
