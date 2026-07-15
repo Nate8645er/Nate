@@ -80,6 +80,8 @@ class Task:
     agent: str = ""
     team: str = ""
     boss: str = ""                    # Teamleiter, der die Aufgabe überwacht/delegiert
+    kette: list = field(default_factory=list)      # JARVIS -> Chef -> Mitarbeiter
+    mitwirkende: list = field(default_factory=list)  # Team-Kollegen, die mitwirken
     created: float = field(default_factory=time.time)
     finished: float = 0.0
     is_demo: bool = False
@@ -88,6 +90,7 @@ class Task:
         return {"id": self.id, "beschreibung": self.description[:200],
                 "adresse": self.address, "status": self.status,
                 "agent": self.agent, "team": self.team, "chef": self.boss,
+                "kette": self.kette, "mitwirkende": self.mitwirkende,
                 "ergebnis": self.result[:400], "demo": self.is_demo}
 
 
@@ -224,13 +227,26 @@ class Orchestrator:
         # Team-Chef überwacht: der Teamleiter delegiert an das Teammitglied.
         boss = materialize(employee.boss_address)
         task.boss = boss.display
+        # Sichtbare Bearbeitungskette: JARVIS -> Teamleiter -> Mitarbeiter,
+        # plus mitwirkende Team-Kollegen (echte Organisationsstruktur).
+        from .identity import team_members
+        kette = [{"rolle": "JARVIS", "name": "Koordinator", "info": "nimmt an & leitet weiter"},
+                 {"rolle": "Teamleiter", "name": boss.name, "team": boss.team,
+                  "info": "verteilt im Team"}]
+        if not employee.is_team_boss:
+            kette.append({"rolle": "Mitarbeiter", "name": employee.name,
+                          "team": employee.team, "info": "führt aus"})
+        task.kette = kette
+        task.mitwirkende = [{"name": m.name, "rolle": m.role}
+                            for m in team_members(employee.address, n=3)]
         task.status = "aktiv"
         self.active[task.id] = task
         self.activated_agents += 1
         if employee.is_team_boss:
             self.log("info", f"#{task.id} aktiv: Teamleiter {employee.name} bearbeitet selbst")
         else:
-            self.log("info", f"#{task.id}: Teamleiter {boss.name} delegiert an {employee.name}")
+            self.log("info", f"#{task.id}: JARVIS → Teamleiter {boss.name} → {employee.name} "
+                             f"(+{len(task.mitwirkende)} Kollegen)")
         try:
             # Freie Sätze zuerst auf ein echtes Kommando prüfen ("öffne YouTube" -> Aktion)
             command = task.description
@@ -275,6 +291,10 @@ class Orchestrator:
                 if bf["level_up"]:
                     self.log("info", f"⬆ Teamleiter {boss.name} steigt durch Führung auf — "
                                      f"Bonus-Level {bf['bonus_level']}")
+            # Mitwirkende Team-Kollegen erhalten etwas Unterstützungs-XP (alle wirken mit).
+            from .identity import team_members
+            for m in team_members(employee.address, n=3):
+                self.progression.award(m.address, amount=1)
         except Exception as e:
             task.status = "fehler"
             task.result = f"{type(e).__name__}: {e}"

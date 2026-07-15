@@ -215,6 +215,22 @@ def team_bosses(company_address: str = "") -> list[VirtualEmployee]:
     return [materialize(f"{prefix}{i}") for i in range(len(TEAMS))]
 
 
+def team_members(worker_address: str, n: int = 3) -> list[VirtualEmployee]:
+    """Ein paar Kollegen im gleichen Team & Unternehmen (mitwirkend, ohne den
+    Bearbeiter selbst und ohne den Chef). Deterministisch, 0 Byte."""
+    segments = validate_address(worker_address)
+    parent = "/".join(str(s) for s in segments[:-1])
+    prefix = f"{parent}/" if parent else ""
+    team_index = segments[-1] % len(TEAMS)
+    out: list[VirtualEmployee] = []
+    seat = team_index + len(TEAMS)      # erster Nicht-Chef-Sitz dieses Teams
+    while len(out) < n and seat < ADDRESS_SPACE:
+        if seat != segments[-1]:        # nicht der Bearbeiter selbst
+            out.append(materialize(f"{prefix}{seat}"))
+        seat += len(TEAMS)              # nächster Kollege desselben Teams
+    return out
+
+
 def address_for_task(description: str, team_hint: str | None = None) -> str:
     """Wählt deterministisch eine passende Adresse für eine Aufgabe.
 

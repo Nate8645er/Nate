@@ -114,6 +114,44 @@ def test_task_goes_through_team_boss(tmp_path: Path):
     assert o.progression.get("500")["erledigt"] >= 1
 
 
+def test_team_members_helper():
+    from jarvis.core.identity import team_members, materialize
+    w = materialize("500")                       # Team-Index 500%25 = 0
+    mates = team_members("500", n=3)
+    assert len(mates) == 3
+    assert all(m.team == w.team for m in mates)  # gleiches Team
+    assert all(m.address != "500" for m in mates)
+    assert all(not m.is_team_boss for m in mates)  # keine Chefs
+
+
+def test_processing_chain_and_team_xp(tmp_path: Path):
+    """Kette JARVIS->Chef->Mitarbeiter am Task; Kollegen bekommen Mitwirk-XP."""
+    import asyncio
+
+    from jarvis.core.orchestrator import Orchestrator
+    o = Orchestrator(tmp_path, max_active=2)
+
+    async def run():
+        await o.start()
+        t = o.submit("!plugin calc eval expression=9+1", address="500")
+        for _ in range(60):
+            if t.status in ("fertig", "fehler"):
+                break
+            await asyncio.sleep(0.05)
+        await o.stop()
+        return t
+
+    t = asyncio.run(run())
+    assert t.status == "fertig"
+    rollen = [k["rolle"] for k in t.kette]
+    assert rollen == ["JARVIS", "Teamleiter", "Mitarbeiter"]
+    assert len(t.mitwirkende) == 3
+    # mindestens ein mitwirkender Kollege hat echte XP bekommen
+    from jarvis.core.identity import team_members
+    mates = team_members("500", n=3)
+    assert any(o.progression.get(m.address)["xp"] >= 1 for m in mates)
+
+
 def test_task_awards_xp_end_to_end(tmp_path: Path):
     """Eine echt erledigte Aufgabe erhöht die Erfahrung des Mitarbeiters."""
     import asyncio

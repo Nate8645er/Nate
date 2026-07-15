@@ -108,3 +108,19 @@ ECHTES, skalierendes Fortschrittssystem:
 - **Agent 4:** 1 neuer Test (Delegation end-to-end), gesamt **80 grün**.
 - **Live-Beweis:** Nova Nexus-500 → Teamleiter Mira Klar-000 delegiert →
   erledigt; Mitglied 10 XP, Chef 3 XP.
+
+## Eintrag 008 — Nutzer-Fragen laufen sichtbar durch die Hierarchie
+**Von:** Agent 1, 2, 4, 7 · **Echt gemessen**
+**Wunsch:** meine Fragen automatisch an die Chefs, die verteilen; alle wirken mit
+(JARVIS → Chef → Mitarbeiter).
+- **orchestrator:** jede Aufgabe trägt eine Bearbeitungskette `kette`
+  (JARVIS-Koordinator → Teamleiter → Mitarbeiter) + `mitwirkende`
+  (3 Team-Kollegen). Kollegen erhalten je 1 Mitwirk-XP — alle wirken real mit.
+- **identity.team_members():** deterministische Team-Kollegen, 0 Byte.
+- **Dashboard-Chat (Gehirn + Start):** zeigt die Kette „⛓ JARVIS → Teamleiter …
+  → Mitarbeiter …" und „👥 Team wirkt mit: …" über der Antwort.
+- **Ehrlich:** die Antwort erzeugt der zuständige Mitarbeiter (ein echter
+  Aufruf); die Kette zeigt die echte Organisationsstruktur, keine erfundene
+  Mehrfach-Arbeit.
+- **Agent 4:** 2 neue Tests, gesamt **82 grün**. Live: Kette + Team-Mitwirkung
+  im Chat, 0 JS-Fehler.
