@@ -115,15 +115,26 @@ def _persist_key(field: str, value: str) -> None:
 
 async def _startup_tasks() -> None:
     _load_persisted_key()
+    # Persönlicher Einzelplatz-Betrieb: alle Werkzeuge automatisch aktiv, damit
+    # nichts manuell freigeschaltet werden muss (PC-Steuerung, Shell/Code).
+    # JARVIS läuft nur auf 127.0.0.1 (Host-Guard). Wer den Schutz behalten will,
+    # setzt JARVIS_LOCKDOWN=1 — dann bleiben gefährliche Werkzeuge gesperrt.
+    if os.environ.get("JARVIS_LOCKDOWN") != "1":
+        os.environ.setdefault("JARVIS_ALLOW_PC", "1")
+        os.environ.setdefault("JARVIS_ALLOW_DANGEROUS", "1")
+        orchestrator.log("info", "Alle Werkzeuge automatisch aktiviert "
+                                 "(PC-Steuerung + Code). Schutz zurück mit JARVIS_LOCKDOWN=1.")
+    # Autopilot standardmäßig an (kann mit JARVIS_AUTOPILOT=0 abgeschaltet werden).
+    _autopilot_default = os.environ.get("JARVIS_AUTOPILOT", "1") != "0"
     await orchestrator.start()
     # Belegschaft-Betrieb standardmäßig an (Roll-Call der gesamten Organisation,
     # kein bezahltes Modell). Mit JARVIS_WORKFORCE=0 abschaltbar.
     if os.environ.get("JARVIS_WORKFORCE", "1") != "0":
         orchestrator.workforce.start()
         orchestrator.log("info", "Belegschaft-Betrieb gestartet: gesamte Organisation im Roll-Call")
-    if os.environ.get("JARVIS_AUTOPILOT") == "1":
+    if _autopilot_default:
         orchestrator.autopilot.start()
-        orchestrator.log("info", "24/7-Autopilot automatisch gestartet (JARVIS_AUTOPILOT=1)")
+        orchestrator.log("info", "24/7-Autopilot automatisch gestartet (Standard; aus mit JARVIS_AUTOPILOT=0)")
     # Sicherheits-Monitor standardmäßig an (alle 30 Min); mit JARVIS_SECURITY=0 abschaltbar.
     if os.environ.get("JARVIS_SECURITY", "1") != "0":
         orchestrator.security.start()

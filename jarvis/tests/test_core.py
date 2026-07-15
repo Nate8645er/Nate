@@ -572,3 +572,23 @@ def test_open_empty_target_goes_to_brain():
     # echte Ziele funktionieren weiter
     assert interpret("öffne youtube") == "!plugin pc open program=https://www.youtube.com"
     assert interpret("öffne mir youtube") == "!plugin pc open program=https://www.youtube.com"
+
+
+def test_kwargs_not_dropped_for_varkwargs_plugins():
+    """Wurzel-Fund (Live-PC): pc/browser_auto (**kwargs) dürfen kwargs NICHT verlieren."""
+    import tempfile
+    from jarvis.core import browser_auto, desktop
+    from jarvis.core.orchestrator import _parse_kwargs, _plugin_param_names
+    pm = PluginManager(Path(tempfile.mkdtemp()))
+    desktop.register(pm, Path(tempfile.mkdtemp()))
+    browser_auto.register(pm, Path(tempfile.mkdtemp()))
+    # **kwargs-Plugins -> None (alle Schlüssel erlaubt), NICHT leeres Set
+    assert _plugin_param_names(pm.plugins["pc"]) is None
+    assert _plugin_param_names(pm.plugins["browser_auto"]) is None
+    vk = _plugin_param_names(pm.plugins["pc"])
+    assert _parse_kwargs("program=https://www.youtube.com", vk) == \
+        {"program": "https://www.youtube.com"}
+    # Plugins mit expliziten Parametern behalten den Freitext-Schutz
+    assert _plugin_param_names(pm.plugins["web"]) == {"query"}
+    assert _parse_kwargs("prompt=setze debug=true", {"prompt"}) == \
+        {"prompt": "setze debug=true"}

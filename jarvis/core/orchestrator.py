@@ -50,7 +50,12 @@ def _parse_kwargs(rest: str, valid_keys: set[str] | None = None) -> dict[str, st
 
 
 def _plugin_param_names(plugin: Any) -> set[str] | None:
-    """Echte Parameternamen der run()-Methode eines Plugins (ohne self/action/**kwargs)."""
+    """Echte Parameternamen der run()-Methode (ohne self/action).
+
+    Nimmt run() **kwargs entgegen (z. B. das pc-Werkzeug), sind BELIEBIGE
+    Schlüssel erlaubt -> None. Sonst würde der Parser bei solchen Werkzeugen
+    ALLE Parameter verwerfen (Bug: 'program= fehlt' trotz program=…).
+    """
     if plugin is None:
         return None
     import inspect
@@ -58,9 +63,13 @@ def _plugin_param_names(plugin: Any) -> set[str] | None:
         params = inspect.signature(plugin.run).parameters
     except (TypeError, ValueError):
         return None
-    return {n for n, p in params.items()
-            if n not in ("self", "action")
-            and p.kind not in (p.VAR_KEYWORD, p.VAR_POSITIONAL)}
+    named = {n for n, p in params.items()
+             if n not in ("self", "action")
+             and p.kind not in (p.VAR_KEYWORD, p.VAR_POSITIONAL)}
+    if named:
+        return named                   # explizite Parameter -> Freitext-Schutz aktiv
+    has_var_kw = any(p.kind == p.VAR_KEYWORD for p in params.values())
+    return None if has_var_kw else named   # nur **kwargs (z. B. pc) -> alle Schlüssel
 
 
 def hardware_limit() -> int:
