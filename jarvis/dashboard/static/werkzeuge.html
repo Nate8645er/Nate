@@ -51,6 +51,15 @@
       </div>
       <div id="orres" class="logs mono" style="max-height:220px; margin-top:8px"></div>
     </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>TRAINING</b> // DATENSATZ AUS ECHTEN DATEN BAUEN</h2>
+      <div style="font-size:11px; color:var(--dim); margin-bottom:6px">
+        Baut aus dem Gedächtnis + den Autopilot-Ideen einen Fine-Tuning-Datensatz
+        (PII wird bereinigt). Bereit für lokales oder API-Fine-Tuning.
+      </div>
+      <button onclick="buildDataset()">DATENSATZ BAUEN</button>
+      <div id="trainres" class="logs mono" style="max-height:200px; margin-top:8px"></div>
+    </div>
   </div>
   <div>
     <div class="panel">
@@ -240,6 +249,18 @@ async function compareModels() {
   $('orres').textContent = t.ergebnis;
 }
 setInterval(orStatus, 3000); orStatus();
+
+async function buildDataset() {
+  $('trainres').textContent = '… baue Datensatz (bereinige PII, sammle echte Daten)';
+  try {
+    const d = await (await fetch('/api/training/build', { method: 'POST' })).json();
+    const s = d.statistik || {};
+    $('trainres').textContent =
+      `Beispiele: ${d.beispiele}\nDatei: ${d.datei}\n` +
+      (d.beispiele ? `Token gesamt: ${s.token_gesamt} · Schnitt: ${s.token_schnitt} (${s.methode})\n` : '') +
+      d.hinweis;
+  } catch (e) { $('trainres').textContent = 'Fehler beim Bauen des Datensatzes.'; }
+}
 
 </script>
 <script src="/static/fable.js"></script>

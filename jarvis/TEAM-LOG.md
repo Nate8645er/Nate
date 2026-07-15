@@ -72,3 +72,12 @@ ECHTES, skalierendes Fortschrittssystem:
   Aufgaben effektives Level 30.
 
 
+
+## Eintrag 005 — Sichtbar & nutzbar gemacht (Bestenliste + Training-Knopf)
+**Von:** Agent 1, 2, 4, 7 · **Echt gemessen** · Entscheidung durch Team (Nutzer delegiert)
+- **Bestenliste** `/api/fortschritt/top` + Panel auf der Mitarbeiter-Seite:
+  zeigt die Aufsteiger nach echter, verdienter Erfahrung.
+- **Trainings-Knopf** `/api/training/build` + Panel auf der Werkzeuge-Seite:
+  baut den Fine-Tuning-Datensatz per Klick (mit PII-Bereinigung), statt CLI.
+- **Agent 4:** 2 neue Tests, gesamt **77 grün**. Live verifiziert: Bestenliste
+  füllt sich nach echten Aufgaben, Datensatz-Knopf baute 2 Beispiele, 0 JS-Fehler.

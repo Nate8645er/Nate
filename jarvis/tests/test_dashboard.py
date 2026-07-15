@@ -206,6 +206,28 @@ def test_openrouter_key_endpoint(client, monkeypatch):
     assert client.get("/api/modelle/key").json()["aktiv"] is True
 
 
+def test_fortschritt_top_and_employee_level(client):
+    """Bestenliste-Endpunkt + Level-Felder in der Mitarbeiter-Identität."""
+    # eine echte Aufgabe erledigen -> Mitarbeiter verdient XP
+    t = client.post("/api/task", json={"beschreibung": "!plugin calc eval expression=8*8",
+                                        "adresse": "555"}).json()
+    _wait_done(client, t["id"])
+    board = client.get("/api/fortschritt/top").json()
+    assert "bestenliste" in board and board["summe"]["aufgaben_gesamt"] >= 1
+    # Mitarbeiter-Identität trägt Level/Meisterschaft
+    e = client.get("/api/employee/555").json()
+    assert 1 <= e["level"] <= 99 and e["meisterschaft"]
+    assert e["erledigte_aufgaben"] >= 1
+
+
+def test_training_build_endpoint(client):
+    """Datensatz-Bau per Klick liefert eine gültige Antwort (auch bei 0 Beispielen)."""
+    r = client.post("/api/training/build")
+    assert r.status_code == 200
+    d = r.json()
+    assert "beispiele" in d and "hinweis" in d and "datei" in d
+
+
 def test_voice_endpoints(client, monkeypatch):
     """Echte Stimme (ElevenLabs): Status, Key setzen, Fallback ohne Key (204)."""
     monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)

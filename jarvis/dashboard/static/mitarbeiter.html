@@ -81,6 +81,13 @@
       </form>
       <div id="org"></div>
     </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>BESTENLISTE</b> // AUFSTEIGER DURCH ECHTE ARBEIT</h2>
+      <div style="font-size:10.5px; color:var(--dim); margin-bottom:6px">
+        Mitarbeiter sammeln echte Erfahrung (XP) für erledigte Aufgaben und steigen im Level.
+      </div>
+      <div id="board"><div style="color:var(--dim); font-size:12px">Noch keine Aufstiege — sobald Aufgaben erledigt werden, erscheinen hier die Besten.</div></div>
+    </div>
   </div>
 </div>
 
@@ -141,6 +148,21 @@ async function toggleWorkforce() {
   await fetch('/api/workforce/' + (on ? 'stop' : 'start'), { method: 'POST' });
   tick();
 }
+
+async function loadBoard() {
+  try {
+    const d = await (await fetch('/api/fortschritt/top?limit=10')).json();
+    const b = d.bestenliste || [];
+    if (!b.length) return;
+    $('board').innerHTML = '<table><thead><tr><th>#</th><th>Mitarbeiter</th><th>Team</th>' +
+      '<th>Rang</th><th>Aufgaben</th><th>XP</th></tr></thead><tbody>' +
+      b.map((e, i) => `<tr><td class="mono">${i + 1}</td><td>${esc(e.name)}</td>` +
+        `<td>${esc(e.team)}</td><td><b style="color:var(--amber2)">${esc(e.meisterschaft)} Lvl ${e.level}</b></td>` +
+        `<td class="mono">${fmt(e.erledigt)}</td><td class="mono">${fmt(e.xp)}</td></tr>`).join('') +
+      '</tbody></table>';
+  } catch (e) {}
+}
+setInterval(loadBoard, 4000); loadBoard();
 
 async function lookup(ev) {
   ev.preventDefault();

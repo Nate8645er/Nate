@@ -283,6 +283,43 @@ async def employee(address: str) -> JSONResponse:
     })
 
 
+@app.get("/api/fortschritt/top")
+async def fortschritt_top(limit: int = 10) -> JSONResponse:
+    """Bestenliste: Mitarbeiter mit den meisten verdienten Erfahrungspunkten."""
+    limit = max(1, min(limit, 50))
+    out = []
+    for row in orchestrator.progression.top(limit):
+        try:
+            e = materialize(row["adresse"])
+            eff = min(99, e.level + row["bonus_level"])
+            out.append({"adresse": row["adresse"], "name": e.name, "team": e.team,
+                        "meisterschaft": e.mastery, "level": eff,
+                        "erledigt": row["erledigt"], "xp": row["xp"]})
+        except ValueError:
+            continue
+    return JSONResponse({"bestenliste": out, "summe": orchestrator.progression.totals()})
+
+
+@app.post("/api/training/build")
+async def training_build() -> JSONResponse:
+    """Baut den Trainingsdatensatz aus JARVIS' echten Daten (Klick statt CLI)."""
+    import asyncio
+
+    from jarvis.training import build_dataset as bd
+    from jarvis.training import tokenize_stats as ts
+    examples = await asyncio.to_thread(bd.build, DATA_DIR)
+    out_path = DATA_DIR / "dataset.jsonl"
+    n = bd.write_jsonl(examples, out_path)
+    stats = ts.stats(out_path) if n else {"beispiele": 0}
+    orchestrator.log("info", f"Trainingsdatensatz gebaut: {n} Beispiele")
+    return JSONResponse({
+        "beispiele": n, "datei": str(out_path), "statistik": stats,
+        "hinweis": ("Bereit für Fine-Tuning (Chat-JSONL)." if n else
+                    "Noch keine brauchbaren Daten — JARVIS muss erst mit echtem "
+                    "API-Key Aufgaben/Ideen erzeugen."),
+    })
+
+
 @app.get("/api/org/{address:path}")
 async def org(address: str, count: int = 10) -> JSONResponse:
     """Zeigt die ersten Mitarbeiter des virtuellen Unternehmens einer Adresse."""
