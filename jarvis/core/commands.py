@@ -61,8 +61,9 @@ _OPEN = re.compile(
     r"^(?:bitte\s+)?(?:öffne|oeffne|starte|start|zeig(?:e|\s+mir)?|"
     r"geh(?:e)?\s+auf|open|launch)\s+(.+?)(?:\s+(?:auf|bitte|für mich))?[.!?]?$",
     re.IGNORECASE)
-# Füllwörter am Anfang des Ziels entfernen
-_FILLER = re.compile(r"^(?:mir|bitte|das|die|der|den|dem|ein|eine|einen|mal|doch|jetzt)\s+",
+# Füllwörter am Anfang des Ziels entfernen (auch wenn sie das GANZE Ziel sind,
+# z. B. "öffne mir" -> Ziel wird leer -> geht ans Gehirn statt kaputt an pc)
+_FILLER = re.compile(r"^(?:mir|bitte|das|die|der|den|dem|ein|eine|einen|mal|doch|jetzt)(?:\s+|$)",
                      re.IGNORECASE)
 
 

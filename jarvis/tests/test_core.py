@@ -562,3 +562,13 @@ def test_brain_401_reported_immediately(monkeypatch):
     monkeypatch.setattr(brain, "_call", fake_401)
     r = brain.answer(materialize("858"), "frage")
     assert "401" in r and "Key ungültig" in r
+
+
+def test_open_empty_target_goes_to_brain():
+    """Live-PC-Fund: 'öffne mir' u. Ä. dürfen KEIN leeres pc-Kommando erzeugen."""
+    from jarvis.core.commands import interpret
+    for t in ["öffne mir", "öffne das", "öffne mal", "öffne", "öffne doch"]:
+        assert interpret(t) is None                 # -> ans Gehirn, nicht kaputt
+    # echte Ziele funktionieren weiter
+    assert interpret("öffne youtube") == "!plugin pc open program=https://www.youtube.com"
+    assert interpret("öffne mir youtube") == "!plugin pc open program=https://www.youtube.com"
