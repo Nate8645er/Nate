@@ -22,6 +22,9 @@ desktop = [
 ]
 # Browser-Automatisierung (Playwright; unterstützt auch Linux-Chromium):
 browser = ["playwright>=1.40"]
+# Trainings-Pipeline: genaue Tokenzählung (optional; sonst Wort-Schätzung).
+# Volles lokales Gewicht-Training zusätzlich mit torch/transformers (GPU empfohlen).
+training = ["tiktoken>=0.5"]
 # Entwicklung/Tests:
 dev = ["pytest>=8.0", "httpx>=0.27"]
 
