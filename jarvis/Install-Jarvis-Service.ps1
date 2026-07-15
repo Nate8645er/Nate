@@ -1,33 +1,21 @@
 <#
 .SYNOPSIS
-    Richtet JARVIS als 24/7-Hintergrunddienst auf Windows ein (geplante Aufgabe).
+    Richtet JARVIS als 24/7-Autostart auf Windows ein — OHNE Administratorrechte.
 
 .DESCRIPTION
     - Installiert bei Bedarf Python und die Abhängigkeiten (venv).
-    - Registriert eine geplante Aufgabe "JARVIS 24/7", die bei jeder Anmeldung
-      automatisch und unsichtbar startet, den Autopilot aktiviert und sich bei
-      einem Absturz selbst neu startet.
-    - Läuft komplett ohne Administratorrechte (Aufgabe im Benutzerkontext).
+    - Legt eine Verknüpfung im Windows-Autostart-Ordner an, die JARVIS bei jeder
+      Anmeldung unsichtbar im Hintergrund startet (mit Autopilot).
+    - Braucht KEINE geplante Aufgabe und KEINE Adminrechte (deshalb keine
+      "Zugriff verweigert"/"Falscher Parameter"-Fehler mehr).
 
-    Danach läuft JARVIS im Hintergrund, sobald du dich an Windows anmeldest —
-    auch wenn kein Fenster offen ist. Das Dashboard erreichst du jederzeit unter
-    http://127.0.0.1:8787
+    Dashboard danach jederzeit: http://127.0.0.1:8787
 
 .PARAMETER Port
     Port des Dashboards (Standard 8787).
 
 .PARAMETER Uninstall
-    Entfernt die geplante Aufgabe wieder (stoppt den 24/7-Betrieb).
-
-.EXAMPLE
-    powershell -ExecutionPolicy Bypass -File .\Install-Jarvis-Service.ps1
-
-.EXAMPLE
-    powershell -ExecutionPolicy Bypass -File .\Install-Jarvis-Service.ps1 -Uninstall
-
-.NOTES
-    24/7 gilt, solange dein PC eingeschaltet (und du angemeldet) bist. Für echten
-    Dauerbetrieb auch ohne Anmeldung wäre ein immer laufender Rechner/Server nötig.
+    Entfernt die Autostart-Verknüpfung wieder (stoppt den 24/7-Betrieb).
 #>
 [CmdletBinding()]
 param(
@@ -36,9 +24,10 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$TaskName = 'JARVIS 24/7'
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path      # ...\jarvis
 $repo = Split-Path -Parent $here                              # Ordner, der 'jarvis' enthält
+$startup = [Environment]::GetFolderPath('Startup')
+$lnkPath = Join-Path $startup 'JARVIS 24-7.lnk'
 
 function Ok($m)   { Write-Host "  [OK] $m" -ForegroundColor Green }
 function Info($m) { Write-Host "  ->  $m" -ForegroundColor Cyan }
@@ -49,26 +38,19 @@ function Warn($m) { Write-Host "  [!] $m" -ForegroundColor Yellow }
 # ---------------------------------------------------------------------------
 if ($Uninstall) {
     Write-Host "`nJARVIS 24/7 wird entfernt..." -ForegroundColor Magenta
-    $existing = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
-    if ($existing) {
-        Stop-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
-        Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false
-        Ok "Geplante Aufgabe '$TaskName' entfernt. JARVIS startet nicht mehr automatisch."
-    } else {
-        Warn "Keine geplante Aufgabe '$TaskName' gefunden."
-    }
-    # laufende Instanz beenden
+    if (Test-Path $lnkPath) { Remove-Item $lnkPath -Force; Ok "Autostart-Verknüpfung entfernt." }
+    else { Warn "Keine Autostart-Verknüpfung gefunden." }
     Get-CimInstance Win32_Process -Filter "Name='python.exe'" -ErrorAction SilentlyContinue |
         Where-Object { $_.CommandLine -like '*jarvis.run*' } |
         ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
-    Ok "Fertig."
+    Ok "Fertig. JARVIS startet nicht mehr automatisch."
     return
 }
 
 Write-Host @"
 
-  JARVIS 24/7 - Hintergrunddienst einrichten
-  ==========================================
+  JARVIS 24/7 - Autostart einrichten (ohne Adminrechte)
+  =====================================================
 "@ -ForegroundColor Magenta
 
 # ---------------------------------------------------------------------------
@@ -92,50 +74,47 @@ Info "Installiere Abhängigkeiten..."
 Ok "Python-Umgebung bereit."
 
 # ---------------------------------------------------------------------------
-# 2. Start-Skript für den Dienst (headless, mit Autopilot, ohne Browser-Popup)
+# 2. Headless-Runner (startet JARVIS unsichtbar mit Autopilot)
 # ---------------------------------------------------------------------------
 $runner = Join-Path $here 'jarvis-service-runner.ps1'
 @"
-# Auto-generiert von Install-Jarvis-Service.ps1 - startet JARVIS headless im Hintergrund.
+# Auto-generiert - startet JARVIS headless im Hintergrund.
 `$env:PYTHONPATH = '$repo'
 Set-Location '$repo'
 & '$py' -m jarvis.run --autopilot --port $Port
 "@ | Set-Content -Path $runner -Encoding UTF8
-Ok "Dienst-Runner erstellt: $runner"
+Ok "Headless-Runner erstellt."
 
 # ---------------------------------------------------------------------------
-# 3. Geplante Aufgabe registrieren (Anmeldung + Neustart bei Absturz)
+# 3. Autostart-Verknüpfung im Startup-Ordner (kein Admin, keine geplante Aufgabe)
 # ---------------------------------------------------------------------------
-Info "Registriere geplante Aufgabe '$TaskName'..."
-$existing = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
-if ($existing) { Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false }
-
-$action = New-ScheduledTaskAction -Execute 'powershell.exe' `
-    -Argument "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$runner`""
-$trigger = New-ScheduledTaskTrigger -AtLogOn
-$settings = New-ScheduledTaskSettingsSet `
-    -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries `
-    -StartWhenAvailable -RestartCount 999 -RestartInterval (New-TimeSpan -Minutes 1) `
-    -ExecutionTimeLimit ([TimeSpan]::Zero)
-Register-ScheduledTask -TaskName $TaskName -Action $action -Trigger $trigger `
-    -Settings $settings -Description 'JARVIS HyperScale 24/7 Autopilot' | Out-Null
-Ok "Aufgabe registriert (startet bei jeder Anmeldung, Neustart bei Absturz)."
+Info "Lege Autostart-Verknüpfung an..."
+$ws = New-Object -ComObject WScript.Shell
+$s = $ws.CreateShortcut($lnkPath)
+$s.TargetPath = 'powershell.exe'
+$s.Arguments  = "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$runner`""
+$s.WorkingDirectory = $repo
+$s.WindowStyle = 7                         # minimiert/unsichtbar
+$s.Description = 'JARVIS HyperScale 24/7'
+$s.Save()
+Ok "Autostart eingerichtet: JARVIS startet ab jetzt bei jeder Anmeldung."
 
 # ---------------------------------------------------------------------------
-# 4. Sofort starten
+# 4. Jetzt sofort starten (unsichtbar)
 # ---------------------------------------------------------------------------
 Info "Starte JARVIS jetzt..."
-Start-ScheduledTask -TaskName $TaskName
+Start-Process powershell.exe -WindowStyle Hidden `
+    -ArgumentList "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$runner`""
 Start-Sleep -Seconds 6
 try {
     $r = Invoke-WebRequest -Uri "http://127.0.0.1:$Port/api/state" -UseBasicParsing -TimeoutSec 8
     if ($r.StatusCode -eq 200) { Ok "JARVIS laeuft: http://127.0.0.1:$Port" }
 } catch {
-    Warn "Dashboard noch nicht erreichbar - gib ihm 10-20s beim ersten Start und oeffne dann http://127.0.0.1:$Port"
+    Warn "Dashboard noch nicht erreichbar - gib ihm 10-20s und oeffne dann http://127.0.0.1:$Port"
 }
 
 # ---------------------------------------------------------------------------
-# 5. Desktop-Verknuepfung zum Dashboard (zum Oeffnen ohne PowerShell)
+# 5. Desktop-Verknuepfung zum Dashboard
 # ---------------------------------------------------------------------------
 try {
     $desktop = [Environment]::GetFolderPath('Desktop')
@@ -147,16 +126,13 @@ try {
 Write-Host @"
 
   =====================================================================
-   JARVIS 24/7 ist eingerichtet.
+   JARVIS 24/7 ist eingerichtet (ohne Adminrechte).
   =====================================================================
-   Dashboard:     http://127.0.0.1:$Port   (Autopilot laeuft automatisch)
-   Autostart:     bei jeder Windows-Anmeldung, unsichtbar im Hintergrund
-   Neustart:      automatisch bei Absturz (jede Minute erneut)
-   Stoppen/Entfernen:
-       powershell -ExecutionPolicy Bypass -File .\Install-Jarvis-Service.ps1 -Uninstall
+   Dashboard:  http://127.0.0.1:$Port   (Autopilot laeuft automatisch)
+   Autostart:  bei jeder Windows-Anmeldung, unsichtbar im Hintergrund
+   Entfernen:  JARVIS-24-7-Entfernen.cmd  (oder -Uninstall)
 
-   Hinweis: Fuer echte KI-Ideen den API-Key setzen (FABLE 5), sonst laeuft
-   der Autopilot im kostenlosen Offline-Modus. Fuer viele Modelle zusaetzlich
-   OPENROUTER_API_KEY setzen (setx). 24/7 gilt, solange der PC an ist.
+   Hinweis: Fuer echte KI den API-Key setzen (Fable 5), sonst Offline-Modus.
+   24/7 gilt, solange der PC an und du angemeldet bist.
   =====================================================================
 "@ -ForegroundColor Green

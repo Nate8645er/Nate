@@ -12,7 +12,7 @@ echo.
 setx JARVIS_ALLOW_PC 1 >nul 2>&1
 setx JARVIS_ALLOW_DANGEROUS 1 >nul 2>&1
 
-:: Geplante Aufgabe registrieren (Autostart bei Anmeldung, Neustart bei Absturz)
+:: Autostart-Verknuepfung anlegen (ohne Adminrechte, keine geplante Aufgabe)
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0Install-Jarvis-Service.ps1"
 
 echo.
