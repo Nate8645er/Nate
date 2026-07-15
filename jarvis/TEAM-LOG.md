@@ -139,3 +139,16 @@ ECHTES, skalierendes Fortschrittssystem:
   ein Aufruf. Keine erfundenen Beiträge (Gehirn-gemockt getestet).
 - **Agent 4:** 3 neue Tests (Team-Modus 4 Aufrufe, Toggle, /api/teams),
   gesamt **85 grün**. Live: Schalter da, 0 JS-Fehler.
+
+## Eintrag 010 — Performance-Härtung (Agent 5)
+**Von:** Agent 5, 2, 4 · **Echt gemessen**
+- **Messung:** materialize ~36'000/s (28 µs); **8 Materialisierungen pro Aufgabe**.
+- **Befund:** `team_members` wurde in `_run_task` DOPPELT berechnet (Anzeige + XP)
+  → 3 unnötige Materialisierungen pro Aufgabe.
+- **Fix:** Team-Kollegen einmal berechnen und wiederverwenden; `team_members`
+  in den Top-Import gezogen (kein Per-Call-Import mehr).
+- **Ergebnis:** **8 → 5 Materialisierungen pro Aufgabe (−37,5 %)**, verifiziert.
+- **Bewusst NICHT geändert:** die Belegschaft-Engine materialisiert weiter jede
+  Adresse — das ist der reale Roll-Call, an dem die ehrliche Rate hängt; ein
+  Cache würde dort (lauter verschiedene Adressen) nur bremsen.
+- **Agent 4:** unverändert **85 Tests grün**, kein Regress; Server-Smoke ok.

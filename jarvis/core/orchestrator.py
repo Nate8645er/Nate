@@ -24,7 +24,7 @@ from typing import Any
 import psutil
 
 from . import brain
-from .identity import ADDRESS_SPACE, address_for_task, materialize
+from .identity import ADDRESS_SPACE, address_for_task, materialize, team_members
 from .plugins import PluginManager
 
 
@@ -234,7 +234,9 @@ class Orchestrator:
         task.boss = boss.display
         # Sichtbare Bearbeitungskette: JARVIS -> Teamleiter -> Mitarbeiter,
         # plus mitwirkende Team-Kollegen (echte Organisationsstruktur).
-        from .identity import team_members
+        # Team-Kollegen EINMAL berechnen und für Anzeige + XP wiederverwenden
+        # (früher doppelt materialisiert — Agent 5: unnötige Arbeit entfernt).
+        mates = team_members(employee.address, n=3)
         kette = [{"rolle": "JARVIS", "name": "Koordinator", "info": "nimmt an & leitet weiter"},
                  {"rolle": "Teamleiter", "name": boss.name, "team": boss.team,
                   "info": "verteilt im Team"}]
@@ -242,8 +244,7 @@ class Orchestrator:
             kette.append({"rolle": "Mitarbeiter", "name": employee.name,
                           "team": employee.team, "info": "führt aus"})
         task.kette = kette
-        task.mitwirkende = [{"name": m.name, "rolle": m.role}
-                            for m in team_members(employee.address, n=3)]
+        task.mitwirkende = [{"name": m.name, "rolle": m.role} for m in mates]
         task.status = "aktiv"
         self.active[task.id] = task
         self.activated_agents += 1
@@ -299,8 +300,8 @@ class Orchestrator:
                     self.log("info", f"⬆ Teamleiter {boss.name} steigt durch Führung auf — "
                                      f"Bonus-Level {bf['bonus_level']}")
             # Mitwirkende Team-Kollegen erhalten etwas Unterstützungs-XP (alle wirken mit).
-            from .identity import team_members
-            for m in team_members(employee.address, n=3):
+            # Wiederverwendung der oben EINMAL berechneten Liste (kein Neu-Materialisieren).
+            for m in mates:
                 self.progression.award(m.address, amount=1)
         except Exception as e:
             task.status = "fehler"
@@ -315,7 +316,6 @@ class Orchestrator:
     async def _team_answer(self, employee: Any, boss: Any, task: Task) -> str:
         """Team-Modus: mehrere Mitglieder liefern EIGENE echte Beiträge, der Chef
         führt sie zu einer Antwort zusammen. Im API-Modus mehrere Aufrufe!"""
-        from .identity import team_members
         members = [employee] + team_members(employee.address, n=2)  # Bearbeiter + 2 Kollegen
         # Jedes Mitglied beantwortet die Frage eigenständig (echte Aufrufe, parallel).
         contribs = await asyncio.gather(
