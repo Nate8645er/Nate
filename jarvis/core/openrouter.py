@@ -22,47 +22,113 @@ from .plugins import Plugin
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
-# Kuratierte, gängige Modelle (Kurzname -> OpenRouter-ID). Nur Zugang, keine
-# vorgefertigten Prompts. Eigene IDs sind ebenfalls direkt nutzbar
-# (z. B. model=anthropic/claude-3.5-sonnet). Model-IDs ändern sich mit der Zeit
-# — die volle Liste steht auf openrouter.ai/models.
-KNOWN_MODELS = {
-    # Anthropic
-    "claude": "anthropic/claude-3.5-sonnet",
-    "claude-opus": "anthropic/claude-3-opus",
-    "claude-haiku": "anthropic/claude-3.5-haiku",
-    # OpenAI
-    "gpt": "openai/gpt-4o",
-    "gpt4": "openai/gpt-4o",
-    "gpt-mini": "openai/gpt-4o-mini",
-    "o1": "openai/o1",
-    # Google
-    "gemini": "google/gemini-2.5-flash",
-    "gemini-pro": "google/gemini-2.5-pro",
-    # xAI
-    "grok": "x-ai/grok-3",
-    # Meta
-    "llama": "meta-llama/llama-3.3-70b-instruct",
-    # Mistral
-    "mistral": "mistralai/mistral-large",
-    # DeepSeek
-    "deepseek": "deepseek/deepseek-chat",
-    "deepseek-r1": "deepseek/deepseek-r1",
-    # Alibaba Qwen
-    "qwen": "qwen/qwen-2.5-72b-instruct",
+# Anbieter-Katalog: Firma -> Liste (Anzeigename, OpenRouter-ID).
+# Nur Zugang, keine vorgefertigten Prompts. Beliebige OpenRouter-IDs sind
+# ebenfalls direkt nutzbar (z. B. model=anthropic/claude-opus-4.8).
+#
+# EHRLICH: Ein Teil dieser Modelle ist sehr neu bzw. noch nicht veröffentlicht.
+# Ist eine ID bei OpenRouter (noch) nicht verfügbar, liefert der Aufruf eine
+# ehrliche Fehlermeldung — es wird nichts erfunden. Die jeweils aktuell
+# verfügbaren IDs stehen auf openrouter.ai/models.
+PROVIDERS: dict[str, list[tuple[str, str]]] = {
+    "Anthropic": [
+        ("Claude Mythos 5", "anthropic/claude-mythos-5"),
+        ("Claude Fable 5", "anthropic/claude-fable-5"),
+        ("Claude Opus 4.8", "anthropic/claude-opus-4.8"),
+        ("Claude Sonnet 5", "anthropic/claude-sonnet-5"),
+        ("Claude Haiku 4.5", "anthropic/claude-haiku-4.5"),
+    ],
+    "OpenAI": [
+        ("GPT-5.6 Sol Ultra", "openai/gpt-5.6-sol-ultra"),
+        ("GPT-5.6 Sol", "openai/gpt-5.6-sol"),
+        ("GPT-5.6 Terra", "openai/gpt-5.6-terra"),
+        ("GPT-5.6 Luna", "openai/gpt-5.6-luna"),
+        ("GPT-5.5", "openai/gpt-5.5"),
+        ("GPT-5", "openai/gpt-5"),
+        ("o3", "openai/o3"),
+        ("o4-mini-high", "openai/o4-mini-high"),
+        ("o4-mini", "openai/o4-mini"),
+    ],
+    "Google": [
+        ("Gemini 3.5 Pro", "google/gemini-3.5-pro"),
+        ("Gemini 3.5 Flash", "google/gemini-3.5-flash"),
+        ("Gemini 2.5 Pro", "google/gemini-2.5-pro"),
+        ("Gemini 2.5 Flash", "google/gemini-2.5-flash"),
+    ],
+    "xAI": [
+        ("Grok 4.5", "x-ai/grok-4.5"),
+        ("Grok 4", "x-ai/grok-4"),
+        ("Grok 3", "x-ai/grok-3"),
+    ],
+    "DeepSeek": [
+        ("DeepSeek R1", "deepseek/deepseek-r1"),
+        ("DeepSeek V3.1", "deepseek/deepseek-v3.1"),
+        ("DeepSeek V3", "deepseek/deepseek-v3"),
+    ],
+    "Qwen": [
+        ("Qwen 3.7 Plus", "qwen/qwen3.7-plus"),
+        ("Qwen 3", "qwen/qwen3"),
+        ("Qwen 2.5", "qwen/qwen-2.5-72b-instruct"),
+    ],
+    "Zhipu AI": [
+        ("GLM-5.2", "z-ai/glm-5.2"),
+        ("GLM-5", "z-ai/glm-5"),
+    ],
+    "MiniMax": [
+        ("MiniMax M3", "minimax/minimax-m3"),
+    ],
+    "Moonshot AI": [
+        ("Kimi K2", "moonshotai/kimi-k2"),
+        ("Kimi K1.5", "moonshotai/kimi-k1.5"),
+    ],
 }
 
-# Standard-Set für "vergleiche die modelle: …" — je ein starkes Modell pro
-# großem Anbieter. Anpassbar über JARVIS_COMPARE_MODELS (Komma-getrennt).
-DEFAULT_COMPARE = ["anthropic/claude-3.5-sonnet", "openai/gpt-4o",
-                   "google/gemini-2.5-flash", "x-ai/grok-3",
-                   "deepseek/deepseek-chat"]
+
+def _norm(s: str) -> str:
+    return s.lower().replace(" ", "").replace("-", "").replace(".", "").replace("_", "")
+
+
+# normalisierter Anzeigename -> ID (für die Auflösung von "modell <name>: …")
+_CATALOG: dict[str, str] = {}
+for _prov, _models in PROVIDERS.items():
+    for _disp, _mid in _models:
+        _CATALOG[_norm(_disp)] = _mid
+
+# handverlesene Kurznamen für schnelles Tippen
+_ALIASES = {
+    "claude": "anthropic/claude-opus-4.8", "opus": "anthropic/claude-opus-4.8",
+    "fable": "anthropic/claude-fable-5", "mythos": "anthropic/claude-mythos-5",
+    "sonnet": "anthropic/claude-sonnet-5", "haiku": "anthropic/claude-haiku-4.5",
+    "gpt": "openai/gpt-5.6-sol", "sol": "openai/gpt-5.6-sol",
+    "terra": "openai/gpt-5.6-terra", "luna": "openai/gpt-5.6-luna",
+    "gemini": "google/gemini-3.5-pro", "gemini-flash": "google/gemini-3.5-flash",
+    "grok": "x-ai/grok-4.5", "deepseek": "deepseek/deepseek-v3.1",
+    "r1": "deepseek/deepseek-r1", "qwen": "qwen/qwen3.7-plus",
+    "glm": "z-ai/glm-5.2", "minimax": "minimax/minimax-m3",
+    "kimi": "moonshotai/kimi-k2",
+}
+for _k, _v in _ALIASES.items():
+    _CATALOG.setdefault(_norm(_k), _v)
+
+
+def resolve(name: str) -> str:
+    """Anzeigename/Kurzname -> OpenRouter-ID; unbekanntes bleibt Roh-ID."""
+    if not name:
+        return DEFAULT_COMPARE[0]
+    return _CATALOG.get(_norm(name), name.strip())
+
+
+# Standard-Set für "vergleiche die modelle: …" — je ein Flaggschiff pro großem
+# Anbieter. Anpassbar über JARVIS_COMPARE_MODELS (Komma-getrennt).
+DEFAULT_COMPARE = ["anthropic/claude-opus-4.8", "openai/gpt-5.6-sol",
+                   "google/gemini-3.5-pro", "x-ai/grok-4.5",
+                   "deepseek/deepseek-r1"]
 
 
 def _compare_models() -> list[str]:
     env = os.environ.get("JARVIS_COMPARE_MODELS", "").strip()
     if env:
-        ids = [m.strip() for m in env.split(",") if m.strip()]
+        ids = [resolve(m) for m in env.split(",") if m.strip()]
         if ids:
             return ids
     return DEFAULT_COMPARE
@@ -130,15 +196,18 @@ class OpenRouterPlugin(Plugin):
     def run(self, action: str = "liste", model: str = "", prompt: str = "",
             **kwargs: object) -> object:
         if action in ("liste", "list", "modelle"):
-            return {"bekannt": KNOWN_MODELS,
+            return {"anbieter": {p: [{"name": d, "id": i} for d, i in ms]
+                                 for p, ms in PROVIDERS.items()},
+                    "anzahl": sum(len(ms) for ms in PROVIDERS.values()),
                     "vergleich_standard": _compare_models(),
                     "aktiv": available(),
                     "hinweis": "eigener Key als OPENROUTER_API_KEY setzen; "
-                               "Vergleichsliste über JARVIS_COMPARE_MODELS anpassbar"}
+                               "Vergleichsliste über JARVIS_COMPARE_MODELS anpassbar; "
+                               "sehr neue Modelle sind evtl. bei OpenRouter noch nicht live"}
         if action in ("frage", "ask", "prompt"):
             if not prompt:
                 raise ValueError("prompt= fehlt")
-            mid = KNOWN_MODELS.get(model.lower().strip(), model.strip()) or DEFAULT_COMPARE[0]
+            mid = resolve(model)
             return {"modell": mid, "antwort": ask(mid, prompt)}
         if action in ("vergleich", "compare", "race", "vergleiche"):
             if not prompt:

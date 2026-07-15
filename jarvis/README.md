@@ -118,8 +118,12 @@ API-Guthaben — genau deshalb ist der aktive Pool hart begrenzt und niemals
 
 ## Viele Modelle über OpenRouter (Werkzeug „modelle")
 
-JARVIS kann zusätzlich **viele KI-Modelle** über einen einzigen OpenRouter-Key
-nutzen (Claude, GPT, Gemini, Grok, Llama, Mistral, DeepSeek, Qwen …):
+JARVIS kann zusätzlich **32 KI-Modelle von 9 Anbietern** über einen einzigen
+OpenRouter-Key nutzen — Anthropic (Claude Mythos 5, Fable 5, Opus 4.8,
+Sonnet 5, Haiku 4.5), OpenAI (GPT-5.6 Sol Ultra/Sol/Terra/Luna, GPT-5.5, GPT-5,
+o3, o4-mini-high, o4-mini), Google (Gemini 3.5 Pro/Flash, 2.5 Pro/Flash),
+xAI (Grok 4.5/4/3), DeepSeek (R1, V3.1, V3), Qwen (3.7 Plus, 3, 2.5),
+Zhipu AI (GLM-5.2, GLM-5), MiniMax (M3) und Moonshot AI (Kimi K2, K1.5):
 
 ```powershell
 setx OPENROUTER_API_KEY "sk-or-..."   # Key von openrouter.ai/keys
@@ -137,6 +141,12 @@ Im Chat/per Sprache:
 Das ist ein **neutraler Multi-Modell-Zugang** — kein „Jailbreak", keine
 Prompt-Verschleierung, keine Umgehung von Modell-Sicherheiten. Ohne Key meldet
 das Werkzeug das ehrlich und tut nichts.
+
+**Ehrlich:** Ein Teil der Modelle ist sehr neu bzw. noch nicht erschienen.
+Ist eine Modell-ID bei OpenRouter (noch) nicht verfügbar, kommt eine ehrliche
+Fehlermeldung statt einer erfundenen Antwort — sobald die ID live ist,
+funktioniert sie automatisch. Die aktuell verfügbaren IDs stehen auf
+openrouter.ai/models.
 
 ## Dashboard (Live-Ticker)
 
