@@ -76,12 +76,12 @@
       <h2><b>REAKTOR</b> // SYSTEMZUSTAND</h2>
       <div class="reactorwrap">
         <svg width="190" height="190" viewBox="0 0 190 190">
-          <circle cx="95" cy="95" r="86" fill="none" stroke="#231409" stroke-width="4"/>
+          <circle cx="95" cy="95" r="86" fill="none" stroke="#0d1f14" stroke-width="4"/>
           <circle cx="95" cy="95" r="86" fill="none" stroke="var(--amber)" stroke-width="4"
                   stroke-linecap="round" id="ring" stroke-dasharray="540 540"
-                  transform="rotate(-90 95 95)" style="filter:drop-shadow(0 0 8px rgba(255,122,26,.8)); transition:stroke-dasharray .8s"/>
-          <circle cx="95" cy="95" r="66" fill="none" stroke="#2a1c10" stroke-width="1"/>
-          <circle cx="95" cy="95" r="54" fill="rgba(255,122,26,.06)" stroke="#3d2814" stroke-width="1"/>
+                  transform="rotate(-90 95 95)" style="filter:drop-shadow(0 0 8px rgba(43,255,102,.8)); transition:stroke-dasharray .8s"/>
+          <circle cx="95" cy="95" r="66" fill="none" stroke="#153a20" stroke-width="1"/>
+          <circle cx="95" cy="95" r="54" fill="rgba(43,255,102,.06)" stroke="#1e5230" stroke-width="1"/>
           <text x="95" y="90" text-anchor="middle" font-size="30" font-weight="800"
                 fill="var(--amber2)" id="health" style="text-shadow:0 0 12px var(--amber)">–</text>
           <text x="95" y="112" text-anchor="middle" font-size="8.5" letter-spacing="2.5" fill="var(--dim)">SYSTEMZUSTAND</text>
@@ -133,12 +133,12 @@ function globe() {
     const X = x * Math.cos(rot) - z * Math.sin(rot), Z = x * Math.sin(rot) + z * Math.cos(rot);
     return [w / 2 + X * R, h / 2 + y * R, Z];
   });
-  gx.strokeStyle = 'rgba(255,122,26,.18)';
+  gx.strokeStyle = 'rgba(43,255,102,.18)';
   for (let i = 0; i < pts.length; i += 4) for (let j = i + 4; j < Math.min(i + 40, pts.length); j += 8) {
     gx.beginPath(); gx.moveTo(pts[i][0], pts[i][1]); gx.lineTo(pts[j][0], pts[j][1]); gx.stroke();
   }
   for (const [x, y, z] of pts) {
-    gx.fillStyle = z > 0 ? 'rgba(255,180,84,.9)' : 'rgba(255,122,26,.25)';
+    gx.fillStyle = z > 0 ? 'rgba(125,255,168,.9)' : 'rgba(43,255,102,.25)';
     gx.beginPath(); gx.arc(x, y, z > 0 ? 1.6 : 1, 0, 7); gx.fill();
   }
   requestAnimationFrame(globe);
@@ -151,14 +151,14 @@ function chart() {
   const c = $('chart'), x = c.getContext('2d');
   const w = c.width = c.clientWidth, h = c.height = c.clientHeight;
   x.clearRect(0, 0, w, h);
-  x.strokeStyle = '#241609'; for (let i = 1; i < 4; i++) { x.beginPath(); x.moveTo(0, h * i / 4); x.lineTo(w, h * i / 4); x.stroke(); }
+  x.strokeStyle = '#123020'; for (let i = 1; i < 4; i++) { x.beginPath(); x.moveTo(0, h * i / 4); x.lineTo(w, h * i / 4); x.stroke(); }
   const draw = (arr, col) => {
     if (arr.length < 2) return;
     x.strokeStyle = col; x.lineWidth = 1.6; x.beginPath();
     arr.forEach((v, i) => { const px = i / (arr.length - 1) * w, py = h - v / 100 * h; i ? x.lineTo(px, py) : x.moveTo(px, py); });
     x.stroke();
   };
-  draw(hist.cpu, '#ff7a1a'); draw(hist.ram, '#ffb454');
+  draw(hist.cpu, '#2bff66'); draw(hist.ram, '#7dffa8');
 }
 
 // ---- Live-Ticker -------------------------------------------------------------

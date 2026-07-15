@@ -81,7 +81,7 @@
         <input id="toolcmd" placeholder="z. B. !plugin shell run command=echo hallo" autocomplete="off">
         <button>SENDEN</button>
       </form>
-      <div style="font-size:10px; color:#e8c98a; margin-top:5px">
+      <div style="font-size:10px; color:#9be6b3; margin-top:5px">
         Hinweis: <b>shell</b> und <b>code</b> erreichen dein Betriebssystem und sind aus
         Sicherheitsgründen standardmäßig gesperrt. Freischalten (bewusst, nur auf deinem PC):
         <span class="mono">setx JARVIS_ALLOW_DANGEROUS 1</span>, dann neu starten.
@@ -103,7 +103,7 @@
         <button onclick="pc('screenshot','')">SCREENSHOT</button>
         <button onclick="pc('apps','')">PROGRAMME</button>
       </div>
-      <div style="font-size:10px; color:#e8c98a; margin-top:5px">
+      <div style="font-size:10px; color:#9be6b3; margin-top:5px">
         Volle Rechnersteuerung — <b>eigener</b> Schalter, standardmäßig aus. Freischalten (bewusst, nur auf deinem PC):
         <span class="mono">setx JARVIS_ALLOW_PC 1</span>, dann neu starten. Maus/Tastatur brauchen einen echten Desktop.
       </div>
@@ -150,7 +150,7 @@ async function load() {
     $('tools').innerHTML = s.plugins.map(p => {
       const state = p.gesperrt ? '🔒 gesperrt' : (p.ok === false ? '⚠ ' + esc(p.hinweis || 'nicht lauffähig') : '✓ lauffähig');
       const col = p.ok === false && !p.gesperrt ? '#c88' : 'var(--dim)';
-      return `<div style="padding:4px 0; border-bottom:1px dashed #241609; font-size:12px">
+      return `<div style="padding:4px 0; border-bottom:1px dashed #123020; font-size:12px">
          ◈ <b style="color:var(--amber2)">${esc(p.name)}</b> — ${esc(p.description)}
          <span style="color:${col}"> · ${state}</span></div>`; }).join('');
     const lauffaehig = s.plugins.filter(p => p.ok !== false).length;
@@ -162,7 +162,7 @@ async function load() {
           : 'Ohne API-Key: Fallback auf das JARVIS-Gehirn. FABLE 5 oben aktivieren.')
       : '';
     $('skills').innerHTML = (s.skills || []).map(sk =>
-      `<div style="padding:4px 0; border-bottom:1px dashed #241609; font-size:12px">
+      `<div style="padding:4px 0; border-bottom:1px dashed #123020; font-size:12px">
          ✦ <b style="color:var(--amber2)">${esc(sk.name)}</b> — ${esc(sk.description)}</div>`).join('');
     $('ticker').textContent = (` ▲ ${lauffaehig}/${s.plugins.length} WERKZEUGE LAUFFÄHIG: ${s.plugins.map(p => p.name).join(', ')} ` +
       `● ${(s.skills || []).length} SKILLS ● CLAUDE-CODE-BRÜCKE: ${code && code.binary ? 'BEREIT' : 'FALLBACK'} ` +
@@ -198,7 +198,7 @@ async function pcStatus() {
     const s = await (await fetch('/api/state')).json();
     const pcp = (s.plugins || []).find(p => p.name === 'pc');
     const el = $('pcstatus'); if (!el || !pcp) return;
-    if (pcp.gesperrt) el.innerHTML = '🔒 <b style="color:#e8c98a">GESPERRT</b> — mit <span class="mono">setx JARVIS_ALLOW_PC 1</span> freischalten und neu starten.';
+    if (pcp.gesperrt) el.innerHTML = '🔒 <b style="color:#9be6b3">GESPERRT</b> — mit <span class="mono">setx JARVIS_ALLOW_PC 1</span> freischalten und neu starten.';
     else el.innerHTML = '✅ <b style="color:var(--green)">FREIGESCHALTET</b> — JARVIS kann deinen PC bedienen.';
   } catch (e) {}
 }

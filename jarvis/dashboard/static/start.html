@@ -12,7 +12,7 @@
   canvas.core { position:absolute; inset:0; width:100%; height:100%; }
   .title { position:relative; z-index:2; text-align:center; pointer-events:none; }
   .title h1 { font-size:44px; letter-spacing:.5em; color:var(--amber);
-              text-shadow:0 0 26px rgba(255,122,26,.9), 0 0 60px rgba(255,122,26,.4); font-weight:800; }
+              text-shadow:0 0 26px rgba(43,255,102,.9), 0 0 60px rgba(43,255,102,.4); font-weight:800; }
   .title .sub2 { color:var(--dim); letter-spacing:.4em; font-size:11px; margin-top:6px; }
   .corestat { position:relative; z-index:2; margin-top:270px; text-align:center; }
   .corestat .pct { font-size:26px; font-weight:800; color:var(--amber2);
@@ -83,7 +83,7 @@ function draw() {
   x.clearRect(0, 0, w, h);
   // Glühen im Zentrum
   const g = x.createRadialGradient(cx, cy, 0, cx, cy, R * 1.5);
-  g.addColorStop(0, 'rgba(255,140,40,.30)'); g.addColorStop(.5, 'rgba(255,90,15,.10)');
+  g.addColorStop(0, 'rgba(60,255,120,.30)'); g.addColorStop(.5, 'rgba(20,200,80,.10)');
   g.addColorStop(1, 'transparent');
   x.fillStyle = g; x.fillRect(0, 0, w, h);
   // Punkte projizieren
@@ -99,7 +99,7 @@ function draw() {
     for (let j = i + 3; j < Math.min(i + 27, proj.length); j += 6) {
       const d = Math.hypot(proj[i][0] - proj[j][0], proj[i][1] - proj[j][1]);
       if (d < R * .42) {
-        x.strokeStyle = `rgba(255,122,26,${.22 - d / (R * 2.2)})`;
+        x.strokeStyle = `rgba(43,255,102,${.22 - d / (R * 2.2)})`;
         x.beginPath(); x.moveTo(proj[i][0], proj[i][1]); x.lineTo(proj[j][0], proj[j][1]); x.stroke();
       }
     }
@@ -107,13 +107,13 @@ function draw() {
   // Punkte
   for (const [px, py, z] of proj) {
     const front = z > 0;
-    x.fillStyle = front ? 'rgba(255,190,100,.95)' : 'rgba(255,110,20,.30)';
+    x.fillStyle = front ? 'rgba(150,255,190,.95)' : 'rgba(40,220,100,.30)';
     x.beginPath(); x.arc(px, py, front ? 1.7 : 1.1, 0, 7); x.fill();
   }
   // Ringe
-  x.strokeStyle = 'rgba(255,122,26,.35)'; x.lineWidth = 1.2;
+  x.strokeStyle = 'rgba(43,255,102,.35)'; x.lineWidth = 1.2;
   x.beginPath(); x.ellipse(cx, cy, R * 1.25, R * .34, rot * 2, 0, 7); x.stroke();
-  x.strokeStyle = 'rgba(255,122,26,.18)';
+  x.strokeStyle = 'rgba(43,255,102,.18)';
   x.beginPath(); x.ellipse(cx, cy, R * 1.45, R * .42, -rot * 1.4, 0, 7); x.stroke();
   requestAnimationFrame(draw);
 }

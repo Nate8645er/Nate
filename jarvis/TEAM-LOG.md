@@ -152,3 +152,12 @@ ECHTES, skalierendes Fortschrittssystem:
   Adresse — das ist der reale Roll-Call, an dem die ehrliche Rate hängt; ein
   Cache würde dort (lauter verschiedene Adressen) nur bremsen.
 - **Agent 4:** unverändert **85 Tests grün**, kein Regress; Server-Smoke ok.
+
+## Eintrag 011 — Matrix-Grün-Theme (Nutzer-Wunsch nach Vorlage)
+**Von:** Agent 7, 2 · Vorlage: Screenshot (Neon-Grün auf Fast-Schwarz)
+- style.css komplett auf Grün: Variablen (--amber/--amber2 → Neon-Grün #2bff66/
+  #7dffa8), Hintergrund #040703, alle Braun-/Orange-Werte → Dunkelgrün.
+- Alle 7 Seiten (inkl. Kern-Animation Startseite + Reaktor Übersicht + Globus/
+  Chart) auf Grün umgestellt (fest kodierte rgba/hex ersetzt).
+- Live-Screenshots geprüft: Startseite-Kern, Übersicht-Reaktor, Mitarbeiter —
+  alles grün, 0 JS-Fehler. Tests unverändert grün.
