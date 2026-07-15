@@ -479,3 +479,52 @@ def test_ssrf_redirect_handler_blocks_internal():
     assert _host_is_blocked("169.254.169.254")   # Cloud-Metadaten
     assert _host_is_blocked("127.0.0.1")
     assert not _host_is_blocked("example.com")
+
+
+# ---------------------------------------------------------------------------
+# Multi-Modell-Anschluss (OpenRouter) — neutraler Zugang, kein Jailbreak
+# ---------------------------------------------------------------------------
+
+def test_openrouter_plugin_registered_and_honest(tmp_path, monkeypatch):
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    from jarvis.core.orchestrator import Orchestrator
+    o = Orchestrator(tmp_path)
+    names = [s["name"] for s in o.plugins.status()]
+    assert "modelle" in names
+    st = next(s for s in o.plugins.status() if s["name"] == "modelle")
+    assert st["ok"] is False and "OPENROUTER_API_KEY" in st["hinweis"]
+    # ohne Key: ehrliche Meldung, kein Crash
+    r = o.plugins.run("Führung", "modelle", "frage", model="gpt", prompt="hi")
+    assert "OPENROUTER_API_KEY" in r["antwort"]
+
+
+def test_openrouter_commands_routed():
+    from jarvis.core.commands import interpret
+    assert interpret("vergleiche die modelle: sinn des lebens") == \
+        "!plugin modelle vergleich prompt=sinn des lebens"
+    assert interpret("modell gpt: erkläre rekursion") == \
+        "!plugin modelle frage model=gpt prompt=erkläre rekursion"
+
+
+def test_openrouter_request_built_correctly(monkeypatch):
+    """Baut die Anfrage korrekt (Bearer-Auth, Modell, system+user)?"""
+    import io, json
+    from jarvis.core import openrouter
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key")
+    cap = {}
+
+    class FakeResp(io.BytesIO):
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+
+    def fake_urlopen(req, timeout=0):
+        cap["auth"] = req.headers.get("Authorization")
+        cap["body"] = json.loads(req.data)
+        return FakeResp(json.dumps({"choices": [{"message": {"content": "42"}}]}).encode())
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    ans = openrouter.ask("openai/gpt-4o", "6*7?")
+    assert ans == "42"
+    assert cap["auth"] == "Bearer test-key"
+    assert cap["body"]["model"] == "openai/gpt-4o"
+    assert [m["role"] for m in cap["body"]["messages"]] == ["system", "user"]

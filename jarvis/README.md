@@ -116,6 +116,26 @@ Danach neu starten. **Achtung:** Jeder aktive Agent-Aufruf kostet dann echtes
 API-Guthaben — genau deshalb ist der aktive Pool hart begrenzt und niemals
 „alle 100 Milliarden".
 
+## Viele Modelle über OpenRouter (Werkzeug „modelle")
+
+JARVIS kann zusätzlich **viele KI-Modelle** über einen einzigen OpenRouter-Key
+nutzen (Claude, GPT, Gemini, Grok, Llama, Mistral, DeepSeek, Qwen …):
+
+```powershell
+setx OPENROUTER_API_KEY "sk-or-..."   # Key von openrouter.ai/keys
+```
+
+Im Chat/per Sprache:
+
+- `modell gpt: erkläre mir Rekursion` — ein bestimmtes Modell fragen
+- `frage gemini: schreibe ein Haiku` — dito
+- `vergleiche die modelle: was ist die beste Strategie?` — mehrere Modelle
+  parallel fragen und die Antworten nebeneinander sehen
+
+Das ist ein **neutraler Multi-Modell-Zugang** — kein „Jailbreak", keine
+Prompt-Verschleierung, keine Umgehung von Modell-Sicherheiten. Ohne Key meldet
+das Werkzeug das ehrlich und tut nichts.
+
 ## Dashboard (Live-Ticker)
 
 - Adressierbare Mitarbeiter, **aktive Agenten / Hardware-Limit**, wartende

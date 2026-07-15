@@ -143,6 +143,8 @@ class Orchestrator:
         self.plugins.plugins["code"] = code_agent.CodeAgentPlugin(workspace)
         desktop.register(self.plugins, workspace)       # PC-Steuerung (eigener Schalter)
         browser_auto.register(self.plugins, workspace)  # Browser-Automatisierung
+        from . import openrouter                          # Multi-Modell-Zugang (OpenRouter)
+        openrouter.register(self.plugins, workspace)
         # Sicherheits-Modul + 30-Minuten-Monitor
         from .security import BodyguardSquad, SecurityMonitor, SecurityPlugin
         sec = SecurityPlugin()

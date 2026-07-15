@@ -124,6 +124,18 @@ def interpret(text: str) -> str | None:
     if mcc:
         return f"!plugin code prompt prompt={mcc.group(1).strip()}"
 
+    # Multi-Modell (OpenRouter): mehrere Modelle vergleichen
+    mcmp = re.match(r"^(?:bitte\s+)?(?:vergleiche?\s+(?:die\s+)?modelle?|modell[- ]?vergleich)"
+                    r"\s*[:,]?\s+(.+)$", s, re.IGNORECASE)
+    if mcmp:
+        return f"!plugin modelle vergleich prompt={mcmp.group(1).strip()}"
+    # Ein bestimmtes Modell fragen: "modell gpt: <prompt>", "frag(e) gemini <prompt>"
+    mmod = re.match(r"^(?:bitte\s+)?(?:modell|frag(?:e)?\s+(?:das\s+modell\s+)?)"
+                    r"\s*([a-zA-Z0-9._-]+)\s*[:,]\s+(.+)$", s, re.IGNORECASE)
+    if mmod:
+        return (f"!plugin modelle frage model={mmod.group(1).strip()} "
+                f"prompt={mmod.group(2).strip()}")
+
     # Bildschirm-Verstehen (Vision): "was ist auf dem bildschirm", "was siehst du", "analysiere den bildschirm"
     if re.search(r"was\s+(ist|siehst\s+du|steht)\s+.*(bildschirm|screen|bild)|"
                  r"analysiere\s+(den\s+)?(bildschirm|screen)|"
