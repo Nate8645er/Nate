@@ -19,6 +19,34 @@ def test_procedural_level_deterministic_and_in_range():
     assert len(seen) > 1        # Level variieren über Adressen
 
 
+def test_team_boss_structure():
+    """Jedes Unternehmen: 25 Teamleiter (Adr 0..24), jeder Mitarbeiter kennt seinen Chef."""
+    from jarvis.core.identity import materialize, team_bosses, TEAMS
+    bosses = team_bosses()
+    assert len(bosses) == len(TEAMS)
+    # Adressen 0..24 sind Chefs, je ein anderes Team
+    assert all(b.is_team_boss for b in bosses)
+    assert len({b.team for b in bosses}) == len(TEAMS)      # je Team genau einer
+    for i, b in enumerate(bosses):
+        assert b.address == str(i) and b.boss_address == str(i)
+        assert "Teamleiter" in b.role
+    # normaler Mitarbeiter: kein Chef, meldet an gleichen-Team-Chef
+    e = materialize("31337")
+    assert e.is_team_boss is False
+    chef = materialize(e.boss_address)
+    assert chef.is_team_boss and chef.team == e.team
+
+
+def test_team_boss_recursive_in_subcompany():
+    from jarvis.core.identity import team_bosses, materialize
+    bosses = team_bosses("7")
+    assert [b.address for b in bosses[:3]] == ["7/0", "7/1", "7/2"]
+    assert all(b.is_team_boss for b in bosses)
+    # ein Mitarbeiter im Unter-Unternehmen kennt seinen dortigen Chef
+    e = materialize("7/500")
+    assert e.boss_address.startswith("7/")
+
+
 def test_mastery_tiers():
     from jarvis.core.identity import mastery_of
     assert mastery_of(5) == "Novize"

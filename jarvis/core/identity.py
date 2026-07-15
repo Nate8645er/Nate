@@ -112,6 +112,8 @@ class VirtualEmployee:
     xp: int = 0               # Basis-Erfahrung zum Level
     mastery: str = "Novize"    # Novize .. Großmeister
     tools: tuple[str, ...] = ()  # beherrschte Werkzeuge (mehr je höher das Level)
+    is_team_boss: bool = False   # ist dieser Mitarbeiter Teamleiter?
+    boss_address: str = ""       # Adresse des eigenen Teamleiters (Chef)
 
     @property
     def display(self) -> str:
@@ -149,16 +151,30 @@ def materialize(address: str) -> VirtualEmployee:
     seed = int.from_bytes(hashlib.sha256(canonical.encode()).digest()[:8], "big")
     rng = random.Random(seed)
 
-    team, roles = TEAMS[segments[-1] % len(TEAMS)]
-    role = roles[rng.randrange(len(roles))]
-    name = f"{_FIRST[rng.randrange(len(_FIRST))]} {_LAST[rng.randrange(len(_LAST))]}-{segments[-1] % 1000:03d}"
+    last = segments[-1]
+    team_index = last % len(TEAMS)
+    team, roles = TEAMS[team_index]
+    # --- Team-Struktur: die ersten len(TEAMS) Adressen jedes Unternehmens
+    #     (0..24) sind die Teamleiter — je einer pro Team. Alle anderen gehören
+    #     zu einem Team und melden an dessen Chef (deterministisch, 0 Byte). ---
+    is_team_boss = last < len(TEAMS)
+    parent = "/".join(str(s) for s in segments[:-1])
+    boss_addr = f"{parent}/{team_index}" if parent else str(team_index)
+
+    if is_team_boss:
+        role = f"Teamleiter {team}"
+    else:
+        role = roles[rng.randrange(len(roles))]
+    name = f"{_FIRST[rng.randrange(len(_FIRST))]} {_LAST[rng.randrange(len(_LAST))]}-{last % 1000:03d}"
     goals = tuple(rng.sample(_GOAL_POOL, k=2))
-    company = f"{name.split()[1].split('-')[0]} Ventures #{segments[-1] % 100_000}"
+    company = f"{name.split()[1].split('-')[0]} Ventures #{last % 100_000}"
     depth = len(segments) - 1
 
     # --- Prozedurales Level & Meisterschaft (deterministisch, 0 Byte) ---
     base = 1 + ((seed >> 8) % 90)                       # 1..90
-    if any(mark in role for mark in _SENIOR_MARK):
+    if is_team_boss:
+        base += 15                                      # Teamleiter führen -> höheres Level
+    elif any(mark in role for mark in _SENIOR_MARK):
         base += 9                                       # Führungs-/Senior-Bonus
     base += min(depth * 3, 9)                           # tiefer = eigener Gründer
     level = max(1, min(99, base))
@@ -184,7 +200,19 @@ def materialize(address: str) -> VirtualEmployee:
         xp=xp_for_level(level),
         mastery=mastery,
         tools=tools,
+        is_team_boss=is_team_boss,
+        boss_address=boss_addr,
     )
+
+
+def team_bosses(company_address: str = "") -> list[VirtualEmployee]:
+    """Die Teamleiter eines Unternehmens — je einer pro Team (Adressen 0..24).
+
+    company_address="" -> Wurzelorganisation; sonst z. B. "7" für die Firma
+    von Mitarbeiter 7. Deterministisch, kein Speicher.
+    """
+    prefix = f"{company_address.strip('/')}/" if company_address.strip("/") else ""
+    return [materialize(f"{prefix}{i}") for i in range(len(TEAMS))]
 
 
 def address_for_task(description: str, team_hint: str | None = None) -> str:

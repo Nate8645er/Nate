@@ -280,6 +280,25 @@ async def employee(address: str) -> JSONResponse:
         "werkzeuge_beherrscht": list(e.tools),
         "erfahrung_basis": e.xp, "erledigte_aufgaben": fort["erledigt"],
         "bonus_level": fort["bonus_level"], "verdiente_xp": fort["xp"],
+        "ist_teamleiter": e.is_team_boss, "chef_adresse": e.boss_address,
+        "chef_name": materialize(e.boss_address).name if not e.is_team_boss else None,
+    })
+
+
+@app.get("/api/teams")
+async def teams(company: str = "") -> JSONResponse:
+    """Die 25 Teams eines Unternehmens mit ihrem jeweiligen Teamleiter (Chef)."""
+    from jarvis.core.identity import team_bosses
+    try:
+        bosses = team_bosses(company)
+    except ValueError as err:
+        raise HTTPException(400, str(err)) from err
+    return JSONResponse({
+        "unternehmen": company or "Wurzelorganisation",
+        "teams": [{"team": b.team, "chef": b.name, "chef_adresse": b.address,
+                   "rolle": b.role, "meisterschaft": b.mastery, "level": b.level}
+                  for b in bosses],
+        "anzahl_teams": len(bosses),
     })
 
 

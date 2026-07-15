@@ -81,3 +81,17 @@ ECHTES, skalierendes Fortschrittssystem:
   baut den Fine-Tuning-Datensatz per Klick (mit PII-Bereinigung), statt CLI.
 - **Agent 4:** 2 neue Tests, gesamt **77 grün**. Live verifiziert: Bestenliste
   füllt sich nach echten Aufgaben, Datensatz-Knopf baute 2 Beispiele, 0 JS-Fehler.
+
+## Eintrag 006 — Team-Chef-Struktur (Ordnung & Überblick)
+**Von:** Agent 1, 2, 4, 7 · **Echt gemessen**
+**Wunsch:** jedes Team soll einen Chef haben.
+- **identity.py:** in JEDEM Unternehmen sind die Adressen 0..24 die Teamleiter
+  (je einer pro Team); jeder andere Mitarbeiter kennt `boss_address` (Chef im
+  gleichen Team). Chefs erhalten Titel „Teamleiter <Team>" + Level-Bonus.
+  Deterministisch, 0 Byte, rekursiv auch in Unter-Firmen.
+- **team_bosses(company):** liefert die 25 Chefs eines Unternehmens.
+- **/api/teams:** Teams + Chefs; Mitarbeiter-Endpunkt zeigt `chef_name`.
+- **Dashboard:** Panel „TEAMS & CHEFS" (25 Teamleiter, anklickbar);
+  Mitarbeiter-Karte zeigt Chef bzw. „★ TEAMLEITER".
+- **Agent 4:** 2 neue Tests, gesamt **79 grün**. Live verifiziert: 25 Chefs,
+  Mitarbeiter kennt Chef im gleichen Team, Panel rendert, 0 JS-Fehler.

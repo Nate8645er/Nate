@@ -82,6 +82,13 @@
       <div id="org"></div>
     </div>
     <div class="panel" style="margin-top:10px">
+      <h2><b>TEAMS &amp; CHEFS</b> // 25 TEAMS, JE EIN TEAMLEITER</h2>
+      <div style="font-size:10.5px; color:var(--dim); margin-bottom:6px">
+        Jedes Unternehmen hat 25 Teams (Adressen 0–24 = die Chefs). Klick auf einen Chef öffnet ihn.
+      </div>
+      <div id="teamchefs"><div style="color:var(--dim); font-size:12px">Lade Teamleiter…</div></div>
+    </div>
+    <div class="panel" style="margin-top:10px">
       <h2><b>BESTENLISTE</b> // AUFSTEIGER DURCH ECHTE ARBEIT</h2>
       <div style="font-size:10.5px; color:var(--dim); margin-bottom:6px">
         Mitarbeiter sammeln echte Erfahrung (XP) für erledigte Aufgaben und steigen im Level.
@@ -149,6 +156,19 @@ async function toggleWorkforce() {
   tick();
 }
 
+async function loadTeamChefs() {
+  try {
+    const d = await (await fetch('/api/teams')).json();
+    $('teamchefs').innerHTML = '<table><thead><tr><th>Team</th><th>Chef</th><th>Rang</th><th></th></tr></thead><tbody>' +
+      (d.teams || []).map(t =>
+        `<tr><td>${esc(t.team)}</td><td>${esc(t.chef)}</td>` +
+        `<td><b style="color:var(--amber2)">${esc(t.meisterschaft)} Lvl ${t.level}</b></td>` +
+        `<td><button style="font-size:10px" onclick="$('addr').value='${esc(t.chef_adresse)}';lookup(event)">ÖFFNEN</button></td></tr>`
+      ).join('') + '</tbody></table>';
+  } catch (e) {}
+}
+loadTeamChefs();
+
 async function loadBoard() {
   try {
     const d = await (await fetch('/api/fortschritt/top?limit=10')).json();
@@ -172,8 +192,12 @@ async function lookup(ev) {
   if (!r.ok) { $('emp').innerHTML = `<div class="empcard">Ungültige Adresse.</div>`; return false; }
   const e = await r.json();
   const bonus = e.bonus_level ? ` (+${e.bonus_level} durch ${e.erledigte_aufgaben} Aufgaben)` : '';
+  const chef = e.ist_teamleiter
+    ? '<span style="color:var(--green)">★ TEAMLEITER dieses Teams</span>'
+    : `Chef: <b>${esc(e.chef_name)}</b> <span style="color:var(--dim)">(Adr ${esc(e.chef_adresse)})</span>`;
   $('emp').innerHTML = `<div class="empcard">
     <b>${esc(e.name)}</b> — ${esc(e.rolle)}, Team ${esc(e.team)} (Ebene ${esc(e.ebene)})<br>
+    ${chef}<br>
     <b style="color:var(--amber2)">${esc(e.meisterschaft)} · Level ${esc(e.level)}</b>${esc(bonus)}
     · Erfahrung ${fmt(e.verdiente_xp + e.erfahrung_basis)} XP<br>
     Spezialisierung: ${esc(e.spezialisierung)}<br>
