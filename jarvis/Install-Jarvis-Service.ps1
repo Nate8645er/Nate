@@ -156,6 +156,7 @@ Write-Host @"
        powershell -ExecutionPolicy Bypass -File .\Install-Jarvis-Service.ps1 -Uninstall
 
    Hinweis: Fuer echte KI-Ideen den API-Key setzen (FABLE 5), sonst laeuft
-   der Autopilot im kostenlosen Offline-Modus. 24/7 gilt, solange der PC an ist.
+   der Autopilot im kostenlosen Offline-Modus. Fuer viele Modelle zusaetzlich
+   OPENROUTER_API_KEY setzen (setx). 24/7 gilt, solange der PC an ist.
   =====================================================================
 "@ -ForegroundColor Green
