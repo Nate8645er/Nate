@@ -274,6 +274,7 @@ function startRec(continuous) {
 }
 function toggleWake() {
   wakeOn = !wakeOn;
+  try { localStorage.setItem('jarvisWake', wakeOn ? '1' : '0'); } catch (e) {}
   $('wake').classList.toggle('on', wakeOn);
   $('wake').textContent = wakeOn ? '🎤 WAKE WORD AN' : '🎤 WAKE WORD AUS';
   if (wakeOn) { startRec(true); $('voicestat').textContent = 'Lausche dauerhaft auf „Hey Jarvis"…'; speak('Jarvis online.'); }
@@ -281,6 +282,14 @@ function toggleWake() {
 }
 function listenOnce() { wakeOn = false; $('wake').classList.remove('on');
   $('voicestat').textContent = 'Ich höre — sprich jetzt…'; startRec(false); }
+// Beim Laden automatisch fortsetzen, wenn zuvor aktiviert (nach einmaliger Mikro-Freigabe)
+try {
+  if (localStorage.getItem('jarvisWake') === '1' && SR) {
+    wakeOn = true; $('wake').classList.add('on'); $('wake').textContent = '🎤 WAKE WORD AN';
+    $('voicestat').textContent = 'Lausche auf „Hey Jarvis"… (bei Bedarf Mikrofon erlauben)';
+    startRec(true);
+  }
+} catch (e) {}
 
 
 </script>

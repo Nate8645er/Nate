@@ -101,18 +101,24 @@ pip install -r jarvis/requirements.txt
 python -m jarvis.run --demo
 ```
 
-## Fable 5 / Claude aktivieren
+## API-Keys setzen (PowerShell — kein Klicken nötig)
 
-Ohne API-Key läuft alles im klar gekennzeichneten **Offline-Modus**
-(regelbasierte Antworten, kostenlos). Für echte KI-Antworten der aktiven
-Agenten:
+JARVIS verbindet sich beim Start **automatisch** mit allem, was als
+Umgebungsvariable gesetzt ist. Am einfachsten mit dem mitgelieferten Skript
+**`JARVIS-API-Keys-Setzen.ps1`** (Rechtsklick → „Mit PowerShell ausführen") —
+es fragt die Keys ab und setzt sie dauerhaft. Oder direkt im Terminal:
 
 ```powershell
-setx ANTHROPIC_API_KEY "sk-ant-..."
-setx JARVIS_MODEL "claude-fable-5"   # optional, ist der Standard
+setx ANTHROPIC_API_KEY  "sk-ant-..."     # Fable 5 / Claude
+setx OPENROUTER_API_KEY "sk-or-..."      # 32 Modelle (openrouter.ai/keys)
+setx ELEVENLABS_API_KEY "..."            # echte Stimme (elevenlabs.io)
+setx JARVIS_VOICE_ID    "hx3VHMzUAVVvishlV9u9"   # Stimm-ID (schon Standard)
+setx JARVIS_MODEL       "claude-fable-5" # optional, ist der Standard
 ```
 
-Danach neu starten. **Achtung:** Jeder aktive Agent-Aufruf kostet dann echtes
+Danach JARVIS **neu starten** — fertig, alles ist automatisch verbunden.
+Alternativ lassen sich die Keys auch per Klick im Dashboard eintragen.
+Ohne Key läuft alles im klar gekennzeichneten **Offline-Modus** (kostenlos). **Achtung:** Jeder aktive Agent-Aufruf kostet dann echtes
 API-Guthaben — genau deshalb ist der aktive Pool hart begrenzt und niemals
 „alle 100 Milliarden".
 
