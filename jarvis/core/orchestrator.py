@@ -158,6 +158,9 @@ class Orchestrator:
         from .skills import SkillRegistry
         self.skills = SkillRegistry(data_dir / "skills")
         self.memory = Memory(data_dir / "memory.db")
+        # Fortschritt: echtes Level-Up durch echte Arbeit
+        from .progression import Progression
+        self.progression = Progression(data_dir / "fortschritt.db")
         # Belegschaft-Betrieb: kontinuierliche Aktivierung des GESAMTEN Adressraums
         from .workforce import WorkforceEngine
         self.workforce = WorkforceEngine(waves=self.max_active)
@@ -254,6 +257,11 @@ class Orchestrator:
             task.status = "fertig"
             self.completed += 1
             await self.memory.remember(task.address, task.description, task.result)
+            # Echtes Level-Up: der Mitarbeiter verdient Erfahrung für echte Arbeit.
+            fort = self.progression.award(task.address)
+            if fort["level_up"]:
+                self.log("info", f"⬆ {employee.name} steigt auf — Bonus-Level "
+                                 f"{fort['bonus_level']} ({fort['erledigt']} Aufgaben)")
         except Exception as e:
             task.status = "fehler"
             task.result = f"{type(e).__name__}: {e}"
@@ -350,6 +358,7 @@ class Orchestrator:
             "logs": list(self.logs)[:60],
             "plugins": self.plugins.status(),
             "skills": [{"name": s.name, "description": s.description} for s in self.skills.all()],
+            "fortschritt": self.progression.totals(),
             "belegschaft": self.workforce.stats(),
             "autopilot": self.autopilot.stats(),
             "sicherheit": self.security.stats(),

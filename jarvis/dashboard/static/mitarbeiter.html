@@ -149,10 +149,14 @@ async function lookup(ev) {
   const r = await fetch('/api/employee/' + encodeURIComponent(a));
   if (!r.ok) { $('emp').innerHTML = `<div class="empcard">Ungültige Adresse.</div>`; return false; }
   const e = await r.json();
+  const bonus = e.bonus_level ? ` (+${e.bonus_level} durch ${e.erledigte_aufgaben} Aufgaben)` : '';
   $('emp').innerHTML = `<div class="empcard">
     <b>${esc(e.name)}</b> — ${esc(e.rolle)}, Team ${esc(e.team)} (Ebene ${esc(e.ebene)})<br>
+    <b style="color:var(--amber2)">${esc(e.meisterschaft)} · Level ${esc(e.level)}</b>${esc(bonus)}
+    · Erfahrung ${fmt(e.verdiente_xp + e.erfahrung_basis)} XP<br>
     Spezialisierung: ${esc(e.spezialisierung)}<br>
     Skills: ${esc(e.skills.join(', '))}<br>
+    Werkzeuge beherrscht: ${esc((e.werkzeuge_beherrscht||[]).join(', '))}<br>
     Ziele: ${esc(e.ziele.join(' · '))}<br>
     Priorität: ${esc(e.prioritaet)} · Plugins: ${esc(e.plugins_autorisiert.join(', '))}<br>
     Eigenes Unternehmen: <b>${esc(e.eigenes_unternehmen)}</b>

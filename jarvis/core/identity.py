@@ -62,6 +62,30 @@ _SKILL_POOL = ["Analyse", "Codegenerierung", "Testen", "Dokumentation",
                "Recherche", "Planung", "Review", "Automatisierung",
                "Datenverarbeitung", "Kommunikation", "Fehlersuche", "Design"]
 
+# Werkzeug-Kompetenzen (welche JARVIS-Werkzeuge ein Mitarbeiter beherrscht) —
+# mehr davon je höher das Level.
+_TOOL_POOL = ["dateien", "shell", "web", "browser", "code", "modelle", "skills",
+              "recherche", "planung", "sicherheit", "automatisierung", "pc"]
+
+_MASTERY = [(80, "Großmeister"), (60, "Meister"), (40, "Experte"),
+            (20, "Fortgeschritten"), (0, "Novize")]
+
+# Führungs-/Senior-Rollen bekommen einen Level-Bonus.
+_SENIOR_MARK = ("CEO", "COO", "CTO", "CFO", "Chief", "Lead", "Senior",
+                "Manager", "Architekt", "CISO", "Master")
+
+
+def mastery_of(level: int) -> str:
+    for schwelle, name in _MASTERY:
+        if level >= schwelle:
+            return name
+    return "Novize"
+
+
+def xp_for_level(level: int) -> int:
+    """Erfahrungspunkte, die zu einem Level gehören (steigende Kurve)."""
+    return level * level * 50
+
 _GOAL_POOL = ["Aufgaben präzise und nachvollziehbar erledigen",
               "Ergebnisse dokumentieren und mit dem Team teilen",
               "Fehler früh erkennen und Lösungen vorschlagen",
@@ -84,10 +108,19 @@ class VirtualEmployee:
     company: str               # eigenes virtuelles Unternehmen dieses Mitarbeiters
     depth: int = 0
     sub_employees: int = field(default=ADDRESS_SPACE)  # adressierbar in SEINEM Unternehmen
+    level: int = 1             # 1..99, prozedural (Basis-Level)
+    xp: int = 0               # Basis-Erfahrung zum Level
+    mastery: str = "Novize"    # Novize .. Großmeister
+    tools: tuple[str, ...] = ()  # beherrschte Werkzeuge (mehr je höher das Level)
 
     @property
     def display(self) -> str:
         return f"{self.name} ({self.role}, {self.team})"
+
+    @property
+    def rang(self) -> str:
+        """Kurzform für Anzeige: 'Meister Lvl 72'."""
+        return f"{self.mastery} Lvl {self.level}"
 
 
 def validate_address(address: str) -> list[int]:
@@ -119,9 +152,22 @@ def materialize(address: str) -> VirtualEmployee:
     team, roles = TEAMS[segments[-1] % len(TEAMS)]
     role = roles[rng.randrange(len(roles))]
     name = f"{_FIRST[rng.randrange(len(_FIRST))]} {_LAST[rng.randrange(len(_LAST))]}-{segments[-1] % 1000:03d}"
-    skills = tuple(rng.sample(_SKILL_POOL, k=4))
     goals = tuple(rng.sample(_GOAL_POOL, k=2))
     company = f"{name.split()[1].split('-')[0]} Ventures #{segments[-1] % 100_000}"
+    depth = len(segments) - 1
+
+    # --- Prozedurales Level & Meisterschaft (deterministisch, 0 Byte) ---
+    base = 1 + ((seed >> 8) % 90)                       # 1..90
+    if any(mark in role for mark in _SENIOR_MARK):
+        base += 9                                       # Führungs-/Senior-Bonus
+    base += min(depth * 3, 9)                           # tiefer = eigener Gründer
+    level = max(1, min(99, base))
+    mastery = mastery_of(level)
+    # mehr Skills & Werkzeuge, je höher das Level
+    n_skills = min(len(_SKILL_POOL), 4 + level // 30)   # 4..7
+    n_tools = min(len(_TOOL_POOL), 2 + level // 20)     # 2..7
+    skills = tuple(rng.sample(_SKILL_POOL, k=n_skills))
+    tools = tuple(rng.sample(_TOOL_POOL, k=n_tools))
 
     return VirtualEmployee(
         address=canonical,
@@ -133,7 +179,11 @@ def materialize(address: str) -> VirtualEmployee:
         goals=goals,
         priority=1 + (seed % 5),
         company=company,
-        depth=len(segments) - 1,
+        depth=depth,
+        level=level,
+        xp=xp_for_level(level),
+        mastery=mastery,
+        tools=tools,
     )
 
 

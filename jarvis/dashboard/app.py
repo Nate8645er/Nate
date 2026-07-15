@@ -266,6 +266,8 @@ async def employee(address: str) -> JSONResponse:
         e = materialize(address)
     except ValueError as err:
         raise HTTPException(400, str(err)) from err
+    fort = orchestrator.progression.get(e.address)
+    eff = orchestrator.progression.effective_level(e.level, e.address)
     return JSONResponse({
         "adresse": e.address, "name": e.name, "team": e.team, "rolle": e.role,
         "spezialisierung": e.specialization, "skills": list(e.skills),
@@ -273,6 +275,11 @@ async def employee(address: str) -> JSONResponse:
         "eigenes_unternehmen": e.company, "ebene": e.depth,
         "adressierbare_mitarbeiter_im_eigenen_unternehmen": e.sub_employees,
         "plugins_autorisiert": orchestrator.plugins.for_team(e.team),
+        # Level & Meisterschaft (prozedurale Basis + echt verdiente Erfahrung)
+        "level_basis": e.level, "level": eff, "meisterschaft": e.mastery,
+        "werkzeuge_beherrscht": list(e.tools),
+        "erfahrung_basis": e.xp, "erledigte_aufgaben": fort["erledigt"],
+        "bonus_level": fort["bonus_level"], "verdiente_xp": fort["xp"],
     })
 
 

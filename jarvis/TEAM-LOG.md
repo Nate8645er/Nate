@@ -53,3 +53,22 @@ bzw. lokales Fine-Tuning nutzbar.
 - **Ehrlich offen:** volles lokales Gewicht-Training (torch/transformers, GPU)
   bewusst NICHT enthalten — nur vorbereitet, klar dokumentiert.
 
+## Eintrag 004 — Level-/Meisterschafts-System („Max-Levelup")
+**Von:** Agent 1, 2, 3, 4, 7 · **Echt gemessen**
+**Ehrliche Einordnung:** 10²² fiktive Mitarbeiter einzeln per ML zu trainieren
+ist unmöglich (keine Daten/Compute, keine echten Modelle). Stattdessen ein
+ECHTES, skalierendes Fortschrittssystem:
+- **identity.py:** jeder Mitarbeiter bekommt prozedural (0 Byte) `level` (1–99),
+  `mastery` (Novize→Großmeister), `xp`, `tools` — mehr Skills/Werkzeuge je Level;
+  Führungs-/Senior-Rollen + tiefere Ebenen erhalten Bonus. Deterministisch.
+- **progression.py:** echtes Level-Up durch echte Arbeit — 10 XP je erledigter
+  Aufgabe, je 100 XP +1 Bonus-Level (max +20), in SQLite pro Adresse.
+- **orchestrator:** vergibt XP bei jeder wirklich erledigten Aufgabe, loggt Level-Ups.
+- **Dashboard:** Mitarbeiter-Karte zeigt Meisterschaft/Level/XP/Werkzeuge.
+- **Verbindung zur Trainings-Pipeline:** echtes Modell-Fine-Tuning auf den
+  echten Ausgaben (Eintrag 003).
+- **Agent 4:** 5 neue Tests inkl. End-to-End (Aufgabe→XP), **gesamt 75 grün**.
+- **Live-Beweis:** Nr. 31337 (Kai Lumen-337) Basis Level 29; nach 10 echten
+  Aufgaben effektives Level 30.
+
+
