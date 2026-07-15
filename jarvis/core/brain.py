@@ -23,8 +23,9 @@ import urllib.request
 from .identity import VirtualEmployee
 
 PREFERRED_MODEL = os.environ.get("JARVIS_MODEL", "claude-fable-5")
-# Fallback-Kette gültiger öffentlicher Modell-IDs, falls das bevorzugte abgelehnt wird.
-FALLBACK_MODELS = ["claude-fable-5", "claude-opus-4-8", "claude-sonnet-5",
+# Fallback-Kette: wird das bevorzugte Modell vom Key abgelehnt (400/404), werden
+# der Reihe nach breit verfügbare Modell-IDs probiert, bis eines antwortet.
+FALLBACK_MODELS = ["claude-opus-4-8", "claude-sonnet-5", "claude-haiku-4-5-20251001",
                    "claude-3-5-sonnet-latest", "claude-3-5-haiku-latest"]
 API_URL = "https://api.anthropic.com/v1/messages"
 
@@ -105,7 +106,11 @@ def describe_image(image_b64: str, media_type: str, frage: str) -> str:
 
 
 def _call_with_fallback(system: str, user: str, max_tokens: int = 600) -> str:
-    """Ruft das Modell; bei 404/model-not-found nächste ID der Kette probieren."""
+    """Ruft das Modell; wird eine Modell-ID abgelehnt (400/404), nächste probieren.
+
+    Auth-/Kredit-/Rate-Fehler (401/403/429) werden NICHT umgangen — dagegen hilft
+    kein anderes Modell, sie werden sofort gemeldet.
+    """
     global _active_model
     order = ([_active_model] if _active_model else []) + \
             [m for m in _candidates() if m != _active_model]
@@ -121,11 +126,13 @@ def _call_with_fallback(system: str, user: str, max_tokens: int = 600) -> str:
                 body = e.read().decode("utf-8", "ignore")
             except Exception:
                 pass
-            # Nur bei Modell-Problemen weiterprobieren; Auth-/Kredit-Fehler sofort melden.
-            if e.code in (404,) or "model" in body.lower():
-                last_err = f"[Modell {model} abgelehnt: {e.code}]"
-                continue
-            raise
+            if e.code in (401, 403, 429):
+                raise                      # Key/Guthaben-Problem: sofort melden
+            # 400/404 o. Ä.: dieses Modell taugt (für diesen Key) nicht -> nächstes
+            last_err = f"[Modell {model}: HTTP {e.code}] {body[:200]}"
+            if _active_model == model:
+                _active_model = None       # nicht an kaputtem Modell festhalten
+            continue
     raise RuntimeError(last_err or "kein gültiges Modell gefunden")
 
 
@@ -165,6 +172,15 @@ def answer(employee: VirtualEmployee, task: str) -> str:
     try:
         return _call_with_fallback(system, task)
     except urllib.error.HTTPError as e:
-        return f"[API-Fehler {e.code}] {e.reason} — Aufgabe nicht bearbeitet."
+        body = ""
+        try:
+            body = e.read().decode("utf-8", "ignore")
+        except Exception:
+            pass
+        reason = {401: "Key ungültig", 403: "Key nicht berechtigt",
+                  429: "Rate-Limit / kein Guthaben"}.get(e.code, f"HTTP {e.code}")
+        return f"[API-Fehler {e.code}: {reason}] {body[:250]}"
+    except RuntimeError as e:      # alle Modelle abgelehnt — echten Grund zeigen
+        return f"[Kein Modell nutzbar] {e}"
     except Exception as e:  # Netzwerk o. ä.: ehrlich melden statt erfinden
         return f"[API nicht erreichbar: {type(e).__name__}] Aufgabe nicht bearbeitet."

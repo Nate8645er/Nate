@@ -528,3 +528,37 @@ def test_openrouter_request_built_correctly(monkeypatch):
     assert cap["auth"] == "Bearer test-key"
     assert cap["body"]["model"] == "openai/gpt-4o"
     assert [m["role"] for m in cap["body"]["messages"]] == ["system", "user"]
+
+
+def test_brain_400_falls_back_to_working_model(monkeypatch):
+    """Fund (Live-PC): 400 auf bevorzugtes Modell -> Fallback bis eines antwortet."""
+    import io
+    import urllib.error
+    from jarvis.core import brain
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test")
+    brain._active_model = None
+
+    def fake_call(model, system, user, max_tokens=600):
+        if "haiku-4-5" in model:
+            return "OK"
+        raise urllib.error.HTTPError("u", 400, "Bad Request", {},
+                                     io.BytesIO(b'{"error":{"message":"model"}}'))
+    monkeypatch.setattr(brain, "_call", fake_call)
+    assert brain.answer(materialize("858"), "frage") == "OK"
+    assert "haiku-4-5" in brain.active_model()
+
+
+def test_brain_401_reported_immediately(monkeypatch):
+    """401 (Key ungültig) wird sofort ehrlich gemeldet, nicht umgangen."""
+    import io
+    import urllib.error
+    from jarvis.core import brain
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test")
+    brain._active_model = None
+
+    def fake_401(model, system, user, max_tokens=600):
+        raise urllib.error.HTTPError("u", 401, "Unauthorized", {},
+                                     io.BytesIO(b'{"error":{"message":"bad key"}}'))
+    monkeypatch.setattr(brain, "_call", fake_401)
+    r = brain.answer(materialize("858"), "frage")
+    assert "401" in r and "Key ungültig" in r
