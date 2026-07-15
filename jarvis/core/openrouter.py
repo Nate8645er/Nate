@@ -23,21 +23,49 @@ from .plugins import Plugin
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 # Kuratierte, gängige Modelle (Kurzname -> OpenRouter-ID). Nur Zugang, keine
-# vorgefertigten Prompts. Eigene IDs sind ebenfalls direkt nutzbar.
+# vorgefertigten Prompts. Eigene IDs sind ebenfalls direkt nutzbar
+# (z. B. model=anthropic/claude-3.5-sonnet). Model-IDs ändern sich mit der Zeit
+# — die volle Liste steht auf openrouter.ai/models.
 KNOWN_MODELS = {
+    # Anthropic
     "claude": "anthropic/claude-3.5-sonnet",
+    "claude-opus": "anthropic/claude-3-opus",
+    "claude-haiku": "anthropic/claude-3.5-haiku",
+    # OpenAI
     "gpt": "openai/gpt-4o",
     "gpt4": "openai/gpt-4o",
+    "gpt-mini": "openai/gpt-4o-mini",
+    "o1": "openai/o1",
+    # Google
     "gemini": "google/gemini-2.5-flash",
+    "gemini-pro": "google/gemini-2.5-pro",
+    # xAI
     "grok": "x-ai/grok-3",
+    # Meta
     "llama": "meta-llama/llama-3.3-70b-instruct",
+    # Mistral
     "mistral": "mistralai/mistral-large",
+    # DeepSeek
     "deepseek": "deepseek/deepseek-chat",
+    "deepseek-r1": "deepseek/deepseek-r1",
+    # Alibaba Qwen
     "qwen": "qwen/qwen-2.5-72b-instruct",
 }
 
+# Standard-Set für "vergleiche die modelle: …" — je ein starkes Modell pro
+# großem Anbieter. Anpassbar über JARVIS_COMPARE_MODELS (Komma-getrennt).
 DEFAULT_COMPARE = ["anthropic/claude-3.5-sonnet", "openai/gpt-4o",
-                   "google/gemini-2.5-flash"]
+                   "google/gemini-2.5-flash", "x-ai/grok-3",
+                   "deepseek/deepseek-chat"]
+
+
+def _compare_models() -> list[str]:
+    env = os.environ.get("JARVIS_COMPARE_MODELS", "").strip()
+    if env:
+        ids = [m.strip() for m in env.split(",") if m.strip()]
+        if ids:
+            return ids
+    return DEFAULT_COMPARE
 
 # Neutraler Assistenten-Systemprompt (bewusst KEINE Jailbreak-Anweisung).
 SYSTEM = ("Du bist ein hilfreicher, sachlicher Assistent in JARVIS. "
@@ -77,7 +105,7 @@ def ask(model: str, prompt: str, system: str = SYSTEM,
 def compare(prompt: str, models: list[str] | None = None,
             system: str = SYSTEM, max_tokens: int = 500) -> list[dict]:
     """Fragt mehrere Modelle parallel und gibt alle Antworten zurück."""
-    models = models or DEFAULT_COMPARE
+    models = models or _compare_models()
     out: list[dict] = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=min(5, len(models))) as ex:
         futs = {ex.submit(ask, m, prompt, system, max_tokens): m for m in models}
@@ -103,9 +131,10 @@ class OpenRouterPlugin(Plugin):
             **kwargs: object) -> object:
         if action in ("liste", "list", "modelle"):
             return {"bekannt": KNOWN_MODELS,
-                    "vergleich_standard": DEFAULT_COMPARE,
+                    "vergleich_standard": _compare_models(),
                     "aktiv": available(),
-                    "hinweis": "eigener Key als OPENROUTER_API_KEY setzen"}
+                    "hinweis": "eigener Key als OPENROUTER_API_KEY setzen; "
+                               "Vergleichsliste über JARVIS_COMPARE_MODELS anpassbar"}
         if action in ("frage", "ask", "prompt"):
             if not prompt:
                 raise ValueError("prompt= fehlt")

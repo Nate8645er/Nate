@@ -129,8 +129,10 @@ Im Chat/per Sprache:
 
 - `modell gpt: erkläre mir Rekursion` — ein bestimmtes Modell fragen
 - `frage gemini: schreibe ein Haiku` — dito
-- `vergleiche die modelle: was ist die beste Strategie?` — mehrere Modelle
-  parallel fragen und die Antworten nebeneinander sehen
+- `vergleiche die modelle: was ist die beste Strategie?` — fragt das
+  Standard-Set (Claude, GPT-4o, Gemini, Grok, DeepSeek) parallel und zeigt die
+  Antworten nebeneinander. Anpassbar über `JARVIS_COMPARE_MODELS`
+  (Komma-getrennte OpenRouter-IDs).
 
 Das ist ein **neutraler Multi-Modell-Zugang** — kein „Jailbreak", keine
 Prompt-Verschleierung, keine Umgehung von Modell-Sicherheiten. Ohne Key meldet
