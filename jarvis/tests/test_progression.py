@@ -152,6 +152,41 @@ def test_processing_chain_and_team_xp(tmp_path: Path):
     assert any(o.progression.get(m.address)["xp"] >= 1 for m in mates)
 
 
+def test_team_mode_multiple_contributions(tmp_path: Path):
+    """Team-Modus: 3 echte Beiträge + Chef-Zusammenführung (Gehirn gemockt)."""
+    import asyncio
+    from unittest import mock
+
+    from jarvis.core.orchestrator import Orchestrator
+    o = Orchestrator(tmp_path, max_active=2)
+    o.team_mode = True
+    calls = []
+
+    def fake_answer(emp, prompt):
+        calls.append(emp.name)
+        if "konsolidierte" in prompt.lower() or "führst du die beiträge" in prompt.lower():
+            return "FINALE Antwort vom Chef"
+        return f"Beitrag {emp.name}"
+
+    async def run():
+        with mock.patch("jarvis.core.brain.answer", fake_answer), \
+             mock.patch("jarvis.core.brain.mode", lambda: "api"):
+            await o.start()
+            t = o.submit("Erkläre KI", address="500")
+            for _ in range(60):
+                if t.status in ("fertig", "fehler"):
+                    break
+                await asyncio.sleep(0.05)
+            await o.stop()
+            return t
+
+    t = asyncio.run(run())
+    assert t.status == "fertig"
+    assert len(t.beitraege) == 3                    # 3 eigene Beiträge
+    assert len(calls) == 4                          # 3 Beiträge + 1 Zusammenführung
+    assert t.result == "FINALE Antwort vom Chef"
+
+
 def test_task_awards_xp_end_to_end(tmp_path: Path):
     """Eine echt erledigte Aufgabe erhöht die Erfahrung des Mitarbeiters."""
     import asyncio

@@ -63,6 +63,10 @@ async def _host_guard(request, call_next):
     return await call_next(request)
 
 
+class KeyIn(BaseModel):
+    schluessel: str
+
+
 class TaskIn(BaseModel):
     beschreibung: str
     adresse: str | None = None
@@ -285,6 +289,19 @@ async def employee(address: str) -> JSONResponse:
     })
 
 
+@app.get("/api/teammode")
+async def teammode_status() -> JSONResponse:
+    return JSONResponse({"an": orchestrator.team_mode})
+
+
+@app.post("/api/teammode")
+async def teammode_set(k: KeyIn) -> JSONResponse:
+    """Team-Modus an/aus (schluessel = '1'/'an' -> an, sonst aus)."""
+    orchestrator.team_mode = k.schluessel.strip().lower() in ("1", "an", "true", "on")
+    orchestrator.log("info", f"Team-Modus {'AN' if orchestrator.team_mode else 'AUS'}")
+    return JSONResponse({"an": orchestrator.team_mode})
+
+
 @app.get("/api/teams")
 async def teams(company: str = "") -> JSONResponse:
     """Die 25 Teams eines Unternehmens mit ihrem jeweiligen Teamleiter (Chef)."""
@@ -384,9 +401,6 @@ async def business() -> JSONResponse:
         },
     })
 
-
-class KeyIn(BaseModel):
-    schluessel: str
 
 
 @app.get("/api/brain")

@@ -82,6 +82,7 @@ class Task:
     boss: str = ""                    # Teamleiter, der die Aufgabe überwacht/delegiert
     kette: list = field(default_factory=list)      # JARVIS -> Chef -> Mitarbeiter
     mitwirkende: list = field(default_factory=list)  # Team-Kollegen, die mitwirken
+    beitraege: list = field(default_factory=list)  # Team-Modus: einzelne Beiträge
     created: float = field(default_factory=time.time)
     finished: float = 0.0
     is_demo: bool = False
@@ -91,6 +92,7 @@ class Task:
                 "adresse": self.address, "status": self.status,
                 "agent": self.agent, "team": self.team, "chef": self.boss,
                 "kette": self.kette, "mitwirkende": self.mitwirkende,
+                "beitraege": self.beitraege,
                 "ergebnis": self.result[:400], "demo": self.is_demo}
 
 
@@ -130,6 +132,9 @@ class Memory:
 class Orchestrator:
     def __init__(self, data_dir: Path, max_active: int | None = None) -> None:
         self.max_active = max_active or hardware_limit()
+        # Team-Modus (abschaltbar): mehrere Teammitglieder liefern eigene Beiträge,
+        # der Chef führt sie zusammen. Im API-Modus mehrere Aufrufe pro Frage!
+        self.team_mode = os.environ.get("JARVIS_TEAM_MODE") == "1"
         self.queue: asyncio.Queue[Task] = asyncio.Queue()
         self.active: dict[int, Task] = {}
         self.recent: deque[Task] = deque(maxlen=200)
@@ -275,6 +280,8 @@ class Orchestrator:
                     raise ValueError("Syntax: !skill <name> <aufgabentext...>")
                 prompt = self.skills.apply(parts[1], parts[2] if len(parts) > 2 else "")
                 task.result = await asyncio.to_thread(brain.answer, employee, prompt)
+            elif self.team_mode:
+                task.result = await self._team_answer(employee, boss, task)
             else:
                 task.result = await asyncio.to_thread(brain.answer, employee, task.description)
             task.status = "fertig"
@@ -304,6 +311,30 @@ class Orchestrator:
             task.finished = time.time()
             self.active.pop(task.id, None)
             self.recent.appendleft(task)
+
+    async def _team_answer(self, employee: Any, boss: Any, task: Task) -> str:
+        """Team-Modus: mehrere Mitglieder liefern EIGENE echte Beiträge, der Chef
+        führt sie zu einer Antwort zusammen. Im API-Modus mehrere Aufrufe!"""
+        from .identity import team_members
+        members = [employee] + team_members(employee.address, n=2)  # Bearbeiter + 2 Kollegen
+        # Jedes Mitglied beantwortet die Frage eigenständig (echte Aufrufe, parallel).
+        contribs = await asyncio.gather(
+            *[asyncio.to_thread(brain.answer, m, task.description) for m in members])
+        task.beitraege = [{"name": m.name, "rolle": m.role, "beitrag": c}
+                          for m, c in zip(members, contribs)]
+        self.log("info", f"#{task.id} Team-Modus: {len(members)} Beiträge, "
+                         f"{boss.name} führt zusammen ({len(members) + 1} Modell-Aufrufe)")
+        # Der Chef führt die Beiträge zu einer konsolidierten Antwort zusammen.
+        zusammenfassung = (
+            f"Als Teamleiter führst du die Beiträge deines Teams zu EINER besten, "
+            f"widerspruchsfreien Antwort auf die Frage zusammen. Frage: "
+            f"„{task.description}\"\n\n" +
+            "\n".join(f"Beitrag {i + 1} ({b['name']}): {b['beitrag']}"
+                      for i, b in enumerate(task.beitraege)) +
+            "\n\nGib nur die konsolidierte Endantwort auf Deutsch, ohne die Beiträge "
+            "zu wiederholen. Erfinde nichts dazu.")
+        final = await asyncio.to_thread(brain.answer, boss, zusammenfassung)
+        return final
 
     async def _worker(self) -> None:
         while True:
@@ -391,6 +422,7 @@ class Orchestrator:
             "logs": list(self.logs)[:60],
             "plugins": self.plugins.status(),
             "skills": [{"name": s.name, "description": s.description} for s in self.skills.all()],
+            "team_modus": self.team_mode,
             "fortschritt": self.progression.totals(),
             "belegschaft": self.workforce.stats(),
             "autopilot": self.autopilot.stats(),

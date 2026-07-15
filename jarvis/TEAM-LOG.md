@@ -124,3 +124,18 @@ ECHTES, skalierendes Fortschrittssystem:
   Mehrfach-Arbeit.
 - **Agent 4:** 2 neue Tests, gesamt **82 grün**. Live: Kette + Team-Mitwirkung
   im Chat, 0 JS-Fehler.
+
+## Eintrag 009 — Echter Team-Modus (abschaltbar, mit Kostenwarnung)
+**Von:** Agent 1, 2, 4, 7 · **Echt gemessen**
+**Wunsch:** mehrere Mitarbeiter geben je einen echten Beitrag, der Chef führt zusammen.
+- **orchestrator:** `team_mode` (Standard AUS). An: 3 Teammitglieder beantworten
+  die Frage eigenständig (echte, parallele brain.answer-Aufrufe), der Teamleiter
+  führt die Beiträge zu EINER Antwort zusammen (`_team_answer`). `Task.beitraege`.
+- **/api/teammode:** Status + Umschalten. `KeyIn` nach oben verschoben (sonst
+  wurde der Body als Query fehlinterpretiert — behoben & verifiziert).
+- **Dashboard:** Panel „TEAM-MODUS" mit Schalter + KOSTENWARNUNG (im API-Modus
+  ~4 Aufrufe/Frage); Chat zeigt die Einzelbeiträge + „vom Teamleiter zusammengeführt".
+- **Ehrlich:** nur im Team-Modus entstehen Mehrfach-Kosten, klar gewarnt; aus =
+  ein Aufruf. Keine erfundenen Beiträge (Gehirn-gemockt getestet).
+- **Agent 4:** 3 neue Tests (Team-Modus 4 Aufrufe, Toggle, /api/teams),
+  gesamt **85 grün**. Live: Schalter da, 0 JS-Fehler.

@@ -41,6 +41,18 @@
       </div>
       <div id="voicehint" style="font-size:10.5px; color:var(--dim); margin-top:4px"></div>
     </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>TEAM-MODUS</b> // MEHRERE MITARBEITER + CHEF FÜHRT ZUSAMMEN</h2>
+      <div style="display:flex; gap:8px; align-items:center">
+        <button id="tmbtn" onclick="toggleTeamMode()">👥 TEAM-MODUS AUS</button>
+        <span id="tmstate" style="font-size:11px; color:var(--dim)">aus</span>
+      </div>
+      <div style="font-size:10.5px; color:#e8c98a; margin-top:6px">
+        An: 3 Teammitglieder geben je einen echten Beitrag, der Teamleiter führt sie
+        zusammen. <b>Achtung:</b> im API-Modus ca. 4 Modell-Aufrufe pro Frage (mehr Kosten).
+        Aus: eine Antwort vom zuständigen Mitarbeiter (günstig).
+      </div>
+    </div>
   </div>
 
   <!-- rechte Spalte: Modellzustand + Gedächtnis -->
@@ -124,7 +136,13 @@ async function dispatch(text) {
           kette += '\n👥 Team wirkt mit: ' + t.mitwirkende.map(m => m.name).join(', ');
         kette += '\n\n';
       }
-      d.childNodes[1].textContent = kette + (t.ergebnis || '(kein Ergebnis)');
+      let beitr = '';
+      if (t.beitraege && t.beitraege.length) {
+        beitr = '— Team-Beiträge —\n' +
+          t.beitraege.map(b => '• ' + b.name + ': ' + (b.beitrag || '').slice(0, 160)).join('\n') +
+          '\n\n— Vom Teamleiter zusammengeführt —\n';
+      }
+      d.childNodes[1].textContent = kette + beitr + (t.ergebnis || '(kein Ergebnis)');
       speak(t.ergebnis); return;
     }
   }
@@ -189,6 +207,26 @@ try {
 } catch (e) {}
 function listenOnce() { wakeOn = false; $('wake').classList.remove('on');
   $('voicestat').textContent = 'Ich höre — sprich jetzt…'; startRec(false); }
+
+// --- Team-Modus ---
+async function tmStatus() {
+  try {
+    const d = await (await fetch('/api/teammode')).json();
+    const el = $('tmbtn'); if (!el) return;
+    el.classList.toggle('on', !!d.an);
+    el.textContent = d.an ? '👥 TEAM-MODUS AN' : '👥 TEAM-MODUS AUS';
+    $('tmstate').textContent = d.an ? 'an — mehrere Beiträge + Chef führt zusammen' : 'aus';
+  } catch (e) {}
+}
+async function toggleTeamMode() {
+  const d = await (await fetch('/api/teammode')).json();
+  const neu = d.an ? 'aus' : 'an';
+  if (neu === 'an' && !confirm('Team-Modus einschalten?\n\nDann geben 3 Mitarbeiter je einen Beitrag und der Chef führt zusammen — im API-Modus ca. 4 Modell-Aufrufe pro Frage (mehr Kosten).')) return;
+  await fetch('/api/teammode', { method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ schluessel: neu }) });
+  tmStatus();
+}
+setInterval(tmStatus, 4000); tmStatus();
 
 // --- Echte Stimme (ElevenLabs) ---
 async function voiceStatus() {

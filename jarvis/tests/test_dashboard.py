@@ -220,6 +220,19 @@ def test_fortschritt_top_and_employee_level(client):
     assert e["erledigte_aufgaben"] >= 1
 
 
+def test_teammode_toggle(client):
+    """Team-Modus an/aus über das Dashboard schaltbar."""
+    assert client.post("/api/teammode", json={"schluessel": "an"}).json()["an"] is True
+    assert client.get("/api/teammode").json()["an"] is True
+    assert client.post("/api/teammode", json={"schluessel": "aus"}).json()["an"] is False
+
+
+def test_teams_endpoint(client):
+    d = client.get("/api/teams").json()
+    assert d["anzahl_teams"] == 25 and len(d["teams"]) == 25
+    assert all("chef" in t and "team" in t for t in d["teams"])
+
+
 def test_training_build_endpoint(client):
     """Datensatz-Bau per Klick liefert eine gültige Antwort (auch bei 0 Beispielen)."""
     r = client.post("/api/training/build")
