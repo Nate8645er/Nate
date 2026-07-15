@@ -51,7 +51,7 @@
     </div>
     <div class="panel" style="margin-top:10px">
       <h2><b>LIVE</b> // WER ARBEITET GERADE WO</h2>
-      <table><thead><tr><th>#</th><th>Mitarbeiter</th><th>Team</th><th>Adresse</th><th>Aufgabe</th><th>Status</th></tr></thead>
+      <table><thead><tr><th>#</th><th>Mitarbeiter</th><th>Teamleiter</th><th>Team</th><th>Aufgabe</th><th>Status</th></tr></thead>
       <tbody id="tasks"></tbody></table>
     </div>
     <div class="panel" style="margin-top:10px">
@@ -119,7 +119,8 @@ async function tick() {
     const all = [...s.aktive, ...s.letzte_aufgaben];
     $('tasks').innerHTML = all.slice(0, 18).map(t =>
       `<tr><td class="mono">${t.id}</td><td>${esc(t.agent || '—')}${t.demo ? ' <span class="demo">DEMO</span>' : ''}</td>` +
-      `<td>${esc(t.team || '')}</td><td class="mono" style="color:var(--dim)">${esc(t.adresse)}</td>` +
+      `<td style="color:var(--dim)">${esc((t.chef || '').split(' (')[0] || '—')}</td>` +
+      `<td>${esc(t.team || '')}</td>` +
       `<td>${esc((t.beschreibung||'').slice(0, 42))}</td>` +
       `<td><span class="tag ${t.status}">${t.status.toUpperCase()}</span></td></tr>`).join('');
     const counts = {};

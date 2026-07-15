@@ -84,6 +84,36 @@ def test_progression_totals(tmp_path: Path):
     assert len(p.top()) == 2
 
 
+def test_task_goes_through_team_boss(tmp_path: Path):
+    """Delegation: die Aufgabe wird vom Teamleiter überwacht; beide bekommen XP."""
+    import asyncio
+
+    from jarvis.core.identity import materialize
+    from jarvis.core.orchestrator import Orchestrator
+    o = Orchestrator(tmp_path, max_active=2)
+
+    async def run():
+        await o.start()
+        # Adresse 500 ist kein Chef -> wird delegiert
+        t = o.submit("!plugin calc eval expression=3+4", address="500")
+        for _ in range(60):
+            if t.status in ("fertig", "fehler"):
+                break
+            await asyncio.sleep(0.05)
+        await o.stop()
+        return t
+
+    t = asyncio.run(run())
+    assert t.status == "fertig"
+    worker = materialize("500")
+    assert worker.is_team_boss is False
+    boss = materialize(worker.boss_address)
+    assert boss.name in t.boss                      # Chef steht auf der Aufgabe
+    # Chef bekam Führungs-XP fürs Delegieren
+    assert o.progression.get(worker.boss_address)["erledigt"] >= 1
+    assert o.progression.get("500")["erledigt"] >= 1
+
+
 def test_task_awards_xp_end_to_end(tmp_path: Path):
     """Eine echt erledigte Aufgabe erhöht die Erfahrung des Mitarbeiters."""
     import asyncio

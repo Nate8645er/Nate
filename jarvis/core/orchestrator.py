@@ -79,6 +79,7 @@ class Task:
     result: str = ""
     agent: str = ""
     team: str = ""
+    boss: str = ""                    # Teamleiter, der die Aufgabe überwacht/delegiert
     created: float = field(default_factory=time.time)
     finished: float = 0.0
     is_demo: bool = False
@@ -86,7 +87,7 @@ class Task:
     def as_dict(self) -> dict[str, Any]:
         return {"id": self.id, "beschreibung": self.description[:200],
                 "adresse": self.address, "status": self.status,
-                "agent": self.agent, "team": self.team,
+                "agent": self.agent, "team": self.team, "chef": self.boss,
                 "ergebnis": self.result[:400], "demo": self.is_demo}
 
 
@@ -220,10 +221,16 @@ class Orchestrator:
             return
         task.agent = employee.display
         task.team = employee.team
+        # Team-Chef überwacht: der Teamleiter delegiert an das Teammitglied.
+        boss = materialize(employee.boss_address)
+        task.boss = boss.display
         task.status = "aktiv"
         self.active[task.id] = task
         self.activated_agents += 1
-        self.log("info", f"#{task.id} aktiv: {employee.display}")
+        if employee.is_team_boss:
+            self.log("info", f"#{task.id} aktiv: Teamleiter {employee.name} bearbeitet selbst")
+        else:
+            self.log("info", f"#{task.id}: Teamleiter {boss.name} delegiert an {employee.name}")
         try:
             # Freie Sätze zuerst auf ein echtes Kommando prüfen ("öffne YouTube" -> Aktion)
             command = task.description
@@ -257,11 +264,17 @@ class Orchestrator:
             task.status = "fertig"
             self.completed += 1
             await self.memory.remember(task.address, task.description, task.result)
-            # Echtes Level-Up: der Mitarbeiter verdient Erfahrung für echte Arbeit.
+            # Echtes Level-Up: der Mitarbeiter verdient volle Erfahrung für echte Arbeit.
             fort = self.progression.award(task.address)
             if fort["level_up"]:
                 self.log("info", f"⬆ {employee.name} steigt auf — Bonus-Level "
                                  f"{fort['bonus_level']} ({fort['erledigt']} Aufgaben)")
+            # Der Teamleiter bekommt Führungs-XP fürs Delegieren/Überwachen.
+            if not employee.is_team_boss:
+                bf = self.progression.award(employee.boss_address, amount=3)
+                if bf["level_up"]:
+                    self.log("info", f"⬆ Teamleiter {boss.name} steigt durch Führung auf — "
+                                     f"Bonus-Level {bf['bonus_level']}")
         except Exception as e:
             task.status = "fehler"
             task.result = f"{type(e).__name__}: {e}"

@@ -95,3 +95,16 @@ ECHTES, skalierendes Fortschrittssystem:
   Mitarbeiter-Karte zeigt Chef bzw. „★ TEAMLEITER".
 - **Agent 4:** 2 neue Tests, gesamt **79 grün**. Live verifiziert: 25 Chefs,
   Mitarbeiter kennt Chef im gleichen Team, Panel rendert, 0 JS-Fehler.
+
+## Eintrag 007 — Chefs funktional: Delegation
+**Von:** Agent 1, 2, 4, 7 · **Echt gemessen**
+**Wunsch:** Aufgaben zuerst an den Teamleiter, der im Team verteilt.
+- **orchestrator:** jede Aufgabe wird vom Teamleiter des Teams überwacht;
+  ist der Bearbeiter kein Chef, delegiert der Teamleiter an ihn (im Log:
+  „Teamleiter X delegiert an Y"). `Task.boss`/`chef` im State.
+- **XP:** Mitglied bekommt volle 10 XP, Teamleiter 3 Führungs-XP — Chefs
+  steigen also durchs Leiten auf.
+- **Dashboard:** Live-Tabelle zeigt Spalte „Teamleiter".
+- **Agent 4:** 1 neuer Test (Delegation end-to-end), gesamt **80 grün**.
+- **Live-Beweis:** Nova Nexus-500 → Teamleiter Mira Klar-000 delegiert →
+  erledigt; Mitglied 10 XP, Chef 3 XP.
