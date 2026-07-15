@@ -82,6 +82,10 @@ def _load_persisted_key() -> None:
         os.environ["ANTHROPIC_API_KEY"] = data["anthropic_api_key"]
     if data.get("openrouter_api_key") and not os.environ.get("OPENROUTER_API_KEY"):
         os.environ["OPENROUTER_API_KEY"] = data["openrouter_api_key"]
+    if data.get("elevenlabs_api_key") and not os.environ.get("ELEVENLABS_API_KEY"):
+        os.environ["ELEVENLABS_API_KEY"] = data["elevenlabs_api_key"]
+    if data.get("voice_id") and not os.environ.get("JARVIS_VOICE_ID"):
+        os.environ["JARVIS_VOICE_ID"] = data["voice_id"]
 
 
 def _persist_key(field: str, value: str) -> None:
@@ -394,6 +398,51 @@ async def modelle_key(k: KeyIn) -> JSONResponse:
     from jarvis.core import openrouter
     orchestrator.log("info", "OpenRouter-Key gesetzt — Multi-Modell-Zugang aktiv")
     return JSONResponse({"aktiv": openrouter.available()})
+
+
+# --- Echte Stimme (ElevenLabs, optional) -----------------------------------
+
+class VoiceKeyIn(BaseModel):
+    schluessel: str
+    stimm_id: str | None = None
+
+
+@app.get("/api/voice/status")
+async def voice_status() -> JSONResponse:
+    from jarvis.core import voice
+    return JSONResponse({"aktiv": voice.available(), "stimm_id": voice.voice_id()})
+
+
+@app.post("/api/voice/key")
+async def voice_key(k: VoiceKeyIn) -> JSONResponse:
+    """ElevenLabs-Key (+ optional Stimm-ID) lokal setzen und persistieren."""
+    from jarvis.core import voice
+    key = k.schluessel.strip()
+    if len(key) < 12:
+        raise HTTPException(400, "Key sieht ungültig aus (zu kurz)")
+    os.environ["ELEVENLABS_API_KEY"] = key
+    _persist_key("elevenlabs_api_key", key)
+    if k.stimm_id and k.stimm_id.strip():
+        os.environ["JARVIS_VOICE_ID"] = k.stimm_id.strip()
+        _persist_key("voice_id", k.stimm_id.strip())
+    orchestrator.log("info", f"Echte Stimme aktiviert (ElevenLabs, Stimme {voice.voice_id()})")
+    return JSONResponse({"aktiv": voice.available(), "stimm_id": voice.voice_id()})
+
+
+@app.post("/api/voice/say")
+async def voice_say(k: KeyIn) -> Response:
+    """Text -> Audio (MP3) mit der echten Stimme. 204, wenn kein Key/Fehler
+    (dann nutzt die Weboberfläche automatisch die Browser-Stimme)."""
+    import asyncio
+
+    from jarvis.core import voice
+    text = k.schluessel.strip()   # 'schluessel' trägt hier den Text
+    if not text:
+        raise HTTPException(400, "kein Text")
+    audio = await asyncio.to_thread(voice.synthesize, text)
+    if not audio:
+        return Response(status_code=204)
+    return Response(content=audio, media_type="audio/mpeg")
 
 
 @app.get("/autopilot")

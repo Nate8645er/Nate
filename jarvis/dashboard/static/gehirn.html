@@ -29,14 +29,17 @@
     </div>
     <div class="panel" style="margin-top:10px">
       <h2><b>SPRACHE</b> // „HEY JARVIS"</h2>
-      <div style="display:flex; gap:6px">
+      <div style="display:flex; gap:6px; flex-wrap:wrap">
         <button id="wake" onclick="toggleWake()">🎤 WAKE WORD AUS</button>
         <button onclick="listenOnce()">EINMAL ZUHÖREN</button>
+        <button id="voicebtn" onclick="voiceKey()">🔊 ECHTE STIMME</button>
+        <button onclick="testVoice()" style="font-size:11px">STIMME TESTEN</button>
       </div>
       <div id="voicestat" style="font-size:11px; color:var(--dim); margin-top:6px">
         Browser-Spracherkennung (Edge/Chrome). Sage „Hey Jarvis", dann deinen Befehl.
         JARVIS antwortet mit Sprachausgabe.
       </div>
+      <div id="voicehint" style="font-size:10.5px; color:var(--dim); margin-top:4px"></div>
     </div>
   </div>
 
@@ -125,8 +128,21 @@ function sendTask(ev) { ev.preventDefault(); const v = $('task').value.trim();
 
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null, wakeOn = false;
-function speak(text) {
-  if (!window.speechSynthesis || !text) return;
+async function speak(text) {
+  if (!text) return;
+  // 1) Echte Stimme (ElevenLabs) versuchen
+  try {
+    const r = await fetch('/api/voice/say', { method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ schluessel: text.slice(0, 2000) }) });
+    if (r.ok && r.status !== 204) {
+      const url = URL.createObjectURL(await r.blob());
+      const a = new Audio(url); a.onended = () => URL.revokeObjectURL(url);
+      a.play(); return;
+    }
+  } catch (e) {}
+  // 2) Fallback: Browser-Stimme
+  if (!window.speechSynthesis) return;
   const u = new SpeechSynthesisUtterance(text.slice(0, 300));
   u.lang = 'de-DE'; u.rate = 1.05; speechSynthesis.speak(u);
 }
@@ -157,6 +173,40 @@ function toggleWake() {
 }
 function listenOnce() { wakeOn = false; $('wake').classList.remove('on');
   $('voicestat').textContent = 'Ich höre — sprich jetzt…'; startRec(false); }
+
+// --- Echte Stimme (ElevenLabs) ---
+async function voiceStatus() {
+  try {
+    const d = await (await fetch('/api/voice/status')).json();
+    const el = $('voicebtn'); if (!el) return;
+    el.classList.toggle('on', !!d.aktiv);
+    el.textContent = d.aktiv ? '🔊 ECHTE STIMME AN' : '🔊 ECHTE STIMME';
+    $('voicehint').innerHTML = d.aktiv
+      ? 'Echte Stimme aktiv · Stimm-ID <span class="mono">' + esc(d.stimm_id) + '</span>'
+      : 'Ohne ElevenLabs-Key spricht JARVIS mit der Browser-Stimme.';
+  } catch (e) {}
+}
+async function voiceKey() {
+  const d = await (await fetch('/api/voice/status')).json();
+  const key = prompt('ElevenLabs-API-Key eingeben.\n' +
+                     'Key von elevenlabs.io. Wird nur lokal auf diesem PC gespeichert:');
+  if (!key) return;
+  const sid = prompt('Stimm-ID (leer lassen = aktuelle behalten):', d.stimm_id || '');
+  const r = await fetch('/api/voice/key', { method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ schluessel: key.trim(), stimm_id: (sid || '').trim() }) });
+  if (r.ok) { const j = await r.json();
+    alert(j.aktiv ? 'Echte Stimme aktiviert!\nStimm-ID: ' + j.stimm_id +
+                    '\n\nHinweis: Jede Sprachausgabe kostet ElevenLabs-Guthaben.'
+                  : 'Key gespeichert, aber noch nicht aktiv.'); }
+  else { alert('Key wurde nicht akzeptiert (zu kurz?).'); }
+  voiceStatus();
+}
+function testVoice() {
+  $('voicestat').textContent = 'Stimme wird getestet…';
+  speak('Hallo, ich bin Jarvis. Deine echte Stimme funktioniert.');
+}
+setInterval(voiceStatus, 4000); voiceStatus();
 
 
 </script>

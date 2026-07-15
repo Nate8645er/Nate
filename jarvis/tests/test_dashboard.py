@@ -206,6 +206,23 @@ def test_openrouter_key_endpoint(client, monkeypatch):
     assert client.get("/api/modelle/key").json()["aktiv"] is True
 
 
+def test_voice_endpoints(client, monkeypatch):
+    """Echte Stimme (ElevenLabs): Status, Key setzen, Fallback ohne Key (204)."""
+    monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)
+    # Standard-Stimm-ID ist die vorgegebene
+    st = client.get("/api/voice/status").json()
+    assert st["aktiv"] is False and st["stimm_id"] == "hx3VHMzUAVVvishlV9u9"
+    # ohne Key -> 204 (Weboberfläche nutzt dann Browser-Stimme)
+    assert client.post("/api/voice/say", json={"schluessel": "hallo"}).status_code == 204
+    # Key + Stimm-ID setzen -> aktiv
+    r = client.post("/api/voice/key",
+                    json={"schluessel": "11labs-test-key-123", "stimm_id": "abc123voiceid"})
+    assert r.status_code == 200 and r.json()["aktiv"] is True
+    assert r.json()["stimm_id"] == "abc123voiceid"
+    # zu kurzer Key -> 400
+    assert client.post("/api/voice/key", json={"schluessel": "x"}).status_code == 400
+
+
 # ---------------------------------------------------------------------------
 # Claw-Code-Route: End-to-End über das Dashboard
 # ---------------------------------------------------------------------------

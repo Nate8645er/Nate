@@ -148,6 +148,21 @@ Fehlermeldung statt einer erfundenen Antwort — sobald die ID live ist,
 funktioniert sie automatisch. Die aktuell verfügbaren IDs stehen auf
 openrouter.ai/models.
 
+## Sprache: „Hey Jarvis" + echte Stimme
+
+JARVIS hört zu und antwortet gesprochen (Seiten **Start** und **Gehirn**):
+
+- **Zuhören** — Button „🎤 WAKE WORD AN", dann „Hey Jarvis, …" (Edge/Chrome).
+- **Sprechen** — er liest seine Antworten laut vor.
+- **AirPods** — als Standard-Audiogerät in Windows koppeln, dann läuft alles
+  über die AirPods (Mikro + Wiedergabe).
+
+Standardmäßig spricht JARVIS mit der **kostenlosen Browser-Stimme**. Für eine
+**echte, hochwertige Stimme** (ElevenLabs): auf der Gehirn-Seite Button
+„🔊 ECHTE STIMME" → ElevenLabs-Key + Stimm-ID eintragen (wird lokal gespeichert).
+Ohne Key oder bei einem Fehler fällt JARVIS automatisch auf die Browser-Stimme
+zurück. Stimm-ID auch über `JARVIS_VOICE_ID` setzbar.
+
 ## Dashboard (Live-Ticker)
 
 - Adressierbare Mitarbeiter, **aktive Agenten / Hardware-Limit**, wartende
