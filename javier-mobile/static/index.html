@@ -53,6 +53,30 @@
     color: var(--cyan); border-color: var(--cyan);
     box-shadow: 0 0 8px rgba(55, 200, 240, 0.4);
   }
+  #voiceBtn {
+    background: none; border: 1px solid var(--cyan-dim); color: var(--muted);
+    border-radius: 12px; padding: 5px 10px; font-size: 11px; letter-spacing: 1px;
+  }
+  #voicePanel {
+    display: none; padding: 12px 16px; border-bottom: 1px solid rgba(55, 200, 240, 0.15);
+    background: var(--panel);
+  }
+  #voicePanel.open { display: block; }
+  #voicePanel label {
+    display: flex; align-items: center; gap: 10px; margin: 8px 0;
+    font-size: 13px; color: var(--muted);
+  }
+  #voicePanel label span { width: 62px; flex-shrink: 0; }
+  #voiceSelect {
+    flex: 1; background: var(--bg); color: var(--text); font-size: 14px;
+    border: 1px solid var(--cyan-dim); border-radius: 8px; padding: 8px; min-width: 0;
+  }
+  #voicePanel input[type="range"] { flex: 1; accent-color: var(--cyan); }
+  #voiceTest {
+    margin-top: 6px; padding: 9px 14px; border-radius: 10px; width: 100%;
+    background: none; border: 1px solid var(--cyan); color: var(--cyan);
+    font-size: 14px; font-weight: 600;
+  }
 
   #chat {
     flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
@@ -132,9 +156,17 @@
   <h1>J A V I E R</h1>
   <div id="headRight">
     <span id="status">offline</span>
+    <button id="voiceBtn" aria-label="Stimme einstellen">STIMME</button>
     <button id="autoBtn" aria-label="Gespraechsmodus umschalten">AUTO AUS</button>
   </div>
 </header>
+
+<div id="voicePanel">
+  <label><span>Stimme</span><select id="voiceSelect"></select></label>
+  <label><span>Tempo</span><input type="range" id="rateRange" min="0.6" max="1.4" step="0.05"></label>
+  <label><span>Tonhoehe</span><input type="range" id="pitchRange" min="0.5" max="1.5" step="0.05"></label>
+  <button id="voiceTest">Probehoeren</button>
+</div>
 
 <div id="chat"></div>
 
@@ -229,11 +261,20 @@ function unlockTTS() {
   speechSynthesis.speak(u);
 }
 
+function germanVoices() {
+  return speechSynthesis.getVoices().filter(function (v) {
+    return v.lang && v.lang.indexOf("de") === 0;
+  });
+}
+
 function pickVoice() {
-  var voices = speechSynthesis.getVoices();
-  var de = voices.filter(function (v) { return v.lang && v.lang.indexOf("de") === 0; });
+  var de = germanVoices();
   if (!de.length) return null;
-  // Prefer enhanced/known good German voices on iOS
+  // Nate's saved choice first, then known good German voices on iOS
+  var saved = localStorage.getItem("javierVoice");
+  for (var k = 0; k < de.length; k++) {
+    if (saved && de[k].name === saved) return de[k];
+  }
   var preferred = ["Anna", "Helena", "Markus", "Petra"];
   for (var i = 0; i < preferred.length; i++) {
     for (var j = 0; j < de.length; j++) {
@@ -243,6 +284,11 @@ function pickVoice() {
   return de[0];
 }
 
+function voicePref(key, fallback) {
+  var v = parseFloat(localStorage.getItem(key));
+  return isNaN(v) ? fallback : v;
+}
+
 function speak(text) {
   if (!("speechSynthesis" in window)) return;
   speechSynthesis.cancel();
@@ -250,7 +296,8 @@ function speak(text) {
   if (!germanVoice) germanVoice = pickVoice();
   if (germanVoice) u.voice = germanVoice;
   u.lang = germanVoice ? germanVoice.lang : "de-DE";
-  u.rate = 1.02;
+  u.rate = voicePref("javierRate", 1.02);
+  u.pitch = voicePref("javierPitch", 1.0);
   u.onstart = function () { reactor.classList.add("speaking"); };
   u.onend = function () {
     reactor.classList.remove("speaking");
@@ -260,8 +307,63 @@ function speak(text) {
   speechSynthesis.speak(u);
 }
 
+// ---------------------------------------------------- voice settings UI
+
+var voiceBtn = document.getElementById("voiceBtn");
+var voicePanel = document.getElementById("voicePanel");
+var voiceSelect = document.getElementById("voiceSelect");
+var rateRange = document.getElementById("rateRange");
+var pitchRange = document.getElementById("pitchRange");
+var voiceTest = document.getElementById("voiceTest");
+
+function fillVoiceSelect() {
+  var de = germanVoices();
+  voiceSelect.innerHTML = "";
+  if (!de.length) {
+    var o = document.createElement("option");
+    o.textContent = "Keine deutsche Stimme gefunden";
+    voiceSelect.appendChild(o);
+    return;
+  }
+  var saved = localStorage.getItem("javierVoice");
+  de.forEach(function (v) {
+    var o = document.createElement("option");
+    o.value = v.name;
+    o.textContent = v.name + " (" + v.lang + ")";
+    if (v.name === saved || (!saved && germanVoice && v.name === germanVoice.name)) {
+      o.selected = true;
+    }
+    voiceSelect.appendChild(o);
+  });
+}
+
+voiceBtn.addEventListener("click", function () {
+  unlockTTS();
+  voicePanel.classList.toggle("open");
+  if (voicePanel.classList.contains("open")) fillVoiceSelect();
+});
+voiceSelect.addEventListener("change", function () {
+  localStorage.setItem("javierVoice", voiceSelect.value);
+  germanVoice = pickVoice();
+});
+rateRange.value = voicePref("javierRate", 1.02);
+pitchRange.value = voicePref("javierPitch", 1.0);
+rateRange.addEventListener("change", function () {
+  localStorage.setItem("javierRate", rateRange.value);
+});
+pitchRange.addEventListener("change", function () {
+  localStorage.setItem("javierPitch", pitchRange.value);
+});
+voiceTest.addEventListener("click", function () {
+  unlockTTS();
+  speak("So klinge ich jetzt, Nate. Zufrieden?");
+});
+
 if ("speechSynthesis" in window) {
-  speechSynthesis.onvoiceschanged = function () { germanVoice = pickVoice(); };
+  speechSynthesis.onvoiceschanged = function () {
+    germanVoice = pickVoice();
+    if (voicePanel.classList.contains("open")) fillVoiceSelect();
+  };
 }
 
 // -------------------------------------------------------------- speech in
