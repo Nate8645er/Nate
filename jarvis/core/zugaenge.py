@@ -98,6 +98,31 @@ PRESETS: dict[str, dict[str, str]] = {
         "url": "https://www.twitch.tv", "login_url": "https://www.twitch.tv/login",
         "user_sel": "#login-username", "pass_sel": "#password-input",
         "submit_sel": "button[data-a-target=passport-login-button]"},
+    "gmx": {
+        "url": "https://www.gmx.net", "login_url": "https://www.gmx.net",
+        "user_sel": "#freemailLoginUsername, input[name=username]",
+        "pass_sel": "#freemailLoginPassword, input[name=password]",
+        "submit_sel": "#login-submit, button[type=submit]"},
+    "web.de": {
+        "url": "https://web.de", "login_url": "https://web.de",
+        "user_sel": "input[name=username], input[type=email]",
+        "pass_sel": "input[name=password]", "submit_sel": "button[type=submit]"},
+    "yahoo": {
+        "url": "https://mail.yahoo.com", "login_url": "https://login.yahoo.com",
+        "user_sel": "#login-username", "pass_sel": "#login-passwd",
+        "submit_sel": "#login-signin"},
+    "icloud": {
+        "url": "https://www.icloud.com", "login_url": "https://www.icloud.com",
+        "user_sel": "#account_name_text_field, input[type=email]",
+        "pass_sel": "#password_text_field, input[type=password]",
+        "submit_sel": "#sign-in, button[type=submit]"},
+    "discord": {
+        "url": "https://discord.com", "login_url": "https://discord.com/login",
+        "user_sel": "input[name=email]", "pass_sel": "input[name=password]",
+        "submit_sel": "button[type=submit]"},
+    "ebay": {
+        "url": "https://www.ebay.de", "login_url": "https://signin.ebay.de",
+        "user_sel": "#userid", "pass_sel": "#pass", "submit_sel": "#sgnBt"},
 }
 
 # Sinnvolle Standard-Selektoren, falls eine unbekannte Plattform hinzugefügt wird.

@@ -185,3 +185,20 @@ sich überall einloggen und mit den Daten arbeiten.
 - **Sicherheit/Ehrlichkeit:** nur lokal (0600), nie gesendet; kein 2FA-/Captcha-
   Bypass; Warnung, dass manche Dienste Automatik blockieren/Konten sperren.
 - **Agent 4:** **96 Tests grün** (+3: Weckwort, YouTube, Login/Vault), kein Regress.
+
+## Eintrag 013 — Login-Bug behoben (falsches Feld) + robuste Feldsuche
+**Von:** Agent 6, 4 · **Nutzer:** Zugänge eingetragen, aber Login schlägt fehl.
+- **Root-Cause (echt reproduziert):** `_login` nutzte EINEN Komma-Selektor
+  (`input[type=email], …, input[type=text]`). Playwright löst das nach
+  DOM-Reihenfolge auf → ein generisches Textfeld (z. B. Suchbox) schnappte sich
+  den Benutzernamen, das echte E-Mail-Feld blieb leer. Nachweis: End-URL
+  `?q=me%40example.com&email=&password=…`.
+- **Fix:** Selektoren werden EINZELN in Prioritätsreihenfolge probiert
+  (`_first_fill`/`_first_click`, jeweils `.first`, mit Sichtbarkeits-Wait und
+  Wert-Verifikation). Ergebnis nach Fix: `?q=&email=me%40example.com&password=…`.
+- **Zusätzlich gehärtet:** Cookie-/Consent-Banner werden vor dem Login
+  weggeklickt; `wait_for_load_state('networkidle')` statt fixem Sleep;
+  2-Schritt-Login (E-Mail → Weiter → Passwort) end-to-end getestet.
+- **Presets:** +5 (gmx, web.de, yahoo, icloud, discord, ebay) → 23 Plattformen.
+- **Agent 4:** neue echte Browser-Regression (lokaler Server, füllt korrektes
+  Feld), **97 Tests grün**. Test überspringt sauber ohne Browser.

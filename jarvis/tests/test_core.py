@@ -306,6 +306,56 @@ def test_browser_auto_commands():
         "!plugin browser_auto click ziel=text=Anmelden"
 
 
+def test_login_fills_correct_field(tmp_path: Path, monkeypatch):
+    """Regression: der Benutzername darf NICHT im generischen Textfeld (Suchbox)
+    landen, sondern im echten E-Mail-Feld. Selektoren werden einzeln in
+    Prioritätsreihenfolge probiert. Überspringt sauber, wenn kein Browser da ist."""
+    import http.server
+    import socketserver
+    import threading
+    from jarvis.core.browser_auto import BrowserAutoPlugin
+    from jarvis.core.zugaenge import Vault
+
+    page = (b"<!doctype html><html><body><form method='get' action='/done'>"
+            b"<input type='text' name='q'>"           # Suchbox ZUERST im DOM
+            b"<input type='email' name='email'>"
+            b"<input type='password' name='password'>"
+            b"<button type='submit'>Anmelden</button></form></body></html>")
+    done = b"<!doctype html><html><body><h1>ok</h1></body></html>"
+
+    class H(http.server.BaseHTTPRequestHandler):
+        def do_GET(self):
+            self.send_response(200)
+            self.send_header("content-type", "text/html")
+            self.end_headers()
+            self.wfile.write(done if self.path.startswith("/done") else page)
+
+        def log_message(self, *a):
+            pass
+
+    srv = socketserver.TCPServer(("127.0.0.1", 0), H)
+    port = srv.server_address[1]
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    try:
+        monkeypatch.setenv("JARVIS_ALLOW_PC", "1")
+        monkeypatch.setenv("JARVIS_ALLOW_DANGEROUS", "1")
+        monkeypatch.setenv("JARVIS_BROWSER_HEADLESS", "1")
+        ws = tmp_path / "workspace"
+        ws.mkdir()
+        v = Vault(tmp_path)
+        v.set("t", "me@example.com", "secret123",
+              login_url=f"http://127.0.0.1:{port}/login")
+        plug = BrowserAutoPlugin(ws)
+        res = plug.run("login", plattform="t")
+        if isinstance(res, str):          # kein Browser installiert -> ehrlich skippen
+            pytest.skip(f"Browser nicht verfügbar: {res}")
+        assert "email=me%40example.com" in res["url"]     # richtiges Feld
+        assert "q=&" in res["url"] or "q=me" not in res["url"]  # NICHT in der Suchbox
+        assert "password=secret123" in res["url"]
+    finally:
+        srv.shutdown()
+
+
 def test_security_check_and_monitor(tmp_path):
     import time
     from jarvis.core.security import SecurityPlugin, SecurityMonitor

@@ -40,6 +40,61 @@ def _split(selectors: str) -> list[str]:
     return [s.strip() for s in selectors.split(",") if s.strip()]
 
 
+def _first_fill(page: Any, selectors: str, value: str, timeout: int = 6000) -> bool:
+    """Füllt das ERSTE sichtbare Feld, das einer der Selektoren (in Prioritäts-
+    reihenfolge) trifft. Nutzt .first (kein Strict-Mode-Fehler bei Mehrfach-
+    Treffern) und wartet auf Sichtbarkeit. Gibt True zurück, wenn gefüllt."""
+    per = max(1200, timeout // max(1, len(_split(selectors))))
+    for sel in _split(selectors):
+        try:
+            loc = page.locator(sel).first
+            loc.wait_for(state="visible", timeout=per)
+            loc.click(timeout=per)          # fokussieren (manche Felder brauchen das)
+            loc.fill("", timeout=per)       # evtl. Vorbelegung leeren
+            loc.fill(value, timeout=per)
+            if (loc.input_value(timeout=1500) or "") == value:
+                return True
+        except Exception:
+            continue
+    return False
+
+
+def _first_click(page: Any, selectors: str, timeout: int = 4000) -> bool:
+    """Klickt den ersten sichtbaren Treffer (in Prioritätsreihenfolge)."""
+    per = max(1200, timeout // max(1, len(_split(selectors))))
+    for sel in _split(selectors):
+        try:
+            loc = page.locator(sel).first
+            loc.wait_for(state="visible", timeout=per)
+            loc.click(timeout=per)
+            return True
+        except Exception:
+            continue
+    return False
+
+
+# Häufige Cookie-/Consent-Buttons, die Klicks aufs Login-Formular blockieren.
+_COOKIE_BTNS = [
+    "button:has-text('Alle akzeptieren')", "button:has-text('Akzeptieren')",
+    "button:has-text('Zustimmen')", "button:has-text('Accept all')",
+    "button:has-text('Accept')", "button:has-text('I agree')",
+    "button:has-text('Ich stimme zu')", "button:has-text('Alle Cookies akzeptieren')",
+    "[aria-label='Accept all']", "#onetrust-accept-btn-handler",
+]
+
+
+def _dismiss_cookiebanner(page: Any) -> None:
+    for sel in _COOKIE_BTNS:
+        try:
+            loc = page.locator(sel).first
+            if loc.is_visible(timeout=800):
+                loc.click(timeout=1500)
+                page.wait_for_timeout(400)
+                return
+        except Exception:
+            continue
+
+
 class _BrowserWorker(threading.Thread):
     def __init__(self, workspace: Path, headless: bool) -> None:
         super().__init__(daemon=True)
@@ -154,49 +209,38 @@ class _BrowserWorker(threading.Thread):
         if not login_url.startswith(("http://", "https://")):
             login_url = "https://" + login_url
         page.goto(login_url, timeout=30000, wait_until="domcontentloaded")
+        page.wait_for_timeout(600)      # kurz für nachladende Login-Formulare
+        _dismiss_cookiebanner(page)     # Cookie-Overlays wegklicken, sonst blockieren sie Klicks
 
-        # 1) Benutzername tippen
-        try:
-            page.fill(cmd["user_sel"], cmd["user"], timeout=8000)
-        except Exception:
+        # 1) Benutzername tippen. WICHTIG: Selektoren EINZELN in Prioritätsreihen-
+        #    folge probieren (nicht als ein Komma-Selektor) — sonst füllt Playwright
+        #    nach DOM-Reihenfolge und ein generisches Textfeld (z. B. Suchbox)
+        #    schnappt sich die Eingabe vor dem echten E-Mail-Feld.
+        if not _first_fill(page, cmd["user_sel"], cmd["user"]):
             return {"plattform": plattform, "status": "kein_loginfeld",
+                    "url": page.url,
                     "hinweis": ("Benutzerfeld nicht gefunden — evtl. schon eingeloggt, "
-                                "oder die Login-Seite/Selektoren stimmen nicht.")}
+                                "oder die Login-Seite/Selektoren stimmen nicht. Auf der "
+                                "ZUGÄNGE-Seite die Login-URL/Feld-Selektoren prüfen.")}
 
         # 2) Passwortfeld füllen. Ist es (noch) nicht sichtbar (2-Schritt-Login
-        #    wie Google), erst 'Weiter' klicken, dann Passwort.
-        def _fill_pass() -> bool:
-            try:
-                page.fill(cmd["pass_sel"], cmd["pass"], timeout=4000)
-                return True
-            except Exception:
-                return False
-
-        if not _fill_pass():
-            for sel in _split(cmd["submit_sel"]):
-                try:
-                    page.click(sel, timeout=3000)
-                    break
-                except Exception:
-                    continue
-            page.wait_for_timeout(1500)
-            _fill_pass()
+        #    wie Google/Amazon), erst 'Weiter' klicken, dann Passwort.
+        if not _first_fill(page, cmd["pass_sel"], cmd["pass"], timeout=3500):
+            _first_click(page, cmd["submit_sel"])        # 'Weiter'
+            page.wait_for_timeout(1800)
+            _first_fill(page, cmd["pass_sel"], cmd["pass"])
 
         # 3) Absenden
-        clicked = False
-        for sel in _split(cmd["submit_sel"]):
-            try:
-                page.click(sel, timeout=3000)
-                clicked = True
-                break
-            except Exception:
-                continue
-        if not clicked:
+        if not _first_click(page, cmd["submit_sel"]):
             try:
                 page.keyboard.press("Enter")
             except Exception:
                 pass
-        page.wait_for_timeout(2500)
+        # Auf Navigation/Netzwerk-Ruhe warten (bis ~6 s), sonst zu früh bewertet
+        try:
+            page.wait_for_load_state("networkidle", timeout=6000)
+        except Exception:
+            page.wait_for_timeout(2500)
 
         # 4) Ergebnis ehrlich bewerten
         path = self.workspace / "login.png"
