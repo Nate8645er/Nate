@@ -47,6 +47,38 @@ iOS nicht her.
 - **Mikrofon nur ueber HTTPS.** Deshalb das mkcert-Zertifikat (siehe unten).
 - Die PWA laeuft nur, solange sie im Vordergrund geoeffnet ist.
 
+## JAVIER ohne PC: in der Cloud (komplett vom Handy einrichtbar)
+
+Wenn der Windows-PC nicht laufen soll, kann das Backend kostenlos bei
+[Render](https://render.com) gehostet werden. Vorteile: von ueberall
+erreichbar, echtes HTTPS (kein mkcert, Mikro funktioniert sofort), PC aus.
+Einrichtung geht komplett in Safari auf dem iPhone:
+
+1. Auf render.com mit GitHub anmelden (Konto ist kostenlos).
+2. "New" -> "Blueprint" -> dieses Repository auswaehlen. Render liest die
+   `render.yaml` im Repo-Root und schlaegt den Service "javier" vor.
+3. Beim Deploy die zwei Variablen eintragen: `ANTHROPIC_API_KEY` (dein
+   API-Key) und `JAVIER_PASSWORD` (frei waehlbares Passwort - WICHTIG,
+   sonst kann jeder mit der URL auf deine Kosten chatten).
+4. Nach ein paar Minuten bekommst du eine URL wie
+   `https://javier-xxxx.onrender.com`. In Safari oeffnen, Passwort einmal
+   eingeben, dann Teilen -> "Zum Home-Bildschirm".
+
+Ehrliche Einschraenkungen im Cloud-Betrieb:
+
+- Der Free-Tier schlaeft nach ~15 Minuten Inaktivitaet ein; die erste
+  Antwort danach dauert bis zu einer Minute (Kaltstart).
+- Todos und Kalender liegen auf dem Cloud-Server und werden bei jedem
+  Redeploy zurueckgesetzt (Free-Tier hat keine dauerhafte Festplatte).
+- Die PC-Aktionen (Ordner oeffnen, Screenshot) funktionieren logischerweise
+  nur, wenn das Backend auf dem PC laeuft - in der Cloud melden sie das
+  ehrlich als Fehler.
+- Bonus: Bilder im static-Ordner haben in der Cloud eine oeffentliche URL -
+  das erfuellt die Instagram-Graph-API-Anforderung ohne Extra-Hosting.
+
+Beide Betriebsarten koennen parallel existieren: zuhause der PC, unterwegs
+die Cloud-Instanz.
+
 ## Schnellstart auf dem PC
 
 1. `start.bat` doppelklicken. Beim ersten Mal werden die Abhaengigkeiten

@@ -353,6 +353,21 @@ autoBtn.addEventListener("click", function () {
 
 // ------------------------------------------------------------------ chat
 
+function apiHeaders() {
+  var h = { "Content-Type": "application/json" };
+  var key = localStorage.getItem("javierKey");
+  if (key) h["X-Javier-Key"] = key;
+  return h;
+}
+
+function postChat() {
+  return fetch("/api/chat", {
+    method: "POST",
+    headers: apiHeaders(),
+    body: JSON.stringify({ messages: history })
+  });
+}
+
 function sendToJavier(text) {
   if (busy || !text) return;
   busy = true;
@@ -362,13 +377,21 @@ function sendToJavier(text) {
   var thinking = addMsg("javier", "...");
   thinking.classList.add("thinking");
 
-  fetch("/api/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages: history })
+  postChat()
+  .then(function (r) {
+    // Cloud deployments are password-protected (JAVIER_PASSWORD).
+    // Ask once, remember on the device, retry.
+    if (r.status === 401) {
+      var pw = prompt("JAVIER-Passwort eingeben:");
+      if (!pw) throw new Error("Passwort erforderlich");
+      localStorage.setItem("javierKey", pw);
+      return postChat();
+    }
+    return r;
   })
   .then(function (r) {
-    if (!r.ok) throw new Error("HTTP " + r.status);
+    if (!r.ok) throw new Error(r.status === 401 ?
+      "Passwort falsch" : "HTTP " + r.status);
     return r.json();
   })
   .then(function (data) {

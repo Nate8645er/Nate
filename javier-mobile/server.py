@@ -12,8 +12,8 @@ load_dotenv()  # before importing tools (Shopify/IG creds)
 
 import anthropic
 import uvicorn
-from fastapi import FastAPI
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, Request
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -64,7 +64,13 @@ def get_client():
 
 
 @app.post("/api/chat")
-def chat(req: ChatRequest):
+def chat(req: ChatRequest, request: Request):
+    # Optional shared secret for public (cloud) deployments: if
+    # JAVIER_PASSWORD is set, the frontend must send it along - otherwise
+    # anyone with the URL could chat on Nate's API key.
+    password = os.environ.get("JAVIER_PASSWORD", "")
+    if password and request.headers.get("x-javier-key", "") != password:
+        return JSONResponse({"error": "unauthorized"}, status_code=401)
     client = get_client()
     messages = [{"role": m.role, "content": m.content} for m in req.messages]
     frontend_actions = []
@@ -134,6 +140,10 @@ def local_ip():
 def ensure_api_key():
     if os.environ.get("ANTHROPIC_API_KEY"):
         return
+    if not sys.stdin or not sys.stdin.isatty():
+        # Cloud/headless start: no terminal to ask on.
+        print("ANTHROPIC_API_KEY fehlt - als Umgebungsvariable setzen.")
+        sys.exit(1)
     print("Kein ANTHROPIC_API_KEY in .env gefunden.")
     key = input("Bitte API-Key eingeben (sk-ant-...): ").strip()
     if not key:
@@ -172,10 +182,17 @@ def print_banner(https):
 
 if __name__ == "__main__":
     ensure_api_key()
+    # Cloud hosts (e.g. Render) inject PORT and terminate TLS themselves.
+    port = int(os.environ.get("PORT", "8000"))
+    cloud = "PORT" in os.environ
     https = os.path.exists(CERT_FILE) and os.path.exists(KEY_FILE)
-    print_banner(https)
-    if https:
-        uvicorn.run(app, host="0.0.0.0", port=8000,
+    if cloud:
+        print("JAVIER startet im Cloud-Modus auf Port %d." % port)
+        uvicorn.run(app, host="0.0.0.0", port=port)
+    elif https:
+        print_banner(True)
+        uvicorn.run(app, host="0.0.0.0", port=port,
                     ssl_certfile=CERT_FILE, ssl_keyfile=KEY_FILE)
     else:
-        uvicorn.run(app, host="0.0.0.0", port=8000)
+        print_banner(False)
+        uvicorn.run(app, host="0.0.0.0", port=port)

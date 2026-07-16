@@ -1,7 +1,7 @@
 // JAVIER MOBILE service worker - caches the app shell so the PWA opens
 // instantly from the homescreen. API calls always go to the network.
 
-var CACHE = "javier-v2";
+var CACHE = "javier-v3";
 var SHELL = ["/", "/index.html", "/manifest.json", "/icon-192.png", "/icon-512.png"];
 
 self.addEventListener("install", function (e) {
