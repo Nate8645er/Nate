@@ -139,6 +139,21 @@ mkcert-Zertifikat dann zusaetzlich fuer diese IP:
    startet JAVIER als Vollbild-App mit eigenem Icon. AirPods verbinden -
    Ein- und Ausgabe laufen automatisch darueber.
 
+## Eigene KI-Stimme (ElevenLabs, optional)
+
+Statt der iPhone-Systemstimme kann JAVIER mit einer beliebigen
+ElevenLabs-Stimme sprechen (inkl. selbst geklonter Stimmen):
+
+1. Konto auf [elevenlabs.io](https://elevenlabs.io) (Gratis-Kontingent
+   vorhanden), API-Key unter Profil -> API Keys.
+2. Voice ID: in "Voices" die gewuenschte Stimme oeffnen -> ID kopieren.
+3. Beide Werte als `ELEVENLABS_API_KEY` und `ELEVENLABS_VOICE_ID` in
+   `.env` bzw. bei Render unter Environment eintragen und neu deployen.
+
+JAVIER nutzt die Stimme dann automatisch (Modell eleven_multilingual_v2)
+und faellt bei Problemen auf die Geraetestimme zurueck. Hinweis: jede
+gesprochene Antwort verbraucht ElevenLabs-Zeichenkontingent.
+
 ## Kontakte fuer Nachrichten
 
 `contacts.json` im Projektordner pflegen (Name -> Nummer im internationalen

@@ -11,9 +11,10 @@ from dotenv import load_dotenv
 load_dotenv()  # before importing tools (Shopify/IG creds)
 
 import anthropic
+import requests as http_requests
 import uvicorn
 from fastapi import FastAPI, Request
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -61,8 +62,24 @@ class ChatRequest(BaseModel):
     messages: list[ChatMessage]
 
 
+class TTSRequest(BaseModel):
+    text: str
+
+
 def get_client():
     return anthropic.Anthropic()
+
+
+def _check_password(request):
+    password = os.environ.get("JAVIER_PASSWORD", "")
+    if password and request.headers.get("x-javier-key", "") != password:
+        return JSONResponse({"error": "unauthorized"}, status_code=401)
+    return None
+
+
+def elevenlabs_configured():
+    return bool(os.environ.get("ELEVENLABS_API_KEY")) and \
+        bool(os.environ.get("ELEVENLABS_VOICE_ID"))
 
 
 @app.post("/api/chat")
@@ -70,9 +87,9 @@ def chat(req: ChatRequest, request: Request):
     # Optional shared secret for public (cloud) deployments: if
     # JAVIER_PASSWORD is set, the frontend must send it along - otherwise
     # anyone with the URL could chat on Nate's API key.
-    password = os.environ.get("JAVIER_PASSWORD", "")
-    if password and request.headers.get("x-javier-key", "") != password:
-        return JSONResponse({"error": "unauthorized"}, status_code=401)
+    denied = _check_password(request)
+    if denied:
+        return denied
     client = get_client()
     messages = [{"role": m.role, "content": m.content} for m in req.messages]
     frontend_actions = []
@@ -117,7 +134,39 @@ def chat(req: ChatRequest, request: Request):
 
 @app.get("/api/health")
 def health():
-    return {"ok": True, "model": MODEL}
+    return {"ok": True, "model": MODEL,
+            "server_tts": elevenlabs_configured()}
+
+
+@app.post("/api/tts")
+def tts(req: TTSRequest, request: Request):
+    # Custom AI voice via ElevenLabs - only active when
+    # ELEVENLABS_API_KEY and ELEVENLABS_VOICE_ID are set. The frontend
+    # falls back to the device voice if this endpoint is unavailable.
+    denied = _check_password(request)
+    if denied:
+        return denied
+    if not elevenlabs_configured():
+        return JSONResponse({"error": "elevenlabs not configured"},
+                            status_code=501)
+    text = (req.text or "").strip()[:1500]
+    if not text:
+        return JSONResponse({"error": "text required"}, status_code=400)
+    try:
+        r = http_requests.post(
+            "https://api.elevenlabs.io/v1/text-to-speech/%s"
+            % os.environ["ELEVENLABS_VOICE_ID"],
+            headers={"xi-api-key": os.environ["ELEVENLABS_API_KEY"],
+                     "Content-Type": "application/json"},
+            json={"text": text, "model_id": "eleven_multilingual_v2",
+                  "voice_settings": {"stability": 0.5,
+                                     "similarity_boost": 0.75}},
+            timeout=30)
+        r.raise_for_status()
+    except http_requests.RequestException as e:
+        return JSONResponse({"error": "elevenlabs failed: %s" % e},
+                            status_code=502)
+    return Response(content=r.content, media_type="audio/mpeg")
 
 
 @app.get("/")

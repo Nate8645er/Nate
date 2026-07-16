@@ -249,16 +249,52 @@ function setStatus(text, online) {
 
 // ------------------------------------------------------------- speech out
 
-// iOS blocks the FIRST speechSynthesis call unless it happens inside a
-// user gesture. This silent utterance, fired from the first tap, unlocks
-// audio so JAVIER's real replies are spoken out loud.
+// iOS blocks the FIRST audio output unless it happens inside a user
+// gesture. This silent utterance plus a muted play() on the shared audio
+// element, fired from the first tap, unlock both output paths.
 var ttsUnlocked = false;
+var serverTTS = false;  // true when the backend has an ElevenLabs voice
+var audioEl = new Audio();
 function unlockTTS() {
-  if (ttsUnlocked || !("speechSynthesis" in window)) return;
+  if (ttsUnlocked) return;
   ttsUnlocked = true;
-  var u = new SpeechSynthesisUtterance(" ");
-  u.volume = 0;
-  speechSynthesis.speak(u);
+  if ("speechSynthesis" in window) {
+    var u = new SpeechSynthesisUtterance(" ");
+    u.volume = 0;
+    speechSynthesis.speak(u);
+  }
+  audioEl.muted = true;
+  audioEl.src = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=";
+  audioEl.play().then(function () { audioEl.muted = false; })
+    .catch(function () { audioEl.muted = false; });
+}
+
+function speakServer(text) {
+  audioEl.pause();
+  reactor.classList.add("speaking");
+  fetch("/api/tts", {
+    method: "POST",
+    headers: apiHeaders(),
+    body: JSON.stringify({ text: text })
+  })
+  .then(function (r) {
+    if (!r.ok) throw new Error("tts " + r.status);
+    return r.blob();
+  })
+  .then(function (blob) {
+    audioEl.src = URL.createObjectURL(blob);
+    audioEl.onended = function () {
+      reactor.classList.remove("speaking");
+      if (convMode && !busy) setTimeout(startListening, 350);
+    };
+    return audioEl.play();
+  })
+  .catch(function () {
+    // Server voice unavailable - fall back to the device voice.
+    reactor.classList.remove("speaking");
+    serverTTS = false;
+    speak(text);
+  });
 }
 
 function germanVoices() {
@@ -290,6 +326,7 @@ function voicePref(key, fallback) {
 }
 
 function speak(text) {
+  if (serverTTS) { speakServer(text); return; }
   if (!("speechSynthesis" in window)) return;
   speechSynthesis.cancel();
   var u = new SpeechSynthesisUtterance(text);
@@ -439,6 +476,7 @@ function startListening() {
     return;
   }
   speechSynthesis.cancel();
+  audioEl.pause();
   heard = "";
   reactor.classList.add("listening");
   setStatus("hoere zu...", true);
@@ -554,7 +592,8 @@ if ("serviceWorker" in navigator) {
 
 fetch("/api/health")
   .then(function (r) { return r.json(); })
-  .then(function () {
+  .then(function (h) {
+    serverTTS = !!h.server_tts;
     setStatus("bereit", true);
     addMsg("javier", "Guten Tag, Nate. JAVIER ist online. Halte den " +
       "Reaktor gedrueckt und sprich mit mir - oder tippe unten.");
