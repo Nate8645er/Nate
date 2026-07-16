@@ -17,6 +17,23 @@ iPhone verbindet sich per Browser im gleichen WLAN.
 - Harmlose PC-Aktionen per Whitelist (Ordner oeffnen, Dateien listen,
   Screenshot)
 
+## Freihaendig sprechen mit AirPods (Auto-Modus)
+
+AirPods verbinden - Mikrofon und Sprachausgabe laufen automatisch darueber,
+ohne Konfiguration. Zwei Arten zu sprechen:
+
+- **Push-to-talk:** Arc-Reactor gedrueckt halten, sprechen, loslassen.
+- **Auto-Modus:** Oben rechts auf "AUTO AUS" tippen. Ab dann oeffnet sich
+  das Mikrofon nach jeder Antwort von JAVIER automatisch wieder - du
+  fuehrst ein Gespraech, ohne das iPhone anzufassen. Nach etwa sechs
+  stillen Runden pausiert der Modus von selbst (Akku und Privatsphaere);
+  ein Tipp auf AUTO oder den Reaktor startet ihn wieder.
+
+Der erste Tap ist Pflicht (iOS verlangt eine Nutzer-Interaktion fuer Mikro
+und Sprachausgabe), und der Auto-Modus laeuft nur, solange die App im
+Vordergrund geoeffnet ist - ein "Hey JAVIER" bei gesperrtem iPhone gibt
+iOS nicht her.
+
 ## Ehrliche iOS-Grenzen (damit es keine Ueberraschungen gibt)
 
 - **Kein Hintergrund-Listening.** iOS erlaubt Webseiten keinen dauerhaften

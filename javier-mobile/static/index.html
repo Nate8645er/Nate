@@ -43,6 +43,15 @@
   }
   #status { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
   #status.online { color: var(--cyan); }
+  #headRight { display: flex; align-items: center; gap: 10px; }
+  #autoBtn {
+    background: none; border: 1px solid var(--cyan-dim); color: var(--muted);
+    border-radius: 12px; padding: 5px 10px; font-size: 11px; letter-spacing: 1px;
+  }
+  #autoBtn.on {
+    color: var(--cyan); border-color: var(--cyan);
+    box-shadow: 0 0 8px rgba(55, 200, 240, 0.4);
+  }
 
   #chat {
     flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
@@ -120,7 +129,10 @@
 <body>
 <header>
   <h1>J A V I E R</h1>
-  <span id="status">offline</span>
+  <div id="headRight">
+    <span id="status">offline</span>
+    <button id="autoBtn" aria-label="Gespraechsmodus umschalten">AUTO AUS</button>
+  </div>
 </header>
 
 <div id="chat"></div>
@@ -141,10 +153,21 @@ var statusEl = document.getElementById("status");
 var reactor = document.getElementById("reactor");
 var textInput = document.getElementById("textInput");
 var sendBtn = document.getElementById("sendBtn");
+var autoBtn = document.getElementById("autoBtn");
+var hintEl = document.getElementById("hint");
 
 var history = [];      // {role, content} - sent to backend on every request
 var busy = false;
 var germanVoice = null;
+
+// Conversation mode: after JAVIER finishes speaking, the mic (AirPods)
+// reopens automatically so Nate can answer hands-free. Works only while
+// the app is open in the foreground - iOS does not allow background
+// listening. After ~6 silent rounds the mode pauses itself to save
+// battery and mic privacy.
+var convMode = false;
+var idleRounds = 0;
+var MAX_IDLE_ROUNDS = 6;
 
 // ---------------------------------------------------------------- UI
 
@@ -208,7 +231,11 @@ function speak(text) {
   u.lang = germanVoice ? germanVoice.lang : "de-DE";
   u.rate = 1.02;
   u.onstart = function () { reactor.classList.add("speaking"); };
-  u.onend = function () { reactor.classList.remove("speaking"); };
+  u.onend = function () {
+    reactor.classList.remove("speaking");
+    // Hands-free loop: reopen the mic right after JAVIER stops talking.
+    if (convMode && !busy) setTimeout(startListening, 350);
+  };
   speechSynthesis.speak(u);
 }
 
@@ -236,6 +263,9 @@ function buildRecognition() {
     setStatus(t.slice(-40), true);
   };
   r.onerror = function (e) {
+    // Silence or an aborted round is normal (especially in auto mode) -
+    // onend decides whether to re-arm the mic.
+    if (e.error === "no-speech" || e.error === "aborted") return;
     // de-CH is not available on every device - fall back to de-DE once
     if ((e.error === "language-not-supported" || e.error === "not-allowed" ||
          e.error === "service-not-allowed") && recLang === "de-CH") {
@@ -244,6 +274,7 @@ function buildRecognition() {
       setStatus("Fallback de-DE, nochmal druecken", false);
     } else {
       setStatus("Mikro-Fehler: " + e.error, false);
+      if (convMode) setAutoMode(false);
     }
     reactor.classList.remove("listening");
   };
@@ -252,10 +283,24 @@ function buildRecognition() {
     if (heard.trim()) {
       var text = heard.trim();
       heard = "";
+      idleRounds = 0;
       sendToJavier(text);
-    } else {
-      setStatus("bereit", true);
+      return;
     }
+    // Nothing heard. In conversation mode keep the mic open for a few
+    // silent rounds, then pause the mode instead of listening forever.
+    if (convMode && !busy) {
+      idleRounds += 1;
+      if (idleRounds < MAX_IDLE_ROUNDS) {
+        setStatus("hoere zu...", true);
+        setTimeout(startListening, 300);
+        return;
+      }
+      setAutoMode(false);
+      setStatus("Auto pausiert - Reaktor druecken", true);
+      return;
+    }
+    setStatus("bereit", true);
   };
   return r;
 }
@@ -286,6 +331,25 @@ reactor.addEventListener("touchend", function (e) { e.preventDefault(); stopList
 reactor.addEventListener("touchcancel", stopListening);
 reactor.addEventListener("mousedown", startListening);
 reactor.addEventListener("mouseup", stopListening);
+
+// --------------------------------------------------- conversation mode
+
+function setAutoMode(on) {
+  convMode = on;
+  idleRounds = 0;
+  autoBtn.textContent = on ? "AUTO AN" : "AUTO AUS";
+  autoBtn.className = on ? "on" : "";
+  hintEl.textContent = on
+    ? "AUTO-MODUS: NACH JEDER ANTWORT HOERT JAVIER WIEDER ZU"
+    : "ARC-REACTOR GEDRUECKT HALTEN UND SPRECHEN";
+  if (!on) stopListening();
+}
+
+autoBtn.addEventListener("click", function () {
+  setAutoMode(!convMode);
+  // The tap is the user gesture iOS needs - open the mic right away.
+  if (convMode && !busy) startListening();
+});
 
 // ------------------------------------------------------------------ chat
 
