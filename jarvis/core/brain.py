@@ -29,13 +29,45 @@ FALLBACK_MODELS = ["claude-opus-4-8", "claude-sonnet-5", "claude-haiku-4-5-20251
                    "claude-3-5-sonnet-latest", "claude-3-5-haiku-latest"]
 API_URL = "https://api.anthropic.com/v1/messages"
 
+# OpenRouter-Gehirn: kostenlose Modelle zuerst (rate-limitiert, aber gratis).
+# Über JARVIS_OPENROUTER_MODEL überschreibbar. IDs können sich ändern — bei
+# Ablehnung wird das nächste probiert, sonst ehrliche Meldung.
+OPENROUTER_FREE_MODELS = [
+    "deepseek/deepseek-chat-v3-0324:free",
+    "meta-llama/llama-3.3-70b-instruct:free",
+    "google/gemini-2.0-flash-exp:free",
+    "qwen/qwen-2.5-72b-instruct:free",
+    "mistralai/mistral-small-3.1-24b-instruct:free",
+]
+
 # Das zuletzt als funktionierend bestätigte Modell (wird nach Verify/Antwort gesetzt).
 DEFAULT_MODEL = PREFERRED_MODEL
 _active_model: str | None = None
 
 
 def mode() -> str:
-    return "api" if os.environ.get("ANTHROPIC_API_KEY") else "offline"
+    """api, sobald irgendein Modell-Zugang da ist (Anthropic ODER OpenRouter)."""
+    if os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("OPENROUTER_API_KEY"):
+        return "api"
+    return "offline"
+
+
+def _openrouter_answer(system: str, user: str, max_tokens: int = 600) -> str | None:
+    """Antwort über OpenRouter-Gratis-Modelle (mit Fallback). None = kein Erfolg."""
+    from . import openrouter
+    global _active_model
+    if not openrouter.available():
+        return None
+    pref = os.environ.get("JARVIS_OPENROUTER_MODEL", "").strip()
+    order = ([pref] if pref else []) + [m for m in OPENROUTER_FREE_MODELS if m != pref]
+    last = ""
+    for m in order:
+        r = openrouter.ask(m, user, system=system, max_tokens=max_tokens)
+        if r and not r.startswith("[OpenRouter") and not r.startswith("[kein"):
+            _active_model = m
+            return r
+        last = r or ""
+    return f"[OpenRouter: kein Gratis-Modell verfügbar gerade] {last[:150]}"
 
 
 def active_model() -> str:
@@ -165,7 +197,13 @@ def _offline_answer(employee: VirtualEmployee, task: str) -> str:
 
 
 def answer(employee: VirtualEmployee, task: str) -> str:
-    """Beantwortet eine Aufgabe im Namen eines aktiven Agenten."""
+    """Beantwortet eine Aufgabe im Namen eines aktiven Agenten.
+
+    Reihenfolge: Anthropic (Fable 5) zuerst, falls Key + Guthaben vorhanden.
+    Scheitert das an Guthaben/Auth, wird automatisch auf OpenRouter-Gratis-
+    Modelle umgeschaltet (falls OPENROUTER_API_KEY gesetzt). Sobald Anthropic
+    wieder Guthaben hat, nutzt JARVIS von selbst wieder Fable 5.
+    """
     if mode() == "offline":
         return _offline_answer(employee, task)
     system = (
@@ -173,24 +211,40 @@ def answer(employee: VirtualEmployee, task: str) -> str:
         f"einer virtuellen Organisation (JARVIS). Deine Skills: "
         f"{', '.join(employee.skills)}. Antworte knapp, präzise und auf Deutsch. "
         f"Erfinde keine Fakten und stelle keine simulierten Ergebnisse als real dar.")
-    try:
-        return _call_with_fallback(system, task)
-    except urllib.error.HTTPError as e:
-        body = getattr(e, "_jarvis_body", "")
-        if not body:
-            try:
-                body = e.read().decode("utf-8", "ignore")
-            except Exception:
-                pass
-        if "credit balance" in body.lower() or "billing" in body.lower():
-            return ("[Kein Guthaben] Dein Anthropic-Konto hat kein Guthaben mehr. "
-                    "Bitte auf console.anthropic.com unter 'Plans & Billing' Guthaben "
-                    "aufladen — danach antwortet Fable 5. (Alternativ ein OpenRouter-"
-                    "Modell nutzen: z. B. 'modell gpt: ...')")
-        reason = {401: "Key ungültig", 403: "Key nicht berechtigt",
-                  429: "Rate-Limit / kein Guthaben"}.get(e.code, f"HTTP {e.code}")
-        return f"[API-Fehler {e.code}: {reason}] {body[:250]}"
-    except RuntimeError as e:      # alle Modelle abgelehnt — echten Grund zeigen
-        return f"[Kein Modell nutzbar] {e}"
-    except Exception as e:  # Netzwerk o. ä.: ehrlich melden statt erfinden
-        return f"[API nicht erreichbar: {type(e).__name__}] Aufgabe nicht bearbeitet."
+
+    # 1) Anthropic (Fable 5), falls ein Anthropic-Key gesetzt ist.
+    if os.environ.get("ANTHROPIC_API_KEY"):
+        try:
+            return _call_with_fallback(system, task)
+        except urllib.error.HTTPError as e:
+            body = getattr(e, "_jarvis_body", "")
+            if not body:
+                try:
+                    body = e.read().decode("utf-8", "ignore")
+                except Exception:
+                    pass
+            low = body.lower()
+            billing = "credit balance" in low or "billing" in low
+            # Bei Guthaben-/Auth-Problem: automatisch OpenRouter-Gratis probieren.
+            if (billing or e.code in (401, 403, 429)) and os.environ.get("OPENROUTER_API_KEY"):
+                orr = _openrouter_answer(system, task)
+                if orr and not orr.startswith("[OpenRouter"):
+                    return orr
+            if billing:
+                return ("[Kein Guthaben] Dein Anthropic-Konto hat kein Guthaben mehr. "
+                        "Bitte auf console.anthropic.com unter 'Plans & Billing' aufladen "
+                        "— danach antwortet Fable 5. (Oder OPENROUTER_API_KEY setzen für "
+                        "Gratis-Modelle.)")
+            reason = {401: "Key ungültig", 403: "Key nicht berechtigt",
+                      429: "Rate-Limit / kein Guthaben"}.get(e.code, f"HTTP {e.code}")
+            return f"[API-Fehler {e.code}: {reason}] {body[:250]}"
+        except RuntimeError:
+            pass          # alle Anthropic-Modelle abgelehnt -> OpenRouter versuchen
+        except Exception as e:
+            return f"[API nicht erreichbar: {type(e).__name__}] Aufgabe nicht bearbeitet."
+
+    # 2) OpenRouter-Gratis-Modelle (Standard, wenn kein Anthropic-Guthaben/-Key).
+    orr = _openrouter_answer(system, task)
+    if orr is not None:
+        return orr
+    return _offline_answer(employee, task)

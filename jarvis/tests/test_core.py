@@ -592,3 +592,33 @@ def test_kwargs_not_dropped_for_varkwargs_plugins():
     assert _plugin_param_names(pm.plugins["web"]) == {"query"}
     assert _parse_kwargs("prompt=setze debug=true", {"prompt"}) == \
         {"prompt": "setze debug=true"}
+
+
+def test_brain_auto_falls_back_to_openrouter_free(monkeypatch):
+    """Kein Anthropic-Guthaben -> automatisch OpenRouter-Gratis-Modell."""
+    import io
+    import urllib.error
+    from jarvis.core import brain, openrouter
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "ant")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "or")
+    brain._active_model = None
+    credit = b'{"error":{"message":"Your credit balance is too low"}}'
+
+    def fail_anthropic(model, system, user, max_tokens=600):
+        raise urllib.error.HTTPError("u", 400, "Bad Request", {}, io.BytesIO(credit))
+    monkeypatch.setattr(brain, "_call", fail_anthropic)
+    monkeypatch.setattr(openrouter, "ask",
+                        lambda m, p, system="", max_tokens=600, timeout=120: f"frei:{m}")
+    out = brain.answer(materialize("570"), "hallo")
+    assert out.startswith("frei:") and ":free" in out
+
+
+def test_brain_openrouter_only_mode(monkeypatch):
+    """Nur OpenRouter-Key: mode() == api, Antwort über Gratis-Modell."""
+    from jarvis.core import brain, openrouter
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.setenv("OPENROUTER_API_KEY", "or")
+    assert brain.mode() == "api"
+    monkeypatch.setattr(openrouter, "ask",
+                        lambda m, p, system="", max_tokens=600, timeout=120: "hi")
+    assert brain.answer(materialize("1"), "frage") == "hi"
