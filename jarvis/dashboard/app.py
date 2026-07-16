@@ -15,7 +15,7 @@ import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -176,14 +176,78 @@ app.mount("/static", StaticFiles(directory=STATIC), name="static")
 async def favicon() -> Response:
     # Kleines SVG-Favicon (Krabbe/Kern), vermeidet 404 im Browser.
     svg = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">'
-           '<circle cx="16" cy="16" r="13" fill="#0b0806" stroke="#ff7a1a" stroke-width="2"/>'
-           '<circle cx="16" cy="16" r="5" fill="#ffb454"/></svg>')
+           '<circle cx="16" cy="16" r="13" fill="#040703" stroke="#2bff66" stroke-width="2"/>'
+           '<circle cx="16" cy="16" r="5" fill="#7dffa8"/></svg>')
     return Response(content=svg, media_type="image/svg+xml")
 
 
 @app.get("/")
 async def start_page() -> FileResponse:
     return FileResponse(STATIC / "start.html")
+
+
+# --- PWA: als App aufs Handy installierbar --------------------------------
+@app.get("/manifest.webmanifest")
+async def manifest() -> FileResponse:
+    return FileResponse(STATIC / "manifest.webmanifest", media_type="application/manifest+json")
+
+
+@app.get("/sw.js")
+async def service_worker() -> FileResponse:
+    # Service Worker MUSS von der Wurzel kommen (Scope '/'), nicht aus /static.
+    return FileResponse(STATIC / "sw.js", media_type="text/javascript",
+                        headers={"Cache-Control": "no-cache", "Service-Worker-Allowed": "/"})
+
+
+@app.get("/handy")
+async def handy_page() -> FileResponse:
+    return FileResponse(STATIC / "handy.html")
+
+
+@app.get("/api/handy")
+async def handy_info(request: Request) -> JSONResponse:
+    """Info für den Handy-Zugang: LAN-Adresse (aus dem Host-Header) + QR-Ziel."""
+    from jarvis.core.netinfo import lan_ip
+    host = request.headers.get("host") or ""
+    port = 8787
+    if ":" in host and not host.endswith("]"):
+        try:
+            port = int(host.rsplit(":", 1)[1])
+        except ValueError:
+            pass
+    ip = lan_ip()
+    url = f"http://{ip}:{port}/" if ip else ""
+    lan_offen = bool(os.environ.get("JARVIS_ALLOWED_HOSTS"))
+    return JSONResponse({"lan_ip": ip, "port": port, "url": url,
+                         "lan_modus_aktiv": lan_offen})
+
+
+@app.get("/api/handy/qr.svg")
+async def handy_qr(request: Request) -> Response:
+    """QR-Code (SVG) zur LAN-Adresse — Handy scannt ihn und ist verbunden.
+    Nutzt 'segno' (pure Python). Fehlt es, kommt 404 und die Seite zeigt nur die URL."""
+    from jarvis.core.netinfo import lan_ip
+    host = request.headers.get("host") or ""
+    port = 8787
+    if ":" in host and not host.endswith("]"):
+        try:
+            port = int(host.rsplit(":", 1)[1])
+        except ValueError:
+            pass
+    ip = lan_ip()
+    if not ip:
+        return Response("keine LAN-IP", status_code=404)
+    try:
+        import io
+
+        import segno
+        buf = io.BytesIO()
+        segno.make(f"http://{ip}:{port}/", error="m").save(
+            buf, kind="svg", scale=6, dark="#2bff66", light="#040703", border=2)
+        return Response(buf.getvalue().decode("utf-8"), media_type="image/svg+xml",
+                        headers={"Cache-Control": "no-cache"})
+    except Exception:
+        return Response("segno nicht installiert", status_code=404)
 
 
 @app.get("/uebersicht")

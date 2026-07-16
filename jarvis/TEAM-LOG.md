@@ -202,3 +202,25 @@ sich überall einloggen und mit den Daten arbeiten.
 - **Presets:** +5 (gmx, web.de, yahoo, icloud, discord, ebay) → 23 Plattformen.
 - **Agent 4:** neue echte Browser-Regression (lokaler Server, füllt korrektes
   Feld), **97 Tests grün**. Test überspringt sauber ohne Browser.
+
+## Eintrag 014 — JARVIS aufs Handy (PWA + Handy-Modus)
+**Von:** Agent 1, 7, 6, 4 · **Nutzer:** "können wir den jarvis auch fürs handy machen"
+- **Ehrliche Architektur:** JARVIS bleibt auf dem PC (Gehirn/PC-Steuerung laufen
+  dort). Das Handy wird eine mobile Fernbedienung im selben WLAN — kein zweiter
+  Server, keine Cloud.
+- **Responsive:** Mobile-Breakpoint (≤720px) in style.css — Header/Nav/Grids
+  stapeln, Touch-Ziele groß, 16px-Inputs (kein iOS-Zoom), Tabellen scrollbar,
+  Safe-Area im Standalone-Modus.
+- **PWA (installierbar):** manifest.webmanifest + Service Worker (sw.js, Netzwerk-
+  zuerst, /api NICHT gecacht) + Reaktor-Icons (pure-Python PNG-Writer, 180/192/
+  512). Head-Tags in alle Seiten injiziert. Neue Routen /manifest.webmanifest,
+  /sw.js (Scope '/'), Icons unter /static/icons.
+- **Handy-Modus:** run.py `--lan` bindet an 0.0.0.0 UND erlaubt NUR die eigene
+  LAN-IP (Host-Guard/DNS-Rebinding-Schutz bleibt an). netinfo.lan_ip() ermittelt
+  die Adresse. `JARVIS-Handy.cmd` + `Start-Jarvis.ps1 -Lan` öffnen die Firewall
+  (privates Netz, best effort) und zeigen die /handy-Seite mit QR.
+- **/handy-Seite:** QR-Code (segno, SVG, grün) zum Scannen, große Adresse zum
+  Kopieren, Installations-Anleitung iPhone/Android, Live-Status.
+- **Sicherheit/Ehrlichkeit:** nur LAN, PC muss laufen, kein automatischer
+  Internet-Zugang (für unterwegs bräuchte es VPN/Tunnel — bewusst nicht offen).
+- **Agent 4:** **99 Tests grün** (+2 PWA/Handy), kein Regress. Favicon auf Grün.

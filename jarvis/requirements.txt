@@ -11,6 +11,8 @@ playwright>=1.40
 # Für den verschlüsselten Zugangs-Vault (Plattform-Logins). Fehlt es, weicht
 # JARVIS ehrlich auf Base64 aus (dann steht 'verschlüsselt: nein' in der UI):
 cryptography>=41.0
+# Für den QR-Code auf der Handy-Seite (pure Python, keine Extra-Abhängigkeiten):
+segno>=1.5
 # Tests (Dashboard-API via TestClient):
 pytest>=8.0
 httpx>=0.27

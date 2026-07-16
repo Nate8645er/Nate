@@ -325,3 +325,29 @@ def test_zugaenge_login_command_routed(client, monkeypatch):
     # ohne Freischaltung: ehrlicher Sperrhinweis, kein Absturz
     assert t["status"] == "fehler" and "gesperrt" in t["ergebnis"].lower()
     client.delete("/api/zugaenge/github")
+
+
+def test_pwa_and_handy_endpoints(client):
+    """PWA-Dateien + Handy-Seite werden ausgeliefert (installierbar aufs Handy)."""
+    m = client.get("/manifest.webmanifest")
+    assert m.status_code == 200 and "JARVIS" in m.text
+    assert m.headers["content-type"].startswith("application/manifest")
+
+    sw = client.get("/sw.js")
+    assert sw.status_code == 200 and "addEventListener" in sw.text
+    assert sw.headers.get("service-worker-allowed") == "/"
+
+    assert client.get("/handy").status_code == 200
+    assert client.get("/static/icons/jarvis-192.png").status_code == 200
+
+    info = client.get("/api/handy").json()
+    assert set(info) >= {"lan_ip", "port", "url", "lan_modus_aktiv"}
+
+
+def test_handy_qr_svg(client):
+    """QR-SVG wird erzeugt (segno) — oder sauber 404, wenn keine LAN-IP/segno."""
+    r = client.get("/api/handy/qr.svg")
+    assert r.status_code in (200, 404)
+    if r.status_code == 200:
+        assert r.headers["content-type"].startswith("image/svg")
+        assert "<svg" in r.text

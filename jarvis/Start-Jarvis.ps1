@@ -2,7 +2,7 @@
 # Installiert die Python-Abhaengigkeiten (einmalig) und startet das Dashboard.
 # Aufruf:  powershell -ExecutionPolicy Bypass -File .\Start-Jarvis.ps1 [-Demo] [-Autopilot] [-Setup]
 #   -Setup : einmalige PC-Einrichtung (PC-Zusaetze, Browser-Treiber, Desktop-Symbol)
-param([switch]$Demo, [switch]$Autopilot, [switch]$Setup)
+param([switch]$Demo, [switch]$Autopilot, [switch]$Setup, [switch]$Lan)
 
 $ErrorActionPreference = 'Stop'
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -49,8 +49,11 @@ $env:PYTHONPATH = $repo
 $argv = @('-m', 'jarvis.run')
 if ($Demo) { $argv += '--demo' }
 if ($Autopilot) { $argv += '--autopilot' }
+if ($Lan) { $argv += '--lan' }
 
 $url = 'http://127.0.0.1:8787'
+# Im Handy-Modus die HANDY-Seite mit QR-Code oeffnen (zum Scannen mit dem Handy).
+$openUrl = if ($Lan) { "$url/handy" } else { $url }
 Write-Host ""
 Write-Host "JARVIS startet als eigene App..." -ForegroundColor Green
 
@@ -70,9 +73,9 @@ $edge = @("$env:ProgramFiles\Microsoft\Edge\Application\msedge.exe",
 $chrome = @("$env:ProgramFiles\Google\Chrome\Application\chrome.exe",
             "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe") |
           Where-Object { Test-Path $_ } | Select-Object -First 1
-if ($edge)      { Start-Process $edge   "--app=$url --window-size=1500,950" }
-elseif ($chrome){ Start-Process $chrome "--app=$url --window-size=1500,950" }
-else            { Start-Process $url }
+if ($edge)      { Start-Process $edge   "--app=$openUrl --window-size=1500,950" }
+elseif ($chrome){ Start-Process $chrome "--app=$openUrl --window-size=1500,950" }
+else            { Start-Process $openUrl }
 
 Write-Host "JARVIS-App geoeffnet. Dieses kleine Fenster offen lassen (hier laeuft JARVIS)." -ForegroundColor Green
 Write-Host "Zum Beenden dieses Fenster schliessen." -ForegroundColor DarkGray
