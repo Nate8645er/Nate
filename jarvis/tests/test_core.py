@@ -217,6 +217,32 @@ def test_natural_language_commands():
     assert interpret("was ist die Hauptstadt von Frankreich") is None
 
 
+def test_wake_word_prefix_is_stripped():
+    """'hey jarvis <befehl>' muss wie '<befehl>' erkannt werden."""
+    from jarvis.core.commands import interpret
+    assert interpret("hey jarvis öffne YouTube") == \
+        "!plugin pc open program=https://www.youtube.com"
+    assert interpret("hey jarvis, mach den Rechner auf") == \
+        "!plugin pc open program=calc"
+    assert interpret("jarvis starte notepad") == "!plugin pc open program=notepad"
+    # Weckwort allein oder mit Frage -> kein Kommando (geht ans Gehirn)
+    assert interpret("hey jarvis") is None
+    assert interpret("hey jarvis wie geht es dir") is None
+
+
+def test_youtube_play_intent():
+    """'spiel <X> auf YouTube' / 'spiel mir ein Video über <X>' öffnet YouTube-Suche."""
+    from jarvis.core.commands import interpret
+    r = interpret("hey jarvis spiel Argentinien gegen England auf youtube")
+    assert r == "!plugin pc open program=https://www.youtube.com/results?search_query=Argentinien+gegen+England"
+    assert interpret("spiel mir ein Lied von Adele") == \
+        "!plugin pc open program=https://www.youtube.com/results?search_query=Adele"
+    assert interpret("spiele das WM Halbfinale auf youtube ab") == \
+        "!plugin pc open program=https://www.youtube.com/results?search_query=WM+Halbfinale"
+    # ohne YouTube-/Media-Signal bleibt es eine normale Frage
+    assert interpret("spiele eine wichtige Rolle im Team") is None
+
+
 def test_natural_command_routed_and_gated(tmp_path: Path, monkeypatch):
     import asyncio
     from jarvis.core.orchestrator import Orchestrator

@@ -220,7 +220,14 @@ def answer(employee: VirtualEmployee, task: str) -> str:
         f"Du bist {employee.name}, {employee.role} im Team {employee.team} "
         f"einer virtuellen Organisation (JARVIS). Deine Skills: "
         f"{', '.join(employee.skills)}. Antworte knapp, präzise und auf Deutsch. "
-        f"Erfinde keine Fakten und stelle keine simulierten Ergebnisse als real dar.")
+        f"Erfinde keine Fakten und stelle keine simulierten Ergebnisse als real dar. "
+        f"WICHTIG zu deinen Fähigkeiten: JARVIS KANN den PC steuern — Programme und "
+        f"Webseiten öffnen, den Browser bedienen, YouTube-Videos abspielen, "
+        f"Screenshots machen und im Internet suchen. Das geschieht über Befehle. "
+        f"Behaupte NIEMALS, du hättest keinen Browser-/PC-Zugriff. Wenn der Nutzer "
+        f"eine Aktion will (z. B. ein Video abspielen), sag ihm den kurzen Befehl, "
+        f"der es auslöst — etwa: »spiel <Titel> auf YouTube« oder »öffne YouTube«. "
+        f"Solche Sätze führt JARVIS wirklich aus.")
 
     global _skip_anthropic
     # 1) Anthropic (Fable 5) — nur wenn Key da UND nicht auf OpenRouter-only gestellt.

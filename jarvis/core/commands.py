@@ -73,6 +73,37 @@ def _strip_filler(t: str) -> str:
         prev = t
         t = _FILLER.sub("", t).strip()
     return t
+
+
+# Weckwort am Anfang entfernen: "hey jarvis", "ok jarvis", "hallo jarvis",
+# "jarvis," ... So wird "hey jarvis öffne youtube" wirklich als Befehl erkannt
+# (früher fiel alles mit "hey jarvis"-Vorsatz durch und landete nur im Chat).
+_WAKE = re.compile(
+    r"^\s*(?:hey|hi|hallo|halo|ok|okay|okey|yo|he)?\s*jarvis\b[\s,:.!-]*",
+    re.IGNORECASE)
+
+
+def _strip_wake(t: str) -> str:
+    return _WAKE.sub("", t).strip()
+
+
+# YouTube: "spiel/play/zeig … auf youtube" ODER "spiel mir ein video/lied/song …".
+# Bewusst eng gehalten, damit normale Fragen NICHT als YouTube-Befehl enden.
+_YT_VERB = r"(?:spiel(?:e|\s+mir|\s+doch)?|spiel\s+ab|play|zeig(?:e|\s+mir)?|abspielen)"
+_YT_ON = re.compile(
+    rf"^(?:bitte\s+)?{_YT_VERB}\s+(.+?)\s+(?:auf|bei|in|über|ueber)\s+"
+    r"(?:youtube|yt|dem\s+youtube)(?:\s+ab)?[.!?]?$", re.IGNORECASE)
+_YT_MEDIA = re.compile(
+    rf"^(?:bitte\s+)?{_YT_VERB}\s+(?:mir\s+)?(?:ein(?:en)?\s+|das\s+|die\s+|den\s+)?"
+    r"(?:video|lied|song|musik(?:video)?|clip|film|trailer)\s+"
+    r"(?:von|über|ueber|zu|mit|namens|über\s+)?\s*(.+?)[.!?]?$", re.IGNORECASE)
+
+
+def _youtube_url(query: str) -> str:
+    """YouTube-Suche, die das erste Ergebnis automatisch abspielt."""
+    import urllib.parse
+    q = urllib.parse.quote_plus(query.strip().strip("\"'"))
+    return "https://www.youtube.com/results?search_query=" + q
 _CLOSE = re.compile(
     r"^(?:bitte\s+)?(?:schließe|schliesse|beende|schließ|close|kill|stopp(?:e)?)\s+"
     r"(?:das\s+|die\s+|den\s+)?(.+?)[.!?]?$", re.IGNORECASE)
@@ -118,6 +149,18 @@ def interpret(text: str) -> str | None:
     s = text.strip()
     if not s or s.startswith("!"):
         return None
+    # Weckwort "hey jarvis" / "jarvis," am Anfang entfernen, sonst wird der
+    # eigentliche Befehl nicht erkannt und alles landet nur im Chat.
+    s = _strip_wake(s)
+    if not s:
+        return None
+
+    # --- YouTube: Video/Song wirklich abspielen (Browser öffnet & spielt ab) ---
+    myt = _YT_ON.match(s) or _YT_MEDIA.match(s)
+    if myt:
+        ziel = _strip_filler(myt.group(1)).strip()
+        if ziel:
+            return f"!plugin pc open program={_youtube_url(ziel)}"
 
     # Claw Code / Claude Code als Werkzeug: "claw code <prompt>", "clawcode <prompt>", "claude code <prompt>"
     mcc = re.match(r"^(?:bitte\s+)?(?:claw\s?code|clawcode|claude\s?code|claw)\s*[:,]?\s+(.+)$",
