@@ -226,15 +226,21 @@ def answer(employee: VirtualEmployee, task: str) -> str:
             low = body.lower()
             billing = "credit balance" in low or "billing" in low
             # Bei Guthaben-/Auth-Problem: automatisch OpenRouter-Gratis probieren.
-            if (billing or e.code in (401, 403, 429)) and os.environ.get("OPENROUTER_API_KEY"):
-                orr = _openrouter_answer(system, task)
-                if orr and not orr.startswith("[OpenRouter"):
-                    return orr
-            if billing:
-                return ("[Kein Guthaben] Dein Anthropic-Konto hat kein Guthaben mehr. "
-                        "Bitte auf console.anthropic.com unter 'Plans & Billing' aufladen "
-                        "— danach antwortet Fable 5. (Oder OPENROUTER_API_KEY setzen für "
-                        "Gratis-Modelle.)")
+            if billing or e.code in (401, 403, 429):
+                if os.environ.get("OPENROUTER_API_KEY"):
+                    orr = _openrouter_answer(system, task)
+                    if orr and not orr.startswith("[OpenRouter"):
+                        return orr
+                    # OpenRouter-Key da, aber Gratis-Modelle scheitern -> echten Grund zeigen
+                    return ("[Anthropic kein Guthaben; OpenRouter-Gratis antwortet gerade "
+                            "nicht] " + (orr or "unbekannt")[:200] +
+                            " — evtl. Gratis-Limit erreicht (kurz warten) oder OpenRouter-"
+                            "Key prüfen.")
+                if billing:
+                    return ("[Kein Guthaben] Dein Anthropic-Konto hat kein Guthaben und es "
+                            "ist KEIN OpenRouter-Key gesetzt. Entweder auf "
+                            "console.anthropic.com aufladen ODER auf der Werkzeuge-Seite "
+                            "den OpenRouter-Key eintragen (Gratis-Modelle).")
             reason = {401: "Key ungültig", 403: "Key nicht berechtigt",
                       429: "Rate-Limit / kein Guthaben"}.get(e.code, f"HTTP {e.code}")
             return f"[API-Fehler {e.code}: {reason}] {body[:250]}"
