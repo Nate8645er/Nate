@@ -243,6 +243,19 @@ def test_youtube_play_intent():
     assert interpret("spiele eine wichtige Rolle im Team") is None
 
 
+def test_login_intent():
+    """'logge dich bei <plattform> ein' wird zur Browser-Login-Aktion."""
+    from jarvis.core.commands import interpret
+    assert interpret("hey jarvis logge dich bei instagram ein") == \
+        "!plugin browser_auto login plattform=instagram"
+    assert interpret("melde dich bei google an") == \
+        "!plugin browser_auto login plattform=google"
+    assert interpret("logge dich bei www.instagram.com ein") == \
+        "!plugin browser_auto login plattform=instagram"
+    assert interpret("hey jarvis logge dich überall ein") == \
+        "!plugin browser_auto login plattform=alle"
+
+
 def test_natural_command_routed_and_gated(tmp_path: Path, monkeypatch):
     import asyncio
     from jarvis.core.orchestrator import Orchestrator

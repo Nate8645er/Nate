@@ -35,6 +35,11 @@ def _headless_default() -> bool:
     return os.name != "nt"   # Windows: sichtbar; sonst headless
 
 
+def _split(selectors: str) -> list[str]:
+    """Komma-getrennte CSS-Selektoren in Einzel-Selektoren zerlegen."""
+    return [s.strip() for s in selectors.split(",") if s.strip()]
+
+
 class _BrowserWorker(threading.Thread):
     def __init__(self, workspace: Path, headless: bool) -> None:
         super().__init__(daemon=True)
@@ -54,11 +59,16 @@ class _BrowserWorker(threading.Thread):
             return
         try:
             with sync_playwright() as pw:
-                browser = None
+                # Eigenes, DAUERHAFTES JARVIS-Profil: Cookies/Sessions überleben
+                # Neustarts -> einmal eingeloggt, bleibt eingeloggt ("überall
+                # angemeldet"). Getrennt vom normalen Chrome-Profil, damit es
+                # keine Konflikte gibt.
+                profile = self.workspace / "browser-profile"
+                profile.mkdir(parents=True, exist_ok=True)
+                context = None
                 attempts: list[dict] = [
                     {"channel": "chrome"}, {"channel": "msedge"}, {},
                 ]
-                # Expliziter Chromium-Pfad (z. B. gebündelt auf Servern)
                 exe = os.environ.get("PLAYWRIGHT_CHROMIUM_PATH")
                 if not exe:
                     for cand in ("/opt/pw-browsers/chromium",
@@ -70,16 +80,18 @@ class _BrowserWorker(threading.Thread):
                     attempts.append({"executable_path": exe})
                 for opts in attempts:
                     try:
-                        browser = pw.chromium.launch(headless=self.headless, **opts)
+                        context = pw.chromium.launch_persistent_context(
+                            str(profile), headless=self.headless,
+                            accept_downloads=True, **opts)
                         break
                     except Exception:
                         continue
-                if browser is None:
+                if context is None:
                     self.err = ("Kein Browser gefunden. Auf Windows Chrome/Edge installieren "
                                 "oder 'playwright install chromium' ausführen.")
                     self.ready.set()
                     return
-                page = browser.new_page()
+                page = context.pages[0] if context.pages else context.new_page()
                 self.ready.set()
                 while True:
                     cmd, resq = self.cmds.get()
@@ -89,7 +101,7 @@ class _BrowserWorker(threading.Thread):
                         resq.put(("ok", self._do(page, cmd)))
                     except Exception as e:
                         resq.put(("err", f"{type(e).__name__}: {e}"))
-                browser.close()
+                context.close()
         except Exception as e:
             self.err = f"Browser-Fehler: {type(e).__name__}: {e}"
             self.ready.set()
@@ -127,13 +139,106 @@ class _BrowserWorker(threading.Thread):
             path = self.workspace / "browser.png"
             page.screenshot(path=str(path))
             return {"gespeichert": str(path)}
+        if action == "login":
+            return self._login(page, cmd)
         raise ValueError(f"Unbekannte Aktion: {action}")
+
+    def _login(self, page: Any, cmd: dict) -> Any:
+        """Loggt sich mit hinterlegten Zugangsdaten ein. Ehrlich bei 2FA/Captcha:
+        JARVIS füllt Benutzer + Passwort und sendet ab; erscheint danach 2FA
+        oder ein Captcha, wird das gemeldet (du erledigst diesen Schritt im
+        sichtbaren Fenster). Cookies bleiben im JARVIS-Profil -> danach dauerhaft
+        angemeldet."""
+        plattform = cmd.get("plattform", "?")
+        login_url = cmd["login_url"]
+        if not login_url.startswith(("http://", "https://")):
+            login_url = "https://" + login_url
+        page.goto(login_url, timeout=30000, wait_until="domcontentloaded")
+
+        # 1) Benutzername tippen
+        try:
+            page.fill(cmd["user_sel"], cmd["user"], timeout=8000)
+        except Exception:
+            return {"plattform": plattform, "status": "kein_loginfeld",
+                    "hinweis": ("Benutzerfeld nicht gefunden — evtl. schon eingeloggt, "
+                                "oder die Login-Seite/Selektoren stimmen nicht.")}
+
+        # 2) Passwortfeld füllen. Ist es (noch) nicht sichtbar (2-Schritt-Login
+        #    wie Google), erst 'Weiter' klicken, dann Passwort.
+        def _fill_pass() -> bool:
+            try:
+                page.fill(cmd["pass_sel"], cmd["pass"], timeout=4000)
+                return True
+            except Exception:
+                return False
+
+        if not _fill_pass():
+            for sel in _split(cmd["submit_sel"]):
+                try:
+                    page.click(sel, timeout=3000)
+                    break
+                except Exception:
+                    continue
+            page.wait_for_timeout(1500)
+            _fill_pass()
+
+        # 3) Absenden
+        clicked = False
+        for sel in _split(cmd["submit_sel"]):
+            try:
+                page.click(sel, timeout=3000)
+                clicked = True
+                break
+            except Exception:
+                continue
+        if not clicked:
+            try:
+                page.keyboard.press("Enter")
+            except Exception:
+                pass
+        page.wait_for_timeout(2500)
+
+        # 4) Ergebnis ehrlich bewerten
+        path = self.workspace / "login.png"
+        try:
+            page.screenshot(path=str(path))
+        except Exception:
+            pass
+        body = ""
+        try:
+            body = page.inner_text("body")[:4000].lower()
+        except Exception:
+            pass
+        needs_2fa = any(k in body for k in (
+            "verifizierung", "verification code", "bestätigungscode", "2-step",
+            "zwei-faktor", "two-factor", "authenticator", "einmalcode", "one-time",
+            "sms", "code gesendet", "code sent"))
+        captcha = "captcha" in body or "recaptcha" in body or "roboter" in body or "not a robot" in body
+        wrong = any(k in body for k in (
+            "falsches passwort", "incorrect password", "wrong password",
+            "passwort ist falsch", "couldn't find your", "konto nicht gefunden"))
+        if wrong:
+            status = "falsche_daten"
+        elif captcha:
+            status = "captcha"
+        elif needs_2fa:
+            status = "2fa_noetig"
+        else:
+            status = "vermutlich_ok"
+        return {"plattform": plattform, "status": status, "url": page.url,
+                "screenshot": str(path),
+                "hinweis": {
+                    "falsche_daten": "Benutzername/Passwort scheinen falsch.",
+                    "captcha": "Captcha aufgetaucht — bitte im sichtbaren Fenster lösen.",
+                    "2fa_noetig": "2FA/Code nötig — bitte im sichtbaren Fenster eingeben; danach bleibt JARVIS angemeldet.",
+                    "vermutlich_ok": "Login abgeschickt. Session im JARVIS-Profil gespeichert — du bleibst angemeldet.",
+                }[status]}
 
 
 class BrowserAutoPlugin(Plugin):
     name = "browser_auto"
     description = ("Browser selbst steuern: Seite öffnen, lesen, Links, klicken, "
-                  "tippen, absenden (Playwright; Schalter JARVIS_ALLOW_PC)")
+                  "tippen, absenden, EINLOGGEN (Playwright; Schalter JARVIS_ALLOW_PC)")
     dangerous = True
     allow_env = ["JARVIS_ALLOW_PC", "JARVIS_ALLOW_DANGEROUS"]
     allowed_teams = ["Führung", "Automatisierung", "Web-Team", "Recherche",
@@ -144,6 +249,9 @@ class BrowserAutoPlugin(Plugin):
         self.workspace.mkdir(parents=True, exist_ok=True)
         self._worker: _BrowserWorker | None = None
         self._lock = threading.Lock()
+        # Zugangs-Vault liegt in DATA_DIR (~/.jarvis), also eine Ebene über 'workspace'.
+        from .zugaenge import Vault
+        self._vault = Vault(workspace.parent)
 
     def health(self) -> tuple[bool, str]:
         """Browser-Automatisierung braucht das Playwright-Paket (Browser wird lazy gestartet)."""
@@ -168,8 +276,9 @@ class BrowserAutoPlugin(Plugin):
             return w
         resq: queue.Queue = queue.Queue()
         w.cmds.put((cmd, resq))
+        timeout = 120 if cmd.get("action") == "login" else 60
         try:
-            status, result = resq.get(timeout=60)
+            status, result = resq.get(timeout=timeout)
         except queue.Empty:
             return "Zeitüberschreitung im Browser."
         return result if status == "ok" else f"[Browser] {result}"
@@ -190,8 +299,37 @@ class BrowserAutoPlugin(Plugin):
                                "text": kwargs.get("text", "")})
         if action == "press":
             return self._send({"action": "press", "taste": kwargs.get("taste", "Enter")})
+        if action == "login":
+            plattform = (kwargs.get("plattform") or kwargs.get("platform") or "").strip()
+            if not plattform:
+                raise ValueError("plattform= fehlt (z. B. plattform=instagram)")
+            # "alle"/"überall" -> nacheinander in ALLE hinterlegten Konten einloggen.
+            if plattform.lower() in ("alle", "all", "überall", "ueberall"):
+                gespeichert = self._vault.list()
+                if not gespeichert:
+                    return ("[Login] Noch keine Zugänge hinterlegt. Trag deine Konten "
+                            "zuerst auf der ZUGÄNGE-Seite ein.")
+                ergebnisse = []
+                for eintr in gespeichert:
+                    r = self.run("login", plattform=eintr["plattform"])
+                    ergebnisse.append({"plattform": eintr["plattform"],
+                                       "ergebnis": r.get("status", r) if isinstance(r, dict) else r})
+                return {"eingeloggt_bei": len(ergebnisse), "details": ergebnisse}
+            eintrag = self._vault.get(plattform)
+            if eintrag is None:
+                return (f"[Login] Für '{plattform}' sind keine Zugangsdaten hinterlegt. "
+                        f"Trag sie auf der ZUGÄNGE-Seite ein.")
+            if not eintrag.get("login_url"):
+                return (f"[Login] Für '{plattform}' fehlt die Login-Adresse. "
+                        f"Bitte auf der ZUGÄNGE-Seite ergänzen.")
+            return self._send({
+                "action": "login", "plattform": plattform,
+                "login_url": eintrag["login_url"],
+                "user_sel": eintrag["user_sel"], "pass_sel": eintrag["pass_sel"],
+                "submit_sel": eintrag["submit_sel"],
+                "user": eintrag["benutzer"], "pass": eintrag["passwort"]})
         raise ValueError(f"Unbekannte Aktion: {action} "
-                         "(goto|read|links|click|type|press|screenshot)")
+                         "(goto|read|links|click|type|press|screenshot|login)")
 
 
 def register(manager: Any, workspace: Path) -> None:

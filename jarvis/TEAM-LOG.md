@@ -161,3 +161,27 @@ ECHTES, skalierendes Fortschrittssystem:
   Chart) auf Grün umgestellt (fest kodierte rgba/hex ersetzt).
 - Live-Screenshots geprüft: Startseite-Kern, Übersicht-Reaktor, Mitarbeiter —
   alles grün, 0 JS-Fehler. Tests unverändert grün.
+
+## Eintrag 012 — Weckwort-Befehle + Auto-Login-Vault (Nutzer-Wunsch)
+**Von:** Agent 2, 6, 4 · **Nutzer:** "hey jarvis"-Befehle wirkungslos; JARVIS soll
+sich überall einloggen und mit den Daten arbeiten.
+- **Root-Cause (Befehle):** `interpret()` ist am Satzanfang verankert; das Weckwort
+  "hey jarvis" davor verhinderte JEDE Kommando-Erkennung → alles landete im Chat,
+  das Modell "redete" statt zu handeln. Fix: Weckwort wird vor dem Parsen entfernt
+  (`_strip_wake`). Zusätzlich: falsche Selbstauskunft im System-Prompt korrigiert
+  (JARVIS behauptet nicht mehr "kein Browser-Zugriff").
+- **Neu (YouTube):** "spiel <X> auf YouTube" / "spiel mir ein Video/Lied über <X>"
+  → öffnet YouTube-Suche & spielt ab (eng gefasst, normale Fragen bleiben Fragen).
+- **Neu (Auto-Login):** `zugaenge.py` — lokaler, verschlüsselter Vault (Fernet/AES,
+  optional Master-Passwort `JARVIS_VAULT_PW`; Base64-Fallback wenn cryptography
+  fehlt/kaputt — Agent 6: `except BaseException`, da eine defekte crypto eine
+  pyo3-PanicException wirft). Presets für 18 Plattformen (Login-URL + Feld-Selektoren).
+- **Browser:** persistenter Kontext (eigenes JARVIS-Profil) → Sitzungen überleben
+  Neustarts, man bleibt eingeloggt. Neue Aktion `login` füllt Benutzer+Passwort,
+  sendet ab, erkennt EHRLICH 2FA/Captcha/falsche Daten und meldet sie.
+- **Befehl:** "logge dich bei <X> ein" / "logge dich überall ein" (alle Konten).
+- **UI:** neue Seite ZUGÄNGE (eintragen/anmelden/löschen, Sicherheitsstatus),
+  Nav-Link auf allen Seiten, cryptography in requirements.
+- **Sicherheit/Ehrlichkeit:** nur lokal (0600), nie gesendet; kein 2FA-/Captcha-
+  Bypass; Warnung, dass manche Dienste Automatik blockieren/Konten sperren.
+- **Agent 4:** **96 Tests grün** (+3: Weckwort, YouTube, Login/Vault), kein Regress.

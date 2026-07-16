@@ -223,6 +223,7 @@ def answer(employee: VirtualEmployee, task: str) -> str:
         f"Erfinde keine Fakten und stelle keine simulierten Ergebnisse als real dar. "
         f"WICHTIG zu deinen Fähigkeiten: JARVIS KANN den PC steuern — Programme und "
         f"Webseiten öffnen, den Browser bedienen, YouTube-Videos abspielen, "
+        f"sich mit hinterlegten Zugangsdaten auf Plattformen EINLOGGEN, "
         f"Screenshots machen und im Internet suchen. Das geschieht über Befehle. "
         f"Behaupte NIEMALS, du hättest keinen Browser-/PC-Zugriff. Wenn der Nutzer "
         f"eine Aktion will (z. B. ein Video abspielen), sag ihm den kurzen Befehl, "

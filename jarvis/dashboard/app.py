@@ -216,6 +216,72 @@ async def schluessel_page() -> FileResponse:
     return FileResponse(STATIC / "schluessel.html")
 
 
+@app.get("/zugaenge")
+async def zugaenge_page() -> FileResponse:
+    return FileResponse(STATIC / "zugaenge.html")
+
+
+# --- Zugänge-Vault: Plattform-Logins (lokal, verschlüsselt) ------------------
+def _vault():
+    from jarvis.core.zugaenge import Vault
+    return Vault(DATA_DIR)
+
+
+class ZugangIn(BaseModel):
+    plattform: str
+    benutzer: str
+    passwort: str
+    login_url: str = ""
+    url: str = ""
+    user_sel: str = ""
+    pass_sel: str = ""
+    submit_sel: str = ""
+
+
+@app.get("/api/zugaenge")
+async def zugaenge_list() -> JSONResponse:
+    from jarvis.core.zugaenge import PRESETS
+    v = _vault()
+    return JSONResponse({
+        "zugaenge": v.list(),
+        "verschluesselt": v.verschluesselt,
+        "master_passwort": bool(os.environ.get("JARVIS_VAULT_PW")),
+        "presets": sorted(PRESETS.keys()),
+    })
+
+
+@app.post("/api/zugaenge")
+async def zugaenge_set(z: ZugangIn) -> JSONResponse:
+    try:
+        res = _vault().set(z.plattform, z.benutzer, z.passwort, z.login_url,
+                           z.url, z.user_sel, z.pass_sel, z.submit_sel)
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    orchestrator.log("info", f"Zugang gespeichert: {res['plattform']} "
+                             f"(verschlüsselt: {res['verschluesselt']})")
+    return JSONResponse(res)
+
+
+@app.delete("/api/zugaenge/{plattform}")
+async def zugaenge_delete(plattform: str) -> JSONResponse:
+    ok = _vault().delete(plattform)
+    if ok:
+        orchestrator.log("info", f"Zugang gelöscht: {plattform.lower()}")
+    return JSONResponse({"geloescht": ok})
+
+
+@app.post("/api/zugaenge/{plattform}/login")
+async def zugaenge_login(plattform: str) -> JSONResponse:
+    """Loggt sich JETZT bei einer Plattform ein (oder 'alle')."""
+    plug = orchestrator.plugins.plugins.get("browser_auto")
+    if plug is None:
+        raise HTTPException(500, "Browser-Automatisierung nicht verfügbar")
+    res = await asyncio.to_thread(orchestrator.plugins.run, "Führung",
+                                  "browser_auto", "login", plattform=plattform)
+    orchestrator.log("info", f"Auto-Login ausgelöst: {plattform}")
+    return JSONResponse({"ergebnis": res})
+
+
 class BrainModeIn(BaseModel):
     nur_openrouter: bool
 

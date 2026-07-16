@@ -293,3 +293,35 @@ def test_clawcode_fallback_without_binary(client, monkeypatch, tmp_path):
     t = _wait_done(client, r.json()["id"])
     assert t["status"] == "fertig"
     assert "Binary nicht gefunden" in t["ergebnis"] or "kein API-Key" in t["ergebnis"]
+
+
+def test_zugaenge_vault_crud(client):
+    """Zugang speichern -> in Liste (maskiert, ohne Klartext-Passwort) -> löschen."""
+    r = client.post("/api/zugaenge", json={
+        "plattform": "instagram", "benutzer": "meinuser", "passwort": "geheim12345"})
+    assert r.status_code == 200 and r.json()["gespeichert"] is True
+
+    d = client.get("/api/zugaenge").json()
+    plats = [z["plattform"] for z in d["zugaenge"]]
+    assert "instagram" in plats
+    # Übersicht enthält NIE das Klartext-Passwort
+    assert "geheim12345" not in r.text
+    body = client.get("/api/zugaenge").text
+    assert "geheim12345" not in body and "meinuser" not in body  # nur maskiert
+
+    r2 = client.delete("/api/zugaenge/instagram")
+    assert r2.status_code == 200 and r2.json()["geloescht"] is True
+
+
+def test_zugaenge_login_command_routed(client, monkeypatch):
+    """'logge dich bei X ein' wird als Login-Aktion erkannt (Gate greift ohne Freischaltung)."""
+    monkeypatch.delenv("JARVIS_ALLOW_PC", raising=False)
+    monkeypatch.delenv("JARVIS_ALLOW_DANGEROUS", raising=False)
+    client.post("/api/zugaenge", json={
+        "plattform": "github", "benutzer": "u", "passwort": "pw1234567890"})
+    r = client.post("/api/task", json={"beschreibung": "hey jarvis logge dich bei github ein"})
+    assert r.status_code == 200
+    t = _wait_done(client, r.json()["id"])
+    # ohne Freischaltung: ehrlicher Sperrhinweis, kein Absturz
+    assert t["status"] == "fehler" and "gesperrt" in t["ergebnis"].lower()
+    client.delete("/api/zugaenge/github")

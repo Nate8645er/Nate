@@ -189,6 +189,25 @@ def interpret(text: str) -> str | None:
     if _SHOT.search(s) and re.search(r"\b(mach|nimm|erstell|screenshot|foto)\b", s, re.IGNORECASE):
         return "!plugin pc screenshot"
 
+    # --- Einloggen auf Plattformen (mit hinterlegten Zugangsdaten) ---
+    # "logge dich überall / bei allen ein" -> alle hinterlegten Konten
+    if re.match(r"^(?:bitte\s+)?(?:logg?e?\s+dich|melde\s+dich|login|einloggen|anmelden)"
+                r"\s+(?:bitte\s+)?(?:überall|ueberall|bei\s+allen?|in\s+alle[sn]?|"
+                r"auf\s+allen?)(?:\s+(?:konten|accounts?|plattformen|ein|an))?[.!?]?$",
+                s, re.IGNORECASE):
+        return "!plugin browser_auto login plattform=alle"
+    mlogin = re.match(
+        r"^(?:bitte\s+)?(?:logg?e?\s+dich|melde\s+dich|log\s+in|login|einloggen|anmelden)"
+        r"\s+(?:bitte\s+)?(?:bei|in|auf|at|to|in\s+mein[a-z]*)\s+"
+        r"(?:mein[a-z]*\s+)?(.+?)(?:\s+(?:ein|an|account|konto|profil))?[.!?]?$",
+        s, re.IGNORECASE)
+    if mlogin:
+        plat = _strip_filler(mlogin.group(1)).strip().strip("\"'").lower()
+        # 'youtube.com' -> 'youtube', 'www.instagram.com' -> 'instagram'
+        plat = re.sub(r"^(?:www\.)|\.(?:com|de|net|org|tv)$", "", plat).strip()
+        if plat:
+            return f"!plugin browser_auto login plattform={plat}"
+
     # --- Browser-Automatisierung (JARVIS steuert den Browser selbst) ---
     mnav = re.match(r"^(?:bitte\s+)?(?:navigiere|surfe|browse|geh(?:e)?\s+im\s+browser)"
                     r"\s+(?:zu|auf|nach)\s+(.+?)[.!?]?$", s, re.IGNORECASE)
