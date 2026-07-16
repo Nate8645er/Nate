@@ -312,6 +312,60 @@ def publish_instagram_post(image_url, caption):
     return instagram.publish_post(image_url, caption)
 
 
+# ------------------------------------------------------------ open apps
+
+# Apps JAVIER can open ON THE IPHONE: the backend only prepares a link,
+# the frontend shows a button and Nate's tap opens the app (iOS only
+# allows opening apps after a user gesture - honest limit).
+APP_LINKS = {
+    "youtube": ("YouTube", "https://www.youtube.com/results?search_query={q}",
+                "https://www.youtube.com"),
+    "snapchat": ("Snapchat", None, "https://www.snapchat.com/"),
+    "instagram": ("Instagram", "https://www.instagram.com/{q}/",
+                  "https://www.instagram.com"),
+    "tiktok": ("TikTok", "https://www.tiktok.com/search?q={q}",
+               "https://www.tiktok.com"),
+    "spotify": ("Spotify", "https://open.spotify.com/search/{q}",
+                "https://open.spotify.com"),
+    "shopify": ("Shopify Admin", None, "https://admin.shopify.com/"),
+    "maps": ("Karten", "https://maps.apple.com/?q={q}",
+             "https://maps.apple.com"),
+    "mail": ("Mail", "mailto:{q}", "mailto:"),
+}
+
+
+def open_app(app, query="", url=""):
+    from urllib.parse import quote
+    app = (app or "").lower()
+    if app == "web":
+        if not url:
+            return {"error": "url wird fuer app=web benoetigt"}
+        if not (url.startswith("https://") or url.startswith("http://")):
+            url = "https://" + url
+        return {
+            "ok": True,
+            "note": "Link vorbereitet. Nate sieht einen Button und tippt "
+                    "selbst - iOS erlaubt kein automatisches Oeffnen.",
+            "_frontend_action": {"type": "link", "label": "Webseite",
+                                 "url": url},
+        }
+    if app not in APP_LINKS:
+        return {"error": "Unbekannte App '%s'. Erlaubt: %s oder web"
+                         % (app, ", ".join(APP_LINKS))}
+    label, search_tpl, home = APP_LINKS[app]
+    if query and search_tpl:
+        link = search_tpl.replace("{q}", quote(query))
+    else:
+        link = home
+    return {
+        "ok": True,
+        "note": "Link zu %s vorbereitet. Nate sieht jetzt einen Button "
+                "und tippt selbst darauf - dann oeffnet sich die App auf "
+                "dem iPhone." % label,
+        "_frontend_action": {"type": "link", "label": label, "url": link},
+    }
+
+
 # ----------------------------------------------------- safe PC commands
 
 SAFE_FOLDERS = {
@@ -477,6 +531,29 @@ def tool_definitions():
             },
         },
         {
+            "name": "open_app",
+            "description": "Eine App oder Webseite auf Nates iPhone "
+                           "OEFFNEN (youtube, snapchat, instagram, tiktok, "
+                           "spotify, shopify, maps, mail oder web mit "
+                           "beliebiger URL). Optional mit Suchbegriff. Es "
+                           "wird ein Button angezeigt - Nate tippt selbst.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "app": {"type": "string",
+                            "enum": ["youtube", "snapchat", "instagram",
+                                     "tiktok", "spotify", "shopify",
+                                     "maps", "mail", "web"]},
+                    "query": {"type": "string",
+                              "description": "Suchbegriff/Profilname "
+                                             "(optional)"},
+                    "url": {"type": "string",
+                            "description": "Volle URL (nur bei app=web)"},
+                },
+                "required": ["app"],
+            },
+        },
+        {
             "name": "run_safe_command",
             "description": "Eine harmlose PC-Aktion aus einer festen "
                            "Whitelist ausfuehren: open_folder, list_files "
@@ -524,6 +601,7 @@ TOOL_FUNCTIONS = {
     "prepare_message": prepare_message,
     "prepare_instagram_post": prepare_instagram_post,
     "publish_instagram_post": publish_instagram_post,
+    "open_app": open_app,
     "run_safe_command": run_safe_command,
 }
 

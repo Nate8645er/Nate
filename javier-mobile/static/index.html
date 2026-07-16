@@ -184,6 +184,14 @@ function addMsg(role, text) {
 function addActionButton(action) {
   var a = document.createElement("a");
   a.className = "action-btn";
+  if (action.type === "link") {
+    a.href = action.url;
+    a.textContent = action.label + " oeffnen";
+    a.target = "_blank";
+    chatEl.appendChild(a);
+    chatEl.scrollTop = chatEl.scrollHeight;
+    return;
+  }
   var num = String(action.number || "").replace(/[^+\d]/g, "");
   if (action.channel === "sms") {
     // iOS uses &body= after the number
@@ -208,6 +216,18 @@ function setStatus(text, online) {
 }
 
 // ------------------------------------------------------------- speech out
+
+// iOS blocks the FIRST speechSynthesis call unless it happens inside a
+// user gesture. This silent utterance, fired from the first tap, unlocks
+// audio so JAVIER's real replies are spoken out loud.
+var ttsUnlocked = false;
+function unlockTTS() {
+  if (ttsUnlocked || !("speechSynthesis" in window)) return;
+  ttsUnlocked = true;
+  var u = new SpeechSynthesisUtterance(" ");
+  u.volume = 0;
+  speechSynthesis.speak(u);
+}
 
 function pickVoice() {
   var voices = speechSynthesis.getVoices();
@@ -327,7 +347,7 @@ function stopListening() {
   if (recognition) { try { recognition.stop(); } catch (e) {} }
 }
 
-reactor.addEventListener("touchstart", function (e) { e.preventDefault(); startListening(); });
+reactor.addEventListener("touchstart", function (e) { e.preventDefault(); unlockTTS(); startListening(); });
 reactor.addEventListener("touchend", function (e) { e.preventDefault(); stopListening(); });
 reactor.addEventListener("touchcancel", stopListening);
 reactor.addEventListener("mousedown", startListening);
@@ -347,6 +367,7 @@ function setAutoMode(on) {
 }
 
 autoBtn.addEventListener("click", function () {
+  unlockTTS();
   setAutoMode(!convMode);
   // The tap is the user gesture iOS needs - open the mic right away.
   if (convMode && !busy) startListening();
@@ -414,6 +435,7 @@ function sendToJavier(text) {
 }
 
 sendBtn.addEventListener("click", function () {
+  unlockTTS();
   var t = textInput.value.trim();
   textInput.value = "";
   sendToJavier(t);
