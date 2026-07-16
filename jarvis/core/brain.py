@@ -126,8 +126,12 @@ def _call_with_fallback(system: str, user: str, max_tokens: int = 600) -> str:
                 body = e.read().decode("utf-8", "ignore")
             except Exception:
                 pass
-            if e.code in (401, 403, 429):
-                raise                      # Key/Guthaben-Problem: sofort melden
+            low = body.lower()
+            # Key-/Guthaben-/Rate-Problem: kein anderes Modell hilft -> sofort melden.
+            # Body an die Ausnahme hängen (e.read() ist danach leer).
+            if e.code in (401, 403, 429) or "credit balance" in low or "billing" in low:
+                e._jarvis_body = body      # type: ignore[attr-defined]
+                raise
             # 400/404 o. Ä.: dieses Modell taugt (für diesen Key) nicht -> nächstes
             last_err = f"[Modell {model}: HTTP {e.code}] {body[:200]}"
             if _active_model == model:
@@ -172,11 +176,17 @@ def answer(employee: VirtualEmployee, task: str) -> str:
     try:
         return _call_with_fallback(system, task)
     except urllib.error.HTTPError as e:
-        body = ""
-        try:
-            body = e.read().decode("utf-8", "ignore")
-        except Exception:
-            pass
+        body = getattr(e, "_jarvis_body", "")
+        if not body:
+            try:
+                body = e.read().decode("utf-8", "ignore")
+            except Exception:
+                pass
+        if "credit balance" in body.lower() or "billing" in body.lower():
+            return ("[Kein Guthaben] Dein Anthropic-Konto hat kein Guthaben mehr. "
+                    "Bitte auf console.anthropic.com unter 'Plans & Billing' Guthaben "
+                    "aufladen — danach antwortet Fable 5. (Alternativ ein OpenRouter-"
+                    "Modell nutzen: z. B. 'modell gpt: ...')")
         reason = {401: "Key ungültig", 403: "Key nicht berechtigt",
                   429: "Rate-Limit / kein Guthaben"}.get(e.code, f"HTTP {e.code}")
         return f"[API-Fehler {e.code}: {reason}] {body[:250]}"
