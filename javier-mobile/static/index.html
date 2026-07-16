@@ -10,6 +10,7 @@
 <title>JAVIER</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="icon" type="image/png" href="/icon-192.png">
 <style>
   :root {
     --bg: #04080f;
@@ -156,7 +157,7 @@ var sendBtn = document.getElementById("sendBtn");
 var autoBtn = document.getElementById("autoBtn");
 var hintEl = document.getElementById("hint");
 
-var history = [];      // {role, content} - sent to backend on every request
+var chatLog = [];      // {role, content} - sent to backend on every request
 var busy = false;
 var germanVoice = null;
 
@@ -364,7 +365,7 @@ function postChat() {
   return fetch("/api/chat", {
     method: "POST",
     headers: apiHeaders(),
-    body: JSON.stringify({ messages: history })
+    body: JSON.stringify({ messages: chatLog })
   });
 }
 
@@ -372,7 +373,7 @@ function sendToJavier(text) {
   if (busy || !text) return;
   busy = true;
   addMsg("user", text);
-  history.push({ role: "user", content: text });
+  chatLog.push({ role: "user", content: text });
   setStatus("denke nach...", true);
   var thinking = addMsg("javier", "...");
   thinking.classList.add("thinking");
@@ -397,7 +398,7 @@ function sendToJavier(text) {
   .then(function (data) {
     thinking.remove();
     addMsg("javier", data.reply);
-    history.push({ role: "assistant", content: data.reply });
+    chatLog.push({ role: "assistant", content: data.reply });
     (data.actions || []).forEach(addActionButton);
     speak(data.reply);
     setStatus("bereit", true);
@@ -405,7 +406,8 @@ function sendToJavier(text) {
   .catch(function (err) {
     thinking.remove();
     addMsg("javier", "Verbindungsproblem, Nate: " + err.message +
-      ". Laeuft der Server auf dem PC?");
+      ". Bitte versuch es gleich noch einmal - falls ich geschlafen " +
+      "habe, brauche ich einen Moment zum Aufwachen.");
     setStatus("offline", false);
   })
   .finally(function () { busy = false; });
