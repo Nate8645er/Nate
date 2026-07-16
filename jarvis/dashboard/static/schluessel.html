@@ -21,7 +21,7 @@
     <div class="panel">
       <h2><b>FABLE 5 / CLAUDE</b> // ANTHROPIC-KEY</h2>
       <div id="s_ant" style="font-size:12px; margin-bottom:6px">Status wird geladen…</div>
-      <form onsubmit="return saveKey(event,'/api/brain/key','ant')">
+      <form onsubmit="return saveKey(event,'/api/brain/key','ant','s_ant')">
         <input id="k_ant" type="password" placeholder="sk-ant-…" autocomplete="off">
         <button>SPEICHERN</button>
       </form>
@@ -34,7 +34,7 @@
     <div class="panel" style="margin-top:10px">
       <h2><b>OPENROUTER</b> // 32 MODELLE (TEILS GRATIS)</h2>
       <div id="s_or" style="font-size:12px; margin-bottom:6px">Status wird geladen…</div>
-      <form onsubmit="return saveKey(event,'/api/modelle/key','or')">
+      <form onsubmit="return saveKey(event,'/api/modelle/key','or','s_or')">
         <input id="k_or" type="password" placeholder="sk-or-v1-…" autocomplete="off">
         <button>SPEICHERN</button>
       </form>
@@ -108,25 +108,32 @@ async function refresh() {
 }
 setInterval(refresh, 3000); refresh();
 
-async function saveKey(ev, url, which) {
+function _mask(k){ return k.length > 10 ? k.slice(0,7) + '…' + k.slice(-4) : '••••'; }
+function _saved(statusId, key) {
+  $(statusId).innerHTML = '<b style="color:var(--green)">✅ GESPEICHERT &amp; AKTIV</b> — ' +
+    '<span class="mono">' + esc(_mask(key)) + '</span>';
+}
+async function saveKey(ev, url, which, statusId) {
   ev.preventDefault();
   const el = $('k_' + which); const key = el.value.trim();
-  if (key.length < 12) { alert('Key sieht zu kurz aus.'); return false; }
+  if (key.length < 12) { alert('Der Key sieht zu kurz aus — bitte den ganzen Key einfügen.'); return false; }
+  $(statusId).innerHTML = '… speichere';
   const r = await fetch(url, { method:'POST', headers:{'content-type':'application/json'},
     body: JSON.stringify({ schluessel: key }) });
-  if (r.ok) { el.value = ''; alert('Gespeichert! Wird jetzt geprueft…'); }
-  else { alert('Key wurde nicht akzeptiert (zu kurz?).'); }
-  refresh(); return false;
+  if (r.ok) { el.value = ''; el.placeholder = '✅ gespeichert (neuer Key überschreibt)'; _saved(statusId, key); }
+  else { $(statusId).innerHTML = '<b style="color:var(--red)">Key nicht akzeptiert (zu kurz?)</b>'; }
+  setTimeout(refresh, 800); return false;
 }
 async function saveVoice(ev) {
   ev.preventDefault();
   const key = $('k_el').value.trim(); const sid = $('k_vid').value.trim();
   if (key.length < 12) { alert('ElevenLabs-Key sieht zu kurz aus.'); return false; }
+  $('s_el').innerHTML = '… speichere';
   const r = await fetch('/api/voice/key', { method:'POST', headers:{'content-type':'application/json'},
     body: JSON.stringify({ schluessel: key, stimm_id: sid }) });
-  if (r.ok) { $('k_el').value=''; alert('Stimme gespeichert!'); }
-  else { alert('Key wurde nicht akzeptiert.'); }
-  refresh(); return false;
+  if (r.ok) { $('k_el').value=''; $('k_el').placeholder='✅ gespeichert'; _saved('s_el', key); }
+  else { $('s_el').innerHTML = '<b style="color:var(--red)">Key nicht akzeptiert</b>'; }
+  setTimeout(refresh, 800); return false;
 }
 async function toggleOnlyOR() {
   const r = await fetch('/api/brainmode');
