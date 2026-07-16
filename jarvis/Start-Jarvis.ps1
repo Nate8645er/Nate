@@ -50,7 +50,31 @@ $argv = @('-m', 'jarvis.run')
 if ($Demo) { $argv += '--demo' }
 if ($Autopilot) { $argv += '--autopilot' }
 
+$url = 'http://127.0.0.1:8787'
 Write-Host ""
-Write-Host "JARVIS startet - Dashboard: http://127.0.0.1:8787" -ForegroundColor Green
-Start-Process "http://127.0.0.1:8787"
-& $py @argv
+Write-Host "JARVIS startet als eigene App..." -ForegroundColor Green
+
+# Server im Hintergrund starten (verbindet sich automatisch mit PC + Keys)
+$server = Start-Process -FilePath $py -ArgumentList $argv -WorkingDirectory $repo -PassThru -WindowStyle Hidden
+
+# Warten bis das Dashboard antwortet
+for ($i = 0; $i -lt 40; $i++) {
+    Start-Sleep -Milliseconds 700
+    try { if ((Invoke-WebRequest $url -UseBasicParsing -TimeoutSec 2).StatusCode -eq 200) { break } } catch {}
+}
+
+# JARVIS als EIGENE APP oeffnen (Edge/Chrome App-Modus = eigenes Fenster, keine Browser-Leiste)
+$edge = @("$env:ProgramFiles\Microsoft\Edge\Application\msedge.exe",
+          "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\msedge.exe") |
+        Where-Object { Test-Path $_ } | Select-Object -First 1
+$chrome = @("$env:ProgramFiles\Google\Chrome\Application\chrome.exe",
+            "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe") |
+          Where-Object { Test-Path $_ } | Select-Object -First 1
+if ($edge)      { Start-Process $edge   "--app=$url --window-size=1500,950" }
+elseif ($chrome){ Start-Process $chrome "--app=$url --window-size=1500,950" }
+else            { Start-Process $url }
+
+Write-Host "JARVIS-App geoeffnet. Dieses kleine Fenster offen lassen (hier laeuft JARVIS)." -ForegroundColor Green
+Write-Host "Zum Beenden dieses Fenster schliessen." -ForegroundColor DarkGray
+# Server im Vordergrund halten, bis er endet
+Wait-Process -Id $server.Id

@@ -13,8 +13,8 @@ setx JARVIS_ALLOW_DANGEROUS 1 >nul 2>&1
 set "JARVIS_ALLOW_PC=1"
 set "JARVIS_ALLOW_DANGEROUS=1"
 
-:: JARVIS mit Autopilot starten (oeffnet das Dashboard im Browser)
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0Start-Jarvis.ps1" -Demo -Autopilot
+:: JARVIS als eigene App starten (eigenes Fenster, verbindet sich autom. mit dem PC)
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0Start-Jarvis.ps1" -Autopilot
 
 echo.
 echo   JARVIS wurde beendet. Fenster kann geschlossen werden.
