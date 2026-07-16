@@ -90,6 +90,8 @@ def _load_persisted_key() -> None:
         os.environ["ELEVENLABS_API_KEY"] = data["elevenlabs_api_key"]
     if data.get("voice_id") and not os.environ.get("JARVIS_VOICE_ID"):
         os.environ["JARVIS_VOICE_ID"] = data["voice_id"]
+    if data.get("brain_mode") and not os.environ.get("JARVIS_BRAIN"):
+        os.environ["JARVIS_BRAIN"] = data["brain_mode"]
 
 
 def _persist_key(field: str, value: str) -> None:
@@ -207,6 +209,32 @@ async def werkzeuge_page() -> FileResponse:
 @app.get("/sicherheit")
 async def sicherheit_page() -> FileResponse:
     return FileResponse(STATIC / "sicherheit.html")
+
+
+@app.get("/schluessel")
+async def schluessel_page() -> FileResponse:
+    return FileResponse(STATIC / "schluessel.html")
+
+
+class BrainModeIn(BaseModel):
+    nur_openrouter: bool
+
+
+@app.get("/api/brainmode")
+async def brainmode_status() -> JSONResponse:
+    from jarvis.core import brain
+    return JSONResponse({"nur_openrouter": brain._only_openrouter()})
+
+
+@app.post("/api/brainmode")
+async def brainmode_set(m: BrainModeIn) -> JSONResponse:
+    """'Nur OpenRouter' an/aus — Fable 5 überspringen (kein Anthropic nötig)."""
+    from jarvis.core import brain
+    os.environ["JARVIS_BRAIN"] = "openrouter" if m.nur_openrouter else "auto"
+    _persist_key("brain_mode", os.environ["JARVIS_BRAIN"])
+    brain._skip_anthropic = False   # Zustand neu bewerten lassen
+    orchestrator.log("info", f"Modell-Modus: {'nur OpenRouter' if m.nur_openrouter else 'Fable 5 + OpenRouter'}")
+    return JSONResponse({"nur_openrouter": brain._only_openrouter()})
 
 
 @app.post("/api/security/check")
