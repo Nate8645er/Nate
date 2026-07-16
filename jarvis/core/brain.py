@@ -43,6 +43,16 @@ OPENROUTER_FREE_MODELS = [
 # Das zuletzt als funktionierend bestätigte Modell (wird nach Verify/Antwort gesetzt).
 DEFAULT_MODEL = PREFERRED_MODEL
 _active_model: str | None = None
+# Sobald Anthropic einmal an Guthaben/Auth scheitert, wird Fable 5 für diese
+# Sitzung übersprungen (keine wiederholten Fehlermeldungen) -> direkt OpenRouter.
+_skip_anthropic = False
+
+
+def _only_openrouter() -> bool:
+    """Fable 5 komplett überspringen? (JARVIS_BRAIN=openrouter oder nach Guthaben-Fehler)"""
+    if os.environ.get("JARVIS_BRAIN", "").lower() == "openrouter":
+        return True
+    return _skip_anthropic
 
 
 def mode() -> str:
@@ -212,8 +222,9 @@ def answer(employee: VirtualEmployee, task: str) -> str:
         f"{', '.join(employee.skills)}. Antworte knapp, präzise und auf Deutsch. "
         f"Erfinde keine Fakten und stelle keine simulierten Ergebnisse als real dar.")
 
-    # 1) Anthropic (Fable 5), falls ein Anthropic-Key gesetzt ist.
-    if os.environ.get("ANTHROPIC_API_KEY"):
+    global _skip_anthropic
+    # 1) Anthropic (Fable 5) — nur wenn Key da UND nicht auf OpenRouter-only gestellt.
+    if os.environ.get("ANTHROPIC_API_KEY") and not _only_openrouter():
         try:
             return _call_with_fallback(system, task)
         except urllib.error.HTTPError as e:
@@ -225,8 +236,9 @@ def answer(employee: VirtualEmployee, task: str) -> str:
                     pass
             low = body.lower()
             billing = "credit balance" in low or "billing" in low
-            # Bei Guthaben-/Auth-Problem: automatisch OpenRouter-Gratis probieren.
+            # Bei Guthaben-/Auth-Problem: Fable 5 ab jetzt überspringen -> OpenRouter.
             if billing or e.code in (401, 403, 429):
+                _skip_anthropic = True
                 if os.environ.get("OPENROUTER_API_KEY"):
                     orr = _openrouter_answer(system, task)
                     if orr and not orr.startswith("[OpenRouter"):
