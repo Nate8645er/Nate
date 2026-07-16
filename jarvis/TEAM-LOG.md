@@ -224,3 +224,23 @@ sich überall einloggen und mit den Daten arbeiten.
 - **Sicherheit/Ehrlichkeit:** nur LAN, PC muss laufen, kein automatischer
   Internet-Zugang (für unterwegs bräuchte es VPN/Tunnel — bewusst nicht offen).
 - **Agent 4:** **99 Tests grün** (+2 PWA/Handy), kein Regress. Favicon auf Grün.
+
+## Eintrag 015 — Apple Kurzbefehle / Siri-Schnittstelle (Nutzer-Wunsch)
+**Von:** Agent 1, 6, 4 · **Nutzer:** JARVIS per iPhone steuern ("Kurzbefehl").
+- **Ehrliche Grenze zuerst geklärt:** iOS lässt KEINER App Voll-Zugriff aufs
+  iPhone. Kurzbefehle sind der von Apple erlaubte Weg: iPhone spricht mit JARVIS,
+  JARVIS antwortet, Siri liest vor. Echte Gerät-Aktionen macht der Kurzbefehl
+  selbst (im Apple-erlaubten Rahmen).
+- **Server:** neuer Endpunkt `/api/shortcut` (GET+POST) — nimmt Text, führt ihn
+  über die bestehende Befehls-/Gehirn-Logik aus, gibt KLARTEXT zurück (damit Siri
+  vorlesen kann). Neue Methode `Orchestrator.answer_now()` verarbeitet EINEN
+  Befehl synchron (interpret → Werkzeug ODER Gehirn), fängt PermissionError/
+  Exceptions ab (nie 500 an Siri).
+- **Schutz:** optionales Token (`JARVIS_SHORTCUT_TOKEN`, lokal in config.json).
+  Ist es gesetzt, muss der Kurzbefehl es mitschicken (Header oder ?token=).
+  Endpunkte `/api/shortcut/token` (Status/erzeugen via secrets.token_urlsafe).
+- **UI:** Seite `/kurzbefehle` — Token erzeugen/kopieren, fertige URL, Schritt-
+  für-Schritt-Anleitung für den iPhone-Kurzbefehl, Beispiel-Sätze. Nav-Link auf
+  allen Seiten.
+- **Agent 4:** **101 Tests grün** (+2 Kurzbefehl/Token). End-to-end getestet
+  (offen/geschützt, GET/POST, Klartext).

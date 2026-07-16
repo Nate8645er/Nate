@@ -351,3 +351,27 @@ def test_handy_qr_svg(client):
     if r.status_code == 200:
         assert r.headers["content-type"].startswith("image/svg")
         assert "<svg" in r.text
+
+
+def test_shortcut_endpoint_and_token(client, monkeypatch):
+    """Kurzbefehl/Siri: Klartext-Antwort, Token-Schutz greift."""
+    monkeypatch.delenv("JARVIS_SHORTCUT_TOKEN", raising=False)
+    # ohne Token offen, Antwort ist text/plain (Siri liest vor)
+    r = client.post("/api/shortcut", json={"text": "was ist 2 plus 2"})
+    assert r.status_code == 200
+    assert r.headers["content-type"].startswith("text/plain")
+    # leeres Kommando -> freundlicher Klartext, kein 500
+    assert client.post("/api/shortcut", json={"text": ""}).status_code == 200
+
+    # Token setzen -> jetzt ist es geschützt
+    tok = client.post("/api/shortcut/token", json={}).json()["token"]
+    assert tok and len(tok) > 10
+    assert client.post("/api/shortcut", json={"text": "hallo"}).status_code == 401
+    assert client.post(f"/api/shortcut?token={tok}", json={"text": "hallo"}).status_code == 200
+    # GET mit Token + text als Query
+    assert client.get(f"/api/shortcut?token={tok}&text=hallo").status_code == 200
+    monkeypatch.delenv("JARVIS_SHORTCUT_TOKEN", raising=False)
+
+
+def test_shortcut_page(client):
+    assert client.get("/kurzbefehle").status_code == 200

@@ -386,6 +386,50 @@ class Orchestrator:
                 return t
         return None
 
+    def answer_now(self, description: str) -> str:
+        """Verarbeitet EINEN Befehl SYNCHRON und gibt die Antwort als Klartext.
+
+        Für die Kurzbefehle-/Siri-Schnittstelle: dieselbe Logik wie eine Aufgabe
+        (Befehl erkennen → Werkzeug ODER Gehirn), aber sofort und ohne Queue,
+        damit Siri die Antwort direkt vorlesen kann.
+        """
+        description = (description or "").strip()
+        if not description:
+            return "Kein Befehl übergeben."
+        try:
+            employee = materialize(self._route(description))
+        except ValueError:
+            employee = materialize("0/0/0")
+        command = description
+        if not command.startswith(("!plugin", "!skill")):
+            from .commands import interpret
+            mapped = interpret(command)
+            if mapped:
+                command = mapped
+        try:
+            if command.startswith("!plugin"):
+                parts = command.split(maxsplit=3)
+                if len(parts) < 3:
+                    return "Syntax: !plugin <name> <aktion> [key=value ...]"
+                name, action = parts[1], parts[2]
+                valid = _plugin_param_names(self.plugins.plugins.get(name))
+                kwargs = _parse_kwargs(parts[3] if len(parts) > 3 else "", valid)
+                result = self.plugins.run(employee.team, name, action, **kwargs)
+                # Erfolgreiche echte Arbeit wird belohnt (wie bei Aufgaben).
+                self.progression.award(employee.address)
+                return str(result)
+            if command.startswith("!skill"):
+                parts = command.split(maxsplit=2)
+                if len(parts) < 2:
+                    return "Syntax: !skill <name> <aufgabentext...>"
+                prompt = self.skills.apply(parts[1], parts[2] if len(parts) > 2 else "")
+                return brain.answer(employee, prompt)
+            return brain.answer(employee, description)
+        except PermissionError as e:
+            return f"[gesperrt] {e}"
+        except Exception as e:  # nie den Aufrufer (Siri) mit 500 abwürgen
+            return f"[Fehler] {type(e).__name__}: {e}"
+
     # -- Zustand für das Dashboard -------------------------------------------
     def finanzen(self) -> dict[str, Any]:
         """Ziel-Tracker: Ziel vs. real erfasste Einnahmen (keine Simulation)."""

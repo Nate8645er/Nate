@@ -92,6 +92,8 @@ def _load_persisted_key() -> None:
         os.environ["JARVIS_VOICE_ID"] = data["voice_id"]
     if data.get("brain_mode") and not os.environ.get("JARVIS_BRAIN"):
         os.environ["JARVIS_BRAIN"] = data["brain_mode"]
+    if data.get("shortcut_token") and not os.environ.get("JARVIS_SHORTCUT_TOKEN"):
+        os.environ["JARVIS_SHORTCUT_TOKEN"] = data["shortcut_token"]
 
 
 def _persist_key(field: str, value: str) -> None:
@@ -248,6 +250,71 @@ async def handy_qr(request: Request) -> Response:
                         headers={"Cache-Control": "no-cache"})
     except Exception:
         return Response("segno nicht installiert", status_code=404)
+
+
+# --- Apple Kurzbefehle / Siri: JARVIS per Sprache vom iPhone steuern ---------
+@app.get("/kurzbefehle")
+async def kurzbefehle_page() -> FileResponse:
+    return FileResponse(STATIC / "kurzbefehle.html")
+
+
+def _shortcut_authorized(request: Request) -> bool:
+    """Token-Schutz: ist ein Token gesetzt, muss der Kurzbefehl es mitschicken."""
+    token = os.environ.get("JARVIS_SHORTCUT_TOKEN", "")
+    if not token:
+        return True     # kein Token gesetzt -> offen (nur für lokalen Gebrauch sinnvoll)
+    given = (request.headers.get("x-jarvis-token")
+             or request.query_params.get("token", ""))
+    return given == token
+
+
+@app.api_route("/api/shortcut", methods=["GET", "POST"])
+async def shortcut(request: Request) -> Response:
+    """Kurzbefehl-/Siri-Endpunkt: nimmt einen Text-Befehl, führt ihn aus und
+    gibt die Antwort als KLARTEXT zurück (damit Siri sie direkt vorlesen kann)."""
+    if not _shortcut_authorized(request):
+        return Response("Nicht autorisiert (Token fehlt oder falsch).",
+                        status_code=401, media_type="text/plain; charset=utf-8")
+    text = request.query_params.get("text", "") or request.query_params.get("q", "")
+    if request.method == "POST":
+        try:
+            body = await request.json()
+            if isinstance(body, dict):
+                text = body.get("text") or body.get("q") or text
+        except Exception:
+            raw = (await request.body()).decode("utf-8", "ignore").strip()
+            text = text or raw
+    text = (text or "").strip()
+    if not text:
+        return Response("Sag JARVIS, was zu tun ist (Parameter 'text').",
+                        media_type="text/plain; charset=utf-8")
+    import asyncio
+    antwort = await asyncio.to_thread(orchestrator.answer_now, text)
+    orchestrator.log("info", f"Kurzbefehl (Siri): {text[:60]}")
+    return Response(str(antwort), media_type="text/plain; charset=utf-8")
+
+
+class TokenIn(BaseModel):
+    token: str | None = None
+
+
+@app.get("/api/shortcut/token")
+async def shortcut_token_status() -> JSONResponse:
+    tok = os.environ.get("JARVIS_SHORTCUT_TOKEN", "")
+    return JSONResponse({"gesetzt": bool(tok),
+                         "token_maskiert": (tok[:4] + "…" + tok[-4:]) if len(tok) > 10 else ("•" * len(tok)),
+                         "token": tok})   # lokal (nur auf DIESEM Gerät sichtbar) zum Einrichten
+
+
+@app.post("/api/shortcut/token")
+async def shortcut_token_set(t: TokenIn) -> JSONResponse:
+    """Setzt ein Token (oder erzeugt eines, wenn leer) und speichert es lokal."""
+    import secrets
+    tok = (t.token or "").strip() or secrets.token_urlsafe(18)
+    os.environ["JARVIS_SHORTCUT_TOKEN"] = tok
+    _persist_key("shortcut_token", tok)
+    orchestrator.log("info", "Kurzbefehl-Token gesetzt/erneuert")
+    return JSONResponse({"gesetzt": True, "token": tok})
 
 
 @app.get("/uebersicht")
