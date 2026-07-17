@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JARVIS</title>
+<meta name="theme-color" content="#040703">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="JARVIS">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23040703'/%3E%3Ccircle cx='90' cy='90' r='60' fill='none' stroke='%232bff66' stroke-width='14'/%3E%3Ccircle cx='90' cy='90' r='26' fill='%237dffa8'/%3E%3C/svg%3E">
+<style>
+  :root{ --bg:#040703; --panel:#0a1410; --line:#123; --green:#2bff66; --green2:#7dffa8; --dim:#5a7a63; --txt:#c9f5d6; }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ margin:0; height:100%; background:var(--bg); color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif; }
+  body{ display:flex; flex-direction:column; height:100dvh;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+  header{ display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid #0e2618; }
+  .logo{ width:26px; height:26px; border-radius:50%; border:3px solid var(--green);
+    display:flex; align-items:center; justify-content:center; box-shadow:0 0 14px rgba(43,255,102,.5); }
+  .logo i{ width:8px; height:8px; border-radius:50%; background:var(--green2); display:block; }
+  header h1{ font-size:17px; letter-spacing:.35em; color:var(--green); margin:0; font-weight:800; }
+  header .st{ margin-left:auto; font-size:10px; letter-spacing:.15em; color:var(--dim); }
+  #cfg{ padding:12px 16px; border-bottom:1px solid #0e2618; background:#06100b; }
+  #cfg.hidden{ display:none; }
+  #cfg label{ font-size:10px; letter-spacing:.18em; color:var(--dim); text-transform:uppercase; display:block; margin:8px 0 4px; }
+  #cfg input, #cfg select{ width:100%; background:#040a06; border:1px solid #1c3a28; color:var(--txt);
+    border-radius:8px; padding:12px; font-size:16px; }
+  .row{ display:flex; gap:8px; align-items:center; }
+  .hint{ font-size:11px; color:var(--dim); margin-top:8px; line-height:1.5; }
+  .hint a{ color:var(--green2); }
+  #chat{ flex:1; overflow-y:auto; padding:14px 14px 6px; display:flex; flex-direction:column; gap:10px; }
+  .msg{ max-width:86%; padding:10px 13px; border-radius:14px; font-size:15px; line-height:1.45; white-space:pre-wrap; word-wrap:break-word; }
+  .me{ align-self:flex-end; background:#123a24; color:#eafff1; border-bottom-right-radius:4px; }
+  .jv{ align-self:flex-start; background:var(--panel); border:1px solid #14301f; border-bottom-left-radius:4px; }
+  .jv .who{ font-size:9px; letter-spacing:.2em; color:var(--green); margin-bottom:4px; }
+  .bar{ display:flex; gap:8px; padding:10px 12px calc(10px + env(safe-area-inset-bottom)); border-top:1px solid #0e2618; background:#06100b; }
+  .bar input{ flex:1; background:#040a06; border:1px solid #1c3a28; color:var(--txt);
+    border-radius:22px; padding:13px 16px; font-size:16px; }
+  .bar button{ border:none; border-radius:50%; width:46px; height:46px; flex:0 0 46px;
+    background:linear-gradient(180deg,#12572f,#0d3a22); color:var(--green2); font-size:20px;
+    border:1px solid var(--green); box-shadow:0 0 12px rgba(43,255,102,.4); }
+  .bar button:active{ transform:scale(.94); }
+  .mic{ background:linear-gradient(180deg,#0d3a22,#082616)!important; }
+  .mic.on{ background:#7a1020!important; border-color:#ff5a6a!important; box-shadow:0 0 14px rgba(255,60,80,.6)!important; }
+  .gear{ background:none; border:none; color:var(--dim); font-size:18px; padding:6px; }
+  .typing{ color:var(--dim); font-size:12px; padding:0 16px 8px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><i></i></div>
+  <h1>JARVIS</h1>
+  <button class="gear" onclick="toggleCfg()">⚙︎</button>
+  <span class="st" id="st">bereit</span>
+</header>
+
+<div id="cfg">
+  <label>OpenRouter-Key (bleibt nur auf diesem iPhone)</label>
+  <input id="key" type="password" placeholder="sk-or-v1-…" autocomplete="off">
+  <label>Modell (gratis)</label>
+  <div class="row">
+    <select id="model">
+      <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B (gratis)</option>
+      <option value="deepseek/deepseek-chat-v3-0324:free">DeepSeek V3 (gratis)</option>
+      <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash (gratis)</option>
+      <option value="qwen/qwen-2.5-72b-instruct:free">Qwen 2.5 72B (gratis)</option>
+      <option value="mistralai/mistral-small-3.1-24b-instruct:free">Mistral Small (gratis)</option>
+      <option value="__custom">Anderes Modell eintippen…</option>
+    </select>
+  </div>
+  <input id="customModel" placeholder="z. B. anbieter/modell:free" style="display:none; margin-top:8px">
+  <div class="row" style="margin-top:10px">
+    <label style="margin:0; flex:1">Antwort vorlesen</label>
+    <input id="speak" type="checkbox" checked style="width:auto">
+  </div>
+  <button onclick="saveCfg()" style="width:100%; margin-top:12px; background:linear-gradient(180deg,#12572f,#0d3a22); color:var(--green2); border:1px solid var(--green); border-radius:10px; padding:13px; font-size:15px; font-weight:700;">SPEICHERN</button>
+  <div class="hint">Key holen: <a href="https://openrouter.ai/keys">openrouter.ai/keys</a> · Der Key wird nur lokal auf deinem iPhone gespeichert und geht direkt zu OpenRouter, nirgends sonst hin.</div>
+</div>
+
+<div id="chat"></div>
+<div class="typing" id="typing" style="display:none">JARVIS denkt…</div>
+
+<div class="bar">
+  <button class="mic" id="micBtn" onclick="toggleMic()" title="Sprechen">🎤</button>
+  <input id="in" placeholder="Frag JARVIS…" autocomplete="off" enterkeyhint="send"
+         onkeydown="if(event.key==='Enter')send()">
+  <button onclick="send()" title="Senden">➤</button>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const LS = window.localStorage;
+const SYSTEM = "Du bist JARVIS, ein persönlicher KI-Assistent auf dem iPhone. Antworte hilfreich, "
+  + "freundlich und auf Deutsch. Fasse dich eher kurz und klar. Erfinde keine Fakten.";
+let history = [];
+
+// --- Konfiguration laden/speichern ---
+function loadCfg(){
+  $('key').value = LS.getItem('or_key') || '';
+  const m = LS.getItem('or_model') || 'meta-llama/llama-3.3-70b-instruct:free';
+  const opt = [...$('model').options].some(o=>o.value===m);
+  if(opt){ $('model').value = m; } else { $('model').value='__custom'; $('customModel').style.display='block'; $('customModel').value=m; }
+  $('speak').checked = LS.getItem('or_speak') !== '0';
+  if(!$('key').value){ $('cfg').classList.remove('hidden'); } else { $('cfg').classList.add('hidden'); }
+}
+$('model').addEventListener('change', ()=>{ $('customModel').style.display = $('model').value==='__custom' ? 'block':'none'; });
+function saveCfg(){
+  LS.setItem('or_key', $('key').value.trim());
+  const m = $('model').value==='__custom' ? $('customModel').value.trim() : $('model').value;
+  LS.setItem('or_model', m);
+  LS.setItem('or_speak', $('speak').checked ? '1':'0');
+  $('cfg').classList.add('hidden');
+  $('st').textContent = 'gespeichert';
+  if(!$('chat').children.length) addMsg('jv', 'Hallo! Ich bin JARVIS auf deinem iPhone. Frag mich etwas.');
+}
+function toggleCfg(){ $('cfg').classList.toggle('hidden'); }
+
+// --- Chat-UI ---
+function addMsg(who, text){
+  const d = document.createElement('div');
+  d.className = 'msg ' + (who==='me'?'me':'jv');
+  if(who==='jv'){ d.innerHTML = '<div class="who">JARVIS</div>'; d.appendChild(document.createTextNode(text)); }
+  else d.textContent = text;
+  $('chat').appendChild(d);
+  $('chat').scrollTop = $('chat').scrollHeight;
+  return d;
+}
+
+// --- Senden an OpenRouter (direkt vom iPhone) ---
+async function send(){
+  const text = $('in').value.trim();
+  if(!text) return;
+  const key = LS.getItem('or_key');
+  if(!key){ $('cfg').classList.remove('hidden'); $('st').textContent='Key fehlt'; return; }
+  $('in').value=''; addMsg('me', text);
+  history.push({role:'user', content:text});
+  $('typing').style.display='block'; $('st').textContent='denkt…';
+  const model = LS.getItem('or_model') || 'meta-llama/llama-3.3-70b-instruct:free';
+  try{
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method:'POST',
+      headers:{ 'Authorization':'Bearer '+key, 'Content-Type':'application/json' },
+      body: JSON.stringify({ model, messages:[{role:'system',content:SYSTEM}, ...history.slice(-12)] })
+    });
+    const data = await res.json();
+    if(!res.ok){
+      const em = (data && data.error && data.error.message) || ('HTTP '+res.status);
+      addMsg('jv', '⚠︎ Fehler: '+em+'\n\nTipp: In ⚙︎ ein anderes Gratis-Modell wählen oder den Key prüfen.');
+      $('st').textContent='Fehler';
+    } else {
+      const ans = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content
+                  || '(keine Antwort)';
+      addMsg('jv', ans);
+      history.push({role:'assistant', content:ans});
+      if(LS.getItem('or_speak')!=='0') speak(ans);
+      $('st').textContent='bereit';
+    }
+  }catch(e){
+    addMsg('jv', '⚠︎ Keine Verbindung: '+e.message+'\n\nBist du online? (WLAN/Mobilnetz)');
+    $('st').textContent='offline';
+  }
+  $('typing').style.display='none';
+}
+
+// --- Vorlesen (Handy-Stimme) ---
+function speak(t){
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(t);
+    u.lang='de-DE'; u.rate=1.0;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+// --- Diktat (falls das iPhone es erlaubt) ---
+let rec=null, recOn=false;
+function toggleMic(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ $('st').textContent='Diktat n. verfügbar – tippen'; return; }
+  if(recOn){ rec && rec.stop(); return; }
+  rec = new SR(); rec.lang='de-DE'; rec.interimResults=false;
+  rec.onresult = e => { $('in').value = e.results[0][0].transcript; send(); };
+  rec.onend = ()=>{ recOn=false; $('micBtn').classList.remove('on'); };
+  rec.onerror = ()=>{ recOn=false; $('micBtn').classList.remove('on'); };
+  rec.start(); recOn=true; $('micBtn').classList.add('on'); $('st').textContent='hört zu…';
+}
+
+loadCfg();
+if(LS.getItem('or_key')) addMsg('jv', 'Hallo! Ich bin JARVIS auf deinem iPhone. Frag mich etwas — tippen oder 🎤.');
+</script>
+</body>
+</html>

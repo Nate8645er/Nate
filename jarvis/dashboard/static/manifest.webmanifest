@@ -1,0 +1,17 @@
+{
+  "name": "JARVIS HyperScale",
+  "short_name": "JARVIS",
+  "description": "JARVIS – dein persönlicher KI-Agent (steuert deinen PC).",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#040703",
+  "theme_color": "#040703",
+  "lang": "de",
+  "icons": [
+    { "src": "/static/icons/jarvis-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/static/icons/jarvis-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/static/icons/jarvis-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

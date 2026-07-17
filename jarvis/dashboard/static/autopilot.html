@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JARVIS // AUTOPILOT</title>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#040703">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="JARVIS">
+<link rel="apple-touch-icon" href="/static/icons/jarvis-180.png">
+<script>if("serviceWorker"in navigator){addEventListener("load",function(){navigator.serviceWorker.register("/sw.js").catch(function(){})})}</script>
+</head>
+<body>
+<header>
+  <h1>JARVIS <span style="color:var(--dim)">//</span> AUTOPILOT 24/7</h1>
+  <nav><a href="/">START</a><a href="/uebersicht">ÜBERSICHT</a><a href="/gehirn">GEHIRN</a><a href="/mitarbeiter">MITARBEITER</a><a href="/werkzeuge">WERKZEUGE</a><a class="here" href="/autopilot">AUTOPILOT</a><a href="/sicherheit">SICHERHEIT</a><a href="/schluessel">SCHLÜSSEL</a><a href="/zugaenge">ZUGÄNGE</a><a href="/handy">HANDY</a><a href="/kurzbefehle">KURZBEFEHLE</a></nav>
+  <button id="fable" onclick="fableKey()" style="margin-left:10px">FABLE 5</button>
+  <span class="sys mono" id="clock"></span>
+  <span class="sys"><span class="dot"></span><span id="mode">ONLINE</span></span>
+</header>
+<div class="tickerwrap"><div class="ticker mono" id="ticker">AUTOPILOT WIRD GELADEN …</div></div>
+
+<div class="grid2">
+  <div>
+    <div class="panel">
+      <h2><b>STEUERUNG</b> // 24/7-IDEENMASCHINE</h2>
+      <div style="display:flex; gap:8px; align-items:center">
+        <button id="apbtn" onclick="toggleAP()">▶ AUTOPILOT STARTEN</button>
+        <span id="apstate" style="font-size:11px; color:var(--dim)">gestoppt</span>
+      </div>
+      <div class="tiles" style="margin-top:8px; grid-template-columns:repeat(3,1fr)">
+        <div class="tile"><div class="l">Ideen heute</div><div class="v" id="ap_heute">0</div></div>
+        <div class="tile"><div class="l">Ideen gesamt</div><div class="v" id="ap_total">0</div></div>
+        <div class="tile"><div class="l">Intervall</div><div class="v" style="font-size:15px" id="ap_int">–</div></div>
+      </div>
+      <div style="font-size:10.5px; color:var(--dim); margin-top:6px">
+        Die Mitarbeiter erfinden fortlaufend eigene Geschäftsideen. Läuft nur, solange
+        dein PC an ist. Im Fable-5-Modus kostet jede Idee einen echten Modell-Aufruf.
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:10px">
+      <h2><b>TAGES-BRIEFING</b> // WAS HEUTE FÜR DICH ERARBEITET WURDE</h2>
+      <div class="tiles" style="grid-template-columns:repeat(2,1fr)">
+        <div class="tile ok"><div class="l">Profit heute (real)</div><div class="v" style="font-size:16px" id="b_profit">0.00 CHF</div></div>
+        <div class="tile"><div class="l">Ideen heute</div><div class="v" id="b_ideen">0</div></div>
+      </div>
+      <div style="font-size:10.5px; color:#9be6b3; margin-top:6px" id="b_hint"></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="panel">
+      <h2><b>IDEEN-STROM</b> // ZULETZT ERFUNDEN</h2>
+      <div id="ideas" style="max-height:560px; overflow-y:auto"></div>
+    </div>
+  </div>
+</div>
+
+<div class="honest"><b>EHRLICHKEITS-PROTOKOLL:</b> Der Autopilot erzeugt echte Vorarbeit (Ideen, Konzepte,
+Entwürfe) — er verdient <b>kein Geld von allein</b>. „Profit heute" zeigt ausschließlich real über
+das finanzen-Plugin erfasste Einnahmen und bleibt 0.00 CHF, bis du echte Verkäufe einträgst.
+Aus einer Idee echtes Geld zu machen, verlangt einen Menschen, der sie umsetzt (Shop, Zahlung, Verkauf).</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const fmt = n => Number(n).toLocaleString('de-CH');
+setInterval(() => $('clock').textContent = new Date().toLocaleString('de-CH'), 1000);
+
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+async function tick() {
+  try {
+    const s = await (await fetch('/api/state')).json();
+    const ap = s.autopilot || {};
+    $('mode').textContent = 'ONLINE // ' + s.modell_modus.toUpperCase();
+    $('ap_heute').textContent = fmt(ap.ideen_heute || 0);
+    $('ap_total').textContent = fmt(ap.ideen_gesamt || 0);
+    $('ap_int').textContent = (ap.intervall_s || 0) + 's';
+    const btn = $('apbtn');
+    btn.classList.toggle('on', !!ap.laeuft);
+    btn.textContent = ap.laeuft ? '⏹ AUTOPILOT STOPPEN' : '▶ AUTOPILOT STARTEN';
+    $('apstate').textContent = ap.laeuft
+      ? `LÄUFT · ${ap.modus === 'api' ? 'Fable 5' : 'Offline-Modus'} · alle ${ap.intervall_s}s eine Idee`
+      : 'gestoppt';
+    $('ideas').innerHTML = (ap.letzte || []).map(e =>
+      `<div style="border:1px solid var(--line); border-radius:5px; padding:8px 10px; margin-bottom:8px; font-size:12px">
+         <div style="color:var(--dim); font-size:10.5px">[${e.zeit}] ${esc(e.von)} · ${esc(e.team)}</div>
+         <div style="white-space:pre-wrap; margin-top:4px">${esc(e.text)}</div></div>`).join('')
+      || '<div style="color:var(--dim)">Noch keine Ideen — Autopilot starten.</div>';
+    $('ticker').textContent = (` ▲ AUTOPILOT ${ap.laeuft ? 'LÄUFT' : 'GESTOPPT'} ` +
+      `● IDEEN HEUTE ${fmt(ap.ideen_heute||0)} ● IDEEN GESAMT ${fmt(ap.ideen_gesamt||0)} ` +
+      `● PROFIT HEUTE (REAL) ${(s.finanzen?.einnahmen_chf||0).toFixed(2)} CHF ● MODELL ${s.modell} [${s.modell_modus.toUpperCase()}] ● `).repeat(2);
+  } catch (e) { $('mode').textContent = 'VERBINDUNG GETRENNT'; }
+}
+setInterval(tick, 2500); tick();
+
+async function briefing() {
+  try {
+    const b = await (await fetch('/api/autopilot/briefing')).json();
+    $('b_profit').textContent = b.profit_heute_chf_real.toFixed(2) + ' CHF';
+    $('b_ideen').textContent = fmt(b.ideen_heute);
+    $('b_hint').textContent = b.hinweis;
+  } catch (e) {}
+}
+setInterval(briefing, 5000); briefing();
+
+async function toggleAP() {
+  const s = await (await fetch('/api/state')).json();
+  const on = s.autopilot && s.autopilot.laeuft;
+  await fetch('/api/autopilot/' + (on ? 'stop' : 'start'), { method: 'POST' });
+  tick();
+}
+</script>
+<script src="/static/fable.js"></script>
+</body>
+</html>
