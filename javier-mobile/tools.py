@@ -371,6 +371,25 @@ APP_LINKS = {
 }
 
 
+def _load_custom_apps():
+    # Nate's own apps from the APPS environment variable (set in Render),
+    # same friendly format as CONTACTS: Migros=migros.ch, Bank=ubs.com
+    # Custom URL schemes work too: Snap=snapchat://
+    apps = {}
+    for key, value in os.environ.items():
+        if key.upper() == "APPS":
+            for part in re.split(r"[,;\n]+", value):
+                if "=" in part:
+                    name, link = part.split("=", 1)
+                    name, link = name.strip(), link.strip()
+                    if name and link:
+                        if "://" not in link:
+                            link = "https://" + link
+                        apps[name] = link
+            break
+    return apps
+
+
 def open_app(app, query="", url=""):
     from urllib.parse import quote
     app = (app or "").lower()
@@ -387,8 +406,21 @@ def open_app(app, query="", url=""):
                                  "url": url},
         }
     if app not in APP_LINKS:
-        return {"error": "Unbekannte App '%s'. Erlaubt: %s oder web"
-                         % (app, ", ".join(APP_LINKS))}
+        custom = _load_custom_apps()
+        for name, link in custom.items():
+            if name.lower() == app:
+                return {
+                    "ok": True,
+                    "note": "Link zu %s vorbereitet. Nate tippt selbst auf "
+                            "den Button." % name,
+                    "_frontend_action": {"type": "link", "label": name,
+                                         "url": link},
+                }
+        return {"error": "Unbekannte App '%s'. Eingebaut: %s, web. "
+                         "Eigene Apps: %s. Neue kann Nate in Render als "
+                         "APPS-Variable anlegen (Name=URL, ...)."
+                         % (app, ", ".join(APP_LINKS),
+                            ", ".join(sorted(custom)) or "(keine)")}
     label, search_tpl, home = APP_LINKS[app]
     if query and search_tpl:
         link = search_tpl.replace("{q}", quote(query))
@@ -576,17 +608,20 @@ def tool_definitions():
         {
             "name": "open_app",
             "description": "Eine App oder Webseite auf Nates iPhone "
-                           "OEFFNEN (youtube, snapchat, instagram, tiktok, "
-                           "spotify, shopify, maps, mail oder web mit "
-                           "beliebiger URL). Optional mit Suchbegriff. Es "
+                           "OEFFNEN. Eingebaut: youtube, snapchat, "
+                           "instagram, tiktok, spotify, shopify, maps, "
+                           "mail, web (mit URL). Zusaetzlich alle Apps, "
+                           "die Nate in der APPS-Umgebungsvariable "
+                           "definiert hat - bei unbekanntem Namen einfach "
+                           "aufrufen, die Fehlermeldung listet die "
+                           "verfuegbaren. Optional mit Suchbegriff. Es "
                            "wird ein Button angezeigt - Nate tippt selbst.",
             "input_schema": {
                 "type": "object",
                 "properties": {
                     "app": {"type": "string",
-                            "enum": ["youtube", "snapchat", "instagram",
-                                     "tiktok", "spotify", "shopify",
-                                     "maps", "mail", "web"]},
+                            "description": "App-Name, z.B. youtube oder "
+                                           "ein eigener Name aus APPS"},
                     "query": {"type": "string",
                               "description": "Suchbegriff/Profilname "
                                              "(optional)"},
