@@ -167,6 +167,31 @@ Dann genuegt: "JAVIER, schreib meiner Mutter, dass ich spaeter komme." -
 JAVIER formuliert, fragt nach ("Soll ich das absenden, Nate?") und zeigt
 dann den WhatsApp/SMS-Button.
 
+## Direkt-Senden per iOS-Kurzbefehl (optional, nur SMS/iMessage)
+
+Normalerweise oeffnet JAVIERs Button die Nachrichten-App mit fertigem
+Text und Nate tippt auf Senden. Mit einem einmaligen iOS-Kurzbefehl wird
+daraus EIN Tipp: Button antippen -> Nachricht ist gesendet. (Nur
+SMS/iMessage - WhatsApp und Snapchat erlauben das niemandem.)
+
+Einrichtung in der Kurzbefehle-App (einmalig):
+
+1. Kurzbefehle-App -> "+" -> Kurzbefehl umbenennen in exakt: JAVIER
+2. Aktion hinzufuegen: "Text trennen" - Eingabe: Kurzbefehl-Eingabe,
+   Trennzeichen: Benutzerdefiniert, Zeichen: |
+3. Aktion "Aus Liste abrufen": Erstes Objekt aus Text trennen
+   (das ist die Telefonnummer)
+4. Aktion "Aus Liste abrufen": Objekt bei Index 2 aus Text trennen
+   (das ist der Nachrichtentext)
+5. Aktion "Nachricht senden": Als Nachricht die Variable aus Schritt 4
+   einsetzen, als Empfaenger die Variable aus Schritt 3; den Schalter
+   "Beim Ausfuehren anzeigen" AUSschalten.
+6. Fertig. Beim allerersten Direkt-Senden fragt iOS einmal um Erlaubnis.
+
+Der "Direkt senden"-Button in JAVIER ruft dann
+shortcuts://run-shortcut?name=JAVIER auf und uebergibt
+"nummer|text" - der Kurzbefehl sendet die Nachricht selbst.
+
 ## Instagram Graph API Setup (optional, Kurzfassung)
 
 Ohne Setup legt JAVIER Posts nur in den Ausgangskorb (`data/outbox/`).
