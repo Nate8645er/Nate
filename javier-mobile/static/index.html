@@ -226,9 +226,21 @@ function addActionButton(action) {
   }
   var num = String(action.number || "").replace(/[^+\d]/g, "");
   if (action.channel === "sms") {
+    // One-tap direct send via the JAVIER iOS shortcut: the tap runs the
+    // shortcut, which sends the SMS/iMessage itself - no Messages app,
+    // no second tap. Requires the one-time shortcut setup (see README).
+    var direct = document.createElement("a");
+    direct.className = "action-btn";
+    direct.href = "shortcuts://run-shortcut?name=JAVIER&input=text&text=" +
+                  encodeURIComponent(num + "|" + action.text);
+    direct.textContent = "Direkt senden an " + action.contact;
+    var ds = document.createElement("small");
+    ds.textContent = "Ein Tipp = gesendet (braucht den JAVIER-Kurzbefehl)";
+    direct.appendChild(ds);
+    chatEl.appendChild(direct);
     // iOS uses &body= after the number
     a.href = "sms:" + num + "&body=" + encodeURIComponent(action.text);
-    a.textContent = "SMS an " + action.contact + " oeffnen";
+    a.textContent = "Oder: SMS-App oeffnen";
   } else {
     a.href = "https://wa.me/" + num.replace("+", "") +
              "?text=" + encodeURIComponent(action.text);
