@@ -8,7 +8,7 @@
           "type": "shipping",
           "settings": {
             "title": "Versand & Lieferung",
-            "content": "<p>Versand innerhalb von 24 Stunden. Lieferzeit 2–4 Werktage. Kostenloser Versand ab CHF 50. Du erhältst eine Sendungsnummer per E-Mail.</p>"
+            "content": "<p>Versand aus dem EU-Lager. Lieferzeit 7–14 Tage, immer inkl. Sendungsverfolgung. Du erhältst deine Sendungsnummer per E-Mail.</p>"
           }
         },
         "guarantee": {
@@ -22,7 +22,7 @@
           "type": "faq",
           "settings": {
             "question": "Wie schnell erhalte ich meine Bestellung?",
-            "answer": "<p>Wir versenden innerhalb von 24 Stunden. Die Lieferung dauert in der Regel 2–4 Werktage.</p>"
+            "answer": "<p>Wir versenden aus dem EU-Lager. Die Lieferung dauert 7–14 Tage und enthält immer eine Sendungsverfolgung.</p>"
           }
         },
         "faq2": {
@@ -35,7 +35,7 @@
       },
       "block_order": ["desc", "shipping", "guarantee", "faq1", "faq2"],
       "settings": {
-        "usp_list": "Versand in 24h|30 Tage Geld-zurück-Garantie|Sichere Bezahlung"
+        "usp_list": "Automatik-Modus mit cleveren Pausen|USB-aufladbar, kein Batteriekauf|30 Tage Geld-zurück-Garantie"
       }
     },
     "related": { "type": "related-products" },

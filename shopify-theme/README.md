@@ -69,6 +69,16 @@ Wichtig: Die Handles `kontakt` und `tracking` werden im Theme intern verlinkt
   Rechtliches (Impressum, Datenschutz, Widerruf, AGB). Im Theme-Editor können der
   Footer-Section drei getrennte Menü-Spalten zugewiesen werden.
 
+### Ein-Produkt-Shop (Standard-Konfiguration)
+
+Die Startseite ist als Landingpage für **ein Produkt** aufgebaut (vorkonfiguriert
+für das Produkt mit Handle `meowufo`): Hero → Trust → **Kauf-Modul** (Varianten +
+Add-to-Cart direkt auf der Startseite) → „So funktioniert's" → Story → Zahlen →
+Bewertungen → FAQ → Newsletter. Das Kauf-Modul findet sein Produkt über die
+Section-Einstellung „Produkt" (Theme-Editor). Empfohlenes Hauptmenü für den
+Ein-Produkt-Shop: Start · Produkt (Direktlink) · FAQ · Kontakt – das Mega-Menü
+bleibt für spätere Sortimentserweiterung einsatzbereit.
+
 ### 3. Theme-Editor (Admin → Onlineshop → Themes → Anpassen)
 
 - **Logo + Favicon** hochladen (Theme-Settings → Marke & Logo).

@@ -5,9 +5,9 @@
     "announcement": {
       "type": "announcement-bar",
       "blocks": {
-        "msg1": { "type": "announcement", "settings": { "text": "Kostenloser Versand ab CHF 50" } },
+        "msg1": { "type": "announcement", "settings": { "text": "Versand aus EU-Lager mit Sendungsverfolgung" } },
         "msg2": { "type": "announcement", "settings": { "text": "30 Tage Geld-zurück-Garantie" } },
-        "msg3": { "type": "announcement", "settings": { "text": "Über 1'000 zufriedene Kundinnen und Kunden" } }
+        "msg3": { "type": "announcement", "settings": { "text": "Sicher bezahlen mit TWINT, Karte & PayPal" } }
       },
       "block_order": ["msg1", "msg2", "msg3"],
       "settings": {}

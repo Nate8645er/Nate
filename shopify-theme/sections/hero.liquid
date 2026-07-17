@@ -45,6 +45,9 @@
       {%- endif -%}
     </div>
   </div>
+  {%- if section.settings.show_scroll_hint and section.settings.image -%}
+    <div class="hero__scroll-hint" aria-hidden="true"></div>
+  {%- endif -%}
 </section>
 
 {% schema %}
@@ -60,7 +63,8 @@
     { "type": "url", "id": "cta_primary_link", "label": "CTA 1 – Link" },
     { "type": "text", "id": "cta_secondary_label", "label": "CTA 2 – Text", "default": "Bestseller ansehen" },
     { "type": "url", "id": "cta_secondary_link", "label": "CTA 2 – Link" },
-    { "type": "checkbox", "id": "show_trust_row", "label": "Trust-Zeile anzeigen", "default": true }
+    { "type": "checkbox", "id": "show_trust_row", "label": "Trust-Zeile anzeigen", "default": true },
+    { "type": "checkbox", "id": "show_scroll_hint", "label": "Scroll-Indikator anzeigen", "default": true }
   ],
   "presets": [{ "name": "Hero" }]
 }

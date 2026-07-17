@@ -3,8 +3,8 @@
     "faq": {
       "type": "faq",
       "blocks": {
-        "q1": { "type": "question", "settings": { "question": "Wie lange dauert der Versand?", "answer": "<p>Bestellungen verlassen unser Lager innerhalb von 24 Stunden. Die Lieferung dauert in der Regel 2–4 Werktage. Nach dem Versand erhältst du eine Sendungsnummer per E-Mail.</p>" } },
-        "q2": { "type": "question", "settings": { "question": "Was kostet der Versand?", "answer": "<p>Ab CHF 50 Bestellwert liefern wir kostenlos. Darunter berechnen wir eine faire Versandpauschale, die dir im Checkout transparent angezeigt wird.</p>" } },
+        "q1": { "type": "question", "settings": { "question": "Wie lange dauert der Versand?", "answer": "<p>Wir versenden aus dem EU-Lager. Die Lieferung dauert 7–14 Tage und enthält immer eine Sendungsverfolgung. Nach dem Versand erhältst du deine Sendungsnummer per E-Mail.</p>" } },
+        "q2": { "type": "question", "settings": { "question": "Was kostet der Versand?", "answer": "<p>Die Versandkosten werden dir im Checkout transparent angezeigt, bevor du bezahlst – keine versteckten Gebühren.</p>" } },
         "q3": { "type": "question", "settings": { "question": "Wie funktioniert die Geld-zurück-Garantie?", "answer": "<p>Du kannst jedes Produkt 30 Tage lang testen. Nicht zufrieden? Schreib uns eine kurze E-Mail und du erhältst dein Geld zurück – ohne Wenn und Aber.</p>" } },
         "q4": { "type": "question", "settings": { "question": "Welche Zahlungsarten werden akzeptiert?", "answer": "<p>Alle gängigen Zahlungsarten: Kreditkarte, TWINT, PayPal, Apple Pay und Google Pay. Alle Zahlungen sind SSL-verschlüsselt.</p>" } },
         "q5": { "type": "question", "settings": { "question": "Wie kann ich meine Bestellung verfolgen?", "answer": "<p>Nach dem Versand erhältst du eine E-Mail mit deiner Sendungsnummer. Auf unserer Tracking-Seite kannst du den Status jederzeit prüfen.</p>" } },

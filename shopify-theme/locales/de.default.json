@@ -55,7 +55,7 @@
       "sold_out": "Ausverkauft"
     },
     "reviews": "Bewertungen",
-    "tax_note": "Inkl. MwSt., zzgl. Versand. Kostenloser Versand ab CHF 50.",
+    "tax_note": "Inkl. MwSt., zzgl. Versand. Lieferung in 7–14 Tagen inkl. Sendungsverfolgung.",
     "add_to_cart": "In den Warenkorb",
     "sold_out": "Ausverkauft",
     "description": "Beschreibung",
@@ -63,7 +63,10 @@
     "quantity": "Menge",
     "quantity_decrease": "Menge verringern",
     "quantity_increase": "Menge erhöhen",
-    "gallery_image": "Produktbild"
+    "gallery_image": "Produktbild",
+    "view_details": "Alle Details ansehen",
+    "pick_product_hint": "Produkt auswählen",
+    "pick_product_text": "Weise dieser Section im Theme-Editor dein Produkt zu, um das Kauf-Modul zu aktivieren."
   },
   "collections": {
     "product_count": {

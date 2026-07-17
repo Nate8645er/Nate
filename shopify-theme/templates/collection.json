@@ -4,7 +4,7 @@
     "trust": {
       "type": "trust-badges",
       "blocks": {
-        "b1": { "type": "badge", "settings": { "icon": "truck", "title": "Schneller Versand", "text": "Bestellungen verlassen unser Lager innerhalb von 24 Stunden." } },
+        "b1": { "type": "badge", "settings": { "icon": "truck", "title": "Versand mit Tracking", "text": "Lieferung in 7–14 Tagen aus dem EU-Lager, inkl. Sendungsverfolgung." } },
         "b2": { "type": "badge", "settings": { "icon": "shield", "title": "Geld-zurück-Garantie", "text": "30 Tage testen. Nicht zufrieden? Geld zurück." } },
         "b3": { "type": "badge", "settings": { "icon": "lock", "title": "Sicher bezahlen", "text": "SSL-verschlüsselt mit allen gängigen Zahlungsarten." } },
         "b4": { "type": "badge", "settings": { "icon": "mail", "title": "Persönlicher Support", "text": "Antwort innerhalb von 24 Stunden." } }

@@ -593,3 +593,184 @@ p { margin: 0 0 1em; }
 /* ---------- Platzhalter-SVGs ---------- */
 .placeholder { background: var(--color-bg-soft); }
 svg.placeholder { width: 100%; height: 100%; }
+
+/* ==========================================================================
+   Premium-Animations-Layer
+   Doktrin: nur transform & opacity, ease-out, kurze Dauern, GPU-freundlich.
+   Alles Bewegte hat einen prefers-reduced-motion-Fallback (siehe oben).
+   ========================================================================== */
+
+/* ---------- Reveal-Varianten (Richtung per data-reveal) ---------- */
+[data-reveal='left'].reveal { transform: translateX(-24px); }
+[data-reveal='right'].reveal { transform: translateX(24px); }
+[data-reveal='scale'].reveal { transform: scale(0.94); }
+.reveal { transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1); transition-duration: 0.6s; }
+
+/* ---------- Header: Scroll-Verhalten + Glass-Effekt ---------- */
+.header--sticky {
+  transition: transform 0.25s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.25s ease-out, background-color 0.25s ease-out;
+}
+.header--scrolled {
+  background: color-mix(in srgb, var(--color-bg) 82%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 30px -22px rgba(0, 0, 0, 0.35);
+}
+@supports not (background: color-mix(in srgb, red 50%, blue)) {
+  .header--scrolled { background: var(--color-bg); }
+}
+.header--hidden { transform: translateY(-100%); }
+
+/* ---------- Ripple auf Buttons ---------- */
+.btn { position: relative; overflow: hidden; }
+.ripple {
+  position: absolute; border-radius: 50%; pointer-events: none;
+  background: currentColor; opacity: 0.25;
+  transform: scale(0);
+  animation: ripple 0.5s ease-out forwards;
+}
+@keyframes ripple {
+  to { transform: scale(1); opacity: 0; }
+}
+
+/* ---------- Fake-3D-Tilt (Karten & Produktbild, Desktop) ---------- */
+.tilt {
+  transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transition: transform 0.15s ease-out;
+  will-change: transform;
+}
+
+/* ---------- Hero: Entrance, Parallax-Basis, Scroll-Indikator ---------- */
+.hero__img { will-change: transform; transform: scale(1.06); }
+.hero__box > * { opacity: 0; transform: translateY(18px); animation: hero-in 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+.hero__box > *:nth-child(2) { animation-delay: 0.1s; }
+.hero__box > *:nth-child(3) { animation-delay: 0.2s; }
+.hero__box > *:nth-child(4) { animation-delay: 0.3s; }
+.hero__box > *:nth-child(5) { animation-delay: 0.4s; }
+@keyframes hero-in { to { opacity: 1; transform: none; } }
+
+.hero__scroll-hint {
+  position: absolute; bottom: 1.25rem; left: 50%;
+  width: 26px; height: 42px; border: 2px solid rgba(255, 255, 255, 0.7);
+  border-radius: 999px; transform: translateX(-50%);
+}
+.hero__scroll-hint::after {
+  content: ''; position: absolute; left: 50%; top: 7px;
+  width: 4px; height: 8px; border-radius: 2px;
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateX(-50%);
+  animation: scroll-hint 1.6s ease-out infinite;
+}
+@keyframes scroll-hint {
+  0% { opacity: 1; transform: translate(-50%, 0); }
+  70% { opacity: 0; transform: translate(-50%, 14px); }
+  100% { opacity: 0; transform: translate(-50%, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__box > * { animation: none; opacity: 1; transform: none; }
+  .hero__img { transform: none; }
+  .hero__scroll-hint::after { animation: none; }
+}
+
+/* ---------- Preis-Puls bei Variantenwechsel & Cart-Bump ---------- */
+.is-pulsing { animation: price-pulse 0.3s ease-out; }
+@keyframes price-pulse {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+.header__cart-count { transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1); }
+
+/* ---------- Kauf-Modul (Ein-Produkt-Startseite) ---------- */
+.buy-box { position: relative; }
+.buy-box__grid { display: grid; gap: 2.5rem; align-items: center; }
+@media (min-width: 990px) { .buy-box__grid { grid-template-columns: 1.05fr 1fr; gap: 4rem; } }
+.buy-box__media { position: relative; }
+.buy-box__glow {
+  position: absolute; inset: 8%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--color-accent) 32%, transparent), transparent 70%);
+  filter: blur(10px); z-index: 0; pointer-events: none;
+}
+@supports not (background: color-mix(in srgb, red 50%, blue)) {
+  .buy-box__glow { background: radial-gradient(closest-side, rgba(232, 130, 58, 0.3), transparent 70%); }
+}
+.buy-box__img {
+  position: relative; z-index: 1; width: 100%;
+  border-radius: calc(var(--radius) * 2);
+  aspect-ratio: 1; object-fit: cover;
+}
+.buy-box__float { animation: floaty 5s ease-in-out infinite; }
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@media (prefers-reduced-motion: reduce) { .buy-box__float { animation: none; } }
+.buy-box__card {
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  background: color-mix(in srgb, var(--color-bg) 70%, #ffffff 30%);
+  border: 1px solid var(--color-border);
+  border-radius: calc(var(--radius) * 2);
+  box-shadow: 0 30px 60px -40px rgba(0, 0, 0, 0.3);
+}
+@supports not (background: color-mix(in srgb, red 50%, blue)) {
+  .buy-box__card { background: #fff; }
+}
+.buy-box__title { font-size: clamp(1.5rem, 3.5vw, 2.1rem); }
+
+/* ---------- Zahlen-Sektion (Count-up) ---------- */
+.stats__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem 1rem; text-align: center; }
+@media (min-width: 750px) { .stats__grid { grid-template-columns: repeat(var(--stats-cols, 3), 1fr); } }
+.stats__value {
+  font-family: var(--font-heading);
+  font-size: clamp(2.2rem, 6vw, 3.4rem);
+  line-height: 1.1; color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+}
+.stats__suffix { font-size: 0.6em; }
+.stats__label { color: var(--color-muted); font-size: 0.92rem; margin-top: 0.3rem; }
+
+/* ---------- „So funktioniert's"-Schritte (Startseite) ---------- */
+.how__grid { display: grid; gap: 1.5rem; counter-reset: how; }
+@media (min-width: 750px) { .how__grid { grid-template-columns: repeat(3, 1fr); } }
+.how__item {
+  padding: 1.75rem; border-radius: calc(var(--radius) * 1.5);
+  background: var(--color-bg); border: 1px solid var(--color-border);
+  transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.2s ease-out;
+}
+@media (hover: hover) {
+  .how__item:hover { transform: translateY(-4px); box-shadow: 0 18px 40px -28px rgba(0, 0, 0, 0.3); }
+}
+.how__num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.6rem; height: 2.6rem; margin-bottom: 1rem;
+  background: var(--color-primary); color: var(--color-primary-contrast);
+  border-radius: 50%; font-weight: 700;
+}
+.how__title { font-family: var(--font-body); font-size: 1.05rem; font-weight: 700; margin-bottom: 0.3rem; }
+.how__text { color: var(--color-muted); font-size: 0.93rem; margin: 0; }
+
+/* ---------- Karten-Hover (Testimonials & Produktkarten leben dezent) ---------- */
+.testimonial, .product-card { transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.2s ease-out; }
+@media (hover: hover) {
+  .testimonial:hover { transform: translateY(-4px); box-shadow: 0 18px 40px -28px rgba(0, 0, 0, 0.25); }
+}
+
+/* ---------- Skeleton-Shimmer (Empfehlungen laden nach) ---------- */
+.skeleton {
+  position: relative; overflow: hidden; background: var(--color-bg-soft);
+  border-radius: var(--radius); aspect-ratio: 1;
+}
+.skeleton::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.55) 50%, transparent 70%);
+  transform: translateX(-100%);
+  animation: shimmer 1.4s ease-out infinite;
+}
+@keyframes shimmer { to { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) { .skeleton::after { animation: none; } }
+
+/* ---------- Sanfter Verlauf für abgesetzte Sections ---------- */
+.section--gradient {
+  background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-soft) 45%, var(--color-bg) 100%);
+}

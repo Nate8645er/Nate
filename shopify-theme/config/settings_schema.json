@@ -38,7 +38,7 @@
     "settings": [
       { "type": "number", "id": "free_shipping_threshold", "label": "Gratisversand ab (Betrag in Shop-Währung)", "default": 50, "info": "Steuert die Gratisversand-Anzeige im Warenkorb und in der Ankündigungsleiste. 0 = deaktiviert." },
       { "type": "text", "id": "guarantee_text", "label": "Garantie-Versprechen", "default": "30 Tage Geld-zurück-Garantie" },
-      { "type": "text", "id": "shipping_text", "label": "Versand-Versprechen", "default": "Versand in 24h aus dem Lager" },
+      { "type": "text", "id": "shipping_text", "label": "Versand-Versprechen", "default": "Versand aus EU-Lager mit Sendungsverfolgung" },
       { "type": "text", "id": "support_text", "label": "Support-Versprechen", "default": "Persönlicher Support per E-Mail" }
     ]
   },

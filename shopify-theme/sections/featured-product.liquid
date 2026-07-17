@@ -1,0 +1,115 @@
+{%- comment -%}
+  Kauf-Modul für die Ein-Produkt-Startseite: Produktbild mit Tilt + Glow,
+  Variantenwahl, Preis, Add-to-Cart direkt auf der Homepage.
+  Nutzt dieselben data-Attribute wie die Produktseite – ein JS für beides.
+{%- endcomment -%}
+{%- liquid
+  assign fp = section.settings.product
+  assign current_variant = fp.selected_or_first_available_variant
+-%}
+<section class="buy-box section section--gradient" data-product id="kaufen">
+  <div class="page-width">
+    <div class="buy-box__grid">
+
+      <div class="buy-box__media reveal" data-reveal="left">
+        <div class="buy-box__glow" aria-hidden="true"></div>
+        {%- if fp != blank and fp.featured_image -%}
+          <div class="buy-box__float" data-tilt>
+            {{ fp.featured_image
+              | image_url: width: 1100
+              | image_tag:
+                widths: '540, 750, 1100',
+                sizes: '(min-width: 990px) 50vw, 100vw',
+                loading: 'eager',
+                fetchpriority: 'high',
+                class: 'buy-box__img',
+                alt: fp.featured_image.alt
+            }}
+          </div>
+        {%- else -%}
+          {{ 'product-1' | placeholder_svg_tag: 'buy-box__img placeholder' }}
+        {%- endif -%}
+      </div>
+
+      <div class="buy-box__card reveal" data-reveal="right">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="section__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+
+        {%- if fp != blank -%}
+          <h2 class="buy-box__title">{{ fp.title | escape }}</h2>
+
+          <div data-price-wrapper>
+            {% render 'price', variant: current_variant %}
+          </div>
+          <p class="product__tax-note">{{ 'products.tax_note' | t }}</p>
+
+          {%- if section.settings.usp_list != blank -%}
+            <ul class="checklist checklist--compact" role="list">
+              {%- assign usps = section.settings.usp_list | split: '|' -%}
+              {%- for usp in usps -%}
+                <li>{% render 'icon', name: 'check' %} {{ usp | strip | escape }}</li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+
+          {%- form 'product', fp, class: 'product__form', data-product-form: '' -%}
+            <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
+
+            {%- unless fp.has_only_default_variant -%}
+              {%- for option in fp.options_with_values -%}
+                <fieldset class="variant-picker">
+                  <legend class="variant-picker__label">{{ option.name | escape }}: <span data-selected-value>{{ option.selected_value | escape }}</span></legend>
+                  <div class="variant-picker__values">
+                    {%- for value in option.values -%}
+                      <label class="variant-pill">
+                        <input type="radio" name="fp-option{{ forloop.parentloop.index }}" value="{{ value | escape }}"
+                          {% if option.selected_value == value %}checked{% endif %} data-option-input>
+                        <span>{{ value | escape }}</span>
+                      </label>
+                    {%- endfor -%}
+                  </div>
+                </fieldset>
+              {%- endfor -%}
+            {%- endunless -%}
+
+            <button type="submit" class="btn btn--accent btn--lg btn--block" data-atc {% unless current_variant.available %}disabled{% endunless %}>
+              <span data-atc-text>
+                {%- if current_variant.available -%}{{ 'products.add_to_cart' | t }}{%- else -%}{{ 'products.sold_out' | t }}{%- endif -%}
+              </span>
+            </button>
+          {%- endform -%}
+
+          <ul class="product__trust" role="list">
+            <li>{% render 'icon', name: 'truck' %} {{ settings.shipping_text | escape }}</li>
+            <li>{% render 'icon', name: 'shield' %} {{ settings.guarantee_text | escape }}</li>
+            <li>{% render 'icon', name: 'lock' %} {{ 'products.secure_checkout' | t }}</li>
+          </ul>
+
+          <p class="faq__hint" style="text-align:left; margin-top:1rem;">
+            <a href="{{ fp.url }}">{{ 'products.view_details' | t }} &rarr;</a>
+          </p>
+
+          <script type="application/json" data-variant-json>
+            {{ fp.variants | json }}
+          </script>
+        {%- else -%}
+          <h2 class="buy-box__title">{{ 'products.pick_product_hint' | t }}</h2>
+          <p class="section__text">{{ 'products.pick_product_text' | t }}</p>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Kauf-Modul (Produkt)",
+  "settings": [
+    { "type": "product", "id": "product", "label": "Produkt" },
+    { "type": "text", "id": "eyebrow", "label": "Overline", "default": "Der Bestseller" },
+    { "type": "text", "id": "usp_list", "label": "Kaufargumente (mit | getrennt)", "default": "Automatik-Modus mit cleveren Pausen|USB-aufladbar, kein Batteriekauf|30 Tage Geld-zurück-Garantie" }
+  ],
+  "presets": [{ "name": "Kauf-Modul (Produkt)" }]
+}
+{% endschema %}

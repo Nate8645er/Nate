@@ -8,7 +8,7 @@
   assign current_variant = product.selected_or_first_available_variant
 -%}
 
-<section class="product section" data-product data-product-id="{{ product.id }}">
+<section class="product section" data-product data-main-product data-product-id="{{ product.id }}">
   <div class="page-width">
     <nav class="breadcrumb" aria-label="{{ 'general.breadcrumb' | t }}">
       <a href="{{ routes.root_url }}">Home</a>
@@ -216,7 +216,7 @@
 {
   "name": "Produktseite",
   "settings": [
-    { "type": "text", "id": "usp_list", "label": "Kaufargumente (mit | getrennt)", "default": "Versand in 24h|30 Tage Geld-zurück-Garantie|Sichere Bezahlung" }
+    { "type": "text", "id": "usp_list", "label": "Kaufargumente (mit | getrennt)", "default": "Versand mit Sendungsverfolgung|30 Tage Geld-zurück-Garantie|Sichere Bezahlung" }
   ],
   "blocks": [
     { "type": "description", "name": "Beschreibung", "limit": 1, "settings": [] },
@@ -224,7 +224,7 @@
       "type": "shipping", "name": "Versand-Info",
       "settings": [
         { "type": "text", "id": "title", "label": "Titel", "default": "Versand & Lieferung" },
-        { "type": "richtext", "id": "content", "label": "Inhalt", "default": "<p>Versand innerhalb von 24 Stunden. Lieferzeit 2–4 Werktage. Kostenloser Versand ab CHF 50.</p>" }
+        { "type": "richtext", "id": "content", "label": "Inhalt", "default": "<p>Versand aus dem EU-Lager. Lieferzeit 7–14 Tage, immer inkl. Sendungsverfolgung.</p>" }
       ]
     },
     {

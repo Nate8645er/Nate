@@ -30,7 +30,7 @@
         "b1": { "type": "badge", "settings": { "icon": "heart", "title": "Qualität vor Quantität", "text": "Lieber wenige Produkte, die überzeugen, als ein riesiges Sortiment." } },
         "b2": { "type": "badge", "settings": { "icon": "shield", "title": "Ehrlichkeit", "text": "30 Tage Geld-zurück-Garantie, weil wir hinter unseren Produkten stehen." } },
         "b3": { "type": "badge", "settings": { "icon": "mail", "title": "Erreichbarkeit", "text": "Echte Menschen, echte Antworten – innerhalb von 24 Stunden." } },
-        "b4": { "type": "badge", "settings": { "icon": "truck", "title": "Verlässlichkeit", "text": "Versand innerhalb von 24 Stunden, transparente Sendungsverfolgung." } }
+        "b4": { "type": "badge", "settings": { "icon": "truck", "title": "Verlässlichkeit", "text": "Jede Lieferung mit Sendungsverfolgung – du weisst immer, wo dein Paket ist." } }
       },
       "block_order": ["b1", "b2", "b3", "b4"]
     },

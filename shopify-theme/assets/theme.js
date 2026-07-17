@@ -1,20 +1,30 @@
 /* ==========================================================================
    Aurum Premium – Theme-JavaScript
    Ein einziges, kleines File (defer geladen, keine Frameworks, keine jQuery).
-   Module: Scroll-Reveal, Ankündigungs-Rotation, Mobile-Nav, Produktgalerie,
-   Variantenwahl, Mengensteuerung, Sticky Add-to-Cart, Countdown,
-   Warenkorb-Auto-Update, Collection-Sortierung.
+   Animations-Doktrin: nur transform/opacity, ease-out, <300ms Feedback,
+   prefers-reduced-motion respektiert, Tilt/Magnetic/Parallax nur auf
+   Geräten mit feinem Zeiger (Desktop).
    ========================================================================== */
 (function () {
   'use strict';
 
-  /* ---------- Scroll-Reveal (IntersectionObserver, mit Fallback) ---------- */
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var finePointer = window.matchMedia('(pointer: fine)').matches;
+
+  /* ---------- Scroll-Reveal (IntersectionObserver, mit Stagger) ---------- */
   function initReveal() {
     var els = document.querySelectorAll('.reveal');
-    if (!('IntersectionObserver' in window)) {
+    if (!('IntersectionObserver' in window) || reducedMotion) {
       document.documentElement.classList.add('no-observer');
       return;
     }
+    /* Stagger: Kinder eines [data-reveal-stagger]-Containers versetzt einblenden */
+    document.querySelectorAll('[data-reveal-stagger]').forEach(function (parent) {
+      var children = parent.querySelectorAll('.reveal');
+      children.forEach(function (child, i) {
+        child.style.transitionDelay = Math.min(i * 70, 420) + 'ms';
+      });
+    });
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
@@ -24,6 +34,31 @@
       });
     }, { rootMargin: '0px 0px -8% 0px' });
     els.forEach(function (el) { io.observe(el); });
+  }
+
+  /* ---------- Header: beim Runterscrollen ausblenden, hoch einblenden ---------- */
+  function initHeaderScroll() {
+    var header = document.querySelector('[data-header]');
+    if (!header || !header.classList.contains('header--sticky') || reducedMotion) return;
+    var lastY = 0;
+    var ticking = false;
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        var y = window.scrollY;
+        header.classList.toggle('header--scrolled', y > 8);
+        /* Nie verstecken, solange das Mobile-Menü offen ist */
+        var navOpen = document.querySelector('.mobile-nav.is-open');
+        if (!navOpen && y > 160) {
+          header.classList.toggle('header--hidden', y > lastY);
+        } else {
+          header.classList.remove('header--hidden');
+        }
+        lastY = y;
+        ticking = false;
+      });
+    }, { passive: true });
   }
 
   /* ---------- Ankündigungsleiste: Botschaften rotieren ---------- */
@@ -69,19 +104,123 @@
     });
   }
 
-  /* ---------- Produktgalerie: Thumbnails ---------- */
-  function initGallery() {
-    var gallery = document.querySelector('[data-gallery]');
-    if (!gallery) return;
-    var images = gallery.querySelectorAll('.product__main-image .product__img');
-    var thumbs = gallery.querySelectorAll('[data-thumb-index]');
-    thumbs.forEach(function (thumb) {
-      thumb.addEventListener('click', function () {
-        var idx = parseInt(thumb.dataset.thumbIndex, 10);
-        images.forEach(function (img, i) {
-          img.classList.toggle('is-active', i === idx);
+  /* ---------- Ripple-Effekt auf Buttons (reines Feedback, verzögert nichts) ---------- */
+  function initRipple() {
+    if (reducedMotion) return;
+    document.addEventListener('pointerdown', function (e) {
+      var btn = e.target.closest('.btn');
+      if (!btn) return;
+      var rect = btn.getBoundingClientRect();
+      var ripple = document.createElement('span');
+      ripple.className = 'ripple';
+      var size = Math.max(rect.width, rect.height) * 2;
+      ripple.style.width = ripple.style.height = size + 'px';
+      ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+      ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+      btn.appendChild(ripple);
+      setTimeout(function () { ripple.remove(); }, 500);
+    });
+  }
+
+  /* ---------- Magnetische Buttons (dezent, nur Desktop) ---------- */
+  function initMagnetic() {
+    if (reducedMotion || !finePointer) return;
+    document.querySelectorAll('.btn--lg, [data-magnetic]').forEach(function (btn) {
+      btn.addEventListener('pointermove', function (e) {
+        var rect = btn.getBoundingClientRect();
+        var x = (e.clientX - rect.left - rect.width / 2) / rect.width;
+        var y = (e.clientY - rect.top - rect.height / 2) / rect.height;
+        btn.style.transform = 'translate(' + (x * 6) + 'px,' + (y * 4) + 'px)';
+      });
+      btn.addEventListener('pointerleave', function () {
+        btn.style.transform = '';
+      });
+    });
+  }
+
+  /* ---------- Fake-3D-Tilt auf Karten & Produktbildern (nur Desktop) ---------- */
+  function initTilt() {
+    if (reducedMotion || !finePointer) return;
+    document.querySelectorAll('[data-tilt]').forEach(function (el) {
+      el.classList.add('tilt');
+      el.addEventListener('pointermove', function (e) {
+        var rect = el.getBoundingClientRect();
+        var rx = ((e.clientY - rect.top) / rect.height - 0.5) * -6;
+        var ry = ((e.clientX - rect.left) / rect.width - 0.5) * 6;
+        el.style.setProperty('--tilt-x', rx.toFixed(2) + 'deg');
+        el.style.setProperty('--tilt-y', ry.toFixed(2) + 'deg');
+      });
+      el.addEventListener('pointerleave', function () {
+        el.style.setProperty('--tilt-x', '0deg');
+        el.style.setProperty('--tilt-y', '0deg');
+      });
+    });
+  }
+
+  /* ---------- Sanfter Parallax auf Hero-Bild (rAF, nur transform) ---------- */
+  function initParallax() {
+    if (reducedMotion) return;
+    var media = document.querySelector('.hero__img');
+    if (!media) return;
+    var ticking = false;
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        var y = Math.min(window.scrollY, 800);
+        media.style.transform = 'translateY(' + (y * 0.12) + 'px) scale(1.06)';
+        ticking = false;
+      });
+    }, { passive: true });
+  }
+
+  /* ---------- Zahlen hochzählen (einmalig, wenn sichtbar) ---------- */
+  function initCounters() {
+    var counters = document.querySelectorAll('[data-count-to]');
+    if (!counters.length) return;
+    function animate(el) {
+      var target = parseInt(el.dataset.countTo, 10) || 0;
+      if (reducedMotion) { el.textContent = target; return; }
+      var start = null;
+      var duration = 900;
+      function step(ts) {
+        if (!start) start = ts;
+        var progress = Math.min((ts - start) / duration, 1);
+        /* ease-out */
+        var eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(target * eased);
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    if (!('IntersectionObserver' in window)) {
+      counters.forEach(function (el) { el.textContent = el.dataset.countTo; });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          animate(entry.target);
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    counters.forEach(function (el) { io.observe(el); });
+  }
+
+  /* ---------- Produktgalerie: Thumbnails mit Crossfade ---------- */
+  function initGalleries() {
+    document.querySelectorAll('[data-gallery]').forEach(function (gallery) {
+      var images = gallery.querySelectorAll('.product__main-image .product__img');
+      var thumbs = gallery.querySelectorAll('[data-thumb-index]');
+      thumbs.forEach(function (thumb) {
+        thumb.addEventListener('click', function () {
+          var idx = parseInt(thumb.dataset.thumbIndex, 10);
+          images.forEach(function (img, i) {
+            img.classList.toggle('is-active', i === idx);
+          });
+          thumbs.forEach(function (t) { t.classList.toggle('is-active', t === thumb); });
         });
-        thumbs.forEach(function (t) { t.classList.toggle('is-active', t === thumb); });
       });
     });
   }
@@ -115,10 +254,8 @@
       .replace(/\{\{\s*amount_with_apostrophe_separator\s*\}\}/, value.replace(/\B(?=(\d{3})+(?!\d))/g, "'"));
   }
 
-  /* ---------- Variantenwahl auf der Produktseite ---------- */
-  function initVariantPicker() {
-    var section = document.querySelector('[data-product]');
-    if (!section) return;
+  /* ---------- Variantenwahl (Produktseite UND Kauf-Modul auf der Startseite) ---------- */
+  function initProductSection(section) {
     var jsonEl = section.querySelector('[data-variant-json]');
     var form = section.querySelector('[data-product-form]');
     if (!jsonEl || !form) return;
@@ -151,6 +288,13 @@
       });
     }
 
+    function pulse(el) {
+      if (reducedMotion || !el) return;
+      el.classList.remove('is-pulsing');
+      void el.offsetWidth; /* Reflow, damit die Animation neu startet */
+      el.classList.add('is-pulsing');
+    }
+
     function updateUI(variant) {
       if (!variant) {
         if (atcBtn) { atcBtn.disabled = true; }
@@ -166,7 +310,7 @@
         var current = priceWrapper.querySelector('.price__current');
         var compare = priceWrapper.querySelector('.price__compare');
         var badge = priceWrapper.querySelector('.price__badge');
-        if (current) current.textContent = formatMoney(variant.price);
+        if (current) { current.textContent = formatMoney(variant.price); pulse(current); }
         var onSale = variant.compare_at_price && variant.compare_at_price > variant.price;
         if (compare) compare.style.display = onSale ? '' : 'none';
         if (compare && onSale) compare.textContent = formatMoney(variant.compare_at_price);
@@ -176,8 +320,8 @@
         }
       }
 
-      /* URL aktualisieren (teilen/zurück-Navigation) */
-      if (history.replaceState) {
+      /* URL nur auf der echten Produktseite aktualisieren */
+      if (section.hasAttribute('data-main-product') && history.replaceState) {
         var url = new URL(window.location.href);
         url.searchParams.set('variant', variant.id);
         history.replaceState({}, '', url.toString());
@@ -194,12 +338,14 @@
     });
   }
 
-  /* ---------- Sticky Add-to-Cart ---------- */
+  /* ---------- Sticky Add-to-Cart (Produktseite) ---------- */
   function initStickyAtc() {
     var bar = document.querySelector('[data-sticky-atc]');
-    var mainBtn = document.querySelector('[data-atc]');
-    var form = document.querySelector('[data-product-form]');
-    if (!bar || !mainBtn || !form || !('IntersectionObserver' in window)) return;
+    if (!bar || !('IntersectionObserver' in window)) return;
+    var section = bar.closest('[data-product]') || document;
+    var mainBtn = section.querySelector('[data-atc]');
+    var form = section.querySelector('[data-product-form]');
+    if (!mainBtn || !form) return;
 
     var io = new IntersectionObserver(function (entries) {
       var visible = entries[0].isIntersecting;
@@ -287,11 +433,17 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     initReveal();
+    initHeaderScroll();
     initAnnouncement();
     initMobileNav();
-    initGallery();
+    initRipple();
+    initMagnetic();
+    initTilt();
+    initParallax();
+    initCounters();
+    initGalleries();
     initQty();
-    initVariantPicker();
+    document.querySelectorAll('[data-product]').forEach(initProductSection);
     initStickyAtc();
     initCountdown();
     initCartAutoUpdate();
