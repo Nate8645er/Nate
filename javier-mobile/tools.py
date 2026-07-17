@@ -259,7 +259,11 @@ def _load_contacts():
                 contacts.update(json.load(f))
         except (ValueError, OSError):
             pass
-    env = os.environ.get("CONTACTS", "").strip()
+    env = ""
+    for key, value in os.environ.items():
+        if key.upper() == "CONTACTS":
+            env = value.strip()
+            break
     if env:
         try:
             if env.startswith("{"):
