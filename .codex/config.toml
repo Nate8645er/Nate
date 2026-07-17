@@ -1,0 +1,6 @@
+# Projektbezogene Codex-Konfiguration (wird geladen, wenn das Projekt "trusted" ist)
+# Worker-Modell: GPT-5.6-Sol (Frontier-Modell der GPT-5.6-Familie)
+model = "gpt-5.6-sol"
+# Hoechste Reasoning-Stufe (ultra = maximales Reasoning mit automatischer Task-Delegation;
+# Alternative ohne Auto-Delegation: "max")
+model_reasoning_effort = "ultra"
