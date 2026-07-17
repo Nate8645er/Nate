@@ -1,0 +1,120 @@
+{%- comment -%}
+  Galaxy-Hero: animierte Weltraum-Szene in reinem CSS (kein WebGL, keine Libraries).
+  Story: Das MeowUFO startet beim Mond, fliegt in einem Bogen zur Erde,
+  der Beam schaltet sich ein und die Alien-Katzen springen nach der Feder.
+  Performance: nur transform/opacity, Sprite als PNG-Asset, LCP = Headline
+  (kein render-blockierendes Held-Bild). prefers-reduced-motion: statische Szene.
+{%- endcomment -%}
+{%- liquid
+  assign ufo_asset = 'ufo-rosa.png'
+  if section.settings.ufo_variant == 'khaki'
+    assign ufo_asset = 'ufo-khaki.png'
+  endif
+-%}
+<section class="galaxy" id="galaxy-hero">
+  {%- comment -%} Sternenhimmel: 2 Twinkle-Ebenen + 2 Sternschnuppen {%- endcomment -%}
+  <div class="galaxy__stars galaxy__stars--far" aria-hidden="true"></div>
+  <div class="galaxy__stars galaxy__stars--near" aria-hidden="true"></div>
+  <div class="galaxy__shooting" aria-hidden="true"></div>
+  <div class="galaxy__shooting galaxy__shooting--late" aria-hidden="true"></div>
+
+  {%- comment -%} Himmelskörper {%- endcomment -%}
+  <div class="galaxy__sun" aria-hidden="true"></div>
+  <div class="galaxy__moon" aria-hidden="true">
+    <span></span><span></span><span></span>
+  </div>
+  <div class="galaxy__planet" aria-hidden="true"><i></i></div>
+  <div class="galaxy__earth" aria-hidden="true"></div>
+
+  {%- comment -%} UFO-Flug: Mond -> Erde, danach Schwebe-Loop + Beam {%- endcomment -%}
+  <div class="galaxy__flight" aria-hidden="true">
+    <div class="galaxy__hover">
+      <img src="{{ ufo_asset | asset_url }}" alt="" width="220" height="187"
+        loading="eager" fetchpriority="high" class="galaxy__ufo">
+      <div class="galaxy__beam"></div>
+    </div>
+  </div>
+
+  {%- comment -%} Alien-Katzen (Antennen + leuchtende Augen) auf der Erde {%- endcomment -%}
+  {%- if section.settings.show_cats -%}
+  <div class="galaxy__cats" aria-hidden="true">
+    <svg class="galaxy__cat galaxy__cat--jump" viewBox="0 0 120 130" role="presentation">
+      <line x1="52" y1="30" x2="46" y2="10" stroke="#1A1530" stroke-width="4"/>
+      <circle cx="45" cy="8" r="6" fill="#7CFFDA" class="galaxy__antenna"/>
+      <polygon points="36,38 44,14 56,30" fill="#1A1530"/>
+      <polygon points="84,38 76,14 64,30" fill="#1A1530"/>
+      <circle cx="60" cy="46" r="26" fill="#1A1530"/>
+      <ellipse cx="58" cy="92" rx="34" ry="30" fill="#1A1530"/>
+      <path d="M28 108 Q6 100 12 78" stroke="#1A1530" stroke-width="9" fill="none" stroke-linecap="round"/>
+      <ellipse cx="50" cy="42" rx="7" ry="8" fill="#FFD166"/>
+      <ellipse cx="70" cy="42" rx="7" ry="8" fill="#FFD166"/>
+      <ellipse cx="50" cy="43" rx="2.6" ry="6" fill="#1A1530"/>
+      <ellipse cx="70" cy="43" rx="2.6" ry="6" fill="#1A1530"/>
+    </svg>
+    <svg class="galaxy__cat galaxy__cat--sit" viewBox="0 0 120 130" role="presentation">
+      <line x1="68" y1="28" x2="76" y2="8" stroke="#1A1530" stroke-width="4"/>
+      <circle cx="77" cy="6" r="6" fill="#FF7BAC" class="galaxy__antenna"/>
+      <polygon points="38,40 46,16 58,32" fill="#1A1530"/>
+      <polygon points="86,40 78,16 66,32" fill="#1A1530"/>
+      <circle cx="62" cy="48" r="25" fill="#1A1530"/>
+      <ellipse cx="60" cy="96" rx="32" ry="28" fill="#1A1530"/>
+      <path d="M90 112 Q112 104 106 82" stroke="#1A1530" stroke-width="9" fill="none" stroke-linecap="round"/>
+      <ellipse cx="53" cy="44" rx="7" ry="8" fill="#FFD166"/>
+      <ellipse cx="72" cy="44" rx="7" ry="8" fill="#FFD166"/>
+      <ellipse cx="53" cy="45" rx="2.6" ry="6" fill="#1A1530"/>
+      <ellipse cx="72" cy="45" rx="2.6" ry="6" fill="#1A1530"/>
+    </svg>
+  </div>
+  {%- endif -%}
+
+  {%- comment -%} Inhalt {%- endcomment -%}
+  <div class="galaxy__content page-width">
+    <div class="galaxy__box">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="hero__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      <h1 class="galaxy__heading">{{ section.settings.heading | escape }}</h1>
+      {%- if section.settings.subheading != blank -%}
+        <p class="galaxy__subheading">{{ section.settings.subheading | escape }}</p>
+      {%- endif -%}
+      <div class="hero__ctas">
+        {%- if section.settings.cta_primary_label != blank -%}
+          <a href="{{ section.settings.cta_primary_link }}" class="btn btn--accent btn--lg">{{ section.settings.cta_primary_label | escape }}</a>
+        {%- endif -%}
+        {%- if section.settings.cta_secondary_label != blank -%}
+          <a href="{{ section.settings.cta_secondary_link }}" class="btn btn--ghost btn--lg">{{ section.settings.cta_secondary_label | escape }}</a>
+        {%- endif -%}
+      </div>
+      {%- if section.settings.show_trust_row -%}
+        <ul class="hero__trust" role="list">
+          <li>{% render 'icon', name: 'truck' %} {{ settings.shipping_text | escape }}</li>
+          <li>{% render 'icon', name: 'shield' %} {{ settings.guarantee_text | escape }}</li>
+        </ul>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <div class="hero__scroll-hint galaxy__scroll-hint" aria-hidden="true"></div>
+</section>
+
+{% schema %}
+{
+  "name": "Galaxy-Hero",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Overline", "default": "Mission: glückliche Wohnungskatzen" },
+    { "type": "text", "id": "heading", "label": "Headline", "default": "Gelandet, um deine Katze zu bespielen" },
+    { "type": "text", "id": "subheading", "label": "Subline", "default": "Das MeowUFO fliegt, wedelt und weckt den Jagdinstinkt – mit Automatik-Modus und USB-Akku. Einschalten, hinstellen, zurücklehnen." },
+    { "type": "text", "id": "cta_primary_label", "label": "CTA 1 – Text", "default": "Jetzt landen lassen" },
+    { "type": "url", "id": "cta_primary_link", "label": "CTA 1 – Link" },
+    { "type": "text", "id": "cta_secondary_label", "label": "CTA 2 – Text", "default": "So funktioniert's" },
+    { "type": "url", "id": "cta_secondary_link", "label": "CTA 2 – Link" },
+    { "type": "select", "id": "ufo_variant", "label": "UFO-Farbe", "default": "rosa", "options": [
+      { "value": "rosa", "label": "Luna (Rosa)" },
+      { "value": "khaki", "label": "Nova (Khaki)" }
+    ] },
+    { "type": "checkbox", "id": "show_cats", "label": "Alien-Katzen anzeigen", "default": true },
+    { "type": "checkbox", "id": "show_trust_row", "label": "Trust-Zeile anzeigen", "default": true }
+  ],
+  "presets": [{ "name": "Galaxy-Hero" }]
+}
+{% endschema %}

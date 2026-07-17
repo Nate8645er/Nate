@@ -1,17 +1,18 @@
 {
   "sections": {
     "hero": {
-      "type": "hero",
+      "type": "hero-galaxy",
       "settings": {
-        "eyebrow": "Für glückliche Wohnungskatzen",
-        "heading": "Deine Katze spielt. Auch wenn du nicht da bist.",
-        "subheading": "Der automatische Federwedel weckt den Jagdinstinkt deiner Katze – mit Automatik-Modus, cleveren Pausen und USB-Akku. Einschalten, hinstellen, fertig.",
-        "cta_primary_label": "Jetzt entdecken",
+        "eyebrow": "Mission: glückliche Wohnungskatzen",
+        "heading": "Gelandet, um deine Katze zu bespielen",
+        "subheading": "Das MeowUFO fliegt vom Mond direkt in dein Wohnzimmer: Automatik-Modus, clevere Pausen, USB-Akku. Einschalten, hinstellen, zurücklehnen.",
+        "cta_primary_label": "Jetzt landen lassen",
         "cta_primary_link": "/#kaufen",
         "cta_secondary_label": "So funktioniert's",
         "cta_secondary_link": "/#so-funktionierts",
-        "show_trust_row": true,
-        "show_scroll_hint": true
+        "ufo_variant": "rosa",
+        "show_cats": true,
+        "show_trust_row": true
       }
     },
     "trust": {
@@ -55,7 +56,7 @@
       },
       "block_order": ["c1", "c2", "c3"],
       "settings": {
-        "eyebrow": "Warum ein Federwedel?",
+        "eyebrow": "Warum ein Federwedel aus dem All?",
         "title": "Wohnungskatzen brauchen Beute – jeden Tag",
         "text": "<p>Katzen sind Jäger. Fehlt die tägliche Jagd, entstehen Langeweile, Übergewicht und Frust – vom zerkratzten Sofa bis zum nächtlichen Weckdienst. Der automatische Federwedel simuliert unberechenbare Beute und gibt deiner Katze das, was ihr Instinkt verlangt: jagen, lauern, fangen.</p>",
         "image_position": "right",

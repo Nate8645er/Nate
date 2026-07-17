@@ -61,6 +61,46 @@
     }, { passive: true });
   }
 
+  /* ---------- Scroll-Fortschrittsbalken ---------- */
+  function initScrollProgress() {
+    var bar = document.querySelector('[data-scroll-progress]');
+    if (!bar) return;
+    var ticking = false;
+    function update() {
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      var progress = max > 0 ? window.scrollY / max : 0;
+      bar.style.transform = 'scaleX(' + Math.min(progress, 1) + ')';
+      ticking = false;
+    }
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    }, { passive: true });
+    update();
+  }
+
+  /* ---------- Such-Overlay ---------- */
+  function initSearchOverlay() {
+    var toggle = document.querySelector('[data-search-toggle]');
+    var overlay = document.querySelector('[data-search-overlay]');
+    if (!toggle || !overlay) return;
+    var input = overlay.querySelector('input[type="search"]');
+    var close = overlay.querySelector('[data-search-close]');
+    function open(e) {
+      e.preventDefault();
+      overlay.classList.add('is-open');
+      setTimeout(function () { if (input) input.focus(); }, 120);
+    }
+    function shut() { overlay.classList.remove('is-open'); }
+    toggle.addEventListener('click', open);
+    if (close) close.addEventListener('click', shut);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) shut(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay.classList.contains('is-open')) shut();
+    });
+  }
+
   /* ---------- Ankündigungsleiste: Botschaften rotieren ---------- */
   function initAnnouncement() {
     var bar = document.querySelector('[data-announcement]');
@@ -434,6 +474,8 @@
   document.addEventListener('DOMContentLoaded', function () {
     initReveal();
     initHeaderScroll();
+    initScrollProgress();
+    initSearchOverlay();
     initAnnouncement();
     initMobileNav();
     initRipple();

@@ -86,7 +86,7 @@ p { margin: 0 0 1em; }
 .btn:hover { transform: translateY(-1px); }
 .btn:active { transform: translateY(0); }
 .btn--primary { background: var(--color-primary); color: var(--color-primary-contrast); }
-.btn--accent { background: var(--color-accent); color: #fff; box-shadow: 0 6px 18px -8px var(--color-accent); }
+.btn--accent { background: var(--color-accent); color: #191230; box-shadow: 0 6px 18px -8px var(--color-accent); }
 .btn--ghost { background: rgba(255, 255, 255, 0.14); color: #fff; border-color: rgba(255, 255, 255, 0.5); backdrop-filter: blur(4px); }
 .btn--outline { background: transparent; color: var(--color-text); border-color: var(--color-text); }
 .btn--lg { padding: 1rem 2.2rem; font-size: 1.05rem; }
@@ -298,7 +298,7 @@ p { margin: 0 0 1em; }
   padding: 0.25rem 0.65rem; border-radius: 999px;
   font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
 }
-.badge--sale { background: var(--color-accent); color: #fff; }
+.badge--sale { background: var(--color-accent); color: #191230; }
 .badge--soldout { background: var(--color-text); color: var(--color-bg); }
 
 /* ---------- Preis & Bewertung ---------- */
@@ -307,7 +307,7 @@ p { margin: 0 0 1em; }
 .price--sale .price__current { color: var(--color-accent); }
 .price__compare { color: var(--color-muted); font-size: 0.92em; }
 .price__badge {
-  background: var(--color-accent); color: #fff;
+  background: var(--color-accent); color: #191230;
   font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 999px;
 }
 .rating { display: inline-flex; align-items: center; gap: 0.1rem; text-decoration: none; margin-bottom: 0.35rem; }
@@ -773,4 +773,295 @@ svg.placeholder { width: 100%; height: 100%; }
 /* ---------- Sanfter Verlauf für abgesetzte Sections ---------- */
 .section--gradient {
   background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-soft) 45%, var(--color-bg) 100%);
+}
+
+/* ==========================================================================
+   SPACE-MODUS – Galaxy-Layer
+   Dunkler Sternenhimmel, Glass-Oberflächen, animierte Hero-Szene.
+   Alles transform/opacity, Sprites als PNG, reduced-motion = statische Szene.
+   ========================================================================== */
+
+/* ---------- Dezenter Sternenhimmel auf der ganzen Seite ---------- */
+body {
+  background-image:
+    radial-gradient(1.2px 1.2px at 22% 18%, rgba(255, 247, 214, 0.5) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 68% 64%, rgba(255, 247, 214, 0.35) 50%, transparent 51%),
+    radial-gradient(1px 1px at 84% 28%, rgba(255, 247, 214, 0.45) 50%, transparent 51%),
+    radial-gradient(1px 1px at 12% 78%, rgba(255, 247, 214, 0.3) 50%, transparent 51%);
+  background-size: 640px 640px;
+}
+
+/* ---------- Dark-Theme-Anpassungen (Glass statt Weiss) ---------- */
+.dropdown, .mega {
+  background: color-mix(in srgb, var(--color-bg-soft) 88%, transparent);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+@supports not (background: color-mix(in srgb, red 50%, blue)) {
+  .dropdown, .mega { background: var(--color-bg-soft); }
+}
+.dropdown a:hover { background: rgba(255, 255, 255, 0.07); }
+.input {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: var(--color-text);
+}
+.input:focus { border-color: var(--color-accent); }
+.testimonial, .faq__item, .how__item, .search-result {
+  background: var(--color-card);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.product__trust, .cart__summary, .contact__aside, .shipping-bar, .collection__toolbar {
+  background: var(--color-card);
+}
+.collection__toolbar { border: 0; border-radius: var(--radius); padding-inline: 1rem; }
+.buy-box__card {
+  background: rgba(255, 255, 255, 0.055);
+  border-color: rgba(255, 255, 255, 0.14);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+.trust-badges__icon { background: var(--color-card); border-color: rgba(255, 255, 255, 0.12); color: var(--color-accent); }
+.qty, .pagination__item, .variant-pill span { border-color: rgba(255, 255, 255, 0.2); }
+.qty__btn:hover { background: rgba(255, 255, 255, 0.08); }
+.btn--outline { color: var(--color-text); border-color: rgba(255, 255, 255, 0.4); }
+.product-card__media, .product__main-image, .product__thumb, .skeleton { background: var(--color-card); }
+.sticky-atc { background: color-mix(in srgb, var(--color-bg) 85%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+@supports not (background: color-mix(in srgb, red 50%, blue)) { .sticky-atc { background: var(--color-bg); } }
+.footer { background: #0A0D24; }
+.section--primary { background: var(--color-bg-soft); }
+
+/* ---------- Scroll-Fortschrittsbalken ---------- */
+.scroll-progress {
+  position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 90;
+  background: linear-gradient(90deg, var(--color-accent), #FFD166);
+  transform-origin: 0 50%; transform: scaleX(0);
+  pointer-events: none;
+}
+
+/* ---------- Such-Overlay ---------- */
+.search-overlay {
+  position: fixed; inset: 0; z-index: 80;
+  display: grid; place-items: start center;
+  padding: 18vh var(--gutter) 0;
+  background: rgba(8, 10, 28, 0.8);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.2s ease-out, visibility 0.2s;
+}
+.search-overlay.is-open { opacity: 1; visibility: visible; }
+.search-overlay__form {
+  width: min(560px, 100%); display: flex; gap: 0.5rem;
+  transform: translateY(-12px); transition: transform 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.search-overlay.is-open .search-overlay__form { transform: none; }
+.search-overlay__close {
+  position: absolute; top: 1.25rem; right: 1.25rem;
+  background: none; border: 0; color: var(--color-text); padding: 0.6rem;
+}
+
+/* ---------- Sanfter Seiten-Übergang (View Transitions, progressiv) ---------- */
+@view-transition { navigation: auto; }
+@keyframes page-fade-in { from { opacity: 0; } to { opacity: 1; } }
+::view-transition-new(root) { animation: page-fade-in 0.25s ease-out; }
+
+/* ==========================================================================
+   Galaxy-Hero: Mond -> Erde Flug mit Beam & Alien-Katzen
+   ========================================================================== */
+.galaxy {
+  position: relative; overflow: hidden;
+  min-height: min(92vh, 860px);
+  display: grid; align-items: center;
+  background:
+    radial-gradient(120% 90% at 80% 110%, #2A1E5C 0%, transparent 55%),
+    radial-gradient(90% 70% at 15% -10%, #1E1850 0%, transparent 60%),
+    linear-gradient(180deg, #0B1026 0%, #181343 55%, #241B56 100%);
+}
+
+/* Sterne: zwei Ebenen, versetzt funkelnd */
+.galaxy__stars {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 22%, #FFF7D6 50%, transparent 51%),
+    radial-gradient(2px 2px at 34% 8%, #FFD166 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 56% 30%, #FFF7D6 50%, transparent 51%),
+    radial-gradient(2px 2px at 78% 14%, #FFF7D6 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 90% 42%, #FFD166 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 8% 64%, #FFF7D6 50%, transparent 51%),
+    radial-gradient(2px 2px at 46% 74%, #FFF7D6 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 70% 58%, #FFF7D6 50%, transparent 51%);
+  background-size: 520px 520px;
+  animation: twinkle 4.5s ease-in-out infinite;
+}
+.galaxy__stars--near {
+  background-position: 260px 140px;
+  animation-delay: -2.2s; opacity: 0.7;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+/* Sternschnuppen */
+.galaxy__shooting {
+  position: absolute; top: 12%; left: -8%;
+  width: 130px; height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, transparent, #FFF7D6);
+  transform: rotate(16deg);
+  opacity: 0;
+  animation: shooting 9s ease-in 2.5s infinite;
+  pointer-events: none;
+}
+.galaxy__shooting--late { top: 34%; animation-delay: 6.5s; animation-duration: 11s; }
+@keyframes shooting {
+  0% { transform: translate(0, 0) rotate(16deg); opacity: 0; }
+  3% { opacity: 0.9; }
+  9% { transform: translate(60vw, 18vw) rotate(16deg); opacity: 0; }
+  100% { transform: translate(60vw, 18vw) rotate(16deg); opacity: 0; }
+}
+
+/* Sonne: warmes Glühen oben rechts */
+.galaxy__sun {
+  position: absolute; top: -90px; right: -70px;
+  width: 220px; height: 220px; border-radius: 50%;
+  background: radial-gradient(circle, #FFD166 0%, #F08A3C 55%, transparent 72%);
+  filter: blur(2px); opacity: 0.85;
+  pointer-events: none;
+}
+
+/* Mond mit Kratern */
+.galaxy__moon {
+  position: absolute; top: 7%; left: 4%;
+  width: clamp(90px, 12vw, 150px); aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle at 38% 34%, #F5F0E4, #D9D2BE 78%);
+  box-shadow: 0 0 60px 18px rgba(237, 231, 217, 0.35);
+}
+.galaxy__moon span {
+  position: absolute; border-radius: 50%;
+  background: rgba(160, 152, 128, 0.45);
+}
+.galaxy__moon span:nth-child(1) { width: 24%; height: 24%; top: 22%; left: 50%; }
+.galaxy__moon span:nth-child(2) { width: 16%; height: 16%; top: 56%; left: 28%; }
+.galaxy__moon span:nth-child(3) { width: 12%; height: 12%; top: 38%; left: 20%; }
+
+/* Ringplanet, schwebt langsam */
+.galaxy__planet {
+  position: absolute; top: 16%; right: 14%;
+  width: clamp(46px, 6vw, 72px); aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #B79CFF, #6C5CE7 75%);
+  animation: floaty 7s ease-in-out infinite;
+}
+.galaxy__planet i {
+  position: absolute; inset: 38% -34%; border-radius: 50%;
+  border: 3px solid rgba(255, 209, 102, 0.75);
+  transform: rotate(-18deg);
+}
+
+/* Erde: grosser Bogen unten rechts */
+.galaxy__earth {
+  position: absolute; bottom: -46vw; right: -18vw;
+  width: 80vw; max-width: 980px; aspect-ratio: 1; border-radius: 50%;
+  background:
+    radial-gradient(38% 26% at 32% 22%, #7FB069 0%, #7FB069 97%, transparent 100%),
+    radial-gradient(30% 22% at 68% 38%, #7FB069 0%, #7FB069 97%, transparent 100%),
+    radial-gradient(circle at 40% 30%, #6FBBF0, #3D7FC4 80%);
+  box-shadow: 0 0 90px 24px rgba(111, 187, 240, 0.35);
+}
+@media (max-width: 749px) {
+  .galaxy__earth { bottom: -70vw; right: -35vw; width: 130vw; }
+}
+
+/* Flugbahn: Container wird animiert, UFO + Beam hängen dran */
+.galaxy__flight {
+  position: absolute; top: 10%; left: 6%;
+  animation: ufo-flight 5.5s cubic-bezier(0.45, 0.05, 0.35, 1) 0.4s forwards;
+  will-change: transform;
+  pointer-events: none;
+  z-index: 2;
+}
+@keyframes ufo-flight {
+  0%   { transform: translate(0, 0) rotate(-6deg) scale(0.55); }
+  35%  { transform: translate(30vw, -4vh) rotate(8deg) scale(0.75); }
+  70%  { transform: translate(56vw, 16vh) rotate(-10deg) scale(0.95); }
+  100% { transform: translate(min(64vw, 880px), 34vh) rotate(0deg) scale(1); }
+}
+.galaxy__hover { animation: floaty 4.5s ease-in-out 6s infinite; }
+.galaxy__ufo {
+  width: clamp(130px, 16vw, 220px); height: auto;
+  filter: drop-shadow(0 14px 30px rgba(0, 0, 0, 0.45));
+}
+
+/* Beam: schaltet sich nach der Landung ein */
+.galaxy__beam {
+  position: absolute; left: 50%; top: 78%;
+  width: 34%; height: 240%;
+  background: linear-gradient(180deg, rgba(255, 252, 215, 0.85), rgba(255, 252, 215, 0));
+  clip-path: polygon(32% 0, 68% 0, 100% 100%, 0 100%);
+  transform: translateX(-50%) scaleY(0); transform-origin: top center;
+  animation: beam-on 0.7s ease-out 6s forwards;
+}
+@keyframes beam-on { to { transform: translateX(-50%) scaleY(1); } }
+
+/* Alien-Katzen unten rechts auf der Erde */
+.galaxy__cats {
+  position: absolute; bottom: 4%; right: clamp(4%, 10vw, 16%);
+  display: flex; align-items: flex-end; gap: 0.5rem;
+  z-index: 2; pointer-events: none;
+}
+.galaxy__cat { width: clamp(64px, 8vw, 105px); height: auto; }
+.galaxy__cat--jump { animation: cat-jump 1.6s cubic-bezier(0.36, 0, 0.3, 1) 6.6s infinite; }
+.galaxy__cat--sit { animation: cat-wiggle 3.2s ease-in-out 6.6s infinite; }
+.galaxy__antenna { animation: antenna-blink 2.4s ease-in-out infinite; }
+@keyframes cat-jump {
+  0%, 100% { transform: translateY(0); }
+  35% { transform: translateY(-26%) rotate(-4deg); }
+  55% { transform: translateY(-22%) rotate(3deg); }
+}
+@keyframes cat-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-4deg); }
+}
+@keyframes antenna-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* Inhalt links */
+.galaxy__content { position: relative; z-index: 3; width: 100%; }
+.galaxy__box { max-width: 560px; color: #F1F3FF; padding-block: clamp(4rem, 12vw, 7rem); }
+.galaxy__box > * { opacity: 0; transform: translateY(18px); animation: hero-in 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+.galaxy__box > *:nth-child(2) { animation-delay: 0.12s; }
+.galaxy__box > *:nth-child(3) { animation-delay: 0.24s; }
+.galaxy__box > *:nth-child(4) { animation-delay: 0.36s; }
+.galaxy__box > *:nth-child(5) { animation-delay: 0.48s; }
+.galaxy__heading {
+  font-size: clamp(2.2rem, 6.5vw, 3.6rem);
+  margin-bottom: 1rem;
+  text-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
+}
+.galaxy__subheading { font-size: clamp(1rem, 2.5vw, 1.2rem); opacity: 0.88; margin-bottom: 1.75rem; max-width: 44ch; }
+.galaxy__scroll-hint { border-color: rgba(255, 255, 255, 0.55); }
+
+/* Mobil: Szene kompakter, Katzen tiefer, Inhalt im Vordergrund */
+@media (max-width: 749px) {
+  .galaxy { min-height: 88vh; }
+  .galaxy__flight { top: 6%; left: 2%; }
+  @keyframes ufo-flight {
+    0%   { transform: translate(0, 0) rotate(-6deg) scale(0.45); }
+    35%  { transform: translate(28vw, -2vh) rotate(8deg) scale(0.6); }
+    70%  { transform: translate(48vw, 12vh) rotate(-10deg) scale(0.8); }
+    100% { transform: translate(52vw, 22vh) rotate(0deg) scale(0.85); }
+  }
+  .galaxy__cats { bottom: 2%; right: 6%; }
+  .galaxy__sun { width: 140px; height: 140px; top: -60px; right: -50px; }
+}
+
+/* Reduced Motion: Szene steht, UFO gelandet, Beam an */
+@media (prefers-reduced-motion: reduce) {
+  .galaxy__stars, .galaxy__shooting, .galaxy__planet, .galaxy__hover,
+  .galaxy__cat--jump, .galaxy__cat--sit, .galaxy__antenna { animation: none; }
+  .galaxy__flight { animation: none; transform: translate(min(64vw, 880px), 34vh); }
+  .galaxy__beam { animation: none; transform: translateX(-50%) scaleY(1); }
+  .galaxy__box > * { animation: none; opacity: 1; transform: none; }
 }

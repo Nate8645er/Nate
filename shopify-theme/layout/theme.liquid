@@ -37,7 +37,8 @@
       --color-primary-contrast: #ffffff;
       --color-accent: {{ settings.color_accent }};
       --color-border: {{ settings.color_text | color_modify: 'alpha', 0.12 }};
-      --color-muted: {{ settings.color_text | color_modify: 'alpha', 0.62 }};
+      --color-muted: {{ settings.color_text | color_modify: 'alpha', 0.66 }};
+      --color-card: {{ settings.color_background | color_lighten: 5 }};
       --radius: {{ settings.corner_radius }}px;
       --page-width: 1240px;
       --gutter: clamp(1rem, 4vw, 2.5rem);
@@ -51,6 +52,7 @@
 </head>
 <body class="template-{{ request.page_type | handle }}">
   <a class="skip-link" href="#MainContent">{{ 'general.skip_to_content' | t }}</a>
+  <div class="scroll-progress" data-scroll-progress aria-hidden="true"></div>
 
   {% sections 'header-group' %}
 
