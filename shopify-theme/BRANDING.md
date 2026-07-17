@@ -38,7 +38,21 @@ dahinterstehen.
   hochladen (Empfehlung: 520 px Breite, wird auf 140 px angezeigt → scharf auf
   Retina). Im Footer wird das Logo automatisch weiss eingefärbt.
 
-## Farbkonzept
+## Farbkonzept (Space-Modus, aktiv)
+
+| Rolle | Farbe | Verwendung |
+| --- | --- | --- |
+| Hintergrund | `#0E1230` Deep Space Navy | Seitenhintergrund mit dezentem Sternenmuster |
+| Hintergrund soft | `#1B2048` Nebel-Indigo | Abgesetzte Sections, Karten |
+| Primär | `#4D46B8` Indigo | Primär-Buttons, Schritte, Fortschritt |
+| Akzent | `#FF7BAC` Luna-Pink | CTAs, Badges, Highlights (Ink-Text `#191230` für Kontrast) |
+| Sterne/Deko | `#FFD166` Gold | Nur dekorativ (Sterne, Scroll-Progress-Verlauf) |
+| Text | `#F1F3FF` Sternenlicht | Fliesstext (Kontrast > 12:1) |
+
+Cartoon-Assets (UFO-Sprites, Hero-Szene, Katzen-Illustrationen) werden über
+`creatives/galaxy_creatives.py` (Pillow, kostenlos, reproduzierbar) erzeugt.
+
+## Farbkonzept (klassisch, via Theme-Settings umschaltbar)
 
 | Rolle | Farbe | Verwendung |
 | --- | --- | --- |
