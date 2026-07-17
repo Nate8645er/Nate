@@ -247,10 +247,43 @@ def get_shopify_status(days=7):
 # ------------------------------------------------------------- messages
 
 def _load_contacts():
+    # Two sources, merged: contacts.json next to the code (example file,
+    # do NOT put real numbers there - the repo is public) and the private
+    # CONTACTS environment variable (set it in Render). The env var wins
+    # and accepts either JSON ({"Mutter": "+41791234567"}) or the simple
+    # form: Mutter=+41791234567, Bruder=+41761234567
+    contacts = {}
     if os.path.exists(CONTACTS_FILE):
-        with open(CONTACTS_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return {}
+        try:
+            with open(CONTACTS_FILE, "r", encoding="utf-8") as f:
+                contacts.update(json.load(f))
+        except (ValueError, OSError):
+            pass
+    env = os.environ.get("CONTACTS", "").strip()
+    if env:
+        try:
+            if env.startswith("{"):
+                contacts.update(json.loads(env))
+            else:
+                for part in re.split(r"[,;\n]+", env):
+                    if "=" in part:
+                        name, num = part.split("=", 1)
+                        if name.strip() and num.strip():
+                            contacts[name.strip()] = num.strip()
+        except ValueError:
+            pass
+    return contacts
+
+
+def list_contacts():
+    contacts = _load_contacts()
+    return {
+        "contacts": sorted(contacts.keys()),
+        "count": len(contacts),
+        "note": "Nummern werden aus Datenschutzgruenden nicht vorgelesen. "
+                "Neue Kontakte traegt Nate in Render als CONTACTS-"
+                "Umgebungsvariable ein (Format: Name=+41791234567, ...).",
+    }
 
 
 def prepare_message(contact_name, message, channel="whatsapp"):
@@ -497,6 +530,12 @@ def tool_definitions():
             },
         },
         {
+            "name": "list_contacts",
+            "description": "Auflisten, welche Kontakte JAVIER fuer "
+                           "Nachrichten kennt (nur Namen, keine Nummern).",
+            "input_schema": {"type": "object", "properties": {}},
+        },
+        {
             "name": "prepare_message",
             "description": "Eine SMS- oder WhatsApp-Nachricht an einen "
                            "Kontakt aus contacts.json VORBEREITEN. Es wird "
@@ -598,6 +637,7 @@ TOOL_FUNCTIONS = {
     "add_event": add_event,
     "get_weather": get_weather,
     "get_shopify_status": get_shopify_status,
+    "list_contacts": list_contacts,
     "prepare_message": prepare_message,
     "prepare_instagram_post": prepare_instagram_post,
     "publish_instagram_post": publish_instagram_post,
