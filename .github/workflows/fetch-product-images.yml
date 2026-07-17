@@ -4,7 +4,11 @@
 # Manuell auslösbar (workflow_dispatch), committet nach creatives/source/.
 name: fetch-product-images
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - claude/shopify-premium-store-25gz8k
+    paths:
+      - '.github/workflows/fetch-product-images.yml'
 
 permissions:
   contents: write
