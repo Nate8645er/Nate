@@ -1,0 +1,57 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "eyebrow": "Neu eingetroffen",
+        "heading": "Premium-Qualität, die man jeden Tag spürt",
+        "subheading": "Sorgfältig ausgewählte Produkte, schnell geliefert – mit 30 Tagen Geld-zurück-Garantie.",
+        "cta_primary_label": "Jetzt entdecken",
+        "cta_primary_link": "shopify://collections/all",
+        "cta_secondary_label": "Bestseller ansehen",
+        "cta_secondary_link": "shopify://collections/all",
+        "show_trust_row": true
+      }
+    },
+    "trust": {
+      "type": "trust-badges",
+      "blocks": {
+        "b1": { "type": "badge", "settings": { "icon": "truck", "title": "Schneller Versand", "text": "Bestellungen verlassen unser Lager innerhalb von 24 Stunden." } },
+        "b2": { "type": "badge", "settings": { "icon": "shield", "title": "Geld-zurück-Garantie", "text": "30 Tage testen. Nicht zufrieden? Geld zurück, ohne Diskussion." } },
+        "b3": { "type": "badge", "settings": { "icon": "lock", "title": "Sicher bezahlen", "text": "SSL-verschlüsselt mit allen gängigen Zahlungsarten." } },
+        "b4": { "type": "badge", "settings": { "icon": "mail", "title": "Persönlicher Support", "text": "Echte Menschen antworten dir innerhalb von 24 Stunden." } }
+      },
+      "block_order": ["b1", "b2", "b3", "b4"]
+    },
+    "bestseller": {
+      "type": "featured-collection",
+      "settings": {
+        "eyebrow": "Von Kundinnen und Kunden geliebt",
+        "title": "Unsere Bestseller",
+        "limit": 4,
+        "columns": "4",
+        "show_view_all": true
+      }
+    },
+    "story": {
+      "type": "image-with-text",
+      "blocks": {
+        "c1": { "type": "check", "settings": { "text": "Jedes Produkt von uns persönlich getestet" } },
+        "c2": { "type": "check", "settings": { "text": "Schneller Versand aus zuverlässigen Lagern" } },
+        "c3": { "type": "check", "settings": { "text": "30 Tage Geld-zurück-Garantie auf alles" } }
+      },
+      "block_order": ["c1", "c2", "c3"],
+      "settings": {
+        "eyebrow": "Unsere Geschichte",
+        "title": "Warum es uns gibt",
+        "text": "<p>Wir haben diesen Shop gegründet, weil wir überzeugt sind: Gute Produkte brauchen keine Kompromisse. Jedes Produkt in unserem Sortiment testen wir selbst, bevor es in den Shop kommt – und hinter jeder Bestellung steht ein echter Mensch, der dafür sorgt, dass du zufrieden bist.</p>",
+        "cta_label": "Mehr über uns",
+        "cta_link": "shopify://pages/ueber-uns"
+      }
+    },
+    "reviews": { "type": "testimonials" },
+    "faq": { "type": "faq" },
+    "newsletter": { "type": "newsletter" }
+  },
+  "order": ["hero", "trust", "bestseller", "story", "reviews", "faq", "newsletter"]
+}

@@ -1,0 +1,67 @@
+{%- comment -%}
+  Hero: großes Bild (oder Farbfläche), Headline, Subline, bis zu 2 CTAs,
+  optionale Trust-Zeile darunter. LCP-optimiert: Bild lädt eager mit hoher Priorität.
+{%- endcomment -%}
+<section class="hero{% if section.settings.image == blank %} hero--plain{% endif %}">
+  {%- if section.settings.image -%}
+    <div class="hero__media">
+      {%- assign hero_alt = section.settings.image.alt | default: section.settings.heading -%}
+      {{ section.settings.image
+        | image_url: width: 2200
+        | image_tag:
+          widths: '750, 1100, 1600, 2200',
+          sizes: '100vw',
+          loading: 'eager',
+          fetchpriority: 'high',
+          class: 'hero__img',
+          alt: hero_alt
+      }}
+      <div class="hero__scrim" style="opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }}"></div>
+    </div>
+  {%- endif -%}
+
+  <div class="hero__content page-width">
+    <div class="hero__box reveal">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="hero__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      <h1 class="hero__heading">{{ section.settings.heading | escape }}</h1>
+      {%- if section.settings.subheading != blank -%}
+        <p class="hero__subheading">{{ section.settings.subheading | escape }}</p>
+      {%- endif -%}
+      <div class="hero__ctas">
+        {%- if section.settings.cta_primary_label != blank -%}
+          <a href="{{ section.settings.cta_primary_link }}" class="btn btn--accent btn--lg">{{ section.settings.cta_primary_label | escape }}</a>
+        {%- endif -%}
+        {%- if section.settings.cta_secondary_label != blank -%}
+          <a href="{{ section.settings.cta_secondary_link }}" class="btn btn--ghost btn--lg">{{ section.settings.cta_secondary_label | escape }}</a>
+        {%- endif -%}
+      </div>
+      {%- if section.settings.show_trust_row -%}
+        <ul class="hero__trust" role="list">
+          <li>{% render 'icon', name: 'truck' %} {{ settings.shipping_text | escape }}</li>
+          <li>{% render 'icon', name: 'shield' %} {{ settings.guarantee_text | escape }}</li>
+        </ul>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Hintergrundbild", "info": "Empfohlen: 2200×1200 px, komprimiert" },
+    { "type": "range", "id": "overlay_opacity", "min": 0, "max": 80, "step": 5, "unit": "%", "label": "Abdunklung", "default": 35 },
+    { "type": "text", "id": "eyebrow", "label": "Overline", "default": "Neu eingetroffen" },
+    { "type": "text", "id": "heading", "label": "Headline", "default": "Premium-Qualität, die man jeden Tag spürt" },
+    { "type": "text", "id": "subheading", "label": "Subline", "default": "Sorgfältig ausgewählte Produkte, schnell geliefert – mit 30 Tagen Geld-zurück-Garantie." },
+    { "type": "text", "id": "cta_primary_label", "label": "CTA 1 – Text", "default": "Jetzt entdecken" },
+    { "type": "url", "id": "cta_primary_link", "label": "CTA 1 – Link" },
+    { "type": "text", "id": "cta_secondary_label", "label": "CTA 2 – Text", "default": "Bestseller ansehen" },
+    { "type": "url", "id": "cta_secondary_link", "label": "CTA 2 – Link" },
+    { "type": "checkbox", "id": "show_trust_row", "label": "Trust-Zeile anzeigen", "default": true }
+  ],
+  "presets": [{ "name": "Hero" }]
+}
+{% endschema %}

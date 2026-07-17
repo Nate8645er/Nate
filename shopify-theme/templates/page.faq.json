@@ -1,0 +1,19 @@
+{
+  "sections": {
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q1": { "type": "question", "settings": { "question": "Wie lange dauert der Versand?", "answer": "<p>Bestellungen verlassen unser Lager innerhalb von 24 Stunden. Die Lieferung dauert in der Regel 2–4 Werktage. Nach dem Versand erhältst du eine Sendungsnummer per E-Mail.</p>" } },
+        "q2": { "type": "question", "settings": { "question": "Was kostet der Versand?", "answer": "<p>Ab CHF 50 Bestellwert liefern wir kostenlos. Darunter berechnen wir eine faire Versandpauschale, die dir im Checkout transparent angezeigt wird.</p>" } },
+        "q3": { "type": "question", "settings": { "question": "Wie funktioniert die Geld-zurück-Garantie?", "answer": "<p>Du kannst jedes Produkt 30 Tage lang testen. Nicht zufrieden? Schreib uns eine kurze E-Mail und du erhältst dein Geld zurück – ohne Wenn und Aber.</p>" } },
+        "q4": { "type": "question", "settings": { "question": "Welche Zahlungsarten werden akzeptiert?", "answer": "<p>Alle gängigen Zahlungsarten: Kreditkarte, TWINT, PayPal, Apple Pay und Google Pay. Alle Zahlungen sind SSL-verschlüsselt.</p>" } },
+        "q5": { "type": "question", "settings": { "question": "Wie kann ich meine Bestellung verfolgen?", "answer": "<p>Nach dem Versand erhältst du eine E-Mail mit deiner Sendungsnummer. Auf unserer Tracking-Seite kannst du den Status jederzeit prüfen.</p>" } },
+        "q6": { "type": "question", "settings": { "question": "Kann ich meine Bestellung ändern oder stornieren?", "answer": "<p>Solange die Bestellung noch nicht versendet wurde, ja. Schreib uns so schnell wie möglich mit deiner Bestellnummer – wir kümmern uns darum.</p>" } }
+      },
+      "block_order": ["q1", "q2", "q3", "q4", "q5", "q6"],
+      "settings": { "title": "Häufige Fragen", "open_first": true, "contact_hint": true }
+    },
+    "newsletter": { "type": "newsletter" }
+  },
+  "order": ["faq", "newsletter"]
+}

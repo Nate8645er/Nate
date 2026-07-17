@@ -1,0 +1,12 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-cart",
+      "settings": {
+        "show_payment_icons": true,
+        "upsell_title": "Kundinnen und Kunden kauften auch"
+      }
+    }
+  },
+  "order": ["main"]
+}

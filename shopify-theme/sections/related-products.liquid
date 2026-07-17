@@ -1,0 +1,30 @@
+{%- comment -%}
+  Cross-Selling: "Das könnte dir auch gefallen" – nutzt Shopifys native
+  Produkt-Empfehlungen (Section-Rendering-API, keine App nötig).
+{%- endcomment -%}
+<section class="related section section--soft"
+  data-related
+  data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ section.settings.limit }}">
+  {%- if recommendations.performed and recommendations.products_count > 0 -%}
+    <div class="page-width">
+      <div class="section__head">
+        <h2 class="section__title">{{ section.settings.title | escape }}</h2>
+      </div>
+      <div class="product-grid product-grid--4">
+        {%- for rec_product in recommendations.products -%}
+          {% render 'product-card', card_product: rec_product, lazy: true %}
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Produkt-Empfehlungen",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Titel", "default": "Das könnte dir auch gefallen" },
+    { "type": "range", "id": "limit", "min": 2, "max": 8, "step": 1, "label": "Anzahl", "default": 4 }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,17 @@
+{
+  "current": {
+    "logo_width": 140,
+    "color_primary": "#1F3D2B",
+    "color_accent": "#E8823A",
+    "color_background": "#FAF7F2",
+    "color_background_soft": "#F1EBE2",
+    "color_text": "#20201D",
+    "type_heading_font": "playfair_display_n4",
+    "type_body_font": "assistant_n4",
+    "corner_radius": 10,
+    "free_shipping_threshold": 50,
+    "guarantee_text": "30 Tage Geld-zurück-Garantie",
+    "shipping_text": "Versand in 24h aus dem Lager",
+    "support_text": "Persönlicher Support per E-Mail"
+  }
+}

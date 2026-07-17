@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="{{ settings.color_primary }}">
+
+  {%- comment -%} SEO: Title, Description, Canonical, Open Graph {%- endcomment -%}
+  {% render 'meta-tags' %}
+
+  {%- comment -%} Strukturierte Daten (Organization / WebSite / Breadcrumbs) {%- endcomment -%}
+  {% render 'structured-data' %}
+
+  {%- if settings.favicon != blank -%}
+    <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 64 }}">
+  {%- endif -%}
+
+  {%- comment -%} Fonts über Shopify-Font-CDN (performant, kein Google-Fonts-Request) {%- endcomment -%}
+  <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+  {%- liquid
+    assign heading_font = settings.type_heading_font
+    assign body_font = settings.type_body_font
+    assign body_font_bold = body_font | font_modify: 'weight', 'bolder'
+  -%}
+  <style>
+    {{ heading_font | font_face: font_display: 'swap' }}
+    {{ body_font | font_face: font_display: 'swap' }}
+    {%- if body_font_bold -%}{{ body_font_bold | font_face: font_display: 'swap' }}{%- endif -%}
+
+    :root {
+      --font-heading: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+      --font-body: {{ body_font.family }}, {{ body_font.fallback_families }};
+      --color-bg: {{ settings.color_background }};
+      --color-bg-soft: {{ settings.color_background_soft }};
+      --color-text: {{ settings.color_text }};
+      --color-primary: {{ settings.color_primary }};
+      --color-primary-contrast: #ffffff;
+      --color-accent: {{ settings.color_accent }};
+      --color-border: {{ settings.color_text | color_modify: 'alpha', 0.12 }};
+      --color-muted: {{ settings.color_text | color_modify: 'alpha', 0.62 }};
+      --radius: {{ settings.corner_radius }}px;
+      --page-width: 1240px;
+      --gutter: clamp(1rem, 4vw, 2.5rem);
+    }
+  </style>
+
+  {{ 'base.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'theme.js' | asset_url }}" defer></script>
+
+  {{ content_for_header }}
+</head>
+<body class="template-{{ request.page_type | handle }}">
+  <a class="skip-link" href="#MainContent">{{ 'general.skip_to_content' | t }}</a>
+
+  {% sections 'header-group' %}
+
+  <main id="MainContent" role="main">
+    {{ content_for_layout }}
+  </main>
+
+  {% sections 'footer-group' %}
+
+  {%- comment -%} Cart-Daten für JS (Gratisversand-Bar, Warenkorb-Anzahl) {%- endcomment -%}
+  <script>
+    window.themeSettings = {
+      freeShippingThreshold: {{ settings.free_shipping_threshold | times: 100 }},
+      cartTotal: {{ cart.total_price }},
+      moneyFormat: {{ shop.money_format | json }}
+    };
+  </script>
+</body>
+</html>

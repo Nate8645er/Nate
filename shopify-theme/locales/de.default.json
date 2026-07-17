@@ -1,0 +1,107 @@
+{
+  "general": {
+    "skip_to_content": "Direkt zum Inhalt",
+    "page": "Seite",
+    "menu": "Menü",
+    "search": "Suchen",
+    "close": "Schliessen",
+    "view_all": "Alle ansehen",
+    "track_order": "Bestellung verfolgen",
+    "contact": "Kontakt",
+    "all_rights_reserved": "Alle Rechte vorbehalten.",
+    "payment_methods": "Zahlungsarten",
+    "breadcrumb": "Brotkrumen-Navigation",
+    "pagination": "Seitennummerierung",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "404_title": "Diese Seite gibt es nicht (mehr)",
+    "404_text": "Kein Problem: Unsere Bestseller sind nur einen Klick entfernt.",
+    "404_cta": "Zur Startseite",
+    "verified_buyer": "Verifizierter Kauf",
+    "faq_contact_hint": "Deine Frage ist nicht dabei? Schreib uns:",
+    "countdown": {
+      "days": "Tage",
+      "hours": "Std",
+      "minutes": "Min",
+      "seconds": "Sek"
+    }
+  },
+  "newsletter": {
+    "email": "Deine E-Mail-Adresse",
+    "submit": "Anmelden",
+    "success": "Fast geschafft! Bitte bestätige deine Anmeldung in deinem Postfach."
+  },
+  "cart": {
+    "title": "Dein Warenkorb",
+    "empty": "Dein Warenkorb ist noch leer.",
+    "continue_shopping": "Weiter einkaufen",
+    "remove": "Entfernen",
+    "note_label": "Anmerkung zur Bestellung (optional)",
+    "subtotal": "Zwischensumme",
+    "tax_note": "Inkl. MwSt. Versandkosten werden im Checkout berechnet.",
+    "checkout": "Zur Kasse",
+    "shipping_bar": {
+      "remaining_html": "Noch {{ amount }} bis zum kostenlosen Versand",
+      "reached": "Du hast dir den kostenlosen Versand gesichert!"
+    }
+  },
+  "products": {
+    "price": {
+      "current": "Aktueller Preis",
+      "regular": "Regulärer Preis"
+    },
+    "badges": {
+      "sale": "Sale",
+      "sold_out": "Ausverkauft"
+    },
+    "reviews": "Bewertungen",
+    "tax_note": "Inkl. MwSt., zzgl. Versand. Kostenloser Versand ab CHF 50.",
+    "add_to_cart": "In den Warenkorb",
+    "sold_out": "Ausverkauft",
+    "description": "Beschreibung",
+    "secure_checkout": "Sicherer Checkout mit SSL-Verschlüsselung",
+    "quantity": "Menge",
+    "quantity_decrease": "Menge verringern",
+    "quantity_increase": "Menge erhöhen",
+    "gallery_image": "Produktbild"
+  },
+  "collections": {
+    "product_count": {
+      "one": "{{ count }} Produkt",
+      "other": "{{ count }} Produkte"
+    },
+    "sort_by": "Sortieren",
+    "empty": "In dieser Kategorie sind aktuell keine Produkte verfügbar.",
+    "list_title": "Alle Kategorien"
+  },
+  "search": {
+    "title": "Suche",
+    "placeholder": "Wonach suchst du?",
+    "no_results": "Keine Ergebnisse für «{{ terms }}». Versuche einen anderen Begriff.",
+    "results_count": "{{ count }} Ergebnisse für «{{ terms }}»"
+  },
+  "contact": {
+    "success": "Danke für deine Nachricht! Wir melden uns innerhalb von 24 Stunden.",
+    "error": "Bitte prüfe deine Angaben und versuche es erneut.",
+    "name": "Name",
+    "email": "E-Mail",
+    "order_number": "Bestellnummer (optional)",
+    "message": "Deine Nachricht",
+    "submit": "Nachricht senden"
+  },
+  "tracking": {
+    "step1_title": "Versandbestätigung öffnen",
+    "step1_text": "Nach dem Versand erhältst du von uns eine E-Mail mit deiner persönlichen Sendungsnummer.",
+    "step2_title": "Sendungsnummer kopieren",
+    "step2_text": "Kopiere die Sendungsnummer aus der E-Mail. Sie beginnt meist mit Buchstaben, gefolgt von Ziffern.",
+    "step3_title": "Status prüfen",
+    "step3_text": "Füge die Nummer beim Tracking-Dienst ein und verfolge dein Paket in Echtzeit bis zur Haustür.",
+    "cta": "Sendung jetzt verfolgen",
+    "help_hint": "Deine Sendung taucht nicht auf oder du brauchst Hilfe? Schreib uns:"
+  },
+  "gift_cards": {
+    "title": "Geschenkgutschein",
+    "expired": "Dieser Gutschein ist abgelaufen.",
+    "shop_link": "Jetzt einlösen"
+  }
+}

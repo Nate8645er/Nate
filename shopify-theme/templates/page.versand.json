@@ -1,0 +1,23 @@
+{
+  "sections": {
+    "main": { "type": "main-page", "settings": {} },
+    "info": {
+      "type": "rich-text",
+      "settings": {
+        "title": "Versand & Lieferung",
+        "text": "<p><strong>Versandzeit:</strong> Bestellungen verlassen unser Lager innerhalb von 24 Stunden (Mo–Fr).</p><p><strong>Lieferzeit:</strong> In der Regel 2–4 Werktage nach Versand.</p><p><strong>Versandkosten:</strong> Kostenloser Versand ab CHF 50 Bestellwert. Darunter wird eine Versandpauschale im Checkout transparent ausgewiesen.</p><p><strong>Sendungsverfolgung:</strong> Nach dem Versand erhältst du eine E-Mail mit deiner Sendungsnummer. Den Status kannst du jederzeit auf unserer Tracking-Seite prüfen.</p><p><strong>Hinweis:</strong> Diese Angaben vor dem Livegang an die tatsächlichen Versandkonditionen und Zielländer anpassen.</p>"
+      }
+    },
+    "trust": {
+      "type": "trust-badges",
+      "blocks": {
+        "b1": { "type": "badge", "settings": { "icon": "clock", "title": "Versand in 24h", "text": "Bestellungen bis 14 Uhr verlassen das Lager am selben Werktag." } },
+        "b2": { "type": "badge", "settings": { "icon": "package", "title": "Sendungsverfolgung", "text": "Sendungsnummer per E-Mail, Status jederzeit einsehbar." } },
+        "b3": { "type": "badge", "settings": { "icon": "truck", "title": "Gratisversand ab CHF 50", "text": "Darunter faire Pauschale, transparent im Checkout." } },
+        "b4": { "type": "badge", "settings": { "icon": "return", "title": "Einfache Rückgabe", "text": "30 Tage Geld-zurück-Garantie auf alle Produkte." } }
+      },
+      "block_order": ["b1", "b2", "b3", "b4"]
+    }
+  },
+  "order": ["main", "info", "trust"]
+}

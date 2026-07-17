@@ -1,0 +1,13 @@
+{
+  "sections": {
+    "main": { "type": "main-page", "settings": {} },
+    "placeholder": {
+      "type": "rich-text",
+      "settings": {
+        "title": "",
+        "text": "<p><strong>⚠️ PLATZHALTER – vor dem Livegang anpassen!</strong></p><p>Diese Datenschutzerklärung muss vor Veröffentlichung des Shops vollständig erstellt und an das jeweilige Land angepasst werden (Schweiz: DSG/revDSG, EU: DSGVO).</p><p>Mindestens abzudecken: Verantwortliche Stelle und Kontakt, erhobene Daten (Bestell-, Zahlungs-, Trackingdaten), Zwecke der Verarbeitung, eingesetzte Dienste (Shopify, Zahlungsanbieter, Analyse- und Marketing-Tools, Newsletter), Cookies, Speicherdauer, Rechte der betroffenen Personen, Datenweitergabe ins Ausland.</p><p><em>Empfehlung: Datenschutzerklärung mit einem Generator für dein Land erstellen (z. B. Shopify-Vorlage unter Einstellungen → Richtlinien als Ausgangspunkt) und rechtlich prüfen lassen.</em></p>"
+      }
+    }
+  },
+  "order": ["main", "placeholder"]
+}

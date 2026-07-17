@@ -1,0 +1,35 @@
+{%- comment -%} Blog-Übersicht {%- endcomment -%}
+<section class="section">
+  <div class="page-width">
+    <h1 class="page__title">{{ blog.title | escape }}</h1>
+    {%- paginate blog.articles by 9 -%}
+      <div class="article-grid">
+        {%- for article in blog.articles -%}
+          <article class="article-card reveal">
+            <a href="{{ article.url }}">
+              {%- if article.image -%}
+                {{ article.image | image_url: width: 700 | image_tag: loading: 'lazy', class: 'article-card__img', alt: article.title }}
+              {%- endif -%}
+              <h2 class="article-card__title">{{ article.title | escape }}</h2>
+            </a>
+            <p class="article-card__meta">{{ article.published_at | date: '%d.%m.%Y' }}</p>
+            <p>{{ article.excerpt_or_content | strip_html | truncate: 140 }}</p>
+          </article>
+        {%- endfor -%}
+      </div>
+      {%- if paginate.pages > 1 -%}
+        <nav class="pagination" aria-label="{{ 'general.pagination' | t }}">
+          {%- if paginate.previous -%}<a class="pagination__item" href="{{ paginate.previous.url }}">&larr;</a>{%- endif -%}
+          {%- if paginate.next -%}<a class="pagination__item" href="{{ paginate.next.url }}">&rarr;</a>{%- endif -%}
+        </nav>
+      {%- endif -%}
+    {%- endpaginate -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Blog",
+  "settings": []
+}
+{% endschema %}

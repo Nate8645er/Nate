@@ -1,0 +1,61 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Aurum Premium",
+    "theme_version": "1.0.0",
+    "theme_author": "Aurum Studio",
+    "theme_documentation_url": "https://shopify.dev/docs/themes",
+    "theme_support_url": "https://help.shopify.com"
+  },
+  {
+    "name": "Marke & Logo",
+    "settings": [
+      { "type": "image_picker", "id": "logo", "label": "Logo" },
+      { "type": "range", "id": "logo_width", "min": 80, "max": 260, "step": 10, "unit": "px", "label": "Logo-Breite", "default": 140 },
+      { "type": "image_picker", "id": "favicon", "label": "Favicon", "info": "Empfohlen: 64×64 px" }
+    ]
+  },
+  {
+    "name": "Farben",
+    "settings": [
+      { "type": "color", "id": "color_primary", "label": "Primärfarbe", "default": "#1F3D2B", "info": "Buttons, Header, Akzentflächen" },
+      { "type": "color", "id": "color_accent", "label": "Akzentfarbe", "default": "#E8823A", "info": "Sale-Badges, Highlights, Countdown" },
+      { "type": "color", "id": "color_background", "label": "Hintergrund", "default": "#FAF7F2" },
+      { "type": "color", "id": "color_background_soft", "label": "Hintergrund (Abschnitte)", "default": "#F1EBE2" },
+      { "type": "color", "id": "color_text", "label": "Textfarbe", "default": "#20201D" }
+    ]
+  },
+  {
+    "name": "Typografie",
+    "settings": [
+      { "type": "font_picker", "id": "type_heading_font", "label": "Überschriften", "default": "playfair_display_n4" },
+      { "type": "font_picker", "id": "type_body_font", "label": "Fließtext", "default": "assistant_n4" },
+      { "type": "range", "id": "corner_radius", "min": 0, "max": 24, "step": 2, "unit": "px", "label": "Ecken-Radius", "default": 10 }
+    ]
+  },
+  {
+    "name": "Versand & Vertrauen",
+    "settings": [
+      { "type": "number", "id": "free_shipping_threshold", "label": "Gratisversand ab (Betrag in Shop-Währung)", "default": 50, "info": "Steuert die Gratisversand-Anzeige im Warenkorb und in der Ankündigungsleiste. 0 = deaktiviert." },
+      { "type": "text", "id": "guarantee_text", "label": "Garantie-Versprechen", "default": "30 Tage Geld-zurück-Garantie" },
+      { "type": "text", "id": "shipping_text", "label": "Versand-Versprechen", "default": "Versand in 24h aus dem Lager" },
+      { "type": "text", "id": "support_text", "label": "Support-Versprechen", "default": "Persönlicher Support per E-Mail" }
+    ]
+  },
+  {
+    "name": "Sendungsverfolgung",
+    "settings": [
+      { "type": "url", "id": "tracking_url", "label": "Tracking-Dienst URL", "info": "z. B. https://www.17track.net/de – wird auf der Tracking-Seite verlinkt." }
+    ]
+  },
+  {
+    "name": "Social Media",
+    "settings": [
+      { "type": "url", "id": "social_instagram", "label": "Instagram" },
+      { "type": "url", "id": "social_facebook", "label": "Facebook" },
+      { "type": "url", "id": "social_tiktok", "label": "TikTok" },
+      { "type": "url", "id": "social_youtube", "label": "YouTube" },
+      { "type": "url", "id": "social_pinterest", "label": "Pinterest" }
+    ]
+  }
+]

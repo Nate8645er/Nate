@@ -1,0 +1,45 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "desc": { "type": "description", "settings": {} },
+        "shipping": {
+          "type": "shipping",
+          "settings": {
+            "title": "Versand & Lieferung",
+            "content": "<p>Versand innerhalb von 24 Stunden. Lieferzeit 2–4 Werktage. Kostenloser Versand ab CHF 50. Du erhältst eine Sendungsnummer per E-Mail.</p>"
+          }
+        },
+        "guarantee": {
+          "type": "guarantee",
+          "settings": {
+            "title": "30 Tage Geld-zurück-Garantie",
+            "content": "<p>Teste das Produkt 30 Tage in Ruhe. Nicht zufrieden? Schreib uns eine E-Mail und du erhältst dein Geld zurück – ohne Wenn und Aber.</p>"
+          }
+        },
+        "faq1": {
+          "type": "faq",
+          "settings": {
+            "question": "Wie schnell erhalte ich meine Bestellung?",
+            "answer": "<p>Wir versenden innerhalb von 24 Stunden. Die Lieferung dauert in der Regel 2–4 Werktage.</p>"
+          }
+        },
+        "faq2": {
+          "type": "faq",
+          "settings": {
+            "question": "Was passiert, wenn mir das Produkt nicht gefällt?",
+            "answer": "<p>Dann greift unsere 30-Tage-Geld-zurück-Garantie: kurze E-Mail an uns, Geld zurück. Ohne Diskussion.</p>"
+          }
+        }
+      },
+      "block_order": ["desc", "shipping", "guarantee", "faq1", "faq2"],
+      "settings": {
+        "usp_list": "Versand in 24h|30 Tage Geld-zurück-Garantie|Sichere Bezahlung"
+      }
+    },
+    "related": { "type": "related-products" },
+    "reviews": { "type": "testimonials" }
+  },
+  "order": ["main", "related", "reviews"]
+}

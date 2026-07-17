@@ -1,0 +1,41 @@
+{
+  "sections": {
+    "intro": {
+      "type": "rich-text",
+      "settings": {
+        "eyebrow": "Über uns",
+        "title": "Gute Produkte. Ehrlicher Service. Keine Kompromisse.",
+        "text": "<p>Was als Suche nach besseren Produkten für den eigenen Alltag begann, ist heute ein Shop mit einem klaren Versprechen: Wir verkaufen nur, was wir selbst mit gutem Gewissen weiterempfehlen würden.</p>",
+        "centered": true
+      }
+    },
+    "story": {
+      "type": "image-with-text",
+      "blocks": {
+        "c1": { "type": "check", "settings": { "text": "Jedes Produkt persönlich getestet" } },
+        "c2": { "type": "check", "settings": { "text": "Sorgfältig ausgewählte Lieferanten" } },
+        "c3": { "type": "check", "settings": { "text": "Support von echten Menschen" } }
+      },
+      "block_order": ["c1", "c2", "c3"],
+      "settings": {
+        "eyebrow": "Unsere Geschichte",
+        "title": "Wie alles begann",
+        "text": "<p>Wir waren es leid, online zu bestellen und enttäuscht zu werden: lange Lieferzeiten, anonyme Shops, keine Antwort vom Support. Also haben wir es selbst gebaut – einen Shop, bei dem wir jedes Produkt kennen, jede Bestellung ernst nehmen und jede E-Mail persönlich beantworten.</p><p>Heute vertrauen uns über 1'000 Kundinnen und Kunden. Und jede einzelne Bestellung behandeln wir so, als wäre sie die erste.</p>",
+        "image_position": "right"
+      }
+    },
+    "values": {
+      "type": "trust-badges",
+      "blocks": {
+        "b1": { "type": "badge", "settings": { "icon": "heart", "title": "Qualität vor Quantität", "text": "Lieber wenige Produkte, die überzeugen, als ein riesiges Sortiment." } },
+        "b2": { "type": "badge", "settings": { "icon": "shield", "title": "Ehrlichkeit", "text": "30 Tage Geld-zurück-Garantie, weil wir hinter unseren Produkten stehen." } },
+        "b3": { "type": "badge", "settings": { "icon": "mail", "title": "Erreichbarkeit", "text": "Echte Menschen, echte Antworten – innerhalb von 24 Stunden." } },
+        "b4": { "type": "badge", "settings": { "icon": "truck", "title": "Verlässlichkeit", "text": "Versand innerhalb von 24 Stunden, transparente Sendungsverfolgung." } }
+      },
+      "block_order": ["b1", "b2", "b3", "b4"]
+    },
+    "reviews": { "type": "testimonials" },
+    "newsletter": { "type": "newsletter" }
+  },
+  "order": ["intro", "story", "values", "reviews", "newsletter"]
+}
