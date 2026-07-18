@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JARVIS // KERN</title>
+<link rel="stylesheet" href="/static/style.css">
+<style>
+  html, body { height:100%; }
+  body { display:flex; flex-direction:column; overflow:hidden; }
+  .stage { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; }
+  canvas.core { position:absolute; inset:0; width:100%; height:100%; }
+  .title { position:relative; z-index:2; text-align:center; pointer-events:none; }
+  .title h1 { font-size:44px; letter-spacing:.5em; color:var(--amber);
+              text-shadow:0 0 26px rgba(43,255,102,.9), 0 0 60px rgba(43,255,102,.4); font-weight:800; }
+  .title .sub2 { color:var(--dim); letter-spacing:.4em; font-size:11px; margin-top:6px; }
+  .corestat { position:relative; z-index:2; margin-top:270px; text-align:center; }
+  .corestat .pct { font-size:26px; font-weight:800; color:var(--amber2);
+                   text-shadow:0 0 16px var(--amber); font-variant-numeric:tabular-nums; }
+  .bootlog { position:absolute; left:26px; bottom:26px; z-index:2; font-size:11.5px;
+             color:var(--amber2); max-width:460px; }
+  .bootlog div { opacity:0; animation:fadein .4s forwards; padding:1.5px 0; }
+  .bootlog .ok::before { content:"[ OK ] "; color:var(--green); }
+  .bootlog .info::before { content:"[ .. ] "; color:var(--dim); }
+  @keyframes fadein { to{opacity:1} }
+  .enter { position:relative; z-index:2; display:flex; gap:10px; margin-top:22px;
+           opacity:0; transition:opacity .8s; pointer-events:none; }
+  .enter.show { opacity:1; pointer-events:auto; }
+  .enter a { text-decoration:none; }
+  .enter button { font-size:12px; padding:11px 20px; }
+  .hud { position:absolute; right:26px; bottom:26px; z-index:2; text-align:right;
+         font-size:11px; color:var(--dim); }
+  .hud b { color:var(--amber2); }
+</style>
+</head>
+<body>
+<header>
+  <h1 style="font-size:16px">JARVIS <span style="color:var(--dim)">//</span> KERN</h1>
+  <nav><a class="here" href="/">START</a><a href="/uebersicht">ÜBERSICHT</a><a href="/gehirn">GEHIRN</a><a href="/mitarbeiter">MITARBEITER</a><a href="/werkzeuge">WERKZEUGE</a><a href="/autopilot">AUTOPILOT</a><a href="/sicherheit">SICHERHEIT</a><a href="/schluessel">SCHLÜSSEL</a><a href="/zugaenge">ZUGÄNGE</a></nav>
+  <button id="fable" onclick="fableKey()" style="margin-left:10px">FABLE 5</button>
+  <span class="sys mono" id="clock"></span>
+  <span class="sys"><span class="dot"></span><span id="mode">BOOT</span></span>
+</header>
+
+<div class="stage">
+  <canvas class="core" id="core"></canvas>
+  <div class="title">
+    <h1>J A R V I S</h1>
+    <div class="sub2">HYPERSCALE // PERSÖNLICHES KI-BETRIEBSSYSTEM</div>
+  </div>
+  <div class="corestat">
+    <div class="pct" id="pct">0%</div>
+    <div style="font-size:9.5px; letter-spacing:.3em; color:var(--dim)">KERN-INTEGRITÄT</div>
+    <div class="enter" id="enter">
+      <a href="/uebersicht"><button>⟶ COMMAND CENTER</button></a>
+      <a href="/gehirn"><button>GEHIRN</button></a>
+      <a href="/mitarbeiter"><button>MITARBEITER</button></a>
+    </div>
+  </div>
+  <div class="bootlog mono" id="boot"></div>
+  <div class="hud mono" id="hud"></div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const fmt = n => Number(n).toLocaleString('de-CH');
+setInterval(() => $('clock').textContent = new Date().toLocaleString('de-CH'), 1000);
+
+// ---- Der Kern: dichte pulsierende Partikel-Sphäre wie im Video ---------------
+const c = $('core'), x = c.getContext('2d');
+const N = 700, pts = [];
+for (let i = 0; i < N; i++) {
+  const t = Math.acos(1 - 2 * (i + .5) / N), p = Math.PI * (1 + 5 ** .5) * i;
+  const r = .55 + Math.random() * .45; // Tiefe: innerer + äußerer Kern
+  pts.push([Math.sin(t) * Math.cos(p) * r, Math.sin(t) * Math.sin(p) * r, Math.cos(t) * r]);
+}
+let rot = 0, pulse = 0;
+function draw() {
+  const w = c.width = c.clientWidth, h = c.height = c.clientHeight;
+  const cx = w / 2, cy = h / 2 - 20;
+  pulse += .025; rot += .0035;
+  const R = Math.min(w, h) * .30 * (1 + Math.sin(pulse) * .035);
+  x.clearRect(0, 0, w, h);
+  // Glühen im Zentrum
+  const g = x.createRadialGradient(cx, cy, 0, cx, cy, R * 1.5);
+  g.addColorStop(0, 'rgba(60,255,120,.30)'); g.addColorStop(.5, 'rgba(20,200,80,.10)');
+  g.addColorStop(1, 'transparent');
+  x.fillStyle = g; x.fillRect(0, 0, w, h);
+  // Punkte projizieren
+  const proj = pts.map(([X, Y, Z]) => {
+    const a = X * Math.cos(rot) - Z * Math.sin(rot), b = X * Math.sin(rot) + Z * Math.cos(rot);
+    const b2 = Y * Math.cos(rot * .6) - b * Math.sin(rot * .6);
+    const b3 = Y * Math.sin(rot * .6) + b * Math.cos(rot * .6);
+    return [cx + a * R, cy + b2 * R, b3];
+  });
+  // Verbindungen (Neuronen-Netz)
+  x.lineWidth = .6;
+  for (let i = 0; i < proj.length; i += 3) {
+    for (let j = i + 3; j < Math.min(i + 27, proj.length); j += 6) {
+      const d = Math.hypot(proj[i][0] - proj[j][0], proj[i][1] - proj[j][1]);
+      if (d < R * .42) {
+        x.strokeStyle = `rgba(43,255,102,${.22 - d / (R * 2.2)})`;
+        x.beginPath(); x.moveTo(proj[i][0], proj[i][1]); x.lineTo(proj[j][0], proj[j][1]); x.stroke();
+      }
+    }
+  }
+  // Punkte
+  for (const [px, py, z] of proj) {
+    const front = z > 0;
+    x.fillStyle = front ? 'rgba(150,255,190,.95)' : 'rgba(40,220,100,.30)';
+    x.beginPath(); x.arc(px, py, front ? 1.7 : 1.1, 0, 7); x.fill();
+  }
+  // Ringe
+  x.strokeStyle = 'rgba(43,255,102,.35)'; x.lineWidth = 1.2;
+  x.beginPath(); x.ellipse(cx, cy, R * 1.25, R * .34, rot * 2, 0, 7); x.stroke();
+  x.strokeStyle = 'rgba(43,255,102,.18)';
+  x.beginPath(); x.ellipse(cx, cy, R * 1.45, R * .42, -rot * 1.4, 0, 7); x.stroke();
+  requestAnimationFrame(draw);
+}
+draw();
+
+// ---- Boot-Sequenz mit ECHTEN Prüfungen ---------------------------------------
+const bootEl = $('boot');
+function bootline(cls, msg) {
+  const d = document.createElement('div'); d.className = cls; d.textContent = msg;
+  bootEl.appendChild(d);
+  while (bootEl.children.length > 12) bootEl.removeChild(bootEl.firstChild);
+}
+async function boot() {
+  let pct = 0;
+  const setPct = v => { pct = v; $('pct').textContent = Math.round(v) + '%'; };
+  bootline('info', 'JARVIS-Kern wird initialisiert …');
+  setPct(8);
+  try {
+    const s = await (await fetch('/api/state')).json();
+    bootline('ok', 'Orchestrator verbunden'); setPct(24);
+    await new Promise(r => setTimeout(r, 350));
+    bootline('ok', `Adressraum bereit: ${fmt(s.adressraum_pro_ebene)} Mitarbeiter/Ebene (rekursiv)`); setPct(42);
+    await new Promise(r => setTimeout(r, 350));
+    bootline('ok', `${s.max_parallel} parallele Agenten-Slots (Hardware-Limit)`); setPct(58);
+    await new Promise(r => setTimeout(r, 350));
+    bootline('ok', `${s.plugins.length} Module geladen: ${s.plugins.map(p => p.name).join(', ')}`); setPct(72);
+    await new Promise(r => setTimeout(r, 350));
+    bootline('ok', `Gedächtnis online: ${fmt(s.gedaechtnis_eintraege)} Einträge`); setPct(85);
+    await new Promise(r => setTimeout(r, 350));
+    bootline(s.modell_modus === 'api' ? 'ok' : 'info',
+      s.modell_modus === 'api' ? `Gehirn verbunden: ${s.modell}`
+        : `Gehirn im Offline-Modus (kein API-Key) — Antworten regelbasiert`);
+    setPct(100);
+    $('mode').textContent = 'SYSTEM ONLINE // ' + s.modell_modus.toUpperCase();
+    bootline('ok', 'SYSTEM ONLINE — alle Systeme nominal');
+    $('enter').classList.add('show');
+    // Live-HUD rechts unten
+    setInterval(async () => {
+      try {
+        const st = await (await fetch('/api/state')).json();
+        $('hud').innerHTML = `AGENTEN <b>${st.aktive_agenten}/${st.max_parallel}</b> · ` +
+          `QUEUE <b>${st.wartende_aufgaben}</b> · ERLEDIGT <b>${fmt(st.fertig)}</b><br>` +
+          `CPU <b>${st.cpu_prozent}%</b> · RAM <b>${st.ram_prozent}%</b> · ` +
+          `MODELL <b>${st.modell}</b> [${st.modell_modus.toUpperCase()}]<br>` +
+          `ZIEL <b>${fmt(st.finanzen.ziel_chf)} CHF</b> · REAL ERFASST <b>${st.finanzen.einnahmen_chf.toFixed(2)} CHF</b> (${st.finanzen.fortschritt_prozent}%)`;
+      } catch (e) {}
+    }, 2000);
+  } catch (e) {
+    bootline('info', 'Orchestrator nicht erreichbar — Server läuft nicht?');
+    $('mode').textContent = 'VERBINDUNG GETRENNT';
+  }
+}
+boot();
+
+
+</script>
+<script src="/static/fable.js"></script>
+</body>
+</html>

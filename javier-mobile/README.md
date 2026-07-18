@@ -1,12 +1,14 @@
-# JAVIER MOBILE
+# JAVIER
 
-Eine JARVIS-artige KI fuer das iPhone 14 - als PWA, ohne Xcode. Das Backend
-(Python + FastAPI + Anthropic Tool-Use-Agent) laeuft auf dem Windows-PC, das
-iPhone verbindet sich per Browser im gleichen WLAN.
+Eine JARVIS-artige KI - als PWA fuer das iPhone 14 (ohne Xcode) und als
+Desktop-Modus fuer den Windows-PC. Das Backend (Python + FastAPI +
+Anthropic Tool-Use-Agent) laeuft auf dem Windows-PC; das iPhone verbindet
+sich per Browser im gleichen WLAN, der PC nutzt `/desktop` direkt.
 
 ## Was JAVIER kann
 
 - Sprechen und zuhoeren ueber AirPods (Push-to-talk auf den Arc-Reactor)
+- Am PC: freihaendig per Wake-Word "Hey JAVIER" (siehe Desktop-Modus)
 - Todo-Liste anlegen, lesen, abhaken (lokale JSON-Datei)
 - Termine lesen und anlegen (lokale ICS-Kalenderdatei)
 - Wetter fuer Rapperswil-Jona (Open-Meteo)
@@ -14,8 +16,113 @@ iPhone verbindet sich per Browser im gleichen WLAN.
 - Nachrichten vorbereiten (SMS / WhatsApp) - du tippst selbst auf Senden
 - Instagram-Posts vorbereiten (Ausgangskorb) und optional echt
   veroeffentlichen (Graph API, siehe unten)
-- Harmlose PC-Aktionen per Whitelist (Ordner oeffnen, Dateien listen,
-  Screenshot)
+- Den Windows-PC steuern (Whitelist): Programme starten, Lautstaerke und
+  Musik/Medien, Dateien suchen, System-Status, Ordner oeffnen, Screenshot,
+  Bildschirm sperren - Herunterfahren/Neustart nur nach Rueckfrage und mit
+  30-Sekunden-Abbruchfenster
+- Die Milliarden-Holding kommandieren: Auftraege an spezialisierte
+  KI-Agents aus einem Adressraum von 10 Milliarden delegieren (siehe
+  unten)
+
+## JAVIER DESKTOP - der PC-Modus
+
+Der gleiche Server, eine eigene Oberflaeche fuer den PC selbst:
+`start.bat` starten und auf dem PC im Browser (Chrome oder Edge)
+`http://localhost:8000/desktop` oeffnen - die URL steht auch im
+Startbanner. Kein mkcert noetig: `localhost` gilt im Browser als sicher,
+das Mikrofon funktioniert sofort.
+
+**Wake-Word "Hey JAVIER":** Oben rechts WAKE-WORD aktivieren und einmal
+den Mikrofonzugriff erlauben. Ab dann hoert JAVIER passiv zu:
+
+- "Hey JAVIER, mach die Musik leiser" - wird direkt ausgefuehrt.
+- Nur "Hey JAVIER" - kurzer Piepton, dann hat man 7 Sekunden fuer den
+  Befehl.
+- Klick auf den Reaktor geht immer, auch ohne Wake-Word.
+
+Waehrend JAVIER spricht, ist das Mikrofon aus - er hoert sich nicht
+selbst zu. Die Wahl bleibt gespeichert und ist beim naechsten Start
+wieder aktiv.
+
+**Ehrliche Grenzen des PC-Modus:**
+
+- Das Wake-Word laeuft nur, solange das Browserfenster (auch minimiert
+  im Hintergrund-Tab kann Chrome drosseln) geoeffnet ist - JAVIER ist
+  kein Windows-Dienst.
+- Die Spracherkennung nutzt die des Browsers (Chrome/Edge); Firefox
+  unterstuetzt sie nicht.
+- Lautstaerke/Medien werden ueber emulierte Tastatur-Sondertasten
+  gesteuert - "Lautstaerke auf 40%" ist deshalb auf etwa 2 Punkte genau.
+- Herunterfahren/Neustart verlangt Nates ausdrueckliches Ja und laesst
+  sich 30 Sekunden lang mit "JAVIER, brich das ab" stoppen.
+
+**Eigene Programme:** In `.env` (oder bei Render unter Environment) die
+Variable `PROGRAMS` pflegen, gleiches Format wie CONTACTS/APPS:
+
+```
+PROGRAMS=Spotify=C:\Users\Nate\AppData\Roaming\Spotify\Spotify.exe, Steam=steam://open/main
+```
+
+Eingebaut sind: notepad, rechner, paint, explorer, taskmanager,
+einstellungen. "JAVIER, starte Spotify" genuegt dann.
+
+## Die Milliarden-Holding: JARVIS mit 10.000.000.000 Mitarbeitern
+
+JAVIER steht an der Spitze einer generativen Konzern-Struktur:
+
+```
+NATE (letztes Wort, immer)
+  HOLDING
+    10 Divisionen (engineering, business, content, data, security,
+                   operations, design, legal, research, ventures)
+      x 100 Companies x 100 Departments x 100 Teams x 1000 Agents
+      = 10.000.000.000 adressierbare Agents
+```
+
+Der Trick: Die **Adresse ist die Rolle**. Es existieren keine 10
+Milliarden Dateien - jede Adresse wie
+`holding/content/copywriting/ads/meta/hook-writer-1` wird erst im Moment
+des Auftrags zu einem echten, spezialisierten KI-Agent instanziiert
+(deterministisch: gleiche Adresse ergibt immer wieder exakt dieselbe
+Rolle). Sagen genuegt:
+
+- "JAVIER, lass den Konzern einen Werbetext fuer MeowUfo schreiben"
+- "Lass das Unternehmen pruefen, ob mein Pricing stimmt"
+- "Wie ist die Holding aufgebaut?"
+
+JAVIER waehlt dann selbst die passenden Adressen, setzt sie ein und
+nennt sie in der Antwort. Bei mehreren Agents liefert die Holding
+zusaetzlich eine konsolidierte Synthese.
+
+**Ehrliche Grenzen:** Adressierbar sind 10 Milliarden - gleichzeitig
+arbeiten maximal 3. Jeder eingesetzte Agent ist ein echter zusaetzlicher
+API-Aufruf (kostet Tokens und einige Sekunden). Fuer einfache
+Fragen antwortet JAVIER deshalb selbst, ohne den Konzern zu bemuehen.
+Die Agents liefern Entwuerfe und Empfehlungen - nichts Irreversibles;
+entschieden wird von Nate.
+
+## Modelle: Fable 5 als Boss, GPT-5.6-Sol als Worker (optional)
+
+- **Boss (JAVIER selbst + Holding-Synthese):** `claude-fable-5`
+  (Fable 5, staerkstes Claude-Modell). Hat dein API-Key darauf keinen
+  Zugriff, wechselt JAVIER beim ersten Aufruf automatisch und dauerhaft
+  auf `claude-sonnet-4-6` - es gibt keinen Zustand, in dem er wegen des
+  Modells nicht antwortet. Uebersteuerbar per `JAVIER_MODEL` in `.env`.
+- **Worker (die Holding-Agents):** Sobald ein `OPENAI_API_KEY` in `.env`
+  bzw. bei Render gesetzt ist, arbeiten die Konzern-Agents auf
+  `gpt-5.6-sol` mit Reasoning-Stufe **ultra** - exakt das Boss/Worker-
+  Setup aus dem Codex-Plugin des Repos (uebersteuerbar per
+  `JAVIER_SOL_MODEL` und `JAVIER_SOL_EFFORT`); die Synthese bleibt beim
+  Claude-Boss. Schlaegt OpenAI fehl (Key, Netz, Kontingent), faellt
+  jeder Worker einzeln und automatisch auf Claude zurueck.
+- `/api/health` zeigt jederzeit, welches Boss- und Worker-Modell aktiv
+  ist.
+
+**Wichtig zu den Keys:** API-Keys gehoeren NIE ins Repository (es ist
+oeffentlich) - nur in die lokale `.env` (bleibt dank `.gitignore`
+privat) oder bei Render unter Environment. Dein vorhandener
+`ANTHROPIC_API_KEY` reicht fuer alles hier - der OpenAI-Key ist rein
+optional.
 
 ## Freihaendig sprechen mit AirPods (Auto-Modus)
 
@@ -232,10 +339,12 @@ https-URL** - lokale Pfade gehen nicht. Einfachste Loesungen:
 
 ```
 javier-mobile/
-  server.py        FastAPI + Anthropic Tool-Use-Loop (claude-sonnet-4-6)
+  server.py        FastAPI + Anthropic Tool-Use-Loop (Fable 5, s. unten)
+  holding.py       Milliarden-Holding (Adressraum + Agent-Dispatch)
   tools.py         Alle Agent-Tools (Todos, Kalender, Wetter, Shopify, ...)
   instagram.py     Optionales Graph-API-Modul
-  static/          index.html, manifest.json, sw.js, Icons (die PWA)
+  static/          index.html (iPhone-PWA), desktop.html (PC-Modus),
+                   manifest.json, sw.js, Icons
   contacts.json    Name -> Telefonnummer fuer Nachrichten
   start.bat        Ein-Klick-Start mit QR-Code
   data/            Entsteht zur Laufzeit: todos.json, calendar.ics,

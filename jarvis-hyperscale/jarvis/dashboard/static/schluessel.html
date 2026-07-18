@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JARVIS // SCHLÜSSEL</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <h1>JARVIS <span style="color:var(--dim)">//</span> SCHLÜSSEL</h1>
+  <nav><a href="/">START</a><a href="/uebersicht">ÜBERSICHT</a><a href="/gehirn">GEHIRN</a><a href="/mitarbeiter">MITARBEITER</a><a href="/werkzeuge">WERKZEUGE</a><a href="/autopilot">AUTOPILOT</a><a href="/sicherheit">SICHERHEIT</a><a class="here" href="/schluessel">SCHLÜSSEL</a><a href="/zugaenge">ZUGÄNGE</a></nav>
+  <span class="sys mono" id="clock"></span>
+  <span class="sys"><span class="dot"></span><span id="mode">ONLINE</span></span>
+</header>
+<div class="tickerwrap"><div class="ticker mono" id="ticker">API-SCHLÜSSEL ZENTRALE — HIER TRAEGST DU ALLE KEYS EIN ●</div></div>
+
+<div class="grid2">
+  <div>
+    <!-- Anthropic / Fable 5 -->
+    <div class="panel">
+      <h2><b>FABLE 5 / CLAUDE</b> // ANTHROPIC-KEY</h2>
+      <div id="s_ant" style="font-size:12px; margin-bottom:6px">Status wird geladen…</div>
+      <form onsubmit="return saveKey(event,'/api/brain/key','ant','s_ant')">
+        <input id="k_ant" type="password" placeholder="sk-ant-…" autocomplete="off">
+        <button>SPEICHERN</button>
+      </form>
+      <div style="font-size:10.5px; color:var(--dim); margin-top:5px">
+        Key von console.anthropic.com. Kostenpflichtig (Guthaben noetig).
+      </div>
+    </div>
+
+    <!-- OpenRouter -->
+    <div class="panel" style="margin-top:10px">
+      <h2><b>OPENROUTER</b> // 32 MODELLE (TEILS GRATIS)</h2>
+      <div id="s_or" style="font-size:12px; margin-bottom:6px">Status wird geladen…</div>
+      <form onsubmit="return saveKey(event,'/api/modelle/key','or','s_or')">
+        <input id="k_or" type="password" placeholder="sk-or-v1-…" autocomplete="off">
+        <button>SPEICHERN</button>
+      </form>
+      <div style="font-size:10.5px; color:var(--dim); margin-top:5px">
+        Key von openrouter.ai/keys. Gratis-Modelle verfuegbar (kein Anthropic-Guthaben noetig).
+      </div>
+      <div style="margin-top:8px">
+        <button id="oronly" onclick="toggleOnlyOR()">NUR OPENROUTER (Fable 5 aus)</button>
+        <span id="s_brain" style="font-size:11px; color:var(--dim)"></span>
+      </div>
+    </div>
+
+    <!-- OpenAI (Sol Ultra Worker direkt) -->
+    <div class="panel" style="margin-top:10px">
+      <h2><b>OPENAI</b> // GPT-5.6 SOL ULTRA (WORKER)</h2>
+      <div id="s_oa" style="font-size:12px; margin-bottom:6px">Status wird geladen…</div>
+      <form onsubmit="return saveKey(event,'/api/openai/key','oa','s_oa')">
+        <input id="k_oa" type="password" placeholder="sk-…" autocomplete="off">
+        <button>SPEICHERN</button>
+      </form>
+      <div style="font-size:10.5px; color:var(--dim); margin-top:5px">
+        Key von platform.openai.com/api-keys (nicht das ChatGPT-Passwort). Der
+        Worker Sol Ultra läuft dann direkt über OpenAI. Tipp: Ein OpenRouter-Key
+        allein deckt Boss (Fable 5) UND Worker (Sol Ultra) ab.
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <!-- ElevenLabs -->
+    <div class="panel">
+      <h2><b>ECHTE STIMME</b> // ELEVENLABS-KEY</h2>
+      <div id="s_el" style="font-size:12px; margin-bottom:6px">Status wird geladen…</div>
+      <form onsubmit="return saveVoice(event)">
+        <input id="k_el" type="password" placeholder="ElevenLabs-Key…" autocomplete="off" style="flex:1">
+        <input id="k_vid" placeholder="Stimm-ID (optional)" style="flex:0 0 150px" autocomplete="off">
+        <button>SPEICHERN</button>
+      </form>
+      <div style="font-size:10.5px; color:var(--dim); margin-top:5px">
+        Key von elevenlabs.io. Ohne Key spricht JARVIS mit der Browser-Stimme.
+      </div>
+    </div>
+
+    <!-- Uebersicht -->
+    <div class="panel" style="margin-top:10px">
+      <h2><b>ÜBERSICHT</b> // WAS IST AKTIV</h2>
+      <div class="kv"><span>Fable 5 / Claude</span><b id="o_ant">–</b></div>
+      <div class="kv"><span>OpenRouter</span><b id="o_or">–</b></div>
+      <div class="kv"><span>OpenAI (Sol Worker)</span><b id="o_oa">–</b></div>
+      <div class="kv"><span>Echte Stimme</span><b id="o_el">–</b></div>
+      <div class="kv"><span>Modell-Modus</span><b id="o_mode">–</b></div>
+      <div class="kv"><span>Boss / Worker</span><b id="o_bw" style="font-size:11px">–</b></div>
+      <div style="font-size:10.5px; color:var(--dim); margin-top:8px">
+        Keys werden nur lokal auf DIESEM PC gespeichert (geschuetzte Datei), nie gesendet.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="honest"><b>EHRLICHKEITS-PROTOKOLL:</b> Jeder Key bleibt lokal (0600-Datei) und wird nie an
+Dritte gesendet. Fable 5 braucht Anthropic-Guthaben; OpenRouter hat kostenlose Modelle. Ohne jeden
+Key laeuft JARVIS im kostenlosen Offline-Modus (regelbasiert).</div>
+
+<script>
+const $ = id => document.getElementById(id);
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+setInterval(() => $('clock').textContent = new Date().toLocaleString('de-CH'), 1000);
+const AKTIV = '<b style="color:var(--green)">✅ AKTIV</b>';
+const AUS   = '<span style="color:#e8c98a">— nicht gesetzt</span>';
+
+async function refresh() {
+  try {
+    const b = await (await fetch('/api/brain')).json();
+    const o = await (await fetch('/api/modelle/key')).json();
+    const oa = await (await fetch('/api/openai/key')).json();
+    const v = await (await fetch('/api/voice/status')).json();
+    const st = await (await fetch('/api/state')).json();
+    const antOn = b.modus === 'api';
+    $('s_ant').innerHTML = antOn ? AKTIV + ' — Modell ' + esc(b.modell) : AUS;
+    $('s_or').innerHTML  = o.aktiv ? AKTIV + ' — 32 Modelle' : AUS;
+    $('s_oa').innerHTML  = oa.aktiv ? AKTIV + ' — Worker ' + esc(oa.worker_modell) : AUS;
+    $('s_el').innerHTML  = v.aktiv ? AKTIV + ' — Stimme ' + esc(v.stimm_id) : AUS;
+    $('o_ant').innerHTML = antOn ? AKTIV : AUS;
+    $('o_or').innerHTML  = o.aktiv ? AKTIV : AUS;
+    $('o_oa').innerHTML  = oa.aktiv ? AKTIV : AUS;
+    $('o_el').innerHTML  = v.aktiv ? AKTIV : AUS;
+    $('o_mode').textContent = b.modus;
+    $('o_bw').textContent = esc(st.boss_modell) + '  /  ' + esc(st.worker_modell);
+    $('mode').textContent = 'ONLINE // ' + (b.modus||'').toUpperCase();
+    if (!$('k_vid').value) $('k_vid').placeholder = 'Stimm-ID (' + esc(v.stimm_id) + ')';
+  } catch (e) { $('mode').textContent = 'VERBINDUNG GETRENNT'; }
+}
+setInterval(refresh, 3000); refresh();
+
+function _mask(k){ return k.length > 10 ? k.slice(0,7) + '…' + k.slice(-4) : '••••'; }
+function _saved(statusId, key) {
+  $(statusId).innerHTML = '<b style="color:var(--green)">✅ GESPEICHERT &amp; AKTIV</b> — ' +
+    '<span class="mono">' + esc(_mask(key)) + '</span>';
+}
+async function saveKey(ev, url, which, statusId) {
+  ev.preventDefault();
+  const el = $('k_' + which); const key = el.value.trim();
+  if (key.length < 12) { alert('Der Key sieht zu kurz aus — bitte den ganzen Key einfügen.'); return false; }
+  $(statusId).innerHTML = '… speichere';
+  const r = await fetch(url, { method:'POST', headers:{'content-type':'application/json'},
+    body: JSON.stringify({ schluessel: key }) });
+  if (r.ok) { el.value = ''; el.placeholder = '✅ gespeichert (neuer Key überschreibt)'; _saved(statusId, key); }
+  else { $(statusId).innerHTML = '<b style="color:var(--red)">Key nicht akzeptiert (zu kurz?)</b>'; }
+  setTimeout(refresh, 800); return false;
+}
+async function saveVoice(ev) {
+  ev.preventDefault();
+  const key = $('k_el').value.trim(); const sid = $('k_vid').value.trim();
+  if (key.length < 12) { alert('ElevenLabs-Key sieht zu kurz aus.'); return false; }
+  $('s_el').innerHTML = '… speichere';
+  const r = await fetch('/api/voice/key', { method:'POST', headers:{'content-type':'application/json'},
+    body: JSON.stringify({ schluessel: key, stimm_id: sid }) });
+  if (r.ok) { $('k_el').value=''; $('k_el').placeholder='✅ gespeichert'; _saved('s_el', key); }
+  else { $('s_el').innerHTML = '<b style="color:var(--red)">Key nicht akzeptiert</b>'; }
+  setTimeout(refresh, 800); return false;
+}
+async function toggleOnlyOR() {
+  const r = await fetch('/api/brainmode');
+  const cur = r.ok ? (await r.json()).nur_openrouter : false;
+  await fetch('/api/brainmode', { method:'POST', headers:{'content-type':'application/json'},
+    body: JSON.stringify({ nur_openrouter: !cur }) });
+  brainState();
+}
+async function brainState() {
+  try {
+    const d = await (await fetch('/api/brainmode')).json();
+    const el = $('oronly');
+    el.classList.toggle('on', !!d.nur_openrouter);
+    el.textContent = d.nur_openrouter ? '✅ NUR OPENROUTER (Fable 5 aus)' : 'NUR OPENROUTER (Fable 5 aus)';
+    $('s_brain').textContent = d.nur_openrouter
+      ? 'Fable 5 wird übersprungen — nur Gratis-Modelle.'
+      : 'Fable 5 zuerst, sonst OpenRouter.';
+  } catch (e) {}
+}
+setInterval(brainState, 4000); brainState();
+</script>
+</body>
+</html>

@@ -25,7 +25,12 @@ STATIC_DIR = os.path.join(BASE_DIR, "static")
 CERT_FILE = os.path.join(BASE_DIR, "certs", "cert.pem")
 KEY_FILE = os.path.join(BASE_DIR, "certs", "key.pem")
 
-MODEL = "claude-sonnet-4-6"
+# Boss-Modell: Fable 5 (staerkstes Claude-Modell). Faellt der Key-Zugang
+# dafuer weg, springt JAVIER automatisch auf das Fallback - er bleibt
+# also immer ansprechbar. Per JAVIER_MODEL in .env uebersteuerbar.
+MODEL = os.environ.get("JAVIER_MODEL", "").strip() or "claude-fable-5"
+FALLBACK_MODEL = "claude-sonnet-4-6"
+_active_model = {"name": MODEL}
 MAX_AGENT_TURNS = 8
 
 SYSTEM_PROMPT = """Du bist JAVIER, Nates persoenliche KI im Stil von JARVIS \
@@ -40,14 +45,34 @@ MeowUfo, Nachrichten vorbereiten, Instagram-Posts, Apps und Webseiten auf \
 dem iPhone oeffnen, PC-Aktionen). Wenn Nate eine App oeffnen will (YouTube, \
 Snapchat, Spotify usw.), nutze open_app - er bekommt dann einen Button.
 
+Du bist ausserdem der JARVIS an der Spitze von Nates Milliarden-Holding: \
+10 Divisionen, 10 Milliarden adressierbare Agents (holding/<division>/\
+<company>/<department>/<team>/<agent>). Wenn Nate 'das Unternehmen', 'den \
+Konzern' oder 'die Firma' etwas erledigen lassen will - oder eine Aufgabe \
+echte Fachtiefe braucht (Texte, Strategien, Analysen, Recht, Design) - \
+nutze konzern_auftrag mit 1-3 praezise gewaehlten Adressen und nenne Nate \
+danach kurz, welche Agents gearbeitet haben. Fuer Fragen zur Struktur: \
+konzern_struktur. Sei ehrlich: Jeder Konzern-Einsatz kostet zusaetzliche \
+API-Aufrufe und einige Sekunden - fuer simple Fragen antwortest du selbst.
+
+Auf dem Windows-PC (Desktop-Modus) steuerst du den Rechner direkt: \
+Programme starten (open_program), Lautstaerke (control_volume), Musik \
+(media_control), Dateien suchen (search_files), Systemstatus (system_info), \
+Bildschirm sperren (lock_pc), Ordner/Screenshots (run_safe_command). \
+Diese Tools wirken nur, wenn das Backend auf dem PC laeuft - in der Cloud \
+melden sie das ehrlich als Fehler.
+
 Eiserne Regel fuer irreversible Aktionen: Bevor du prepare_message oder \
 publish_instagram_post aufrufst, nenne Nate den genauen Inhalt und frage \
 explizit um Bestaetigung, etwa: 'Soll ich das absenden, Nate?'. Rufe das \
-Tool erst auf, nachdem Nate in seiner naechsten Nachricht zugestimmt hat.
+Tool erst auf, nachdem Nate in seiner naechsten Nachricht zugestimmt hat. \
+Genauso bei shutdown_pc: erst fragen ('Soll ich den PC wirklich \
+herunterfahren, Nate?'), erst nach seinem Ja mit confirm=true aufrufen.
 
 Sei ehrlich ueber deine Grenzen: Du kannst auf dem iPhone keine Nachrichten \
 vollautomatisch senden - du bereitest sie vor und Nate tippt auf Senden. \
-Du hoerst nicht im Hintergrund mit; Nate muss den Sprechknopf druecken."""
+Auf dem iPhone hoerst du nicht im Hintergrund mit; am PC hoerst du mit dem \
+Wake-Word 'Hey JAVIER' zu, aber nur solange das Browserfenster offen ist."""
 
 
 app = FastAPI(title="JAVIER MOBILE")
@@ -68,6 +93,21 @@ class TTSRequest(BaseModel):
 
 def get_client():
     return anthropic.Anthropic()
+
+
+def create_message(client, **kwargs):
+    # One place for every model call: tries the configured model and
+    # falls back once (permanently for this process) if the API key has
+    # no access to it - JAVIER stays alive either way.
+    try:
+        return client.messages.create(model=_active_model["name"], **kwargs)
+    except anthropic.NotFoundError:
+        if _active_model["name"] == FALLBACK_MODEL:
+            raise
+        print("Modell %s nicht verfuegbar - Fallback auf %s"
+              % (_active_model["name"], FALLBACK_MODEL))
+        _active_model["name"] = FALLBACK_MODEL
+        return client.messages.create(model=FALLBACK_MODEL, **kwargs)
 
 
 def _check_password(request):
@@ -96,8 +136,8 @@ def chat(req: ChatRequest, request: Request):
     reply_text = ""
 
     for _ in range(MAX_AGENT_TURNS):
-        response = client.messages.create(
-            model=MODEL,
+        response = create_message(
+            client,
             max_tokens=1024,
             system=SYSTEM_PROMPT,
             tools=tools.tool_definitions(),
@@ -134,7 +174,9 @@ def chat(req: ChatRequest, request: Request):
 
 @app.get("/api/health")
 def health():
-    return {"ok": True, "model": MODEL,
+    import holding
+    return {"ok": True, "model": _active_model["name"],
+            "worker_model": holding.worker_description(),
             "server_tts": elevenlabs_configured()}
 
 
@@ -172,6 +214,13 @@ def tts(req: TTSRequest, request: Request):
 @app.get("/")
 def index():
     return FileResponse(os.path.join(STATIC_DIR, "index.html"))
+
+
+@app.get("/desktop")
+def desktop():
+    # PC mode: JARVIS surface for the Windows machine itself, with
+    # wake-word listening (desktop browsers allow a persistent mic).
+    return FileResponse(os.path.join(STATIC_DIR, "desktop.html"))
 
 
 app.mount("/", StaticFiles(directory=STATIC_DIR), name="static")
@@ -214,8 +263,10 @@ def print_banner(https):
     url = "%s://%s:8000" % (scheme, ip)
     print()
     print("=" * 52)
-    print("  JAVIER MOBILE ist bereit.")
+    print("  JAVIER ist bereit.")
     print("  Auf dem iPhone oeffnen:  %s" % url)
+    print("  Auf DIESEM PC oeffnen:   %s://localhost:8000/desktop"
+          % scheme)
     print("=" * 52)
     if not https:
         print("  WARNUNG: kein HTTPS-Zertifikat gefunden (certs/).")
