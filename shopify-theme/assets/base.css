@@ -1067,6 +1067,45 @@ body {
   .galaxy__sun { width: 140px; height: 140px; top: -60px; right: -50px; }
 }
 
+/* ---------- Toast-Meldungen ---------- */
+.toast-container {
+  position: fixed; bottom: 1.25rem; left: 50%; transform: translateX(-50%);
+  display: grid; gap: 0.5rem; z-index: 95;
+  width: min(420px, calc(100vw - 2rem));
+  pointer-events: none;
+}
+.toast {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 0.9rem 1.2rem;
+  background: rgba(20, 24, 58, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius);
+  color: var(--color-text);
+  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  opacity: 0; transform: translateY(12px);
+  transition: opacity 0.25s ease-out, transform 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+  pointer-events: auto;
+}
+.toast.is-visible { opacity: 1; transform: none; }
+.toast--error { border-color: rgba(255, 110, 110, 0.5); }
+.toast__msg { font-weight: 600; }
+.toast__link {
+  flex-shrink: 0; font-weight: 700; color: var(--color-accent);
+  text-decoration: none; border-bottom: 1px solid currentColor;
+}
+@media (prefers-reduced-motion: reduce) { .toast { transition: opacity 0.2s ease-out; transform: none; } }
+
+/* ---------- Produktbild-Zoom (Desktop, Maus-Verfolgung) ---------- */
+.zoomable { cursor: zoom-in; }
+.zoomable .product__img { transition: transform 0.25s ease-out; }
+@media (hover: hover) and (pointer: fine) {
+  .zoomable:hover .product__img.is-active,
+  .zoomable:hover .product__img:first-child { transform: scale(1.6); }
+  .zoomable:hover .product__img.is-active ~ .product__img:first-child { transform: none; }
+}
+
 /* Reduced Motion: Szene steht, UFO gelandet, Beam an */
 @media (prefers-reduced-motion: reduce) {
   .galaxy__stars, .galaxy__shooting, .galaxy__planet, .galaxy__hover,

@@ -429,6 +429,94 @@
     });
   }
 
+  /* ---------- Toast-Meldungen (aria-live, selbstauflösend) ---------- */
+  var toastContainer = null;
+  function showToast(message, linkText, linkHref, isError) {
+    if (!toastContainer) {
+      toastContainer = document.createElement('div');
+      toastContainer.className = 'toast-container';
+      toastContainer.setAttribute('aria-live', 'polite');
+      document.body.appendChild(toastContainer);
+    }
+    var toast = document.createElement('div');
+    toast.className = 'toast' + (isError ? ' toast--error' : '');
+    toast.innerHTML = '<span class="toast__msg"></span>';
+    toast.querySelector('.toast__msg').textContent = message;
+    if (linkText && linkHref) {
+      var a = document.createElement('a');
+      a.href = linkHref;
+      a.className = 'toast__link';
+      a.textContent = linkText;
+      toast.appendChild(a);
+    }
+    toastContainer.appendChild(toast);
+    requestAnimationFrame(function () { toast.classList.add('is-visible'); });
+    setTimeout(function () {
+      toast.classList.remove('is-visible');
+      setTimeout(function () { toast.remove(); }, 300);
+    }, 4000);
+  }
+
+  /* ---------- AJAX Add-to-Cart: kein Seitenreload, Badge-Pop + Toast ---------- */
+  function initAjaxCart() {
+    document.querySelectorAll('[data-product-form]').forEach(function (form) {
+      form.addEventListener('submit', function (e) {
+        /* Nur den normalen ATC abfangen – Dynamic-Checkout-Buttons laufen nativ */
+        e.preventDefault();
+        var atcBtn = form.querySelector('[data-atc]');
+        var atcText = form.querySelector('[data-atc-text]');
+        var original = atcText ? atcText.textContent : '';
+        if (atcBtn) { atcBtn.disabled = true; }
+        if (atcText) { atcText.textContent = '…'; }
+
+        fetch(window.Shopify && window.Shopify.routes ? window.Shopify.routes.root + 'cart/add.js' : '/cart/add.js', {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        })
+          .then(function (res) {
+            if (!res.ok) return res.json().then(function (err) { throw err; });
+            return res.json();
+          })
+          .then(function () { return fetch('/cart.js', { headers: { 'Accept': 'application/json' } }); })
+          .then(function (res) { return res.json(); })
+          .then(function (cart) {
+            document.querySelectorAll('[data-cart-count]').forEach(function (el) {
+              el.textContent = cart.item_count;
+              el.classList.remove('is-hidden');
+              el.classList.remove('is-pulsing');
+              void el.offsetWidth;
+              el.classList.add('is-pulsing');
+            });
+            showToast('Im Warenkorb!', 'Zur Kasse', '/cart');
+          })
+          .catch(function (err) {
+            showToast((err && err.description) || 'Das hat leider nicht geklappt. Bitte versuche es erneut.', null, null, true);
+          })
+          .finally(function () {
+            if (atcBtn) { atcBtn.disabled = false; }
+            if (atcText) { atcText.textContent = original; }
+          });
+      });
+    });
+  }
+
+  /* ---------- Produktbild-Zoom (Desktop): Lupe folgt der Maus ---------- */
+  function initImageZoom() {
+    if (reducedMotion || !finePointer) return;
+    document.querySelectorAll('.product__main-image').forEach(function (frame) {
+      frame.classList.add('zoomable');
+      frame.addEventListener('pointermove', function (e) {
+        var img = frame.querySelector('.product__img.is-active') || frame.querySelector('.product__img');
+        if (!img) return;
+        var rect = frame.getBoundingClientRect();
+        var x = ((e.clientX - rect.left) / rect.width) * 100;
+        var y = ((e.clientY - rect.top) / rect.height) * 100;
+        img.style.transformOrigin = x + '% ' + y + '%';
+      });
+    });
+  }
+
   /* ---------- Warenkorb: Mengenänderung sendet das Formular ---------- */
   function initCartAutoUpdate() {
     var form = document.querySelector('[data-cart-form]');
@@ -455,10 +543,13 @@
     });
   }
 
-  /* ---------- Cross-Selling: native Produkt-Empfehlungen nachladen ---------- */
+  /* ---------- Cross-Selling: Empfehlungen nachladen (mit Skeleton-Loader) ---------- */
   function initRelatedProducts() {
     var section = document.querySelector('[data-related]');
     if (!section || section.querySelector('.product-card')) return;
+    /* Skeleton-Karten anzeigen, bis die Empfehlungen da sind */
+    section.innerHTML = '<div class="page-width"><div class="product-grid product-grid--4">' +
+      new Array(4).fill('<div class="skeleton"></div>').join('') + '</div></div>';
     fetch(section.dataset.url)
       .then(function (res) { return res.text(); })
       .then(function (html) {
@@ -466,9 +557,11 @@
         var fresh = doc.querySelector('[data-related]');
         if (fresh && fresh.querySelector('.product-card')) {
           section.innerHTML = fresh.innerHTML;
+        } else {
+          section.innerHTML = '';
         }
       })
-      .catch(function () { /* Empfehlungen sind optional – Fehler still schlucken */ });
+      .catch(function () { section.innerHTML = ''; });
   }
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -486,6 +579,8 @@
     initGalleries();
     initQty();
     document.querySelectorAll('[data-product]').forEach(initProductSection);
+    initAjaxCart();
+    initImageZoom();
     initStickyAtc();
     initCountdown();
     initCartAutoUpdate();
