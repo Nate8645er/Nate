@@ -10,5 +10,46 @@
   "enabledPlugins": {
     "ultra-enterprise-os@nate-marketplace": true,
     "superpowers-chrome@nate-marketplace": true
+  },
+  "env": {
+    "TS_BASH_COMPACT": "1",
+    "TS_BASH_REWRITE": "1"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'nohup bash \"$CLAUDE_PROJECT_DIR/scripts/token-savior/ensure-install.sh\" >/dev/null 2>&1 &'",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/token-savior/pre-hook.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash|WebFetch|Read|Grep|mcp__playwright__.*|mcp__token-savior__search_codebase|mcp__token-savior__get_function_source|mcp__token-savior__get_class_source",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/token-savior/post-hook.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
   }
 }

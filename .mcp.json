@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "token-savior": {
+      "command": "bash",
+      "args": ["scripts/token-savior/launch.sh"],
+      "env": {
+        "WORKSPACE_ROOTS": "/home/user/Nate",
+        "TOKEN_SAVIOR_CLIENT": "claude-code",
+        "TOKEN_SAVIOR_PROFILE": "optimized"
+      }
+    }
+  }
+}
