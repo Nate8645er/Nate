@@ -289,11 +289,13 @@ class Orchestrator:
                 if len(parts) < 2:
                     raise ValueError("Syntax: !skill <name> <aufgabentext...>")
                 prompt = self.skills.apply(parts[1], parts[2] if len(parts) > 2 else "")
-                task.result = await asyncio.to_thread(brain.answer, employee, prompt)
+                task.result = await asyncio.to_thread(brain.answer, employee, prompt, "worker")
             elif self.team_mode:
                 task.result = await self._team_answer(employee, boss, task)
             else:
-                task.result = await asyncio.to_thread(brain.answer, employee, task.description)
+                # Mitarbeiter erledigt die Aufgabe als Worker (Sol Ultra, falls konfiguriert).
+                task.result = await asyncio.to_thread(
+                    brain.answer, employee, task.description, "worker")
             task.status = "fertig"
             self.completed += 1
             await self.memory.remember(task.address, task.description, task.result)
@@ -326,9 +328,11 @@ class Orchestrator:
         """Team-Modus: mehrere Mitglieder liefern EIGENE echte Beiträge, der Chef
         führt sie zu einer Antwort zusammen. Im API-Modus mehrere Aufrufe!"""
         members = [employee] + team_members(employee.address, n=2)  # Bearbeiter + 2 Kollegen
-        # Jedes Mitglied beantwortet die Frage eigenständig (echte Aufrufe, parallel).
+        # Jedes Mitglied beantwortet die Frage eigenständig als Worker (Sol Ultra),
+        # echte Aufrufe, parallel.
         contribs = await asyncio.gather(
-            *[asyncio.to_thread(brain.answer, m, task.description) for m in members])
+            *[asyncio.to_thread(brain.answer, m, task.description, "worker")
+              for m in members])
         task.beitraege = [{"name": m.name, "rolle": m.role, "beitrag": c}
                           for m, c in zip(members, contribs)]
         self.log("info", f"#{task.id} Team-Modus: {len(members)} Beiträge, "
@@ -342,7 +346,8 @@ class Orchestrator:
                       for i, b in enumerate(task.beitraege)) +
             "\n\nGib nur die konsolidierte Endantwort auf Deutsch, ohne die Beiträge "
             "zu wiederholen. Erfinde nichts dazu.")
-        final = await asyncio.to_thread(brain.answer, boss, zusammenfassung)
+        # Der Chef führt zusammen — als Boss (Fable 5).
+        final = await asyncio.to_thread(brain.answer, boss, zusammenfassung, "boss")
         return final
 
     async def _worker(self) -> None:
@@ -425,6 +430,9 @@ class Orchestrator:
             "ram_frei_mb": vm.available // 1_048_576,
             "modell_modus": brain.mode(),
             "modell": brain.active_model(),   # tatsächlich aktives Modell (inkl. Fallback)
+            "boss_modell": brain.boss_model(),
+            "worker_modell": (brain.worker_model() if brain.worker_active()
+                              else "(wie Boss — kein OpenRouter-Key)"),
             "laufzeit_s": int(time.time() - self.started),
             "aktive": [t.as_dict() for t in list(self.active.values())[:50]],
             "letzte_aufgaben": [t.as_dict() for t in list(self.recent)[:30]],

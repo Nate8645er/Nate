@@ -117,6 +117,29 @@ setx JARVIS_MODEL       "claude-fable-5" # optional, ist der Standard
 ```
 
 Danach JARVIS **neu starten** — fertig, alles ist automatisch verbunden.
+
+## Boss/Worker: Fable 5 orchestriert, GPT-5.6 Sol Ultra arbeitet
+
+JARVIS läuft mit einer echten Rollenaufteilung — genau Nates Setup:
+
+- **Boss = Fable 5** (`claude-fable-5`): nimmt Aufgaben an, delegiert im Team und
+  führt im Team-Modus die Beiträge zu einer Endantwort zusammen.
+- **Worker = GPT-5.6 Sol Ultra** (`openai/gpt-5.6-sol-ultra` über OpenRouter):
+  die eigentlichen Mitarbeiter-Agenten erledigen ihre Aufgaben damit.
+
+**Ein einziger OpenRouter-Key deckt beide ab** (Fable 5 UND Sol Ultra laufen
+über OpenRouter). Ist zusätzlich ein `ANTHROPIC_API_KEY` gesetzt, nutzt der
+Boss direkt Anthropic. **Ohne OpenRouter-Key** fällt der Worker still auf das
+Boss-Gehirn (Fable 5) zurück — JARVIS bleibt immer funktionsfähig. Steuerung:
+
+```powershell
+setx JARVIS_BOSS_MODEL   "claude-fable-5"            # Boss (Standard)
+setx JARVIS_WORKER_MODEL "openai/gpt-5.6-sol-ultra"  # Worker (Standard); "off" = Fable macht alles
+```
+
+Das Dashboard (`/api/state`) zeigt live `boss_modell` und `worker_modell`. Im
+Chat lassen sich beide auch gezielt ansprechen: `sol: <text>` (Sol Ultra),
+`fable: <text>` (Fable 5), `vergleiche die modelle: <text>` (parallel).
 Alternativ lassen sich die Keys auch per Klick im Dashboard eintragen.
 Ohne Key läuft alles im klar gekennzeichneten **Offline-Modus** (kostenlos). **Achtung:** Jeder aktive Agent-Aufruf kostet dann echtes
 API-Guthaben — genau deshalb ist der aktive Pool hart begrenzt und niemals

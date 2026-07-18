@@ -23,6 +23,17 @@ import urllib.request
 from .identity import VirtualEmployee
 
 PREFERRED_MODEL = os.environ.get("JARVIS_MODEL", "claude-fable-5")
+
+# Boss/Worker-Aufteilung (Nates Setup): Fable 5 orchestriert und führt zusammen,
+# GPT-5.6 Sol Ultra erledigt die eigentliche Mitarbeiter-Arbeit. Der Worker
+# läuft über OpenRouter (openai/gpt-5.6-sol-ultra) — genau EIN OpenRouter-Key
+# deckt damit Boss UND Worker ab. Ohne OpenRouter-Key fällt der Worker still
+# auf das Boss-Gehirn (Fable 5) zurück; JARVIS bleibt in jedem Fall funktionsfähig.
+# Beides per Umgebungsvariable überschreibbar; JARVIS_WORKER_MODEL=off schaltet
+# die Aufteilung ab (dann macht Fable 5 alles).
+BOSS_MODEL = os.environ.get("JARVIS_BOSS_MODEL", "").strip() or "claude-fable-5"
+WORKER_MODEL = os.environ.get("JARVIS_WORKER_MODEL", "").strip() or "openai/gpt-5.6-sol-ultra"
+_last_worker_model: str | None = None
 # Fallback-Kette: wird das bevorzugte Modell vom Key abgelehnt (400/404), werden
 # der Reihe nach breit verfügbare Modell-IDs probiert, bis eines antwortet.
 FALLBACK_MODELS = ["claude-opus-4-8", "claude-sonnet-5", "claude-haiku-4-5-20251001",
@@ -206,17 +217,8 @@ def _offline_answer(employee: VirtualEmployee, task: str) -> str:
     )
 
 
-def answer(employee: VirtualEmployee, task: str) -> str:
-    """Beantwortet eine Aufgabe im Namen eines aktiven Agenten.
-
-    Reihenfolge: Anthropic (Fable 5) zuerst, falls Key + Guthaben vorhanden.
-    Scheitert das an Guthaben/Auth, wird automatisch auf OpenRouter-Gratis-
-    Modelle umgeschaltet (falls OPENROUTER_API_KEY gesetzt). Sobald Anthropic
-    wieder Guthaben hat, nutzt JARVIS von selbst wieder Fable 5.
-    """
-    if mode() == "offline":
-        return _offline_answer(employee, task)
-    system = (
+def _build_system(employee: VirtualEmployee) -> str:
+    return (
         f"Du bist {employee.name}, {employee.role} im Team {employee.team} "
         f"einer virtuellen Organisation (JARVIS). Deine Skills: "
         f"{', '.join(employee.skills)}. Antworte knapp, präzise und auf Deutsch. "
@@ -230,6 +232,59 @@ def answer(employee: VirtualEmployee, task: str) -> str:
         f"der es auslöst — etwa: »spiel <Titel> auf YouTube« oder »öffne YouTube«. "
         f"Solche Sätze führt JARVIS wirklich aus.")
 
+
+def worker_model() -> str:
+    """Modell-ID der Worker-Agenten (Sol Ultra) — leer/'off' = keine Aufteilung."""
+    return WORKER_MODEL
+
+
+def boss_model() -> str:
+    """Aktives Boss-Modell (Fable 5, inkl. tatsächlichem Fallback)."""
+    return active_model()
+
+
+def worker_active() -> bool:
+    """Läuft die Worker-Arbeit wirklich auf Sol Ultra? (OpenRouter-Key + Modell gesetzt)"""
+    from . import openrouter
+    return openrouter.available() and bool(WORKER_MODEL) and WORKER_MODEL.lower() != "off"
+
+
+def _worker_answer(system: str, task: str) -> str | None:
+    """Worker-Gehirn: GPT-5.6 Sol Ultra über OpenRouter. None = nicht verfügbar/Fehler
+    (dann übernimmt das Boss-Gehirn als ehrlicher Rückfall)."""
+    if not worker_active():
+        return None
+    from . import openrouter
+    global _last_worker_model
+    r = openrouter.ask(WORKER_MODEL, task, system=system, max_tokens=900)
+    if r and not r.startswith("[OpenRouter") and not r.startswith("[kein"):
+        _last_worker_model = WORKER_MODEL
+        return r
+    return None
+
+
+def answer(employee: VirtualEmployee, task: str, role: str = "boss") -> str:
+    """Beantwortet eine Aufgabe im Namen eines aktiven Agenten.
+
+    role="worker": erledigende Mitarbeiter -> GPT-5.6 Sol Ultra (OpenRouter),
+      bei fehlendem Key/Fehler Rückfall auf das Boss-Gehirn.
+    role="boss" (Standard): Orchestrierung/Zusammenführung -> Fable 5. Reihenfolge:
+      Anthropic (Fable 5) zuerst, falls Key + Guthaben vorhanden. Scheitert das an
+      Guthaben/Auth, automatisch OpenRouter-Gratis-Modelle (falls Key). Sobald
+      Anthropic wieder Guthaben hat, nutzt JARVIS von selbst wieder Fable 5.
+    """
+    if mode() == "offline":
+        return _offline_answer(employee, task)
+    system = _build_system(employee)
+    if role == "worker":
+        w = _worker_answer(system, task)
+        if w is not None:
+            return w
+        # Kein OpenRouter/Sol -> Boss-Gehirn (Fable 5) als Rückfall.
+    return _boss_brain(system, task)
+
+
+def _boss_brain(system: str, task: str) -> str:
     global _skip_anthropic
     # 1) Anthropic (Fable 5) — nur wenn Key da UND nicht auf OpenRouter-only gestellt.
     if os.environ.get("ANTHROPIC_API_KEY") and not _only_openrouter():
@@ -273,4 +328,5 @@ def answer(employee: VirtualEmployee, task: str) -> str:
     orr = _openrouter_answer(system, task)
     if orr is not None:
         return orr
-    return _offline_answer(employee, task)
+    return ("[Kein Modell verfügbar] Weder Anthropic (Fable 5) noch OpenRouter "
+            "lieferten eine Antwort. Bitte Key/Guthaben prüfen.")

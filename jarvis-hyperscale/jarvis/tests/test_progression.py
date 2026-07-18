@@ -162,7 +162,7 @@ def test_team_mode_multiple_contributions(tmp_path: Path):
     o.team_mode = True
     calls = []
 
-    def fake_answer(emp, prompt):
+    def fake_answer(emp, prompt, role="boss"):
         calls.append(emp.name)
         if "konsolidierte" in prompt.lower() or "führst du die beiträge" in prompt.lower():
             return "FINALE Antwort vom Chef"
