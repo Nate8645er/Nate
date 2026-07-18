@@ -24,6 +24,11 @@ MODEL = os.environ.get("JAVIER_MODEL", "").strip() or "claude-fable-5"
 FALLBACK_MODEL = "claude-sonnet-4-6"
 _active_model = {"name": MODEL}
 SOL_MODEL = os.environ.get("JAVIER_SOL_MODEL", "").strip() or "gpt-5.6-sol"
+# Reasoning-Stufe des Sol-Workers - 'ultra' wie im Codex-Setup des
+# Repos (.codex/config.toml). Reasoning verbraucht Completion-Tokens,
+# deshalb bekommt der Sol-Worker ein deutlich hoeheres Token-Budget.
+SOL_EFFORT = os.environ.get("JAVIER_SOL_EFFORT", "").strip() or "ultra"
+SOL_MAX_TOKENS = 6000
 MAX_AGENTS = 3
 AGENT_MAX_TOKENS = 1200
 
@@ -109,7 +114,9 @@ def _sol_configured():
 
 
 def worker_description():
-    return SOL_MODEL if _sol_configured() else _active_model["name"]
+    if _sol_configured():
+        return "%s (reasoning: %s)" % (SOL_MODEL, SOL_EFFORT)
+    return _active_model["name"]
 
 
 def _ask(client, system, user_text, max_tokens=AGENT_MAX_TOKENS):
@@ -139,18 +146,32 @@ def _ask_worker(client, system, user_text):
     if not _sol_configured():
         return _ask(client, system, user_text)
     import requests
-    try:
+
+    def call_sol(with_effort):
+        payload = {"model": SOL_MODEL,
+                   "max_completion_tokens": SOL_MAX_TOKENS,
+                   "messages": [{"role": "system", "content": system},
+                                {"role": "user", "content": user_text}]}
+        if with_effort:
+            payload["reasoning_effort"] = SOL_EFFORT
         r = requests.post(
             "https://api.openai.com/v1/chat/completions",
             headers={"Authorization": "Bearer %s"
                      % os.environ["OPENAI_API_KEY"]},
-            json={"model": SOL_MODEL,
-                  "max_completion_tokens": AGENT_MAX_TOKENS,
-                  "messages": [{"role": "system", "content": system},
-                               {"role": "user", "content": user_text}]},
-            timeout=90)
+            json=payload, timeout=180)
         r.raise_for_status()
-        text = r.json()["choices"][0]["message"]["content"].strip()
+        return r.json()["choices"][0]["message"]["content"].strip()
+
+    try:
+        try:
+            text = call_sol(True)
+        except requests.HTTPError as e:
+            # Kennt der Endpoint die Reasoning-Stufe nicht (400), einmal
+            # ohne sie versuchen statt Sol ganz aufzugeben.
+            if e.response is not None and e.response.status_code == 400:
+                text = call_sol(False)
+            else:
+                raise
         if text:
             return text
     except (requests.RequestException, KeyError, IndexError, ValueError):

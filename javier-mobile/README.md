@@ -110,9 +110,11 @@ entschieden wird von Nate.
   Modells nicht antwortet. Uebersteuerbar per `JAVIER_MODEL` in `.env`.
 - **Worker (die Holding-Agents):** Sobald ein `OPENAI_API_KEY` in `.env`
   bzw. bei Render gesetzt ist, arbeiten die Konzern-Agents auf
-  `gpt-5.6-sol` (uebersteuerbar per `JAVIER_SOL_MODEL`); die Synthese
-  bleibt beim Claude-Boss. Schlaegt OpenAI fehl (Key, Netz, Kontingent),
-  faellt jeder Worker einzeln und automatisch auf Claude zurueck.
+  `gpt-5.6-sol` mit Reasoning-Stufe **ultra** - exakt das Boss/Worker-
+  Setup aus dem Codex-Plugin des Repos (uebersteuerbar per
+  `JAVIER_SOL_MODEL` und `JAVIER_SOL_EFFORT`); die Synthese bleibt beim
+  Claude-Boss. Schlaegt OpenAI fehl (Key, Netz, Kontingent), faellt
+  jeder Worker einzeln und automatisch auf Claude zurueck.
 - `/api/health` zeigt jederzeit, welches Boss- und Worker-Modell aktiv
   ist.
 
