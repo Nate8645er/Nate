@@ -1,2 +1,8 @@
 # Token Savior Index-Cache (wird pro Session neu aufgebaut)
 .token-savior-cache.json
+
+# meta-mcp: Zugangsdaten, Logs und Build-Artefakte nicht committen
+meta-mcp/.env
+meta-mcp/server.log
+meta-mcp/node_modules/
+meta-mcp/dist/

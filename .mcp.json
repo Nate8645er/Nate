@@ -1,5 +1,9 @@
 {
   "mcpServers": {
+    "meta-mcp": {
+      "command": "bash",
+      "args": ["scripts/meta-mcp/launch.sh"]
+    },
     "token-savior": {
       "command": "bash",
       "args": ["scripts/token-savior/launch.sh"],
