@@ -113,6 +113,88 @@ def test_orchestrator_routes_task_through_worker(monkeypatch, tmp_path):
     assert "openai/gpt-5.6-sol-ultra" in seen["models"]
 
 
+def test_worker_uses_openai_directly_without_openrouter(monkeypatch):
+    """Nur OpenAI-Key (kein OpenRouter) -> Worker läuft direkt über die OpenAI-API."""
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-oa")
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    seen = {}
+
+    def fake_openai(system, task, max_tokens=900):
+        seen["hit"] = True
+        return "Sol direkt über OpenAI"
+
+    monkeypatch.setattr(brain, "_openai_worker", fake_openai)
+    assert brain.worker_active() is True
+    out = brain.answer(materialize("500"), "erledige das", role="worker")
+    assert out == "Sol direkt über OpenAI" and seen.get("hit")
+    assert "OpenAI direkt" in brain.worker_model()
+
+
+def test_openrouter_preferred_over_openai(monkeypatch):
+    """Sind beide Keys da, gewinnt OpenRouter (ein Key deckt Boss+Worker)."""
+    monkeypatch.setenv("OPENROUTER_API_KEY", "or")
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-oa")
+    from jarvis.core import openrouter
+    monkeypatch.setattr(openrouter, "ask",
+                        lambda m, p, system="", max_tokens=600, timeout=120: "via OR")
+    called = {"openai": 0}
+    monkeypatch.setattr(brain, "_openai_worker",
+                        lambda s, t, max_tokens=900: called.__setitem__("openai", called["openai"] + 1) or "oa")
+    out = brain.answer(materialize("1"), "x", role="worker")
+    assert out == "via OR" and called["openai"] == 0
+
+
+def test_only_openai_boss_runs_on_sol(monkeypatch):
+    """Nur OpenAI-Key: mangels Fable läuft auch der Boss ehrlich auf Sol."""
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-oa")
+    monkeypatch.setattr(brain, "_openai_worker", lambda s, t, max_tokens=900: "boss=sol")
+    assert brain.mode() == "api"
+    out = brain.answer(materialize("1"), "führe zusammen", role="boss")
+    assert out == "boss=sol"
+    assert "OpenAI" in brain.boss_model()
+
+
+def test_code_tool_boss_worker_split(monkeypatch, tmp_path):
+    """code-Tool ohne Binary: Worker (Sol) implementiert, Boss (Fable) reviewt."""
+    from jarvis.core import code_agent
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "or")     # Worker aktiv
+    roles = []
+
+    def fake_answer(emp, prompt, role="boss"):
+        roles.append(role)
+        return "IMPL" if role == "worker" else "FINAL-REVIEW"
+
+    monkeypatch.setattr(code_agent.brain, "answer", fake_answer)
+    plugin = code_agent.CodeAgentPlugin(tmp_path)
+    plugin.binary = None                               # kein echtes Binary -> Split
+    out = plugin.run(prompt="schreibe eine Funktion")
+    assert roles == ["worker", "boss"]                 # erst Sol, dann Fable
+    assert "FINAL-REVIEW" in out and "Code-Split" in out
+
+
+def test_code_tool_single_pass_without_worker(monkeypatch, tmp_path):
+    """Ohne Sol-Worker macht das code-Tool genau EINEN Durchgang (kein Doppelaufruf)."""
+    from jarvis.core import code_agent
+
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    calls = {"n": 0}
+
+    def fake_answer(emp, prompt, role="boss"):
+        calls["n"] += 1
+        return "einmal"
+
+    monkeypatch.setattr(code_agent.brain, "answer", fake_answer)
+    plugin = code_agent.CodeAgentPlugin(tmp_path)
+    plugin.binary = None
+    plugin.run(prompt="x")
+    assert calls["n"] == 1
+
+
 def test_autopilot_idea_runs_as_worker(monkeypatch, tmp_path):
     """Autopilot-Ideen sind Worker-Arbeit -> role=worker (Sol Ultra)."""
     from jarvis.core import autopilot as ap_mod

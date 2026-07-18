@@ -86,6 +86,8 @@ def _load_persisted_key() -> None:
         os.environ["ANTHROPIC_API_KEY"] = data["anthropic_api_key"]
     if data.get("openrouter_api_key") and not os.environ.get("OPENROUTER_API_KEY"):
         os.environ["OPENROUTER_API_KEY"] = data["openrouter_api_key"]
+    if data.get("openai_api_key") and not os.environ.get("OPENAI_API_KEY"):
+        os.environ["OPENAI_API_KEY"] = data["openai_api_key"]
     if data.get("elevenlabs_api_key") and not os.environ.get("ELEVENLABS_API_KEY"):
         os.environ["ELEVENLABS_API_KEY"] = data["elevenlabs_api_key"]
     if data.get("voice_id") and not os.environ.get("JARVIS_VOICE_ID"):
@@ -580,6 +582,32 @@ async def modelle_key(k: KeyIn) -> JSONResponse:
     from jarvis.core import openrouter
     orchestrator.log("info", "OpenRouter-Key gesetzt — Multi-Modell-Zugang aktiv")
     return JSONResponse({"aktiv": openrouter.available()})
+
+
+@app.get("/api/openai/key")
+async def openai_key_status() -> JSONResponse:
+    """Ist ein OpenAI-Key aktiv? (Worker Sol Ultra direkt über OpenAI)"""
+    from jarvis.core import brain
+    return JSONResponse({"aktiv": bool(os.environ.get("OPENAI_API_KEY")),
+                         "worker_modell": brain.worker_model()})
+
+
+@app.post("/api/openai/key")
+async def openai_key(k: KeyIn) -> JSONResponse:
+    """OpenAI-Key lokal setzen und persistieren (nur auf diesem PC).
+
+    Damit erreicht der Worker (GPT-5.6 Sol Ultra) OpenAI DIREKT — nützlich,
+    wenn kein OpenRouter-Key vorhanden ist. Boss bleibt Fable 5 (Anthropic/
+    OpenRouter); ist NUR OpenAI gesetzt, läuft mangels Fable alles auf Sol.
+    """
+    key = k.schluessel.strip()
+    if len(key) < 12:
+        raise HTTPException(400, "Key sieht ungültig aus (zu kurz)")
+    os.environ["OPENAI_API_KEY"] = key
+    _persist_key("openai_api_key", key)   # 0600, nicht weltlesbar
+    from jarvis.core import brain
+    orchestrator.log("info", "OpenAI-Key gesetzt — Worker Sol Ultra direkt über OpenAI")
+    return JSONResponse({"aktiv": True, "worker_modell": brain.worker_model()})
 
 
 # --- Echte Stimme (ElevenLabs, optional) -----------------------------------

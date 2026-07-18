@@ -46,6 +46,21 @@
         <span id="s_brain" style="font-size:11px; color:var(--dim)"></span>
       </div>
     </div>
+
+    <!-- OpenAI (Sol Ultra Worker direkt) -->
+    <div class="panel" style="margin-top:10px">
+      <h2><b>OPENAI</b> // GPT-5.6 SOL ULTRA (WORKER)</h2>
+      <div id="s_oa" style="font-size:12px; margin-bottom:6px">Status wird geladen…</div>
+      <form onsubmit="return saveKey(event,'/api/openai/key','oa','s_oa')">
+        <input id="k_oa" type="password" placeholder="sk-…" autocomplete="off">
+        <button>SPEICHERN</button>
+      </form>
+      <div style="font-size:10.5px; color:var(--dim); margin-top:5px">
+        Key von platform.openai.com/api-keys (nicht das ChatGPT-Passwort). Der
+        Worker Sol Ultra läuft dann direkt über OpenAI. Tipp: Ein OpenRouter-Key
+        allein deckt Boss (Fable 5) UND Worker (Sol Ultra) ab.
+      </div>
+    </div>
   </div>
 
   <div>
@@ -68,8 +83,10 @@
       <h2><b>ÜBERSICHT</b> // WAS IST AKTIV</h2>
       <div class="kv"><span>Fable 5 / Claude</span><b id="o_ant">–</b></div>
       <div class="kv"><span>OpenRouter</span><b id="o_or">–</b></div>
+      <div class="kv"><span>OpenAI (Sol Worker)</span><b id="o_oa">–</b></div>
       <div class="kv"><span>Echte Stimme</span><b id="o_el">–</b></div>
       <div class="kv"><span>Modell-Modus</span><b id="o_mode">–</b></div>
+      <div class="kv"><span>Boss / Worker</span><b id="o_bw" style="font-size:11px">–</b></div>
       <div style="font-size:10.5px; color:var(--dim); margin-top:8px">
         Keys werden nur lokal auf DIESEM PC gespeichert (geschuetzte Datei), nie gesendet.
       </div>
@@ -92,16 +109,20 @@ async function refresh() {
   try {
     const b = await (await fetch('/api/brain')).json();
     const o = await (await fetch('/api/modelle/key')).json();
+    const oa = await (await fetch('/api/openai/key')).json();
     const v = await (await fetch('/api/voice/status')).json();
-    const br = await (await fetch('/api/teammode')).json();  // nur Erreichbarkeitscheck
+    const st = await (await fetch('/api/state')).json();
     const antOn = b.modus === 'api';
     $('s_ant').innerHTML = antOn ? AKTIV + ' — Modell ' + esc(b.modell) : AUS;
     $('s_or').innerHTML  = o.aktiv ? AKTIV + ' — 32 Modelle' : AUS;
+    $('s_oa').innerHTML  = oa.aktiv ? AKTIV + ' — Worker ' + esc(oa.worker_modell) : AUS;
     $('s_el').innerHTML  = v.aktiv ? AKTIV + ' — Stimme ' + esc(v.stimm_id) : AUS;
     $('o_ant').innerHTML = antOn ? AKTIV : AUS;
     $('o_or').innerHTML  = o.aktiv ? AKTIV : AUS;
+    $('o_oa').innerHTML  = oa.aktiv ? AKTIV : AUS;
     $('o_el').innerHTML  = v.aktiv ? AKTIV : AUS;
     $('o_mode').textContent = b.modus;
+    $('o_bw').textContent = esc(st.boss_modell) + '  /  ' + esc(st.worker_modell);
     $('mode').textContent = 'ONLINE // ' + (b.modus||'').toUpperCase();
     if (!$('k_vid').value) $('k_vid').placeholder = 'Stimm-ID (' + esc(v.stimm_id) + ')';
   } catch (e) { $('mode').textContent = 'VERBINDUNG GETRENNT'; }

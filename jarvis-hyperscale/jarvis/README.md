@@ -129,8 +129,16 @@ JARVIS läuft mit einer echten Rollenaufteilung — genau Nates Setup:
 
 **Ein einziger OpenRouter-Key deckt beide ab** (Fable 5 UND Sol Ultra laufen
 über OpenRouter). Ist zusätzlich ein `ANTHROPIC_API_KEY` gesetzt, nutzt der
-Boss direkt Anthropic. **Ohne OpenRouter-Key** fällt der Worker still auf das
-Boss-Gehirn (Fable 5) zurück — JARVIS bleibt immer funktionsfähig. Steuerung:
+Boss direkt Anthropic.
+
+**OpenAI-Key als Alternative für den Worker:** Wer keinen OpenRouter-Key
+nutzt, kann auf der Schlüssel-Seite (oder per `setx OPENAI_API_KEY "sk-…"`)
+einen OpenAI-Key eintragen — dann erreicht der Worker Sol Ultra **direkt über
+OpenAI** (`gpt-5.6-sol-ultra`, per `JARVIS_OPENAI_MODEL` änderbar). Ist nur der
+OpenAI-Key gesetzt (kein Fable-Zugang), läuft mangels Fable auch der Boss
+ehrlich auf Sol — im Dashboard klar so ausgewiesen. **Ohne jeden Worker-Key**
+fällt der Worker still auf das Boss-Gehirn (Fable 5) zurück — JARVIS bleibt
+immer funktionsfähig. Steuerung:
 
 ```powershell
 setx JARVIS_BOSS_MODEL   "claude-fable-5"            # Boss (Standard)
@@ -230,7 +238,7 @@ zurück. Stimm-ID auch über `JARVIS_VOICE_ID` setzbar.
 | `glob` | Dateien per Muster finden (Claude Code Glob) |
 | `grep` | in Dateien suchen (Claude Code Grep) |
 | `webfetch` | URL abrufen und als Text zurückgeben (Claude Code WebFetch) |
-| `code` | **Claude Code / Claw als Werkzeug — mit Fable 5** |
+| `code` | **Claude Code / Claw — echter Agent (Fable 5) oder Boss/Worker-Split: Sol Ultra implementiert, Fable 5 reviewt** |
 
 Aufgaben-Syntax: `!plugin <name> <aktion> key=wert` (Werte dürfen Leerzeichen
 enthalten). Jedes Tool ist pro Team autorisiert; Tool-Aufgaben werden

@@ -33,6 +33,11 @@ PREFERRED_MODEL = os.environ.get("JARVIS_MODEL", "claude-fable-5")
 # die Aufteilung ab (dann macht Fable 5 alles).
 BOSS_MODEL = os.environ.get("JARVIS_BOSS_MODEL", "").strip() or "claude-fable-5"
 WORKER_MODEL = os.environ.get("JARVIS_WORKER_MODEL", "").strip() or "openai/gpt-5.6-sol-ultra"
+# Direkter OpenAI-Weg für den Worker: greift, wenn ein OPENAI_API_KEY gesetzt
+# ist, aber KEIN OpenRouter-Key — dann spricht JARVIS Sol Ultra direkt bei
+# OpenAI an (ohne den 'openai/'-Präfix von OpenRouter).
+OPENAI_WORKER_MODEL = os.environ.get("JARVIS_OPENAI_MODEL", "").strip() or "gpt-5.6-sol-ultra"
+OPENAI_URL = "https://api.openai.com/v1/chat/completions"
 _last_worker_model: str | None = None
 # Fallback-Kette: wird das bevorzugte Modell vom Key abgelehnt (400/404), werden
 # der Reihe nach breit verfügbare Modell-IDs probiert, bis eines antwortet.
@@ -67,8 +72,9 @@ def _only_openrouter() -> bool:
 
 
 def mode() -> str:
-    """api, sobald irgendein Modell-Zugang da ist (Anthropic ODER OpenRouter)."""
-    if os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("OPENROUTER_API_KEY"):
+    """api, sobald irgendein Modell-Zugang da ist (Anthropic ODER OpenRouter ODER OpenAI)."""
+    if (os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("OPENROUTER_API_KEY")
+            or os.environ.get("OPENAI_API_KEY")):
         return "api"
     return "offline"
 
@@ -233,33 +239,80 @@ def _build_system(employee: VirtualEmployee) -> str:
         f"Solche Sätze führt JARVIS wirklich aus.")
 
 
+def _openai_configured() -> bool:
+    return bool(os.environ.get("OPENAI_API_KEY"))
+
+
 def worker_model() -> str:
-    """Modell-ID der Worker-Agenten (Sol Ultra) — leer/'off' = keine Aufteilung."""
+    """Modell-ID der Worker-Agenten (Sol Ultra) — Anzeige inkl. Transportweg."""
+    from . import openrouter
+    if bool(WORKER_MODEL) and WORKER_MODEL.lower() != "off":
+        if openrouter.available():
+            return WORKER_MODEL
+        if _openai_configured():
+            return f"{OPENAI_WORKER_MODEL} (OpenAI direkt)"
     return WORKER_MODEL
 
 
 def boss_model() -> str:
-    """Aktives Boss-Modell (Fable 5, inkl. tatsächlichem Fallback)."""
+    """Aktives Boss-Modell. Fable 5, sobald Anthropic/OpenRouter erreichbar; nur mit
+    OpenAI-Key (kein Fable-Zugang) läuft auch der Boss ehrlich auf Sol."""
+    from . import openrouter
+    if os.environ.get("ANTHROPIC_API_KEY") or openrouter.available():
+        return active_model()
+    if _openai_configured():
+        return f"{OPENAI_WORKER_MODEL} (OpenAI — kein Fable-Zugang)"
     return active_model()
 
 
 def worker_active() -> bool:
-    """Läuft die Worker-Arbeit wirklich auf Sol Ultra? (OpenRouter-Key + Modell gesetzt)"""
+    """Läuft die Worker-Arbeit wirklich auf Sol Ultra? Braucht einen Worker-Transport
+    (OpenRouter ODER OpenAI-Key) und ein gesetztes Worker-Modell (nicht 'off')."""
     from . import openrouter
-    return openrouter.available() and bool(WORKER_MODEL) and WORKER_MODEL.lower() != "off"
+    if not WORKER_MODEL or WORKER_MODEL.lower() == "off":
+        return False
+    return openrouter.available() or _openai_configured()
+
+
+def _openai_worker(system: str, task: str, max_tokens: int = 900) -> str | None:
+    """Worker direkt über die OpenAI-API (Sol Ultra). None = Fehler/kein Key."""
+    key = os.environ.get("OPENAI_API_KEY")
+    if not key:
+        return None
+    payload = {"model": OPENAI_WORKER_MODEL,
+               "messages": [{"role": "system", "content": system},
+                            {"role": "user", "content": task}],
+               "max_completion_tokens": max_tokens}
+    req = urllib.request.Request(
+        OPENAI_URL, data=json.dumps(payload).encode(),
+        headers={"Authorization": f"Bearer {key}", "content-type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            data = json.loads(resp.read())
+        text = (data["choices"][0]["message"]["content"] or "").strip()
+        return text or None
+    except Exception:      # Netz/Auth/Modell -> ehrlicher Rückfall aufs Boss-Gehirn
+        return None
 
 
 def _worker_answer(system: str, task: str) -> str | None:
-    """Worker-Gehirn: GPT-5.6 Sol Ultra über OpenRouter. None = nicht verfügbar/Fehler
-    (dann übernimmt das Boss-Gehirn als ehrlicher Rückfall)."""
+    """Worker-Gehirn: GPT-5.6 Sol Ultra. Zuerst über OpenRouter (ein Key deckt Boss
+    und Worker), sonst direkt über OpenAI. None = nicht verfügbar/Fehler (dann
+    übernimmt das Boss-Gehirn/Fable 5 als ehrlicher Rückfall)."""
     if not worker_active():
         return None
     from . import openrouter
     global _last_worker_model
-    r = openrouter.ask(WORKER_MODEL, task, system=system, max_tokens=900)
-    if r and not r.startswith("[OpenRouter") and not r.startswith("[kein"):
-        _last_worker_model = WORKER_MODEL
-        return r
+    if openrouter.available():
+        r = openrouter.ask(WORKER_MODEL, task, system=system, max_tokens=900)
+        if r and not r.startswith("[OpenRouter") and not r.startswith("[kein"):
+            _last_worker_model = WORKER_MODEL
+            return r
+    if _openai_configured():
+        r = _openai_worker(system, task)
+        if r:
+            _last_worker_model = OPENAI_WORKER_MODEL
+            return r
     return None
 
 
@@ -328,5 +381,9 @@ def _boss_brain(system: str, task: str) -> str:
     orr = _openrouter_answer(system, task)
     if orr is not None:
         return orr
+    # 3) Nur OpenAI-Key vorhanden: mangels Fable-Zugang läuft auch der Boss auf Sol.
+    oa = _openai_worker(system, task)
+    if oa is not None:
+        return oa
     return ("[Kein Modell verfügbar] Weder Anthropic (Fable 5) noch OpenRouter "
-            "lieferten eine Antwort. Bitte Key/Guthaben prüfen.")
+            "noch OpenAI lieferten eine Antwort. Bitte Key/Guthaben prüfen.")

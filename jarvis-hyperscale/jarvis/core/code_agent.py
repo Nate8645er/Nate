@@ -50,7 +50,9 @@ def find_binary() -> str | None:
 
 class CodeAgentPlugin(Plugin):
     name = "code"
-    description = "Claude Code / Claw als Werkzeug: Prompt an den echten Agenten (Fable 5)"
+    description = ("Claude Code / Claw als Werkzeug: echter Agent (Fable 5) falls "
+                   "installiert, sonst Boss/Worker-Split (Sol Ultra implementiert, "
+                   "Fable 5 reviewt)")
     dangerous = True                     # startet einen Agenten mit vollem Tool-Zugriff
     allowed_teams = ["Führung", "Softwareentwicklung", "KI-Entwicklung", "DevOps",
                      "Python-Team", "Rust-Team", "Web-Team", "Automatisierung",
@@ -74,18 +76,44 @@ class CodeAgentPlugin(Plugin):
         s["binary"] = self.binary or "keins gefunden (Fallback: JARVIS-Gehirn)"
         return s
 
+    def _boss_worker_code(self, prompt: str) -> str:
+        """Coding im Boss/Worker-Split: Sol Ultra (Worker) implementiert, Fable 5
+        (Boss) reviewt und finalisiert. Ohne Sol-Worker (kein OpenRouter/OpenAI)
+        genau EIN Fable-5-Durchgang — kein unnötiger Doppelaufruf."""
+        from .identity import materialize
+        emp = materialize("0")
+        if not brain.worker_active():
+            # Kein Sol-Worker -> ein einziger Durchgang über das Gehirn (Fable 5).
+            return brain.answer(emp, prompt, role="worker")
+        draft = brain.answer(
+            emp,
+            "Implementiere die folgende Coding-Aufgabe vollständig und konkret "
+            "(Code + kurze Erklärung). Aufgabe:\n" + prompt,
+            role="worker")
+        final = brain.answer(
+            emp,
+            "Du bist der leitende Entwickler (Boss). Prüfe und verbessere die "
+            "Umsetzung deines Workers: korrigiere Fehler, schärfe den Code und "
+            "gib die FINALE, beste Fassung aus (Code + knappe Begründung der "
+            "Änderungen). Aufgabe war:\n" + prompt +
+            "\n\nWorker-Entwurf:\n" + draft,
+            role="boss")
+        return (f"[Code-Split — Worker {brain.WORKER_MODEL}, Boss "
+                f"{brain.boss_model()}]\n{final}")
+
     def run(self, action: str = "prompt", prompt: str = "", model: str = "", **kwargs: object) -> object:
         if not prompt:
             raise ValueError("prompt= fehlt")
         model = model or brain.DEFAULT_MODEL
 
-        # Kein Binary oder kein Key -> ehrlicher Fallback auf das JARVIS-Gehirn.
-        if not self.binary or not os.environ.get("ANTHROPIC_API_KEY"):
-            from .identity import materialize
-            emp = materialize("0")
-            note = ("[Claude-Code-Binary nicht gefunden] " if not self.binary
-                    else "[kein API-Key] ")
-            return note + brain.answer(emp, prompt)
+        # Kein echtes Agenten-Binary -> Boss/Worker-Split über das Gehirn
+        # (Sol Ultra implementiert, Fable 5 reviewt). Braucht kein Binary und
+        # folgt trotzdem Nates Modell-Aufteilung.
+        if not self.binary:
+            return "[Claude-Code-Binary nicht gefunden] " + self._boss_worker_code(prompt)
+        # Binary da, aber kein Anthropic-Key -> ebenfalls Boss/Worker-Split.
+        if not os.environ.get("ANTHROPIC_API_KEY"):
+            return "[kein Anthropic-Key] " + self._boss_worker_code(prompt)
 
         try:
             proc = subprocess.run(
