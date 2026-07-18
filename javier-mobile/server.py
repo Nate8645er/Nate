@@ -25,7 +25,12 @@ STATIC_DIR = os.path.join(BASE_DIR, "static")
 CERT_FILE = os.path.join(BASE_DIR, "certs", "cert.pem")
 KEY_FILE = os.path.join(BASE_DIR, "certs", "key.pem")
 
-MODEL = "claude-sonnet-4-6"
+# Boss-Modell: Fable 5 (staerkstes Claude-Modell). Faellt der Key-Zugang
+# dafuer weg, springt JAVIER automatisch auf das Fallback - er bleibt
+# also immer ansprechbar. Per JAVIER_MODEL in .env uebersteuerbar.
+MODEL = os.environ.get("JAVIER_MODEL", "").strip() or "claude-fable-5"
+FALLBACK_MODEL = "claude-sonnet-4-6"
+_active_model = {"name": MODEL}
 MAX_AGENT_TURNS = 8
 
 SYSTEM_PROMPT = """Du bist JAVIER, Nates persoenliche KI im Stil von JARVIS \
@@ -90,6 +95,21 @@ def get_client():
     return anthropic.Anthropic()
 
 
+def create_message(client, **kwargs):
+    # One place for every model call: tries the configured model and
+    # falls back once (permanently for this process) if the API key has
+    # no access to it - JAVIER stays alive either way.
+    try:
+        return client.messages.create(model=_active_model["name"], **kwargs)
+    except anthropic.NotFoundError:
+        if _active_model["name"] == FALLBACK_MODEL:
+            raise
+        print("Modell %s nicht verfuegbar - Fallback auf %s"
+              % (_active_model["name"], FALLBACK_MODEL))
+        _active_model["name"] = FALLBACK_MODEL
+        return client.messages.create(model=FALLBACK_MODEL, **kwargs)
+
+
 def _check_password(request):
     password = os.environ.get("JAVIER_PASSWORD", "")
     if password and request.headers.get("x-javier-key", "") != password:
@@ -116,8 +136,8 @@ def chat(req: ChatRequest, request: Request):
     reply_text = ""
 
     for _ in range(MAX_AGENT_TURNS):
-        response = client.messages.create(
-            model=MODEL,
+        response = create_message(
+            client,
             max_tokens=1024,
             system=SYSTEM_PROMPT,
             tools=tools.tool_definitions(),
@@ -154,7 +174,9 @@ def chat(req: ChatRequest, request: Request):
 
 @app.get("/api/health")
 def health():
-    return {"ok": True, "model": MODEL,
+    import holding
+    return {"ok": True, "model": _active_model["name"],
+            "worker_model": holding.worker_description(),
             "server_tts": elevenlabs_configured()}
 
 

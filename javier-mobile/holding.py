@@ -12,9 +12,18 @@
 # Auftrag maximal MAX_AGENTS Agents aktiv - Milliarden sind adressierbar,
 # nicht gleichzeitig beschaeftigt.
 
+import os
 import re
 
-MODEL = "claude-sonnet-4-6"
+# Boss/Worker-Aufteilung (wie im Codex-Setup des Repos): Der Boss
+# (JAVIER selbst und die Synthese) laeuft auf dem Claude-Modell aus
+# JAVIER_MODEL (Standard: Fable 5, mit automatischem Fallback). Die
+# Worker-Agents der Holding laufen optional auf OpenAI GPT-5.6-Sol,
+# sobald ein OPENAI_API_KEY gesetzt ist - sonst ebenfalls auf Claude.
+MODEL = os.environ.get("JAVIER_MODEL", "").strip() or "claude-fable-5"
+FALLBACK_MODEL = "claude-sonnet-4-6"
+_active_model = {"name": MODEL}
+SOL_MODEL = os.environ.get("JAVIER_SOL_MODEL", "").strip() or "gpt-5.6-sol"
 MAX_AGENTS = 3
 AGENT_MAX_TOKENS = 1200
 
@@ -95,12 +104,58 @@ def _client():
     return anthropic.Anthropic()
 
 
+def _sol_configured():
+    return bool(os.environ.get("OPENAI_API_KEY"))
+
+
+def worker_description():
+    return SOL_MODEL if _sol_configured() else _active_model["name"]
+
+
 def _ask(client, system, user_text, max_tokens=AGENT_MAX_TOKENS):
-    response = client.messages.create(
-        model=MODEL, max_tokens=max_tokens, system=system,
-        messages=[{"role": "user", "content": user_text}])
+    import anthropic
+    try:
+        response = client.messages.create(
+            model=_active_model["name"], max_tokens=max_tokens,
+            system=system,
+            messages=[{"role": "user", "content": user_text}])
+    except anthropic.NotFoundError:
+        # Key has no access to the configured model - fall back once,
+        # permanently for this process. JAVIER stays functional.
+        if _active_model["name"] == FALLBACK_MODEL:
+            raise
+        _active_model["name"] = FALLBACK_MODEL
+        response = client.messages.create(
+            model=FALLBACK_MODEL, max_tokens=max_tokens, system=system,
+            messages=[{"role": "user", "content": user_text}])
     return "\n".join(b.text for b in response.content
                      if b.type == "text").strip()
+
+
+def _ask_worker(client, system, user_text):
+    # Worker path: GPT-5.6-Sol via OpenAI, wenn ein Key da ist - bei
+    # jedem Fehler ehrlicher Rueckfall auf den Claude-Weg, damit ein
+    # kaputter OpenAI-Key nie die ganze Holding lahmlegt.
+    if not _sol_configured():
+        return _ask(client, system, user_text)
+    import requests
+    try:
+        r = requests.post(
+            "https://api.openai.com/v1/chat/completions",
+            headers={"Authorization": "Bearer %s"
+                     % os.environ["OPENAI_API_KEY"]},
+            json={"model": SOL_MODEL,
+                  "max_completion_tokens": AGENT_MAX_TOKENS,
+                  "messages": [{"role": "system", "content": system},
+                               {"role": "user", "content": user_text}]},
+            timeout=90)
+        r.raise_for_status()
+        text = r.json()["choices"][0]["message"]["content"].strip()
+        if text:
+            return text
+    except (requests.RequestException, KeyError, IndexError, ValueError):
+        pass
+    return _ask(client, system, user_text)
 
 
 def konzern_struktur(adresse=""):
@@ -165,12 +220,13 @@ def konzern_auftrag(auftrag, adressen):
         addr = "holding/" + "/".join(
             levels[n] for n in LEVEL_NAMES if n in levels)
         try:
-            result = _ask(client, role_prompt(levels), auftrag)
+            result = _ask_worker(client, role_prompt(levels), auftrag)
         except Exception as e:
             result = "(Agent-Fehler: %s)" % e
         agents.append({"adresse": addr, "ergebnis": result})
 
     out = {"auftrag": auftrag, "agents": agents,
+           "worker_modell": worker_description(),
            "note": "Nenne Nate kurz, welche Adressen gearbeitet haben, "
                    "und fasse das Ergebnis gesprochen knapp zusammen."}
     if len(agents) > 1:

@@ -96,10 +96,31 @@ zusaetzlich eine konsolidierte Synthese.
 
 **Ehrliche Grenzen:** Adressierbar sind 10 Milliarden - gleichzeitig
 arbeiten maximal 3. Jeder eingesetzte Agent ist ein echter zusaetzlicher
-Anthropic-API-Aufruf (kostet Tokens und einige Sekunden). Fuer einfache
+API-Aufruf (kostet Tokens und einige Sekunden). Fuer einfache
 Fragen antwortet JAVIER deshalb selbst, ohne den Konzern zu bemuehen.
 Die Agents liefern Entwuerfe und Empfehlungen - nichts Irreversibles;
 entschieden wird von Nate.
+
+## Modelle: Fable 5 als Boss, GPT-5.6-Sol als Worker (optional)
+
+- **Boss (JAVIER selbst + Holding-Synthese):** `claude-fable-5`
+  (Fable 5, staerkstes Claude-Modell). Hat dein API-Key darauf keinen
+  Zugriff, wechselt JAVIER beim ersten Aufruf automatisch und dauerhaft
+  auf `claude-sonnet-4-6` - es gibt keinen Zustand, in dem er wegen des
+  Modells nicht antwortet. Uebersteuerbar per `JAVIER_MODEL` in `.env`.
+- **Worker (die Holding-Agents):** Sobald ein `OPENAI_API_KEY` in `.env`
+  bzw. bei Render gesetzt ist, arbeiten die Konzern-Agents auf
+  `gpt-5.6-sol` (uebersteuerbar per `JAVIER_SOL_MODEL`); die Synthese
+  bleibt beim Claude-Boss. Schlaegt OpenAI fehl (Key, Netz, Kontingent),
+  faellt jeder Worker einzeln und automatisch auf Claude zurueck.
+- `/api/health` zeigt jederzeit, welches Boss- und Worker-Modell aktiv
+  ist.
+
+**Wichtig zu den Keys:** API-Keys gehoeren NIE ins Repository (es ist
+oeffentlich) - nur in die lokale `.env` (bleibt dank `.gitignore`
+privat) oder bei Render unter Environment. Dein vorhandener
+`ANTHROPIC_API_KEY` reicht fuer alles hier - der OpenAI-Key ist rein
+optional.
 
 ## Freihaendig sprechen mit AirPods (Auto-Modus)
 
@@ -316,7 +337,8 @@ https-URL** - lokale Pfade gehen nicht. Einfachste Loesungen:
 
 ```
 javier-mobile/
-  server.py        FastAPI + Anthropic Tool-Use-Loop (claude-sonnet-4-6)
+  server.py        FastAPI + Anthropic Tool-Use-Loop (Fable 5, s. unten)
+  holding.py       Milliarden-Holding (Adressraum + Agent-Dispatch)
   tools.py         Alle Agent-Tools (Todos, Kalender, Wetter, Shopify, ...)
   instagram.py     Optionales Graph-API-Modul
   static/          index.html (iPhone-PWA), desktop.html (PC-Modus),
