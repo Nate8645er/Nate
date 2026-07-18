@@ -624,8 +624,9 @@ fetch("/api/health")
     setStatus("bereit", true);
     addMsg("javier", "Guten Tag, Nate. JAVIER Desktop ist online. " +
       "Aktiviere das Wake-Word und sag 'Hey JAVIER' - oder klicke den " +
-      "Reaktor. Ich kann jetzt auch den PC steuern: Programme starten, " +
-      "Lautstaerke, Musik, Dateien suchen, sperren.");
+      "Reaktor. Ich steuere den PC (Programme, Lautstaerke, Musik, " +
+      "Dateien) und kommandiere die Milliarden-Holding - sag einfach, " +
+      "was der Konzern erledigen soll.");
     // Restore wake mode only after the mic was allowed once before.
     if (localStorage.getItem("javierWake") === "1") setWakeMode(true);
   })

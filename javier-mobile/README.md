@@ -20,6 +20,9 @@ sich per Browser im gleichen WLAN, der PC nutzt `/desktop` direkt.
   Musik/Medien, Dateien suchen, System-Status, Ordner oeffnen, Screenshot,
   Bildschirm sperren - Herunterfahren/Neustart nur nach Rueckfrage und mit
   30-Sekunden-Abbruchfenster
+- Die Milliarden-Holding kommandieren: Auftraege an spezialisierte
+  KI-Agents aus einem Adressraum von 10 Milliarden delegieren (siehe
+  unten)
 
 ## JAVIER DESKTOP - der PC-Modus
 
@@ -62,6 +65,41 @@ PROGRAMS=Spotify=C:\Users\Nate\AppData\Roaming\Spotify\Spotify.exe, Steam=steam:
 
 Eingebaut sind: notepad, rechner, paint, explorer, taskmanager,
 einstellungen. "JAVIER, starte Spotify" genuegt dann.
+
+## Die Milliarden-Holding: JARVIS mit 10.000.000.000 Mitarbeitern
+
+JAVIER steht an der Spitze einer generativen Konzern-Struktur:
+
+```
+NATE (letztes Wort, immer)
+  HOLDING
+    10 Divisionen (engineering, business, content, data, security,
+                   operations, design, legal, research, ventures)
+      x 100 Companies x 100 Departments x 100 Teams x 1000 Agents
+      = 10.000.000.000 adressierbare Agents
+```
+
+Der Trick: Die **Adresse ist die Rolle**. Es existieren keine 10
+Milliarden Dateien - jede Adresse wie
+`holding/content/copywriting/ads/meta/hook-writer-1` wird erst im Moment
+des Auftrags zu einem echten, spezialisierten KI-Agent instanziiert
+(deterministisch: gleiche Adresse ergibt immer wieder exakt dieselbe
+Rolle). Sagen genuegt:
+
+- "JAVIER, lass den Konzern einen Werbetext fuer MeowUfo schreiben"
+- "Lass das Unternehmen pruefen, ob mein Pricing stimmt"
+- "Wie ist die Holding aufgebaut?"
+
+JAVIER waehlt dann selbst die passenden Adressen, setzt sie ein und
+nennt sie in der Antwort. Bei mehreren Agents liefert die Holding
+zusaetzlich eine konsolidierte Synthese.
+
+**Ehrliche Grenzen:** Adressierbar sind 10 Milliarden - gleichzeitig
+arbeiten maximal 3. Jeder eingesetzte Agent ist ein echter zusaetzlicher
+Anthropic-API-Aufruf (kostet Tokens und einige Sekunden). Fuer einfache
+Fragen antwortet JAVIER deshalb selbst, ohne den Konzern zu bemuehen.
+Die Agents liefern Entwuerfe und Empfehlungen - nichts Irreversibles;
+entschieden wird von Nate.
 
 ## Freihaendig sprechen mit AirPods (Auto-Modus)
 

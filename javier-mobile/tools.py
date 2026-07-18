@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 
 import requests
 
+import holding
 import instagram
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -982,6 +983,51 @@ def tool_definitions():
             "input_schema": {"type": "object", "properties": {}},
         },
         {
+            "name": "konzern_auftrag",
+            "description": "Einen Auftrag an Nates Milliarden-Holding "
+                           "delegieren: 1-3 spezialisierte Agents werden "
+                           "aus ihren Adressen instanziiert, arbeiten den "
+                           "Auftrag ab und liefern (bei mehreren) eine "
+                           "Synthese. Adressformat: holding/<division>/"
+                           "<company>/<department>/<team>/<agent> - "
+                           "Division aus: engineering, business, content, "
+                           "data, security, operations, design, legal, "
+                           "research, ventures; tiefere Ebenen frei und "
+                           "sprechend waehlen, je praeziser desto besser "
+                           "(z.B. holding/content/copywriting/ads/meta/"
+                           "hook-writer-1). Kostet pro Agent einen "
+                           "zusaetzlichen API-Aufruf und einige Sekunden "
+                           "- fuer einfache Fragen NICHT noetig.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "auftrag": {"type": "string",
+                                "description": "Der konkrete Auftrag mit "
+                                               "allem noetigen Kontext"},
+                    "adressen": {"type": "array",
+                                 "items": {"type": "string"},
+                                 "description": "1-3 Agent-Adressen"},
+                },
+                "required": ["auftrag", "adressen"],
+            },
+        },
+        {
+            "name": "konzern_struktur",
+            "description": "Die Struktur der Milliarden-Holding erklaeren "
+                           "(ohne Adresse: die 10 Divisionen und das "
+                           "Adressformat) oder eine konkrete Agent-Adresse "
+                           "aufloesen und ihre Rolle zeigen. Kostet keinen "
+                           "API-Aufruf.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "adresse": {"type": "string",
+                                "description": "Optional: eine Adresse "
+                                               "holding/..."},
+                },
+            },
+        },
+        {
             "name": "shutdown_pc",
             "description": "Den Windows-PC herunterfahren oder neu starten "
                            "- IMMER zuerst Nates ausdrueckliche "
@@ -1042,6 +1088,8 @@ TOOL_FUNCTIONS = {
     "system_info": system_info,
     "lock_pc": lock_pc,
     "shutdown_pc": shutdown_pc,
+    "konzern_auftrag": holding.konzern_auftrag,
+    "konzern_struktur": holding.konzern_struktur,
 }
 
 
