@@ -36,6 +36,8 @@
         <div class="kv"><span>Gedächtnis-Einträge</span><b id="mem">–</b></div>
         <div class="kv"><span>Modell</span><b id="model">–</b></div>
         <div class="kv"><span>Modus</span><b id="mmode">–</b></div>
+        <div class="kv"><span>Boss (orchestriert)</span><b id="bossm">–</b></div>
+        <div class="kv"><span>Worker (arbeitet)</span><b id="workerm">–</b></div>
         <div class="kv"><span>Laufzeit</span><b id="uptime">–</b></div>
       </div>
     </div>
@@ -174,6 +176,8 @@ async function tick() {
     $('acts').textContent = fmt(s.aktivierte_agenten_gesamt);
     $('mem').textContent = fmt(s.gedaechtnis_eintraege);
     $('model').textContent = s.modell; $('mmode').textContent = s.modell_modus;
+    $('bossm').textContent = s.boss_modell || '–';
+    $('workerm').textContent = s.worker_modell || '–';
     $('uptime').textContent = s.laufzeit_s + ' s';
     $('t_act').textContent = s.aktive_agenten; $('t_wait').textContent = s.wartende_aufgaben;
     $('t_done').textContent = fmt(s.fertig); $('t_err').textContent = s.fehler;

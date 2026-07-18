@@ -113,6 +113,36 @@ def test_orchestrator_routes_task_through_worker(monkeypatch, tmp_path):
     assert "openai/gpt-5.6-sol-ultra" in seen["models"]
 
 
+def test_autopilot_idea_runs_as_worker(monkeypatch, tmp_path):
+    """Autopilot-Ideen sind Worker-Arbeit -> role=worker (Sol Ultra)."""
+    from jarvis.core import autopilot as ap_mod
+
+    seen = {}
+
+    def fake_answer(emp, prompt, role="boss"):
+        seen["role"] = role
+        return "TITEL: Test\nIDEE: x\nZIELGRUPPE: y\nERSTER SCHRITT: z"
+
+    monkeypatch.setattr(ap_mod.brain, "answer", fake_answer)
+    ap = ap_mod.Autopilot(tmp_path, interval_s=999)
+    ap.on = True
+    ap._gen = 1
+    # Einen einzelnen Durchlauf ausführen, dann stoppen.
+    import threading
+    t = threading.Thread(target=ap._run, args=(1,))
+    t.start()
+    import time as _t
+    for _ in range(50):
+        if ap.count_total >= 1:
+            break
+        _t.sleep(0.02)
+    ap.on = False
+    ap._gen = 2
+    t.join(timeout=2)
+    assert seen.get("role") == "worker"
+    assert ap.count_total >= 1
+
+
 def test_default_role_is_boss(monkeypatch):
     """Direkte answer()-Aufrufe ohne role bleiben Boss (Rückwärtskompatibilität)."""
     monkeypatch.setenv("OPENROUTER_API_KEY", "or")

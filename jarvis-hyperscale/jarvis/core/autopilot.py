@@ -84,7 +84,8 @@ class Autopilot:
             addr = address_for_task("business idee", team_hint="Business")
             emp = materialize(addr)
             try:
-                text = brain.answer(emp, IDEA_PROMPT)
+                # Ideenfindung ist kreative Mitarbeiter-Arbeit -> Worker (Sol Ultra).
+                text = brain.answer(emp, IDEA_PROMPT, role="worker")
             except Exception as e:  # nie abstürzen
                 text = f"[Fehler bei Ideengenerierung: {type(e).__name__}]"
             entry = {"ts": time.time(),

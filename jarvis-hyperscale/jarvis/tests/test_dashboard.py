@@ -53,9 +53,13 @@ def test_state_has_all_subsystems(client):
     assert r.status_code == 200
     s = r.json()
     for key in ("plugins", "skills", "belegschaft", "autopilot", "sicherheit",
-                "bodyguards", "finanzen", "modell", "modell_modus", "logs"):
+                "bodyguards", "finanzen", "modell", "modell_modus", "logs",
+                "boss_modell", "worker_modell"):
         assert key in s, f"Feld {key} fehlt in /api/state"
     assert isinstance(s["plugins"], list) and s["plugins"]
+    # Boss/Worker sind sichtbar und nicht leer (Worte statt exaktes Modell, da
+    # der aktive Boss-Name durch Fallback variieren kann).
+    assert s["boss_modell"] and s["worker_modell"]
 
 
 def test_all_pages_and_static_served(client):
