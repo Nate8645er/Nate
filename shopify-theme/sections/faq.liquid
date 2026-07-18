@@ -1,0 +1,79 @@
+{%- comment -%}
+  FAQ-Accordion (nativ mit <details>, kein JS nötig) + FAQPage-Schema (SEO).
+  Nutzbar auf der FAQ-Seite UND auf Produktseiten (Template-Section).
+{%- endcomment -%}
+<section class="faq section">
+  <div class="page-width page-width--narrow">
+    <div class="section__head reveal">
+      <h2 class="section__title">{{ section.settings.title | escape }}</h2>
+      {%- if section.settings.text != blank -%}<p class="section__text">{{ section.settings.text | escape }}</p>{%- endif -%}
+    </div>
+
+    <div class="faq__list">
+      {%- for block in section.blocks -%}
+        <details class="faq__item reveal" {{ block.shopify_attributes }}{% if forloop.first and section.settings.open_first %} open{% endif %}>
+          <summary class="faq__question">
+            {{ block.settings.question | escape }}
+            <span class="faq__chevron">{% render 'icon', name: 'chevron-down' %}</span>
+          </summary>
+          <div class="faq__answer rte">{{ block.settings.answer }}</div>
+        </details>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.contact_hint -%}
+      <p class="faq__hint">{{ 'general.faq_contact_hint' | t }} <a href="{{ pages['kontakt'].url | default: '/pages/kontakt' }}">{{ 'general.contact' | t }}</a></p>
+    {%- endif -%}
+  </div>
+</section>
+
+{%- if section.blocks.size > 0 -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {%- for block in section.blocks -%}
+    {
+      "@type": "Question",
+      "name": {{ block.settings.question | json }},
+      "acceptedAnswer": { "@type": "Answer", "text": {{ block.settings.answer | strip_html | json }} }
+    }{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+  ]
+}
+</script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "FAQ",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Titel", "default": "Häufige Fragen" },
+    { "type": "text", "id": "text", "label": "Text" },
+    { "type": "checkbox", "id": "open_first", "label": "Erste Frage geöffnet", "default": true },
+    { "type": "checkbox", "id": "contact_hint", "label": "Kontakt-Hinweis anzeigen", "default": true }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "Frage",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Frage", "default": "Wie lange dauert der Versand?" },
+        { "type": "richtext", "id": "answer", "label": "Antwort", "default": "<p>Wir versenden aus dem EU-Lager. Die Lieferung dauert 7–14 Tage und enthält immer eine Sendungsverfolgung.</p>" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ",
+      "blocks": [
+        { "type": "question", "settings": { "question": "Wie lange dauert der Versand?", "answer": "<p>Wir versenden aus dem EU-Lager. Die Lieferung dauert 7–14 Tage und enthält immer eine Sendungsverfolgung.</p>" } },
+        { "type": "question", "settings": { "question": "Wie funktioniert die Geld-zurück-Garantie?", "answer": "<p>Du kannst jedes Produkt 30 Tage lang testen. Nicht zufrieden? Schreib uns eine E-Mail und du erhältst dein Geld zurück – ohne Wenn und Aber.</p>" } },
+        { "type": "question", "settings": { "question": "Welche Zahlungsarten werden akzeptiert?", "answer": "<p>Alle gängigen Zahlungsarten: Kreditkarte, TWINT, PayPal, Apple Pay und Google Pay. Alle Zahlungen sind SSL-verschlüsselt.</p>" } },
+        { "type": "question", "settings": { "question": "Wie kann ich meine Bestellung verfolgen?", "answer": "<p>Nach dem Versand erhältst du eine E-Mail mit deiner Sendungsnummer. Auf unserer Tracking-Seite kannst du den Status jederzeit prüfen.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

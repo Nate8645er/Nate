@@ -1,0 +1,56 @@
+{%- comment -%}
+  Tracking-Seite: Erklärung + Link zum Tracking-Dienst (Settings → Sendungsverfolgung).
+  Kostenlose Alternative zu Tracking-Apps: Sendungsnummer aus der Versand-E-Mail
+  beim verlinkten Dienst (z. B. 17track.net) eingeben.
+{%- endcomment -%}
+<section class="section">
+  <div class="page-width page-width--narrow">
+    <h1 class="page__title">{{ page.title | default: section.settings.title | escape }}</h1>
+    {%- if page.content != blank -%}
+      <div class="rte">{{ page.content }}</div>
+    {%- endif -%}
+
+    <ol class="steps" role="list">
+      <li class="steps__item reveal">
+        <span class="steps__num">1</span>
+        <div>
+          <h2 class="steps__title">{{ 'tracking.step1_title' | t }}</h2>
+          <p>{{ 'tracking.step1_text' | t }}</p>
+        </div>
+      </li>
+      <li class="steps__item reveal">
+        <span class="steps__num">2</span>
+        <div>
+          <h2 class="steps__title">{{ 'tracking.step2_title' | t }}</h2>
+          <p>{{ 'tracking.step2_text' | t }}</p>
+        </div>
+      </li>
+      <li class="steps__item reveal">
+        <span class="steps__num">3</span>
+        <div>
+          <h2 class="steps__title">{{ 'tracking.step3_title' | t }}</h2>
+          <p>{{ 'tracking.step3_text' | t }}</p>
+        </div>
+      </li>
+    </ol>
+
+    {%- if settings.tracking_url != blank -%}
+      <div class="section__cta">
+        <a href="{{ settings.tracking_url }}" target="_blank" rel="noopener" class="btn btn--accent btn--lg">
+          {% render 'icon', name: 'package' %} {{ 'tracking.cta' | t }}
+        </a>
+      </div>
+    {%- endif -%}
+
+    <p class="faq__hint">{{ 'tracking.help_hint' | t }} <a href="{{ pages['kontakt'].url | default: '/pages/kontakt' }}">{{ 'general.contact' | t }}</a></p>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Sendungsverfolgung",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Titel (Fallback)", "default": "Sendungsverfolgung" }
+  ]
+}
+{% endschema %}

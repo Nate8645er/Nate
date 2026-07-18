@@ -1,0 +1,17 @@
+{
+  "type": "footer",
+  "name": "Footer-Gruppe",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "shop": { "type": "link_column", "settings": { "heading": "Shop", "menu": "main-menu" } },
+        "help": { "type": "link_column", "settings": { "heading": "Hilfe & Service", "menu": "footer" } },
+        "legal": { "type": "link_column", "settings": { "heading": "Rechtliches", "menu": "footer" } }
+      },
+      "block_order": ["shop", "help", "legal"],
+      "settings": {}
+    }
+  },
+  "order": ["footer"]
+}

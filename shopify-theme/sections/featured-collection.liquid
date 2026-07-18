@@ -1,0 +1,60 @@
+{%- comment -%}
+  Bestseller / Featured Collection: Produktgrid aus einer wählbaren Collection.
+  Fallback auf Platzhalter-Karten, solange keine Collection zugewiesen ist.
+{%- endcomment -%}
+<section class="featured-collection section">
+  <div class="page-width">
+    <div class="section__head reveal">
+      {%- if section.settings.eyebrow != blank -%}<p class="section__eyebrow">{{ section.settings.eyebrow | escape }}</p>{%- endif -%}
+      <h2 class="section__title">{{ section.settings.title | escape }}</h2>
+      {%- if section.settings.text != blank -%}<p class="section__text">{{ section.settings.text | escape }}</p>{%- endif -%}
+    </div>
+
+    <div class="product-grid product-grid--{{ section.settings.columns }}">
+      {%- liquid
+        assign coll = section.settings.collection
+        assign limit = section.settings.limit
+      -%}
+      {%- if coll != blank and coll.products.size > 0 -%}
+        {%- for product in coll.products limit: limit -%}
+          {% render 'product-card', card_product: product, lazy: true %}
+        {%- endfor -%}
+      {%- else -%}
+        {%- for i in (1..limit) -%}
+          {%- assign ph_index = forloop.index0 | modulo: 6 | plus: 1 -%}
+          <article class="product-card">
+            <div class="product-card__media">{{ 'product-' | append: ph_index | placeholder_svg_tag: 'product-card__img placeholder' }}</div>
+            <div class="product-card__info">
+              <h3 class="product-card__title">Beispielprodukt {{ forloop.index }}</h3>
+              <div class="price"><span class="price__current">CHF 39.90</span></div>
+            </div>
+          </article>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+
+    {%- if section.settings.show_view_all and coll != blank -%}
+      <div class="section__cta">
+        <a href="{{ coll.url }}" class="btn btn--outline">{{ 'general.view_all' | t }} {% render 'icon', name: 'arrow-right' %}</a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Bestseller / Collection",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Overline", "default": "Von Kundinnen und Kunden geliebt" },
+    { "type": "text", "id": "title", "label": "Titel", "default": "Unsere Bestseller" },
+    { "type": "text", "id": "text", "label": "Text" },
+    { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "range", "id": "limit", "min": 2, "max": 12, "step": 1, "label": "Anzahl Produkte", "default": 4 },
+    { "type": "select", "id": "columns", "label": "Spalten (Desktop)", "default": "4", "options": [
+      { "value": "2", "label": "2" }, { "value": "3", "label": "3" }, { "value": "4", "label": "4" }
+    ] },
+    { "type": "checkbox", "id": "show_view_all", "label": "\"Alle ansehen\"-Button", "default": true }
+  ],
+  "presets": [{ "name": "Bestseller / Collection" }]
+}
+{% endschema %}

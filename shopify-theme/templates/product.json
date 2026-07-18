@@ -1,0 +1,45 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "desc": { "type": "description", "settings": {} },
+        "shipping": {
+          "type": "shipping",
+          "settings": {
+            "title": "Versand & Lieferung",
+            "content": "<p>Versand aus dem EU-Lager. Lieferzeit 7–14 Tage, immer inkl. Sendungsverfolgung. Du erhältst deine Sendungsnummer per E-Mail.</p>"
+          }
+        },
+        "guarantee": {
+          "type": "guarantee",
+          "settings": {
+            "title": "30 Tage Geld-zurück-Garantie",
+            "content": "<p>Teste das Produkt 30 Tage in Ruhe. Nicht zufrieden? Schreib uns eine E-Mail und du erhältst dein Geld zurück – ohne Wenn und Aber.</p>"
+          }
+        },
+        "faq1": {
+          "type": "faq",
+          "settings": {
+            "question": "Wie schnell erhalte ich meine Bestellung?",
+            "answer": "<p>Wir versenden aus dem EU-Lager. Die Lieferung dauert 7–14 Tage und enthält immer eine Sendungsverfolgung.</p>"
+          }
+        },
+        "faq2": {
+          "type": "faq",
+          "settings": {
+            "question": "Was passiert, wenn mir das Produkt nicht gefällt?",
+            "answer": "<p>Dann greift unsere 30-Tage-Geld-zurück-Garantie: kurze E-Mail an uns, Geld zurück. Ohne Diskussion.</p>"
+          }
+        }
+      },
+      "block_order": ["desc", "shipping", "guarantee", "faq1", "faq2"],
+      "settings": {
+        "usp_list": "Automatik-Modus mit cleveren Pausen|USB-aufladbar, kein Batteriekauf|30 Tage Geld-zurück-Garantie"
+      }
+    },
+    "related": { "type": "related-products" },
+    "reviews": { "type": "testimonials" }
+  },
+  "order": ["main", "related", "reviews"]
+}

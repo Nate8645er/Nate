@@ -1,0 +1,31 @@
+{%- comment -%} Blog-Artikel mit Article-Schema (SEO) {%- endcomment -%}
+<article class="section">
+  <div class="page-width page-width--narrow">
+    <header class="article__head">
+      <h1 class="page__title">{{ article.title | escape }}</h1>
+      <p class="article-card__meta">{{ article.published_at | date: '%d.%m.%Y' }}{% if article.author != blank %} &middot; {{ article.author | escape }}{% endif %}</p>
+    </header>
+    {%- if article.image -%}
+      {{ article.image | image_url: width: 1400 | image_tag: loading: 'eager', class: 'article__img', alt: article.title }}
+    {%- endif -%}
+    <div class="rte">{{ article.content }}</div>
+  </div>
+</article>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": {{ article.title | json }},
+  "datePublished": {{ article.published_at | date: '%Y-%m-%d' | json }},
+  {%- if article.image %}"image": {{ article.image | image_url: width: 1200 | prepend: 'https:' | json }},{% endif %}
+  "author": { "@type": "Person", "name": {{ article.author | default: shop.name | json }} }
+}
+</script>
+
+{% schema %}
+{
+  "name": "Artikel",
+  "settings": []
+}
+{% endschema %}
