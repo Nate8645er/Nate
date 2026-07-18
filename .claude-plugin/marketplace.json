@@ -26,6 +26,26 @@
         "quality"
       ],
       "category": "productivity"
+    },
+    {
+      "name": "superpowers-chrome",
+      "source": "./superpowers-chrome",
+      "description": "Direkte Chrome-Browsersteuerung via Chrome DevTools Protocol: 'browsing'-Skill mit 17 CLI-Kommandos plus ultraleichter MCP-Server mit einem einzigen use_browser-Tool (Auto-Capture von HTML, Markdown, Screenshots). Zero Dependencies, startet Chrome automatisch (headless-Auto-Erkennung).",
+      "version": "3.0.2",
+      "author": {
+        "name": "Jesse Vincent"
+      },
+      "homepage": "https://github.com/obra/superpowers-chrome",
+      "license": "MIT",
+      "keywords": [
+        "chrome",
+        "browser",
+        "automation",
+        "devtools",
+        "cdp",
+        "mcp"
+      ],
+      "category": "automation"
     }
   ]
 }
