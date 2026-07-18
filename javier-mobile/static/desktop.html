@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#04080f">
+<title>JAVIER DESKTOP</title>
+<link rel="icon" type="image/png" href="/icon-192.png">
+<style>
+  :root {
+    --bg: #04080f;
+    --panel: #0a1420;
+    --cyan: #37c8f0;
+    --cyan-dim: #1a5a70;
+    --text: #cfe8f2;
+    --muted: #5f7d8c;
+    --user: #12283a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: radial-gradient(ellipse at 50% -20%, #0a1e30 0%, var(--bg) 60%);
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, sans-serif;
+    display: flex; flex-direction: column; height: 100vh;
+  }
+  header {
+    padding: 14px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid rgba(55, 200, 240, 0.15); flex-shrink: 0;
+  }
+  header h1 {
+    font-size: 20px; font-weight: 600; letter-spacing: 7px; color: var(--cyan);
+    text-shadow: 0 0 14px rgba(55, 200, 240, 0.5);
+  }
+  header h1 small { font-size: 11px; letter-spacing: 3px; color: var(--muted); margin-left: 10px; }
+  #status { font-size: 12px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+  #status.online { color: var(--cyan); }
+  #headRight { display: flex; align-items: center; gap: 12px; }
+  .hbtn {
+    background: none; border: 1px solid var(--cyan-dim); color: var(--muted);
+    border-radius: 12px; padding: 6px 12px; font-size: 12px; letter-spacing: 1px;
+    cursor: pointer;
+  }
+  .hbtn.on {
+    color: var(--cyan); border-color: var(--cyan);
+    box-shadow: 0 0 10px rgba(55, 200, 240, 0.4);
+  }
+  #voicePanel {
+    display: none; padding: 12px 24px; border-bottom: 1px solid rgba(55, 200, 240, 0.15);
+    background: var(--panel);
+  }
+  #voicePanel.open { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+  #voicePanel label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  #voiceSelect {
+    background: var(--bg); color: var(--text); font-size: 13px;
+    border: 1px solid var(--cyan-dim); border-radius: 8px; padding: 6px;
+  }
+  #voicePanel input[type="range"] { accent-color: var(--cyan); }
+  #voiceTest {
+    padding: 6px 14px; border-radius: 10px; background: none; cursor: pointer;
+    border: 1px solid var(--cyan); color: var(--cyan); font-size: 13px;
+  }
+
+  #main { flex: 1; display: flex; min-height: 0; }
+  #chat {
+    flex: 1; overflow-y: auto; padding: 20px 24px;
+    display: flex; flex-direction: column; gap: 10px;
+    max-width: 860px; margin: 0 auto; width: 100%;
+  }
+  .msg {
+    max-width: 78%; padding: 10px 16px; border-radius: 14px;
+    font-size: 15px; line-height: 1.5; white-space: pre-wrap; word-break: break-word;
+  }
+  .msg.user {
+    align-self: flex-end; background: var(--user);
+    border: 1px solid rgba(55, 200, 240, 0.25); border-bottom-right-radius: 4px;
+  }
+  .msg.javier {
+    align-self: flex-start; background: var(--panel);
+    border: 1px solid rgba(55, 200, 240, 0.12); border-bottom-left-radius: 4px;
+  }
+  .msg.javier::before {
+    content: "JAVIER"; display: block; font-size: 9px; letter-spacing: 3px;
+    color: var(--cyan-dim); margin-bottom: 4px;
+  }
+  .msg.thinking { color: var(--muted); font-style: italic; }
+  .action-btn {
+    display: inline-block; margin: 6px 0 0; padding: 10px 16px; border-radius: 12px;
+    background: linear-gradient(180deg, #0f3a50, #0a2838); cursor: pointer;
+    border: 1px solid var(--cyan); color: var(--cyan); align-self: flex-start;
+    font-size: 14px; font-weight: 600; text-align: center; text-decoration: none;
+  }
+  .action-btn small { display: block; font-weight: 400; font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  #bottom {
+    flex-shrink: 0; padding: 8px 24px 18px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    border-top: 1px solid rgba(55, 200, 240, 0.15);
+    background: rgba(4, 8, 15, 0.9);
+  }
+  #hint { font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
+  #reactor {
+    width: 110px; height: 110px; border-radius: 50%; position: relative; cursor: pointer;
+    border: none; background: radial-gradient(circle, #bdf3ff 0%, #37c8f0 28%, #0b2f42 62%, #04080f 100%);
+    box-shadow: 0 0 28px rgba(55, 200, 240, 0.55), inset 0 0 20px rgba(190, 243, 255, 0.6);
+    user-select: none;
+  }
+  #reactor::before {
+    content: ""; position: absolute; inset: 12px; border-radius: 50%;
+    border: 2px solid rgba(190, 243, 255, 0.5);
+  }
+  #reactor::after {
+    content: ""; position: absolute; inset: 27px; border-radius: 50%;
+    border: 3px dashed rgba(13, 60, 80, 0.9);
+  }
+  #reactor.listening {
+    animation: pulse 0.9s ease-in-out infinite;
+    box-shadow: 0 0 52px rgba(55, 200, 240, 0.95), inset 0 0 26px #fff;
+  }
+  #reactor.passive { box-shadow: 0 0 36px rgba(55, 200, 240, 0.7), inset 0 0 20px rgba(190, 243, 255, 0.6); }
+  #reactor.speaking { animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+  }
+  #inputRow { display: flex; gap: 12px; width: 100%; max-width: 860px; }
+  #textInput {
+    flex: 1; background: var(--panel); border: 1px solid rgba(55, 200, 240, 0.25);
+    border-radius: 22px; padding: 11px 18px; color: var(--text); font-size: 15px;
+    outline: none;
+  }
+  #sendBtn {
+    background: none; border: 1px solid var(--cyan-dim); color: var(--cyan);
+    border-radius: 50%; width: 46px; height: 46px; font-size: 18px; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>J A V I E R<small>DESKTOP</small></h1>
+  <div id="headRight">
+    <span id="status">offline</span>
+    <button id="voiceBtn" class="hbtn">STIMME</button>
+    <button id="wakeBtn" class="hbtn">WAKE-WORD AUS</button>
+  </div>
+</header>
+
+<div id="voicePanel">
+  <label>Stimme <select id="voiceSelect"></select></label>
+  <label>Tempo <input type="range" id="rateRange" min="0.6" max="1.4" step="0.05"></label>
+  <label>Tonhoehe <input type="range" id="pitchRange" min="0.5" max="1.5" step="0.05"></label>
+  <button id="voiceTest">Probehoeren</button>
+</div>
+
+<div id="main"><div id="chat"></div></div>
+
+<div id="bottom">
+  <button id="reactor" aria-label="Zuhoeren starten"></button>
+  <div id="hint">REAKTOR KLICKEN ODER WAKE-WORD AKTIVIEREN</div>
+  <div id="inputRow">
+    <input id="textInput" type="text" placeholder="Oder tippen..." autocomplete="off">
+    <button id="sendBtn" aria-label="Senden">&#10148;</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+var chatEl = document.getElementById("chat");
+var statusEl = document.getElementById("status");
+var reactor = document.getElementById("reactor");
+var textInput = document.getElementById("textInput");
+var sendBtn = document.getElementById("sendBtn");
+var wakeBtn = document.getElementById("wakeBtn");
+var hintEl = document.getElementById("hint");
+
+var chatLog = [];   // {role, content} - sent to backend on every request
+var busy = false;
+var speaking = false;
+var germanVoice = null;
+
+// Listening state machine:
+//   wakeMode  - persistent toggle: passively listen for "Hey JAVIER"
+//   command   - the NEXT utterance is a command and gets sent
+var wakeMode = false;
+var command = false;
+var commandTimer = null;
+var WAKE_WORDS = ["javier", "jarvis", "xavier", "javi"];
+
+// ---------------------------------------------------------------- UI
+
+function addMsg(role, text) {
+  var div = document.createElement("div");
+  div.className = "msg " + (role === "user" ? "user" : "javier");
+  div.textContent = text;
+  chatEl.appendChild(div);
+  chatEl.scrollTop = chatEl.scrollHeight;
+  return div;
+}
+
+function addActionButton(action) {
+  // Desktop rendering: links open in a new tab; SMS has no desktop
+  // channel, so JAVIER offers the text to copy instead - honest.
+  if (action.type === "link") {
+    var a = document.createElement("a");
+    a.className = "action-btn";
+    a.href = action.url;
+    a.target = "_blank";
+    a.textContent = action.label + " oeffnen";
+    chatEl.appendChild(a);
+    chatEl.scrollTop = chatEl.scrollHeight;
+    return;
+  }
+  if (action.type === "message") {
+    var num = String(action.number || "").replace(/[^+\d]/g, "");
+    if (action.channel === "sms") {
+      var b = document.createElement("button");
+      b.className = "action-btn";
+      b.textContent = "Text fuer SMS an " + action.contact + " kopieren";
+      var s = document.createElement("small");
+      s.textContent = "SMS senden geht nur am iPhone - hier: Text in die Zwischenablage";
+      b.appendChild(s);
+      b.addEventListener("click", function () {
+        navigator.clipboard.writeText(action.text).then(function () {
+          b.firstChild.textContent = "Kopiert.";
+        });
+      });
+      chatEl.appendChild(b);
+    } else {
+      var w = document.createElement("a");
+      w.className = "action-btn";
+      w.href = "https://wa.me/" + num.replace("+", "") +
+               "?text=" + encodeURIComponent(action.text);
+      w.target = "_blank";
+      w.textContent = "WhatsApp an " + action.contact + " oeffnen";
+      var ws = document.createElement("small");
+      ws.textContent = "Du klickst selbst auf Senden";
+      w.appendChild(ws);
+      chatEl.appendChild(w);
+    }
+    chatEl.scrollTop = chatEl.scrollHeight;
+  }
+}
+
+function setStatus(text, online) {
+  statusEl.textContent = text;
+  statusEl.className = online ? "online" : "";
+}
+
+function beep() {
+  try {
+    var ctx = beep.ctx || (beep.ctx = new (window.AudioContext || window.webkitAudioContext)());
+    var o = ctx.createOscillator();
+    var g = ctx.createGain();
+    o.frequency.value = 880;
+    g.gain.setValueAtTime(0.08, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.18);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(); o.stop(ctx.currentTime + 0.2);
+  } catch (e) { /* no audio - not critical */ }
+}
+
+// ------------------------------------------------------------- speech out
+
+var serverTTS = false;  // true when the backend has an ElevenLabs voice
+var audioEl = new Audio();
+
+function speakServer(text) {
+  audioEl.pause();
+  speaking = true;
+  reactor.classList.add("speaking");
+  fetch("/api/tts", {
+    method: "POST",
+    headers: apiHeaders(),
+    body: JSON.stringify({ text: text })
+  })
+  .then(function (r) {
+    if (!r.ok) throw new Error("tts " + r.status);
+    return r.blob();
+  })
+  .then(function (blob) {
+    audioEl.src = URL.createObjectURL(blob);
+    audioEl.onended = doneSpeaking;
+    return audioEl.play();
+  })
+  .catch(function () {
+    serverTTS = false;
+    doneSpeaking();
+    speak(text);
+  });
+}
+
+function doneSpeaking() {
+  speaking = false;
+  reactor.classList.remove("speaking");
+  resumeListening();
+}
+
+function germanVoices() {
+  return speechSynthesis.getVoices().filter(function (v) {
+    return v.lang && v.lang.indexOf("de") === 0;
+  });
+}
+
+function pickVoice() {
+  var de = germanVoices();
+  if (!de.length) return null;
+  var saved = localStorage.getItem("javierVoice");
+  for (var k = 0; k < de.length; k++) {
+    if (saved && de[k].name === saved) return de[k];
+  }
+  var preferred = ["Stefan", "Conrad", "Anna", "Katja", "Markus"];
+  for (var i = 0; i < preferred.length; i++) {
+    for (var j = 0; j < de.length; j++) {
+      if (de[j].name.indexOf(preferred[i]) !== -1) return de[j];
+    }
+  }
+  return de[0];
+}
+
+function voicePref(key, fallback) {
+  var v = parseFloat(localStorage.getItem(key));
+  return isNaN(v) ? fallback : v;
+}
+
+function speak(text) {
+  // While JAVIER talks the mic is off, so he never hears himself.
+  stopListening();
+  if (serverTTS) { speakServer(text); return; }
+  if (!("speechSynthesis" in window)) { resumeListening(); return; }
+  speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  if (!germanVoice) germanVoice = pickVoice();
+  if (germanVoice) u.voice = germanVoice;
+  u.lang = germanVoice ? germanVoice.lang : "de-DE";
+  u.rate = voicePref("javierRate", 1.02);
+  u.pitch = voicePref("javierPitch", 1.0);
+  u.onstart = function () { speaking = true; reactor.classList.add("speaking"); };
+  u.onend = doneSpeaking;
+  u.onerror = doneSpeaking;
+  speechSynthesis.speak(u);
+}
+
+// ---------------------------------------------------- voice settings UI
+
+var voiceBtn = document.getElementById("voiceBtn");
+var voicePanel = document.getElementById("voicePanel");
+var voiceSelect = document.getElementById("voiceSelect");
+var rateRange = document.getElementById("rateRange");
+var pitchRange = document.getElementById("pitchRange");
+var voiceTest = document.getElementById("voiceTest");
+
+function fillVoiceSelect() {
+  var de = germanVoices();
+  voiceSelect.innerHTML = "";
+  if (!de.length) {
+    var o = document.createElement("option");
+    o.textContent = "Keine deutsche Stimme gefunden";
+    voiceSelect.appendChild(o);
+    return;
+  }
+  var saved = localStorage.getItem("javierVoice");
+  de.forEach(function (v) {
+    var o = document.createElement("option");
+    o.value = v.name;
+    o.textContent = v.name + " (" + v.lang + ")";
+    if (v.name === saved || (!saved && germanVoice && v.name === germanVoice.name)) {
+      o.selected = true;
+    }
+    voiceSelect.appendChild(o);
+  });
+}
+
+voiceBtn.addEventListener("click", function () {
+  voicePanel.classList.toggle("open");
+  if (voicePanel.classList.contains("open")) fillVoiceSelect();
+});
+voiceSelect.addEventListener("change", function () {
+  localStorage.setItem("javierVoice", voiceSelect.value);
+  germanVoice = pickVoice();
+});
+rateRange.value = voicePref("javierRate", 1.02);
+pitchRange.value = voicePref("javierPitch", 1.0);
+rateRange.addEventListener("change", function () {
+  localStorage.setItem("javierRate", rateRange.value);
+});
+pitchRange.addEventListener("change", function () {
+  localStorage.setItem("javierPitch", pitchRange.value);
+});
+voiceTest.addEventListener("click", function () {
+  speak("So klinge ich jetzt, Nate. Zufrieden?");
+});
+
+if ("speechSynthesis" in window) {
+  speechSynthesis.onvoiceschanged = function () {
+    germanVoice = pickVoice();
+    if (voicePanel.classList.contains("open")) fillVoiceSelect();
+  };
+}
+
+// -------------------------------------------------------------- speech in
+// One continuous recognition instance. In wake mode every final result is
+// scanned for a wake word; "Hey JAVIER mach Musik lauter" executes in one
+// go, a bare "Hey JAVIER" opens a 7 second command window (beep).
+
+var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+var recognition = null;
+var recActive = false;
+var recLang = "de-CH";
+
+function stripWake(text) {
+  var t = " " + text.toLowerCase() + " ";
+  for (var i = 0; i < WAKE_WORDS.length; i++) {
+    var idx = t.indexOf(WAKE_WORDS[i]);
+    if (idx !== -1) {
+      var rest = text.slice(idx - 1 + WAKE_WORDS[i].length);
+      return { found: true, rest: rest.replace(/^[\s,.!?]+/, "").trim() };
+    }
+  }
+  return { found: false, rest: "" };
+}
+
+function enterCommandWindow() {
+  command = true;
+  beep();
+  reactor.classList.add("listening");
+  setStatus("Ja, Nate? Ich hoere...", true);
+  clearTimeout(commandTimer);
+  commandTimer = setTimeout(function () {
+    command = false;
+    reactor.classList.remove("listening");
+    setStatus(wakeMode ? "warte auf 'Hey JAVIER'" : "bereit", true);
+  }, 7000);
+}
+
+function handleFinal(text) {
+  text = text.trim();
+  if (!text) return;
+  if (command) {
+    clearTimeout(commandTimer);
+    command = false;
+    reactor.classList.remove("listening");
+    sendToJavier(text);
+    return;
+  }
+  var w = stripWake(text);
+  if (!w.found) return;  // passive mode: ignore everything without wake word
+  if (w.rest) {
+    sendToJavier(w.rest);
+  } else {
+    enterCommandWindow();
+  }
+}
+
+function buildRecognition() {
+  if (!SR) return null;
+  var r = new SR();
+  r.lang = recLang;
+  r.interimResults = true;
+  r.continuous = true;
+  r.onresult = function (e) {
+    for (var i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) {
+        handleFinal(e.results[i][0].transcript);
+      } else if (command) {
+        setStatus(e.results[i][0].transcript.slice(-50), true);
+      }
+    }
+  };
+  r.onerror = function (e) {
+    if (e.error === "no-speech" || e.error === "aborted") return;
+    if (e.error === "language-not-supported" && recLang === "de-CH") {
+      recLang = "de-DE";
+      recognition = buildRecognition();
+      return;
+    }
+    if (e.error === "not-allowed" || e.error === "service-not-allowed") {
+      setWakeMode(false);
+      setStatus("Mikrofon nicht erlaubt", false);
+      addMsg("javier", "Ich darf das Mikrofon nicht verwenden, Nate. " +
+        "Bitte erlaube den Zugriff in der Adressleiste des Browsers.");
+      return;
+    }
+    setStatus("Mikro-Fehler: " + e.error, false);
+  };
+  r.onend = function () {
+    recActive = false;
+    // Chrome stops continuous recognition after a while - re-arm as long
+    // as we are supposed to listen and JAVIER is neither busy nor talking.
+    if ((wakeMode || command) && !busy && !speaking) {
+      setTimeout(startListening, 250);
+    }
+  };
+  return r;
+}
+
+function startListening() {
+  if (busy || speaking || recActive) return;
+  if (!recognition) recognition = buildRecognition();
+  if (!recognition) {
+    setStatus("Spracherkennung nicht verfuegbar", false);
+    addMsg("javier", "Dieser Browser unterstuetzt keine Spracherkennung. " +
+      "Am PC bitte Chrome oder Edge verwenden.");
+    return;
+  }
+  try { recognition.start(); recActive = true; } catch (e) { /* running */ }
+  if (!command) {
+    reactor.classList.add("passive");
+    setStatus(wakeMode ? "warte auf 'Hey JAVIER'" : "hoere zu...", true);
+  }
+}
+
+function stopListening() {
+  if (recognition && recActive) { try { recognition.stop(); } catch (e) {} }
+  recActive = false;
+  reactor.classList.remove("passive");
+}
+
+function resumeListening() {
+  if ((wakeMode || command) && !busy && !speaking) startListening();
+}
+
+// Reactor click = talk to JAVIER right now (no wake word needed).
+reactor.addEventListener("click", function () {
+  if (speaking) { speechSynthesis.cancel(); audioEl.pause(); doneSpeaking(); return; }
+  if (command) return;
+  enterCommandWindow();
+  startListening();
+});
+
+// --------------------------------------------------------- wake mode
+
+function setWakeMode(on) {
+  wakeMode = on;
+  localStorage.setItem("javierWake", on ? "1" : "0");
+  wakeBtn.textContent = on ? "WAKE-WORD AN" : "WAKE-WORD AUS";
+  wakeBtn.className = "hbtn" + (on ? " on" : "");
+  hintEl.textContent = on
+    ? "SAG 'HEY JAVIER' - ODER REAKTOR KLICKEN"
+    : "REAKTOR KLICKEN ODER WAKE-WORD AKTIVIEREN";
+  if (on) startListening();
+  else if (!command) { stopListening(); setStatus("bereit", true); }
+}
+
+wakeBtn.addEventListener("click", function () { setWakeMode(!wakeMode); });
+
+// ------------------------------------------------------------------ chat
+
+function apiHeaders() {
+  var h = { "Content-Type": "application/json" };
+  var key = localStorage.getItem("javierKey");
+  if (key) h["X-Javier-Key"] = key;
+  return h;
+}
+
+function postChat() {
+  return fetch("/api/chat", {
+    method: "POST",
+    headers: apiHeaders(),
+    body: JSON.stringify({ messages: chatLog })
+  });
+}
+
+function sendToJavier(text) {
+  if (busy || !text) return;
+  busy = true;
+  stopListening();
+  addMsg("user", text);
+  chatLog.push({ role: "user", content: text });
+  setStatus("denke nach...", true);
+  var thinking = addMsg("javier", "...");
+  thinking.classList.add("thinking");
+
+  postChat()
+  .then(function (r) {
+    if (r.status === 401) {
+      var pw = prompt("JAVIER-Passwort eingeben:");
+      if (!pw) throw new Error("Passwort erforderlich");
+      localStorage.setItem("javierKey", pw);
+      return postChat();
+    }
+    return r;
+  })
+  .then(function (r) {
+    if (!r.ok) throw new Error(r.status === 401 ?
+      "Passwort falsch" : "HTTP " + r.status);
+    return r.json();
+  })
+  .then(function (data) {
+    thinking.remove();
+    addMsg("javier", data.reply);
+    chatLog.push({ role: "assistant", content: data.reply });
+    (data.actions || []).forEach(addActionButton);
+    busy = false;
+    speak(data.reply);
+    setStatus(wakeMode ? "warte auf 'Hey JAVIER'" : "bereit", true);
+  })
+  .catch(function (err) {
+    thinking.remove();
+    addMsg("javier", "Verbindungsproblem, Nate: " + err.message +
+      ". Laeuft der Server noch?");
+    setStatus("offline", false);
+    busy = false;
+    resumeListening();
+  });
+}
+
+sendBtn.addEventListener("click", function () {
+  var t = textInput.value.trim();
+  textInput.value = "";
+  sendToJavier(t);
+});
+textInput.addEventListener("keydown", function (e) {
+  if (e.key === "Enter") sendBtn.click();
+});
+
+// ------------------------------------------------------------------ boot
+
+fetch("/api/health")
+  .then(function (r) { return r.json(); })
+  .then(function (h) {
+    serverTTS = !!h.server_tts;
+    setStatus("bereit", true);
+    addMsg("javier", "Guten Tag, Nate. JAVIER Desktop ist online. " +
+      "Aktiviere das Wake-Word und sag 'Hey JAVIER' - oder klicke den " +
+      "Reaktor. Ich kann jetzt auch den PC steuern: Programme starten, " +
+      "Lautstaerke, Musik, Dateien suchen, sperren.");
+    // Restore wake mode only after the mic was allowed once before.
+    if (localStorage.getItem("javierWake") === "1") setWakeMode(true);
+  })
+  .catch(function () { setStatus("Server nicht erreichbar", false); });
+</script>
+</body>
+</html>

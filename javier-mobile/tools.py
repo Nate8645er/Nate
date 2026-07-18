@@ -497,6 +497,261 @@ def run_safe_command(action, target="downloads"):
                      "list_files, screenshot" % action}
 
 
+# ------------------------------------------- PC control (desktop mode)
+# Real control of the Windows PC for the /desktop UI. Same philosophy as
+# run_safe_command: strict whitelists, no arbitrary shell execution, and
+# honest errors on non-Windows hosts (e.g. the cloud instance).
+
+# Programs that exist on every Windows installation. Custom programs come
+# from the PROGRAMS environment variable (Name=C:\Pfad\zur\app.exe or
+# Name=steam://open/main) - same friendly format as CONTACTS/APPS.
+PROGRAMS_BUILTIN = {
+    "notepad": ("Editor (Notepad)", ["notepad.exe"]),
+    "editor": ("Editor (Notepad)", ["notepad.exe"]),
+    "rechner": ("Rechner", ["calc.exe"]),
+    "paint": ("Paint", ["mspaint.exe"]),
+    "explorer": ("Datei-Explorer", ["explorer.exe"]),
+    "taskmanager": ("Task-Manager", ["taskmgr.exe"]),
+    "einstellungen": ("Windows-Einstellungen", "ms-settings:"),
+}
+
+# Windows virtual key codes sent as characters through WScript.Shell -
+# the same keys a keyboard's volume/media buttons send.
+_KEY_VOL_MUTE, _KEY_VOL_DOWN, _KEY_VOL_UP = 173, 174, 175
+_KEY_MEDIA_NEXT, _KEY_MEDIA_PREV = 176, 177
+_KEY_MEDIA_STOP, _KEY_MEDIA_PLAY = 178, 179
+
+
+def _windows_only(feature):
+    if sys.platform != "win32":
+        return {"error": "%s funktioniert nur, wenn das Backend auf dem "
+                         "Windows-PC laeuft - nicht in der Cloud." % feature}
+    return None
+
+
+def _run_ps(script, timeout=20):
+    # Run a fixed PowerShell snippet; returns (ok, output_or_error).
+    try:
+        r = subprocess.run(
+            ["powershell", "-NoProfile", "-Command", script],
+            capture_output=True, timeout=timeout, text=True)
+    except (subprocess.SubprocessError, OSError) as e:
+        return False, str(e)
+    if r.returncode != 0:
+        return False, (r.stderr or "exit %d" % r.returncode).strip()
+    return True, (r.stdout or "").strip()
+
+
+def _send_keys(key_code, count=1):
+    count = max(1, min(int(count), 60))
+    ok, out = _run_ps(
+        "$w = New-Object -ComObject WScript.Shell; "
+        "for ($i = 0; $i -lt %d; $i++) { $w.SendKeys([char]%d) }"
+        % (count, key_code))
+    return ok, out
+
+
+def _load_custom_programs():
+    programs = {}
+    for key, value in os.environ.items():
+        if key.upper() == "PROGRAMS":
+            for part in re.split(r"[,;\n]+", value):
+                if "=" in part:
+                    name, target = part.split("=", 1)
+                    if name.strip() and target.strip():
+                        programs[name.strip()] = target.strip()
+            break
+    return programs
+
+
+def open_program(name):
+    err = _windows_only("Programme starten")
+    if err:
+        return err
+    wanted = (name or "").strip().lower()
+    custom = _load_custom_programs()
+    try:
+        if wanted in PROGRAMS_BUILTIN:
+            label, target = PROGRAMS_BUILTIN[wanted]
+            if isinstance(target, str):
+                os.startfile(target)
+            else:
+                subprocess.Popen(target)
+            return {"ok": True, "started": label}
+        for cname, target in custom.items():
+            if cname.lower() == wanted:
+                # os.startfile handles .exe paths, documents and URL
+                # schemes alike, always without shell or arguments.
+                os.startfile(target)
+                return {"ok": True, "started": cname}
+    except OSError as e:
+        return {"error": "Start fehlgeschlagen: %s" % e}
+    return {"error": "Unbekanntes Programm '%s'. Eingebaut: %s. Eigene: %s. "
+                     "Neue kann Nate als PROGRAMS-Umgebungsvariable anlegen "
+                     "(Name=C:\\Pfad\\zur\\app.exe, ...)."
+            % (name, ", ".join(sorted(set(PROGRAMS_BUILTIN) - {"editor"})),
+               ", ".join(sorted(custom)) or "(keine)")}
+
+
+def control_volume(action, level=None):
+    err = _windows_only("Lautstaerke-Steuerung")
+    if err:
+        return err
+    # Each volume key press moves the Windows master volume by 2 points.
+    if action == "mute":
+        ok, out = _send_keys(_KEY_VOL_MUTE)
+        return {"ok": True, "note": "Stumm umgeschaltet."} if ok \
+            else {"error": out}
+    if action in ("up", "down"):
+        key = _KEY_VOL_UP if action == "up" else _KEY_VOL_DOWN
+        ok, out = _send_keys(key, 5)
+        return {"ok": True, "note": "Lautstaerke um etwa 10 Punkte %s."
+                % ("erhoeht" if action == "up" else "gesenkt")} if ok \
+            else {"error": out}
+    if action == "set":
+        if level is None or not 0 <= int(level) <= 100:
+            return {"error": "level (0-100) wird fuer action=set benoetigt"}
+        ok, out = _send_keys(_KEY_VOL_DOWN, 50)
+        if ok and int(level) > 0:
+            ok, out = _send_keys(_KEY_VOL_UP, round(int(level) / 2))
+        return {"ok": True, "note": "Lautstaerke auf etwa %d%% gesetzt."
+                % int(level)} if ok else {"error": out}
+    return {"error": "Unbekannte Aktion '%s'. Erlaubt: up, down, mute, set"
+            % action}
+
+
+def media_control(action):
+    err = _windows_only("Medien-Steuerung")
+    if err:
+        return err
+    keys = {"play_pause": _KEY_MEDIA_PLAY, "next": _KEY_MEDIA_NEXT,
+            "previous": _KEY_MEDIA_PREV, "stop": _KEY_MEDIA_STOP}
+    if action not in keys:
+        return {"error": "Unbekannte Aktion '%s'. Erlaubt: %s"
+                % (action, ", ".join(keys))}
+    ok, out = _send_keys(keys[action])
+    return {"ok": True, "sent": action} if ok else {"error": out}
+
+
+def search_files(query, folder="alle"):
+    query = (query or "").strip().lower()
+    if len(query) < 2:
+        return {"error": "query braucht mindestens 2 Zeichen"}
+    folder = (folder or "alle").lower()
+    if folder == "alle":
+        roots = [(k, v) for k, v in SAFE_FOLDERS.items()]
+    elif folder in SAFE_FOLDERS:
+        roots = [(folder, SAFE_FOLDERS[folder])]
+    else:
+        return {"error": "Unbekannter Ordner '%s'. Erlaubt: alle, %s"
+                % (folder, ", ".join(SAFE_FOLDERS))}
+    matches, truncated = [], False
+    for label, root in roots:
+        if not os.path.isdir(root):
+            continue
+        base_depth = root.rstrip(os.sep).count(os.sep)
+        for dirpath, dirnames, filenames in os.walk(root):
+            # Stay shallow (4 levels) and out of hidden folders.
+            if dirpath.count(os.sep) - base_depth >= 4:
+                dirnames[:] = []
+            dirnames[:] = [d for d in dirnames if not d.startswith(".")]
+            for fn in filenames:
+                if query in fn.lower():
+                    matches.append({"ordner": label,
+                                    "pfad": os.path.join(dirpath, fn)})
+                    if len(matches) >= 30:
+                        truncated = True
+                        break
+            if truncated:
+                break
+        if truncated:
+            break
+    return {"query": query, "count": len(matches), "matches": matches,
+            "truncated": truncated,
+            "note": "Durchsucht wurden nur die sicheren Ordner: %s."
+                    % ", ".join(l for l, _ in roots)}
+
+
+def system_info():
+    import platform
+    import shutil
+    info = {"system": "%s %s" % (platform.system(), platform.release()),
+            "rechnername": platform.node(),
+            "cpu_kerne": os.cpu_count()}
+    try:
+        du = shutil.disk_usage(os.path.expanduser("~"))
+        info["festplatte"] = "%.0f von %.0f GB frei" % (
+            du.free / 1e9, du.total / 1e9)
+    except OSError:
+        pass
+    if sys.platform == "win32":
+        import ctypes
+
+        class _MemStatus(ctypes.Structure):
+            _fields_ = [("dwLength", ctypes.c_ulong),
+                        ("dwMemoryLoad", ctypes.c_ulong),
+                        ("ullTotalPhys", ctypes.c_ulonglong),
+                        ("ullAvailPhys", ctypes.c_ulonglong),
+                        ("ullTotalPageFile", ctypes.c_ulonglong),
+                        ("ullAvailPageFile", ctypes.c_ulonglong),
+                        ("ullTotalVirtual", ctypes.c_ulonglong),
+                        ("ullAvailVirtual", ctypes.c_ulonglong),
+                        ("ullAvailExtendedVirtual", ctypes.c_ulonglong)]
+
+        stat = _MemStatus(dwLength=ctypes.sizeof(_MemStatus))
+        if ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat)):
+            info["arbeitsspeicher"] = "%.1f von %.1f GB frei (%d%% belegt)" % (
+                stat.ullAvailPhys / 1e9, stat.ullTotalPhys / 1e9,
+                stat.dwMemoryLoad)
+        ticks = ctypes.windll.kernel32.GetTickCount64()
+        info["laufzeit_stunden"] = round(ticks / 3600000, 1)
+        ok, out = _run_ps(
+            "(Get-CimInstance Win32_Battery).EstimatedChargeRemaining",
+            timeout=10)
+        if ok and out.isdigit():
+            info["akku_prozent"] = int(out)
+    return info
+
+
+def lock_pc():
+    err = _windows_only("PC sperren")
+    if err:
+        return err
+    try:
+        subprocess.Popen(["rundll32.exe", "user32.dll,LockWorkStation"])
+    except OSError as e:
+        return {"error": "Sperren fehlgeschlagen: %s" % e}
+    return {"ok": True, "note": "PC wird gesperrt."}
+
+
+def shutdown_pc(action, confirm=False):
+    # Deliberately guarded: needs Nate's explicit confirmation AND leaves
+    # a 30 second window in which 'abort' cancels the shutdown.
+    err = _windows_only("Herunterfahren/Neustart")
+    if err:
+        return err
+    if action == "abort":
+        ok, out = _run_ps("shutdown /a", timeout=10)
+        return {"ok": True, "note": "Herunterfahren abgebrochen."} if ok \
+            else {"error": "Abbruch fehlgeschlagen (laeuft ueberhaupt "
+                           "eines?): %s" % out}
+    if action not in ("shutdown", "restart"):
+        return {"error": "Unbekannte Aktion '%s'. Erlaubt: shutdown, "
+                         "restart, abort" % action}
+    if not confirm:
+        return {"error": "Sicherheitsstopp: Zuerst Nates ausdrueckliche "
+                         "Bestaetigung einholen, dann mit confirm=true "
+                         "erneut aufrufen."}
+    flag = "/s" if action == "shutdown" else "/r"
+    ok, out = _run_ps("shutdown %s /t 30" % flag, timeout=10)
+    if not ok:
+        return {"error": "shutdown fehlgeschlagen: %s" % out}
+    return {"ok": True,
+            "note": "Der PC faehrt in 30 Sekunden %s. Zum Abbrechen: "
+                    "shutdown_pc mit action=abort."
+                    % ("herunter" if action == "shutdown" else "neu")}
+
+
 # ------------------------------------------------------ tool definitions
 
 def tool_definitions():
@@ -648,6 +903,104 @@ def tool_definitions():
                 "required": ["action"],
             },
         },
+        {
+            "name": "open_program",
+            "description": "Ein Programm AUF DEM WINDOWS-PC starten. "
+                           "Eingebaut: notepad, rechner, paint, explorer, "
+                           "taskmanager, einstellungen. Zusaetzlich alle "
+                           "Programme aus Nates PROGRAMS-Umgebungsvariable "
+                           "- bei unbekanntem Namen einfach aufrufen, die "
+                           "Fehlermeldung listet die verfuegbaren.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string",
+                             "description": "Programmname, z.B. rechner"},
+                },
+                "required": ["name"],
+            },
+        },
+        {
+            "name": "control_volume",
+            "description": "Lautstaerke des Windows-PCs aendern: lauter, "
+                           "leiser, stumm oder auf einen Zielwert setzen.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "action": {"type": "string",
+                               "enum": ["up", "down", "mute", "set"]},
+                    "level": {"type": "integer",
+                              "description": "Zielwert 0-100 (nur bei set)"},
+                },
+                "required": ["action"],
+            },
+        },
+        {
+            "name": "media_control",
+            "description": "Musik/Medien auf dem Windows-PC steuern "
+                           "(wirkt auf den aktiven Player, z.B. Spotify): "
+                           "Wiedergabe/Pause, naechster oder voriger Titel, "
+                           "Stopp.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "action": {"type": "string",
+                               "enum": ["play_pause", "next", "previous",
+                                        "stop"]},
+                },
+                "required": ["action"],
+            },
+        },
+        {
+            "name": "search_files",
+            "description": "Dateien auf dem PC nach Namen suchen - nur in "
+                           "den sicheren Ordnern (downloads, desktop, "
+                           "dokumente, bilder, ausgangskorb).",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string",
+                              "description": "Teil des Dateinamens"},
+                    "folder": {"type": "string",
+                               "description": "Ein Ordnername oder 'alle' "
+                                              "(Standard)"},
+                },
+                "required": ["query"],
+            },
+        },
+        {
+            "name": "system_info",
+            "description": "Systemstatus des PCs: Windows-Version, CPU-"
+                           "Kerne, freier Arbeitsspeicher und Festplatten-"
+                           "platz, Laufzeit, Akku (falls vorhanden).",
+            "input_schema": {"type": "object", "properties": {}},
+        },
+        {
+            "name": "lock_pc",
+            "description": "Den Windows-PC sofort sperren (Sperrbildschirm, "
+                           "nichts geht verloren).",
+            "input_schema": {"type": "object", "properties": {}},
+        },
+        {
+            "name": "shutdown_pc",
+            "description": "Den Windows-PC herunterfahren oder neu starten "
+                           "- IMMER zuerst Nates ausdrueckliche "
+                           "Bestaetigung einholen und erst dann mit "
+                           "confirm=true aufrufen. Es bleibt ein 30-"
+                           "Sekunden-Fenster, in dem action=abort den "
+                           "Vorgang stoppt.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "action": {"type": "string",
+                               "enum": ["shutdown", "restart", "abort"]},
+                    "confirm": {"type": "boolean",
+                                "description": "true erst nach Nates "
+                                               "Bestaetigung"},
+                },
+                "required": ["action"],
+            },
+        },
     ]
     if instagram.is_configured():
         tools.append({
@@ -682,6 +1035,13 @@ TOOL_FUNCTIONS = {
     "publish_instagram_post": publish_instagram_post,
     "open_app": open_app,
     "run_safe_command": run_safe_command,
+    "open_program": open_program,
+    "control_volume": control_volume,
+    "media_control": media_control,
+    "search_files": search_files,
+    "system_info": system_info,
+    "lock_pc": lock_pc,
+    "shutdown_pc": shutdown_pc,
 }
 
 

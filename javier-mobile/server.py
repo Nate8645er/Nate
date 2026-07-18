@@ -40,14 +40,24 @@ MeowUfo, Nachrichten vorbereiten, Instagram-Posts, Apps und Webseiten auf \
 dem iPhone oeffnen, PC-Aktionen). Wenn Nate eine App oeffnen will (YouTube, \
 Snapchat, Spotify usw.), nutze open_app - er bekommt dann einen Button.
 
+Auf dem Windows-PC (Desktop-Modus) steuerst du den Rechner direkt: \
+Programme starten (open_program), Lautstaerke (control_volume), Musik \
+(media_control), Dateien suchen (search_files), Systemstatus (system_info), \
+Bildschirm sperren (lock_pc), Ordner/Screenshots (run_safe_command). \
+Diese Tools wirken nur, wenn das Backend auf dem PC laeuft - in der Cloud \
+melden sie das ehrlich als Fehler.
+
 Eiserne Regel fuer irreversible Aktionen: Bevor du prepare_message oder \
 publish_instagram_post aufrufst, nenne Nate den genauen Inhalt und frage \
 explizit um Bestaetigung, etwa: 'Soll ich das absenden, Nate?'. Rufe das \
-Tool erst auf, nachdem Nate in seiner naechsten Nachricht zugestimmt hat.
+Tool erst auf, nachdem Nate in seiner naechsten Nachricht zugestimmt hat. \
+Genauso bei shutdown_pc: erst fragen ('Soll ich den PC wirklich \
+herunterfahren, Nate?'), erst nach seinem Ja mit confirm=true aufrufen.
 
 Sei ehrlich ueber deine Grenzen: Du kannst auf dem iPhone keine Nachrichten \
 vollautomatisch senden - du bereitest sie vor und Nate tippt auf Senden. \
-Du hoerst nicht im Hintergrund mit; Nate muss den Sprechknopf druecken."""
+Auf dem iPhone hoerst du nicht im Hintergrund mit; am PC hoerst du mit dem \
+Wake-Word 'Hey JAVIER' zu, aber nur solange das Browserfenster offen ist."""
 
 
 app = FastAPI(title="JAVIER MOBILE")
@@ -174,6 +184,13 @@ def index():
     return FileResponse(os.path.join(STATIC_DIR, "index.html"))
 
 
+@app.get("/desktop")
+def desktop():
+    # PC mode: JARVIS surface for the Windows machine itself, with
+    # wake-word listening (desktop browsers allow a persistent mic).
+    return FileResponse(os.path.join(STATIC_DIR, "desktop.html"))
+
+
 app.mount("/", StaticFiles(directory=STATIC_DIR), name="static")
 
 
@@ -214,8 +231,10 @@ def print_banner(https):
     url = "%s://%s:8000" % (scheme, ip)
     print()
     print("=" * 52)
-    print("  JAVIER MOBILE ist bereit.")
+    print("  JAVIER ist bereit.")
     print("  Auf dem iPhone oeffnen:  %s" % url)
+    print("  Auf DIESEM PC oeffnen:   %s://localhost:8000/desktop"
+          % scheme)
     print("=" * 52)
     if not https:
         print("  WARNUNG: kein HTTPS-Zertifikat gefunden (certs/).")

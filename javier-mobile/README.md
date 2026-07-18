@@ -1,12 +1,14 @@
-# JAVIER MOBILE
+# JAVIER
 
-Eine JARVIS-artige KI fuer das iPhone 14 - als PWA, ohne Xcode. Das Backend
-(Python + FastAPI + Anthropic Tool-Use-Agent) laeuft auf dem Windows-PC, das
-iPhone verbindet sich per Browser im gleichen WLAN.
+Eine JARVIS-artige KI - als PWA fuer das iPhone 14 (ohne Xcode) und als
+Desktop-Modus fuer den Windows-PC. Das Backend (Python + FastAPI +
+Anthropic Tool-Use-Agent) laeuft auf dem Windows-PC; das iPhone verbindet
+sich per Browser im gleichen WLAN, der PC nutzt `/desktop` direkt.
 
 ## Was JAVIER kann
 
 - Sprechen und zuhoeren ueber AirPods (Push-to-talk auf den Arc-Reactor)
+- Am PC: freihaendig per Wake-Word "Hey JAVIER" (siehe Desktop-Modus)
 - Todo-Liste anlegen, lesen, abhaken (lokale JSON-Datei)
 - Termine lesen und anlegen (lokale ICS-Kalenderdatei)
 - Wetter fuer Rapperswil-Jona (Open-Meteo)
@@ -14,8 +16,52 @@ iPhone verbindet sich per Browser im gleichen WLAN.
 - Nachrichten vorbereiten (SMS / WhatsApp) - du tippst selbst auf Senden
 - Instagram-Posts vorbereiten (Ausgangskorb) und optional echt
   veroeffentlichen (Graph API, siehe unten)
-- Harmlose PC-Aktionen per Whitelist (Ordner oeffnen, Dateien listen,
-  Screenshot)
+- Den Windows-PC steuern (Whitelist): Programme starten, Lautstaerke und
+  Musik/Medien, Dateien suchen, System-Status, Ordner oeffnen, Screenshot,
+  Bildschirm sperren - Herunterfahren/Neustart nur nach Rueckfrage und mit
+  30-Sekunden-Abbruchfenster
+
+## JAVIER DESKTOP - der PC-Modus
+
+Der gleiche Server, eine eigene Oberflaeche fuer den PC selbst:
+`start.bat` starten und auf dem PC im Browser (Chrome oder Edge)
+`http://localhost:8000/desktop` oeffnen - die URL steht auch im
+Startbanner. Kein mkcert noetig: `localhost` gilt im Browser als sicher,
+das Mikrofon funktioniert sofort.
+
+**Wake-Word "Hey JAVIER":** Oben rechts WAKE-WORD aktivieren und einmal
+den Mikrofonzugriff erlauben. Ab dann hoert JAVIER passiv zu:
+
+- "Hey JAVIER, mach die Musik leiser" - wird direkt ausgefuehrt.
+- Nur "Hey JAVIER" - kurzer Piepton, dann hat man 7 Sekunden fuer den
+  Befehl.
+- Klick auf den Reaktor geht immer, auch ohne Wake-Word.
+
+Waehrend JAVIER spricht, ist das Mikrofon aus - er hoert sich nicht
+selbst zu. Die Wahl bleibt gespeichert und ist beim naechsten Start
+wieder aktiv.
+
+**Ehrliche Grenzen des PC-Modus:**
+
+- Das Wake-Word laeuft nur, solange das Browserfenster (auch minimiert
+  im Hintergrund-Tab kann Chrome drosseln) geoeffnet ist - JAVIER ist
+  kein Windows-Dienst.
+- Die Spracherkennung nutzt die des Browsers (Chrome/Edge); Firefox
+  unterstuetzt sie nicht.
+- Lautstaerke/Medien werden ueber emulierte Tastatur-Sondertasten
+  gesteuert - "Lautstaerke auf 40%" ist deshalb auf etwa 2 Punkte genau.
+- Herunterfahren/Neustart verlangt Nates ausdrueckliches Ja und laesst
+  sich 30 Sekunden lang mit "JAVIER, brich das ab" stoppen.
+
+**Eigene Programme:** In `.env` (oder bei Render unter Environment) die
+Variable `PROGRAMS` pflegen, gleiches Format wie CONTACTS/APPS:
+
+```
+PROGRAMS=Spotify=C:\Users\Nate\AppData\Roaming\Spotify\Spotify.exe, Steam=steam://open/main
+```
+
+Eingebaut sind: notepad, rechner, paint, explorer, taskmanager,
+einstellungen. "JAVIER, starte Spotify" genuegt dann.
 
 ## Freihaendig sprechen mit AirPods (Auto-Modus)
 
@@ -235,7 +281,8 @@ javier-mobile/
   server.py        FastAPI + Anthropic Tool-Use-Loop (claude-sonnet-4-6)
   tools.py         Alle Agent-Tools (Todos, Kalender, Wetter, Shopify, ...)
   instagram.py     Optionales Graph-API-Modul
-  static/          index.html, manifest.json, sw.js, Icons (die PWA)
+  static/          index.html (iPhone-PWA), desktop.html (PC-Modus),
+                   manifest.json, sw.js, Icons
   contacts.json    Name -> Telefonnummer fuer Nachrichten
   start.bat        Ein-Klick-Start mit QR-Code
   data/            Entsteht zur Laufzeit: todos.json, calendar.ics,

@@ -1,7 +1,7 @@
 // JAVIER MOBILE service worker - caches the app shell so the PWA opens
 // instantly from the homescreen. API calls always go to the network.
 
-var CACHE = "javier-v8";
+var CACHE = "javier-v9";
 var SHELL = ["/", "/index.html", "/manifest.json", "/icon-192.png", "/icon-512.png"];
 
 self.addEventListener("install", function (e) {
@@ -24,6 +24,9 @@ self.addEventListener("activate", function (e) {
 self.addEventListener("fetch", function (e) {
   var url = new URL(e.request.url);
   if (url.pathname.indexOf("/api/") === 0) return; // network only
+  // Desktop mode is used on the PC with the server right there - always
+  // fetch it fresh so updates arrive without cache-version bumps.
+  if (url.pathname === "/desktop" || url.pathname === "/desktop.html") return;
   e.respondWith(
     caches.match(e.request).then(function (hit) {
       return hit || fetch(e.request).then(function (resp) {
