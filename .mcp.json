@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "bash",
+      "args": ["scripts/playwright-mcp/launch.sh"]
+    },
+    "meta-mcp": {
+      "command": "bash",
+      "args": ["scripts/meta-mcp/launch.sh"]
+    },
+    "token-savior": {
+      "command": "bash",
+      "args": ["scripts/token-savior/launch.sh"],
+      "env": {
+        "WORKSPACE_ROOTS": "/home/user/Nate",
+        "TOKEN_SAVIOR_CLIENT": "claude-code",
+        "TOKEN_SAVIOR_PROFILE": "optimized"
+      }
+    }
+  }
+}
