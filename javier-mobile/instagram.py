@@ -29,7 +29,7 @@ import time
 
 import requests
 
-GRAPH = "https://graph.facebook.com/v19.0"
+GRAPH = "https://graph.facebook.com/v23.0"
 
 
 def is_configured():
@@ -58,16 +58,25 @@ def publish_post(image_url, caption):
         container_id = body["id"]
 
         # Meta processes the container asynchronously; poll briefly.
+        # Token goes in the Authorization header, not the URL, so it
+        # cannot end up in proxy/server logs.
+        ready = False
         for _ in range(10):
             s = requests.get(
                 "%s/%s" % (GRAPH, container_id),
-                params={"fields": "status_code", "access_token": token},
+                params={"fields": "status_code"},
+                headers={"Authorization": "Bearer %s" % token},
                 timeout=15).json()
             if s.get("status_code") == "FINISHED":
+                ready = True
                 break
             if s.get("status_code") == "ERROR":
                 return {"error": "container processing failed: %s" % s}
             time.sleep(2)
+        if not ready:
+            return {"error": "container not ready after 20s - Bild "
+                             "vermutlich zu gross oder URL zu langsam; "
+                             "spaeter erneut versuchen"}
 
         r = requests.post(
             "%s/%s/media_publish" % (GRAPH, ig_id),

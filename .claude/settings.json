@@ -8,6 +8,7 @@
     }
   },
   "enabledPlugins": {
-    "ultra-enterprise-os@nate-marketplace": true
+    "ultra-enterprise-os@nate-marketplace": true,
+    "meta-ads@nate-marketplace": true
   }
 }
