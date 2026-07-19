@@ -58,8 +58,10 @@ Einrichtung geht komplett in Safari auf dem iPhone:
 2. "New" -> "Blueprint" -> dieses Repository auswaehlen. Render liest die
    `render.yaml` im Repo-Root und schlaegt den Service "javier" vor.
 3. Beim Deploy die zwei Variablen eintragen: `ANTHROPIC_API_KEY` (dein
-   API-Key) und `JAVIER_PASSWORD` (frei waehlbares Passwort - WICHTIG,
-   sonst kann jeder mit der URL auf deine Kosten chatten).
+   API-Key) und `JAVIER_PASSWORD` (langes, zufaelliges Passwort waehlen).
+   Im Cloud-Modus ist das Passwort PFLICHT: ohne `JAVIER_PASSWORD`
+   startet der Server nicht bzw. lehnt alle Anfragen ab - sonst koennte
+   jeder mit der URL auf deine Kosten chatten und deine Daten lesen.
 4. Nach ein paar Minuten bekommst du eine URL wie
    `https://javier-xxxx.onrender.com`. In Safari oeffnen, Passwort einmal
    eingeben, dann Teilen -> "Zum Home-Bildschirm".

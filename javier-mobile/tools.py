@@ -110,7 +110,9 @@ def _write_events(events):
         parts.append("BEGIN:VEVENT\r\n")
         for key in ("UID", "DTSTART", "DTEND", "SUMMARY", "LOCATION"):
             if key in ev and ev[key]:
-                parts.append("%s:%s\r\n" % (key, ev[key]))
+                # Newlines would inject extra ICS properties.
+                value = str(ev[key]).replace("\r", " ").replace("\n", " ")
+                parts.append("%s:%s\r\n" % (key, value))
         parts.append("END:VEVENT\r\n")
     parts.append(ICS_FOOTER)
     with open(ICS_FILE, "w", encoding="utf-8") as f:
@@ -218,7 +220,7 @@ def get_shopify_status(days=7):
     if not store or not token:
         return {"error": "SHOPIFY_STORE / SHOPIFY_ACCESS_TOKEN fehlen in .env"}
     since = (datetime.now() - timedelta(days=days)).isoformat()
-    url = "https://%s/admin/api/2024-01/orders.json" % store
+    url = "https://%s/admin/api/2026-01/orders.json" % store
     params = {"status": "any", "created_at_min": since, "limit": 250,
               "fields": "id,name,created_at,total_price,currency,financial_status"}
     try:
@@ -330,10 +332,23 @@ def prepare_instagram_post(caption, image_path=""):
     with open(os.path.join(post_dir, "caption.txt"), "w", encoding="utf-8") as f:
         f.write(caption)
     copied = False
-    if image_path and os.path.exists(image_path):
-        import shutil
-        shutil.copy(image_path, post_dir)
-        copied = True
+    if image_path:
+        # Only real image files from the home directory may be copied -
+        # an unchecked path would let a prompted request drop e.g. .env
+        # into the (potentially publicly exposed) outbox.
+        real = os.path.realpath(os.path.expanduser(image_path))
+        allowed_ext = (".jpg", ".jpeg", ".png", ".webp", ".gif")
+        home = os.path.realpath(os.path.expanduser("~"))
+        if not real.lower().endswith(allowed_ext):
+            return {"error": "image_path muss ein Bild sein "
+                             "(%s)" % ", ".join(allowed_ext)}
+        if not (real.startswith(home + os.sep) or
+                real.startswith(BASE_DIR + os.sep)):
+            return {"error": "image_path muss im Benutzerordner liegen"}
+        if os.path.isfile(real):
+            import shutil
+            shutil.copy(real, post_dir)
+            copied = True
     return {
         "ok": True,
         "outbox_folder": post_dir,

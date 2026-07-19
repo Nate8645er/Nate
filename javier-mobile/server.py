@@ -3,6 +3,7 @@
 
 import json
 import os
+import secrets
 import socket
 import sys
 
@@ -25,7 +26,7 @@ STATIC_DIR = os.path.join(BASE_DIR, "static")
 CERT_FILE = os.path.join(BASE_DIR, "certs", "cert.pem")
 KEY_FILE = os.path.join(BASE_DIR, "certs", "key.pem")
 
-MODEL = "claude-sonnet-4-6"
+MODEL = "claude-sonnet-5"
 MAX_AGENT_TURNS = 8
 
 SYSTEM_PROMPT = """Du bist JAVIER, Nates persoenliche KI im Stil von JARVIS \
@@ -53,6 +54,15 @@ Du hoerst nicht im Hintergrund mit; Nate muss den Sprechknopf druecken."""
 app = FastAPI(title="JAVIER MOBILE")
 
 
+@app.middleware("http")
+async def security_headers(request, call_next):
+    resp = await call_next(request)
+    resp.headers.setdefault("X-Content-Type-Options", "nosniff")
+    resp.headers.setdefault("X-Frame-Options", "DENY")
+    resp.headers.setdefault("Referrer-Policy", "no-referrer")
+    return resp
+
+
 class ChatMessage(BaseModel):
     role: str
     content: str
@@ -72,7 +82,15 @@ def get_client():
 
 def _check_password(request):
     password = os.environ.get("JAVIER_PASSWORD", "")
-    if password and request.headers.get("x-javier-key", "") != password:
+    if not password:
+        # Cloud deployments (PORT is set by the host) must never run open:
+        # without a shared secret the API would be public on Nate's keys.
+        if "PORT" in os.environ:
+            return JSONResponse({"error": "JAVIER_PASSWORD not set"},
+                                status_code=401)
+        return None
+    supplied = request.headers.get("x-javier-key", "")
+    if not secrets.compare_digest(supplied, password):
         return JSONResponse({"error": "unauthorized"}, status_code=401)
     return None
 
@@ -95,19 +113,37 @@ def chat(req: ChatRequest, request: Request):
     frontend_actions = []
     reply_text = ""
 
-    for _ in range(MAX_AGENT_TURNS):
-        response = client.messages.create(
-            model=MODEL,
-            max_tokens=1024,
-            system=SYSTEM_PROMPT,
-            tools=tools.tool_definitions(),
-            messages=messages,
-        )
+    for turn in range(MAX_AGENT_TURNS + 1):
+        # Last turn: tool use forbidden, so the model must produce a
+        # closing answer even if it would rather keep calling tools.
+        # (Tool definitions stay in the request - the API requires them
+        # whenever the history contains tool_use blocks.)
+        final_turn = turn == MAX_AGENT_TURNS
+        try:
+            response = client.messages.create(
+                model=MODEL,
+                max_tokens=2048,
+                system=SYSTEM_PROMPT,
+                tools=tools.tool_definitions(),
+                tool_choice={"type": "none"} if final_turn
+                else {"type": "auto"},
+                messages=messages,
+            )
+        except anthropic.APIConnectionError:
+            return {"reply": "Entschuldige Nate, ich erreiche die "
+                             "KI-Schnittstelle gerade nicht. Versuch es "
+                             "gleich nochmal.",
+                    "actions": frontend_actions}
+        except anthropic.APIStatusError as e:
+            return {"reply": "Entschuldige Nate, die KI-Schnittstelle "
+                             "meldet Fehler %s. Versuch es gleich nochmal."
+                             % e.status_code,
+                    "actions": frontend_actions}
         text_parts = [b.text for b in response.content if b.type == "text"]
         if text_parts:
             reply_text = "\n".join(text_parts).strip()
 
-        if response.stop_reason != "tool_use":
+        if final_turn or response.stop_reason != "tool_use":
             break
 
         tool_results = []
@@ -238,6 +274,11 @@ if __name__ == "__main__":
     cloud = "PORT" in os.environ
     https = os.path.exists(CERT_FILE) and os.path.exists(KEY_FILE)
     if cloud:
+        if not os.environ.get("JAVIER_PASSWORD"):
+            print("JAVIER_PASSWORD fehlt - im Cloud-Modus Pflicht, sonst "
+                  "waere die API oeffentlich. Auf Render als "
+                  "Umgebungsvariable setzen.")
+            sys.exit(1)
         print("JAVIER startet im Cloud-Modus auf Port %d." % port)
         uvicorn.run(app, host="0.0.0.0", port=port)
     elif https:
