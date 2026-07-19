@@ -234,7 +234,7 @@ https-URL** - lokale Pfade gehen nicht. Einfachste Loesungen:
 
 ```
 javier-mobile/
-  server.py        FastAPI + Anthropic Tool-Use-Loop (claude-sonnet-4-6)
+  server.py        FastAPI + Anthropic Tool-Use-Loop (claude-fable-5)
   tools.py         Alle Agent-Tools (Todos, Kalender, Wetter, Shopify, ...)
   instagram.py     Optionales Graph-API-Modul
   static/          index.html, manifest.json, sw.js, Icons (die PWA)

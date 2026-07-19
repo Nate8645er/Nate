@@ -26,7 +26,7 @@ STATIC_DIR = os.path.join(BASE_DIR, "static")
 CERT_FILE = os.path.join(BASE_DIR, "certs", "cert.pem")
 KEY_FILE = os.path.join(BASE_DIR, "certs", "key.pem")
 
-MODEL = "claude-sonnet-5"
+MODEL = "claude-fable-5"
 MAX_AGENT_TURNS = 8
 
 SYSTEM_PROMPT = """Du bist JAVIER, Nates persoenliche KI im Stil von JARVIS \
