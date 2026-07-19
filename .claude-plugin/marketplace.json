@@ -12,8 +12,8 @@
     {
       "name": "ultra-enterprise-os",
       "source": "./ultra-enterprise-os",
-      "description": "Autonomes AI Enterprise Operating System: dynamischer Orchestrator, der fuer jede Aufgabe die optimale virtuelle Organisation aus spezialisierten Teams, Agenten und Sub-Agenten zusammenstellt und nur das konsolidierte Endergebnis liefert.",
-      "version": "1.0.0",
+      "description": "Nates komplettes AI-Unternehmen in einem Plugin: 5 Skills, 22 Agents, 8 Commands — Orchestrierung, Organigramm, 10-Milliarden-Skalierung mit Generator und COD-Coding-Modus.",
+      "version": "2.2.0",
       "author": {
         "name": "Nate"
       },
