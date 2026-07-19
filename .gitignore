@@ -6,3 +6,6 @@ meta-mcp/.env
 meta-mcp/server.log
 meta-mcp/node_modules/
 meta-mcp/dist/
+
+# Playwright-MCP Laufzeit-Snapshots
+.playwright-mcp/
