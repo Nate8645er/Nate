@@ -2,6 +2,10 @@
 # Startet den Token-Savior-MCP-Server; installiert ihn vorher bei Bedarf.
 # Wird von .mcp.json referenziert (Server "token-savior").
 set -u
+# Profil-Default auch bei manuellem Direktstart (normalerweise kommt das
+# aus dem env-Block in .mcp.json; ohne Default startet der Server im
+# full-Profil mit 69 statt 15 Tools).
+export TOKEN_SAVIOR_PROFILE="${TOKEN_SAVIOR_PROFILE:-optimized}"
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 "$DIR/ensure-install.sh" || {
   echo "token-savior: Installation fehlgeschlagen" >&2
