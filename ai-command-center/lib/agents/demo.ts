@@ -7,7 +7,13 @@
  * ergibt exakt dieselbe Ausgabe).
  */
 
-import type { QualityReport, TaskPlan, WorkerRole } from "./types";
+import type {
+  OrgDepartmentSpec,
+  OrgRoleSpec,
+  QualityReport,
+  TaskPlan,
+  WorkerRole,
+} from "./types";
 
 /** Deterministischer Hash (FNV-1a) fuer stabile "Bewertungen" aus Text. */
 function hash(text: string): number {
@@ -228,6 +234,152 @@ export const DEMO_WORKER_OUTPUTS: Record<
   coding: demoCodingOutput,
   business: demoBusinessOutput,
 };
+
+/* ------------------------- Organisations-Modus (Demo) ------------------------- */
+
+/**
+ * Bauplan der Demo-Firma: 3 Abteilungen mit je 3 Spezialisten-Rollen
+ * (9 dynamische Agenten). Die Teilaufgaben werden deterministisch aus dem
+ * Missionsziel abgeleitet.
+ */
+const DEMO_ORG_BLUEPRINT: readonly {
+  name: string;
+  roles: readonly { rolle: string; fachgebiet: string; teilaufgabe: (g: string) => string }[];
+}[] = [
+  {
+    name: "Strategie & Analyse",
+    roles: [
+      {
+        rolle: "Marktanalyst",
+        fachgebiet: "Marktforschung",
+        teilaufgabe: (g) =>
+          `Analysiere fuer "${g}" den Markt: Groesse, Trends, Zielsegmente und die drei wichtigsten Wachstumstreiber.`,
+      },
+      {
+        rolle: "Wettbewerbsanalyst",
+        fachgebiet: "Wettbewerbsanalyse",
+        teilaufgabe: (g) =>
+          `Vergleiche fuer "${g}" die relevanten Wettbewerber und leite drei Differenzierungschancen ab.`,
+      },
+      {
+        rolle: "Finanzplaner",
+        fachgebiet: "Finanzplanung",
+        teilaufgabe: (g) =>
+          `Erstelle fuer "${g}" eine grobe Kosten-/Ertragsrechnung mit Annahmen und Break-even-Einschaetzung.`,
+      },
+    ],
+  },
+  {
+    name: "Produkt & Umsetzung",
+    roles: [
+      {
+        rolle: "Konzeptentwickler",
+        fachgebiet: "Konzeption",
+        teilaufgabe: (g) =>
+          `Entwickle fuer "${g}" das inhaltliche Kernkonzept mit Struktur und priorisierten Bausteinen.`,
+      },
+      {
+        rolle: "Umsetzungsplaner",
+        fachgebiet: "Projektplanung",
+        teilaufgabe: (g) =>
+          `Plane fuer "${g}" die Umsetzung in Phasen mit Meilensteinen, Aufwaenden und Abhaengigkeiten.`,
+      },
+      {
+        rolle: "Prozessoptimierer",
+        fachgebiet: "Prozesse & Automatisierung",
+        teilaufgabe: (g) =>
+          `Identifiziere fuer "${g}" die wichtigsten Prozesse und schlage je eine Automatisierung vor.`,
+      },
+    ],
+  },
+  {
+    name: "Marketing & Vertrieb",
+    roles: [
+      {
+        rolle: "Kampagnenmanager",
+        fachgebiet: "Kampagnenplanung",
+        teilaufgabe: (g) =>
+          `Entwirf fuer "${g}" eine Kampagne mit Kernbotschaft, Kanaelen und 4-Wochen-Plan.`,
+      },
+      {
+        rolle: "Content-Stratege",
+        fachgebiet: "Content-Strategie",
+        teilaufgabe: (g) =>
+          `Erstelle fuer "${g}" eine Content-Strategie mit Formaten, Frequenz und Erfolgskriterien.`,
+      },
+      {
+        rolle: "Vertriebsplaner",
+        fachgebiet: "Vertriebsstrategie",
+        teilaufgabe: (g) =>
+          `Definiere fuer "${g}" den Vertriebsweg: Zielkunden, Angebotslogik und messbare naechste Schritte.`,
+      },
+    ],
+  },
+];
+
+/**
+ * ORG-PLAN im Demo-Modus: deterministische virtuelle Firma (3 Abteilungen,
+ * 9 Rollen) im selben JSON-Format, das der Commander liefern wuerde.
+ * Die ids vergibt der Orchestrator beim Parsen (Slug aus der Rolle).
+ */
+export function demoOrgPlan(goal: string): {
+  departments: { name: string; roles: { rolle: string; fachgebiet: string; teilaufgabe: string }[] }[];
+} {
+  const g = shortGoal(goal);
+  return {
+    departments: DEMO_ORG_BLUEPRINT.map((d) => ({
+      name: d.name,
+      roles: d.roles.map((r) => ({
+        rolle: r.rolle,
+        fachgebiet: r.fachgebiet,
+        teilaufgabe: r.teilaufgabe(g),
+      })),
+    })),
+  };
+}
+
+/**
+ * Deterministische Demo-Antwort einer dynamischen Rolle – aus rolle,
+ * fachgebiet und teilaufgabe generiert (auch fuer LLM-erdachte Rollen).
+ */
+export function demoDynOutput(goal: string, role: OrgRoleSpec): string {
+  const g = shortGoal(goal);
+  const variant = hash(`${role.rolle}|${role.teilaufgabe}`) % 3;
+  const empfehlung = [
+    "Mit dem kleinsten messbaren Schritt starten und woechentlich nachsteuern.",
+    "Eine Verantwortlichkeit und einen Termin je Massnahme festlegen.",
+    "Erfolgskriterium vorab definieren und nach vier Wochen pruefen.",
+  ][variant];
+  return [
+    `## ${role.rolle}: ${g}`,
+    "",
+    `**Fachgebiet:** ${role.fachgebiet}`,
+    "",
+    `**Auftrag:** ${role.teilaufgabe}`,
+    "",
+    "### Ergebnis",
+    `- Kernbefund: Aus Sicht ${role.fachgebiet} liegt der groesste Hebel fuer "${g}" in Fokus und klarer Priorisierung.`,
+    `- Vorgehen: Der Auftrag wurde in drei umsetzbare Schritte zerlegt – Analyse, Massnahme, Messung.`,
+    "- Annahme: Es liegen keine internen Daten vor; alle Aussagen sind als Annahmen gekennzeichnet.",
+    "",
+    "### Empfehlung",
+    `1. ${empfehlung}`,
+    "2. Ergebnis mit den Nachbar-Rollen der Abteilung abgleichen, um Doppelarbeit zu vermeiden.",
+    "3. Offene Entscheidungsfragen an den Commander zurueckmelden.",
+  ].join("\n");
+}
+
+/** Abteilungs-Zusammenfassung des Commanders im Demo-Modus. */
+export function demoDepartmentSummary(dept: OrgDepartmentSpec, goal: string): string {
+  const g = shortGoal(goal);
+  return [
+    `- Die Abteilung ${dept.name} hat ${dept.roles.length} Spezialisten-Ergebnisse zu "${g}" geliefert.`,
+    ...dept.roles.map(
+      (r) => `- ${r.rolle} (${r.fachgebiet}): Teilaufgabe bearbeitet, Empfehlung mit messbarem naechstem Schritt.`,
+    ),
+    "- Gemeinsame Linie: klein starten, Erfolgskriterium definieren, woechentlich nachsteuern.",
+  ].join("\n");
+}
 
 /** Quality-Report im Demo-Modus: stabiler Score 82–91 aus dem Input abgeleitet. */
 export function demoQualityReport(combinedOutputs: string): QualityReport {

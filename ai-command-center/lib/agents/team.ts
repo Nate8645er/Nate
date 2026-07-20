@@ -14,13 +14,65 @@ import type { AgentConfig, AgentRole, PlanId, WorkerRole } from "./types";
 /** Produktname – zentral aenderbar. */
 export const BRAND = "AI Command Center";
 
-/** Aktive Worker je Abo-Plan (bestimmt den parallelen Fan-out der Mission). */
+/**
+ * Aktive Worker je Abo-Plan (bestimmt den parallelen Fan-out der Mission).
+ * BUSINESS/ENTERPRISE laufen im ORGANISATIONS-MODUS (dynamische Firma statt
+ * fester Worker); die Eintraege hier dienen nur noch als Referenz/Fallback.
+ */
 export const WORKERS_BY_PLAN: Record<PlanId, readonly WorkerRole[]> = {
   FREE: ["builder", "analyst"],
   STARTER: ["builder", "analyst"],
   PROFESSIONAL: ["builder", "analyst", "marketing", "research"],
   BUSINESS: ["builder", "analyst", "marketing", "research", "coding", "business"],
+  ENTERPRISE: ["builder", "analyst", "marketing", "research", "coding", "business"],
 };
+
+/** Plaene mit Organisations-Modus (dynamische virtuelle Firma pro Mission). */
+export const ORG_MODE_PLANS: ReadonlySet<PlanId> = new Set(["BUSINESS", "ENTERPRISE"]);
+
+/** Obergrenze dynamischer Agenten je Org-Plan (Provider-Kosten/Rate-Limits). */
+export const MAX_DYN_AGENTS: Record<"BUSINESS" | "ENTERPRISE", number> = {
+  BUSINESS: 12,
+  ENTERPRISE: 24,
+};
+
+/**
+ * System-Prompt fuer den ORG-PLAN des Commanders: er gruendet pro Mission
+ * eine virtuelle Firma aus 2-4 Abteilungen mit je 2-4 Spezialisten-Rollen.
+ */
+export function orgPlannerPrompt(maxAgents: number): string {
+  return [
+    `Du bist der Commander von ${BRAND}, einer KI-Abteilung fuer Unternehmen.`,
+    "Gruende fuer die Mission des Nutzers eine dynamische virtuelle Firma:",
+    "2 bis 4 Abteilungen, jede mit 2 bis 4 Spezialisten-Rollen.",
+    `Insgesamt maximal ${maxAgents} Rollen.`,
+    "Jede Rolle hat: rolle (Berufsbezeichnung), fachgebiet (Spezialisierung), teilaufgabe (konkreter Arbeitsauftrag fuer diese Mission, 1-3 Saetze, deutsch).",
+    "Die Teilaufgaben ergaenzen sich ohne Doppelarbeit und decken die Mission vollstaendig ab.",
+    "Antworte AUSSCHLIESSLICH mit einem JSON-Objekt in exakt diesem Format, ohne Markdown-Codeblock:",
+    '{"departments": [{"name": "...", "roles": [{"rolle": "...", "fachgebiet": "...", "teilaufgabe": "..."}]}]}',
+  ].join("\n");
+}
+
+/**
+ * Zur Laufzeit generierter System-Prompt einer dynamischen Spezialisten-Rolle
+ * im Organisations-Modus.
+ */
+export function dynSystemPrompt(rolle: string, fachgebiet: string): string {
+  return [
+    `Du bist ${rolle}, Spezialist fuer ${fachgebiet} im virtuellen Unternehmen des Kunden, aufgebaut von ${BRAND}.`,
+    "Du bearbeitest genau die dir zugewiesene Teilaufgabe der Gesamtmission – fokussiert auf dein Fachgebiet.",
+    "Antworte auf Deutsch, strukturiert in Markdown, praezise und ohne Fuelltext.",
+    "Kennzeichne Annahmen als Annahmen. Liefere ein fertiges Ergebnis, keine Rueckfragen.",
+  ].join("\n");
+}
+
+/** System-Prompt fuer die Abteilungs-Zusammenfassung durch den Commander. */
+export const DEPARTMENT_SUMMARY_PROMPT = [
+  `Du bist der Commander von ${BRAND}.`,
+  "Fasse die Ergebnisse EINER Abteilung deiner virtuellen Firma kurz zusammen:",
+  "die 3 bis 5 wichtigsten Erkenntnisse und Empfehlungen der Abteilung, als Markdown-Liste.",
+  "Antworte auf Deutsch, maximal 10 Zeilen, ohne Einleitung und ohne Wiederholung der Rohtexte.",
+].join("\n");
 
 /** Kurzbeschreibung je Worker fuer den Planungs-Prompt des Commanders. */
 const PLANNER_HINTS: Record<WorkerRole, string> = {

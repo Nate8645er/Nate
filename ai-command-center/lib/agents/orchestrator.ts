@@ -22,26 +22,55 @@
 
 import {
   DEMO_WORKER_OUTPUTS,
+  demoDepartmentSummary,
+  demoDynOutput,
+  demoOrgPlan,
   demoPlan,
   demoQualityReport,
   demoSynthesis,
 } from "./demo";
 import { callLLM, hasApiKey } from "./providers";
-import { AGENTS, plannerPrompt, SYNTHESIS_PROMPT, WORKERS_BY_PLAN } from "./team";
+import {
+  AGENTS,
+  DEPARTMENT_SUMMARY_PROMPT,
+  dynSystemPrompt,
+  MAX_DYN_AGENTS,
+  ORG_MODE_PLANS,
+  orgPlannerPrompt,
+  plannerPrompt,
+  SYNTHESIS_PROMPT,
+  WORKERS_BY_PLAN,
+} from "./team";
 import type {
   AgentConfig,
+  AgentId,
   AgentRole,
   ChatMessage,
   EmitFn,
   MissionContext,
+  OrgDepartmentSpec,
+  OrgRoleSpec,
   PlanId,
+  Provider,
   QualityReport,
   TaskPlan,
   WorkerRole,
 } from "./types";
 
-/** Harter Deckel ueber der Gesamtmission (Route erlaubt 300s). */
+/** Harter Deckel ueber der Gesamtmission (Route erlaubt 480s). */
 const MISSION_TIMEOUT_MS = 270_000;
+/** Organisations-Modus (BUSINESS/ENTERPRISE): mehr Agenten, mehr Zeit. */
+const ORG_MISSION_TIMEOUT_MS = 480_000;
+
+/** Max. gleichzeitige LLM-Calls dynamischer Agenten (Provider-Rate-Limits). */
+const DYN_BATCH_SIZE = 4;
+
+/** Rotierende Modell-Zuweisung fuer dynamische Agenten (Index % 3). */
+const DYN_MODEL_ROTATION: readonly { provider: Provider; model: string }[] = [
+  { provider: "openai", model: "gpt-4o-mini" },
+  { provider: "moonshot", model: "kimi-k3" },
+  { provider: "anthropic", model: "claude-sonnet-5" },
+];
 
 /**
  * Kontextzeile aus dem Branchen-Onboarding fuer den Commander-System-Prompt

@@ -12,7 +12,7 @@
 
 import { createHmac, randomBytes } from "node:crypto";
 
-const PLANS = ["STARTER", "PROFESSIONAL", "BUSINESS"];
+const PLANS = ["STARTER", "PROFESSIONAL", "BUSINESS", "ENTERPRISE"];
 const BASE32_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 const KEY_RANDOM_LENGTH = 16;
 

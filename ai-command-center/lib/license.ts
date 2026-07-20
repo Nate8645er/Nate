@@ -35,6 +35,7 @@ export const PAID_PLANS: readonly PaidPlan[] = [
   "STARTER",
   "PROFESSIONAL",
   "BUSINESS",
+  "ENTERPRISE",
 ] as const;
 
 /** Missionen pro Kalendertag (UTC) – wird SERVERSEITIG erzwungen. */
@@ -43,6 +44,7 @@ export const PLAN_LIMITS: Record<PlanId, number> = {
   STARTER: 25,
   PROFESSIONAL: 100,
   BUSINESS: 400,
+  ENTERPRISE: 1000,
 };
 
 /** Naechsthoeherer Plan fuer die Upgrade-Empfehlung im Limit-Fehler. */
@@ -50,7 +52,8 @@ const NEXT_PLAN: Record<PlanId, PaidPlan | null> = {
   FREE: "STARTER",
   STARTER: "PROFESSIONAL",
   PROFESSIONAL: "BUSINESS",
-  BUSINESS: null,
+  BUSINESS: "ENTERPRISE",
+  ENTERPRISE: null,
 };
 
 /** Lizenz-Token-Laufzeit: 30 Tage. */
@@ -119,7 +122,7 @@ function readToken(token: string): Record<string, unknown> | null {
 
 const BASE32_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 const KEY_RANDOM_LENGTH = 16;
-const KEY_RE = /^ACC-(STARTER|PROFESSIONAL|BUSINESS)-([A-Z2-7]{16})-([0-9A-F]{8})$/;
+const KEY_RE = /^ACC-(STARTER|PROFESSIONAL|BUSINESS|ENTERPRISE)-([A-Z2-7]{16})-([0-9A-F]{8})$/;
 
 function keySignature(payload: string): string {
   return hmacHex(payload).slice(0, 8).toUpperCase();

@@ -10,7 +10,7 @@
 export type Provider = "anthropic" | "openai" | "moonshot";
 
 /** Abo-Plaene. FREE gilt ohne (gueltiges) Lizenz-Token. */
-export type PlanId = "FREE" | "STARTER" | "PROFESSIONAL" | "BUSINESS";
+export type PlanId = "FREE" | "STARTER" | "PROFESSIONAL" | "BUSINESS" | "ENTERPRISE";
 
 /**
  * Unternehmenskontext aus dem Branchen-Onboarding.
@@ -35,6 +35,30 @@ export type AgentRole =
 
 /** Ausfuehrende Worker-Rollen (alle ausser Commander und Quality). */
 export type WorkerRole = Exclude<AgentRole, "commander" | "quality">;
+
+/**
+ * Agenten-Identitaet in Events: feste Rolle ODER dynamischer Agent aus dem
+ * Organisations-Modus (BUSINESS/ENTERPRISE), z. B. "dyn:marktanalyst".
+ */
+export type AgentId = AgentRole | `dyn:${string}`;
+
+/** Eine dynamische Spezialisten-Rolle aus dem ORG-PLAN des Commanders. */
+export interface OrgRoleSpec {
+  /** Eindeutige Event-Id, immer mit Praefix "dyn:". */
+  id: `dyn:${string}`;
+  /** Anzeigename, z. B. "Marktanalyst". */
+  rolle: string;
+  /** Fachgebiet fuer den generierten System-Prompt. */
+  fachgebiet: string;
+  /** Konkrete Teilaufgabe innerhalb der Mission. */
+  teilaufgabe: string;
+}
+
+/** Eine Abteilung der virtuellen Firma (Organisations-Modus). */
+export interface OrgDepartmentSpec {
+  name: string;
+  roles: OrgRoleSpec[];
+}
 
 /** Konfiguration eines einzelnen Agenten. */
 export interface AgentConfig {
@@ -68,10 +92,36 @@ export interface QualityReport {
  * Das Dashboard rendert den Live-Status ausschliesslich aus diesen Events.
  */
 export type AgentEvent =
-  /** Statuswechsel eines Agenten (z. B. "plant", "arbeitet", "fertig") */
-  | { type: "status"; agent: AgentRole; status: AgentStatus; message: string }
+  /**
+   * Statuswechsel eines Agenten (z. B. "plant", "arbeitet", "fertig").
+   * Dynamische Agenten (agent = "dyn:...") tragen zusaetzlich label
+   * (Anzeigename) und department (Abteilung) fuer das Dashboard.
+   */
+  | {
+      type: "status";
+      agent: AgentId;
+      status: AgentStatus;
+      message: string;
+      label?: string;
+      department?: string;
+    }
   /** Fertige Text-Ausgabe eines Agenten */
-  | { type: "output"; agent: AgentRole; content: string }
+  | {
+      type: "output";
+      agent: AgentId;
+      content: string;
+      label?: string;
+      department?: string;
+    }
+  /**
+   * ORG-PLAN des Commanders (nur BUSINESS/ENTERPRISE): die virtuelle Firma
+   * als Abteilungen mit dynamischen Rollen – das Dashboard rendert daraus
+   * das Organigramm und legt fuer jede Rolle eine Live-Karte an.
+   */
+  | {
+      type: "org";
+      departments: { name: string; roles: { id: string; label: string }[] }[];
+    }
   /** Quality-Score inkl. Verbesserungen */
   | { type: "score"; score: number; improvements: string[] }
   /** Finales, synthetisiertes Ergebnis (Markdown) */
@@ -83,7 +133,7 @@ export type AgentEvent =
    */
   | { type: "usage"; token: string; used: number; limit: number; plan: PlanId }
   /** Fehler eines Agenten oder der Pipeline */
-  | { type: "error"; agent: AgentRole | null; message: string };
+  | { type: "error"; agent: AgentId | null; message: string };
 
 export type AgentStatus = "idle" | "working" | "done" | "error";
 
