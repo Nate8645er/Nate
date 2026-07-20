@@ -12,8 +12,10 @@
 
 import type { ChatMessage, LLMResult, Provider } from "./types";
 
-const REQUEST_TIMEOUT_MS = 120_000;
+const REQUEST_TIMEOUT_MS = 90_000;
 const MAX_TOKENS = 4096;
+/** Ein Wiederholungsversuch bei Netz-/5xx-Fehlern. */
+const MAX_ATTEMPTS = 2;
 
 interface ProviderEndpoint {
   url: string;
@@ -36,7 +38,18 @@ const ENDPOINTS: Record<Provider, ProviderEndpoint> = {
 };
 
 /**
+ * Prueft, ob fuer den Provider ein API-Key in process.env hinterlegt ist.
+ * Der Orchestrator nutzt das, um ohne Key direkt in den Demo-Modus zu gehen.
+ */
+export function hasApiKey(provider: Provider): boolean {
+  return Boolean(process.env[ENDPOINTS[provider].envKey]?.trim());
+}
+
+/**
  * Ruft das angegebene Modell beim jeweiligen Provider auf.
+ *
+ * Netz-/Timeout-Fehler und HTTP 5xx werden genau einmal wiederholt;
+ * 4xx-Fehler (falscher Key, ungueltiges Modell) sofort zurueckgegeben.
  *
  * @param provider  anthropic | openai | moonshot
  * @param model     Modell-ID, z. B. "claude-sonnet-5" oder "gpt-4o-mini"
@@ -67,8 +80,29 @@ export async function callLLM(
       ? buildAnthropicRequest(apiKey, model, system, messages)
       : buildOpenAIStyleRequest(apiKey, model, system, messages);
 
+  let lastError = `${provider}: unbekannter Fehler`;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const outcome = await attemptRequest(provider, endpoint.url, headers, body);
+    if (outcome.ok) return { ok: true, text: outcome.text };
+    lastError = outcome.error;
+    if (!outcome.retryable) break;
+  }
+  return { ok: false, error: lastError };
+}
+
+type AttemptOutcome =
+  | { ok: true; text: string }
+  | { ok: false; error: string; retryable: boolean };
+
+/** Ein einzelner HTTP-Versuch; meldet, ob ein Retry sinnvoll ist. */
+async function attemptRequest(
+  provider: Provider,
+  url: string,
+  headers: Record<string, string>,
+  body: unknown,
+): Promise<AttemptOutcome> {
   try {
-    const response = await fetch(endpoint.url, {
+    const response = await fetch(url, {
       method: "POST",
       headers,
       body: JSON.stringify(body),
@@ -80,6 +114,8 @@ export async function callLLM(
       return {
         ok: false,
         error: `${provider} antwortete mit HTTP ${response.status}: ${detail}`,
+        // Nur Server-Fehler wiederholen; 4xx aendert ein Retry nicht.
+        retryable: response.status >= 500,
       };
     }
 
@@ -93,6 +129,7 @@ export async function callLLM(
       return {
         ok: false,
         error: `${provider}: Antwort enthielt keinen Text (unerwartetes Format).`,
+        retryable: false,
       };
     }
     return { ok: true, text };
@@ -103,7 +140,11 @@ export async function callLLM(
         : err instanceof Error
           ? err.message
           : String(err);
-    return { ok: false, error: `${provider}: Netzwerkfehler (${reason})` };
+    return {
+      ok: false,
+      error: `${provider}: Netzwerkfehler (${reason})`,
+      retryable: true,
+    };
   }
 }
 

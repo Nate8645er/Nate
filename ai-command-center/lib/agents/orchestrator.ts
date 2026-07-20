@@ -8,13 +8,35 @@
  *   4. Commander synthetisiert das finale Ergebnis
  *
  * Alle Zwischenstaende werden ueber emit() als AgentEvents gestreamt.
- * Faellt ein Worker aus, laeuft die Mission mit dem verbleibenden
- * Ergebnis weiter; nur ein Totalausfall bricht ab.
+ *
+ * Robustheit: Fehlt fuer einen Provider der API-Key oder scheitert ein
+ * Call endgueltig (nach Retry), springt pro Phase ein deterministischer
+ * DEMO-FALLBACK ein (lib/agents/demo.ts). Eine Mission laeuft dadurch
+ * IMMER bis zum final-Event durch. Zusaetzlich haengt ueber der gesamten
+ * Mission ein harter Timeout, der im Grenzfall sauber mit einem
+ * final-Event abschliesst.
  */
 
-import { callLLM } from "./providers";
+import {
+  demoAnalystOutput,
+  demoBuilderOutput,
+  demoPlan,
+  demoQualityReport,
+  demoSynthesis,
+} from "./demo";
+import { callLLM, hasApiKey } from "./providers";
 import { AGENTS, SYNTHESIS_PROMPT } from "./team";
-import type { AgentConfig, EmitFn, QualityReport, TaskPlan } from "./types";
+import type {
+  AgentConfig,
+  AgentRole,
+  ChatMessage,
+  EmitFn,
+  QualityReport,
+  TaskPlan,
+} from "./types";
+
+/** Harter Deckel ueber der Gesamtmission (Route erlaubt 300s). */
+const MISSION_TIMEOUT_MS = 270_000;
 
 export async function runMission(goal: string, emit: EmitFn): Promise<void> {
   const trimmedGoal = goal.trim();
@@ -23,122 +45,192 @@ export async function runMission(goal: string, emit: EmitFn): Promise<void> {
     return;
   }
 
+  // Nach Missionsende (regulaer oder Timeout) keine Events mehr durchlassen,
+  // damit ein noch laufender Rest-Task den Stream nicht "wiederbelebt".
+  let finished = false;
+  const guardedEmit: EmitFn = (event) => {
+    if (!finished) emit(event);
+  };
+
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<"timeout">((resolve) => {
+    timer = setTimeout(() => resolve("timeout"), MISSION_TIMEOUT_MS);
+  });
+
+  try {
+    const outcome = await Promise.race([
+      runMissionPhases(trimmedGoal, guardedEmit).then(() => "done" as const),
+      timeout,
+    ]);
+
+    if (outcome === "timeout") {
+      // Sauber abschliessen: alle Agenten auf "done", Demo-Ergebnis liefern.
+      for (const role of Object.keys(AGENTS) as AgentRole[]) {
+        guardedEmit(status(role, "done", "Zeitlimit erreicht – Demo-Abschluss"));
+      }
+      guardedEmit({
+        type: "error",
+        agent: null,
+        message: "Zeitlimit der Mission erreicht – Ergebnis wurde im Demo-Modus abgeschlossen.",
+      });
+      guardedEmit({ type: "final", content: demoSynthesis(trimmedGoal, "") });
+    }
+  } finally {
+    finished = true;
+    clearTimeout(timer);
+  }
+}
+
+/* ----------------------------- Missionsphasen ----------------------------- */
+
+async function runMissionPhases(goal: string, emit: EmitFn): Promise<void> {
   // 1. Commander plant
   emit(status("commander", "working", "Commander plant die Mission …"));
-  const plan = await planMission(trimmedGoal);
-  if (!plan.ok) {
-    emit(status("commander", "error", "Planung fehlgeschlagen"));
-    emit({ type: "error", agent: "commander", message: plan.error });
-    return;
-  }
-  emit(status("commander", "done", "Plan erstellt"));
+  const planCall = await callAgent(
+    AGENTS.commander,
+    AGENTS.commander.systemPrompt,
+    [{ role: "user", content: `Mission: ${goal}` }],
+    () => JSON.stringify(demoPlan(goal)),
+    emit,
+  );
+  const plan = parsePlan(planCall.text, goal);
+  emit(status("commander", "done", planCall.demo ? "Plan erstellt (Demo-Modus)" : "Plan erstellt"));
   emit({
     type: "output",
     agent: "commander",
     content: [
-      `**Teilaufgabe Builder:** ${plan.value.builderTask}`,
-      `**Teilaufgabe Analyst:** ${plan.value.analystTask}`,
+      `**Teilaufgabe Builder:** ${plan.builderTask}`,
+      `**Teilaufgabe Analyst:** ${plan.analystTask}`,
     ].join("\n\n"),
   });
 
   // 2. Builder + Analyst parallel
   emit(status("builder", "working", "Builder arbeitet …"));
   emit(status("analyst", "working", "Analyst recherchiert …"));
-  const [builderResult, analystResult] = await Promise.all([
-    runWorker(AGENTS.builder, trimmedGoal, plan.value.builderTask),
-    runWorker(AGENTS.analyst, trimmedGoal, plan.value.analystTask),
+  const [builderCall, analystCall] = await Promise.all([
+    callAgent(
+      AGENTS.builder,
+      AGENTS.builder.systemPrompt,
+      workerMessages(goal, plan.builderTask),
+      () => demoBuilderOutput(goal, plan.builderTask),
+      emit,
+    ),
+    callAgent(
+      AGENTS.analyst,
+      AGENTS.analyst.systemPrompt,
+      workerMessages(goal, plan.analystTask),
+      () => demoAnalystOutput(goal, plan.analystTask),
+      emit,
+    ),
   ]);
 
   const workerOutputs: string[] = [];
-  for (const { agent, result } of [
-    { agent: AGENTS.builder, result: builderResult },
-    { agent: AGENTS.analyst, result: analystResult },
+  for (const { agent, call } of [
+    { agent: AGENTS.builder, call: builderCall },
+    { agent: AGENTS.analyst, call: analystCall },
   ]) {
-    if (result.ok) {
-      emit(status(agent.role, "done", `${agent.name} fertig`));
-      emit({ type: "output", agent: agent.role, content: result.text });
-      workerOutputs.push(`## Ergebnis ${agent.name}\n\n${result.text}`);
-    } else {
-      emit(status(agent.role, "error", `${agent.name} ausgefallen`));
-      emit({ type: "error", agent: agent.role, message: result.error });
-    }
+    emit(status(agent.role, "done", call.demo ? `${agent.name} fertig (Demo-Modus)` : `${agent.name} fertig`));
+    emit({ type: "output", agent: agent.role, content: call.text });
+    workerOutputs.push(`## Ergebnis ${agent.name}\n\n${call.text}`);
   }
-
-  if (workerOutputs.length === 0) {
-    emit({
-      type: "error",
-      agent: null,
-      message: "Beide Worker sind ausgefallen – Mission abgebrochen.",
-    });
-    return;
-  }
-
   const combined = workerOutputs.join("\n\n");
 
   // 3. Quality prueft
   emit(status("quality", "working", "Quality prueft die Ergebnisse …"));
-  const quality = await reviewQuality(trimmedGoal, combined);
-  let improvementNotes = "";
-  if (quality.ok) {
-    emit(status("quality", "done", `Score: ${quality.value.score}/100`));
-    emit({
-      type: "score",
-      score: quality.value.score,
-      improvements: quality.value.improvements,
-    });
-    improvementNotes = quality.value.improvements.length
-      ? `\n\nVerbesserungsvorschlaege des Quality-Agenten:\n- ${quality.value.improvements.join("\n- ")}`
-      : "";
-  } else {
-    // Quality-Ausfall ist nicht fatal: Synthese laeuft ohne Review weiter.
-    emit(status("quality", "error", "Quality-Pruefung fehlgeschlagen"));
-    emit({ type: "error", agent: "quality", message: quality.error });
-  }
+  const qualityCall = await callAgent(
+    AGENTS.quality,
+    AGENTS.quality.systemPrompt,
+    [
+      {
+        role: "user",
+        content: `Mission: ${goal}\n\nZu bewertende Ergebnisse:\n\n${combined}`,
+      },
+    ],
+    () => JSON.stringify(demoQualityReport(combined)),
+    emit,
+  );
+  const quality = parseQuality(qualityCall.text) ?? demoQualityReport(combined);
+  emit(
+    status(
+      "quality",
+      "done",
+      qualityCall.demo ? `Score: ${quality.score}/100 (Demo-Modus)` : `Score: ${quality.score}/100`,
+    ),
+  );
+  emit({ type: "score", score: quality.score, improvements: quality.improvements });
+  const improvementNotes = quality.improvements.length
+    ? `\n\nVerbesserungsvorschlaege des Quality-Agenten:\n- ${quality.improvements.join("\n- ")}`
+    : "";
 
   // 4. Commander-Synthese
   emit(status("commander", "working", "Commander erstellt das Gesamtergebnis …"));
-  const synthesis = await callLLM(
-    AGENTS.commander.provider,
-    AGENTS.commander.model,
+  const synthesisCall = await callAgent(
+    AGENTS.commander,
     SYNTHESIS_PROMPT,
     [
       {
         role: "user",
-        content: `Mission: ${trimmedGoal}\n\n${combined}${improvementNotes}`,
+        content: `Mission: ${goal}\n\n${combined}${improvementNotes}`,
       },
     ],
+    () => demoSynthesis(goal, combined),
+    emit,
   );
-
-  if (!synthesis.ok) {
-    emit(status("commander", "error", "Synthese fehlgeschlagen"));
-    emit({ type: "error", agent: "commander", message: synthesis.error });
-    return;
-  }
-  emit(status("commander", "done", "Mission abgeschlossen"));
-  emit({ type: "final", content: synthesis.text });
+  emit(
+    status(
+      "commander",
+      "done",
+      synthesisCall.demo ? "Mission abgeschlossen (Demo-Modus)" : "Mission abgeschlossen",
+    ),
+  );
+  emit({ type: "final", content: synthesisCall.text });
 }
 
 /* ----------------------------- interne Helfer ----------------------------- */
 
-type Result<T> = { ok: true; value: T } | { ok: false; error: string };
+interface AgentCall {
+  text: string;
+  /** true, wenn die Antwort aus dem Demo-Fallback stammt */
+  demo: boolean;
+}
 
-function status(
-  agent: AgentConfig["role"],
-  s: "idle" | "working" | "done" | "error",
-  message: string,
-) {
+/**
+ * Ruft einen Agenten auf und degradiert bei fehlendem Key oder
+ * endgueltigem Fehler in den Demo-Fallback – wirft nie.
+ */
+async function callAgent(
+  agent: AgentConfig,
+  system: string,
+  messages: ChatMessage[],
+  demoFallback: () => string,
+  emit: EmitFn,
+): Promise<AgentCall> {
+  if (!hasApiKey(agent.provider)) {
+    emit(status(agent.role, "working", `Demo-Modus: kein API-Key fuer ${agent.provider}`));
+    return { text: demoFallback(), demo: true };
+  }
+  const result = await callLLM(agent.provider, agent.model, system, messages);
+  if (result.ok) return { text: result.text, demo: false };
+  emit(status(agent.role, "working", `Demo-Modus: ${agent.provider} nicht erreichbar`));
+  return { text: demoFallback(), demo: true };
+}
+
+function status(agent: AgentRole, s: "idle" | "working" | "done" | "error", message: string) {
   return { type: "status" as const, agent, status: s, message };
 }
 
-/** Schritt 1: Commander erzeugt den TaskPlan (JSON). */
-async function planMission(goal: string): Promise<Result<TaskPlan>> {
-  const { provider, model, systemPrompt } = AGENTS.commander;
-  const result = await callLLM(provider, model, systemPrompt, [
-    { role: "user", content: `Mission: ${goal}` },
-  ]);
-  if (!result.ok) return { ok: false, error: result.error };
+function workerMessages(goal: string, task: string): ChatMessage[] {
+  return [
+    {
+      role: "user",
+      content: `Gesamtmission: ${goal}\n\nDeine Teilaufgabe: ${task}`,
+    },
+  ];
+}
 
-  const parsed = parseJsonObject(result.text);
+/** Extrahiert den TaskPlan; unbrauchbares JSON faellt auf den Demo-Plan zurueck. */
+function parsePlan(text: string, goal: string): TaskPlan {
+  const parsed = parseJsonObject(text);
   if (
     parsed &&
     typeof parsed.builderTask === "string" &&
@@ -147,73 +239,29 @@ async function planMission(goal: string): Promise<Result<TaskPlan>> {
     parsed.analystTask.trim()
   ) {
     return {
-      ok: true,
-      value: {
-        builderTask: parsed.builderTask.trim(),
-        analystTask: parsed.analystTask.trim(),
-      },
+      builderTask: parsed.builderTask.trim(),
+      analystTask: parsed.analystTask.trim(),
     };
   }
-
-  // Fallback: Wenn der Commander kein valides JSON liefert, arbeiten
-  // beide Worker mit dem Originalziel weiter, statt die Mission abzubrechen.
-  return {
-    ok: true,
-    value: {
-      builderTask: `Erstelle ein konkretes, verwendbares Ergebnis fuer: ${goal}`,
-      analystTask: `Analysiere Kontext, Zielgruppe, Chancen und Risiken fuer: ${goal}`,
-    },
-  };
+  return demoPlan(goal);
 }
 
-/** Schritt 2: Ein Worker (Builder oder Analyst) bearbeitet seine Teilaufgabe. */
-function runWorker(agent: AgentConfig, goal: string, task: string) {
-  return callLLM(agent.provider, agent.model, agent.systemPrompt, [
-    {
-      role: "user",
-      content: `Gesamtmission: ${goal}\n\nDeine Teilaufgabe: ${task}`,
-    },
-  ]);
-}
-
-/** Schritt 3: Quality bewertet die kombinierten Ergebnisse. */
-async function reviewQuality(
-  goal: string,
-  combinedOutputs: string,
-): Promise<Result<QualityReport>> {
-  const { provider, model, systemPrompt } = AGENTS.quality;
-  const result = await callLLM(provider, model, systemPrompt, [
-    {
-      role: "user",
-      content: `Mission: ${goal}\n\nZu bewertende Ergebnisse:\n\n${combinedOutputs}`,
-    },
-  ]);
-  if (!result.ok) return { ok: false, error: result.error };
-
-  const parsed = parseJsonObject(result.text);
+/** Extrahiert den QualityReport oder null bei unbrauchbarem JSON. */
+function parseQuality(text: string): QualityReport | null {
+  const parsed = parseJsonObject(text);
   const score = typeof parsed?.score === "number" ? parsed.score : NaN;
-  if (!Number.isFinite(score)) {
-    return {
-      ok: false,
-      error: "Quality-Agent lieferte kein valides JSON mit Score.",
-    };
-  }
+  if (!Number.isFinite(score)) return null;
   const improvements = Array.isArray(parsed?.improvements)
     ? parsed.improvements.filter((i): i is string => typeof i === "string")
     : [];
-  return {
-    ok: true,
-    value: { score: clamp(Math.round(score), 0, 100), improvements },
-  };
+  return { score: clamp(Math.round(score), 0, 100), improvements };
 }
 
 /**
  * Robustes JSON-Parsing: toleriert Markdown-Codeblocks und
  * umgebenden Text, indem das erste {...}-Objekt extrahiert wird.
  */
-function parseJsonObject(
-  text: string,
-): Record<string, unknown> | null {
+function parseJsonObject(text: string): Record<string, unknown> | null {
   const start = text.indexOf("{");
   const end = text.lastIndexOf("}");
   if (start === -1 || end <= start) return null;
