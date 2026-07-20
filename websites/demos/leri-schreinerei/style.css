@@ -773,7 +773,133 @@ dialog.legal-dialog p { color: var(--ink-soft); }
 dialog.legal-dialog .dialog-close { margin-top: var(--space-6); }
 
 /* --------------------------------------------------------------------------
-   13. Scroll-Reveal & Motion
+   13. Demo-Banner (nur Präsentation)
+   -------------------------------------------------------------------------- */
+.demo-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  background: var(--brand-deep);
+  color: var(--on-deep-soft);
+  font-size: var(--text-sm);
+  text-align: center;
+}
+.demo-banner p { margin: 0; }
+.demo-banner-close {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--on-deep-soft);
+  cursor: pointer;
+  flex: none;
+}
+.demo-banner-close:hover { color: #fff; background: rgb(255 255 255 / 0.1); }
+.demo-banner.is-hidden { display: none; }
+
+/* --------------------------------------------------------------------------
+   14. Über uns
+   -------------------------------------------------------------------------- */
+.about-grid {
+  display: grid;
+  gap: var(--space-12);
+  align-items: center;
+}
+@media (min-width: 56rem) {
+  .about-grid { grid-template-columns: 1.1fr 0.9fr; }
+}
+.about-grid .section-head { margin-bottom: var(--space-6); }
+.about-grid > div > p { color: var(--ink-soft); max-width: 36rem; }
+.about-grid > div > p strong { color: var(--ink); }
+
+.about-facts {
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--space-3);
+}
+.about-facts li {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  color: var(--ink-soft);
+}
+.about-facts svg { color: var(--brand); flex: none; margin-top: 0.25rem; }
+.about-facts strong { color: var(--ink); font-weight: 600; }
+
+.about-visual {
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--line);
+}
+.about-visual svg { width: 100%; height: auto; }
+
+/* --------------------------------------------------------------------------
+   15. Referenzen
+   -------------------------------------------------------------------------- */
+.references-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+}
+
+.reference-card {
+  padding: var(--space-6);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  transition: border-color 200ms var(--ease-out),
+              box-shadow 200ms var(--ease-out);
+}
+.section--tint .reference-card { background: var(--surface); }
+.reference-card:hover {
+  border-color: color-mix(in srgb, var(--brand) 45%, var(--line));
+  box-shadow: var(--shadow-md);
+}
+.reference-card h3 { font-size: var(--text-lg); margin-bottom: var(--space-2); }
+.reference-card p { color: var(--ink-soft); }
+
+.reference-list {
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--space-2);
+}
+.reference-list li {
+  position: relative;
+  padding-left: var(--space-6);
+  font-weight: 600;
+  color: var(--ink);
+}
+.reference-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 0.9rem;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--accent-warm);
+}
+
+.contact-note {
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid rgb(255 255 255 / 0.15);
+  font-size: var(--text-sm);
+}
+
+/* --------------------------------------------------------------------------
+   16. Scroll-Reveal & Motion
    -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: no-preference) {
   .reveal {

@@ -145,7 +145,20 @@
   });
 
   /* ------------------------------------------------------------------
-     6. Jahreszahl im Footer
+     6. Demo-Banner schliessen
+     ------------------------------------------------------------------ */
+  var demoBanner = document.getElementById("demo-banner");
+  if (demoBanner) {
+    var demoClose = demoBanner.querySelector(".demo-banner-close");
+    if (demoClose) {
+      demoClose.addEventListener("click", function () {
+        demoBanner.classList.add("is-hidden");
+      });
+    }
+  }
+
+  /* ------------------------------------------------------------------
+     7. Jahreszahl im Footer
      ------------------------------------------------------------------ */
   var yearEl = document.getElementById("jahr");
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
