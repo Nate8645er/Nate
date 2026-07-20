@@ -8,7 +8,9 @@
  * Quality-Gauge und finales Ergebnis. Verlauf + Plan in localStorage.
  *
  * Abo-Stufen (FREE/STARTER/PROFESSIONAL/BUSINESS) schalten HUD-Module
- * rein visuell frei — die Mission-Pipeline ist fuer alle identisch.
+ * frei; Stufen oberhalb der lizenzierten Stufe (Lizenz-Modal, POST
+ * /api/license) sind gesperrt. Branchen-Onboarding-Modal liefert den
+ * Mission-Kontext, das SSE-Event "usage" den Tageszaehler im Header.
  *
  * TODO Phase 2: Verlauf + Plan serverseitig je Benutzer persistieren.
  */
@@ -401,12 +403,246 @@ const ExtraAgentCard = memo(function ExtraAgentCard({ name, tagline }: { name: s
   );
 });
 
+/* --------------------------------- Modals --------------------------------- */
+
+/** Fokus-Ring fuer Tastaturbedienung (focus-visible) im HUD-Stil. */
+const FOCUS_RING =
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff8c2a]/70";
+
+/** Kleines Schloss-Symbol fuer gesperrte Plan-Stufen. */
+const LockIcon = memo(function LockIcon() {
+  return (
+    <svg viewBox="0 0 12 12" className="h-2.5 w-2.5" aria-hidden fill="none" stroke="currentColor" strokeWidth="1.3">
+      <rect x="2" y="5.2" width="8" height="5.3" rx="0.8" />
+      <path d="M3.8 5.2V3.8a2.2 2.2 0 0 1 4.4 0v1.4" />
+    </svg>
+  );
+});
+
+/**
+ * HUD-Modal-Shell: role=dialog, Escape schliesst, Klick auf den Hintergrund
+ * schliesst, Fokus springt beim Oeffnen in den Dialog und danach zurueck.
+ */
+function HudModal({
+  labelId,
+  onClose,
+  children,
+}: {
+  labelId: string;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const previous = document.activeElement;
+    dialogRef.current?.focus();
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      if (previous instanceof HTMLElement) previous.focus();
+    };
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-40 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
+      onMouseDown={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={labelId}
+        tabIndex={-1}
+        className="hud-panel hud-corners hud-modal-in relative w-full max-w-lg rounded-sm border border-[#ff8c2a]/30 bg-[#0b0a08] p-6 outline-none"
+      >
+        <button
+          onClick={onClose}
+          aria-label="Schliessen"
+          className={`absolute right-3 top-3 rounded-sm px-2 py-1 font-mono text-xs text-[#ffb35c]/70 transition hover:text-[#fff3e2] ${FOCUS_RING}`}
+        >
+          ✕
+        </button>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/** Auswahl-Button (Branche/Groesse) im Onboarding-Modal. */
+const ChoiceButton = memo(function ChoiceButton({
+  label,
+  selected,
+  onSelect,
+}: {
+  label: string;
+  selected: boolean;
+  onSelect: (label: string) => void;
+}) {
+  return (
+    <button
+      onClick={() => onSelect(label)}
+      aria-pressed={selected}
+      className={`rounded-sm border px-3 py-2.5 text-sm transition-colors ${FOCUS_RING} ${
+        selected
+          ? "border-[#ff8c2a] bg-[#ff8c2a]/15 text-[#fff3e2]"
+          : "border-[#ff8c2a]/25 bg-[#ff8c2a]/[0.03] text-[#e8dcc8] hover:border-[#ff8c2a]/60"
+      }`}
+    >
+      {label}
+    </button>
+  );
+});
+
+/** Branchen-Onboarding: Branche + Unternehmensgroesse waehlen. */
+function OnboardingModal({
+  initialBranche,
+  initialGroesse,
+  onConfirm,
+  onClose,
+}: {
+  initialBranche: string | null;
+  initialGroesse: string | null;
+  onConfirm: (branche: string, groesse: string) => void;
+  onClose: () => void;
+}) {
+  const [branche, setBranche] = useState<string | null>(initialBranche);
+  const [groesse, setGroesse] = useState<string | null>(initialGroesse);
+
+  return (
+    <HudModal labelId="onboarding-title" onClose={onClose}>
+      <div className="hud-label mb-1">Onboarding // Kontext</div>
+      <h2 id="onboarding-title" className="text-xl font-bold text-[#fff3e2]">Ihr Unternehmen</h2>
+      <p className="mt-1 text-sm text-[#c9b391]">
+        Ihre KI-Abteilung passt Plaene und Ergebnisse an Branche und Teamgroesse an.
+      </p>
+
+      <div className="hud-label mt-5 mb-2">Branche</div>
+      <div className="grid grid-cols-2 gap-2">
+        {BRANCHEN.map((b) => (
+          <ChoiceButton key={b} label={b} selected={branche === b} onSelect={setBranche} />
+        ))}
+      </div>
+
+      <div className="hud-label mt-5 mb-2">Unternehmensgroesse</div>
+      <div className="grid grid-cols-4 gap-2">
+        {GROESSEN.map((g) => (
+          <ChoiceButton key={g} label={g} selected={groesse === g} onSelect={setGroesse} />
+        ))}
+      </div>
+
+      <button
+        onClick={() => branche && groesse && onConfirm(branche, groesse)}
+        disabled={!branche || !groesse}
+        className={`mt-6 w-full rounded-sm bg-[#ff8c2a] px-6 py-3 font-semibold text-[#1a0f04] transition hover:bg-[#ffb35c] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
+      >
+        Start
+      </button>
+    </HudModal>
+  );
+}
+
+/** Lizenz-Aktivierung: Schluessel eingeben, gegen POST /api/license tauschen. */
+function LicenseModal({
+  licensedPlan,
+  onActivated,
+  onClose,
+}: {
+  licensedPlan: Plan;
+  onActivated: (plan: Plan, token: string) => void;
+  onClose: () => void;
+}) {
+  const [key, setKey] = useState("");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const activate = useCallback(async () => {
+    const trimmed = key.trim();
+    if (!trimmed || busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      const res = await fetch("/api/license", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key: trimmed }),
+      });
+      const data = (await res.json().catch(() => null)) as
+        | { valid?: boolean; plan?: string; token?: string; error?: string }
+        | null;
+      if (
+        res.ok &&
+        data?.valid &&
+        typeof data.token === "string" &&
+        typeof data.plan === "string" &&
+        (PLANS as string[]).includes(data.plan)
+      ) {
+        onActivated(data.plan as Plan, data.token);
+      } else {
+        setError(data?.error ?? "Ungueltiger Lizenzschluessel.");
+      }
+    } catch {
+      setError("Verbindung fehlgeschlagen. Bitte erneut versuchen.");
+    } finally {
+      setBusy(false);
+    }
+  }, [key, busy, onActivated]);
+
+  return (
+    <HudModal labelId="license-title" onClose={onClose}>
+      <div className="hud-label mb-1">Zugang // Freischaltung</div>
+      <h2 id="license-title" className="text-xl font-bold text-[#fff3e2]">Lizenz aktivieren</h2>
+      <p className="mt-1 text-sm text-[#c9b391]">
+        {licensedPlan === "FREE"
+          ? "Geben Sie Ihren Lizenzschluessel ein, um STARTER, PROFESSIONAL oder BUSINESS freizuschalten."
+          : `Aktive Lizenz: ${licensedPlan}. Ein neuer Schluessel ersetzt die aktuelle Lizenz.`}
+      </p>
+      <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+        <input
+          value={key}
+          onChange={(e) => setKey(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && activate()}
+          placeholder="ACC-STARTER-..."
+          disabled={busy}
+          aria-label="Lizenzschluessel"
+          className={`flex-1 rounded-sm border border-[#ff8c2a]/25 bg-[#ff8c2a]/[0.04] px-4 py-3 font-mono text-sm text-[#fff3e2] placeholder:text-[#8a7455] outline-none transition focus:border-[#ff8c2a]/70 focus:ring-2 focus:ring-[#ff8c2a]/20 ${FOCUS_RING}`}
+        />
+        <button
+          onClick={activate}
+          disabled={!key.trim() || busy}
+          className={`rounded-sm bg-[#ff8c2a] px-6 py-3 font-semibold text-[#1a0f04] transition hover:bg-[#ffb35c] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
+        >
+          {busy ? "Pruefe ..." : "Aktivieren"}
+        </button>
+      </div>
+      {error && (
+        <p role="alert" className="mt-3 rounded-sm border border-red-400/30 bg-red-400/10 px-4 py-2 text-sm text-red-300">
+          {error}
+        </p>
+      )}
+    </HudModal>
+  );
+}
+
 /* --------------------------------- Seite ---------------------------------- */
 
 export default function DashboardPage() {
   const [goal, setGoal] = useState("");
   const [running, setRunning] = useState(false);
-  const [plan, setPlan] = useState<Plan>("PROFESSIONAL");
+  const [plan, setPlan] = useState<Plan>("FREE");
+  /** Per Lizenz-Token freigeschalteter Plan; ohne Token FREE. */
+  const [licensedPlan, setLicensedPlan] = useState<Plan>("FREE");
+  const [licenseToken, setLicenseToken] = useState<string | null>(null);
+  const [usageToken, setUsageToken] = useState<string | null>(null);
+  const [usage, setUsage] = useState<{ used: number; limit: number } | null>(null);
+  const [branche, setBranche] = useState<string | null>(null);
+  const [groesse, setGroesse] = useState<string | null>(null);
+  const [onboardingOpen, setOnboardingOpen] = useState(false);
+  const [licenseOpen, setLicenseOpen] = useState(false);
   const [statuses, setStatuses] = useState<Record<AgentRole, { status: AgentStatus; message: string }>>({
     commander: { status: "idle", message: "Bereit" },
     builder: { status: "idle", message: "Bereit" },
@@ -440,14 +676,87 @@ export default function DashboardPage() {
     try {
       const raw = localStorage.getItem(HISTORY_KEY);
       if (raw) setHistory(JSON.parse(raw) as HistoryEntry[]);
+
+      // Lizenz-Token lesen (nur Anzeige; die HMAC-Pruefung macht der Server).
+      let licensed: Plan = "FREE";
+      const storedToken = localStorage.getItem(LICENSE_TOKEN_KEY);
+      if (storedToken) {
+        const payload = decodeTokenPayload(storedToken);
+        const p = payload?.p;
+        const exp = payload?.exp;
+        if (
+          typeof p === "string" && (PLANS as string[]).includes(p) &&
+          typeof exp === "number" && exp > Date.now()
+        ) {
+          licensed = p as Plan;
+          setLicensedPlan(licensed);
+          setLicenseToken(storedToken);
+        } else {
+          localStorage.removeItem(LICENSE_TOKEN_KEY);
+        }
+      }
+
+      // Gewaehlten Plan laden, aber auf die lizenzierte Stufe begrenzen.
       const storedPlan = localStorage.getItem(PLAN_KEY);
-      if (storedPlan && (PLANS as string[]).includes(storedPlan)) setPlan(storedPlan as Plan);
+      if (storedPlan && (PLANS as string[]).includes(storedPlan)) {
+        const wanted = storedPlan as Plan;
+        setPlan(PLAN_LEVEL[wanted] > PLAN_LEVEL[licensed] ? licensed : wanted);
+      }
+
+      // Usage-Token nur weiterverwenden, wenn es vom heutigen UTC-Tag stammt.
+      const storedUsage = localStorage.getItem(USAGE_TOKEN_KEY);
+      if (storedUsage) {
+        const payload = decodeTokenPayload(storedUsage);
+        if (payload?.d === new Date().toISOString().slice(0, 10)) {
+          setUsageToken(storedUsage);
+        } else {
+          localStorage.removeItem(USAGE_TOKEN_KEY);
+        }
+      }
+
+      // Branchen-Onboarding: ohne gespeicherte Branche Modal oeffnen.
+      const storedBranche = localStorage.getItem(BRANCHE_KEY);
+      const storedGroesse = localStorage.getItem(GROESSE_KEY);
+      if (storedBranche) setBranche(storedBranche);
+      if (storedGroesse) setGroesse(storedGroesse);
+      if (!storedBranche) setOnboardingOpen(true);
     } catch { /* korrupter Zustand wird ignoriert */ }
   }, []);
 
   const selectPlan = useCallback((p: Plan) => {
     setPlan(p);
     try { localStorage.setItem(PLAN_KEY, p); } catch { /* voll */ }
+  }, []);
+
+  /** Plan-Schalter: gesperrte Stufen oeffnen das Lizenz-Modal. */
+  const handlePlanClick = useCallback((p: Plan) => {
+    if (PLAN_LEVEL[p] > PLAN_LEVEL[licensedPlan]) {
+      setLicenseOpen(true);
+      return;
+    }
+    selectPlan(p);
+  }, [licensedPlan, selectPlan]);
+
+  const confirmOnboarding = useCallback((b: string, g: string) => {
+    setBranche(b);
+    setGroesse(g);
+    setOnboardingOpen(false);
+    try {
+      localStorage.setItem(BRANCHE_KEY, b);
+      localStorage.setItem(GROESSE_KEY, g);
+    } catch { /* voll */ }
+  }, []);
+
+  const handleLicenseActivated = useCallback((p: Plan, token: string) => {
+    setLicensedPlan(p);
+    setLicenseToken(token);
+    setLicenseOpen(false);
+    // Plan-Schalter springt direkt auf die frisch lizenzierte Stufe.
+    setPlan(p);
+    try {
+      localStorage.setItem(LICENSE_TOKEN_KEY, token);
+      localStorage.setItem(PLAN_KEY, p);
+    } catch { /* voll */ }
   }, []);
 
   const saveHistory = useCallback((entry: HistoryEntry) => {
@@ -490,6 +799,13 @@ export default function DashboardPage() {
         setFinalResult(ev.content);
         pushLog("commander", "Finales Ergebnis uebermittelt");
         break;
+      case "usage":
+        // Neu signierten Tageszaehler uebernehmen und fuer den naechsten
+        // Start als Header "x-acc-usage" bereithalten.
+        setUsage({ used: ev.used, limit: ev.limit });
+        setUsageToken(ev.token);
+        try { localStorage.setItem(USAGE_TOKEN_KEY, ev.token); } catch { /* voll */ }
+        break;
       case "error":
         setError(ev.message);
         if (ev.agent) setStatuses((s) => ({ ...s, [ev.agent as AgentRole]: { status: "error", message: ev.message } }));
@@ -525,10 +841,16 @@ export default function DashboardPage() {
     abortRef.current = controller;
 
     try {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (licenseToken) headers["x-acc-license"] = licenseToken;
+      if (usageToken) headers["x-acc-usage"] = usageToken;
       const res = await fetch("/api/mission", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ goal: missionGoal }),
+        headers,
+        body: JSON.stringify({
+          goal: missionGoal,
+          ...(branche && groesse ? { context: { branche, groesse } } : {}),
+        }),
         signal: controller.signal,
       });
       if (!res.ok || !res.body) {
@@ -563,7 +885,7 @@ export default function DashboardPage() {
       setRunning(false);
       abortRef.current = null;
     }
-  }, [goal, running, handleEvent, saveHistory]);
+  }, [goal, running, handleEvent, saveHistory, licenseToken, usageToken, branche, groesse]);
 
   const stopMission = useCallback(() => abortRef.current?.abort(), []);
   const toggleOutput = useCallback(
@@ -590,29 +912,60 @@ export default function DashboardPage() {
             </a>
             <div className="hud-label">Mission Control // Online</div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             {isBusiness && (
               <span className="hidden rounded-sm border border-[#ffd257]/50 bg-[#ffd257]/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[#ffd257] sm:inline">
                 Team-Arbeitsbereich
               </span>
             )}
+            {usage && (
+              <span className="hidden font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 sm:inline" aria-live="polite">
+                Missionen heute: {usage.used}/{usage.limit}
+              </span>
+            )}
+            {branche && (
+              <button
+                onClick={() => setOnboardingOpen(true)}
+                className={`rounded-sm border border-[#ff8c2a]/30 bg-[#ff8c2a]/[0.06] px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c] transition-colors hover:bg-[#ff8c2a]/15 ${FOCUS_RING}`}
+              >
+                {branche}{" "}
+                <span className="ml-1.5 text-[#ff8c2a] underline underline-offset-2">Ändern</span>
+              </button>
+            )}
+            <button
+              onClick={() => setLicenseOpen(true)}
+              className={`rounded-sm border px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors ${FOCUS_RING} ${
+                licensedPlan === "FREE"
+                  ? "border-[#ff8c2a]/40 text-[#ff8c2a] hover:bg-[#ff8c2a]/10"
+                  : "border-[#ffb35c]/40 bg-[#ff8c2a]/[0.06] text-[#ffb35c] hover:bg-[#ff8c2a]/15"
+              }`}
+            >
+              {licensedPlan === "FREE" ? "Lizenz aktivieren" : `Lizenz: ${licensedPlan}`}
+            </button>
             <div className="flex overflow-hidden rounded-sm border border-[#ff8c2a]/30" role="group" aria-label="Abo-Stufe">
-              {PLANS.map((p) => (
-                <button
-                  key={p}
-                  onClick={() => selectPlan(p)}
-                  aria-pressed={plan === p}
-                  className={`px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors ${
-                    plan === p
-                      ? p === "BUSINESS"
-                        ? "bg-[#ffd257] text-[#1a0f04]"
-                        : "bg-[#ff8c2a] text-[#1a0f04]"
-                      : "text-[#ffb35c]/70 hover:bg-[#ff8c2a]/10"
-                  }`}
-                >
-                  {p}
-                </button>
-              ))}
+              {PLANS.map((p) => {
+                const locked = PLAN_LEVEL[p] > PLAN_LEVEL[licensedPlan];
+                return (
+                  <button
+                    key={p}
+                    onClick={() => handlePlanClick(p)}
+                    aria-pressed={plan === p}
+                    aria-label={locked ? `${p} (Lizenz erforderlich)` : p}
+                    className={`flex items-center gap-1 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors ${FOCUS_RING} ${
+                      plan === p
+                        ? p === "BUSINESS"
+                          ? "bg-[#ffd257] text-[#1a0f04]"
+                          : "bg-[#ff8c2a] text-[#1a0f04]"
+                        : locked
+                          ? "text-[#8a7455] hover:bg-[#ff8c2a]/10"
+                          : "text-[#ffb35c]/70 hover:bg-[#ff8c2a]/10"
+                    }`}
+                  >
+                    {locked && <LockIcon />}
+                    {p}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -766,6 +1119,22 @@ export default function DashboardPage() {
           )}
         </div>
       </div>
+
+      {onboardingOpen && (
+        <OnboardingModal
+          initialBranche={branche}
+          initialGroesse={groesse}
+          onConfirm={confirmOnboarding}
+          onClose={() => setOnboardingOpen(false)}
+        />
+      )}
+      {licenseOpen && (
+        <LicenseModal
+          licensedPlan={licensedPlan}
+          onActivated={handleLicenseActivated}
+          onClose={() => setLicenseOpen(false)}
+        />
+      )}
 
       {isBusiness && (
         <BusinessTicker

@@ -109,10 +109,15 @@ body {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.35; }
 }
+@keyframes hud-modal-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
 
 .hud-spin-slow { animation: hud-spin 48s linear infinite; transform-box: fill-box; transform-origin: center; }
 .hud-spin-rev { animation: hud-spin 22s linear infinite reverse; transform-box: fill-box; transform-origin: center; }
 .hud-pulse { animation: hud-pulse 1.6s ease-in-out infinite; }
+.hud-modal-in { animation: hud-modal-in 0.18s ease-out; }
 
 /* Gauge-Fuellstand animiert (einmalige Transition, kein Loop) */
 .hud-gauge-arc {
@@ -122,7 +127,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .hud-spin-slow,
   .hud-spin-rev,
-  .hud-pulse {
+  .hud-pulse,
+  .hud-modal-in {
     animation: none !important;
   }
   .hud-gauge-arc {
