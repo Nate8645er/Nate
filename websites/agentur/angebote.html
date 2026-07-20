@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Angebote &amp; Preise | ZEHNTAGE, Webagentur Schweiz</title>
+<meta name="description" content="ZEHNTAGE, Webagentur Schweiz: Klare Pakete zu Festpreisen in CHF. Landingpage ab 1'490, Business-Website ab 3'900, Onlineshop ab 6'900. Abos ab 190 CHF/Monat, monatlich kündbar.">
+<meta property="og:title" content="Angebote &amp; Preise | ZEHNTAGE">
+<meta property="og:description" content="Ihre Website. In zehn Tagen. Websites und Onlineshops zu Festpreisen in CHF. Abos monatlich kündbar.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="de_CH">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230e6a58'/%3E%3Ctext x='16' y='22' font-family='Arial,sans-serif' font-size='17' font-weight='800' fill='white' text-anchor='middle'%3EZ%3C/text%3E%3C/svg%3E">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Webdesign und Webentwicklung",
+  "provider": {
+    "@type": "ProfessionalService",
+    "name": "ZEHNTAGE",
+    "founder": { "@type": "Person", "name": "Blin Murseli" },
+    "areaServed": "CH"
+  },
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Pakete und Abonnemente",
+    "itemListElement": [
+      {
+        "@type": "Offer",
+        "name": "Landingpage",
+        "description": "Ein-Seiten-Website mit klarem Ziel, responsive und suchmaschinenoptimiert.",
+        "price": "1490",
+        "priceCurrency": "CHF"
+      },
+      {
+        "@type": "Offer",
+        "name": "Business-Website",
+        "description": "Bis 8 Seiten, individuelle Gestaltung, Bild-Paket und eine Automatisierung inklusive.",
+        "price": "3900",
+        "priceCurrency": "CHF"
+      },
+      {
+        "@type": "Offer",
+        "name": "Onlineshop",
+        "description": "Shop-Aufbau inkl. Produktdaten, Zahlung, Versand und rechtskonformer Preisauszeichnung.",
+        "price": "6900",
+        "priceCurrency": "CHF"
+      },
+      {
+        "@type": "Offer",
+        "name": "Care-Abo",
+        "description": "Hosting-Betreuung, Updates, kleine Änderungen und Backups. Monatlich kündbar.",
+        "price": "190",
+        "priceCurrency": "CHF"
+      },
+      {
+        "@type": "Offer",
+        "name": "Growth-Abo",
+        "description": "Alles aus Care plus SEO-Pflege, eine neue Unterseite oder Kampagnen-Landingpage pro Monat und Monatsreport.",
+        "price": "490",
+        "priceCurrency": "CHF"
+      },
+      {
+        "@type": "Offer",
+        "name": "Automation-Abo",
+        "description": "Alles aus Growth plus Workflows und Automatisierungen, Dashboard und Produktbild-Kontingent.",
+        "price": "790",
+        "priceCurrency": "CHF"
+      }
+    ]
+  }
+}
+</script>
+<style>
+/* ============ Brand-Werte: hier anpassen ============ */
+:root {
+  --ink: #17201d;
+  --ink-soft: #45524d;
+  --paper: #f7f8f7;
+  --paper-raised: #ffffff;
+  --accent: #0e6a58;
+  --accent-deep: #0a5244;
+  --accent-wash: #e3efec;
+  --line: #dde3e0;
+  --radius: 12px;
+  --space-1: 0.5rem; --space-2: 1rem; --space-3: 1.5rem;
+  --space-4: 2.5rem; --space-5: 4rem; --space-6: 6.5rem;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+/* ==================================================== */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { line-height: 1.15; text-wrap: balance; letter-spacing: -0.02em; }
+img { max-width: 100%; display: block; }
+a { color: var(--accent); }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 var(--space-3); }
+
+/* ---------- Navigation ---------- */
+header {
+  position: sticky; top: 0; z-index: 40;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.nav { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+.logo { font-weight: 800; font-size: 1.15rem; color: var(--ink); text-decoration: none; letter-spacing: -0.01em; }
+.logo span { color: var(--accent); }
+.nav-links { display: flex; gap: var(--space-3); align-items: center; }
+.nav-links a { color: var(--ink-soft); text-decoration: none; font-size: 0.95rem; }
+.nav-links a:hover { color: var(--ink); }
+.nav-links a[aria-current="page"] { color: var(--ink); font-weight: 600; }
+.btn {
+  display: inline-block; background: var(--accent); color: #fff;
+  padding: 0.7rem 1.4rem; border-radius: 999px; text-decoration: none;
+  font-weight: 600; font-size: 0.95rem; border: none; cursor: pointer;
+  transition: background 150ms var(--ease-out), transform 150ms var(--ease-out);
+}
+.btn:hover { background: var(--accent-deep); }
+.btn:active { transform: scale(0.97); }
+.btn:focus-visible { outline: 3px solid var(--accent-wash); outline-offset: 2px; }
+.btn-ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+.btn-ghost:hover { background: var(--paper-raised); border-color: var(--ink-soft); }
+
+/* ---------- Hero ---------- */
+.hero { padding: var(--space-6) 0 var(--space-5); position: relative; overflow: hidden; isolation: isolate; }
+/* Aurora: zwei langsam wandernde, geblurte Farbfelder in Petrol/Smaragd */
+.hero::before, .hero::after {
+  content: ""; position: absolute; z-index: -1; border-radius: 50%;
+  filter: blur(70px); pointer-events: none; will-change: transform;
+}
+.hero::before {
+  width: 560px; height: 560px; top: -180px; left: -140px;
+  background: radial-gradient(circle at 35% 35%, rgba(14, 106, 88, 0.30), transparent 65%);
+  animation: aurora-a 26s ease-in-out infinite alternate;
+}
+.hero::after {
+  width: 480px; height: 480px; bottom: -200px; right: -100px;
+  background: radial-gradient(circle at 60% 40%, rgba(44, 143, 122, 0.26), transparent 65%);
+  animation: aurora-b 32s ease-in-out infinite alternate;
+}
+@keyframes aurora-a {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(70px, 50px, 0) scale(1.18); }
+}
+@keyframes aurora-b {
+  from { transform: translate3d(0, 0, 0) scale(1.12); }
+  to { transform: translate3d(-60px, -40px, 0) scale(1); }
+}
+/* Grosse "10" als Hintergrund-Motiv */
+.hero-ten {
+  position: absolute; z-index: -1; top: -0.14em; right: -0.05em;
+  font-size: clamp(15rem, 32vw, 28rem); font-weight: 800; line-height: 1;
+  letter-spacing: -0.06em; color: var(--accent); opacity: 0.06;
+  user-select: none; pointer-events: none;
+}
+.kicker { color: var(--accent); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.hero h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); margin: var(--space-2) 0; font-weight: 800; }
+.hero p.lede { font-size: 1.15rem; color: var(--ink-soft); max-width: 38rem; }
+.hero-ctas { margin-top: var(--space-4); display: flex; gap: var(--space-2); flex-wrap: wrap; }
+
+/* ---------- Sektionen ---------- */
+section { padding: var(--space-6) 0; }
+section.tint { background: var(--paper-raised); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.sec-head { max-width: 40rem; margin-bottom: var(--space-5); }
+.sec-head h2 { font-size: clamp(1.6rem, 3.4vw, 2.3rem); margin-top: var(--space-1); }
+.sec-head p { color: var(--ink-soft); margin-top: var(--space-2); }
+
+/* Prozess */
+.steps { counter-reset: step; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-4); }
+.step { counter-increment: step; }
+.step::before {
+  content: counter(step, decimal-leading-zero);
+  font-size: 2rem; font-weight: 800; color: var(--accent);
+  display: block; margin-bottom: var(--space-1);
+}
+.step h3 { font-size: 1.05rem; margin-bottom: 0.3rem; }
+.step p { color: var(--ink-soft); font-size: 0.93rem; }
+
+/* Preise */
+.prices { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-3); align-items: stretch; }
+.price {
+  background: var(--paper-raised); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: var(--space-4) var(--space-3); display: flex; flex-direction: column;
+  position: relative; transition: transform 250ms var(--ease-out);
+}
+/* Hover-Schatten liegt auf einem Pseudo-Element: es wird nur opacity animiert */
+.price::after {
+  content: ""; position: absolute; inset: 0; border-radius: var(--radius);
+  box-shadow: 0 22px 44px -20px rgba(14, 106, 88, 0.35);
+  opacity: 0; transition: opacity 250ms var(--ease-out); pointer-events: none;
+}
+.price:hover { transform: translateY(-5px); }
+.price:hover::after { opacity: 1; }
+.price.featured {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 14px 40px -18px rgba(14, 106, 88, 0.35);
+}
+.price h3 { font-size: 1rem; color: var(--ink-soft); font-weight: 600; }
+.price .amount { font-size: 2rem; font-weight: 800; margin: var(--space-1) 0; letter-spacing: -0.02em; }
+.price .amount small { font-size: 0.9rem; font-weight: 500; color: var(--ink-soft); }
+.price ul { list-style: none; margin: var(--space-2) 0 var(--space-3); flex: 1; }
+.price li { padding: 0.35rem 0 0.35rem 1.4rem; position: relative; font-size: 0.93rem; color: var(--ink-soft); }
+.price li::before { content: ""; position: absolute; left: 0; top: 0.72rem; width: 0.55rem; height: 0.3rem; border-left: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(-45deg); }
+.price-note { margin-top: var(--space-3); font-size: 0.85rem; color: var(--ink-soft); }
+.badge { display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent-deep); background: var(--accent-wash); border-radius: 999px; padding: 0.2rem 0.65rem; margin-bottom: var(--space-2); align-self: flex-start; }
+
+/* Zusatzleistungen */
+.addons { list-style: none; max-width: 44rem; }
+.addons li {
+  display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-2);
+  padding: var(--space-2) 0; border-top: 1px solid var(--line);
+}
+.addons li:last-child { border-bottom: 1px solid var(--line); }
+.addons .addon-name { font-weight: 600; }
+.addons .addon-desc { display: block; font-weight: 400; font-size: 0.88rem; color: var(--ink-soft); }
+.addons .addon-price { white-space: nowrap; font-weight: 700; color: var(--accent-deep); }
+
+/* FAQ */
+details { border-top: 1px solid var(--line); }
+details:last-of-type { border-bottom: 1px solid var(--line); }
+summary { cursor: pointer; padding: var(--space-2) 0; font-weight: 600; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+summary::after {
+  content: ""; flex: none; width: 0.5em; height: 0.5em; margin-left: var(--space-2);
+  border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent);
+  transform: translateY(-25%) rotate(45deg); transition: transform 200ms var(--ease-out);
+}
+details[open] summary::after { transform: translateY(10%) rotate(225deg); }
+details p { padding: 0 0 var(--space-2); color: var(--ink-soft); max-width: 44rem; }
+summary:focus-visible { outline: 3px solid var(--accent-wash); outline-offset: 2px; }
+
+/* Bestellformular */
+.contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: var(--space-5); }
+form { display: grid; gap: var(--space-2); }
+label { font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.3rem; }
+label small { font-weight: 400; color: var(--ink-soft); }
+input, textarea, select {
+  width: 100%; padding: 0.75rem 0.9rem; border: 1.5px solid var(--line); border-radius: 8px;
+  font: inherit; background: var(--paper-raised); color: var(--ink);
+}
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-wash); }
+.form-status { font-size: 0.9rem; color: var(--accent-deep); min-height: 1.4em; }
+.form-note { font-size: 0.85rem; color: var(--ink-soft); }
+
+/* Footer */
+footer { background: var(--ink); color: #b9c4c0; padding: var(--space-5) 0; font-size: 0.9rem; }
+footer .wrap { display: flex; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; }
+footer a { color: #dde5e2; text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+
+/* Reveal-Animation */
+.reveal { opacity: 0; transform: translateY(14px); transition: opacity 500ms var(--ease-out), transform 500ms var(--ease-out); }
+.reveal.in { opacity: 1; transform: none; }
+
+/* Sticky-Mini-CTA: nur auf Mobile sichtbar */
+.mini-cta { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { transition: none; opacity: 1; transform: none; }
+  .btn, summary::after, .price, .price::after { transition: none; }
+  .hero::before, .hero::after { animation: none; }
+  .price:hover { transform: none; }
+  .price:hover::after { opacity: 0; }
+}
+@media (max-width: 820px) {
+  .contact-grid { grid-template-columns: 1fr; }
+  .nav-links a:not(.btn) { display: none; }
+  .hero { padding-top: var(--space-5); }
+  body { padding-bottom: 5rem; }
+  .mini-cta {
+    display: block; position: fixed; left: 50%; bottom: calc(1rem + env(safe-area-inset-bottom));
+    transform: translateX(-50%); z-index: 60;
+    background: var(--accent); color: #fff; text-decoration: none; white-space: nowrap;
+    font-weight: 600; font-size: 0.95rem; padding: 0.85rem 1.7rem; border-radius: 999px;
+    box-shadow: 0 12px 30px -10px rgba(10, 82, 68, 0.55);
+  }
+  .mini-cta:hover { background: var(--accent-deep); }
+  .mini-cta:focus-visible { outline: 3px solid var(--accent-wash); outline-offset: 2px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="index.html">zehntage<span>.</span></a>
+    <nav class="nav-links" aria-label="Hauptnavigation">
+      <a href="index.html#leistungen">Leistungen</a>
+      <a href="index.html#prozess">Arbeitsweise</a>
+      <a href="angebote.html" aria-current="page">Angebote</a>
+      <a href="index.html#faq">FAQ</a>
+      <a class="btn" href="#bestellen">Jetzt anfragen</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <!-- ===================== HERO ===================== -->
+  <section class="hero" aria-label="Intro">
+    <span class="hero-ten" aria-hidden="true">10</span>
+    <div class="wrap">
+      <p class="kicker">Angebote · Webagentur Schweiz</p>
+      <h1>Klare Pakete. Klare Preise.</h1>
+      <p class="lede">Alle Pakete zu Festpreisen in CHF, ohne versteckte Kosten. Ihre Website ist in der Regel in zehn Arbeitstagen online. Sie wählen ein Paket, wir kümmern uns um den Rest.</p>
+      <div class="hero-ctas">
+        <a class="btn" href="#pakete">Pakete ansehen</a>
+        <a class="btn btn-ghost" href="#abos">Zu den Abos</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== EINMAL-PAKETE ===================== -->
+  <section id="pakete" class="tint">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="kicker">Einmal-Pakete</p>
+        <h2>Ein Preis, ein Ergebnis, keine Überraschungen.</h2>
+        <p>Beratung, Design, Umsetzung und Tests sind immer inbegriffen. Individuelle Projekte offerieren wir gerne separat.</p>
+      </div>
+      <div class="prices">
+        <div class="price reveal">
+          <h3>Landingpage</h3>
+          <p class="amount">ab 1'490 <small>CHF</small></p>
+          <ul>
+            <li>Ein-Seiten-Website mit klarem Ziel</li>
+            <li>Responsive Design, SEO-Grundlagen</li>
+            <li>Kontaktformular und Analytics</li>
+            <li>Texte gemeinsam verfeinert</li>
+            <li>Übergabe in 5 Arbeitstagen</li>
+          </ul>
+          <a class="btn btn-ghost paket-cta" href="#bestellen" data-paket="Landingpage (einmalig, ab 1'490 CHF)">Jetzt anfragen</a>
+        </div>
+        <div class="price featured reveal">
+          <span class="badge">Meistgewählt</span>
+          <h3>Business-Website</h3>
+          <p class="amount">ab 3'900 <small>CHF</small></p>
+          <ul>
+            <li>Bis 8 Seiten, individuelle Gestaltung</li>
+            <li>Bild-Paket im Markenstil inklusive</li>
+            <li>SEO, Ladezeit-Optimierung, Tests</li>
+            <li>1 Automatisierung inklusive</li>
+            <li>Übergabe in ca. 10 Arbeitstagen</li>
+          </ul>
+          <a class="btn paket-cta" href="#bestellen" data-paket="Business-Website (einmalig, ab 3'900 CHF)">Jetzt anfragen</a>
+        </div>
+        <div class="price reveal">
+          <h3>Onlineshop</h3>
+          <p class="amount">ab 6'900 <small>CHF</small></p>
+          <ul>
+            <li>Shop-Aufbau inkl. Produktdaten</li>
+            <li>Zahlung, Versand, Rechtstexte</li>
+            <li>Produktbilder und Werbegrafiken</li>
+            <li>Bestell-Automatisierungen</li>
+            <li>Kurze Schulung zur Übergabe</li>
+          </ul>
+          <a class="btn btn-ghost paket-cta" href="#bestellen" data-paket="Onlineshop (einmalig, ab 6'900 CHF)">Jetzt anfragen</a>
+        </div>
+      </div>
+      <p class="price-note reveal">Alle Preise verstehen sich als Festpreise nach gemeinsamer Klärung des Umfangs. Was «ab» genau bedeutet, steht im FAQ weiter unten.</p>
+    </div>
+  </section>
+
+  <!-- ===================== ABONNEMENTE ===================== -->
+  <section id="abos">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="kicker">Abonnemente</p>
+        <h2>Laufend betreut statt bloss geliefert.</h2>
+        <p>Alle Abos sind monatlich kündbar, ohne Mindestlaufzeit. Sie zahlen nur, solange es Ihnen etwas bringt.</p>
+      </div>
+      <div class="prices">
+        <div class="price reveal">
+          <h3>Care-Abo</h3>
+          <p class="amount">190 <small>CHF / Monat</small></p>
+          <ul>
+            <li>Hosting-Betreuung und Überwachung</li>
+            <li>Technische Updates und Wartung</li>
+            <li>Kleine Änderungen an Inhalten</li>
+            <li>Regelmässige Backups</li>
+          </ul>
+          <a class="btn btn-ghost paket-cta" href="#bestellen" data-paket="Care-Abo (190 CHF/Monat)">Jetzt anfragen</a>
+        </div>
+        <div class="price featured reveal">
+          <span class="badge">Für Wachstum</span>
+          <h3>Growth-Abo</h3>
+          <p class="amount">490 <small>CHF / Monat</small></p>
+          <ul>
+            <li>Alles aus dem Care-Abo</li>
+            <li>Laufende SEO-Pflege</li>
+            <li>1 neue Unterseite oder Kampagnen-Landingpage pro Monat</li>
+            <li>Monatsreport mit Kennzahlen</li>
+          </ul>
+          <a class="btn paket-cta" href="#bestellen" data-paket="Growth-Abo (490 CHF/Monat)">Jetzt anfragen</a>
+        </div>
+        <div class="price reveal">
+          <h3>Automation-Abo</h3>
+          <p class="amount">790 <small>CHF / Monat</small></p>
+          <ul>
+            <li>Alles aus dem Growth-Abo</li>
+            <li>Workflows und Automatisierungen</li>
+            <li>Dashboard mit Ihren Kennzahlen</li>
+            <li>Monatliches Produktbild-Kontingent</li>
+          </ul>
+          <a class="btn btn-ghost paket-cta" href="#bestellen" data-paket="Automation-Abo (790 CHF/Monat)">Jetzt anfragen</a>
+        </div>
+      </div>
+      <p class="price-note reveal">Monatlich kündbar, keine Mindestlaufzeit. Der Wechsel zwischen den Abos ist jederzeit auf den Folgemonat möglich.</p>
+    </div>
+  </section>
+
+  <!-- ===================== ZUSATZLEISTUNGEN ===================== -->
+  <section id="zusatz" class="tint">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="kicker">Zusatzleistungen</p>
+        <h2>Bausteine nach Bedarf.</h2>
+        <p>Lassen sich mit jedem Paket und Abo kombinieren, einzeln oder gebündelt.</p>
+      </div>
+      <ul class="addons reveal">
+        <li>
+          <span class="addon-name">Produktbilder-Paket
+            <small class="addon-desc">Konsistente Produktvisuals im Markenstil, aus unserer eigenen Bild-Pipeline.</small>
+          </span>
+          <span class="addon-price">ab 290 CHF</span>
+        </li>
+        <li>
+          <span class="addon-name">Logo &amp; Branding
+            <small class="addon-desc">Logo, Farbwelt und Typografie als kleines, brauchbares Markenpaket.</small>
+          </span>
+          <span class="addon-price">ab 690 CHF</span>
+        </li>
+        <li>
+          <span class="addon-name">KI-Chatbot
+            <small class="addon-desc">Beantwortet Kundenanfragen rund um die Uhr, mit Wissen aus Ihren Unterlagen.</small>
+          </span>
+          <span class="addon-price">ab 990 CHF</span>
+        </li>
+        <li>
+          <span class="addon-name">Zusatz-Unterseite
+            <small class="addon-desc">Weitere Seite im bestehenden Design, inklusive Texten und Bildern.</small>
+          </span>
+          <span class="addon-price">ab 350 CHF</span>
+        </li>
+        <li>
+          <span class="addon-name">Textpaket
+            <small class="addon-desc">Klare, suchmaschinentaugliche Texte für Ihre wichtigsten Seiten.</small>
+          </span>
+          <span class="addon-price">ab 450 CHF</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== ABLAUF ===================== -->
+  <section id="ablauf">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="kicker">Ablauf</p>
+        <h2>In drei Schritten zum fixen Auftrag.</h2>
+      </div>
+      <div class="steps">
+        <div class="step reveal">
+          <h3>Anfrage</h3>
+          <p>Sie schicken uns das Bestellformular mit Ihrem Wunschpaket. Dauert zwei Minuten, kostet nichts.</p>
+        </div>
+        <div class="step reveal">
+          <h3>Fixofferte innert 1 Arbeitstag</h3>
+          <p>Sie erhalten eine verbindliche Offerte mit Festpreis, Umfang und Liefertermin. Erst mit Ihrer Bestätigung wird daraus ein Auftrag.</p>
+        </div>
+        <div class="step reveal">
+          <h3>Umsetzung</h3>
+          <p>Wir gestalten, entwickeln und testen. In der Regel ist Ihre Website in ca. 10 Arbeitstagen online.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FAQ ===================== -->
+  <section id="faq" class="tint">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="kicker">FAQ</p>
+        <h2>Häufige Fragen zu den Angeboten.</h2>
+      </div>
+      <details class="reveal">
+        <summary>Was heisst «ab»-Preis?</summary>
+        <p>Der «ab»-Preis gilt für den beschriebenen Standardumfang des Pakets. Wünschen Sie mehr Seiten, Sprachen oder Sonderfunktionen, nennen wir den Aufpreis vorab in der Fixofferte. Danach ist der Preis fix: Was in der Offerte steht, wird nicht überschritten.</p>
+      </details>
+      <details class="reveal">
+        <summary>Wie funktioniert die Kündigung des Abos?</summary>
+        <p>Ganz einfach: eine kurze Nachricht per E-Mail genügt, und das Abo endet auf den nächsten Monat. Es gibt keine Mindestlaufzeit und keine Kündigungsfrist über den laufenden Monat hinaus. Ihre Website bleibt selbstverständlich Ihre.</p>
+      </details>
+      <details class="reveal">
+        <summary>Was brauche ich, um zu starten?</summary>
+        <p>Im Minimum: Ihr Firmenname, eine Vorstellung vom Ziel der Website und etwas Zeit für ein kurzes Gespräch. Logo, Texte und Bilder sind hilfreich, aber kein Muss. Fehlendes ergänzen wir mit dem Textpaket und unserer Bild-Pipeline.</p>
+      </details>
+      <details class="reveal">
+        <summary>Wem gehört die Website?</summary>
+        <p>Ihnen. Nach der Bezahlung gehören Ihnen Design, Inhalte und alle Zugänge, inklusive Domain und Hosting-Konto. Sie können jederzeit zu einem anderen Anbieter wechseln, auch ohne Abo bei uns.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ===================== BESTELLFORMULAR ===================== -->
+  <section id="bestellen">
+    <div class="wrap contact-grid">
+      <div class="sec-head reveal" style="margin-bottom:0">
+        <p class="kicker">Bestellung</p>
+        <h2>Paket wählen, Anfrage senden.</h2>
+        <p>Sie erhalten innert eines Arbeitstages eine Fixofferte mit Preis, Umfang und Liefertermin. Kein Anruf nötig, keine Verpflichtung.</p>
+      </div>
+      <!-- data-webhook: URL des n8n-Webhooks. Beim Deployment auf die oeffentliche n8n-Instanz zeigen. -->
+      <form id="bestellung" novalidate data-webhook="http://127.0.0.1:5678/webhook/kontakt">
+        <div>
+          <label for="b-name">Name</label>
+          <input id="b-name" name="name" type="text" autocomplete="name" required>
+        </div>
+        <div>
+          <label for="b-firma">Firma <small>(optional)</small></label>
+          <input id="b-firma" name="firma" type="text" autocomplete="organization">
+        </div>
+        <div>
+          <label for="b-mail">E-Mail</label>
+          <input id="b-mail" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div>
+          <label for="b-tel">Telefon <small>(optional)</small></label>
+          <input id="b-tel" name="telefon" type="tel" autocomplete="tel">
+        </div>
+        <div>
+          <label for="b-paket">Paket oder Abo</label>
+          <select id="b-paket" name="paket">
+            <optgroup label="Einmal-Pakete">
+              <option>Landingpage (einmalig, ab 1'490 CHF)</option>
+              <option>Business-Website (einmalig, ab 3'900 CHF)</option>
+              <option>Onlineshop (einmalig, ab 6'900 CHF)</option>
+            </optgroup>
+            <optgroup label="Abonnemente">
+              <option>Care-Abo (190 CHF/Monat)</option>
+              <option>Growth-Abo (490 CHF/Monat)</option>
+              <option>Automation-Abo (790 CHF/Monat)</option>
+            </optgroup>
+            <optgroup label="Weiteres">
+              <option>Zusatzleistung / etwas anderes</option>
+              <option>Noch unsicher, bitte beraten</option>
+            </optgroup>
+          </select>
+        </div>
+        <div>
+          <label for="b-msg">Nachricht</label>
+          <textarea id="b-msg" name="nachricht" rows="4" required placeholder="Kurz: Worum geht es, was ist das Ziel?"></textarea>
+        </div>
+        <button class="btn" type="submit">Anfrage senden</button>
+        <p class="form-status" role="status" aria-live="polite"></p>
+        <p class="form-note">Verbindlich wird es erst mit Ihrer schriftlichen Auftragsbestätigung, die Anfrage ist kostenlos.</p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<a class="mini-cta" href="#bestellen">Projekt anfragen</a>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <strong style="color:#fff">zehntage.</strong><br>
+      Webagentur Schweiz. Ihre Website. In zehn Tagen.
+    </div>
+    <nav aria-label="Rechtliches" style="display:flex; gap:1.5rem">
+      <a href="index.html#impressum">Impressum</a>
+      <a href="index.html#datenschutz">Datenschutz</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+// Reveal-Animation beim Scrollen (respektiert prefers-reduced-motion via CSS)
+const revealEls = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries) => {
+  for (const e of entries) {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }
+}, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
+revealEls.forEach(el => io.observe(el));
+// Sicherheitsnetz: nichts bleibt dauerhaft unsichtbar (Screenshots, Print, alte Browser)
+window.addEventListener('load', () => {
+  setTimeout(() => revealEls.forEach(el => el.classList.add('in')), 2000);
+});
+
+// Paket-CTAs: springen zum Formular und waehlen das Paket vor
+const paketSelect = document.getElementById('b-paket');
+document.querySelectorAll('.paket-cta').forEach(link => {
+  link.addEventListener('click', () => {
+    const wert = link.dataset.paket;
+    if (wert) paketSelect.value = wert;
+  });
+});
+// Auch via URL vorwaehlbar: angebote.html#bestellen?paket=… bzw. ?paket= in der Query
+const paketParam = new URLSearchParams(window.location.search).get('paket');
+if (paketParam) {
+  const treffer = Array.from(paketSelect.options).find(o => o.value.startsWith(paketParam));
+  if (treffer) paketSelect.value = treffer.value;
+}
+
+// Formular: sendet an den n8n-Webhook (data-webhook). Ohne erreichbaren
+// Webhook wird eine klare Fehlermeldung mit E-Mail-Ausweg angezeigt.
+document.getElementById('bestellung').addEventListener('submit', async (ev) => {
+  ev.preventDefault();
+  const form = ev.target;
+  const status = form.querySelector('.form-status');
+  const button = form.querySelector('button[type=submit]');
+  if (!form.checkValidity()) {
+    status.textContent = 'Bitte Name, E-Mail und Nachricht ausfüllen.';
+    return;
+  }
+  const payload = {
+    name: form.name.value.trim(),
+    firma: form.firma.value.trim(),
+    email: form.email.value.trim(),
+    telefon: form.telefon.value.trim(),
+    paket: form.paket.value,
+    nachricht: form.nachricht.value.trim()
+  };
+  button.disabled = true;
+  status.textContent = 'Wird gesendet …';
+  try {
+    const res = await fetch(form.dataset.webhook, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    status.textContent = 'Danke! Ihre Anfrage ist eingegangen. Wir melden uns innert eines Arbeitstages mit der Fixofferte.';
+    form.reset();
+  } catch (err) {
+    status.textContent = 'Senden nicht möglich. Bitte direkt an beamswiss@gmail.com schreiben.';
+  } finally {
+    button.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

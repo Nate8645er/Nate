@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZEHNTAGE | Ihre Website. In zehn Tagen.</title>
+<meta name="description" content="ZEHNTAGE, Webagentur Schweiz: Websites, Onlineshops und Automatisierungen für Schweizer KMU. Ihre Website in zehn Tagen, zu Festpreisen in CHF.">
+<meta property="og:title" content="ZEHNTAGE | Webagentur Schweiz">
+<meta property="og:description" content="Ihre Website. In zehn Tagen. Websites, Onlineshops und Automatisierungen für Schweizer KMU, zu Festpreisen in CHF.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="de_CH">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230e6a58'/%3E%3Ctext x='16' y='22' font-family='Arial,sans-serif' font-size='17' font-weight='800' fill='white' text-anchor='middle'%3EZ%3C/text%3E%3C/svg%3E">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "ZEHNTAGE",
+  "description": "Webagentur Schweiz: Websites, Onlineshops, Automatisierungen und Dashboards für Schweizer KMU. Ihre Website. In zehn Tagen.",
+  "areaServed": "CH",
+  "priceRange": "CHF 1490 - CHF 9800"
+}
+</script>
+<style>
+/* ============ Brand-Werte: hier anpassen ============ */
+:root {
+  --ink: #17201d;
+  --ink-soft: #45524d;
+  --paper: #f7f8f7;
+  --paper-raised: #ffffff;
+  --accent: #0e6a58;
+  --accent-deep: #0a5244;
+  --accent-wash: #e3efec;
+  --line: #dde3e0;
+  --radius: 12px;
+  --space-1: 0.5rem; --space-2: 1rem; --space-3: 1.5rem;
+  --space-4: 2.5rem; --space-5: 4rem; --space-6: 6.5rem;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+/* ==================================================== */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { line-height: 1.15; text-wrap: balance; letter-spacing: -0.02em; }
+img { max-width: 100%; display: block; }
+a { color: var(--accent); }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 var(--space-3); }
+
+/* ---------- Navigation ---------- */
+header {
+  position: sticky; top: 0; z-index: 40;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.nav { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+.logo { font-weight: 800; font-size: 1.15rem; color: var(--ink); text-decoration: none; letter-spacing: -0.01em; }
+.logo span { color: var(--accent); }
+.nav-links { display: flex; gap: var(--space-3); align-items: center; }
+.nav-links a { color: var(--ink-soft); text-decoration: none; font-size: 0.95rem; }
+.nav-links a:hover { color: var(--ink); }
+.btn {
+  display: inline-block; background: var(--accent); color: #fff;
+  padding: 0.7rem 1.4rem; border-radius: 999px; text-decoration: none;
+  font-weight: 600; font-size: 0.95rem; border: none; cursor: pointer;
+  transition: background 150ms var(--ease-out), transform 150ms var(--ease-out);
+}
+.btn:hover { background: var(--accent-deep); }
+.btn:active { transform: scale(0.97); }
+.btn:focus-visible { outline: 3px solid var(--accent-wash); outline-offset: 2px; }
+.btn-ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+.btn-ghost:hover { background: var(--paper-raised); border-color: var(--ink-soft); }
+
+/* ---------- Hero ---------- */
+.hero { padding: var(--space-6) 0 var(--space-5); position: relative; overflow: hidden; isolation: isolate; }
+/* Aurora: zwei langsam wandernde, geblurte Farbfelder in Petrol/Smaragd */
+.hero::before, .hero::after {
+  content: ""; position: absolute; z-index: -1; border-radius: 50%;
+  filter: blur(70px); pointer-events: none; will-change: transform;
+}
+.hero::before {
+  width: 560px; height: 560px; top: -180px; left: -140px;
+  background: radial-gradient(circle at 35% 35%, rgba(14, 106, 88, 0.30), transparent 65%);
+  animation: aurora-a 26s ease-in-out infinite alternate;
+}
+.hero::after {
+  width: 480px; height: 480px; bottom: -200px; right: -100px;
+  background: radial-gradient(circle at 60% 40%, rgba(44, 143, 122, 0.26), transparent 65%);
+  animation: aurora-b 32s ease-in-out infinite alternate;
+}
+@keyframes aurora-a {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(70px, 50px, 0) scale(1.18); }
+}
+@keyframes aurora-b {
+  from { transform: translate3d(0, 0, 0) scale(1.12); }
+  to { transform: translate3d(-60px, -40px, 0) scale(1); }
+}
+/* Grosse "10" als Hintergrund-Motiv */
+.hero-ten {
+  position: absolute; z-index: -1; top: -0.14em; right: -0.05em;
+  font-size: clamp(15rem, 32vw, 28rem); font-weight: 800; line-height: 1;
+  letter-spacing: -0.06em; color: var(--accent); opacity: 0.06;
+  user-select: none; pointer-events: none;
+}
+.hero-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: var(--space-5); align-items: center; }
+.kicker { color: var(--accent); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.hero h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); margin: var(--space-2) 0; font-weight: 800; }
+.hero p.lede { font-size: 1.15rem; color: var(--ink-soft); max-width: 34rem; }
+.hero-ctas { margin-top: var(--space-4); display: flex; gap: var(--space-2); flex-wrap: wrap; }
+.hero-visual {
+  border-radius: var(--radius); overflow: hidden; aspect-ratio: 16/10;
+  background: linear-gradient(135deg, var(--accent-deep) 0%, var(--accent) 45%, #2c8f7a 100%);
+  position: relative; box-shadow: 0 20px 50px -20px rgba(14, 106, 88, 0.45);
+}
+.hero-visual img { width: 100%; height: 100%; object-fit: cover; }
+.hero-visual figcaption {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 0.6rem 1rem; font-size: 0.78rem; color: #eaf4f1;
+  background: linear-gradient(transparent, rgba(10, 60, 50, 0.75));
+}
+
+/* ---------- Sektionen ---------- */
+section { padding: var(--space-6) 0; }
+section.tint { background: var(--paper-raised); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.sec-head { max-width: 40rem; margin-bottom: var(--space-5); }
+.sec-head h2 { font-size: clamp(1.6rem, 3.4vw, 2.3rem); margin-top: var(--space-1); }
+.sec-head p { color: var(--ink-soft); margin-top: var(--space-2); }
+
+/* Leistungen */
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-3); }
+.service { padding: var(--space-3) 0; border-top: 2px solid var(--line); transition: transform 250ms var(--ease-out); }
+.service:hover { border-top-color: var(--accent); transform: translateY(-4px); }
+.service h3 { font-size: 1.1rem; margin-bottom: 0.4rem; }
+.service p { color: var(--ink-soft); font-size: 0.95rem; }
+.service .tool { display: inline-block; margin-top: 0.7rem; font-size: 0.75rem; color: var(--accent-deep); background: var(--accent-wash); border-radius: 999px; padding: 0.15rem 0.6rem; font-weight: 600; }
+
+/* Prozess */
+.steps { counter-reset: step; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-4); }
+.step { counter-increment: step; }
+.step::before {
+  content: counter(step, decimal-leading-zero);
+  font-size: 2rem; font-weight: 800; color: var(--accent);
+  display: block; margin-bottom: var(--space-1);
+}
+.step h3 { font-size: 1.05rem; margin-bottom: 0.3rem; }
+.step p { color: var(--ink-soft); font-size: 0.93rem; }
+
+/* Preise */
+.prices { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-3); align-items: stretch; }
+.price {
+  background: var(--paper-raised); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: var(--space-4) var(--space-3); display: flex; flex-direction: column;
+  position: relative; transition: transform 250ms var(--ease-out);
+}
+/* Hover-Schatten liegt auf einem Pseudo-Element: es wird nur opacity animiert */
+.price::after {
+  content: ""; position: absolute; inset: 0; border-radius: var(--radius);
+  box-shadow: 0 22px 44px -20px rgba(14, 106, 88, 0.35);
+  opacity: 0; transition: opacity 250ms var(--ease-out); pointer-events: none;
+}
+.price:hover { transform: translateY(-5px); }
+.price:hover::after { opacity: 1; }
+.price.featured {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 14px 40px -18px rgba(14, 106, 88, 0.35);
+}
+.price h3 { font-size: 1rem; color: var(--ink-soft); font-weight: 600; }
+.price .amount { font-size: 2rem; font-weight: 800; margin: var(--space-1) 0; letter-spacing: -0.02em; }
+.price .amount small { font-size: 0.9rem; font-weight: 500; color: var(--ink-soft); }
+.price ul { list-style: none; margin: var(--space-2) 0 var(--space-3); flex: 1; }
+.price li { padding: 0.35rem 0 0.35rem 1.4rem; position: relative; font-size: 0.93rem; color: var(--ink-soft); }
+.price li::before { content: ""; position: absolute; left: 0; top: 0.72rem; width: 0.55rem; height: 0.3rem; border-left: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(-45deg); }
+.price-note { margin-top: var(--space-3); font-size: 0.85rem; color: var(--ink-soft); }
+
+/* FAQ */
+details { border-top: 1px solid var(--line); }
+details:last-of-type { border-bottom: 1px solid var(--line); }
+summary { cursor: pointer; padding: var(--space-2) 0; font-weight: 600; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+summary::after {
+  content: ""; flex: none; width: 0.5em; height: 0.5em; margin-left: var(--space-2);
+  border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent);
+  transform: translateY(-25%) rotate(45deg); transition: transform 200ms var(--ease-out);
+}
+details[open] summary::after { transform: translateY(10%) rotate(225deg); }
+details p { padding: 0 0 var(--space-2); color: var(--ink-soft); max-width: 44rem; }
+summary:focus-visible { outline: 3px solid var(--accent-wash); outline-offset: 2px; }
+
+/* Kontakt */
+.contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: var(--space-5); }
+form { display: grid; gap: var(--space-2); }
+label { font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.3rem; }
+input, textarea, select {
+  width: 100%; padding: 0.75rem 0.9rem; border: 1.5px solid var(--line); border-radius: 8px;
+  font: inherit; background: var(--paper-raised); color: var(--ink);
+}
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-wash); }
+.form-status { font-size: 0.9rem; color: var(--accent-deep); min-height: 1.4em; }
+
+/* Footer */
+footer { background: var(--ink); color: #b9c4c0; padding: var(--space-5) 0; font-size: 0.9rem; }
+footer .wrap { display: flex; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; }
+footer a { color: #dde5e2; text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+
+/* Reveal-Animation */
+.reveal { opacity: 0; transform: translateY(14px); transition: opacity 500ms var(--ease-out), transform 500ms var(--ease-out); }
+.reveal.in { opacity: 1; transform: none; }
+
+/* Sticky-Mini-CTA: nur auf Mobile sichtbar */
+.mini-cta { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { transition: none; opacity: 1; transform: none; }
+  .btn, summary::after, .price, .price::after, .service { transition: none; }
+  .hero::before, .hero::after { animation: none; }
+  .price:hover, .service:hover { transform: none; }
+  .price:hover::after { opacity: 0; }
+}
+@media (max-width: 820px) {
+  .hero-grid, .contact-grid { grid-template-columns: 1fr; }
+  .nav-links a:not(.btn) { display: none; }
+  .hero { padding-top: var(--space-5); }
+  body { padding-bottom: 5rem; }
+  .mini-cta {
+    display: block; position: fixed; left: 50%; bottom: calc(1rem + env(safe-area-inset-bottom));
+    transform: translateX(-50%); z-index: 60;
+    background: var(--accent); color: #fff; text-decoration: none; white-space: nowrap;
+    font-weight: 600; font-size: 0.95rem; padding: 0.85rem 1.7rem; border-radius: 999px;
+    box-shadow: 0 12px 30px -10px rgba(10, 82, 68, 0.55);
+  }
+  .mini-cta:hover { background: var(--accent-deep); }
+  .mini-cta:focus-visible { outline: 3px solid var(--accent-wash); outline-offset: 2px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="#top">zehntage<span>.</span></a>
+    <nav class="nav-links" aria-label="Hauptnavigation">
+      <a href="#leistungen">Leistungen</a>
+      <a href="#prozess">Arbeitsweise</a>
+      <a href="#preise">Preise</a>
+      <a href="angebote.html">Angebote</a>
+      <a href="#faq">FAQ</a>
+      <a class="btn" href="#kontakt">Projekt anfragen</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <!-- ===================== HERO ===================== -->
+  <section class="hero" aria-label="Intro">
+    <span class="hero-ten" aria-hidden="true">10</span>
+    <div class="wrap hero-grid">
+      <div>
+        <p class="kicker">Webagentur · Schweiz</p>
+        <h1>Ihre Website. In zehn Tagen.</h1>
+        <p class="lede">Individuell gestaltet, kein Baukasten. Wir bauen Websites, Onlineshops und Automatisierungen für KMU. KI-gestützte Entwicklung macht uns schneller, Festpreise machen uns berechenbar.</p>
+        <div class="hero-ctas">
+          <a class="btn" href="#kontakt">Kostenloses Erstgespräch</a>
+          <a class="btn btn-ghost" href="#leistungen">Was wir können</a>
+        </div>
+      </div>
+      <figure class="hero-visual" data-replace="Optional: echtes Projektbild einsetzen">
+        <img src="assets/hero.png" alt="Abstrakte Visualisierung eines digitalen Netzwerks, erzeugt mit unserer eigenen KI-Bild-Pipeline" onerror="this.remove()">
+        <figcaption>Erzeugt mit der eigenen Bild-Pipeline von ZEHNTAGE (ComfyUI)</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ===================== LEISTUNGEN ===================== -->
+  <section id="leistungen" class="tint">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="kicker">Leistungen</p>
+        <h2>Alles aus einer Hand, jedes Werkzeug am richtigen Ort.</h2>
+        <p>Hinter jeder Leistung steht ein eingespieltes Setup aus spezialisierten KI-Werkzeugen. Sie bekommen das Ergebnis, wir kümmern uns um die Technik.</p>
+      </div>
+      <div class="grid-3">
+        <div class="service reveal">
+          <h3>Unternehmenswebsites</h3>
+          <p>Responsive, schnell und suchmaschinenoptimiert. Vom Einseiter bis zur mehrsprachigen Firmenpräsenz.</p>
+          <span class="tool">bolt.diy + Eigenentwicklung</span>
+        </div>
+        <div class="service reveal">
+          <h3>Onlineshops</h3>
+          <p>Shopify oder massgeschneidert: Produktdaten, Zahlung, Versand und rechtskonforme Preisauszeichnung.</p>
+          <span class="tool">Shopify</span>
+        </div>
+        <div class="service reveal">
+          <h3>Produktbilder &amp; Grafiken</h3>
+          <p>Logos, Banner und Produktvisuals aus unserer eigenen Bild-Pipeline, konsistent im Markenstil.</p>
+          <span class="tool">ComfyUI</span>
+        </div>
+        <div class="service reveal">
+          <h3>Automatisierungen</h3>
+          <p>Offertenanfragen ins CRM, Bestellbestätigungen, Newsletter-Flows: Abläufe laufen von allein.</p>
+          <span class="tool">n8n</span>
+        </div>
+        <div class="service reveal">
+          <h3>Dashboards &amp; Auswertungen</h3>
+          <p>Umsatz, Besucher, Lagerbestand: Ihre Kennzahlen live auf einem Blick statt in Excel-Listen.</p>
+          <span class="tool">Metabase</span>
+        </div>
+        <div class="service reveal">
+          <h3>KI-Chatbots &amp; Agenten</h3>
+          <p>Kundenanfragen rund um die Uhr beantworten, Termine buchen, Wissen aus Ihren Dokumenten nutzen.</p>
+          <span class="tool">CrewAI + OmniRoute</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROZESS ===================== -->
+  <section id="prozess">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="kicker">Arbeitsweise</p>
+        <h2>Vier Schritte bis zur Übergabe.</h2>
+      </div>
+      <div class="steps">
+        <div class="step reveal">
+          <h3>Gespräch</h3>
+          <p>30 Minuten, kostenlos. Wir klären Ziel, Umfang und Festpreis. Kein Fachchinesisch.</p>
+        </div>
+        <div class="step reveal">
+          <h3>Entwurf</h3>
+          <p>Innert weniger Tage sehen Sie einen klickbaren Entwurf, nicht bloss eine Skizze.</p>
+        </div>
+        <div class="step reveal">
+          <h3>Umsetzung</h3>
+          <p>Entwicklung, Inhalte, Bilder und automatisierte Tests auf allen Geräten.</p>
+        </div>
+        <div class="step reveal">
+          <h3>Übergabe</h3>
+          <p>Live-Schaltung, kurze Schulung und auf Wunsch laufende Betreuung.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PREISE ===================== -->
+  <section id="preise" class="tint">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="kicker">Preise</p>
+        <h2>Festpreise. Keine Überraschungen.</h2>
+        <p>Alle Preise in CHF, inkl. Beratung, Umsetzung und Tests. Individuelle Projekte auf Anfrage.</p>
+      </div>
+      <div class="prices">
+        <div class="price reveal">
+          <h3>Landingpage</h3>
+          <p class="amount">ab 1'490 <small>CHF</small></p>
+          <ul>
+            <li>Ein-Seiten-Website mit klarem Ziel</li>
+            <li>Responsive Design, SEO-Grundlagen</li>
+            <li>Kontaktformular und Analytics</li>
+            <li>Übergabe in 5 Arbeitstagen</li>
+          </ul>
+          <a class="btn btn-ghost" href="angebote.html#bestellen">Anfragen</a>
+        </div>
+        <div class="price featured reveal">
+          <h3>Business-Website</h3>
+          <p class="amount">ab 3'900 <small>CHF</small></p>
+          <ul>
+            <li>Bis 8 Seiten, individuelle Gestaltung</li>
+            <li>Bild-Paket aus der KI-Pipeline</li>
+            <li>SEO, Ladezeit-Optimierung, Tests</li>
+            <li>1 Automatisierung inklusive</li>
+          </ul>
+          <a class="btn" href="angebote.html#bestellen">Anfragen</a>
+        </div>
+        <div class="price reveal">
+          <h3>Onlineshop</h3>
+          <p class="amount">ab 6'900 <small>CHF</small></p>
+          <ul>
+            <li>Shop-Aufbau inkl. Produktdaten</li>
+            <li>Zahlung, Versand, Rechtstexte</li>
+            <li>Produktbilder und Werbegrafiken</li>
+            <li>Bestell-Automatisierungen</li>
+          </ul>
+          <a class="btn btn-ghost" href="angebote.html#bestellen">Anfragen</a>
+        </div>
+      </div>
+      <p class="price-note reveal">Laufende Betreuung (Updates, Inhalte, kleine Änderungen) ab 190 CHF pro Monat.</p>
+    </div>
+  </section>
+
+  <!-- ===================== FAQ ===================== -->
+  <section id="faq">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="kicker">FAQ</p>
+        <h2>Häufige Fragen.</h2>
+      </div>
+      <details class="reveal">
+        <summary>Warum seid ihr schneller als klassische Agenturen?</summary>
+        <p>Weil Routinearbeit bei uns automatisiert ist: Layouts, Testläufe, Bildproduktion und Textentwürfe erledigen KI-Werkzeuge unter menschlicher Kontrolle. Die gewonnene Zeit stecken wir in Beratung und Feinschliff.</p>
+      </details>
+      <details class="reveal">
+        <summary>Was passiert nach der Übergabe?</summary>
+        <p>Die Website gehört Ihnen, inklusive aller Zugänge. Auf Wunsch übernehmen wir Hosting, Updates und Anpassungen im Betreuungs-Abo, kündbar jeden Monat.</p>
+      </details>
+      <details class="reveal">
+        <summary>Nutzt ihr Baukästen wie Wix?</summary>
+        <p>Nein. Wir entwickeln mit offenen Web-Technologien und Shopify für Shops. Sie sind nicht an eine geschlossene Plattform gebunden.</p>
+      </details>
+      <details class="reveal">
+        <summary>Sind die KI-Bilder rechtlich unbedenklich?</summary>
+        <p>Wir erzeugen Bilder mit eigenen Werkzeugen und prüfen jede Verwendung. Für Personenfotos und geschützte Marken setzen wir auf echtes Material mit klarer Lizenz.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ===================== KONTAKT ===================== -->
+  <section id="kontakt" class="tint">
+    <div class="wrap contact-grid">
+      <div class="sec-head reveal" style="margin-bottom:0">
+        <p class="kicker">Kontakt</p>
+        <h2>Erzählen Sie uns von Ihrem Projekt.</h2>
+        <p>Sie erhalten innert eines Arbeitstages eine Antwort mit ehrlicher Einschätzung: Was es kostet, wie lange es dauert, ob es sich lohnt.</p>
+      </div>
+      <!-- data-webhook: URL des n8n-Webhooks. Beim Deployment auf die oeffentliche n8n-Instanz zeigen. -->
+      <form id="anfrage" novalidate data-webhook="http://127.0.0.1:5678/webhook/kontakt">
+        <div>
+          <label for="f-name">Name</label>
+          <input id="f-name" name="name" type="text" autocomplete="name" required>
+        </div>
+        <div>
+          <label for="f-mail">E-Mail</label>
+          <input id="f-mail" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div>
+          <label for="f-art">Projektart</label>
+          <select id="f-art" name="art">
+            <option>Landingpage</option>
+            <option>Business-Website</option>
+            <option>Onlineshop</option>
+            <option>Automatisierung / Dashboard</option>
+            <option>Etwas anderes</option>
+          </select>
+        </div>
+        <div>
+          <label for="f-msg">Kurzbeschrieb</label>
+          <textarea id="f-msg" name="nachricht" rows="4" required></textarea>
+        </div>
+        <button class="btn" type="submit">Anfrage senden</button>
+        <p class="form-status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<a class="mini-cta" href="#kontakt">Projekt anfragen</a>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <strong style="color:#fff">zehntage.</strong><br>
+      Webagentur Schweiz. Ihre Website. In zehn Tagen.
+    </div>
+    <nav aria-label="Rechtliches" style="display:flex; gap:1.5rem">
+      <a href="#impressum">Impressum</a>
+      <a href="#datenschutz">Datenschutz</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+// Reveal-Animation beim Scrollen (respektiert prefers-reduced-motion via CSS)
+const revealEls = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries) => {
+  for (const e of entries) {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }
+}, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
+revealEls.forEach(el => io.observe(el));
+// Sicherheitsnetz: nichts bleibt dauerhaft unsichtbar (Screenshots, Print, alte Browser)
+window.addEventListener('load', () => {
+  setTimeout(() => revealEls.forEach(el => el.classList.add('in')), 2000);
+});
+
+// Formular: sendet an den n8n-Webhook (data-webhook). Ohne erreichbaren
+// Webhook wird eine klare Fehlermeldung mit E-Mail-Ausweg angezeigt.
+document.getElementById('anfrage').addEventListener('submit', async (ev) => {
+  ev.preventDefault();
+  const form = ev.target;
+  const status = form.querySelector('.form-status');
+  const button = form.querySelector('button[type=submit]');
+  if (!form.checkValidity()) {
+    status.textContent = 'Bitte Name, E-Mail und Kurzbeschrieb ausfüllen.';
+    return;
+  }
+  const payload = {
+    name: form.name.value.trim(),
+    email: form.email.value.trim(),
+    art: form.art.value,
+    nachricht: form.nachricht.value.trim()
+  };
+  button.disabled = true;
+  status.textContent = 'Wird gesendet …';
+  try {
+    const res = await fetch(form.dataset.webhook, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    status.textContent = 'Danke! Ihre Anfrage ist eingegangen. Wir melden uns innert eines Arbeitstages.';
+    form.reset();
+  } catch (err) {
+    status.textContent = 'Senden nicht möglich. Bitte direkt an beamswiss@gmail.com schreiben.';
+  } finally {
+    button.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

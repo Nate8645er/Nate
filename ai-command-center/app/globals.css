@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ------------------------------------------------------------------ */
+/* JARVIS HUD (Dashboard)                                             */
+/* ------------------------------------------------------------------ */
+
+:root {
+  --hud-bg: #0b0a08;
+  --hud-amber: #ff8c2a;
+  --hud-amber-soft: #ffb35c;
+  --hud-gold: #ffd257;
+}
+
+/* Panel mit duenner Glow-Linie */
+.hud-panel {
+  position: relative;
+  border: 1px solid rgba(255, 140, 42, 0.22);
+  background: rgba(255, 140, 42, 0.03);
+  box-shadow:
+    0 0 14px rgba(255, 140, 42, 0.05),
+    inset 0 0 24px rgba(255, 140, 42, 0.03);
+}
+
+/* Ecken-Markierungen (8 kurze Striche via Background-Gradients) */
+.hud-corners::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--hud-amber), var(--hud-amber)) left 0 top 0 / 12px 2px,
+    linear-gradient(var(--hud-amber), var(--hud-amber)) left 0 top 0 / 2px 12px,
+    linear-gradient(var(--hud-amber), var(--hud-amber)) right 0 top 0 / 12px 2px,
+    linear-gradient(var(--hud-amber), var(--hud-amber)) right 0 top 0 / 2px 12px,
+    linear-gradient(var(--hud-amber), var(--hud-amber)) left 0 bottom 0 / 12px 2px,
+    linear-gradient(var(--hud-amber), var(--hud-amber)) left 0 bottom 0 / 2px 12px,
+    linear-gradient(var(--hud-amber), var(--hud-amber)) right 0 bottom 0 / 12px 2px,
+    linear-gradient(var(--hud-amber), var(--hud-amber)) right 0 bottom 0 / 2px 12px;
+  background-repeat: no-repeat;
+  opacity: 0.8;
+}
+
+/* Monospace-Micro-Label */
+.hud-label {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 179, 92, 0.72);
+}
+
+/* Dezente Scanline- + Grid-Textur als Overlay */
+.hud-texture {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 179, 92, 0.02) 0px,
+      rgba(255, 179, 92, 0.02) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    linear-gradient(rgba(255, 140, 42, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 140, 42, 0.025) 1px, transparent 1px);
+  background-size: 100% 100%, 48px 48px, 48px 48px;
+}
+
+/* Gold-Rahmen (BUSINESS) */
+.hud-gold-frame {
+  border: 1px solid rgba(255, 210, 87, 0.5);
+  box-shadow:
+    0 0 28px rgba(255, 200, 80, 0.12),
+    inset 0 0 40px rgba(255, 200, 80, 0.04);
+}
+
+/* Animationen: ausschliesslich transform/opacity */
+@keyframes hud-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes hud-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+.hud-spin-slow { animation: hud-spin 48s linear infinite; transform-box: fill-box; transform-origin: center; }
+.hud-spin-rev { animation: hud-spin 22s linear infinite reverse; transform-box: fill-box; transform-origin: center; }
+.hud-pulse { animation: hud-pulse 1.6s ease-in-out infinite; }
+
+/* Gauge-Fuellstand animiert (einmalige Transition, kein Loop) */
+.hud-gauge-arc {
+  transition: stroke-dashoffset 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-spin-slow,
+  .hud-spin-rev,
+  .hud-pulse {
+    animation: none !important;
+  }
+  .hud-gauge-arc {
+    transition: none !important;
+  }
+}
