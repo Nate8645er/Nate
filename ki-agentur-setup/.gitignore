@@ -1,7 +1,0 @@
-# Echte Secrets / lokale Konfiguration niemals committen
-.env
-.env.local
-config/.env
-config/claude-mcp-config.json
-*.log
-logs/
