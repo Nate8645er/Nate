@@ -367,7 +367,8 @@ footer a:hover { text-decoration: underline; }
         <h2>Erzählen Sie uns von Ihrem Projekt.</h2>
         <p>Sie erhalten innert eines Arbeitstages eine Antwort mit ehrlicher Einschätzung: Was es kostet, wie lange es dauert, ob es sich lohnt.</p>
       </div>
-      <form id="anfrage" novalidate>
+      <!-- data-webhook: URL des n8n-Webhooks. Beim Deployment auf die oeffentliche n8n-Instanz zeigen. -->
+      <form id="anfrage" novalidate data-webhook="http://127.0.0.1:5678/webhook/kontakt">
         <div>
           <label for="f-name">Name</label>
           <input id="f-name" name="name" type="text" autocomplete="name" required>
@@ -424,17 +425,39 @@ window.addEventListener('load', () => {
   setTimeout(() => revealEls.forEach(el => el.classList.add('in')), 2000);
 });
 
-// Formular: reines Frontend, Backend-Anbindung folgt (z.B. n8n-Webhook)
-document.getElementById('anfrage').addEventListener('submit', (ev) => {
+// Formular: sendet an den n8n-Webhook (data-webhook). Ohne erreichbaren
+// Webhook wird eine klare Fehlermeldung mit E-Mail-Ausweg angezeigt.
+document.getElementById('anfrage').addEventListener('submit', async (ev) => {
   ev.preventDefault();
   const form = ev.target;
   const status = form.querySelector('.form-status');
+  const button = form.querySelector('button[type=submit]');
   if (!form.checkValidity()) {
     status.textContent = 'Bitte Name, E-Mail und Kurzbeschrieb ausfüllen.';
     return;
   }
-  status.textContent = 'Danke! Ihre Anfrage ist notiert. Wir melden uns innert eines Arbeitstages.';
-  form.reset();
+  const payload = {
+    name: form.name.value.trim(),
+    email: form.email.value.trim(),
+    art: form.art.value,
+    nachricht: form.nachricht.value.trim()
+  };
+  button.disabled = true;
+  status.textContent = 'Wird gesendet …';
+  try {
+    const res = await fetch(form.dataset.webhook, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    status.textContent = 'Danke! Ihre Anfrage ist eingegangen. Wir melden uns innert eines Arbeitstages.';
+    form.reset();
+  } catch (err) {
+    status.textContent = 'Senden nicht möglich. Bitte direkt an hallo@nate.digital schreiben.';
+  } finally {
+    button.disabled = false;
+  }
 });
 </script>
 </body>
