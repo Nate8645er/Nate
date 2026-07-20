@@ -604,8 +604,11 @@ document.querySelectorAll('.paket-cta').forEach(link => {
     if (wert) paketSelect.value = wert;
   });
 });
-// Auch via URL vorwaehlbar: angebote.html#bestellen?paket=… bzw. ?paket= in der Query
-const paketParam = new URLSearchParams(window.location.search).get('paket');
+// Auch via URL vorwaehlbar: angebote.html?paket=…#bestellen oder angebote.html#bestellen?paket=…
+let paketParam = new URLSearchParams(window.location.search).get('paket');
+if (!paketParam && window.location.hash.includes('?')) {
+  paketParam = new URLSearchParams(window.location.hash.slice(window.location.hash.indexOf('?'))).get('paket');
+}
 if (paketParam) {
   const treffer = Array.from(paketSelect.options).find(o => o.value.startsWith(paketParam));
   if (treffer) paketSelect.value = treffer.value;
