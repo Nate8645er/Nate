@@ -1,0 +1,58 @@
+{
+  "name": "kimi-mcp-server",
+  "version": "0.4.1",
+  "description": "MCP server for Claude Code × Kimi Code (kimi-for-coding, 256K context) — delegate bulk codebase analysis to Kimi, save 90% on token costs",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "kimi-mcp-server": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "README_zh.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run test && npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "claude-code",
+    "kimi",
+    "kimi-code",
+    "llm",
+    "ai",
+    "code-analysis",
+    "model-context-protocol"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/howardpen9/kimi-code-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/howardpen9/kimi-code-mcp/issues"
+  },
+  "homepage": "https://github.com/howardpen9/kimi-code-mcp#readme",
+  "author": "howardpen9",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vitest": "^4.0.18"
+  }
+}
