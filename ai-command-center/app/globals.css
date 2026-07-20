@@ -110,8 +110,8 @@ body {
   50% { opacity: 0.35; }
 }
 
-.hud-spin-slow { animation: hud-spin 48s linear infinite; transform-origin: center; }
-.hud-spin-rev { animation: hud-spin 22s linear infinite reverse; transform-origin: center; }
+.hud-spin-slow { animation: hud-spin 48s linear infinite; transform-box: fill-box; transform-origin: center; }
+.hud-spin-rev { animation: hud-spin 22s linear infinite reverse; transform-box: fill-box; transform-origin: center; }
 .hud-pulse { animation: hud-pulse 1.6s ease-in-out infinite; }
 
 /* Gauge-Fuellstand animiert (einmalige Transition, kein Loop) */
