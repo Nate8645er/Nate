@@ -117,10 +117,20 @@ export type AgentEvent =
    * ORG-PLAN des Commanders (nur BUSINESS/ENTERPRISE): die virtuelle Firma
    * als Abteilungen mit dynamischen Rollen – das Dashboard rendert daraus
    * das Organigramm und legt fuer jede Rolle eine Live-Karte an.
+   *
+   * `roles` sind die echten, live-arbeitenden Spezialisten (rufen ein LLM auf,
+   * gedeckelt durch MAX_DYN_AGENTS). `assistants` ist die statisch generierte
+   * Belegschaft (KEINE LLM-Aufrufe, nur Namen/Rollen). `workforce` ist die
+   * sichtbare Gesamt-Belegschaft (echte Rollen + Assistenten, WORKFORCE_BY_PLAN).
    */
   | {
       type: "org";
-      departments: { name: string; roles: { id: string; label: string }[] }[];
+      workforce: number;
+      departments: {
+        name: string;
+        roles: { id: string; label: string }[];
+        assistants: { id: string; label: string }[];
+      }[];
     }
   /** Quality-Score inkl. Verbesserungen */
   | { type: "score"; score: number; improvements: string[] }

@@ -53,14 +53,43 @@ const STATUS_LABEL: Record<AgentStatus, string> = {
   error: "Fehler",
 };
 
-type Plan = "FREE" | "STARTER" | "PROFESSIONAL" | "BUSINESS";
-const PLANS: Plan[] = ["FREE", "STARTER", "PROFESSIONAL", "BUSINESS"];
+type Plan = "FREE" | "STARTER" | "PROFESSIONAL" | "BUSINESS" | "ENTERPRISE";
+const PLANS: Plan[] = ["FREE", "STARTER", "PROFESSIONAL", "BUSINESS", "ENTERPRISE"];
 const PLAN_LEVEL: Record<Plan, number> = {
   FREE: 0,
   STARTER: 1,
   PROFESSIONAL: 2,
   BUSINESS: 3,
+  ENTERPRISE: 4,
 };
+
+/**
+ * Sichtbare Gesamt-Belegschaft je Plan (Spiegel von WORKFORCE_BY_PLAN in
+ * lib/agents/team.ts – dient nur der Anzeige vor dem ersten org-Event; die
+ * verbindliche Zahl liefert der Server im org-Event).
+ */
+const WORKFORCE_BY_PLAN: Record<Plan, number> = {
+  FREE: 4,
+  STARTER: 8,
+  PROFESSIONAL: 24,
+  BUSINESS: 150,
+  ENTERPRISE: 1000,
+};
+
+/** Plaene im Organisations-Modus (dynamische Firma + Belegschaft). */
+const ORG_MODE_PLANS: ReadonlySet<Plan> = new Set<Plan>(["BUSINESS", "ENTERPRISE"]);
+
+/** Eine Abteilung der virtuellen Firma im Dashboard (aus dem org-Event). */
+interface OrgDepartment {
+  name: string;
+  roles: { id: string; label: string }[];
+  assistants: { id: string; label: string }[];
+}
+interface OrgState {
+  workforce: number;
+  departments: OrgDepartment[];
+}
+type DynStatus = { status: AgentStatus; message: string };
 
 const HISTORY_KEY = "acc-mission-history";
 const PLAN_KEY = "acc-plan";
@@ -216,6 +245,7 @@ const TelemetryTiles = memo(function TelemetryTiles({
   missions,
   activeAgents,
   totalAgents,
+  workforce,
   running,
   startedAt,
   eventTimesRef,
@@ -223,6 +253,7 @@ const TelemetryTiles = memo(function TelemetryTiles({
   missions: number;
   activeAgents: number;
   totalAgents: number;
+  workforce: number;
   running: boolean;
   startedAt: number | null;
   eventTimesRef: React.RefObject<number[]>;
@@ -245,6 +276,7 @@ const TelemetryTiles = memo(function TelemetryTiles({
   const tiles = [
     { label: "Missionen", value: String(missions) },
     { label: "Agenten aktiv", value: `${activeAgents}/${totalAgents}` },
+    { label: "Belegschaft", value: workforce >= 1000 ? workforce.toLocaleString("de-CH") : String(workforce) },
     { label: "Events/s", value: eps.toFixed(1) },
     { label: "Laufzeit", value: formatElapsed(lastElapsedRef.current) },
   ];
@@ -292,6 +324,8 @@ const BusinessTicker = memo(function BusinessTicker({
   activeAgents,
   totalAgents,
   missions,
+  workforce,
+  plan,
   totalEventsRef,
 }: {
   running: boolean;
@@ -299,6 +333,8 @@ const BusinessTicker = memo(function BusinessTicker({
   activeAgents: number;
   totalAgents: number;
   missions: number;
+  workforce: number;
+  plan: Plan;
   totalEventsRef: React.RefObject<number>;
 }) {
   const [, setTick] = useState(0);
@@ -311,9 +347,10 @@ const BusinessTicker = memo(function BusinessTicker({
     `UPTIME ${uptime}`,
     `EVENTS ${totalEventsRef.current ?? 0}`,
     `AGENTS ${activeAgents}/${totalAgents}`,
+    `WORKFORCE ${workforce.toLocaleString("de-CH")}`,
     `MISSIONS ${missions}`,
     `LINK ${running ? "ACTIVE" : "STABLE"}`,
-    "PLAN BUSINESS",
+    `PLAN ${plan}`,
   ];
   return (
     <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[#ffd257]/40 bg-[#0b0a08]/90 backdrop-blur" role="status" aria-label="Live-Telemetrie">
@@ -411,6 +448,112 @@ const LockedAgentCard = memo(function LockedAgentCard({ name, tagline }: { name:
         <span className="text-[#c9b391]"> · Ab Professional</span>
       </p>
     </div>
+  );
+});
+
+/** Status-Punkt-Klassen fuer die dynamischen Rollen im Organigramm. */
+function dynDotClass(status: AgentStatus): string {
+  return status === "working"
+    ? "hud-pulse bg-[#ff8c2a]"
+    : status === "done"
+      ? "bg-[#ffb35c]"
+      : status === "error"
+        ? "bg-red-400"
+        : "bg-[#5a4a35]";
+}
+
+/** Wie viele Belegschafts-Chips maximal eingeklappt sichtbar sind. */
+const WORKFORCE_CHIP_PREVIEW = 12;
+
+/** Eine Abteilung im Organigramm: echte Live-Rollen + gedimmte Belegschaft. */
+const DepartmentCard = memo(function DepartmentCard({
+  dept,
+  dynStatuses,
+}: {
+  dept: OrgDepartment;
+  dynStatuses: Record<string, DynStatus>;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const total = dept.assistants.length;
+  const shown = expanded ? dept.assistants : dept.assistants.slice(0, WORKFORCE_CHIP_PREVIEW);
+  const rest = total - shown.length;
+
+  return (
+    <div className="hud-panel hud-corners rounded-sm p-4">
+      <div className="flex items-center justify-between">
+        <h3 className="font-semibold text-[#fff3e2]">{dept.name}</h3>
+        <span className="hud-label">{dept.roles.length} live · {total} Assist.</span>
+      </div>
+
+      {/* Echte, live-arbeitende Spezialisten */}
+      <ul className="mt-3 space-y-1.5">
+        {dept.roles.map((r) => {
+          const st = dynStatuses[r.id]?.status ?? "idle";
+          return (
+            <li key={r.id} className="flex items-center gap-2 text-sm">
+              <span aria-hidden className={`h-2 w-2 rounded-full ${dynDotClass(st)}`} />
+              <span className="text-[#e8dcc8]">{r.label}</span>
+              <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/60">
+                {STATUS_LABEL[st]}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+
+      {/* Belegschaft: statische Assistenten (keine LLM-Aufrufe) */}
+      {total > 0 && (
+        <div className="mt-4 border-t border-[#ff8c2a]/10 pt-3">
+          <button
+            onClick={() => setExpanded((v) => !v)}
+            aria-expanded={expanded}
+            className={`hud-label transition-colors hover:text-[#ff8c2a] ${FOCUS_RING}`}
+          >
+            Belegschaft: {total} {expanded ? "▲ einklappen" : "▼ anzeigen"}
+          </button>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {shown.map((a) => (
+              <span
+                key={a.id}
+                className="rounded-sm border border-[#ff8c2a]/12 bg-[#ff8c2a]/[0.03] px-2 py-0.5 font-mono text-[10px] text-[#ffb35c]/55"
+              >
+                {a.label}
+              </span>
+            ))}
+            {!expanded && rest > 0 && (
+              <span className="rounded-sm px-2 py-0.5 font-mono text-[10px] text-[#8a7455]">
+                +{rest} weitere
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+});
+
+/** Organigramm der virtuellen Firma (nur Org-Plaene). */
+const OrgChart = memo(function OrgChart({
+  org,
+  dynStatuses,
+}: {
+  org: OrgState;
+  dynStatuses: Record<string, DynStatus>;
+}) {
+  return (
+    <section aria-label="Virtuelle Firma" className="mt-8">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="hud-label">Virtuelle Firma // Organigramm</div>
+        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#ffd257]/80">
+          Belegschaft {org.workforce.toLocaleString("de-CH")}
+        </div>
+      </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {org.departments.map((d) => (
+          <DepartmentCard key={d.name} dept={d} dynStatuses={dynStatuses} />
+        ))}
+      </div>
+    </section>
   );
 });
 
@@ -662,6 +805,8 @@ export default function DashboardPage() {
   const [error, setError] = useState("");
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [openOutput, setOpenOutput] = useState<AgentRole | null>(null);
+  const [org, setOrg] = useState<OrgState | null>(null);
+  const [dynStatuses, setDynStatuses] = useState<Record<string, DynStatus>>({});
   const [logs, setLogs] = useState<string[]>([]);
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -675,8 +820,20 @@ export default function DashboardPage() {
   const showFeed = level >= 2;
   const showExtraAgents = level >= 2;
   const isBusiness = level >= 3;
+  const isOrgPlan = ORG_MODE_PLANS.has(plan);
   const fancy = level >= 1;
-  const totalAgents = showExtraAgents ? 8 : 4;
+  // Belegschaft: verbindlich aus dem org-Event, sonst der Plan-Erwartungswert.
+  const workforce = org?.workforce ?? WORKFORCE_BY_PLAN[plan];
+  const dynRoleCount = useMemo(
+    () => (org ? org.departments.reduce((n, d) => n + d.roles.length, 0) : 0),
+    [org],
+  );
+  // Org-Modus zaehlt echte, LLM-aufrufende Rollen (+ Commander/Quality).
+  const totalAgents = isOrgPlan
+    ? (org ? dynRoleCount + 2 : 2)
+    : showExtraAgents
+      ? 8
+      : 4;
 
   useEffect(() => {
     try {
@@ -786,13 +943,31 @@ export default function DashboardPage() {
     eventTimesRef.current = [...eventTimesRef.current.filter((t) => now - t < 10_000), now];
 
     switch (ev.type) {
+      case "org": {
+        // Firma uebernehmen; Live-Rollen zunaechst auf "Bereit" setzen.
+        setOrg({ workforce: ev.workforce, departments: ev.departments });
+        const roleCount = ev.departments.reduce((n, d) => n + d.roles.length, 0);
+        const seed: Record<string, DynStatus> = {};
+        for (const d of ev.departments) {
+          for (const r of d.roles) seed[r.id] = { status: "idle", message: "Bereit" };
+        }
+        setDynStatuses(seed);
+        pushLog("commander", `Firma gegruendet: ${ev.departments.length} Abteilungen, ${roleCount} Rollen, Belegschaft ${ev.workforce}`);
+        break;
+      }
       case "status":
-        setStatuses((s) => ({ ...s, [ev.agent]: { status: ev.status, message: ev.message } }));
-        pushLog(ev.agent, ev.message);
+        if (typeof ev.agent === "string" && ev.agent.startsWith("dyn:")) {
+          setDynStatuses((s) => ({ ...s, [ev.agent]: { status: ev.status, message: ev.message } }));
+        } else {
+          setStatuses((s) => ({ ...s, [ev.agent]: { status: ev.status, message: ev.message } }));
+        }
+        pushLog(ev.label ?? ev.agent, ev.message);
         break;
       case "output":
-        setOutputs((o) => ({ ...o, [ev.agent]: ev.content }));
-        pushLog(ev.agent, `Ausgabe empfangen (${ev.content.length} Zeichen)`);
+        if (!(typeof ev.agent === "string" && ev.agent.startsWith("dyn:"))) {
+          setOutputs((o) => ({ ...o, [ev.agent]: ev.content }));
+        }
+        pushLog(ev.label ?? ev.agent, `Ausgabe empfangen (${ev.content.length} Zeichen)`);
         break;
       case "score":
         ctx.score = ev.score;
@@ -831,6 +1006,8 @@ export default function DashboardPage() {
     setImprovements([]);
     setOutputs({});
     setOpenOutput(null);
+    setOrg(null);
+    setDynStatuses({});
     setLogs([`[${timestamp()}] SYSTEM > Mission gestartet: ${missionGoal}`]);
     setStartedAt(Date.now());
     eventTimesRef.current = [];
@@ -915,8 +1092,10 @@ export default function DashboardPage() {
   );
 
   const activeAgents = useMemo(
-    () => Object.values(statuses).filter((s) => s.status === "working").length,
-    [statuses],
+    () =>
+      Object.values(statuses).filter((s) => s.status === "working").length +
+      Object.values(dynStatuses).filter((s) => s.status === "working").length,
+    [statuses, dynStatuses],
   );
   const missionCount = history.length + (running ? 1 : 0);
 
@@ -973,7 +1152,7 @@ export default function DashboardPage() {
                     aria-label={locked ? `${p} (Lizenz erforderlich)` : p}
                     className={`flex items-center gap-1 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors ${FOCUS_RING} ${
                       plan === p
-                        ? p === "BUSINESS"
+                        ? p === "BUSINESS" || p === "ENTERPRISE"
                           ? "bg-[#ffd257] text-[#1a0f04]"
                           : "bg-[#ff8c2a] text-[#1a0f04]"
                         : locked
@@ -1034,6 +1213,7 @@ export default function DashboardPage() {
                   missions={missionCount}
                   activeAgents={activeAgents}
                   totalAgents={totalAgents}
+                  workforce={workforce}
                   running={running}
                   startedAt={startedAt}
                   eventTimesRef={eventTimesRef}
@@ -1092,6 +1272,9 @@ export default function DashboardPage() {
               )}
             </div>
           </section>
+
+          {/* Organigramm der virtuellen Firma (BUSINESS/ENTERPRISE) */}
+          {isOrgPlan && org && <OrgChart org={org} dynStatuses={dynStatuses} />}
 
           {openOutput && outputs[openOutput] && (
             <section aria-label="Agenten-Ausgabe" className={`mt-4 rounded-sm border border-[#ff8c2a]/20 bg-[#ff8c2a]/[0.02] p-5 text-sm leading-relaxed ${fancy ? "hud-corners relative" : ""}`}>
@@ -1179,6 +1362,8 @@ export default function DashboardPage() {
           activeAgents={activeAgents}
           totalAgents={totalAgents}
           missions={missionCount}
+          workforce={workforce}
+          plan={plan}
           totalEventsRef={totalEventsRef}
         />
       )}

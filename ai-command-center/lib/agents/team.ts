@@ -37,6 +37,86 @@ export const MAX_DYN_AGENTS: Record<"BUSINESS" | "ENTERPRISE", number> = {
 };
 
 /**
+ * Sichtbare Gesamt-Belegschaft je Abo (Marketing-/Skalierungs-Signal).
+ *
+ * WICHTIG: Nur die MAX_DYN_AGENTS dynamischen Spezialisten rufen tatsaechlich
+ * ein LLM auf. Die restliche Belegschaft besteht aus rein statisch generierten
+ * Assistenten (Namen/Rollen als Strings, KEINE LLM-Aufrufe) – sie skaliert die
+ * sichtbare Firma, ohne Provider-Kosten oder Rate-Limits zu erhoehen.
+ */
+export const WORKFORCE_BY_PLAN: Record<PlanId, number> = {
+  FREE: 4,
+  STARTER: 8,
+  PROFESSIONAL: 24,
+  BUSINESS: 150,
+  ENTERPRISE: 1000,
+};
+
+/** Ein generierter, NICHT LLM-aufrufender Assistent der Belegschaft. */
+export interface WorkforceAssistant {
+  /** Eindeutige Id, immer mit Praefix "asst:". */
+  id: `asst:${string}`;
+  /** Anzeigename, z. B. "Analyst Assistent 3". */
+  label: string;
+}
+
+/** Rollen-Pool fuer die generierte Belegschaft (deterministisch per Index). */
+const WORKFORCE_ROLE_POOL = [
+  "Analyst",
+  "Koordinator",
+  "Sachbearbeiter",
+  "Researcher",
+  "Operator",
+  "Spezialist",
+  "Disponent",
+  "Planer",
+] as const;
+
+/** Klein-Slug (ASCII) fuer stabile Assistenten-Ids. */
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[äàáâ]/g, "a")
+    .replace(/[öòóô]/g, "o")
+    .replace(/[üùúû]/g, "u")
+    .replace(/ß/g, "ss")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+/**
+ * Verteilt (total minus echte Rollen) als generierte Assistenten deterministisch
+ * auf die Abteilungen. Rein synchron, KEINE LLM-Aufrufe, kein Math.random –
+ * jede Zuordnung leitet sich reproduzierbar aus dem Laufindex ab.
+ *
+ * Rueckgabe: pro Abteilung (gleiche Reihenfolge wie `departments`) die Liste der
+ * Assistenten. Ist `total` kleiner/gleich der Zahl echter Rollen, bleiben die
+ * Listen leer.
+ */
+export function buildWorkforce(
+  departments: readonly { roles: readonly unknown[] }[],
+  total: number,
+): WorkforceAssistant[][] {
+  const result: WorkforceAssistant[][] = departments.map(() => []);
+  const deptCount = departments.length;
+  if (deptCount === 0) return result;
+
+  const realRoles = departments.reduce((n, d) => n + d.roles.length, 0);
+  const assistantCount = Math.max(0, Math.floor(total) - realRoles);
+
+  for (let i = 0; i < assistantCount; i++) {
+    const deptIndex = i % deptCount;
+    const role = WORKFORCE_ROLE_POOL[i % WORKFORCE_ROLE_POOL.length];
+    const n = result[deptIndex].length + 1;
+    result[deptIndex].push({
+      id: `asst:${slugify(role)}-${i + 1}`,
+      label: `${role} Assistent ${n}`,
+    });
+  }
+  return result;
+}
+
+/**
  * System-Prompt fuer den ORG-PLAN des Commanders: er gruendet pro Mission
  * eine virtuelle Firma aus 2-4 Abteilungen mit je 2-4 Spezialisten-Rollen.
  */

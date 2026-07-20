@@ -32,6 +32,7 @@ import {
 import { callLLM, hasApiKey } from "./providers";
 import {
   AGENTS,
+  buildWorkforce,
   DEPARTMENT_SUMMARY_PROMPT,
   dynSystemPrompt,
   MAX_DYN_AGENTS,
@@ -40,6 +41,7 @@ import {
   plannerPrompt,
   SYNTHESIS_PROMPT,
   WORKERS_BY_PLAN,
+  WORKFORCE_BY_PLAN,
 } from "./team";
 import type {
   AgentConfig,
@@ -103,6 +105,7 @@ export async function runMission(
     return;
   }
 
+  const isOrg = ORG_MODE_PLANS.has(plan);
   const workers = WORKERS_BY_PLAN[plan];
 
   // Nach Missionsende (regulaer oder Timeout) keine Events mehr durchlassen,
@@ -113,23 +116,32 @@ export async function runMission(
   };
 
   let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeoutMs = isOrg ? ORG_MISSION_TIMEOUT_MS : MISSION_TIMEOUT_MS;
   const timeout = new Promise<"timeout">((resolve) => {
-    timer = setTimeout(() => resolve("timeout"), MISSION_TIMEOUT_MS);
+    timer = setTimeout(() => resolve("timeout"), timeoutMs);
   });
+
+  // Org-Modus (BUSINESS/ENTERPRISE): dynamische Firma; sonst fester Fan-out.
+  const phases = isOrg
+    ? runOrgMissionPhases(trimmedGoal, guardedEmit, plan as "BUSINESS" | "ENTERPRISE", context)
+    : runMissionPhases(trimmedGoal, guardedEmit, workers, context);
 
   try {
     const outcome = await Promise.race([
-      runMissionPhases(trimmedGoal, guardedEmit, workers, context).then(
-        () => "done" as const,
-      ),
+      phases.then(() => "done" as const),
       timeout,
     ]);
 
     if (outcome === "timeout") {
-      // Sauber abschliessen: alle beteiligten Agenten auf "done", Demo-Ergebnis liefern.
-      const activeRoles: AgentRole[] = ["commander", ...workers, "quality"];
-      for (const role of activeRoles) {
-        guardedEmit(status(role, "done", "Zeitlimit erreicht – Demo-Abschluss"));
+      // Sauber abschliessen: beteiligte Agenten auf "done", Demo-Ergebnis liefern.
+      if (isOrg) {
+        guardedEmit(status("commander", "done", "Zeitlimit erreicht – Demo-Abschluss"));
+        guardedEmit(status("quality", "done", "Zeitlimit erreicht – Demo-Abschluss"));
+      } else {
+        const activeRoles: AgentRole[] = ["commander", ...workers, "quality"];
+        for (const role of activeRoles) {
+          guardedEmit(status(role, "done", "Zeitlimit erreicht – Demo-Abschluss"));
+        }
       }
       guardedEmit({
         type: "error",
@@ -245,6 +257,254 @@ async function runMissionPhases(
     ),
   );
   emit({ type: "final", content: synthesisCall.text });
+}
+
+/* -------------------------- Organisations-Phasen -------------------------- */
+
+/**
+ * Org-Modus (BUSINESS/ENTERPRISE): Der Commander gruendet eine virtuelle Firma.
+ *
+ *   1. Commander entwirft Abteilungen mit echten Spezialisten-Rollen
+ *      (gedeckelt durch MAX_DYN_AGENTS – nur diese rufen ein LLM auf).
+ *   2. buildWorkforce erzeugt SYNCHRON die restliche Belegschaft als statische
+ *      Assistenten (KEINE LLM-Aufrufe). Ein org-Event traegt Rollen, Assistenten
+ *      und die Gesamt-Belegschaft (workforce) ins Dashboard.
+ *   3. Echte Rollen arbeiten in Batches a DYN_BATCH_SIZE (Rate-Limit-Schutz),
+ *      mit rotierender Modell-Zuweisung.
+ *   4. Commander fasst je Abteilung zusammen, Quality bewertet, Commander
+ *      synthetisiert genau EIN finales Ergebnis.
+ */
+async function runOrgMissionPhases(
+  goal: string,
+  emit: EmitFn,
+  plan: "BUSINESS" | "ENTERPRISE",
+  context?: MissionContext,
+): Promise<void> {
+  const maxAgents = MAX_DYN_AGENTS[plan];
+  const workforceTotal = WORKFORCE_BY_PLAN[plan];
+
+  // 1. Commander gruendet die Firma (echte, LLM-aufrufende Rollen)
+  emit(status("commander", "working", "Commander gruendet die virtuelle Firma …"));
+  const orgCall = await callAgent(
+    AGENTS.commander,
+    orgPlannerPrompt(maxAgents) + contextLine(context),
+    [{ role: "user", content: `Mission: ${goal}` }],
+    () => JSON.stringify(demoOrgPlan(goal)),
+    emit,
+  );
+  const departments = parseOrgPlan(orgCall.text, goal, maxAgents);
+
+  // 2. Belegschaft rein synchron generieren (keine LLM-Aufrufe, deterministisch)
+  const workforce = buildWorkforce(departments, workforceTotal);
+
+  emit(status("commander", "done", orgCall.demo ? "Firma gegruendet (Demo-Modus)" : "Firma gegruendet"));
+  emit({
+    type: "org",
+    workforce: workforceTotal,
+    departments: departments.map((d, di) => ({
+      name: d.name,
+      roles: d.roles.map((r) => ({ id: r.id, label: r.rolle })),
+      assistants: workforce[di].map((a) => ({ id: a.id, label: a.label })),
+    })),
+  });
+
+  // 3. Echte Rollen in Batches ausfuehren (max. DYN_BATCH_SIZE parallel)
+  const roles = departments.flatMap((d) =>
+    d.roles.map((r) => ({ role: r, department: d.name })),
+  );
+  const outputById = new Map<string, string>();
+
+  for (let start = 0; start < roles.length; start += DYN_BATCH_SIZE) {
+    const batch = roles.slice(start, start + DYN_BATCH_SIZE);
+    for (const { role, department } of batch) {
+      emit(dynStatus(role.id, department, role.rolle, "working", `${role.rolle} arbeitet …`));
+    }
+    const results = await Promise.all(
+      batch.map(({ role, department }, i) => {
+        const model = DYN_MODEL_ROTATION[(start + i) % DYN_MODEL_ROTATION.length];
+        return callDynAgent(role, department, goal, model, emit);
+      }),
+    );
+    batch.forEach(({ role, department }, i) => {
+      const call = results[i];
+      emit(
+        dynStatus(
+          role.id,
+          department,
+          role.rolle,
+          "done",
+          call.demo ? `${role.rolle} fertig (Demo-Modus)` : `${role.rolle} fertig`,
+        ),
+      );
+      emit({ type: "output", agent: role.id, content: call.text, label: role.rolle, department });
+      outputById.set(role.id, call.text);
+    });
+  }
+
+  // 4. Commander fasst je Abteilung zusammen
+  const summaries: string[] = [];
+  for (const d of departments) {
+    emit(status("commander", "working", `Commander buendelt ${d.name} …`));
+    const deptOutputs = d.roles
+      .map((r) => `### ${r.rolle}\n\n${outputById.get(r.id) ?? ""}`)
+      .join("\n\n");
+    const summaryCall = await callAgent(
+      AGENTS.commander,
+      DEPARTMENT_SUMMARY_PROMPT,
+      [{ role: "user", content: `Mission: ${goal}\n\nAbteilung: ${d.name}\n\n${deptOutputs}` }],
+      () => demoDepartmentSummary(d, goal),
+      emit,
+    );
+    summaries.push(`## Abteilung ${d.name}\n\n${summaryCall.text}`);
+  }
+  const combined = summaries.join("\n\n");
+
+  // 5. Quality bewertet die Abteilungs-Ergebnisse zusammen
+  emit(status("quality", "working", "Quality prueft die Firma …"));
+  const qualityCall = await callAgent(
+    AGENTS.quality,
+    AGENTS.quality.systemPrompt,
+    [{ role: "user", content: `Mission: ${goal}\n\nZu bewertende Ergebnisse:\n\n${combined}` }],
+    () => JSON.stringify(demoQualityReport(combined)),
+    emit,
+  );
+  const quality = parseQuality(qualityCall.text) ?? demoQualityReport(combined);
+  emit(
+    status(
+      "quality",
+      "done",
+      qualityCall.demo ? `Score: ${quality.score}/100 (Demo-Modus)` : `Score: ${quality.score}/100`,
+    ),
+  );
+  emit({ type: "score", score: quality.score, improvements: quality.improvements });
+  const improvementNotes = quality.improvements.length
+    ? `\n\nVerbesserungsvorschlaege des Quality-Agenten:\n- ${quality.improvements.join("\n- ")}`
+    : "";
+
+  // 6. Commander-Synthese – genau EIN finales Ergebnis
+  emit(status("commander", "working", "Commander erstellt das Gesamtergebnis …"));
+  const synthesisCall = await callAgent(
+    AGENTS.commander,
+    SYNTHESIS_PROMPT + contextLine(context),
+    [{ role: "user", content: `Mission: ${goal}\n\n${combined}${improvementNotes}` }],
+    () => demoSynthesis(goal, combined),
+    emit,
+  );
+  emit(
+    status(
+      "commander",
+      "done",
+      synthesisCall.demo ? "Mission abgeschlossen (Demo-Modus)" : "Mission abgeschlossen",
+    ),
+  );
+  emit({ type: "final", content: synthesisCall.text });
+}
+
+/**
+ * Ruft eine dynamische Rolle auf und degradiert bei fehlendem Key oder
+ * Fehler in den deterministischen Demo-Fallback – wirft nie. Das Modell
+ * kommt aus der rotierenden Zuweisung (Rate-Limit-Streuung).
+ */
+async function callDynAgent(
+  role: OrgRoleSpec,
+  department: string,
+  goal: string,
+  model: { provider: Provider; model: string },
+  emit: EmitFn,
+): Promise<AgentCall> {
+  const system = dynSystemPrompt(role.rolle, role.fachgebiet);
+  const messages = workerMessages(goal, role.teilaufgabe);
+  if (!hasApiKey(model.provider)) {
+    emit(dynStatus(role.id, department, role.rolle, "working", `Demo-Modus: kein API-Key fuer ${model.provider}`));
+    return { text: demoDynOutput(goal, role), demo: true };
+  }
+  const result = await callLLM(model.provider, model.model, system, messages);
+  if (result.ok) return { text: result.text, demo: false };
+  emit(dynStatus(role.id, department, role.rolle, "working", `Demo-Modus: ${model.provider} nicht erreichbar`));
+  return { text: demoDynOutput(goal, role), demo: true };
+}
+
+/** Status-Event einer dynamischen Rolle (mit label + department fuers HUD). */
+function dynStatus(
+  id: `dyn:${string}`,
+  department: string,
+  label: string,
+  s: "idle" | "working" | "done" | "error",
+  message: string,
+) {
+  return { type: "status" as const, agent: id, status: s, message, label, department };
+}
+
+/**
+ * Parst den ORG-PLAN des Commanders (JSON mit departments/roles) und vergibt
+ * stabile "dyn:"-Ids. Deckelt die Zahl echter Rollen hart auf maxAgents und
+ * faellt bei unbrauchbarem JSON auf die deterministische Demo-Firma zurueck.
+ */
+function parseOrgPlan(text: string, goal: string, maxAgents: number): OrgDepartmentSpec[] {
+  const parsed = parseJsonObject(text);
+  const raw = Array.isArray(parsed?.departments) ? parsed.departments : [];
+  const departments = buildDepartments(raw, maxAgents);
+  if (departments.length) return departments;
+  return buildDepartments(demoOrgPlan(goal).departments, maxAgents);
+}
+
+/** Baut aus rohen (LLM- oder Demo-)Abteilungen valide OrgDepartmentSpecs. */
+function buildDepartments(raw: unknown[], maxAgents: number): OrgDepartmentSpec[] {
+  const departments: OrgDepartmentSpec[] = [];
+  const usedIds = new Set<string>();
+  let count = 0;
+
+  for (const d of raw) {
+    if (count >= maxAgents) break;
+    const obj = typeof d === "object" && d !== null ? (d as Record<string, unknown>) : {};
+    const name = typeof obj.name === "string" && obj.name.trim() ? obj.name.trim() : "Abteilung";
+    const rolesRaw = Array.isArray(obj.roles) ? obj.roles : [];
+    const roles: OrgRoleSpec[] = [];
+
+    for (const r of rolesRaw) {
+      if (count >= maxAgents) break;
+      const ro = typeof r === "object" && r !== null ? (r as Record<string, unknown>) : {};
+      const rolle = str(ro.rolle);
+      const teilaufgabe = str(ro.teilaufgabe);
+      if (!rolle || !teilaufgabe) continue;
+      roles.push({
+        id: uniqueDynId(rolle, usedIds),
+        rolle,
+        fachgebiet: str(ro.fachgebiet) || rolle,
+        teilaufgabe,
+      });
+      count++;
+    }
+    if (roles.length) departments.push({ name, roles });
+  }
+  return departments;
+}
+
+/** Trimmt einen unbekannten Wert zu einem nicht-leeren String oder "". */
+function str(value: unknown): string {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+/** Erzeugt eine kollisionsfreie "dyn:"-Id aus dem Rollennamen. */
+function uniqueDynId(rolle: string, used: Set<string>): `dyn:${string}` {
+  const base = slugifyRole(rolle) || "rolle";
+  let id: `dyn:${string}` = `dyn:${base}`;
+  let n = 2;
+  while (used.has(id)) id = `dyn:${base}-${n++}`;
+  used.add(id);
+  return id;
+}
+
+/** Klein-Slug (ASCII) fuer stabile Rollen-Ids. */
+function slugifyRole(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[äàáâ]/g, "a")
+    .replace(/[öòóô]/g, "o")
+    .replace(/[üùúû]/g, "u")
+    .replace(/ß/g, "ss")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 /* ----------------------------- interne Helfer ----------------------------- */
