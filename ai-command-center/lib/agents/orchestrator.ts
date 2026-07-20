@@ -31,6 +31,7 @@ import type {
   AgentRole,
   ChatMessage,
   EmitFn,
+  MissionContext,
   QualityReport,
   TaskPlan,
 } from "./types";
@@ -38,7 +39,23 @@ import type {
 /** Harter Deckel ueber der Gesamtmission (Route erlaubt 300s). */
 const MISSION_TIMEOUT_MS = 270_000;
 
-export async function runMission(goal: string, emit: EmitFn): Promise<void> {
+/**
+ * Kontextzeile aus dem Branchen-Onboarding fuer den Commander-System-Prompt
+ * (Planung + Synthese). Ohne Kontext bleibt der Prompt unveraendert.
+ */
+function contextLine(context?: MissionContext): string {
+  if (!context) return "";
+  return (
+    `\nDer Kunde ist ein Unternehmen aus der Branche "${context.branche}" ` +
+    `mit ${context.groesse} Mitarbeitenden – passe Plan und Sprache darauf an.`
+  );
+}
+
+export async function runMission(
+  goal: string,
+  emit: EmitFn,
+  context?: MissionContext,
+): Promise<void> {
   const trimmedGoal = goal.trim();
   if (!trimmedGoal) {
     emit({ type: "error", agent: null, message: "Kein Missionsziel angegeben." });
@@ -59,7 +76,7 @@ export async function runMission(goal: string, emit: EmitFn): Promise<void> {
 
   try {
     const outcome = await Promise.race([
-      runMissionPhases(trimmedGoal, guardedEmit).then(() => "done" as const),
+      runMissionPhases(trimmedGoal, guardedEmit, context).then(() => "done" as const),
       timeout,
     ]);
 
@@ -83,12 +100,16 @@ export async function runMission(goal: string, emit: EmitFn): Promise<void> {
 
 /* ----------------------------- Missionsphasen ----------------------------- */
 
-async function runMissionPhases(goal: string, emit: EmitFn): Promise<void> {
+async function runMissionPhases(
+  goal: string,
+  emit: EmitFn,
+  context?: MissionContext,
+): Promise<void> {
   // 1. Commander plant
   emit(status("commander", "working", "Commander plant die Mission …"));
   const planCall = await callAgent(
     AGENTS.commander,
-    AGENTS.commander.systemPrompt,
+    AGENTS.commander.systemPrompt + contextLine(context),
     [{ role: "user", content: `Mission: ${goal}` }],
     () => JSON.stringify(demoPlan(goal)),
     emit,
@@ -166,7 +187,7 @@ async function runMissionPhases(goal: string, emit: EmitFn): Promise<void> {
   emit(status("commander", "working", "Commander erstellt das Gesamtergebnis …"));
   const synthesisCall = await callAgent(
     AGENTS.commander,
-    SYNTHESIS_PROMPT,
+    SYNTHESIS_PROMPT + contextLine(context),
     [
       {
         role: "user",

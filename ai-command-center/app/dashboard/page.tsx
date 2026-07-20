@@ -51,7 +51,26 @@ const PLAN_LEVEL: Record<Plan, number> = {
 
 const HISTORY_KEY = "acc-mission-history";
 const PLAN_KEY = "acc-plan";
+/** Lizenz-Token (30 Tage, HMAC-signiert) aus POST /api/license. */
+const LICENSE_TOKEN_KEY = "acc-license-token";
+/** Usage-Token (Tageszaehler), vom Server per SSE-Event "usage" erneuert. */
+const USAGE_TOKEN_KEY = "acc-usage-token";
+const BRANCHE_KEY = "acc-branche";
+const GROESSE_KEY = "acc-groesse";
 const MAX_LOG_LINES = 300;
+
+const BRANCHEN = [
+  "Marketing/Agentur",
+  "Handel/E-Commerce",
+  "Handwerk/Bau",
+  "Treuhand/Finanzen",
+  "Gesundheit",
+  "Software/IT",
+  "Gastronomie",
+  "Andere",
+] as const;
+
+const GROESSEN = ["Solo", "2-10", "11-50", "50+"] as const;
 
 interface HistoryEntry {
   goal: string;
@@ -71,6 +90,24 @@ function formatElapsed(ms: number): string {
   const m = String(Math.floor(total / 60)).padStart(2, "0");
   const s = String(total % 60).padStart(2, "0");
   return `${m}:${s}`;
+}
+
+/**
+ * Liest das Payload eines signierten Tokens ("base64url(JSON).hmac") zur
+ * ANZEIGE. Die HMAC-Pruefung passiert ausschliesslich serverseitig.
+ */
+function decodeTokenPayload(token: string): Record<string, unknown> | null {
+  const dot = token.lastIndexOf(".");
+  if (dot <= 0) return null;
+  try {
+    const b64 = token.slice(0, dot).replace(/-/g, "+").replace(/_/g, "/");
+    const parsed: unknown = JSON.parse(atob(b64));
+    return typeof parsed === "object" && parsed !== null
+      ? (parsed as Record<string, unknown>)
+      : null;
+  } catch {
+    return null;
+  }
 }
 
 /** Minimaler Markdown-Renderer (Ueberschriften, Listen, fett) ohne externe Lib. */

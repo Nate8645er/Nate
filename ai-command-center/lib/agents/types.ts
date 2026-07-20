@@ -9,6 +9,19 @@
 /** Unterstuetzte LLM-Provider. */
 export type Provider = "anthropic" | "openai" | "moonshot";
 
+/** Abo-Plaene. FREE gilt ohne (gueltiges) Lizenz-Token. */
+export type PlanId = "FREE" | "STARTER" | "PROFESSIONAL" | "BUSINESS";
+
+/**
+ * Unternehmenskontext aus dem Branchen-Onboarding.
+ * Wird optional mit POST /api/mission gesendet und vom Orchestrator
+ * als Kontextzeile an den Commander-System-Prompt gehaengt.
+ */
+export interface MissionContext {
+  branche: string;
+  groesse: string;
+}
+
 /** Rollen der vier Agenten im Team. */
 export type AgentRole = "commander" | "builder" | "analyst" | "quality";
 
@@ -52,6 +65,12 @@ export type AgentEvent =
   | { type: "score"; score: number; improvements: string[] }
   /** Finales, synthetisiertes Ergebnis (Markdown) */
   | { type: "final"; content: string }
+  /**
+   * Signiertes Usage-Token (stateless Tageszaehler). Der Client haelt das
+   * Token in localStorage und sendet es beim naechsten Start als Header
+   * "x-acc-usage" zurueck; der Server signiert es bei jeder Antwort neu.
+   */
+  | { type: "usage"; token: string; used: number; limit: number; plan: PlanId }
   /** Fehler eines Agenten oder der Pipeline */
   | { type: "error"; agent: AgentRole | null; message: string };
 
