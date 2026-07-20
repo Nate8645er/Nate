@@ -25,15 +25,26 @@ const AGENT_META: Record<AgentRole, { name: string; tagline: string }> = {
   builder: { name: "Builder", tagline: "Der Entwickler" },
   analyst: { name: "Analyst", tagline: "Der Stratege" },
   quality: { name: "Quality", tagline: "Der Pruefer" },
+  marketing: { name: "Marketing", tagline: "Kampagnen & Content" },
+  coding: { name: "Coding", tagline: "Software & Automation" },
+  research: { name: "Research", tagline: "Tiefenrecherche" },
+  business: { name: "Business", tagline: "Strategie & Finanzen" },
 };
 
-/** Zusatz-Einheiten ab PROFESSIONAL (Dummy-Status "bereit"). */
-const EXTRA_AGENTS = [
-  { name: "Marketing", tagline: "Kampagnen & Content" },
-  { name: "Coding", tagline: "Software & Automation" },
-  { name: "Research", tagline: "Tiefenrecherche" },
-  { name: "Business", tagline: "Strategie & Finanzen" },
-] as const;
+/** Kern-Team (immer aktiv). */
+const BASE_ROLES: readonly AgentRole[] = ["commander", "builder", "analyst", "quality"];
+/** Zusatz-Worker: ab PROFESSIONAL sichtbar/aktiv, darunter "Ab Professional". */
+const EXTRA_ROLES: readonly AgentRole[] = ["marketing", "research", "coding", "business"];
+/** Zusatz-Worker, die erst ab BUSINESS mitarbeiten. */
+const BUSINESS_ONLY_ROLES: ReadonlySet<AgentRole> = new Set(["coding", "business"]);
+
+const ALL_ROLES: readonly AgentRole[] = [...BASE_ROLES, ...EXTRA_ROLES];
+
+function initialStatuses(): Record<AgentRole, { status: AgentStatus; message: string }> {
+  return Object.fromEntries(
+    ALL_ROLES.map((role) => [role, { status: "idle", message: "Bereit" }]),
+  ) as Record<AgentRole, { status: AgentStatus; message: string }>;
+}
 
 const STATUS_LABEL: Record<AgentStatus, string> = {
   idle: "Bereit",
@@ -386,18 +397,18 @@ const AgentCard = memo(function AgentCard({
   );
 });
 
-/** Statische Zusatz-Einheit (PROFESSIONAL+): Dummy-Status "bereit". */
-const ExtraAgentCard = memo(function ExtraAgentCard({ name, tagline }: { name: string; tagline: string }) {
+/** Gesperrte Zusatz-Einheit (unterhalb PROFESSIONAL): Hinweis auf das Upgrade. */
+const LockedAgentCard = memo(function LockedAgentCard({ name, tagline }: { name: string; tagline: string }) {
   return (
-    <div className="hud-corners relative rounded-sm border border-[#ff8c2a]/20 bg-[#ff8c2a]/[0.02] p-4">
+    <div className="relative rounded-sm border border-[#ff8c2a]/15 bg-[#ff8c2a]/[0.02] p-4 opacity-70">
       <div className="flex items-center justify-between">
         <h3 className="font-semibold text-[#fff3e2]">{name}</h3>
-        <span aria-hidden className="h-2 w-2 rounded-full bg-[#7a6a4a]" />
+        <span aria-hidden className="h-2 w-2 rounded-full bg-[#5a4a35]" />
       </div>
       <p className="hud-label mt-0.5">{tagline}</p>
       <p className="mt-3 text-sm">
-        <span className="font-medium text-[#fff3e2]">Bereit</span>
-        <span className="text-[#c9b391]"> · Einheit im Standby</span>
+        <span className="font-medium text-[#8a7455]">Gesperrt</span>
+        <span className="text-[#c9b391]"> · Ab Professional</span>
       </p>
     </div>
   );
@@ -643,12 +654,7 @@ export default function DashboardPage() {
   const [groesse, setGroesse] = useState<string | null>(null);
   const [onboardingOpen, setOnboardingOpen] = useState(false);
   const [licenseOpen, setLicenseOpen] = useState(false);
-  const [statuses, setStatuses] = useState<Record<AgentRole, { status: AgentStatus; message: string }>>({
-    commander: { status: "idle", message: "Bereit" },
-    builder: { status: "idle", message: "Bereit" },
-    analyst: { status: "idle", message: "Bereit" },
-    quality: { status: "idle", message: "Bereit" },
-  });
+  const [statuses, setStatuses] = useState<Record<AgentRole, { status: AgentStatus; message: string }>>(initialStatuses);
   const [outputs, setOutputs] = useState<Partial<Record<AgentRole, string>>>({});
   const [score, setScore] = useState<number | null>(null);
   const [improvements, setImprovements] = useState<string[]>([]);
@@ -829,11 +835,26 @@ export default function DashboardPage() {
     setStartedAt(Date.now());
     eventTimesRef.current = [];
     totalEventsRef.current = 0;
+    // Fan-out bestimmt SERVERSEITIG das Lizenz-Token (licensedPlan) –
+    // Zusatz-Worker ohne Freischaltung bleiben sichtbar im Standby.
+    const licLevel = PLAN_LEVEL[licensedPlan];
+    const extraReset = (role: AgentRole): { status: AgentStatus; message: string } => {
+      const active = BUSINESS_ONLY_ROLES.has(role) ? licLevel >= 3 : licLevel >= 2;
+      if (active) return { status: "idle", message: "Wartet auf den Plan" };
+      return {
+        status: "idle",
+        message: BUSINESS_ONLY_ROLES.has(role) && licLevel >= 2 ? "Ab Business" : "Ab Professional",
+      };
+    };
     setStatuses({
       commander: { status: "working", message: "Analysiert die Aufgabe" },
       builder: { status: "idle", message: "Wartet auf den Plan" },
       analyst: { status: "idle", message: "Wartet auf den Plan" },
       quality: { status: "idle", message: "Wartet auf Ergebnisse" },
+      marketing: extraReset("marketing"),
+      research: extraReset("research"),
+      coding: extraReset("coding"),
+      business: extraReset("business"),
     });
 
     const ctx = { goal: missionGoal, score: null as number | null, final: "" };
@@ -885,7 +906,7 @@ export default function DashboardPage() {
       setRunning(false);
       abortRef.current = null;
     }
-  }, [goal, running, handleEvent, saveHistory, licenseToken, usageToken, branche, groesse]);
+  }, [goal, running, handleEvent, saveHistory, licenseToken, licensedPlan, usageToken, branche, groesse]);
 
   const stopMission = useCallback(() => abortRef.current?.abort(), []);
   const toggleOutput = useCallback(
@@ -898,7 +919,6 @@ export default function DashboardPage() {
     [statuses],
   );
   const missionCount = history.length + (running ? 1 : 0);
-  const agentRoles = useMemo(() => Object.keys(AGENT_META) as AgentRole[], []);
 
   return (
     <main className="relative min-h-screen bg-[#0b0a08] text-[#e8dcc8]">
@@ -1038,7 +1058,7 @@ export default function DashboardPage() {
           <section aria-label="Agenten-Status" className="mt-8">
             {fancy && <div className="hud-label mb-3">Einheiten // Agenten-Status</div>}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {agentRoles.map((role) => (
+              {BASE_ROLES.map((role) => (
                 <AgentCard
                   key={role}
                   role={role}
@@ -1052,8 +1072,24 @@ export default function DashboardPage() {
                   fancy={fancy}
                 />
               ))}
-              {showExtraAgents &&
-                EXTRA_AGENTS.map((a) => <ExtraAgentCard key={a.name} name={a.name} tagline={a.tagline} />)}
+              {EXTRA_ROLES.map((role) =>
+                showExtraAgents ? (
+                  <AgentCard
+                    key={role}
+                    role={role}
+                    name={AGENT_META[role].name}
+                    tagline={AGENT_META[role].tagline}
+                    status={statuses[role].status}
+                    message={statuses[role].message}
+                    hasOutput={Boolean(outputs[role])}
+                    isOpen={openOutput === role}
+                    onToggle={toggleOutput}
+                    fancy={fancy}
+                  />
+                ) : (
+                  <LockedAgentCard key={role} name={AGENT_META[role].name} tagline={AGENT_META[role].tagline} />
+                ),
+              )}
             </div>
           </section>
 

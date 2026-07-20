@@ -85,13 +85,16 @@ export async function POST(request: Request): Promise<Response> {
           });
           return;
         }
-        await runMission(missionGoal, emit, context);
+        // Plan aus dem validierten Lizenz-Token steuert den Agenten-Fan-out.
+        await runMission(missionGoal, emit, context, plan);
       } catch (err) {
         emit({
           type: "error",
           agent: null,
           message:
-            err instanceof Error ? err.message : "Unbekannter Serverfehler.",
+            // Interne Details nur serverseitig loggen, Client erhaelt generische Meldung.
+            (console.error("[mission] Serverfehler:", err),
+            "Die Mission konnte nicht abgeschlossen werden. Bitte erneut versuchen."),
         });
       } finally {
         if (!closed) {

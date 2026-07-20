@@ -65,7 +65,16 @@ const LICENSE_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const DEV_FALLBACK_SECRET = "acc-dev-secret-nicht-fuer-produktion";
 
 function secret(): string {
-  return process.env.LICENSE_SECRET || DEV_FALLBACK_SECRET;
+  const s = process.env.LICENSE_SECRET;
+  if (!s) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error(
+        "LICENSE_SECRET ist nicht gesetzt. In Produktion ist der Betrieb ohne eigenes Secret nicht erlaubt.",
+      );
+    }
+    return DEV_FALLBACK_SECRET;
+  }
+  return s;
 }
 
 /* ------------------------------ HMAC-Helfer ------------------------------- */

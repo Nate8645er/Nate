@@ -22,8 +22,19 @@ export interface MissionContext {
   groesse: string;
 }
 
-/** Rollen der vier Agenten im Team. */
-export type AgentRole = "commander" | "builder" | "analyst" | "quality";
+/** Rollen der Agenten im Team (Kern + plan-abhaengige Zusatz-Worker). */
+export type AgentRole =
+  | "commander"
+  | "builder"
+  | "analyst"
+  | "quality"
+  | "marketing"
+  | "coding"
+  | "research"
+  | "business";
+
+/** Ausfuehrende Worker-Rollen (alle ausser Commander und Quality). */
+export type WorkerRole = Exclude<AgentRole, "commander" | "quality">;
 
 /** Konfiguration eines einzelnen Agenten. */
 export interface AgentConfig {
@@ -38,11 +49,11 @@ export interface AgentConfig {
   systemPrompt: string;
 }
 
-/** Vom Commander erzeugter Plan: je eine Teilaufgabe fuer Builder und Analyst. */
-export interface TaskPlan {
-  builderTask: string;
-  analystTask: string;
-}
+/**
+ * Vom Commander erzeugter Plan: je eine Teilaufgabe pro aktivem Worker.
+ * Welche Worker aktiv sind, bestimmt der Abo-Plan (WORKERS_BY_PLAN in team.ts).
+ */
+export type TaskPlan = Partial<Record<WorkerRole, string>>;
 
 /** Ergebnis der Quality-Pruefung. */
 export interface QualityReport {
