@@ -121,7 +121,15 @@ export default function KommandoPage() {
   /* ?befehl=/offerte aus der Skills-Seite -> Vorlage vorbefüllen. */
   useEffect(() => {
     try {
-      const b = new URLSearchParams(window.location.search).get("befehl");
+      const params = new URLSearchParams(window.location.search);
+      const b = params.get("befehl");
+      const t = params.get("text");
+      if (t?.trim()) {
+        // Vorbefüllter Befehl aus einem anderen Bereich (z. B. Kunden-Modul).
+        setActiveId(null);
+        setInput(t.trim().slice(0, 2000));
+        return;
+      }
       if (!b) return;
       const skill = SKILLS.find((s) => s.befehl === b);
       if (skill) {

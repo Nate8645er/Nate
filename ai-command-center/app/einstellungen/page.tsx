@@ -36,6 +36,7 @@ const DATEN_KEYS = [
   "acc-workflows",
   "acc-chat-conversations",
   "acc-benutzer",
+  "acc-kunden",
 ];
 
 export default function EinstellungenPage() {

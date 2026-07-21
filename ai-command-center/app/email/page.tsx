@@ -50,6 +50,19 @@ export default function EmailPage() {
     } catch {
       /* Storage nicht lesbar */
     }
+    // Verbindung aus dem Kunden-Modul: ?an=empfaenger&auftrag=... vorbefüllen.
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const an = params.get("an");
+      const auftragParam = params.get("auftrag");
+      if (an) setEmpfaenger(an.slice(0, 120));
+      if (auftragParam) {
+        setModus("neu");
+        setAuftrag(auftragParam.slice(0, 2000));
+      }
+    } catch {
+      /* Query nicht lesbar */
+    }
   }, []);
 
   const signaturSpeichern = (v: string) => {

@@ -220,6 +220,27 @@ export const SKILLS: Skill[] = [
       "Fortschritte, Probleme mit Lösungsvorschlag, nächste Woche): " +
       "[Stichpunkte der Woche einfügen]",
   },
+  {
+    befehl: "/rechnung",
+    name: "Rechnung erstellen",
+    beschreibung: "Professionelle Rechnung mit Positionen, MwSt und Zahlungsfrist.",
+    kategorie: "Planung & Büro",
+    vorlage:
+      "Erstelle eine professionelle, versandfertige Rechnung als Dokument: " +
+      "Rechnungssteller: [Ihre Firma, Adresse]. Kunde: [Name, Firma, Adresse]. " +
+      "Positionen: [Leistung 1: Betrag CHF; Leistung 2: Betrag CHF]. " +
+      "MwSt: [8.1% / keine]. Zahlungsfrist: [30] Tage. Rechnungsnummer: [Nr].",
+  },
+  {
+    befehl: "/mahnung",
+    name: "Zahlungserinnerung",
+    beschreibung: "Freundliche Erinnerung bis 2. Mahnung – wirksam, ohne Kunden zu verlieren.",
+    kategorie: "Planung & Büro",
+    vorlage:
+      "Erstelle eine [freundliche Zahlungserinnerung / 1. Mahnung / 2. Mahnung] " +
+      "für: Kunde [Name], Rechnung [Nr] über [Betrag] CHF, fällig seit [Datum]. " +
+      "Ton: bestimmt aber beziehungserhaltend. Mit Betreff, versandfertig.",
+  },
   /* ---------- Informatik & Code ---------- */
   {
     befehl: "/code",
