@@ -21,7 +21,8 @@ export type BereichId =
   | "benutzer"
   | "einstellungen"
   | "integrationen"
-  | "status";
+  | "status"
+  | "sicherheit";
 
 const PRIMAER: { id: BereichId; label: string; href: string }[] = [
   { id: "missionen", label: "Missionen", href: "/dashboard" },
@@ -40,6 +41,7 @@ const MEHR: { id: BereichId; label: string; href: string }[] = [
   { id: "einstellungen", label: "Einstellungen", href: "/einstellungen" },
   { id: "integrationen", label: "Integrationen", href: "/integrationen" },
   { id: "status", label: "System-Status", href: "/status" },
+  { id: "sicherheit", label: "Sicherheit", href: "/sicherheit" },
 ];
 
 export default function WorkNav({
