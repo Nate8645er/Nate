@@ -11,6 +11,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AGENTS, WORKERS_BY_PLAN, WORKFORCE_BY_PLAN, MAX_DYN_AGENTS } from "@/lib/agents/team";
 import type { AgentRole, PlanId } from "@/lib/agents/types";
+import WorkNav from "@/app/components/WorkNav";
 
 export const metadata: Metadata = {
   title: "Ihre Belegschaft | AI Command Center",
@@ -40,13 +41,7 @@ export default function TeamPage() {
             <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" />
             <span className="hud-label">AI Command Center</span>
           </div>
-          <nav className="flex items-center gap-4 text-sm text-zinc-400" aria-label="Bereiche">
-            <Link href="/dashboard" className="hover:text-[#ffb35c]">Missionen</Link>
-            <Link href="/chat" className="hover:text-[#ffb35c]">Kommando</Link>
-            <Link href="/workflows" className="hidden hover:text-[#ffb35c] sm:inline">Autopilot</Link>
-            <Link href="/berichte" className="hidden hover:text-[#ffb35c] sm:inline">Berichte</Link>
-            <span className="text-[#ffb35c]">Team</span>
-          </nav>
+          <WorkNav aktiv="team" variante="dunkel" />
         </header>
 
         <div className="pt-10">

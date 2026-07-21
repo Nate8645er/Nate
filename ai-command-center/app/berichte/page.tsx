@@ -12,6 +12,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { ArtifactFile } from "@/lib/agents/types";
+import WorkNav from "@/app/components/WorkNav";
 
 const HISTORY_KEY = "acc-mission-history";
 const KOMMANDOS_KEY = "acc-kommandos";
@@ -118,13 +119,7 @@ export default function BerichtePage() {
             <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" />
             <span className="hud-label">AI Command Center</span>
           </div>
-          <nav className="flex items-center gap-4 text-sm text-zinc-400" aria-label="Bereiche">
-            <Link href="/dashboard" className="hover:text-[#ffb35c]">Missionen</Link>
-            <Link href="/chat" className="hover:text-[#ffb35c]">Kommando</Link>
-            <Link href="/workflows" className="hidden hover:text-[#ffb35c] sm:inline">Autopilot</Link>
-            <span className="text-[#ffb35c]">Berichte</span>
-            <Link href="/team" className="hidden hover:text-[#ffb35c] sm:inline">Team</Link>
-          </nav>
+          <WorkNav aktiv="berichte" variante="dunkel" />
         </header>
 
         <div className="pt-10">

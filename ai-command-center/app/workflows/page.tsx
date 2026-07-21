@@ -16,6 +16,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import WorkNav from "@/app/components/WorkNav";
 
 const WORKFLOWS_KEY = "acc-workflows";
 const LICENSE_TOKEN_KEY = "acc-license-token";
@@ -241,13 +242,7 @@ export default function WorkflowsPage() {
             <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" />
             <span className="hud-label">AI Command Center</span>
           </div>
-          <nav className="flex items-center gap-4 text-sm text-zinc-400" aria-label="Bereiche">
-            <Link href="/dashboard" className="hover:text-[#ffb35c]">Missionen</Link>
-            <Link href="/chat" className="hover:text-[#ffb35c]">Kommando</Link>
-            <span className="text-[#ffb35c]">Autopilot</span>
-            <Link href="/berichte" className="hidden hover:text-[#ffb35c] sm:inline">Berichte</Link>
-            <Link href="/team" className="hidden hover:text-[#ffb35c] sm:inline">Team</Link>
-          </nav>
+          <WorkNav aktiv="autopilot" variante="dunkel" />
         </header>
 
         <div className="pt-10">

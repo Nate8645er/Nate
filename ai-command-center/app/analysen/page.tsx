@@ -11,6 +11,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import WorkNav from "@/app/components/WorkNav";
 
 const HISTORY_KEY = "acc-mission-history";
 const KOMMANDOS_KEY = "acc-kommandos";
@@ -87,13 +88,7 @@ export default function AnalysenPage() {
             <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f]" />
             <span className="text-sm font-bold">AI Command Center</span>
           </div>
-          <nav className="flex items-center gap-4 text-sm text-[#6f6557]" aria-label="Bereiche">
-            <Link href="/dashboard" className="hover:text-[#c25e0e]">Missionen</Link>
-            <Link href="/chat" className="hover:text-[#c25e0e]">Kommando</Link>
-            <span className="font-semibold text-[#c25e0e]">Analysen</span>
-            <Link href="/benutzer" className="hidden hover:text-[#c25e0e] sm:inline">Benutzer</Link>
-            <Link href="/einstellungen" className="hidden hover:text-[#c25e0e] sm:inline">Einstellungen</Link>
-          </nav>
+          <WorkNav aktiv="analysen" variante="hell" />
         </header>
 
         <div className="pt-10">

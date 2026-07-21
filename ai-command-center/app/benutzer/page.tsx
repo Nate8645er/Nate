@@ -11,6 +11,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import WorkNav from "@/app/components/WorkNav";
 
 const BENUTZER_KEY = "acc-benutzer";
 
@@ -74,13 +75,7 @@ export default function BenutzerPage() {
             <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f]" />
             <span className="text-sm font-bold">AI Command Center</span>
           </div>
-          <nav className="flex items-center gap-4 text-sm text-[#6f6557]" aria-label="Bereiche">
-            <Link href="/dashboard" className="hover:text-[#c25e0e]">Missionen</Link>
-            <Link href="/chat" className="hover:text-[#c25e0e]">Kommando</Link>
-            <Link href="/analysen" className="hover:text-[#c25e0e]">Analysen</Link>
-            <span className="font-semibold text-[#c25e0e]">Benutzer</span>
-            <Link href="/einstellungen" className="hidden hover:text-[#c25e0e] sm:inline">Einstellungen</Link>
-          </nav>
+          <WorkNav aktiv="benutzer" variante="hell" />
         </header>
 
         <div className="pt-10">

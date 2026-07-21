@@ -18,6 +18,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import WorkNav from "@/app/components/WorkNav";
 
 const LICENSE_TOKEN_KEY = "acc-license-token";
 const USAGE_TOKEN_KEY = "acc-usage-token";
@@ -154,13 +155,7 @@ export default function EmailPage() {
             <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" />
             <span className="hud-label">AI Command Center</span>
           </div>
-          <nav className="flex items-center gap-4 text-sm text-zinc-400" aria-label="Bereiche">
-            <Link href="/dashboard" className="hover:text-[#ffb35c]">Missionen</Link>
-            <Link href="/chat" className="hover:text-[#ffb35c]">Kommando</Link>
-            <span className="text-[#ffb35c]">E-Mail</span>
-            <Link href="/workflows" className="hidden hover:text-[#ffb35c] sm:inline">Autopilot</Link>
-            <Link href="/berichte" className="hidden hover:text-[#ffb35c] sm:inline">Berichte</Link>
-          </nav>
+          <WorkNav aktiv="email" variante="dunkel" />
         </header>
 
         <div className="pt-10">

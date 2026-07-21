@@ -16,6 +16,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import WorkNav from "@/app/components/WorkNav";
 
 const KUNDEN_KEY = "acc-kunden";
 
@@ -106,13 +107,7 @@ export default function KundenPage() {
             <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f]" />
             <span className="text-sm font-bold">AI Command Center</span>
           </div>
-          <nav className="flex items-center gap-4 text-sm text-[#6f6557]" aria-label="Bereiche">
-            <Link href="/dashboard" className="hover:text-[#c25e0e]">Missionen</Link>
-            <Link href="/chat" className="hover:text-[#c25e0e]">Kommando</Link>
-            <span className="font-semibold text-[#c25e0e]">Kunden</span>
-            <Link href="/email" className="hidden hover:text-[#c25e0e] sm:inline">E-Mail</Link>
-            <Link href="/analysen" className="hidden hover:text-[#c25e0e] sm:inline">Analysen</Link>
-          </nav>
+          <WorkNav aktiv="kunden" variante="hell" />
         </header>
 
         <div className="pt-10">

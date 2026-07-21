@@ -9,6 +9,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SKILLS, SKILL_KATEGORIEN } from "@/lib/skills";
+import WorkNav from "@/app/components/WorkNav";
 
 export const metadata: Metadata = {
   title: "Fähigkeiten | AI Command Center",
@@ -26,13 +27,7 @@ export default function FaehigkeitenPage() {
             <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" />
             <span className="hud-label">AI Command Center</span>
           </div>
-          <nav className="flex items-center gap-4 text-sm text-zinc-400" aria-label="Bereiche">
-            <Link href="/dashboard" className="hover:text-[#ffb35c]">Missionen</Link>
-            <Link href="/chat" className="hover:text-[#ffb35c]">Kommando</Link>
-            <span className="text-[#ffb35c]">Skills</span>
-            <Link href="/team" className="hidden hover:text-[#ffb35c] sm:inline">Team</Link>
-            <Link href="/berichte" className="hidden hover:text-[#ffb35c] sm:inline">Berichte</Link>
-          </nav>
+          <WorkNav aktiv="skills" variante="dunkel" />
         </header>
 
         <div className="pt-10">

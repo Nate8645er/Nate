@@ -20,6 +20,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ArtifactFile } from "@/lib/agents/types";
 import { SKILLS, skillSuche } from "@/lib/skills";
+import WorkNav from "@/app/components/WorkNav";
 
 const KOMMANDOS_KEY = "acc-kommandos";
 const LICENSE_TOKEN_KEY = "acc-license-token";
@@ -385,14 +386,7 @@ export default function KommandoPage() {
             </button>
             <h1 className="text-sm font-bold tracking-tight">Kommandozentrale</h1>
           </div>
-          <nav className="flex items-center gap-4 text-sm text-[#6f6557]" aria-label="Bereiche">
-            <Link href="/dashboard" className="hover:text-[#c25e0e]">Missionen</Link>
-            <span className="font-semibold text-[#c25e0e]">Kommando</span>
-            <Link href="/faehigkeiten" className="hover:text-[#c25e0e]">Skills</Link>
-            <Link href="/email" className="hidden hover:text-[#c25e0e] sm:inline">E-Mail</Link>
-            <Link href="/workflows" className="hidden hover:text-[#c25e0e] sm:inline">Autopilot</Link>
-            <Link href="/berichte" className="hidden hover:text-[#c25e0e] md:inline">Berichte</Link>
-          </nav>
+          <WorkNav aktiv="kommando" variante="hell" />
         </header>
 
         <main className="flex-1 overflow-y-auto px-4 py-8">

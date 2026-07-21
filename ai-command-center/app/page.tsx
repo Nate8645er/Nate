@@ -540,6 +540,78 @@ export default function Home() {
           </div>
         </section>
 
+        {/* 3b) Für Unternehmen: Sicherheit, Zahlen, Enterprise-Kontakt */}
+        <section id="unternehmen" className="scroll-mt-24 border-t border-[#ff8c2a]/10 px-6 py-24">
+          <div className="mx-auto max-w-6xl">
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="hud-label mb-4">Für Unternehmen gebaut</p>
+              <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+                Professionell. Sicher. Sofort einsatzbereit.
+              </h2>
+            </div>
+
+            {/* Zahlenleiste */}
+            <div className="mt-14 grid grid-cols-2 gap-6 text-center lg:grid-cols-4">
+              {[
+                ["13", "Arbeitsbereiche", "Vom CRM bis zur Kommandozentrale"],
+                ["24", "Skills", "Geprüfte Befehle für jede Abteilung"],
+                ["3", "KI-Anbieter", "Ausfallsicher mit Fallback-Kette"],
+                ["1000", "Mitarbeitende", "Belegschaft im Enterprise-Ausbau"],
+              ].map(([wert, label, note]) => (
+                <div key={label} className="rounded-2xl border border-[#ff8c2a]/15 bg-[#0d0c09] p-6">
+                  <p className="bg-gradient-to-r from-[#ffb066] to-[#ff5f1f] bg-clip-text text-4xl font-bold text-transparent">
+                    {wert}
+                  </p>
+                  <p className="mt-1 font-semibold text-white">{label}</p>
+                  <p className="mt-1 text-xs text-zinc-500">{note}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Sicherheits-Argumente */}
+            <div className="mt-8 grid gap-6 sm:grid-cols-3">
+              {[
+                [
+                  "Datensparsamkeit ab Werk",
+                  "Ihre Arbeitsdaten bleiben in Ihrem Browser statt auf fremden Servern – mit Export und Löschung per Klick. Das ist gelebter Datenschutz, nicht nur ein Versprechen.",
+                ],
+                [
+                  "Fälschungssichere Lizenzen",
+                  "Signierte Lizenzschlüssel und Tageslimits nach Industriestandard (HMAC-SHA256). Verschlüsselte Übertragung auf jedem Weg.",
+                ],
+                [
+                  "Ehrliche Enterprise-Roadmap",
+                  "Was live ist, ist live. Was pro Kunde eingerichtet wird (ERP/CRM-Anbindung, SSO, On-Premise), sagen wir offen – und setzen es gemeinsam mit Ihnen um.",
+                ],
+              ].map(([titel, text]) => (
+                <div key={titel} className="rounded-2xl border border-[#ff8c2a]/15 bg-[#0d0c09] p-6">
+                  <h3 className="font-semibold text-white">{titel}</h3>
+                  <p className="mt-2 text-sm leading-6 text-zinc-400">{text}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Enterprise-Kontakt */}
+            <div className="mt-10 flex flex-col items-center justify-between gap-4 rounded-2xl border border-[#ffd257]/30 bg-[#ffd257]/[0.04] p-8 sm:flex-row">
+              <div>
+                <h3 className="text-lg font-semibold text-white">
+                  Grösseres Vorhaben? Sprechen wir darüber.
+                </h3>
+                <p className="mt-1 text-sm text-zinc-400">
+                  Enterprise ab 8&apos;900 CHF/Monat: eigene Integrationen, private Umgebung,
+                  persönliche Einrichtung und Begleitung.
+                </p>
+              </div>
+              <a
+                href="mailto:beamswiss@gmail.com?subject=Enterprise-Anfrage%20AI%20Command%20Center"
+                className="shop-btn shrink-0 rounded-xl border border-[#ffd257]/50 bg-[#ffd257]/10 px-6 py-3 text-sm font-bold text-[#ffd257] hover:bg-[#ffd257]/20"
+              >
+                Gespräch vereinbaren
+              </a>
+            </div>
+          </div>
+        </section>
+
         {/* 4) Vertrauens-Leiste */}
         <section className="border-t border-[#ff8c2a]/10 px-6 py-16">
           <div className="mx-auto grid max-w-6xl gap-8 sm:grid-cols-2 lg:grid-cols-4">
