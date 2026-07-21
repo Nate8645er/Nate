@@ -1,0 +1,45 @@
+{%- comment -%}
+  Vertrauens-Band als laufende Marquee-Zeile.
+  Der Inhalt wird fuer die Endlos-Schleife dupliziert (aria-hidden),
+  Animation pausiert bei Hover, reduced-motion stoppt sie komplett.
+{%- endcomment -%}
+<section class="acc-marquee" aria-label="Vertrauensmerkmale">
+  <div class="acc-marquee__track">
+    {%- for i in (1..2) -%}
+      <div class="acc-marquee__group" {% if i == 2 %}aria-hidden="true"{% endif %}>
+        {%- for block in section.blocks -%}
+          <span class="acc-marquee__item" {{ block.shopify_attributes }}>{{ block.settings.text | escape }}</span>
+        {%- endfor -%}
+      </div>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Vertrauens-Band",
+  "tag": "section",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Eintrag",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text", "default": "Schweizer Anbieter" }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "Vertrauens-Band",
+      "blocks": [
+        { "type": "item", "settings": { "text": "Schweizer Anbieter" } },
+        { "type": "item", "settings": { "text": "Monatlich kuendbar" } },
+        { "type": "item", "settings": { "text": "Quality-Score in jeder Mission" } },
+        { "type": "item", "settings": { "text": "Demo gratis testen" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

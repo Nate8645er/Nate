@@ -1,13 +1,21 @@
+{%- comment -%}
+  FAQ v2: details/summary mit rotierendem SVG-Chevron (rein CSS).
+{%- endcomment -%}
 <section class="acc-section acc-faq-section" id="faq">
   <div class="acc-wrap">
-    <div class="acc-shead">
+    <div class="acc-shead acc-reveal">
       <p class="acc-micro">{{ section.settings.eyebrow | escape }}</p>
       <h2>{{ section.settings.heading | escape }}</h2>
     </div>
-    <div class="acc-faq">
+    <div class="acc-faq acc-reveal">
       {%- for block in section.blocks -%}
         <details {{ block.shopify_attributes }}{% if forloop.first %} open{% endif %}>
-          <summary>{{ block.settings.question | escape }}</summary>
+          <summary>
+            {{ block.settings.question | escape }}
+            <svg class="acc-faq__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </summary>
           <div class="acc-faq__a">{{ block.settings.answer }}</div>
         </details>
       {%- endfor -%}

@@ -2,7 +2,11 @@
   <div class="acc-wrap acc-page">
     <p class="acc-micro">// {{ page.title | escape | upcase }}</p>
     <h1>{{ page.title | escape }}</h1>
-    <div class="acc-rte">{{ page.content }}</div>
+    <div class="acc-panel acc-corner" style="padding: var(--sp-6);">
+      <span class="acc-c1" aria-hidden="true"></span>
+      <span class="acc-c2" aria-hidden="true"></span>
+      <div class="acc-rte">{{ page.content }}</div>
+    </div>
   </div>
 </section>
 

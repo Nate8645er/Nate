@@ -1,15 +1,37 @@
-<section class="acc-section acc-vorteile">
+{%- comment -%}
+  Vorteile v2: 6 Karten mit Inline-SVG-Icons, Hover-Lift und
+  gestaffeltem Scroll-Reveal (Delay via inline transition-delay).
+{%- endcomment -%}
+<section class="acc-section acc-vorteile" id="vorteile">
   <div class="acc-wrap">
-    <div class="acc-shead">
+    <div class="acc-shead acc-reveal">
       <p class="acc-micro">{{ section.settings.eyebrow | escape }}</p>
       <h2>{{ section.settings.heading | escape }}</h2>
     </div>
-    <div class="acc-grid4">
+    <div class="acc-grid3">
       {%- for block in section.blocks -%}
-        <div class="acc-panel acc-corner acc-usp" {{ block.shopify_attributes }}>
+        {%- assign d = forloop.index0 | modulo: 3 | times: 90 -%}
+        <div class="acc-panel acc-corner acc-usp acc-reveal" style="transition-delay: {{ d }}ms;" {{ block.shopify_attributes }}>
           <span class="acc-c1" aria-hidden="true"></span>
           <span class="acc-c2" aria-hidden="true"></span>
-          <div class="acc-usp__num">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</div>
+          <div class="acc-usp__icon" aria-hidden="true">
+            {%- case block.settings.icon -%}
+              {%- when 'blitz' -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>
+              {%- when 'schild' -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.6-3 8.4-7 10-4-1.6-7-5.4-7-10V6l7-3z"/><path d="m9 12 2 2 4-4"/></svg>
+              {%- when 'team' -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="17" cy="9" r="2.4"/><path d="M15.8 15.2c2.3.2 4 1.7 4.7 4.3"/></svg>
+              {%- when 'chart' -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4"/><path d="M4 20h16"/><path d="m7 14 4-4 3 3 5-6"/></svg>
+              {%- when 'uhr' -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/></svg>
+              {%- when 'stufen' -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4v-4h4v-4h4V8h4"/><path d="m17 5 3 3-3 3"/></svg>
+              {%- else -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="m8.5 12 2.5 2.5 5-5"/></svg>
+            {%- endcase -%}
+          </div>
           <h3>{{ block.settings.title | escape }}</h3>
           <p>{{ block.settings.text | escape }}</p>
         </div>
@@ -24,27 +46,44 @@
   "tag": "section",
   "settings": [
     { "type": "text", "id": "eyebrow", "label": "Micro-Label", "default": "// WARUM AI COMMAND CENTER" },
-    { "type": "text", "id": "heading", "label": "Ueberschrift", "default": "Vier Vorteile, ein Abo" }
+    { "type": "text", "id": "heading", "label": "Ueberschrift", "default": "Sechs Gruende fuer Ihr Kommando" }
   ],
   "blocks": [
     {
       "type": "usp",
       "name": "Vorteil",
       "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "default": "blitz",
+          "options": [
+            { "value": "blitz", "label": "Blitz" },
+            { "value": "schild", "label": "Schild" },
+            { "value": "team", "label": "Team" },
+            { "value": "chart", "label": "Diagramm" },
+            { "value": "uhr", "label": "Uhr" },
+            { "value": "stufen", "label": "Stufen" },
+            { "value": "check", "label": "Check" }
+          ]
+        },
         { "type": "text", "id": "title", "label": "Titel", "default": "Sofort startklar" },
         { "type": "textarea", "id": "text", "label": "Text", "default": "In Tagen live statt in Monaten. Wir liefern fertige KI-Prozesse, keine Baustellen." }
       ]
     }
   ],
-  "max_blocks": 8,
+  "max_blocks": 9,
   "presets": [
     {
       "name": "Vorteile",
       "blocks": [
-        { "type": "usp", "settings": { "title": "Sofort startklar", "text": "In Tagen live statt in Monaten. Fertige KI-Prozesse, keine Baustellen." } },
-        { "type": "usp", "settings": { "title": "Planbare Kosten", "text": "Ein fixer Monatspreis statt teurer Festanstellungen. Monatlich kuendbar." } },
-        { "type": "usp", "settings": { "title": "Ganzes Team inklusive", "text": "Strategie, Automatisierung und Umsetzung aus einer Hand, ohne Recruiting." } },
-        { "type": "usp", "settings": { "title": "Skaliert mit Ihnen", "text": "Abo hoch- oder runterstufen, wann immer Ihr Bedarf sich aendert." } }
+        { "type": "usp", "settings": { "icon": "blitz", "title": "Sofort startklar", "text": "In Tagen live statt in Monaten. Fertige KI-Prozesse, keine Baustellen." } },
+        { "type": "usp", "settings": { "icon": "chart", "title": "Planbare Kosten", "text": "Ein fixer Monatspreis statt teurer Festanstellungen. Monatlich kuendbar." } },
+        { "type": "usp", "settings": { "icon": "team", "title": "Ganzes Team inklusive", "text": "Strategie, Automatisierung und Umsetzung aus einer Hand, ohne Recruiting." } },
+        { "type": "usp", "settings": { "icon": "stufen", "title": "Skaliert mit Ihnen", "text": "Abo hoch- oder runterstufen, wann immer Ihr Bedarf sich aendert." } },
+        { "type": "usp", "settings": { "icon": "schild", "title": "Quality-Score inklusive", "text": "Jede Mission wird geprueft und bewertet, bevor Sie das Ergebnis erhalten." } },
+        { "type": "usp", "settings": { "icon": "uhr", "title": "Arbeitet rund um die Uhr", "text": "Ihre KI-Abteilung kennt keine Buerozeiten. Missionen laufen auch nachts." } }
       ]
     }
   ]

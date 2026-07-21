@@ -1,0 +1,95 @@
+{%- comment -%}
+  Statische Vergleichstabelle der Abostufen.
+  Zeilen: Missionen/Tag, Team-Groesse, Dateien+Code, Dokumente,
+  Organisation, Support. Spalten: FREE bis ENTERPRISE.
+  PRO ist als beliebteste Stufe leicht hervorgehoben.
+{%- endcomment -%}
+<section class="acc-section acc-vergleich">
+  <div class="acc-wrap">
+    <div class="acc-shead acc-reveal">
+      <p class="acc-micro">{{ section.settings.eyebrow | escape }}</p>
+      <h2>{{ section.settings.heading | escape }}</h2>
+    </div>
+    <div class="acc-panel acc-corner acc-reveal" style="padding: var(--sp-5);">
+      <span class="acc-c1" aria-hidden="true"></span>
+      <span class="acc-c2" aria-hidden="true"></span>
+      <div class="acc-compare">
+        <table>
+          <caption class="acc-micro" style="caption-side: bottom; padding-top: var(--sp-4); text-align: left;">Alle Abos monatlich kuendbar. PRO ist die beliebteste Stufe.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Leistung</th>
+              <th scope="col">Free</th>
+              <th scope="col">Starter</th>
+              <th scope="col" class="acc-col-hi">Pro</th>
+              <th scope="col">Business</th>
+              <th scope="col">Enterprise</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Missionen pro Tag</td>
+              <td>3</td>
+              <td>15</td>
+              <td class="acc-col-hi">50</td>
+              <td>200</td>
+              <td>Unbegrenzt</td>
+            </tr>
+            <tr>
+              <td>Team-Groesse (Agenten)</td>
+              <td>2</td>
+              <td>5</td>
+              <td class="acc-col-hi">10</td>
+              <td>25</td>
+              <td>Unbegrenzt</td>
+            </tr>
+            <tr>
+              <td>Dateien und Code</td>
+              <td><span class="acc-dash" aria-label="nicht enthalten">&#10005;</span></td>
+              <td><span class="acc-check">&#10003;</span></td>
+              <td class="acc-col-hi"><span class="acc-check">&#10003;</span></td>
+              <td><span class="acc-check">&#10003;</span></td>
+              <td><span class="acc-check">&#10003;</span></td>
+            </tr>
+            <tr>
+              <td>Dokumente (PDF, Word, Excel)</td>
+              <td><span class="acc-dash" aria-label="nicht enthalten">&#10005;</span></td>
+              <td><span class="acc-dash" aria-label="nicht enthalten">&#10005;</span></td>
+              <td class="acc-col-hi"><span class="acc-check">&#10003;</span></td>
+              <td><span class="acc-check">&#10003;</span></td>
+              <td><span class="acc-check">&#10003;</span></td>
+            </tr>
+            <tr>
+              <td>Organisation (Projekte, Rollen)</td>
+              <td><span class="acc-dash" aria-label="nicht enthalten">&#10005;</span></td>
+              <td><span class="acc-dash" aria-label="nicht enthalten">&#10005;</span></td>
+              <td class="acc-col-hi"><span class="acc-dash" aria-label="nicht enthalten">&#10005;</span></td>
+              <td><span class="acc-check">&#10003;</span></td>
+              <td><span class="acc-check">&#10003;</span></td>
+            </tr>
+            <tr>
+              <td>Support</td>
+              <td>Community</td>
+              <td>E-Mail</td>
+              <td class="acc-col-hi">Priorisiert</td>
+              <td>Persoenlich</td>
+              <td>Dediziert</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Abo-Vergleich",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Micro-Label", "default": "// LEISTUNGSVERGLEICH" },
+    { "type": "text", "id": "heading", "label": "Ueberschrift", "default": "Alle Stufen im Vergleich" }
+  ],
+  "presets": [{ "name": "Abo-Vergleich" }]
+}
+{% endschema %}

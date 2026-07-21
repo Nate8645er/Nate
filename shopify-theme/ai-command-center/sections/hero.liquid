@@ -1,16 +1,68 @@
+{%- comment -%}
+  Hero v2: volle Hoehe, zwei langsame Glow-Blobs, Headline mit
+  Wort-fuer-Wort-Fade-in (rein CSS, Delays inline), zwei CTAs und
+  animiertes HUD-Produktmotiv (Score-Ring + 4 Agenten-Chips).
+{%- endcomment -%}
 <section class="acc-hero">
   <div class="acc-hero__grid" aria-hidden="true"></div>
+  <div class="acc-blob acc-blob--1" aria-hidden="true"></div>
+  <div class="acc-blob acc-blob--2" aria-hidden="true"></div>
+
   <div class="acc-wrap acc-hero__inner">
-    <p class="acc-micro">{{ section.settings.eyebrow | escape }}</p>
-    <h1>{{ section.settings.headline }}</h1>
-    <p class="acc-hero__sub">{{ section.settings.subheadline | escape }}</p>
-    <div class="acc-hero__cta">
-      {%- if section.settings.cta_label != blank -%}
-        <a class="acc-btn" href="{{ section.settings.cta_link | default: routes.all_products_collection_url }}">{{ section.settings.cta_label | escape }}</a>
-      {%- endif -%}
-      {%- if section.settings.cta2_label != blank -%}
-        <a class="acc-btn acc-btn--ghost" href="{{ section.settings.cta2_link | default: '#faq' }}">{{ section.settings.cta2_label | escape }}</a>
-      {%- endif -%}
+    <div class="acc-hero__copy">
+      <p class="acc-micro">{{ section.settings.eyebrow | escape }}</p>
+      <h1>
+        {%- assign delay = 0 -%}
+        {%- assign words1 = section.settings.headline_1 | strip | split: ' ' -%}
+        {%- for word in words1 -%}
+          <span class="acc-word" style="animation-delay: {{ delay }}ms;">{{ word | escape }}</span>
+          {%- assign delay = delay | plus: 90 %} {% endfor -%}
+        {%- assign words2 = section.settings.headline_2 | strip | split: ' ' -%}
+        {%- for word in words2 -%}
+          <span class="acc-word acc-hl" style="animation-delay: {{ delay }}ms;">{{ word | escape }}</span>
+          {%- assign delay = delay | plus: 90 %} {% endfor -%}
+      </h1>
+      <p class="acc-hero__sub">{{ section.settings.subheadline | escape }}</p>
+      <div class="acc-hero__cta">
+        {%- if section.settings.cta_label != blank -%}
+          <a class="acc-btn acc-btn--lg" href="{{ section.settings.cta_link | default: routes.all_products_collection_url }}">{{ section.settings.cta_label | escape }}</a>
+        {%- endif -%}
+        {%- if section.settings.cta2_label != blank -%}
+          <a class="acc-btn acc-btn--ghost acc-btn--lg" href="{{ section.settings.cta2_link | default: '#faq' }}">{{ section.settings.cta2_label | escape }}</a>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <div class="acc-panel acc-corner acc-hud" aria-hidden="true">
+      <span class="acc-c1"></span>
+      <span class="acc-c2"></span>
+      <div class="acc-hud__head">
+        <span class="acc-micro">// MISSION CONTROL</span>
+        <span class="acc-hud__status acc-micro"><i></i>LIVE</span>
+      </div>
+      <div class="acc-hud__ring">
+        <svg viewBox="0 0 160 160">
+          <defs>
+            <linearGradient id="accRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ffb066"/>
+              <stop offset="55%" stop-color="#ff8c2a"/>
+              <stop offset="100%" stop-color="#ff5f1f"/>
+            </linearGradient>
+          </defs>
+          <circle class="acc-ring-bg" cx="80" cy="80" r="70"/>
+          <circle class="acc-ring-fg" cx="80" cy="80" r="70"/>
+        </svg>
+        <div class="acc-hud__score">
+          <strong>92</strong>
+          <span>Quality-Score</span>
+        </div>
+      </div>
+      <div class="acc-hud__chips">
+        <span class="acc-chip"><i></i>Agent: Texte</span>
+        <span class="acc-chip"><i></i>Agent: Code</span>
+        <span class="acc-chip"><i></i>Agent: Analyse</span>
+        <span class="acc-chip"><i></i>Agent: Review</span>
+      </div>
     </div>
   </div>
 </section>
@@ -21,11 +73,12 @@
   "tag": "section",
   "settings": [
     { "type": "text", "id": "eyebrow", "label": "Micro-Label", "default": "// SYSTEM ONLINE" },
-    { "type": "html", "id": "headline", "label": "Headline", "default": "Ihre komplette KI-Abteilung im <span class=\"acc-hl\">Abo</span>" },
-    { "type": "text", "id": "subheadline", "label": "Subheadline", "default": "Strategie, Automatisierung und Umsetzung als monatliches Abo. Kein Team aufbauen, keine Fixkosten, monatlich kuendbar." },
+    { "type": "text", "id": "headline_1", "label": "Headline (normal)", "default": "Ihre komplette KI-Abteilung" },
+    { "type": "text", "id": "headline_2", "label": "Headline (Amber hervorgehoben)", "default": "im Abo" },
+    { "type": "text", "id": "subheadline", "label": "Subheadline", "default": "Missionen starten statt Personal aufbauen. Texte, Code, Analysen und Dokumente aus einem System. Monatlich kuendbar." },
     { "type": "text", "id": "cta_label", "label": "CTA Text", "default": "Abos ansehen" },
     { "type": "url", "id": "cta_link", "label": "CTA Link" },
-    { "type": "text", "id": "cta2_label", "label": "Sekundaerer CTA Text", "default": "Haeufige Fragen" },
+    { "type": "text", "id": "cta2_label", "label": "Sekundaerer CTA Text", "default": "So funktioniert es" },
     { "type": "url", "id": "cta2_link", "label": "Sekundaerer CTA Link" }
   ],
   "presets": [{ "name": "Hero" }]

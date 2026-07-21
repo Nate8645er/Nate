@@ -3,19 +3,49 @@
     "hero": {
       "type": "hero"
     },
+    "logoleiste": {
+      "type": "logoleiste",
+      "blocks": {
+        "t1": { "type": "item", "settings": { "text": "Schweizer Anbieter" } },
+        "t2": { "type": "item", "settings": { "text": "Monatlich kuendbar" } },
+        "t3": { "type": "item", "settings": { "text": "Quality-Score in jeder Mission" } },
+        "t4": { "type": "item", "settings": { "text": "Demo gratis testen" } }
+      },
+      "block_order": ["t1", "t2", "t3", "t4"]
+    },
     "vorteile": {
       "type": "vorteile",
       "blocks": {
-        "b1": { "type": "usp", "settings": { "title": "Sofort startklar", "text": "In Tagen live statt in Monaten. Fertige KI-Prozesse, keine Baustellen." } },
-        "b2": { "type": "usp", "settings": { "title": "Planbare Kosten", "text": "Ein fixer Monatspreis statt teurer Festanstellungen. Monatlich kuendbar." } },
-        "b3": { "type": "usp", "settings": { "title": "Ganzes Team inklusive", "text": "Strategie, Automatisierung und Umsetzung aus einer Hand, ohne Recruiting." } },
-        "b4": { "type": "usp", "settings": { "title": "Skaliert mit Ihnen", "text": "Abo hoch- oder runterstufen, wann immer Ihr Bedarf sich aendert." } }
+        "b1": { "type": "usp", "settings": { "icon": "blitz", "title": "Sofort startklar", "text": "In Tagen live statt in Monaten. Fertige KI-Prozesse, keine Baustellen." } },
+        "b2": { "type": "usp", "settings": { "icon": "chart", "title": "Planbare Kosten", "text": "Ein fixer Monatspreis statt teurer Festanstellungen. Monatlich kuendbar." } },
+        "b3": { "type": "usp", "settings": { "icon": "team", "title": "Ganzes Team inklusive", "text": "Strategie, Automatisierung und Umsetzung aus einer Hand, ohne Recruiting." } },
+        "b4": { "type": "usp", "settings": { "icon": "stufen", "title": "Skaliert mit Ihnen", "text": "Abo hoch- oder runterstufen, wann immer Ihr Bedarf sich aendert." } },
+        "b5": { "type": "usp", "settings": { "icon": "schild", "title": "Quality-Score inklusive", "text": "Jede Mission wird geprueft und bewertet, bevor Sie das Ergebnis erhalten." } },
+        "b6": { "type": "usp", "settings": { "icon": "uhr", "title": "Arbeitet rund um die Uhr", "text": "Ihre KI-Abteilung kennt keine Buerozeiten. Missionen laufen auch nachts." } }
       },
-      "block_order": ["b1", "b2", "b3", "b4"]
+      "block_order": ["b1", "b2", "b3", "b4", "b5", "b6"]
     },
     "produkt-grid": {
       "type": "produkt-grid",
       "settings": { "limit": 6 }
+    },
+    "ablauf": {
+      "type": "ablauf",
+      "blocks": {
+        "s1": { "type": "step", "settings": { "title": "Abo waehlen", "text": "Waehlen Sie die Abostufe, die zu Ihrem Bedarf passt. Monatlich kuendbar, ohne Risiko." } },
+        "s2": { "type": "step", "settings": { "title": "Zugang erhalten", "text": "Nach dem Kauf erhalten Sie Ihren Lizenzschluessel per E-Mail. Einloggen, fertig." } },
+        "s3": { "type": "step", "settings": { "title": "Missionen starten", "text": "Beschreiben Sie die Aufgabe, Ihre KI-Abteilung liefert das Ergebnis mit Quality-Score." } }
+      },
+      "block_order": ["s1", "s2", "s3"]
+    },
+    "zitate": {
+      "type": "zitate",
+      "blocks": {
+        "z1": { "type": "quote", "settings": { "text": "Mission gestartet, 20 Minuten spaeter lag der fertige Newsletter mit Betreffzeilen-Varianten bereit.", "label": "Einsatz: Marketing-Texte" } },
+        "z2": { "type": "quote", "settings": { "text": "Das System hat unser Skript geprueft, zwei Fehler gefunden und die korrigierte Version gleich mitgeliefert.", "label": "Einsatz: Code-Review" } },
+        "z3": { "type": "quote", "settings": { "text": "Jeden Montag ein fertiger Wochenreport aus unseren Zahlen, inklusive Zusammenfassung fuer die Geschaeftsleitung.", "label": "Einsatz: Reporting" } }
+      },
+      "block_order": ["z1", "z2", "z3"]
     },
     "faq": {
       "type": "faq",
@@ -28,7 +58,10 @@
         "f6": { "type": "qa", "settings": { "question": "Wie funktioniert der Support?", "answer": "<p>Sie erreichen uns ueber die Kontaktseite. Reaktionszeiten richten sich nach Ihrer Abostufe.</p>" } }
       },
       "block_order": ["f1", "f2", "f3", "f4", "f5", "f6"]
+    },
+    "cta-band": {
+      "type": "cta-band"
     }
   },
-  "order": ["hero", "vorteile", "produkt-grid", "faq"]
+  "order": ["hero", "logoleiste", "vorteile", "produkt-grid", "ablauf", "zitate", "faq", "cta-band"]
 }

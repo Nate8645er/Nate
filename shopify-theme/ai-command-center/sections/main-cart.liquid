@@ -1,40 +1,65 @@
+{%- comment -%}
+  Warenkorb v2: Zeilen mit Bild, Mengenfeld, Entfernen-Link,
+  Zeilensumme, grosser Checkout-Button.
+{%- endcomment -%}
 <section class="acc-section acc-cart-section">
   <div class="acc-wrap acc-cart">
     <p class="acc-micro">// WARENKORB</p>
-    <h1 style="margin:12px 0 28px;">Ihr Warenkorb</h1>
+    <h1 style="margin: var(--sp-3) 0 var(--sp-6); font-size: var(--fs-h2);">Ihr Warenkorb</h1>
 
     {%- if cart.item_count > 0 -%}
       {%- form 'cart', cart -%}
         {%- for item in cart.items -%}
           <div class="acc-cart__row">
-            {%- if item.image -%}
-              <img src="{{ item.image | image_url: width: 144 }}" alt="{{ item.product.title | escape }}" loading="lazy">
-            {%- endif -%}
+            <div class="acc-cart__img">
+              {%- if item.image -%}
+                <img src="{{ item.image | image_url: width: 176 }}" alt="{{ item.product.title | escape }}" loading="lazy">
+              {%- else -%}
+                <div class="acc-card__ph" style="font-size: 9px;">// BILD</div>
+              {%- endif -%}
+            </div>
             <div class="acc-cart__meta">
               <a href="{{ item.url }}">{{ item.product.title | escape }}</a>
               {%- unless item.variant.title contains 'Default' -%}
-                <div class="acc-micro">{{ item.variant.title | escape }}</div>
+                <div class="acc-cart__variant">{{ item.variant.title | escape }}</div>
               {%- endunless -%}
-              <div class="acc-micro">Menge {{ item.quantity }} &middot; {{ item.final_line_price | money }}</div>
+              <div class="acc-cart__controls">
+                <span class="acc-qty">
+                  <label class="acc-micro" for="acc-qty-{{ forloop.index }}" style="padding: 0 0 0 12px;">Menge</label>
+                  <input
+                    id="acc-qty-{{ forloop.index }}"
+                    type="number"
+                    name="updates[]"
+                    value="{{ item.quantity }}"
+                    min="0"
+                    inputmode="numeric"
+                    aria-label="Menge fuer {{ item.product.title | escape }}">
+                </span>
+                <a class="acc-cart__remove" href="{{ item.url_to_remove }}">Entfernen</a>
+              </div>
             </div>
+            <div class="acc-cart__lineprice">{{ item.final_line_price | money }}</div>
           </div>
         {%- endfor -%}
 
         <div class="acc-cart__foot">
-          <div class="acc-cart__total">Total: {{ cart.total_price | money }}</div>
-          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <div class="acc-cart__total">
+            <span>Zwischensumme</span>
+            {{ cart.total_price | money }}
+          </div>
+          <div class="acc-cart__actions">
             <button type="submit" name="update" class="acc-btn acc-btn--ghost">Aktualisieren</button>
-            <button type="submit" name="checkout" class="acc-btn">Zur Kasse</button>
+            <button type="submit" name="checkout" class="acc-btn acc-btn--lg">Zur Kasse</button>
           </div>
         </div>
-        <p class="acc-micro" style="margin-top:14px;">Versand und Steuern werden an der Kasse berechnet.</p>
+        <p class="acc-micro" style="margin-top: var(--sp-4);">Versand und Steuern werden an der Kasse berechnet. Abos sind monatlich kuendbar.</p>
       {%- endform -%}
     {%- else -%}
       <div class="acc-panel acc-corner acc-empty">
         <span class="acc-c1" aria-hidden="true"></span>
         <span class="acc-c2" aria-hidden="true"></span>
         <p class="acc-micro">// LEER</p>
-        <p>Ihr Warenkorb ist leer.</p>
+        <p>Ihr Warenkorb ist leer. Zeit fuer Ihre erste KI-Abteilung.</p>
         <a class="acc-btn" href="{{ routes.all_products_collection_url }}">Abos ansehen</a>
       </div>
     {%- endif -%}

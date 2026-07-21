@@ -1,0 +1,58 @@
+{%- comment -%}
+  Anwendungsbeispiele: klar als "So nutzen Kunden das System" gerahmt.
+  Bewusst KEINE erfundenen Namen oder Firmen, nur Einsatz-Szenarien.
+{%- endcomment -%}
+<section class="acc-section acc-zitate">
+  <div class="acc-wrap">
+    <div class="acc-shead acc-reveal">
+      <p class="acc-micro">{{ section.settings.eyebrow | escape }}</p>
+      <h2>{{ section.settings.heading | escape }}</h2>
+      <p class="acc-lead">{{ section.settings.subline | escape }}</p>
+    </div>
+    <div class="acc-quotes">
+      {%- for block in section.blocks -%}
+        {%- assign d = forloop.index0 | times: 120 -%}
+        <figure class="acc-panel acc-corner acc-quote acc-reveal" style="transition-delay: {{ d }}ms; margin: 0;" {{ block.shopify_attributes }}>
+          <span class="acc-c1" aria-hidden="true"></span>
+          <span class="acc-c2" aria-hidden="true"></span>
+          <div class="acc-quote__mark" aria-hidden="true">&raquo;</div>
+          <blockquote>{{ block.settings.text | escape }}</blockquote>
+          <footer class="acc-micro">{{ block.settings.label | escape }}</footer>
+        </figure>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Anwendungsbeispiele",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Micro-Label", "default": "// AUS DER PRAXIS" },
+    { "type": "text", "id": "heading", "label": "Ueberschrift", "default": "So nutzen Kunden das System" },
+    { "type": "text", "id": "subline", "label": "Unterzeile", "default": "Drei typische Einsatz-Szenarien, wie sie taeglich im AI Command Center laufen." }
+  ],
+  "blocks": [
+    {
+      "type": "quote",
+      "name": "Beispiel",
+      "settings": [
+        { "type": "textarea", "id": "text", "label": "Aussage", "default": "Mission gestartet, 20 Minuten spaeter lag der fertige Newsletter mit Betreffzeilen-Varianten bereit." },
+        { "type": "text", "id": "label", "label": "Einsatz-Label", "default": "Einsatz: Marketing-Texte" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Anwendungsbeispiele",
+      "blocks": [
+        { "type": "quote", "settings": { "text": "Mission gestartet, 20 Minuten spaeter lag der fertige Newsletter mit Betreffzeilen-Varianten bereit.", "label": "Einsatz: Marketing-Texte" } },
+        { "type": "quote", "settings": { "text": "Das System hat unser Skript geprueft, zwei Fehler gefunden und die korrigierte Version gleich mitgeliefert.", "label": "Einsatz: Code-Review" } },
+        { "type": "quote", "settings": { "text": "Jeden Montag ein fertiger Wochenreport aus unseren Zahlen, inklusive Zusammenfassung fuer die Geschaeftsleitung.", "label": "Einsatz: Reporting" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

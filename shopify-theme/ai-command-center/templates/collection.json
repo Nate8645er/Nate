@@ -2,7 +2,22 @@
   "sections": {
     "main": {
       "type": "main-collection"
+    },
+    "vergleich": {
+      "type": "abos-vergleich"
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "f1": { "type": "qa", "settings": { "question": "Welche Stufe passt zu mir?", "answer": "<p>Starten Sie im Zweifel mit STARTER und stufen Sie hoch, sobald Sie mehr Missionen brauchen. Der Wechsel ist jederzeit moeglich.</p>" } },
+        "f2": { "type": "qa", "settings": { "question": "Kann ich monatlich kuendigen?", "answer": "<p>Ja. Alle Abos sind monatlich kuendbar, ohne lange Bindung.</p>" } },
+        "f3": { "type": "qa", "settings": { "question": "Gibt es eine Gratis-Demo?", "answer": "<p>Ja, die FREE-Stufe ist gratis und zeigt Ihnen das System im Alltag. Kein Zahlungsmittel noetig.</p>" } }
+      },
+      "block_order": ["f1", "f2", "f3"]
+    },
+    "cta-band": {
+      "type": "cta-band"
     }
   },
-  "order": ["main"]
+  "order": ["main", "vergleich", "faq", "cta-band"]
 }
