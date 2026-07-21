@@ -15,6 +15,7 @@ export type BereichId =
   | "kunden"
   | "email"
   | "skills"
+  | "werkzeuge"
   | "autopilot"
   | "berichte"
   | "analysen"
@@ -35,6 +36,7 @@ const PRIMAER: { id: BereichId; label: string; href: string }[] = [
 ];
 
 const MEHR: { id: BereichId; label: string; href: string }[] = [
+  { id: "werkzeuge", label: "Blitz-Werkzeuge", href: "/werkzeuge" },
   { id: "berichte", label: "Berichte", href: "/berichte" },
   { id: "analysen", label: "Analysen", href: "/analysen" },
   { id: "team", label: "Team", href: "/team" },
