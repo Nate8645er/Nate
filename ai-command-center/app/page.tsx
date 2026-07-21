@@ -37,7 +37,7 @@ const PLANS: Plan[] = [
   },
   {
     name: "Starter",
-    price: "299",
+    price: "249",
     priceNote: "CHF pro Monat",
     team: "Team: 12 Agenten",
     badge: "Bestseller",
@@ -53,7 +53,7 @@ const PLANS: Plan[] = [
   },
   {
     name: "Professional",
-    price: "999",
+    price: "890",
     priceNote: "CHF pro Monat",
     team: "Team: 50 Agenten",
     benefits: [
@@ -67,7 +67,7 @@ const PLANS: Plan[] = [
   },
   {
     name: "Business",
-    price: "2999",
+    price: "2'790",
     priceNote: "CHF pro Monat",
     team: "Abteilung: 250 Agenten",
     badge: "Beliebt bei Firmen",
@@ -83,7 +83,7 @@ const PLANS: Plan[] = [
   },
   {
     name: "Enterprise",
-    price: "ab 10 000",
+    price: "ab 9'800",
     priceNote: "CHF pro Monat",
     team: "Belegschaft: 1000 Mitarbeitende",
     benefits: [
@@ -144,6 +144,50 @@ const FEATURES = [
     ),
     href: "/integrationen",
     linkLabel: "Alle Integrationen ansehen",
+  },
+  {
+    title: "Marketing und Kampagnen",
+    text: "Kampagnenpläne, Werbetexte und ganze Content-Serien: Ihr Team plant, schreibt und liefert fertige Entwürfe zur Freigabe.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" className="h-7 w-7">
+        <path d="M3.5 10.5v3a1 1 0 0 0 1 1H7l7.5 4V5.5L7 9.5H4.5a1 1 0 0 0-1 1Z" />
+        <path d="M14.5 9.5a3 3 0 0 1 0 5" />
+        <path d="M7 14.5v4a1 1 0 0 0 1 1h1.5" />
+      </svg>
+    ),
+  },
+  {
+    title: "Strategie und Zahlen",
+    text: "Businesspläne, Finanz-Einordnung und Entscheidungsvorlagen: fundierte Grundlagen, bevor Sie den nächsten Schritt gehen.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" className="h-7 w-7">
+        <path d="M3.5 3.5v16a1 1 0 0 0 1 1h16" />
+        <path d="m7 14 4-4 3 3 5.5-5.5" />
+        <path d="M15.5 7.5h4v4" />
+      </svg>
+    ),
+  },
+  {
+    title: "Quality-Score 0-100",
+    text: "Jedes Ergebnis wird geprüft, bevor Sie es sehen. Der Score von 0 bis 100 zeigt sofort, wie belastbar ein Resultat ist.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" className="h-7 w-7">
+        <path d="M12 2.5 5 5.5v5c0 4.5 3 8.5 7 10.5 4-2 7-6 7-10.5v-5l-7-3Z" />
+        <path d="m8.8 11.8 2.2 2.2 4.2-4.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    title: "Passt sich Ihrer Branche an",
+    text: "Das Onboarding stellt Ihr Team auf Ihre Firma ein: Branche, Tonalität und Ziele fliessen in jede Mission ein.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" className="h-7 w-7">
+        <path d="M4 6.5h16M4 12h16M4 17.5h16" />
+        <circle cx="9" cy="6.5" r="2" fill="#0d0c09" />
+        <circle cx="15" cy="12" r="2" fill="#0d0c09" />
+        <circle cx="7" cy="17.5" r="2" fill="#0d0c09" />
+      </svg>
+    ),
   },
 ];
 
