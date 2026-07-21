@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "AI Command Center | Ihre komplette KI-Abteilung im Abo",
+  title: "AI Command Center | Die digitale KI-Belegschaft für Ihr Unternehmen",
   description:
-    "Ein virtuelles KI-Team, das echte Arbeit liefert: Dateien, Code, Analysen. Schweizer Anbieter, monatlich kündbar, Demo ohne Kreditkarte.",
+    "Eine ganze KI-Belegschaft im Abo: plant, recherchiert, schreibt und programmiert – fertige Websites, Dokumente und Analysen in Minuten. Schweizer Anbieter, monatlich kündbar, Demo ohne Kreditkarte.",
 };
 
 /* Shop-Domain zentral definiert, später leicht austauschbar. */
@@ -189,6 +189,31 @@ const FEATURES = [
       </svg>
     ),
   },
+  {
+    title: "KI-Chat für Mitarbeitende",
+    text: "Schnelle Fragen, Texte und Ideen im direkten Gespräch mit Ihrem Assistenten – zugeschnitten auf Ihre Branche.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" className="h-7 w-7">
+        <path d="M4 5.5h16v10.5H9L4.5 20V5.5Z" strokeLinejoin="round" />
+        <path d="M8 9.5h8M8 12.5h5" strokeLinecap="round" />
+      </svg>
+    ),
+    href: "/chat",
+    linkLabel: "Chat öffnen",
+  },
+  {
+    title: "Autopilot-Workflows",
+    text: "Wiederkehrende Aufträge einmal anlegen – Ihre Belegschaft erledigt sie regelmässig: Wochenpläne, Berichte, Angebotsideen.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" className="h-7 w-7">
+        <path d="M12 4a8 8 0 1 1-7.5 5.2" strokeLinecap="round" />
+        <path d="M4.5 4v5h5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M12 8.5V12l2.5 2" strokeLinecap="round" />
+      </svg>
+    ),
+    href: "/workflows",
+    linkLabel: "Workflows ansehen",
+  },
 ];
 
 const TRUST = [
@@ -292,11 +317,11 @@ function ProductShowcase() {
                 strokeWidth="7"
                 strokeLinecap="round"
                 strokeDasharray="251.3"
-                strokeDashoffset="17.6"
+                strokeDashoffset="0"
                 transform="rotate(-90 50 50)"
               />
               <text x="50" y="55" textAnchor="middle" fill="#ffd257" fontSize="20" fontWeight="600">
-                93
+                100
               </text>
             </svg>
             <span className="hud-label">Quality-Score</span>
@@ -356,14 +381,19 @@ export default function Home() {
         {/* 1) Hero: Produktbühne */}
         <section className="relative overflow-hidden px-6 pb-24 pt-20 sm:pt-28">
           <div className="mx-auto max-w-3xl text-center">
-            <p className="hud-label mb-6">Das KI-System im Abo</p>
+            <p className="hud-label mb-6">Die erste digitale KI-Belegschaft der Schweiz</p>
             <h1 className="text-balance text-4xl font-semibold tracking-tight text-white sm:text-6xl">
-              Ihre komplette KI-Abteilung im Abo
+              Eine ganze{" "}
+              <span className="bg-gradient-to-r from-[#ffb066] via-[#ff8c2a] to-[#ff5f1f] bg-clip-text text-transparent">
+                KI-Belegschaft
+              </span>{" "}
+              für Ihr Unternehmen
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg leading-8 text-zinc-400">
-              Ein ganzes Team aus spezialisierten KI-Agenten arbeitet für Sie: recherchiert,
-              schreibt, programmiert und analysiert. Sie geben den Auftrag, Ihr Team liefert
-              fertige Ergebnisse zum Herunterladen.
+              Sie geben einen Auftrag – Ihre digitale Abteilung plant, recherchiert, schreibt
+              und programmiert, bis das Ergebnis steht: fertige Websites, Dokumente,
+              Präsentationen und Analysen. Geprüft mit Quality-Score, geliefert in Minuten
+              statt Wochen.
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link

@@ -1386,6 +1386,18 @@ export default function DashboardPage() {
               {licensedPlan === "FREE" ? "Lizenz aktivieren" : `Lizenz: ${licensedPlan}`}
             </button>
             <a
+              href="/chat"
+              className={`rounded-sm px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+            >
+              KI-Chat
+            </a>
+            <a
+              href="/workflows"
+              className={`rounded-sm px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+            >
+              Autopilot
+            </a>
+            <a
               href="/integrationen"
               className={`rounded-sm px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
             >
