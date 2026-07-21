@@ -49,7 +49,7 @@ const MonogrammBadge = memo(function MonogrammBadge({
   return (
     <span
       aria-hidden
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm border font-mono text-sm font-bold tracking-[0.08em]"
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border font-mono text-sm font-bold tracking-[0.08em]"
       style={{
         color: akzent,
         borderColor: `${akzent}59`,
@@ -67,7 +67,7 @@ const PlanBadge = memo(function PlanBadge({ planStufe }: { planStufe: Connector[
   const enterprise = planStufe === "ENTERPRISE";
   return (
     <span
-      className={`rounded-sm border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em] ${
+      className={`rounded-xl border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em] ${
         enterprise
           ? "border-[#ffd257]/50 bg-[#ffd257]/10 text-[#ffd257]"
           : "border-[#ff8c2a]/40 bg-[#ff8c2a]/[0.08] text-[#ffb35c]"
@@ -83,7 +83,7 @@ const StatusBadge = memo(function StatusBadge({ status }: { status: Connector["s
   const available = status === "verfügbar-auf-anfrage";
   return (
     <span
-      className={`flex items-center gap-1.5 rounded-sm border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em] ${
+      className={`flex items-center gap-1.5 rounded-xl border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em] ${
         available
           ? "border-[#ffb35c]/35 bg-[#ffb35c]/[0.06] text-[#ffb35c]/90"
           : "border-[#8a7455]/50 bg-[#8a7455]/10 text-[#c9b391]"
@@ -137,12 +137,12 @@ function HudModal({
         aria-modal="true"
         aria-labelledby={labelId}
         tabIndex={-1}
-        className="hud-panel hud-corners hud-modal-in relative w-full max-w-lg rounded-sm border border-[#ff8c2a]/30 bg-[#0b0a08] p-6 outline-none"
+        className="hud-panel hud-corners hud-modal-in relative w-full max-w-lg rounded-xl border border-[#ff8c2a]/30 bg-[#0b0a08] p-6 outline-none"
       >
         <button
           onClick={onClose}
           aria-label="Schliessen"
-          className={`absolute right-3 top-3 rounded-sm px-2 py-1 font-mono text-xs text-[#ffb35c]/70 transition hover:text-[#fff3e2] ${FOCUS_RING}`}
+          className={`absolute right-3 top-3 rounded-xl px-2 py-1 font-mono text-xs text-[#ffb35c]/70 transition hover:text-[#fff3e2] ${FOCUS_RING}`}
         >
           ✕
         </button>
@@ -189,7 +189,7 @@ function AnfrageModal({ connector, onClose }: { connector: Connector; onClose: (
           <li key={s.titel} className="flex gap-3">
             <span
               aria-hidden
-              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-sm border border-[#ff8c2a]/40 bg-[#ff8c2a]/[0.06] font-mono text-xs font-bold text-[#ff8c2a]"
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-[#ff8c2a]/40 bg-[#ff8c2a]/[0.06] font-mono text-xs font-bold text-[#ff8c2a]"
             >
               {i + 1}
             </span>
@@ -203,7 +203,7 @@ function AnfrageModal({ connector, onClose }: { connector: Connector; onClose: (
 
       <a
         href={mailtoHref(connector.name)}
-        className={`mt-6 block w-full rounded-sm bg-[#ff8c2a] px-6 py-3 text-center font-semibold text-[#1a0f04] transition hover:bg-[#ffb35c] active:scale-[0.98] ${FOCUS_RING}`}
+        className={`mt-6 block w-full rounded-xl bg-[#ff8c2a] px-6 py-3 text-center font-semibold text-[#1a0f04] transition hover:bg-[#ffb35c] active:scale-[0.98] ${FOCUS_RING}`}
       >
         Anfrage per E-Mail senden
       </a>
@@ -224,7 +224,7 @@ const ConnectorCard = memo(function ConnectorCard({
 }) {
   const akzent = KATEGORIE_AKZENT[connector.kategorie];
   return (
-    <div className="hud-panel hud-corners flex flex-col rounded-sm p-4">
+    <div className="hud-panel hud-corners flex flex-col rounded-xl p-4">
       <div className="flex items-start gap-3">
         <MonogrammBadge monogramm={connector.monogramm} akzent={akzent} />
         <div className="min-w-0">
@@ -238,7 +238,7 @@ const ConnectorCard = memo(function ConnectorCard({
       <p className="mt-3 flex-1 text-sm leading-relaxed text-[#c9b391]">{connector.beschreibung}</p>
       <button
         onClick={() => onRequest(connector)}
-        className={`mt-4 w-full rounded-sm border border-[#ff8c2a]/40 bg-[#ff8c2a]/[0.06] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ff8c2a] transition-colors hover:bg-[#ff8c2a]/15 ${FOCUS_RING}`}
+        className={`mt-4 w-full rounded-xl border border-[#ff8c2a]/40 bg-[#ff8c2a]/[0.06] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ff8c2a] transition-colors hover:bg-[#ff8c2a]/15 ${FOCUS_RING}`}
       >
         Anbindung anfragen
       </button>
@@ -297,7 +297,7 @@ export default function IntegrationenPage() {
           </div>
           <a
             href="/dashboard"
-            className={`rounded-sm border border-[#ff8c2a]/40 bg-[#ff8c2a]/[0.06] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ff8c2a] transition-colors hover:bg-[#ff8c2a]/15 ${FOCUS_RING}`}
+            className={`rounded-xl border border-[#ff8c2a]/40 bg-[#ff8c2a]/[0.06] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ff8c2a] transition-colors hover:bg-[#ff8c2a]/15 ${FOCUS_RING}`}
           >
             ← Zurück zum Dashboard
           </a>
@@ -306,7 +306,7 @@ export default function IntegrationenPage() {
 
       <div className="relative z-10 mx-auto max-w-7xl px-5 py-8">
         {/* Hero */}
-        <section aria-label="Integration-Center" className="hud-panel hud-corners rounded-sm p-5">
+        <section aria-label="Integration-Center" className="hud-panel hud-corners rounded-xl p-5">
           <div className="hud-label mb-2">Anbindungen // Firmensysteme</div>
           <h1 className="text-2xl font-bold text-[#fff3e2]">
             Integration-Center: Verbinden Sie Ihre KI-Abteilung mit Ihren Systemen
@@ -330,7 +330,7 @@ export default function IntegrationenPage() {
 
         {/* Eigene Systeme: generischer REST/Webhook-Connector */}
         <section aria-label="Eigene Systeme" className="mt-10">
-          <div className="hud-panel hud-corners rounded-sm p-5">
+          <div className="hud-panel hud-corners rounded-xl p-5">
             <div className="hud-label mb-2">Eigene Systeme // REST + Webhooks</div>
             <h2 className="text-xl font-bold text-[#fff3e2]">
               Ihre Firmensoftware ist nicht dabei?

@@ -91,20 +91,20 @@ function KeyRow({ value }: { value: string }) {
     }
   }, [value]);
   return (
-    <li className="flex flex-wrap items-center gap-2 rounded-sm border border-[#ff8c2a]/15 bg-[#ff8c2a]/[0.03] px-3 py-2">
+    <li className="flex flex-wrap items-center gap-2 rounded-xl border border-[#ff8c2a]/15 bg-[#ff8c2a]/[0.03] px-3 py-2">
       <code className="flex-1 break-all font-mono text-xs text-[#fff3e2] sm:text-sm">
         {value}
       </code>
       <button
         onClick={onCopy}
-        className={`shrink-0 rounded-sm border border-[#ff8c2a]/40 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c] transition-colors hover:bg-[#ff8c2a]/15 ${FOCUS_RING}`}
+        className={`shrink-0 rounded-xl border border-[#ff8c2a]/40 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c] transition-colors hover:bg-[#ff8c2a]/15 ${FOCUS_RING}`}
       >
         {copied ? "Kopiert" : "Kopieren"}
       </button>
       <button
         onClick={() => downloadStartDatei(value)}
         title="HTML-Datei für den Kunden: anklicken öffnet die Plattform und aktiviert die Lizenz automatisch"
-        className={`shrink-0 rounded-sm bg-[#ff8c2a] px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1a0f04] transition-colors hover:bg-[#ffb35c] ${FOCUS_RING}`}
+        className={`shrink-0 rounded-xl bg-[#ff8c2a] px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1a0f04] transition-colors hover:bg-[#ffb35c] ${FOCUS_RING}`}
       >
         Start-Datei
       </button>
@@ -192,7 +192,7 @@ export default function AdminPage() {
       </header>
 
       <div className="relative z-10 mx-auto max-w-3xl px-5 py-8">
-        <section aria-label="Schlüssel erzeugen" className="hud-panel hud-corners rounded-sm p-5 sm:p-6">
+        <section aria-label="Schlüssel erzeugen" className="hud-panel hud-corners rounded-xl p-5 sm:p-6">
           <div className="hud-label mb-2">Lizenz // Generator</div>
           <h1 className="text-2xl font-bold text-[#fff3e2]">Lizenzschlüssel erzeugen</h1>
           <p className="mt-1 text-sm text-[#c9b391]">
@@ -212,7 +212,7 @@ export default function AdminPage() {
                 placeholder="••••••••"
                 disabled={busy}
                 aria-label="Admin-Passwort"
-                className={`mt-1.5 w-full rounded-sm border border-[#ff8c2a]/25 bg-[#ff8c2a]/[0.04] px-4 py-3 font-mono text-sm text-[#fff3e2] placeholder:text-[#8a7455] outline-none transition focus:border-[#ff8c2a]/70 focus:ring-2 focus:ring-[#ff8c2a]/20 ${FOCUS_RING}`}
+                className={`mt-1.5 w-full rounded-xl border border-[#ff8c2a]/25 bg-[#ff8c2a]/[0.04] px-4 py-3 font-mono text-sm text-[#fff3e2] placeholder:text-[#8a7455] outline-none transition focus:border-[#ff8c2a]/70 focus:ring-2 focus:ring-[#ff8c2a]/20 ${FOCUS_RING}`}
               />
             </label>
 
@@ -224,7 +224,7 @@ export default function AdminPage() {
                   onChange={(e) => setPlan(e.target.value as Plan)}
                   disabled={busy}
                   aria-label="Plan"
-                  className={`mt-1.5 w-full rounded-sm border border-[#ff8c2a]/25 bg-[#ff8c2a]/[0.04] px-4 py-3 font-mono text-sm text-[#fff3e2] outline-none transition focus:border-[#ff8c2a]/70 focus:ring-2 focus:ring-[#ff8c2a]/20 ${FOCUS_RING}`}
+                  className={`mt-1.5 w-full rounded-xl border border-[#ff8c2a]/25 bg-[#ff8c2a]/[0.04] px-4 py-3 font-mono text-sm text-[#fff3e2] outline-none transition focus:border-[#ff8c2a]/70 focus:ring-2 focus:ring-[#ff8c2a]/20 ${FOCUS_RING}`}
                 >
                   {PLANS.map((p) => (
                     <option key={p} value={p} className="bg-[#0b0a08]">
@@ -247,7 +247,7 @@ export default function AdminPage() {
                   }}
                   disabled={busy}
                   aria-label="Anzahl"
-                  className={`mt-1.5 w-full rounded-sm border border-[#ff8c2a]/25 bg-[#ff8c2a]/[0.04] px-4 py-3 font-mono text-sm text-[#fff3e2] outline-none transition focus:border-[#ff8c2a]/70 focus:ring-2 focus:ring-[#ff8c2a]/20 ${FOCUS_RING}`}
+                  className={`mt-1.5 w-full rounded-xl border border-[#ff8c2a]/25 bg-[#ff8c2a]/[0.04] px-4 py-3 font-mono text-sm text-[#fff3e2] outline-none transition focus:border-[#ff8c2a]/70 focus:ring-2 focus:ring-[#ff8c2a]/20 ${FOCUS_RING}`}
                 />
               </label>
             </div>
@@ -270,7 +270,7 @@ export default function AdminPage() {
             <button
               onClick={generate}
               disabled={!password.trim() || busy}
-              className={`mt-1 w-full rounded-sm bg-[#ff8c2a] px-6 py-3 font-semibold text-[#1a0f04] transition hover:bg-[#ffb35c] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
+              className={`mt-1 w-full rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-6 py-3 font-semibold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)] transition hover:bg-[#ffb35c] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
             >
               {busy ? "Erzeuge …" : ultra ? "Ultra-Codes erzeugen" : "Schlüssel erzeugen"}
             </button>
@@ -279,7 +279,7 @@ export default function AdminPage() {
           {error && (
             <p
               role="alert"
-              className="mt-4 rounded-sm border border-red-400/30 bg-red-400/10 px-4 py-2 text-sm text-red-300"
+              className="mt-4 rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-2 text-sm text-red-300"
             >
               {error}
             </p>
@@ -289,7 +289,7 @@ export default function AdminPage() {
         {keys.length > 0 && (
           <section
             aria-label="Erzeugte Schlüssel"
-            className="hud-panel hud-corners mt-6 rounded-sm p-5 sm:p-6"
+            className="hud-panel hud-corners mt-6 rounded-xl p-5 sm:p-6"
           >
             <div className="mb-3 flex items-center justify-between gap-2">
               <div className="hud-label">
@@ -297,7 +297,7 @@ export default function AdminPage() {
               </div>
               <button
                 onClick={copyAll}
-                className={`shrink-0 rounded-sm border border-[#ffb35c]/40 bg-[#ff8c2a]/[0.06] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c] transition-colors hover:bg-[#ff8c2a]/15 ${FOCUS_RING}`}
+                className={`shrink-0 rounded-xl border border-[#ffb35c]/40 bg-[#ff8c2a]/[0.06] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c] transition-colors hover:bg-[#ff8c2a]/15 ${FOCUS_RING}`}
               >
                 {copiedAll ? "Alle kopiert" : "Alle kopieren"}
               </button>

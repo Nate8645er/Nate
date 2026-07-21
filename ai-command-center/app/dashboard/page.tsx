@@ -346,7 +346,7 @@ const TelemetryTiles = memo(function TelemetryTiles({
   return (
     <div className="grid grid-cols-2 gap-3">
       {tiles.map((t) => (
-        <div key={t.label} className="hud-panel hud-corners rounded-sm px-3 py-3 text-center">
+        <div key={t.label} className="hud-panel hud-corners rounded-xl px-3 py-3 text-center">
           <div className="hud-label">{t.label}</div>
           <div className="mt-1 font-mono text-xl font-bold text-[#fff3e2] sm:text-2xl">{t.value}</div>
         </div>
@@ -363,7 +363,7 @@ const TerminalFeed = memo(function TerminalFeed({ logs }: { logs: string[] }) {
     if (el) el.scrollTop = el.scrollHeight;
   }, [logs]);
   return (
-    <section aria-label="Terminal-Feed" className="hud-panel hud-corners mt-8 rounded-sm">
+    <section aria-label="Terminal-Feed" className="hud-panel hud-corners mt-8 rounded-xl">
       <div className="flex items-center justify-between border-b border-[#ff8c2a]/15 px-4 py-2">
         <span className="hud-label">Mission Log // Live-Feed</span>
         <span className="hud-pulse h-1.5 w-1.5 rounded-full bg-[#ff8c2a]" aria-hidden />
@@ -456,7 +456,7 @@ const AgentCard = memo(function AgentCard({
           : "border-[#ff8c2a]/20";
   return (
     <div
-      className={`relative rounded-sm border bg-[#ff8c2a]/[0.03] p-4 transition-colors ${borderCls} ${fancy ? "hud-corners" : ""}`}
+      className={`relative rounded-xl border bg-[#ff8c2a]/[0.03] p-4 transition-colors ${borderCls} ${fancy ? "hud-corners" : ""}`}
       style={
         fancy && status === "working"
           ? { boxShadow: "0 0 18px rgba(255,140,42,0.25), inset 0 0 18px rgba(255,140,42,0.06)" }
@@ -499,7 +499,7 @@ const AgentCard = memo(function AgentCard({
 /** Gesperrte Zusatz-Einheit (unterhalb PROFESSIONAL): Hinweis auf das Upgrade. */
 const LockedAgentCard = memo(function LockedAgentCard({ name, tagline }: { name: string; tagline: string }) {
   return (
-    <div className="relative rounded-sm border border-[#ff8c2a]/15 bg-[#ff8c2a]/[0.02] p-4 opacity-70">
+    <div className="relative rounded-xl border border-[#ff8c2a]/15 bg-[#ff8c2a]/[0.02] p-4 opacity-70">
       <div className="flex items-center justify-between">
         <h3 className="font-semibold text-[#fff3e2]">{name}</h3>
         <span aria-hidden className="h-2 w-2 rounded-full bg-[#5a4a35]" />
@@ -541,7 +541,7 @@ const DepartmentCard = memo(function DepartmentCard({
   const rest = total - shown.length;
 
   return (
-    <div className="hud-panel hud-corners rounded-sm p-4">
+    <div className="hud-panel hud-corners rounded-xl p-4">
       <div className="flex items-center justify-between">
         <h3 className="font-semibold text-[#fff3e2]">{dept.name}</h3>
         <span className="hud-label">{dept.roles.length} live · {total} Assist.</span>
@@ -577,13 +577,13 @@ const DepartmentCard = memo(function DepartmentCard({
             {shown.map((a) => (
               <span
                 key={a.id}
-                className="rounded-sm border border-[#ff8c2a]/12 bg-[#ff8c2a]/[0.03] px-2 py-0.5 font-mono text-[10px] text-[#ffb35c]/55"
+                className="rounded-xl border border-[#ff8c2a]/12 bg-[#ff8c2a]/[0.03] px-2 py-0.5 font-mono text-[10px] text-[#ffb35c]/55"
               >
                 {a.label}
               </span>
             ))}
             {!expanded && rest > 0 && (
-              <span className="rounded-sm px-2 py-0.5 font-mono text-[10px] text-[#8a7455]">
+              <span className="rounded-xl px-2 py-0.5 font-mono text-[10px] text-[#8a7455]">
                 +{rest} weitere
               </span>
             )}
@@ -645,14 +645,14 @@ const ArtifactViewer = memo(function ArtifactViewer({ files }: { files: Artifact
             <button
               onClick={() => setPreviewOpen((v) => !v)}
               aria-pressed={previewOpen}
-              className={`rounded-sm border border-[#ff8c2a]/40 bg-[#ff8c2a]/[0.06] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ff8c2a] transition-colors hover:bg-[#ff8c2a]/15 ${FOCUS_RING}`}
+              className={`rounded-xl border border-[#ff8c2a]/40 bg-[#ff8c2a]/[0.06] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ff8c2a] transition-colors hover:bg-[#ff8c2a]/15 ${FOCUS_RING}`}
             >
               {previewOpen ? "Vorschau schliessen" : "Live-Vorschau"}
             </button>
           )}
           <button
             onClick={() => downloadAllArtifacts(files)}
-            className={`rounded-sm bg-[#ff8c2a] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] font-semibold text-[#1a0f04] transition hover:bg-[#ffb35c] active:scale-[0.98] ${FOCUS_RING}`}
+            className={`rounded-xl bg-[#ff8c2a] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] font-semibold text-[#1a0f04] transition hover:bg-[#ffb35c] active:scale-[0.98] ${FOCUS_RING}`}
           >
             Alle herunterladen ({files.length})
           </button>
@@ -661,7 +661,7 @@ const ArtifactViewer = memo(function ArtifactViewer({ files }: { files: Artifact
 
       {/* Live-Vorschau der ersten HTML-Datei im HUD-Panel (automatisch offen) */}
       {previewHtml && previewOpen && (
-        <div className="hud-panel hud-corners mb-4 rounded-sm">
+        <div className="hud-panel hud-corners mb-4 rounded-xl">
           <div className="flex items-center justify-between border-b border-[#ff8c2a]/15 px-4 py-2">
             <span className="hud-label">Live-Vorschau // {baseName(previewHtml.path)}</span>
             <span className="hud-pulse h-1.5 w-1.5 rounded-full bg-[#ff8c2a]" aria-hidden />
@@ -677,7 +677,7 @@ const ArtifactViewer = memo(function ArtifactViewer({ files }: { files: Artifact
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(200px,260px)_1fr]">
         {/* Datei-Liste / Tabs */}
-        <div className="hud-panel hud-corners rounded-sm p-2">
+        <div className="hud-panel hud-corners rounded-xl p-2">
           <ul className="space-y-1">
             {files.map((f, i) => {
               const selected = f.path === active.path;
@@ -686,7 +686,7 @@ const ArtifactViewer = memo(function ArtifactViewer({ files }: { files: Artifact
                   <button
                     onClick={() => setActiveIndex(i)}
                     aria-pressed={selected}
-                    className={`flex w-full items-center gap-2 rounded-sm px-3 py-2 text-left font-mono text-xs transition-colors ${FOCUS_RING} ${
+                    className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-mono text-xs transition-colors ${FOCUS_RING} ${
                       selected
                         ? "bg-[#ff8c2a]/15 text-[#fff3e2]"
                         : "text-[#ffb35c]/70 hover:bg-[#ff8c2a]/[0.06]"
@@ -704,12 +704,12 @@ const ArtifactViewer = memo(function ArtifactViewer({ files }: { files: Artifact
         </div>
 
         {/* Code-Ansicht */}
-        <div className="hud-panel hud-corners flex min-w-0 flex-col rounded-sm">
+        <div className="hud-panel hud-corners flex min-w-0 flex-col rounded-xl">
           <div className="flex items-center justify-between border-b border-[#ff8c2a]/15 px-4 py-2">
             <span className="truncate font-mono text-xs text-[#e8dcc8]">{active.path}</span>
             <button
               onClick={() => downloadArtifact(active)}
-              className={`shrink-0 rounded-sm bg-[#ff8c2a] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em] font-semibold text-[#1a0f04] transition hover:bg-[#ffb35c] active:scale-[0.98] ${FOCUS_RING}`}
+              className={`shrink-0 rounded-xl bg-[#ff8c2a] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em] font-semibold text-[#1a0f04] transition hover:bg-[#ffb35c] active:scale-[0.98] ${FOCUS_RING}`}
             >
               Herunterladen
             </button>
@@ -778,12 +778,12 @@ function HudModal({
         aria-modal="true"
         aria-labelledby={labelId}
         tabIndex={-1}
-        className="hud-panel hud-corners hud-modal-in relative w-full max-w-lg rounded-sm border border-[#ff8c2a]/30 bg-[#0b0a08] p-6 outline-none"
+        className="hud-panel hud-corners hud-modal-in relative w-full max-w-lg rounded-xl border border-[#ff8c2a]/30 bg-[#0b0a08] p-6 outline-none"
       >
         <button
           onClick={onClose}
           aria-label="Schliessen"
-          className={`absolute right-3 top-3 rounded-sm px-2 py-1 font-mono text-xs text-[#ffb35c]/70 transition hover:text-[#fff3e2] ${FOCUS_RING}`}
+          className={`absolute right-3 top-3 rounded-xl px-2 py-1 font-mono text-xs text-[#ffb35c]/70 transition hover:text-[#fff3e2] ${FOCUS_RING}`}
         >
           ✕
         </button>
@@ -807,7 +807,7 @@ const ChoiceButton = memo(function ChoiceButton({
     <button
       onClick={() => onSelect(label)}
       aria-pressed={selected}
-      className={`rounded-sm border px-3 py-2.5 text-sm transition-colors ${FOCUS_RING} ${
+      className={`rounded-xl border px-3 py-2.5 text-sm transition-colors ${FOCUS_RING} ${
         selected
           ? "border-[#ff8c2a] bg-[#ff8c2a]/15 text-[#fff3e2]"
           : "border-[#ff8c2a]/25 bg-[#ff8c2a]/[0.03] text-[#e8dcc8] hover:border-[#ff8c2a]/60"
@@ -858,7 +858,7 @@ function OnboardingModal({
       <button
         onClick={() => branche && groesse && onConfirm(branche, groesse)}
         disabled={!branche || !groesse}
-        className={`mt-6 w-full rounded-sm bg-[#ff8c2a] px-6 py-3 font-semibold text-[#1a0f04] transition hover:bg-[#ffb35c] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
+        className={`mt-6 w-full rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-6 py-3 font-semibold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)] transition hover:bg-[#ffb35c] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
       >
         Start
       </button>
@@ -946,25 +946,25 @@ function LicenseModal({
           placeholder="ACC-STARTER-..."
           disabled={busy}
           aria-label="Lizenzschlüssel"
-          className={`flex-1 rounded-sm border border-[#ff8c2a]/25 bg-[#ff8c2a]/[0.04] px-4 py-3 font-mono text-sm text-[#fff3e2] placeholder:text-[#8a7455] outline-none transition focus:border-[#ff8c2a]/70 focus:ring-2 focus:ring-[#ff8c2a]/20 ${FOCUS_RING}`}
+          className={`flex-1 rounded-xl border border-[#ff8c2a]/25 bg-[#ff8c2a]/[0.04] px-4 py-3 font-mono text-sm text-[#fff3e2] placeholder:text-[#8a7455] outline-none transition focus:border-[#ff8c2a]/70 focus:ring-2 focus:ring-[#ff8c2a]/20 ${FOCUS_RING}`}
         />
         <button
           onClick={activate}
           disabled={!key.trim() || busy}
-          className={`rounded-sm bg-[#ff8c2a] px-6 py-3 font-semibold text-[#1a0f04] transition hover:bg-[#ffb35c] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
+          className={`rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-6 py-3 font-semibold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)] transition hover:bg-[#ffb35c] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
         >
           {busy ? "Prüfe ..." : "Aktivieren"}
         </button>
       </div>
       {ultraOk && (
-        <p className="mt-3 rounded-sm border border-[#ffd257]/40 bg-[#ffd257]/10 px-4 py-2 text-sm text-[#ffd257]">
+        <p className="mt-3 rounded-xl border border-[#ffd257]/40 bg-[#ffd257]/10 px-4 py-2 text-sm text-[#ffd257]">
           ⚡ ULTRA-Levelup aktiviert für {ultraOk}: +50% Missionen pro Tag,
           +50% Token-Budget, +2 Browser-Quellen und die Skills der
           nächsthöheren Stufe. Gilt, solange Ihre {ultraOk}-Lizenz aktiv ist.
         </p>
       )}
       {error && (
-        <p role="alert" className="mt-3 rounded-sm border border-red-400/30 bg-red-400/10 px-4 py-2 text-sm text-red-300">
+        <p role="alert" className="mt-3 rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-2 text-sm text-red-300">
           {error}
         </p>
       )}
@@ -1429,7 +1429,7 @@ export default function DashboardPage() {
           </div>
           <div className="flex flex-wrap items-center gap-3">
             {isBusiness && (
-              <span className="hidden rounded-sm border border-[#ffd257]/50 bg-[#ffd257]/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[#ffd257] sm:inline">
+              <span className="hidden rounded-xl border border-[#ffd257]/50 bg-[#ffd257]/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[#ffd257] sm:inline">
                 Team-Arbeitsbereich
               </span>
             )}
@@ -1441,7 +1441,7 @@ export default function DashboardPage() {
             {branche && (
               <button
                 onClick={() => setOnboardingOpen(true)}
-                className={`rounded-sm border border-[#ff8c2a]/30 bg-[#ff8c2a]/[0.06] px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c] transition-colors hover:bg-[#ff8c2a]/15 ${FOCUS_RING}`}
+                className={`rounded-xl border border-[#ff8c2a]/30 bg-[#ff8c2a]/[0.06] px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c] transition-colors hover:bg-[#ff8c2a]/15 ${FOCUS_RING}`}
               >
                 {branche}{" "}
                 <span className="ml-1.5 text-[#ff8c2a] underline underline-offset-2">Ändern</span>
@@ -1449,7 +1449,7 @@ export default function DashboardPage() {
             )}
             <button
               onClick={() => setLicenseOpen(true)}
-              className={`rounded-sm border px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors ${FOCUS_RING} ${
+              className={`rounded-xl border px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors ${FOCUS_RING} ${
                 licensedPlan === "FREE"
                   ? "border-[#ff8c2a]/40 text-[#ff8c2a] hover:bg-[#ff8c2a]/10"
                   : "border-[#ffb35c]/40 bg-[#ff8c2a]/[0.06] text-[#ffb35c] hover:bg-[#ff8c2a]/15"
@@ -1459,65 +1459,65 @@ export default function DashboardPage() {
             </button>
             <a
               href="/chat"
-              className={`rounded-sm px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
             >
               Kommando
             </a>
             <a
               href="/kunden"
-              className={`rounded-sm px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
             >
               Kunden
             </a>
             <a
               href="/email"
-              className={`rounded-sm px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
             >
               E-Mail
             </a>
             <a
               href="/faehigkeiten"
-              className={`rounded-sm px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
             >
               Skills
             </a>
             <a
               href="/analysen"
-              className={`rounded-sm px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
             >
               Analysen
             </a>
             <a
               href="/einstellungen"
-              className={`rounded-sm px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
             >
               Einstellungen
             </a>
             <a
               href="/berichte"
-              className={`rounded-sm px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
             >
               Berichte
             </a>
             <a
               href="/team"
-              className={`rounded-sm px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
             >
               Team
             </a>
             <a
               href="/workflows"
-              className={`rounded-sm px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
             >
               Autopilot
             </a>
             <a
               href="/integrationen"
-              className={`rounded-sm px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
             >
               Integrationen
             </a>
-            <div className="flex overflow-hidden rounded-sm border border-[#ff8c2a]/30" role="group" aria-label="Abo-Stufe">
+            <div className="flex overflow-hidden rounded-xl border border-[#ff8c2a]/30" role="group" aria-label="Abo-Stufe">
               {PLANS.map((p) => {
                 const locked = PLAN_LEVEL[p] > PLAN_LEVEL[licensedPlan];
                 return (
@@ -1547,9 +1547,9 @@ export default function DashboardPage() {
       </header>
 
       <div className={`relative z-10 mx-auto max-w-7xl px-5 py-8 ${isBusiness ? "pb-16" : ""}`}>
-        <div className={isBusiness ? "hud-gold-frame rounded-sm p-4 sm:p-6" : ""}>
+        <div className={isBusiness ? "hud-gold-frame rounded-xl p-4 sm:p-6" : ""}>
           {/* Eingabe */}
-          <section aria-label="Neue Mission" className={fancy ? "hud-panel hud-corners rounded-sm p-5" : ""}>
+          <section aria-label="Neue Mission" className={fancy ? "hud-panel hud-corners rounded-xl p-5" : ""}>
             {fancy && <div className="hud-label mb-2">Mission Input</div>}
             <h1 className="text-2xl font-bold text-[#fff3e2]">Was soll Ihre KI-Abteilung erledigen?</h1>
             <p className="mt-1 text-sm text-[#c9b391]">
@@ -1566,7 +1566,7 @@ export default function DashboardPage() {
                     : 'z. B. "Erstelle eine Marketingstrategie für eine Zürcher Bäckerei"'
                 }
                 disabled={running}
-                className="flex-1 rounded-sm border border-[#ff8c2a]/25 bg-[#ff8c2a]/[0.04] px-4 py-3 text-[#fff3e2] placeholder:text-[#8a7455] outline-none transition focus:border-[#ff8c2a]/70 focus:ring-2 focus:ring-[#ff8c2a]/20"
+                className="flex-1 rounded-xl border border-[#ff8c2a]/25 bg-[#ff8c2a]/[0.04] px-4 py-3 text-[#fff3e2] placeholder:text-[#8a7455] outline-none transition focus:border-[#ff8c2a]/70 focus:ring-2 focus:ring-[#ff8c2a]/20"
               />
               <input
                 ref={fileInputRef}
@@ -1585,40 +1585,40 @@ export default function DashboardPage() {
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={running || docBusy}
-                className={`rounded-sm border border-[#ff8c2a]/40 px-4 py-3 font-semibold text-[#ffb35c] transition hover:bg-[#ff8c2a]/10 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
+                className={`rounded-xl border border-[#ff8c2a]/40 px-4 py-3 font-semibold text-[#ffb35c] transition hover:bg-[#ff8c2a]/10 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
               >
                 {docBusy ? "Liest Dokument …" : "Dokument anhängen"}
               </button>
               {running ? (
-                <button onClick={stopMission} className="rounded-sm border border-red-400/40 px-6 py-3 font-semibold text-red-300 transition hover:bg-red-400/10 active:scale-[0.98]">
+                <button onClick={stopMission} className="rounded-xl border border-red-400/40 px-6 py-3 font-semibold text-red-300 transition hover:bg-red-400/10 active:scale-[0.98]">
                   Abbrechen
                 </button>
               ) : (
-                <button onClick={startMission} disabled={!goal.trim()} className="rounded-sm bg-[#ff8c2a] px-6 py-3 font-semibold text-[#1a0f04] transition hover:bg-[#ffb35c] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40">
+                <button onClick={startMission} disabled={!goal.trim()} className="rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-6 py-3 font-semibold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)] transition hover:bg-[#ffb35c] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40">
                   Mission starten
                 </button>
               )}
             </div>
             {dokument && (
-              <div className="mt-3 inline-flex max-w-full items-center gap-2 rounded-sm border border-[#ff8c2a]/30 bg-[#ff8c2a]/[0.08] px-3 py-1.5 font-mono text-xs text-[#ffb35c]">
+              <div className="mt-3 inline-flex max-w-full items-center gap-2 rounded-xl border border-[#ff8c2a]/30 bg-[#ff8c2a]/[0.08] px-3 py-1.5 font-mono text-xs text-[#ffb35c]">
                 <span className="truncate" title={dokument.name}>{dokument.name}</span>
                 <span className="shrink-0 text-[#8a7455]">{dokument.text.length} Zeichen</span>
                 <button
                   onClick={removeDocument}
                   aria-label={`Dokument ${dokument.name} entfernen`}
-                  className={`shrink-0 rounded-sm px-1 text-sm leading-none text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/15 hover:text-[#fff3e2] ${FOCUS_RING}`}
+                  className={`shrink-0 rounded-xl px-1 text-sm leading-none text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/15 hover:text-[#fff3e2] ${FOCUS_RING}`}
                 >
                   ×
                 </button>
               </div>
             )}
             {docError && (
-              <p role="alert" className="mt-3 rounded-sm border border-red-400/30 bg-red-400/10 px-4 py-2 text-sm text-red-300">
+              <p role="alert" className="mt-3 rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-2 text-sm text-red-300">
                 {docError}
               </p>
             )}
             {error && (
-              <p role="alert" className="mt-3 rounded-sm border border-red-400/30 bg-red-400/10 px-4 py-2 text-sm text-red-300">
+              <p role="alert" className="mt-3 rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-2 text-sm text-red-300">
                 {error}
               </p>
             )}
@@ -1645,7 +1645,7 @@ export default function DashboardPage() {
                 </div>
               ) : <div />}
               {showGauge ? (
-                <div className="hud-panel hud-corners rounded-sm p-4 text-center lg:justify-self-end">
+                <div className="hud-panel hud-corners rounded-xl p-4 text-center lg:justify-self-end">
                   <div className="hud-label mb-1">Quality Score</div>
                   <RadialGauge score={score} />
                 </div>
@@ -1696,7 +1696,7 @@ export default function DashboardPage() {
           {isOrgPlan && org && <OrgChart org={org} dynStatuses={dynStatuses} />}
 
           {openOutput && outputs[openOutput] && (
-            <section aria-label="Agenten-Ausgabe" className={`mt-4 rounded-sm border border-[#ff8c2a]/20 bg-[#ff8c2a]/[0.02] p-5 text-sm leading-relaxed ${fancy ? "hud-corners relative" : ""}`}>
+            <section aria-label="Agenten-Ausgabe" className={`mt-4 rounded-xl border border-[#ff8c2a]/20 bg-[#ff8c2a]/[0.02] p-5 text-sm leading-relaxed ${fancy ? "hud-corners relative" : ""}`}>
               <h3 className="mb-2 font-semibold text-[#fff3e2]">{AGENT_META[openOutput].name}: Rohausgabe</h3>
               <div className="max-h-72 overflow-y-auto whitespace-pre-wrap text-[#e8dcc8]">{outputs[openOutput]}</div>
             </section>
@@ -1707,7 +1707,7 @@ export default function DashboardPage() {
 
           {/* Quality-Score als Text (unterhalb PROFESSIONAL) */}
           {!showGauge && score !== null && (
-            <section aria-label="Qualitätsbewertung" className="mt-8 rounded-sm border border-[#ff8c2a]/20 bg-[#ff8c2a]/[0.02] p-5">
+            <section aria-label="Qualitätsbewertung" className="mt-8 rounded-xl border border-[#ff8c2a]/20 bg-[#ff8c2a]/[0.02] p-5">
               <div className="flex items-center gap-4">
                 <div className={`font-mono text-3xl font-extrabold ${score >= 80 ? "text-[#ffb35c]" : score >= 60 ? "text-amber-400" : "text-red-400"}`}>{score}/100</div>
                 <div className="text-sm text-[#c9b391]">Bewertung durch Quality AI</div>
@@ -1715,7 +1715,7 @@ export default function DashboardPage() {
             </section>
           )}
           {improvements.length > 0 && (
-            <section aria-label="Verbesserungen" className={`mt-4 rounded-sm border border-[#ff8c2a]/15 bg-[#ff8c2a]/[0.02] p-5 ${fancy ? "hud-corners relative" : ""}`}>
+            <section aria-label="Verbesserungen" className={`mt-4 rounded-xl border border-[#ff8c2a]/15 bg-[#ff8c2a]/[0.02] p-5 ${fancy ? "hud-corners relative" : ""}`}>
               <div className={fancy ? "hud-label mb-2" : "mb-2 text-sm font-semibold text-[#fff3e2]"}>Verbesserungsvorschläge</div>
               <ul className="space-y-1 text-sm text-[#e8dcc8]">
                 {improvements.map((imp, i) => (
@@ -1733,7 +1733,7 @@ export default function DashboardPage() {
           {/* Finales Ergebnis: mit Dateien eingeklappt hinter den Artefakten */}
           {finalResult && artifacts.length > 0 && (
             <section aria-label="Ergebnis" className="mt-6">
-              <details className={`rounded-sm border border-[#ff8c2a]/30 bg-gradient-to-b from-[#ff8c2a]/[0.07] to-transparent ${fancy ? "hud-corners relative" : ""}`}>
+              <details className={`rounded-xl border border-[#ff8c2a]/30 bg-gradient-to-b from-[#ff8c2a]/[0.07] to-transparent ${fancy ? "hud-corners relative" : ""}`}>
                 <summary className={`cursor-pointer select-none p-5 text-lg font-bold text-[#fff3e2] transition-colors hover:text-[#ffb35c] ${FOCUS_RING}`}>
                   Vollständiger Bericht
                   <span className="ml-3 font-mono text-[10px] font-normal uppercase tracking-[0.18em] text-[#ffb35c]/70">Zum Aufklappen</span>
@@ -1743,7 +1743,7 @@ export default function DashboardPage() {
             </section>
           )}
           {finalResult && artifacts.length === 0 && (
-            <section aria-label="Ergebnis" className={`mt-8 rounded-sm border border-[#ff8c2a]/30 bg-gradient-to-b from-[#ff8c2a]/[0.07] to-transparent p-6 ${fancy ? "hud-corners relative" : ""}`}>
+            <section aria-label="Ergebnis" className={`mt-8 rounded-xl border border-[#ff8c2a]/30 bg-gradient-to-b from-[#ff8c2a]/[0.07] to-transparent p-6 ${fancy ? "hud-corners relative" : ""}`}>
               {fancy && <div className="hud-label mb-1">Mission Complete</div>}
               <h2 className="text-lg font-bold text-[#fff3e2]">Ergebnis Ihrer KI-Abteilung</h2>
               <div className="mt-3 text-sm leading-relaxed text-[#e8dcc8]">{renderMarkdown(finalResult)}</div>
@@ -1759,7 +1759,7 @@ export default function DashboardPage() {
                   <li key={i}>
                     <button
                       onClick={() => { setFinalResult(h.final); setScore(h.score); setImprovements([]); setArtifacts(h.artifacts ?? []); setError(""); }}
-                      className="w-full rounded-sm border border-[#ff8c2a]/15 bg-[#ff8c2a]/[0.02] px-4 py-3 text-left text-sm transition hover:border-[#ff8c2a]/50"
+                      className="w-full rounded-xl border border-[#ff8c2a]/15 bg-[#ff8c2a]/[0.02] px-4 py-3 text-left text-sm transition hover:border-[#ff8c2a]/50"
                     >
                       <span className="font-medium text-[#fff3e2]">{h.goal}</span>
                       <span className="ml-2 font-mono text-xs text-[#8a7455]">

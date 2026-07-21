@@ -179,23 +179,10 @@ h1, h2, h3, h4 {
   }
 }
 
-/* Ecken-Markierungen (8 kurze Striche via Background-Gradients) */
+/* 2026: keine Ecken-Markierungen mehr – weiche Glas-Karten statt
+   Tech-Rahmen. Klasse bleibt fuer Alt-Markup definiert, zeigt nichts. */
 .hud-corners::after {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  pointer-events: none;
-  background:
-    linear-gradient(var(--hud-amber), var(--hud-amber)) left 0 top 0 / 12px 2px,
-    linear-gradient(var(--hud-amber), var(--hud-amber)) left 0 top 0 / 2px 12px,
-    linear-gradient(var(--hud-amber), var(--hud-amber)) right 0 top 0 / 12px 2px,
-    linear-gradient(var(--hud-amber), var(--hud-amber)) right 0 top 0 / 2px 12px,
-    linear-gradient(var(--hud-amber), var(--hud-amber)) left 0 bottom 0 / 12px 2px,
-    linear-gradient(var(--hud-amber), var(--hud-amber)) left 0 bottom 0 / 2px 12px,
-    linear-gradient(var(--hud-amber), var(--hud-amber)) right 0 bottom 0 / 12px 2px,
-    linear-gradient(var(--hud-amber), var(--hud-amber)) right 0 bottom 0 / 2px 12px;
-  background-repeat: no-repeat;
-  opacity: 0.8;
+  content: none;
 }
 
 /* Monospace-Micro-Label */
