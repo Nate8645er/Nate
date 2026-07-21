@@ -472,7 +472,7 @@ h1, h2, h3, h4 { font-family: var(--acc-head); line-height: 1.12; letter-spacing
   animation: accRingFill 2.4s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards,
              accRingPulse 4s ease-in-out 3s infinite;
 }
-@keyframes accRingFill { to { stroke-dashoffset: 35; } }
+@keyframes accRingFill { to { stroke-dashoffset: 0; } }
 @keyframes accRingPulse {
   0%, 100% { filter: drop-shadow(0 0 4px rgba(255, 140, 42, 0.4)); }
   50% { filter: drop-shadow(0 0 12px rgba(255, 140, 42, 0.8)); }
@@ -1114,7 +1114,7 @@ h1, h2, h3, h4 { font-family: var(--acc-head); line-height: 1.12; letter-spacing
   body::before { display: none; }
   .acc-word, .acc-chip { opacity: 1 !important; transform: none !important; }
   .acc-js .acc-reveal { opacity: 1 !important; transform: none !important; }
-  .acc-hud__ring .acc-ring-fg { stroke-dashoffset: 35; }
+  .acc-hud__ring .acc-ring-fg { stroke-dashoffset: 0; }
   .acc-marquee__track { animation: none !important; }
   .acc-buybar { transform: none; }
 }

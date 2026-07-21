@@ -371,8 +371,8 @@
           "type": "einblick",
           "settings": {
             "motiv": "email",
-            "titel": "Die E-Mail-Zentrale: Antworten in Sekunden statt Stunden.",
-            "text": "Fügen Sie eine eingehende Kundenmail ein und geben Sie die Richtung vor – etwa «Preisnachlass freundlich ablehnen, Ratenzahlung anbieten». Ihre KI schreibt die versandfertige Antwort mit Betreff, professionellem Ton und Ihrer Signatur. Ein Klick öffnet Gmail mit allem bereits ausgefüllt: Sie prüfen kurz und drücken auf Senden. Sicherheit inklusive: Versteckte Anweisungen in einer Kundenmail können Ihre KI nicht umsteuern."
+            "titel": "E-Mail & WhatsApp: Antworten in Sekunden statt Stunden.",
+            "text": "Fügen Sie eine eingehende Kundenmail oder WhatsApp-Nachricht ein und geben Sie die Richtung vor – etwa «Preisnachlass freundlich ablehnen, Ratenzahlung anbieten». Ihre KI schreibt die versandfertige Antwort mit Betreff, professionellem Ton und Ihrer Signatur. Ein Klick öffnet Gmail oder WhatsApp mit allem bereits ausgefüllt: Sie prüfen kurz und drücken auf Senden. Sicherheit inklusive: Versteckte Anweisungen in einer Nachricht können Ihre KI nicht umsteuern."
           }
         },
         "e3": {
@@ -509,8 +509,8 @@
           "type": "bereich",
           "settings": {
             "symbol": "✉️",
-            "name": "E-Mail-Zentrale",
-            "text": "Kundenmails beantwortet die KI – Sie drücken nur Senden."
+            "name": "E-Mail & WhatsApp",
+            "text": "Kundenmails und WhatsApp-Nachrichten beantwortet die KI – Sie drücken nur Senden."
           }
         },
         "a5": {
