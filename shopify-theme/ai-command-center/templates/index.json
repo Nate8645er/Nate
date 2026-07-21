@@ -6,62 +6,282 @@
     "logoleiste": {
       "type": "logoleiste",
       "blocks": {
-        "t1": { "type": "item", "settings": { "text": "Schweizer Anbieter" } },
-        "t2": { "type": "item", "settings": { "text": "Monatlich kündbar" } },
-        "t3": { "type": "item", "settings": { "text": "Quality-Score in jeder Mission" } },
-        "t4": { "type": "item", "settings": { "text": "Demo gratis testen" } }
+        "t1": {
+          "type": "item",
+          "settings": {
+            "text": "Schweizer Anbieter"
+          }
+        },
+        "t2": {
+          "type": "item",
+          "settings": {
+            "text": "Monatlich kündbar"
+          }
+        },
+        "t3": {
+          "type": "item",
+          "settings": {
+            "text": "Quality-Score in jeder Mission"
+          }
+        },
+        "t4": {
+          "type": "item",
+          "settings": {
+            "text": "Demo gratis testen"
+          }
+        }
       },
-      "block_order": ["t1", "t2", "t3", "t4"]
+      "block_order": [
+        "t1",
+        "t2",
+        "t3",
+        "t4"
+      ]
     },
     "vorteile": {
       "type": "vorteile",
       "blocks": {
-        "b1": { "type": "usp", "settings": { "icon": "blitz", "title": "Sofort startklar", "text": "In Tagen live statt in Monaten. Fertige KI-Prozesse, keine Baustellen." } },
-        "b2": { "type": "usp", "settings": { "icon": "chart", "title": "Planbare Kosten", "text": "Ein fixer Monatspreis statt teurer Festanstellungen. Monatlich kündbar." } },
-        "b3": { "type": "usp", "settings": { "icon": "team", "title": "Ganzes Team inklusive", "text": "Strategie, Automatisierung und Umsetzung aus einer Hand, ohne Recruiting." } },
-        "b4": { "type": "usp", "settings": { "icon": "stufen", "title": "Skaliert mit Ihnen", "text": "Abo hoch- oder runterstufen, wann immer Ihr Bedarf sich ändert." } },
-        "b5": { "type": "usp", "settings": { "icon": "schild", "title": "Quality-Score inklusive", "text": "Jede Mission wird geprüft und bewertet, bevor Sie das Ergebnis erhalten." } },
-        "b6": { "type": "usp", "settings": { "icon": "uhr", "title": "Arbeitet rund um die Uhr", "text": "Ihre KI-Abteilung kennt keine Bürozeiten. Missionen laufen auch nachts." } }
+        "b1": {
+          "type": "usp",
+          "settings": {
+            "icon": "blitz",
+            "title": "Sofort startklar",
+            "text": "In Tagen live statt in Monaten. Fertige KI-Prozesse, keine Baustellen."
+          }
+        },
+        "b2": {
+          "type": "usp",
+          "settings": {
+            "icon": "chart",
+            "title": "Planbare Kosten",
+            "text": "Ein fixer Monatspreis statt teurer Festanstellungen. Monatlich kündbar."
+          }
+        },
+        "b3": {
+          "type": "usp",
+          "settings": {
+            "icon": "team",
+            "title": "Ganzes Team inklusive",
+            "text": "Strategie, Automatisierung und Umsetzung aus einer Hand, ohne Recruiting."
+          }
+        },
+        "b4": {
+          "type": "usp",
+          "settings": {
+            "icon": "stufen",
+            "title": "Skaliert mit Ihnen",
+            "text": "Abo hoch- oder runterstufen, wann immer Ihr Bedarf sich ändert."
+          }
+        },
+        "b5": {
+          "type": "usp",
+          "settings": {
+            "icon": "schild",
+            "title": "Quality-Score inklusive",
+            "text": "Jede Mission wird geprüft und bewertet, bevor Sie das Ergebnis erhalten."
+          }
+        },
+        "b6": {
+          "type": "usp",
+          "settings": {
+            "icon": "uhr",
+            "title": "Arbeitet rund um die Uhr",
+            "text": "Ihre KI-Abteilung kennt keine Bürozeiten. Missionen laufen auch nachts."
+          }
+        }
       },
-      "block_order": ["b1", "b2", "b3", "b4", "b5", "b6"]
+      "block_order": [
+        "b1",
+        "b2",
+        "b3",
+        "b4",
+        "b5",
+        "b6"
+      ]
     },
     "produkt-grid": {
       "type": "produkt-grid",
-      "settings": { "limit": 6 }
+      "settings": {
+        "limit": 6
+      }
     },
     "ablauf": {
       "type": "ablauf",
       "blocks": {
-        "s1": { "type": "step", "settings": { "title": "Abo wählen", "text": "Wählen Sie die Abostufe, die zu Ihrem Bedarf passt. Monatlich kündbar, ohne Risiko." } },
-        "s2": { "type": "step", "settings": { "title": "Zugang erhalten", "text": "Nach dem Kauf erhalten Sie Ihren Lizenzschlüssel per E-Mail. Einloggen, fertig." } },
-        "s3": { "type": "step", "settings": { "title": "Missionen starten", "text": "Beschreiben Sie die Aufgabe, Ihre KI-Abteilung liefert das Ergebnis mit Quality-Score." } }
+        "s1": {
+          "type": "step",
+          "settings": {
+            "title": "Abo wählen",
+            "text": "Wählen Sie die Abostufe, die zu Ihrem Bedarf passt. Monatlich kündbar, ohne Risiko."
+          }
+        },
+        "s2": {
+          "type": "step",
+          "settings": {
+            "title": "Zugang erhalten",
+            "text": "Nach dem Kauf erhalten Sie Ihren Lizenzschlüssel per E-Mail. Einloggen, fertig."
+          }
+        },
+        "s3": {
+          "type": "step",
+          "settings": {
+            "title": "Missionen starten",
+            "text": "Beschreiben Sie die Aufgabe, Ihre KI-Abteilung liefert das Ergebnis mit Quality-Score."
+          }
+        }
       },
-      "block_order": ["s1", "s2", "s3"]
+      "block_order": [
+        "s1",
+        "s2",
+        "s3"
+      ]
     },
     "zitate": {
       "type": "zitate",
       "blocks": {
-        "z1": { "type": "quote", "settings": { "text": "Mission gestartet, 20 Minuten später lag der fertige Newsletter mit Betreffzeilen-Varianten bereit.", "label": "Einsatz: Marketing-Texte" } },
-        "z2": { "type": "quote", "settings": { "text": "Das System hat unser Skript geprüft, zwei Fehler gefunden und die korrigierte Version gleich mitgeliefert.", "label": "Einsatz: Code-Review" } },
-        "z3": { "type": "quote", "settings": { "text": "Jeden Montag ein fertiger Wochenreport aus unseren Zahlen, inklusive Zusammenfassung für die Geschäftsleitung.", "label": "Einsatz: Reporting" } }
+        "z1": {
+          "type": "quote",
+          "settings": {
+            "text": "Mission gestartet, 20 Minuten später lag der fertige Newsletter mit Betreffzeilen-Varianten bereit.",
+            "label": "Einsatz: Marketing-Texte"
+          }
+        },
+        "z2": {
+          "type": "quote",
+          "settings": {
+            "text": "Das System hat unser Skript geprüft, zwei Fehler gefunden und die korrigierte Version gleich mitgeliefert.",
+            "label": "Einsatz: Code-Review"
+          }
+        },
+        "z3": {
+          "type": "quote",
+          "settings": {
+            "text": "Jeden Montag ein fertiger Wochenreport aus unseren Zahlen, inklusive Zusammenfassung für die Geschäftsleitung.",
+            "label": "Einsatz: Reporting"
+          }
+        }
       },
-      "block_order": ["z1", "z2", "z3"]
+      "block_order": [
+        "z1",
+        "z2",
+        "z3"
+      ]
     },
     "faq": {
       "type": "faq",
       "blocks": {
-        "f1": { "type": "qa", "settings": { "question": "Wie schnell bin ich startklar?", "answer": "<p>In der Regel innerhalb weniger Tage nach Aboabschluss. Onboarding und erste Prozesse gehen sofort los.</p>" } },
-        "f2": { "type": "qa", "settings": { "question": "Kann ich monatlich kündigen?", "answer": "<p>Ja. Alle Abos sind monatlich kündbar, ohne lange Bindung.</p>" } },
-        "f3": { "type": "qa", "settings": { "question": "Was ist im Abo enthalten?", "answer": "<p>Strategie, Automatisierung und die laufende Umsetzung Ihrer KI-Prozesse. Details je Abostufe.</p>" } },
-        "f4": { "type": "qa", "settings": { "question": "Brauche ich technisches Vorwissen?", "answer": "<p>Nein. Wir übernehmen Einrichtung und Betrieb, Sie geben die Richtung vor.</p>" } },
-        "f5": { "type": "qa", "settings": { "question": "Kann ich das Abo wechseln?", "answer": "<p>Jederzeit hoch- oder runterstufen, passend zu Ihrem aktuellen Bedarf.</p>" } },
-        "f6": { "type": "qa", "settings": { "question": "Wie funktioniert der Support?", "answer": "<p>Sie erreichen uns über die Kontaktseite. Reaktionszeiten richten sich nach Ihrer Abostufe.</p>" } }
+        "f1": {
+          "type": "qa",
+          "settings": {
+            "question": "Wie schnell bin ich startklar?",
+            "answer": "<p>In der Regel innerhalb weniger Tage nach Aboabschluss. Onboarding und erste Prozesse gehen sofort los.</p>"
+          }
+        },
+        "f2": {
+          "type": "qa",
+          "settings": {
+            "question": "Kann ich monatlich kündigen?",
+            "answer": "<p>Ja. Alle Abos sind monatlich kündbar, ohne lange Bindung.</p>"
+          }
+        },
+        "f3": {
+          "type": "qa",
+          "settings": {
+            "question": "Was ist im Abo enthalten?",
+            "answer": "<p>Strategie, Automatisierung und die laufende Umsetzung Ihrer KI-Prozesse. Details je Abostufe.</p>"
+          }
+        },
+        "f4": {
+          "type": "qa",
+          "settings": {
+            "question": "Brauche ich technisches Vorwissen?",
+            "answer": "<p>Nein. Wir übernehmen Einrichtung und Betrieb, Sie geben die Richtung vor.</p>"
+          }
+        },
+        "f5": {
+          "type": "qa",
+          "settings": {
+            "question": "Kann ich das Abo wechseln?",
+            "answer": "<p>Jederzeit hoch- oder runterstufen, passend zu Ihrem aktuellen Bedarf.</p>"
+          }
+        },
+        "f6": {
+          "type": "qa",
+          "settings": {
+            "question": "Wie funktioniert der Support?",
+            "answer": "<p>Sie erreichen uns über die Kontaktseite. Reaktionszeiten richten sich nach Ihrer Abostufe.</p>"
+          }
+        }
       },
-      "block_order": ["f1", "f2", "f3", "f4", "f5", "f6"]
+      "block_order": [
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6"
+      ]
     },
     "cta-band": {
       "type": "cta-band"
+    },
+    "zahlen": {
+      "type": "zahlen",
+      "blocks": {
+        "z1": {
+          "type": "zahl",
+          "settings": {
+            "wert": "13",
+            "name": "Arbeitsbereiche",
+            "notiz": "Vom CRM bis zur Kommandozentrale"
+          }
+        },
+        "z2": {
+          "type": "zahl",
+          "settings": {
+            "wert": "24",
+            "name": "Skills",
+            "notiz": "Geprüfte Befehle für jede Abteilung"
+          }
+        },
+        "z3": {
+          "type": "zahl",
+          "settings": {
+            "wert": "3",
+            "name": "KI-Anbieter",
+            "notiz": "Ausfallsicher mit Fallback-Kette"
+          }
+        },
+        "z4": {
+          "type": "zahl",
+          "settings": {
+            "wert": "1000",
+            "name": "Mitarbeitende",
+            "notiz": "Belegschaft im Enterprise-Ausbau"
+          }
+        }
+      },
+      "block_order": [
+        "z1",
+        "z2",
+        "z3",
+        "z4"
+      ],
+      "settings": {
+        "label": "Für Unternehmen gebaut",
+        "titel": "Professionell. Sicher. Sofort einsatzbereit."
+      }
     }
   },
-  "order": ["hero", "logoleiste", "vorteile", "produkt-grid", "ablauf", "zitate", "faq", "cta-band"]
+  "order": [
+    "hero",
+    "logoleiste",
+    "vorteile",
+    "zahlen",
+    "produkt-grid",
+    "ablauf",
+    "zitate",
+    "faq",
+    "cta-band"
+  ]
 }
