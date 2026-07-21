@@ -18,6 +18,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import type { AgentEvent, AgentRole, AgentStatus, ArtifactFile } from "@/lib/agents/types";
+import AgentOffice, { type OfficeAgent } from "@/app/components/AgentOffice";
 
 /* ------------------------------- Konstanten ------------------------------- */
 
@@ -424,94 +425,6 @@ const BusinessTicker = memo(function BusinessTicker({
   );
 });
 
-/** Agenten-Statuskarte mit Puls-Glow. */
-const AgentCard = memo(function AgentCard({
-  role,
-  name,
-  tagline,
-  status,
-  message,
-  hasOutput,
-  isOpen,
-  onToggle,
-  fancy,
-}: {
-  role: AgentRole;
-  name: string;
-  tagline: string;
-  status: AgentStatus;
-  message: string;
-  hasOutput: boolean;
-  isOpen: boolean;
-  onToggle: (role: AgentRole) => void;
-  fancy: boolean;
-}) {
-  const borderCls =
-    status === "working"
-      ? "border-[#ff8c2a]/70"
-      : status === "done"
-        ? "border-[#ffb35c]/40"
-        : status === "error"
-          ? "border-red-400/50"
-          : "border-[#ff8c2a]/20";
-  return (
-    <div
-      className={`relative rounded-xl border bg-[#ff8c2a]/[0.03] p-4 transition-colors ${borderCls} ${fancy ? "hud-corners" : ""}`}
-      style={
-        fancy && status === "working"
-          ? { boxShadow: "0 0 18px rgba(255,140,42,0.25), inset 0 0 18px rgba(255,140,42,0.06)" }
-          : undefined
-      }
-    >
-      <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-[#fff3e2]">{name}</h3>
-        <span
-          aria-hidden
-          className={`h-2 w-2 rounded-full ${
-            status === "working"
-              ? "hud-pulse bg-[#ff8c2a]"
-              : status === "done"
-                ? "bg-[#ffb35c]"
-                : status === "error"
-                  ? "bg-red-400"
-                  : "bg-[#5a4a35]"
-          }`}
-          style={status === "working" ? { boxShadow: "0 0 8px rgba(255,140,42,0.9)" } : undefined}
-        />
-      </div>
-      <p className="hud-label mt-0.5">{tagline}</p>
-      <p className="mt-3 text-sm">
-        <span className="font-medium text-[#fff3e2]">{STATUS_LABEL[status]}</span>
-        <span className="text-[#c9b391]"> · {message}</span>
-      </p>
-      {hasOutput && (
-        <button
-          onClick={() => onToggle(role)}
-          className="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-[#ff8c2a] underline-offset-2 hover:underline"
-        >
-          {isOpen ? "Ausgabe verbergen" : "Ausgabe ansehen"}
-        </button>
-      )}
-    </div>
-  );
-});
-
-/** Gesperrte Zusatz-Einheit (unterhalb PROFESSIONAL): Hinweis auf das Upgrade. */
-const LockedAgentCard = memo(function LockedAgentCard({ name, tagline }: { name: string; tagline: string }) {
-  return (
-    <div className="relative rounded-xl border border-[#ff8c2a]/15 bg-[#ff8c2a]/[0.02] p-4 opacity-70">
-      <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-[#fff3e2]">{name}</h3>
-        <span aria-hidden className="h-2 w-2 rounded-full bg-[#5a4a35]" />
-      </div>
-      <p className="hud-label mt-0.5">{tagline}</p>
-      <p className="mt-3 text-sm">
-        <span className="font-medium text-[#8a7455]">Gesperrt</span>
-        <span className="text-[#c9b391]"> · Ab Professional</span>
-      </p>
-    </div>
-  );
-});
 
 /** Status-Punkt-Klassen für die dynamischen Rollen im Organigramm. */
 function dynDotClass(status: AgentStatus): string {
@@ -1040,6 +953,19 @@ export default function DashboardPage() {
     : showExtraAgents
       ? 8
       : 4;
+
+  // Agenten fürs animierte Büro: Kern-Team + (ab PROFESSIONAL) Spezialisten.
+  // Darunter erscheinen die Spezialisten als gesperrte, gedimmte Plätze.
+  const officeAgents = useMemo<OfficeAgent[]>(
+    () =>
+      ALL_ROLES.map((role) => ({
+        id: role,
+        name: AGENT_META[role].name,
+        status: statuses[role].status,
+        locked: EXTRA_ROLES.includes(role) && !showExtraAgents,
+      })),
+    [statuses, showExtraAgents],
+  );
 
   useEffect(() => {
     try {
@@ -1653,42 +1579,37 @@ export default function DashboardPage() {
             </section>
           )}
 
-          {/* Agenten-Status */}
-          <section aria-label="Agenten-Status" className="mt-8">
-            {fancy && <div className="hud-label mb-3">Einheiten // Agenten-Status</div>}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {BASE_ROLES.map((role) => (
-                <AgentCard
-                  key={role}
-                  role={role}
-                  name={AGENT_META[role].name}
-                  tagline={AGENT_META[role].tagline}
-                  status={statuses[role].status}
-                  message={statuses[role].message}
-                  hasOutput={Boolean(outputs[role])}
-                  isOpen={openOutput === role}
-                  onToggle={toggleOutput}
-                  fancy={fancy}
-                />
-              ))}
-              {EXTRA_ROLES.map((role) =>
-                showExtraAgents ? (
-                  <AgentCard
-                    key={role}
-                    role={role}
-                    name={AGENT_META[role].name}
-                    tagline={AGENT_META[role].tagline}
-                    status={statuses[role].status}
-                    message={statuses[role].message}
-                    hasOutput={Boolean(outputs[role])}
-                    isOpen={openOutput === role}
-                    onToggle={toggleOutput}
-                    fancy={fancy}
-                  />
-                ) : (
-                  <LockedAgentCard key={role} name={AGENT_META[role].name} tagline={AGENT_META[role].tagline} />
-                ),
-              )}
+          {/* Agenten-Büro: animierte Belegschaft statt statischer Karten */}
+          <section aria-label="Ihre KI-Belegschaft" className="mt-8">
+            {fancy && <div className="hud-label mb-3">Ihr Büro // Belegschaft live</div>}
+            <AgentOffice agents={officeAgents} />
+            {/* Kompakte Legende + Ausgabe-Zugriff je Agent */}
+            <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-4">
+              {ALL_ROLES.map((role) => {
+                const gesperrt = EXTRA_ROLES.includes(role) && !showExtraAgents;
+                const st = statuses[role].status;
+                const dot =
+                  gesperrt ? "bg-[#5a4a35]"
+                    : st === "working" ? "hud-pulse bg-[#ff8c2a]"
+                    : st === "done" ? "bg-[#2dd48f]"
+                    : st === "error" ? "bg-red-400"
+                    : "bg-[#7ba7e0]";
+                return (
+                  <div key={role} className="flex items-center gap-2 text-xs">
+                    <span aria-hidden className={`h-2 w-2 shrink-0 rounded-full ${dot}`} />
+                    <span className="truncate text-[#e8dcc8]">{AGENT_META[role].name}</span>
+                    {!gesperrt && Boolean(outputs[role]) && (
+                      <button
+                        onClick={() => toggleOutput(role)}
+                        className="ml-auto shrink-0 font-mono text-[10px] uppercase tracking-[0.12em] text-[#ff8c2a] hover:underline"
+                      >
+                        {openOutput === role ? "verbergen" : "Ausgabe"}
+                      </button>
+                    )}
+                    {gesperrt && <span className="ml-auto shrink-0 text-[10px] text-[#8a7455]">🔒 ab Pro</span>}
+                  </div>
+                );
+              })}
             </div>
           </section>
 
