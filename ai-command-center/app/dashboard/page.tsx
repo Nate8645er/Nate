@@ -73,9 +73,9 @@ const PLAN_LEVEL: Record<Plan, number> = {
 const WORKFORCE_BY_PLAN: Record<Plan, number> = {
   FREE: 4,
   PERSONAL: 6,
-  STARTER: 8,
-  PROFESSIONAL: 24,
-  BUSINESS: 150,
+  STARTER: 12,
+  PROFESSIONAL: 50,
+  BUSINESS: 250,
   ENTERPRISE: 1000,
 };
 
