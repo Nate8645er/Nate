@@ -91,6 +91,12 @@ interface OrgState {
 }
 type DynStatus = { status: AgentStatus; message: string };
 
+/** Dokumenten-Analyse: Upload-Limit und Client-Kappung (Server kappt erneut). */
+const MAX_DOC_BYTES = 2 * 1024 * 1024;
+const MAX_DOC_CHARS = 20_000;
+/** Endungen, die der Client selbst per FileReader als Text liest. */
+const TEXT_DOC_EXTENSIONS = new Set(["txt", "md", "csv", "html", "htm"]);
+
 const HISTORY_KEY = "acc-mission-history";
 const PLAN_KEY = "acc-plan";
 /** Lizenz-Token (30 Tage, HMAC-signiert) aus POST /api/license. */
@@ -927,6 +933,16 @@ function LicenseModal({
   );
 }
 
+/** Liest eine Textdatei per FileReader (Dokumenten-Analyse, TXT/MD/CSV/HTML). */
+function readFileAsText(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : "");
+    reader.onerror = () => reject(reader.error ?? new Error("Datei konnte nicht gelesen werden."));
+    reader.readAsText(file);
+  });
+}
+
 /* --------------------------------- Seite ---------------------------------- */
 
 export default function DashboardPage() {
@@ -955,6 +971,11 @@ export default function DashboardPage() {
   const [dynStatuses, setDynStatuses] = useState<Record<string, DynStatus>>({});
   const [logs, setLogs] = useState<string[]>([]);
   const [startedAt, setStartedAt] = useState<number | null>(null);
+  /** Angehaengtes Dokument (Dokumenten-Analyse) fuer die naechste Mission. */
+  const [dokument, setDokument] = useState<{ name: string; text: string } | null>(null);
+  const [docBusy, setDocBusy] = useState(false);
+  const [docError, setDocError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const eventTimesRef = useRef<number[]>([]);
   const totalEventsRef = useRef(0);
@@ -1146,6 +1167,52 @@ export default function DashboardPage() {
     }
   }, [pushLog]);
 
+  /**
+   * Dokumenten-Analyse: liest .txt/.md/.csv/.html direkt per FileReader,
+   * schickt PDFs an POST /api/extract und haengt den Text (gekappt auf
+   * MAX_DOC_CHARS) als Dokument an die naechste Mission.
+   */
+  const attachDocument = useCallback(async (file: File) => {
+    setDocError("");
+    if (file.size > MAX_DOC_BYTES) {
+      setDocError("Datei zu gross – maximal 2 MB.");
+      return;
+    }
+    const ext = file.name.toLowerCase().split(".").pop() ?? "";
+    setDocBusy(true);
+    try {
+      let text: string;
+      if (ext === "pdf") {
+        const form = new FormData();
+        form.append("file", file);
+        const res = await fetch("/api/extract", { method: "POST", body: form });
+        const data = (await res.json().catch(() => null)) as { text?: string; error?: string } | null;
+        if (!res.ok) throw new Error(data?.error ?? `Server antwortete mit ${res.status}`);
+        text = data?.text ?? "";
+      } else if (TEXT_DOC_EXTENSIONS.has(ext)) {
+        text = await readFileAsText(file);
+      } else {
+        setDocError("Nur .txt, .md, .csv, .html oder .pdf werden unterstuetzt.");
+        return;
+      }
+      const clean = text.trim().slice(0, MAX_DOC_CHARS);
+      if (!clean) {
+        setDocError("Im Dokument wurde kein Text gefunden.");
+        return;
+      }
+      setDokument({ name: file.name.slice(0, 80), text: clean });
+    } catch (err) {
+      setDocError(err instanceof Error ? err.message : "Dokument konnte nicht gelesen werden.");
+    } finally {
+      setDocBusy(false);
+    }
+  }, []);
+
+  const removeDocument = useCallback(() => {
+    setDokument(null);
+    setDocError("");
+  }, []);
+
   const startMission = useCallback(async () => {
     const missionGoal = goal.trim();
     if (!missionGoal || running) return;
@@ -1199,7 +1266,14 @@ export default function DashboardPage() {
         headers,
         body: JSON.stringify({
           goal: missionGoal,
-          ...(branche && groesse ? { context: { branche, groesse } } : {}),
+          ...((branche && groesse) || dokument
+            ? {
+                context: {
+                  ...(branche && groesse ? { branche, groesse } : {}),
+                  ...(dokument ? { dokument } : {}),
+                },
+              }
+            : {}),
         }),
         signal: controller.signal,
       });
@@ -1241,7 +1315,7 @@ export default function DashboardPage() {
       setRunning(false);
       abortRef.current = null;
     }
-  }, [goal, running, handleEvent, saveHistory, licenseToken, licensedPlan, usageToken, branche, groesse]);
+  }, [goal, running, handleEvent, saveHistory, licenseToken, licensedPlan, usageToken, branche, groesse, dokument]);
 
   const stopMission = useCallback(() => abortRef.current?.abort(), []);
   const toggleOutput = useCallback(
@@ -1348,10 +1422,35 @@ export default function DashboardPage() {
                 value={goal}
                 onChange={(e) => setGoal(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && startMission()}
-                placeholder='z. B. "Erstelle eine Marketingstrategie fuer eine Zuercher Baeckerei"'
+                placeholder={
+                  dokument
+                    ? "z. B. Fasse dieses Dokument zusammen"
+                    : 'z. B. "Erstelle eine Marketingstrategie fuer eine Zuercher Baeckerei"'
+                }
                 disabled={running}
                 className="flex-1 rounded-sm border border-[#ff8c2a]/25 bg-[#ff8c2a]/[0.04] px-4 py-3 text-[#fff3e2] placeholder:text-[#8a7455] outline-none transition focus:border-[#ff8c2a]/70 focus:ring-2 focus:ring-[#ff8c2a]/20"
               />
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".txt,.md,.csv,.html,.pdf"
+                className="hidden"
+                aria-hidden
+                tabIndex={-1}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  // Zuruecksetzen, damit dieselbe Datei erneut waehlbar ist.
+                  e.target.value = "";
+                  if (file) void attachDocument(file);
+                }}
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={running || docBusy}
+                className={`rounded-sm border border-[#ff8c2a]/40 px-4 py-3 font-semibold text-[#ffb35c] transition hover:bg-[#ff8c2a]/10 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
+              >
+                {docBusy ? "Liest Dokument …" : "Dokument anhaengen"}
+              </button>
               {running ? (
                 <button onClick={stopMission} className="rounded-sm border border-red-400/40 px-6 py-3 font-semibold text-red-300 transition hover:bg-red-400/10 active:scale-[0.98]">
                   Abbrechen
@@ -1362,6 +1461,24 @@ export default function DashboardPage() {
                 </button>
               )}
             </div>
+            {dokument && (
+              <div className="mt-3 inline-flex max-w-full items-center gap-2 rounded-sm border border-[#ff8c2a]/30 bg-[#ff8c2a]/[0.08] px-3 py-1.5 font-mono text-xs text-[#ffb35c]">
+                <span className="truncate" title={dokument.name}>{dokument.name}</span>
+                <span className="shrink-0 text-[#8a7455]">{dokument.text.length} Zeichen</span>
+                <button
+                  onClick={removeDocument}
+                  aria-label={`Dokument ${dokument.name} entfernen`}
+                  className={`shrink-0 rounded-sm px-1 text-sm leading-none text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/15 hover:text-[#fff3e2] ${FOCUS_RING}`}
+                >
+                  ×
+                </button>
+              </div>
+            )}
+            {docError && (
+              <p role="alert" className="mt-3 rounded-sm border border-red-400/30 bg-red-400/10 px-4 py-2 text-sm text-red-300">
+                {docError}
+              </p>
+            )}
             {error && (
               <p role="alert" className="mt-3 rounded-sm border border-red-400/30 bg-red-400/10 px-4 py-2 text-sm text-red-300">
                 {error}

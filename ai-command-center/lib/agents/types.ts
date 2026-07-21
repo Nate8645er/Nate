@@ -16,10 +16,19 @@ export type PlanId = "FREE" | "STARTER" | "PROFESSIONAL" | "BUSINESS" | "ENTERPR
  * Unternehmenskontext aus dem Branchen-Onboarding.
  * Wird optional mit POST /api/mission gesendet und vom Orchestrator
  * als Kontextzeile an den Commander-System-Prompt gehaengt.
+ * `dokument` (optional) ist ein vom Nutzer angehaengtes Text-Dokument
+ * (Dokumenten-Analyse); der Orchestrator haengt es als abgegrenzten
+ * DATENBLOCK an die USER-Messages der Worker – nie an System-Prompts.
  */
 export interface MissionContext {
-  branche: string;
-  groesse: string;
+  branche?: string;
+  groesse?: string;
+  dokument?: {
+    /** Dateiname, serverseitig auf 80 Zeichen gekappt. */
+    name: string;
+    /** Extrahierter Text, serverseitig auf 20000 Zeichen gekappt. */
+    text: string;
+  };
 }
 
 /** Rollen der Agenten im Team (Kern + plan-abhaengige Zusatz-Worker). */

@@ -24,6 +24,9 @@ export const maxDuration = 300;
 
 const MAX_GOAL_LENGTH = 2000;
 const MAX_CONTEXT_FIELD_LENGTH = 80;
+/** Serverseitige Kappung des angehaengten Dokuments (Dokumenten-Analyse). */
+const MAX_DOKUMENT_NAME_LENGTH = 80;
+const MAX_DOKUMENT_TEXT_LENGTH = 20_000;
 
 export async function POST(request: Request): Promise<Response> {
   let goal: unknown;
@@ -122,8 +125,24 @@ function sanitizeContext(raw: unknown): MissionContext | undefined {
   if (typeof raw !== "object" || raw === null) return undefined;
   const branche = cleanContextField((raw as { branche?: unknown }).branche);
   const groesse = cleanContextField((raw as { groesse?: unknown }).groesse);
-  if (!branche || !groesse) return undefined;
-  return { branche, groesse };
+  const dokument = sanitizeDokument((raw as { dokument?: unknown }).dokument);
+  const onboarding = branche && groesse ? { branche, groesse } : {};
+  if ((!branche || !groesse) && !dokument) return undefined;
+  return { ...onboarding, ...(dokument ? { dokument } : {}) };
+}
+
+/**
+ * Validiert das optionale angehaengte Dokument und kappt serverseitig
+ * name (80) und text (20000 Zeichen); unbrauchbares => undefined.
+ */
+function sanitizeDokument(raw: unknown): MissionContext["dokument"] | undefined {
+  if (typeof raw !== "object" || raw === null) return undefined;
+  const { name, text } = raw as { name?: unknown; text?: unknown };
+  if (typeof name !== "string" || typeof text !== "string") return undefined;
+  const cleanName = name.replace(/\s+/g, " ").trim().slice(0, MAX_DOKUMENT_NAME_LENGTH);
+  const cleanText = text.slice(0, MAX_DOKUMENT_TEXT_LENGTH).trim();
+  if (!cleanName || !cleanText) return undefined;
+  return { name: cleanName, text: cleanText };
 }
 
 /** Trimmt, entfernt Zeilenumbrueche und begrenzt die Laenge. */
