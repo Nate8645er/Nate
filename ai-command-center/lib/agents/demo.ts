@@ -8,6 +8,7 @@
  */
 
 import type {
+  ArtifactFile,
   OrgDepartmentSpec,
   OrgRoleSpec,
   QualityReport,
@@ -29,6 +30,104 @@ function hash(text: string): number {
 function shortGoal(goal: string): string {
   const g = goal.trim().replace(/\s+/g, " ");
   return g.length > 80 ? `${g.slice(0, 77)}…` : g;
+}
+
+/* --------------------------- Datei-Artefakte (Demo) --------------------------- */
+
+/** HTML-escapen (Attribut/Textkontext) fuer sicher eingebettete Nutzertexte. */
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+/**
+ * Erkennt buildbare Ziele: verlangt das Ziel eine Website/Seite/App/ein Script,
+ * liefert der Demo-Modus echte Beispiel-Dateien statt nur Text.
+ */
+export function isBuildableGoal(goal: string): boolean {
+  return /(bauen|erstell|website|webseite|web-seite|kasse|shop|landing\s*page|landingpage|app|script|skript|prototyp|seite)/i.test(
+    goal,
+  );
+}
+
+/**
+ * Erzeugt fuer buildbare Ziele eine kleine, ECHTE Beispiel-Datei-Ausgabe:
+ * eine eigenstaendige (inline gestylte) index.html mit sichtbarem Inhalt plus
+ * eine README.md. Nicht buildbare Ziele liefern eine leere Liste.
+ *
+ * Deterministisch (kein Zufall): gleiches Ziel => gleiche Dateien.
+ */
+export function demoArtifactFiles(goal: string): ArtifactFile[] {
+  if (!isBuildableGoal(goal)) return [];
+  const g = shortGoal(goal);
+  const safe = escapeHtml(g);
+
+  const html = [
+    "<!doctype html>",
+    '<html lang="de">',
+    "<head>",
+    '  <meta charset="utf-8" />',
+    '  <meta name="viewport" content="width=device-width, initial-scale=1" />',
+    `  <title>${safe}</title>`,
+    "  <style>",
+    "    :root { --bg:#0f0d0b; --card:#171310; --accent:#ff8c2a; --text:#f3ead9; --muted:#c9b391; }",
+    "    * { box-sizing: border-box; }",
+    "    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:var(--bg); color:var(--text); }",
+    "    header { padding:72px 24px 56px; text-align:center; background:radial-gradient(120% 80% at 50% 0%, rgba(255,140,42,0.16), transparent 70%); }",
+    "    header h1 { margin:0 0 12px; font-size:clamp(28px,6vw,52px); letter-spacing:-0.02em; }",
+    "    header p { margin:0 auto; max-width:620px; color:var(--muted); font-size:18px; line-height:1.6; }",
+    "    .cta { display:inline-block; margin-top:28px; padding:14px 30px; border-radius:8px; background:var(--accent); color:#1a0f04; font-weight:700; text-decoration:none; }",
+    "    main { max-width:960px; margin:0 auto; padding:24px; display:grid; gap:20px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); }",
+    "    .card { background:var(--card); border:1px solid rgba(255,140,42,0.18); border-radius:12px; padding:24px; }",
+    "    .card h2 { margin:0 0 8px; font-size:20px; color:#fff3e2; }",
+    "    .card p { margin:0; color:var(--muted); line-height:1.6; }",
+    "    footer { text-align:center; padding:40px 24px 60px; color:var(--muted); font-size:14px; }",
+    "  </style>",
+    "</head>",
+    "<body>",
+    "  <header>",
+    "    <h1>Willkommen</h1>",
+    `    <p>${safe} &ndash; erstellt von Ihrer KI-Abteilung als sofort einsatzbereiter Startpunkt.</p>`,
+    '    <a class="cta" href="#kontakt">Jetzt Kontakt aufnehmen</a>',
+    "  </header>",
+    "  <main>",
+    '    <section class="card"><h2>Ueber uns</h2><p>Kurze, klare Vorstellung Ihres Angebots. Ersetzen Sie diesen Text durch Ihre eigene Geschichte.</p></section>',
+    '    <section class="card"><h2>Leistungen</h2><p>Drei bis fuenf Kernleistungen als klare Stichpunkte &ndash; damit Besucher den Nutzen sofort erkennen.</p></section>',
+    '    <section class="card" id="kontakt"><h2>Kontakt</h2><p>Telefon, E-Mail und Oeffnungszeiten. Ein klarer Handlungsaufruf schliesst die Seite ab.</p></section>',
+    "  </main>",
+    "  <footer>Demo-Ausgabe &middot; von AI Command Center generiert</footer>",
+    "</body>",
+    "</html>",
+  ].join("\n");
+
+  const readme = [
+    `# ${g}`,
+    "",
+    "Diese Dateien wurden von **AI Command Center** als Beispiel-Startpaket erzeugt.",
+    "",
+    "## Inhalt",
+    "- `index.html` – eigenstaendige Landingpage (Styles inline, direkt im Browser oder in der Live-Vorschau lauffaehig).",
+    "",
+    "## Naechste Schritte",
+    "1. Texte durch Ihre eigenen Inhalte ersetzen.",
+    "2. Farben in `:root` an Ihr Branding anpassen.",
+    "3. Datei auf einen beliebigen Webspace hochladen.",
+  ].join("\n");
+
+  return [
+    { path: "index.html", language: "html", content: html },
+    { path: "README.md", language: "markdown", content: readme },
+  ];
+}
+
+/** Rendert Artefakt-Dateien als FILE-Bloecke fuer die Agenten-Textausgabe. */
+function renderFileBlocks(files: readonly ArtifactFile[]): string {
+  return files
+    .map((f) => `=== FILE: ${f.path} ===\n${f.content}\n=== END FILE ===`)
+    .join("\n\n");
 }
 
 /** Demo-Teilaufgabe je Worker (fuer den Commander-Plan im Demo-Modus). */
@@ -58,7 +157,7 @@ export function demoPlan(goal: string, workers: readonly WorkerRole[]): TaskPlan
 /** Builder-Ergebnis im Demo-Modus. */
 export function demoBuilderOutput(goal: string, task: string): string {
   const g = shortGoal(goal);
-  return [
+  const lines = [
     `## Umsetzungspaket: ${g}`,
     "",
     `**Auftrag:** ${task}`,
@@ -76,7 +175,22 @@ export function demoBuilderOutput(goal: string, task: string): string {
     "- Entwurf intern gegen das Missionsziel pruefen.",
     "- Eine Feedbackrunde einplanen, danach finalisieren.",
     "- Ergebnis in den Zielkanal (Dokument, Website, Praesentation) ueberfuehren.",
-  ].join("\n");
+  ];
+
+  // Buildbare Ziele erhalten echte Beispiel-Dateien als FILE-Bloecke, die der
+  // Orchestrator zum artifact-Event parst.
+  const files = demoArtifactFiles(goal);
+  if (files.length) {
+    lines.push(
+      "",
+      "### 4. Erzeugte Dateien",
+      "Direkt verwendbares Startpaket (siehe Datei-Bloecke):",
+      "",
+      renderFileBlocks(files),
+    );
+  }
+
+  return lines.join("\n");
 }
 
 /** Analyst-Ergebnis im Demo-Modus. */

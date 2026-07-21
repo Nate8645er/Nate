@@ -47,6 +47,7 @@ import type {
   AgentConfig,
   AgentId,
   AgentRole,
+  ArtifactFile,
   ChatMessage,
   EmitFn,
   MissionContext,
@@ -208,6 +209,15 @@ async function runMissionPhases(
   });
   const combined = workerOutputs.join("\n\n");
 
+  // 2b. Echte Dateien aus den Builder-/Coding-Ausgaben parsen und als EIN
+  //     artifact-Event emittieren (nach den Worker-Ausgaben, vor dem final).
+  const artifactFiles = dedupeArtifactFiles(
+    workers.flatMap((w, i) =>
+      w === "builder" || w === "coding" ? parseArtifactFiles(workerCalls[i].text) : [],
+    ),
+  );
+  if (artifactFiles.length) emit({ type: "artifact", files: artifactFiles });
+
   // 3. Quality prueft alle Ergebnisse zusammen
   emit(status("quality", "working", "Quality prueft die Ergebnisse …"));
   const qualityCall = await callAgent(
@@ -340,6 +350,12 @@ async function runOrgMissionPhases(
       outputById.set(role.id, call.text);
     });
   }
+
+  // 3b. Echte Dateien aus allen Rollen-Ausgaben parsen (vor dem final-Event).
+  const artifactFiles = dedupeArtifactFiles(
+    [...outputById.values()].flatMap((text) => parseArtifactFiles(text)),
+  );
+  if (artifactFiles.length) emit({ type: "artifact", files: artifactFiles });
 
   // 4. Commander fasst je Abteilung zusammen
   const summaries: string[] = [];
@@ -505,6 +521,106 @@ function slugifyRole(text: string): string {
     .replace(/ß/g, "ss")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+}
+
+/* --------------------------- Datei-Artefakt-Parser -------------------------- */
+
+/** Dateiendung -> Sprach-Label (fuer die Code-Ansicht im Dashboard). */
+const LANGUAGE_BY_EXT: Record<string, string> = {
+  html: "html",
+  htm: "html",
+  css: "css",
+  js: "javascript",
+  mjs: "javascript",
+  cjs: "javascript",
+  ts: "typescript",
+  tsx: "tsx",
+  jsx: "jsx",
+  json: "json",
+  md: "markdown",
+  txt: "text",
+  py: "python",
+  rb: "ruby",
+  php: "php",
+  go: "go",
+  rs: "rust",
+  java: "java",
+  sh: "bash",
+  bash: "bash",
+  yml: "yaml",
+  yaml: "yaml",
+  toml: "toml",
+  sql: "sql",
+  vue: "vue",
+  svelte: "svelte",
+  xml: "xml",
+  svg: "xml",
+  csv: "csv",
+  env: "bash",
+};
+
+/** Leitet die Sprache aus der Dateiendung ab; unbekannt => "text". */
+function languageFromPath(path: string): string {
+  const base = path.split("/").pop() ?? path;
+  const dot = base.lastIndexOf(".");
+  const ext = dot > 0 ? base.slice(dot + 1).toLowerCase() : "";
+  return LANGUAGE_BY_EXT[ext] ?? "text";
+}
+
+/**
+ * Regex fuer einen Datei-Block. Toleriert Leerraum um die Marker sowie CRLF.
+ * Der Inhalt wird nicht-gierig bis zur END-Marker-Zeile gefasst.
+ *   === FILE: pfad/name.ext ===
+ *   <inhalt>
+ *   === END FILE ===
+ */
+const FILE_BLOCK_RE =
+  /===[ \t]*FILE:[ \t]*(.+?)[ \t]*===[ \t]*\r?\n([\s\S]*?)\r?\n?===[ \t]*END[ \t]+FILE[ \t]*===/gi;
+
+/** Sanitisiert einen Pfad: keine absoluten/uebergeordneten Pfade, gekappt. */
+function sanitizePath(raw: string): string {
+  const cleaned = raw
+    .trim()
+    .replace(/^[/\\]+/, "")
+    .replace(/\.\.[/\\]/g, "")
+    .replace(/[\r\n\t]/g, "")
+    .slice(0, 200)
+    .trim();
+  return cleaned;
+}
+
+/**
+ * Robuster Parser: extrahiert alle Datei-Bloecke aus einem Agenten-Text und
+ * leitet je Datei die Sprache aus der Endung ab. Wirft nie; unbrauchbare
+ * Bloecke (ohne Pfad) werden uebersprungen.
+ */
+export function parseArtifactFiles(text: string): ArtifactFile[] {
+  if (!text || text.indexOf("=== FILE:") === -1) {
+    // Schneller Ausstieg, tolerant gegenueber fehlendem Leerraum:
+    if (!/===[ \t]*FILE:/i.test(text ?? "")) return [];
+  }
+  const files: ArtifactFile[] = [];
+  FILE_BLOCK_RE.lastIndex = 0;
+  let match: RegExpExecArray | null;
+  while ((match = FILE_BLOCK_RE.exec(text)) !== null) {
+    const path = sanitizePath(match[1]);
+    if (!path) continue;
+    const content = match[2] ?? "";
+    files.push({ path, language: languageFromPath(path), content });
+  }
+  return files;
+}
+
+/** Entfernt Duplikate anhand des Pfads; der erste Treffer gewinnt. */
+function dedupeArtifactFiles(files: ArtifactFile[]): ArtifactFile[] {
+  const seen = new Set<string>();
+  const out: ArtifactFile[] = [];
+  for (const f of files) {
+    if (seen.has(f.path)) continue;
+    seen.add(f.path);
+    out.push(f);
+  }
+  return out;
 }
 
 /* ----------------------------- interne Helfer ----------------------------- */

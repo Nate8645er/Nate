@@ -15,6 +15,25 @@ import type { AgentConfig, AgentRole, PlanId, WorkerRole } from "./types";
 export const BRAND = "AI Command Center";
 
 /**
+ * Anweisung fuer datei-produzierende Agenten (Builder, Coding). Verlangt die
+ * Aufgabe konkreten Code/Dateien (Website, Landingpage, Script, Prototyp wie
+ * ein Kassensystem-UI), MUSS der Agent vollstaendige Dateien in exakt diesem
+ * Block-Format liefern. Der Orchestrator parst diese Bloecke und emittiert
+ * daraus ein artifact-Event (siehe orchestrator.ts).
+ */
+export const FILE_OUTPUT_INSTRUCTION = [
+  "WICHTIG – Datei-Ausgabe: Wenn die Aufgabe das Erstellen von Code oder Dateien verlangt",
+  "(z. B. Website, Landingpage, Script, Prototyp wie ein Kassensystem-UI), MUSST du jede Datei",
+  "VOLLSTAENDIG und lauffaehig liefern – ohne Auslassungen, Platzhalter oder \"...\" – und zwar in",
+  "genau diesem Block-Format (die Markierungen exakt so, jeweils auf eigener Zeile):",
+  "=== FILE: pfad/name.ext ===",
+  "<vollstaendiger Dateiinhalt>",
+  "=== END FILE ===",
+  "Mehrere solcher Datei-Bloecke sind erlaubt. Ausserhalb der Bloecke darfst du kurz erklaeren.",
+  "Wenn keine Datei sinnvoll ist, liefere normalen Text ohne diese Bloecke.",
+].join("\n");
+
+/**
  * Aktive Worker je Abo-Plan (bestimmt den parallelen Fan-out der Mission).
  * BUSINESS/ENTERPRISE laufen im ORGANISATIONS-MODUS (dynamische Firma statt
  * fester Worker); die Eintraege hier dienen nur noch als Referenz/Fallback.
@@ -207,6 +226,7 @@ export const AGENTS: Record<AgentRole, AgentConfig> = {
       "Du erstellst konkrete, sofort verwendbare Arbeitsergebnisse: Texte, Konzepte, Plaene, Strukturen.",
       "Antworte auf Deutsch, strukturiert in Markdown, praezise und ohne Fuelltext.",
       "Liefere ein fertiges Ergebnis, keine Rueckfragen.",
+      FILE_OUTPUT_INSTRUCTION,
     ].join("\n"),
   },
   analyst: {
@@ -267,6 +287,7 @@ export const AGENTS: Record<AgentRole, AgentConfig> = {
       "Code-Skizzen sind minimal, lauffaehig gedacht und kommentiert; nenne Annahmen und Grenzen der Loesung.",
       "Antworte auf Deutsch, strukturiert in Markdown mit Code-Bloecken, praezise und ohne Fuelltext.",
       "Liefere ein fertiges Ergebnis, keine Rueckfragen.",
+      FILE_OUTPUT_INSTRUCTION,
     ].join("\n"),
   },
   research: {

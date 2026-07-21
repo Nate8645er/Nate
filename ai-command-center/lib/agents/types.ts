@@ -88,6 +88,20 @@ export interface QualityReport {
 }
 
 /**
+ * Eine vom Team erzeugte Datei (echtes Artefakt einer Mission).
+ * Der Orchestrator parst sie aus den Builder-/Coding-Ausgaben; das
+ * Dashboard zeigt sie an, oeffnet die Vorschau und laedt sie herunter.
+ */
+export interface ArtifactFile {
+  /** Relativer Pfad inkl. Dateiname, z. B. "index.html" oder "src/app.ts". */
+  path: string;
+  /** Aus der Endung abgeleitete Sprache (z. B. "html", "typescript"). */
+  language: string;
+  /** Vollstaendiger Dateiinhalt. */
+  content: string;
+}
+
+/**
  * Discriminated Union fuer Server-Sent Events der Mission-API.
  * Das Dashboard rendert den Live-Status ausschliesslich aus diesen Events.
  */
@@ -134,6 +148,12 @@ export type AgentEvent =
     }
   /** Quality-Score inkl. Verbesserungen */
   | { type: "score"; score: number; improvements: string[] }
+  /**
+   * Vom Team erzeugte, echte Dateien (Code/Assets). Wird EINMAL pro Mission
+   * emittiert – nach den Worker-Ausgaben und VOR dem final-Event. Das
+   * Dashboard rendert daraus den Abschnitt "Erzeugte Dateien".
+   */
+  | { type: "artifact"; files: ArtifactFile[] }
   /** Finales, synthetisiertes Ergebnis (Markdown) */
   | { type: "final"; content: string }
   /**

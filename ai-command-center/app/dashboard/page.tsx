@@ -16,7 +16,7 @@
  */
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { AgentEvent, AgentRole, AgentStatus } from "@/lib/agents/types";
+import type { AgentEvent, AgentRole, AgentStatus, ArtifactFile } from "@/lib/agents/types";
 
 /* ------------------------------- Konstanten ------------------------------- */
 
@@ -119,6 +119,51 @@ interface HistoryEntry {
   final: string;
   score: number | null;
   at: string;
+  /** Erzeugte Dateien der Mission (optional, aeltere Eintraege haben keine). */
+  artifacts?: ArtifactFile[];
+}
+
+/** MIME-Typ je Sprache fuer den Datei-Download (sonst text/plain). */
+const MIME_BY_LANGUAGE: Record<string, string> = {
+  html: "text/html",
+  css: "text/css",
+  javascript: "application/javascript",
+  typescript: "text/plain",
+  json: "application/json",
+  markdown: "text/markdown",
+  xml: "application/xml",
+  csv: "text/csv",
+};
+
+/** Basisname (ohne Verzeichnis) eines Pfads. */
+function baseName(path: string): string {
+  return path.split("/").pop() || path;
+}
+
+/** Findet die index.html unter den Dateien (fuer die Live-Vorschau). */
+function findIndexHtml(files: readonly ArtifactFile[]): ArtifactFile | undefined {
+  return files.find((f) => baseName(f.path).toLowerCase() === "index.html");
+}
+
+/** Laedt eine einzelne Datei ueber einen Blob herunter. */
+function downloadArtifact(file: ArtifactFile): void {
+  const mime = MIME_BY_LANGUAGE[file.language] ?? "text/plain";
+  const blob = new Blob([file.content], { type: `${mime};charset=utf-8` });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = baseName(file.path) || "datei.txt";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+/** Laedt alle Dateien nacheinander herunter (leichte Staffelung fuer Browser). */
+function downloadAllArtifacts(files: readonly ArtifactFile[]): void {
+  files.forEach((file, i) => {
+    window.setTimeout(() => downloadArtifact(file), i * 250);
+  });
 }
 
 /* ------------------------------ kleine Helfer ----------------------------- */
@@ -557,6 +602,106 @@ const OrgChart = memo(function OrgChart({
   );
 });
 
+/**
+ * "Erzeugte Dateien": Datei-Liste links, Code-Ansicht rechts (monospace,
+ * scrollbar). Pro Datei Download, "Alle herunterladen" und – wenn eine
+ * index.html dabei ist – eine Live-Vorschau via <iframe srcdoc>.
+ */
+const ArtifactViewer = memo(function ArtifactViewer({ files }: { files: ArtifactFile[] }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const indexHtml = useMemo(() => findIndexHtml(files), [files]);
+  const active = files[Math.min(activeIndex, files.length - 1)] ?? files[0];
+
+  if (!active) return null;
+
+  return (
+    <section aria-label="Erzeugte Dateien" className="mt-8">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="hud-label">Erzeugte Dateien // Artefakte</div>
+        <div className="flex flex-wrap items-center gap-2">
+          {indexHtml && (
+            <button
+              onClick={() => setPreviewOpen((v) => !v)}
+              aria-pressed={previewOpen}
+              className={`rounded-sm border border-[#ff8c2a]/40 bg-[#ff8c2a]/[0.06] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ff8c2a] transition-colors hover:bg-[#ff8c2a]/15 ${FOCUS_RING}`}
+            >
+              {previewOpen ? "Vorschau schliessen" : "Live-Vorschau"}
+            </button>
+          )}
+          <button
+            onClick={() => downloadAllArtifacts(files)}
+            className={`rounded-sm bg-[#ff8c2a] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] font-semibold text-[#1a0f04] transition hover:bg-[#ffb35c] active:scale-[0.98] ${FOCUS_RING}`}
+          >
+            Alle herunterladen ({files.length})
+          </button>
+        </div>
+      </div>
+
+      {/* Live-Vorschau der index.html im HUD-Panel */}
+      {indexHtml && previewOpen && (
+        <div className="hud-panel hud-corners mb-4 rounded-sm">
+          <div className="flex items-center justify-between border-b border-[#ff8c2a]/15 px-4 py-2">
+            <span className="hud-label">Live-Vorschau // {baseName(indexHtml.path)}</span>
+            <span className="hud-pulse h-1.5 w-1.5 rounded-full bg-[#ff8c2a]" aria-hidden />
+          </div>
+          <iframe
+            title="Live-Vorschau"
+            srcDoc={indexHtml.content}
+            sandbox="allow-scripts"
+            className="h-[420px] w-full rounded-b-sm border-0 bg-white"
+          />
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(200px,260px)_1fr]">
+        {/* Datei-Liste / Tabs */}
+        <div className="hud-panel hud-corners rounded-sm p-2">
+          <ul className="space-y-1">
+            {files.map((f, i) => {
+              const selected = f.path === active.path;
+              return (
+                <li key={f.path}>
+                  <button
+                    onClick={() => setActiveIndex(i)}
+                    aria-pressed={selected}
+                    className={`flex w-full items-center gap-2 rounded-sm px-3 py-2 text-left font-mono text-xs transition-colors ${FOCUS_RING} ${
+                      selected
+                        ? "bg-[#ff8c2a]/15 text-[#fff3e2]"
+                        : "text-[#ffb35c]/70 hover:bg-[#ff8c2a]/[0.06]"
+                    }`}
+                  >
+                    <span className="truncate">{f.path}</span>
+                    <span className="ml-auto shrink-0 text-[9px] uppercase tracking-[0.14em] text-[#8a7455]">
+                      {f.language}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+
+        {/* Code-Ansicht */}
+        <div className="hud-panel hud-corners flex min-w-0 flex-col rounded-sm">
+          <div className="flex items-center justify-between border-b border-[#ff8c2a]/15 px-4 py-2">
+            <span className="truncate font-mono text-xs text-[#e8dcc8]">{active.path}</span>
+            <button
+              onClick={() => downloadArtifact(active)}
+              className={`shrink-0 rounded-sm border border-[#ff8c2a]/30 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ff8c2a] transition-colors hover:bg-[#ff8c2a]/10 ${FOCUS_RING}`}
+            >
+              Herunterladen
+            </button>
+          </div>
+          <pre className="max-h-[420px] overflow-auto px-4 py-3 font-mono text-[11px] leading-5 text-[#e8dcc8]">
+            <code>{active.content}</code>
+          </pre>
+        </div>
+      </div>
+    </section>
+  );
+});
+
 /* --------------------------------- Modals --------------------------------- */
 
 /** Fokus-Ring fuer Tastaturbedienung (focus-visible) im HUD-Stil. */
@@ -801,6 +946,7 @@ export default function DashboardPage() {
   const [outputs, setOutputs] = useState<Partial<Record<AgentRole, string>>>({});
   const [score, setScore] = useState<number | null>(null);
   const [improvements, setImprovements] = useState<string[]>([]);
+  const [artifacts, setArtifacts] = useState<ArtifactFile[]>([]);
   const [finalResult, setFinalResult] = useState("");
   const [error, setError] = useState("");
   const [history, setHistory] = useState<HistoryEntry[]>([]);
@@ -937,7 +1083,7 @@ export default function DashboardPage() {
     });
   }, []);
 
-  const handleEvent = useCallback((ev: AgentEvent, ctx: { goal: string; score: number | null; final: string }) => {
+  const handleEvent = useCallback((ev: AgentEvent, ctx: { goal: string; score: number | null; final: string; artifacts: ArtifactFile[] }) => {
     const now = Date.now();
     totalEventsRef.current += 1;
     eventTimesRef.current = [...eventTimesRef.current.filter((t) => now - t < 10_000), now];
@@ -975,6 +1121,11 @@ export default function DashboardPage() {
         setImprovements(ev.improvements);
         pushLog("quality", `Score ${ev.score}/100`);
         break;
+      case "artifact":
+        ctx.artifacts = ev.files;
+        setArtifacts(ev.files);
+        pushLog("builder", `${ev.files.length} Datei(en) erzeugt: ${ev.files.map((f) => f.path).join(", ")}`);
+        break;
       case "final":
         ctx.final = ev.content;
         setFinalResult(ev.content);
@@ -1004,6 +1155,7 @@ export default function DashboardPage() {
     setFinalResult("");
     setScore(null);
     setImprovements([]);
+    setArtifacts([]);
     setOutputs({});
     setOpenOutput(null);
     setOrg(null);
@@ -1034,7 +1186,7 @@ export default function DashboardPage() {
       business: extraReset("business"),
     });
 
-    const ctx = { goal: missionGoal, score: null as number | null, final: "" };
+    const ctx = { goal: missionGoal, score: null as number | null, final: "", artifacts: [] as ArtifactFile[] };
     const controller = new AbortController();
     abortRef.current = controller;
 
@@ -1073,7 +1225,13 @@ export default function DashboardPage() {
         }
       }
       if (ctx.final) {
-        saveHistory({ goal: missionGoal, final: ctx.final, score: ctx.score, at: new Date().toISOString() });
+        saveHistory({
+          goal: missionGoal,
+          final: ctx.final,
+          score: ctx.score,
+          at: new Date().toISOString(),
+          ...(ctx.artifacts.length ? { artifacts: ctx.artifacts } : {}),
+        });
       }
     } catch (err) {
       if (!(err instanceof DOMException && err.name === "AbortError")) {
@@ -1306,6 +1464,11 @@ export default function DashboardPage() {
             </section>
           )}
 
+          {/* Erzeugte Dateien (Artefakte) */}
+          {artifacts.length > 0 && (
+            <ArtifactViewer key={artifacts.map((f) => f.path).join("|")} files={artifacts} />
+          )}
+
           {/* Finales Ergebnis */}
           {finalResult && (
             <section aria-label="Ergebnis" className={`mt-8 rounded-sm border border-[#ff8c2a]/30 bg-gradient-to-b from-[#ff8c2a]/[0.07] to-transparent p-6 ${fancy ? "hud-corners relative" : ""}`}>
@@ -1323,7 +1486,7 @@ export default function DashboardPage() {
                 {history.map((h, i) => (
                   <li key={i}>
                     <button
-                      onClick={() => { setFinalResult(h.final); setScore(h.score); setImprovements([]); setError(""); }}
+                      onClick={() => { setFinalResult(h.final); setScore(h.score); setImprovements([]); setArtifacts(h.artifacts ?? []); setError(""); }}
                       className="w-full rounded-sm border border-[#ff8c2a]/15 bg-[#ff8c2a]/[0.02] px-4 py-3 text-left text-sm transition hover:border-[#ff8c2a]/50"
                     >
                       <span className="font-medium text-[#fff3e2]">{h.goal}</span>
