@@ -486,7 +486,7 @@
           "settings": {
             "symbol": "🎛",
             "name": "Kommandozentrale",
-            "text": "Befehl geben, fertige Datei erhalten – mit 25 Skills."
+            "text": "Befehl geben, fertige Datei erhalten – mit 40 Skills."
           }
         },
         "a2": {
@@ -542,7 +542,7 @@
           "settings": {
             "symbol": "🧠",
             "name": "Skills",
-            "text": "25 geprüfte Befehle – von /offerte bis /code."
+            "text": "40 geprüfte Befehle – von /offerte über /vertrag bis /code."
           }
         },
         "a9": {
