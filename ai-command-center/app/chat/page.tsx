@@ -19,7 +19,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ArtifactFile } from "@/lib/agents/types";
-import { SKILLS, skillSuche } from "@/lib/skills";
+import { SKILLS, skillSuche, skillVerfuegbar, SKILL_AB_STUFE, type SkillStufe } from "@/lib/skills";
 import WorkNav from "@/app/components/WorkNav";
 
 const KOMMANDOS_KEY = "acc-kommandos";
@@ -142,7 +142,23 @@ export default function KommandoPage() {
     }
   }, []);
 
-  const skillTreffer = skillSuche(input);
+  /* Abo-Stufe des Nutzers (acc-plan aus der Lizenz-Aktivierung, sonst FREE):
+   * verfügbare Skills sind wählbar, höhere zeigen die nötige Stufe. */
+  const [stufe, setStufe] = useState<SkillStufe>("FREE");
+  useEffect(() => {
+    try {
+      const p = localStorage.getItem("acc-plan");
+      if (p && ["FREE", "PERSONAL", "STARTER", "PROFESSIONAL", "BUSINESS", "ENTERPRISE"].includes(p)) {
+        setStufe(p as SkillStufe);
+      }
+    } catch {
+      /* Storage nicht lesbar */
+    }
+  }, []);
+
+  const alleTreffer = skillSuche(input);
+  const skillTreffer = alleTreffer.filter((s) => skillVerfuegbar(s.befehl, stufe));
+  const gesperrteTreffer = alleTreffer.filter((s) => !skillVerfuegbar(s.befehl, stufe));
 
   /** Datei anhängen: PDF via /api/extract, Text-Formate direkt lesen. */
   const dateiWaehlen = useCallback(async (file: File) => {
@@ -533,10 +549,10 @@ export default function KommandoPage() {
         <footer className="px-4 pb-5 pt-2">
           <div className="mx-auto max-w-3xl">
             {/* Slash-Befehlspalette */}
-            {skillTreffer.length > 0 && !running && (
+            {(skillTreffer.length > 0 || gesperrteTreffer.length > 0) && !running && (
               <div className="mb-2 overflow-hidden rounded-2xl border border-[#e8e1d2] bg-white shadow-[0_8px_30px_rgba(40,30,10,0.10)]">
                 <p className="border-b border-[#f0ebe0] px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-[#a2988a]">
-                  Befehle
+                  Befehle · Ihr Abo: {stufe}
                 </p>
                 {skillTreffer.map((s) => (
                   <button
@@ -548,6 +564,19 @@ export default function KommandoPage() {
                     <span className="truncate text-sm text-[#33291b]">{s.name}</span>
                     <span className="hidden truncate text-xs text-[#a2988a] sm:inline">{s.beschreibung}</span>
                   </button>
+                ))}
+                {gesperrteTreffer.map((s) => (
+                  <div
+                    key={s.befehl}
+                    className="flex w-full items-baseline gap-3 px-4 py-2.5 text-left opacity-55"
+                    aria-disabled="true"
+                  >
+                    <span className="shrink-0 font-mono text-sm font-bold text-[#a2988a]">{s.befehl}</span>
+                    <span className="truncate text-sm text-[#8d8172]">{s.name}</span>
+                    <span className="ml-auto shrink-0 rounded-full border border-[#e0d8c6] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#8d8172]">
+                      ab {SKILL_AB_STUFE[s.befehl]}
+                    </span>
+                  </div>
                 ))}
               </div>
             )}

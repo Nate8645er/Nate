@@ -464,6 +464,55 @@ export const SKILLS: Skill[] = [
       "häufige Probleme. Zielgruppe: [Entwickler/Endnutzer]. " +
       "Grundlage: [Beschreibung einfügen oder Datei anhängen]",
   },
+
+  /* ---------- Exklusiv ab BUSINESS ---------- */
+  {
+    befehl: "/prozess-automatisierung",
+    name: "Automatisierungs-Fahrplan",
+    beschreibung: "Welche Abläufe Ihrer Firma sich automatisieren lassen – mit Plan.",
+    kategorie: "Planung & Büro",
+    vorlage:
+      "Analysiere unsere Firma und erstelle einen Automatisierungs-Fahrplan: " +
+      "Branche [Branche], Team [Anzahl Personen], heutige Abläufe: " +
+      "[wichtigste Abläufe beschreiben]. Liefere: Automatisierungs-Potenzial " +
+      "je Ablauf, Aufwand/Nutzen-Matrix, konkrete Umsetzungs-Reihenfolge für " +
+      "12 Monate und geschätzte Zeitersparnis pro Woche.",
+  },
+  {
+    befehl: "/abteilungs-bericht",
+    name: "Abteilungs-Bericht",
+    beschreibung: "Konsolidierter Bericht über mehrere Teams/Standorte.",
+    kategorie: "Planung & Büro",
+    vorlage:
+      "Erstelle einen konsolidierten Führungs-Bericht über unsere Abteilungen: " +
+      "[Zahlen/Stichpunkte je Abteilung oder Datei anhängen]. Mit Gesamtbild, " +
+      "Vergleich der Abteilungen, Auffälligkeiten, Risiken und konkreten " +
+      "Führungs-Entscheidungen, die jetzt anstehen.",
+  },
+  /* ---------- Exklusiv ab ENTERPRISE ---------- */
+  {
+    befehl: "/ki-strategie",
+    name: "KI-Strategie",
+    beschreibung: "Firmenweite KI-Roadmap: wo KI Ihnen Vorsprung verschafft.",
+    kategorie: "Analyse & Kontrolle",
+    vorlage:
+      "Erstelle eine firmenweite KI-Strategie für [Firma, Branche, Grösse]: " +
+      "heutige Situation [was ist digital/manuell], Wettbewerb, die 5 " +
+      "wirkungsvollsten KI-Einsatzfelder mit Business-Case, Risiken und " +
+      "Datenschutz, Roadmap über 24 Monate mit Meilensteinen und Budget-Rahmen.",
+  },
+  {
+    befehl: "/integrations-plan",
+    name: "System-Integrations-Plan",
+    beschreibung: "Anbindung Ihrer Systeme (ERP/CRM/Maschinen) sauber geplant.",
+    kategorie: "Informatik & Code",
+    vorlage:
+      "Erstelle einen Integrations-Plan für unsere Systemlandschaft: " +
+      "vorhandene Systeme [ERP/CRM/Buchhaltung/Maschinen/etc. auflisten], " +
+      "Ziel: [was soll automatisch fliessen]. Mit Architektur-Skizze in Text, " +
+      "Schnittstellen je System, Reihenfolge der Anbindung, Aufwandsschätzung " +
+      "und Risiken/Abhängigkeiten.",
+  },
 ];
 
 /** Skills nach Kategorie gruppiert (für Katalog-Seite und Palette). */
@@ -480,6 +529,83 @@ export const SKILL_KATEGORIEN = [
 
 /** Gesamtzahl der Skills – überall dynamisch verwenden statt hart codieren. */
 export const SKILL_ANZAHL = SKILLS.length;
+
+/* ------------------------------------------------------------------ */
+/* Abo-Stufen: jede Stufe schaltet zusätzliche Skills frei.            */
+/* Ein System, sechs Ausbaustufen – höhere Stufen enthalten immer      */
+/* alles aus den tieferen.                                             */
+/* ------------------------------------------------------------------ */
+
+export type SkillStufe = "FREE" | "PERSONAL" | "STARTER" | "PROFESSIONAL" | "BUSINESS" | "ENTERPRISE";
+
+export const STUFEN_REIHENFOLGE: SkillStufe[] = [
+  "FREE", "PERSONAL", "STARTER", "PROFESSIONAL", "BUSINESS", "ENTERPRISE",
+];
+
+/** Ab welcher Stufe ein Skill verfügbar ist (alles Aufgezählte inklusive). */
+export const SKILL_AB_STUFE: Record<string, SkillStufe> = {
+  /* FREE – der Kern zum Kennenlernen (8) */
+  "/website": "FREE",
+  "/offerte": "FREE",
+  "/dokument": "FREE",
+  "/werbetext": "FREE",
+  "/kontrolle": "FREE",
+  "/uebersetzen": "FREE",
+  "/termine": "FREE",
+  "/code": "FREE",
+  /* PERSONAL – der Alltag von Einzelpersonen (+8 = 16) */
+  "/praesentation": "PERSONAL",
+  "/rechnung": "PERSONAL",
+  "/mahnung": "PERSONAL",
+  "/geschaeftsbrief": "PERSONAL",
+  "/social": "PERSONAL",
+  "/newsletter": "PERSONAL",
+  "/sitzungsprotokoll": "PERSONAL",
+  "/whatsapp": "PERSONAL",
+  /* STARTER – Marketing + Verkauf fürs Tagesgeschäft (+8 = 24) */
+  "/stellenanzeige": "STARTER",
+  "/kampagne": "STARTER",
+  "/verkaufsskript": "STARTER",
+  "/nachfassen": "STARTER",
+  "/kundenumfrage": "STARTER",
+  "/reklamation": "STARTER",
+  "/support": "STARTER",
+  "/wochenbericht": "STARTER",
+  /* PROFESSIONAL – Analyse, Finanzen, Technik (+8 = 32) */
+  "/markt": "PROFESSIONAL",
+  "/preise": "PROFESSIONAL",
+  "/prognose": "PROFESSIONAL",
+  "/budget": "PROFESSIONAL",
+  "/liquiditaet": "PROFESSIONAL",
+  "/kalkulation": "PROFESSIONAL",
+  "/prozesse": "PROFESSIONAL",
+  "/bugfix": "PROFESSIONAL",
+  /* BUSINESS – Personal, Recht, Führung (+8 = 40) */
+  "/bewerber-check": "BUSINESS",
+  "/arbeitszeugnis": "BUSINESS",
+  "/mitarbeitergespraech": "BUSINESS",
+  "/onboarding": "BUSINESS",
+  "/vertrag": "BUSINESS",
+  "/datenschutz": "BUSINESS",
+  "/prozess-automatisierung": "BUSINESS",
+  "/abteilungs-bericht": "BUSINESS",
+  /* ENTERPRISE – Strategie und Systemlandschaft (+4 = 44) */
+  "/businessplan": "ENTERPRISE",
+  "/api-doku": "ENTERPRISE",
+  "/ki-strategie": "ENTERPRISE",
+  "/integrations-plan": "ENTERPRISE",
+};
+
+/** Ist ein Skill in der gegebenen Stufe enthalten? */
+export function skillVerfuegbar(befehl: string, stufe: SkillStufe): boolean {
+  const ab = SKILL_AB_STUFE[befehl] ?? "FREE";
+  return STUFEN_REIHENFOLGE.indexOf(stufe) >= STUFEN_REIHENFOLGE.indexOf(ab);
+}
+
+/** Anzahl verfügbarer Skills pro Stufe (für Preistabellen und Shop). */
+export function skillAnzahlFuer(stufe: SkillStufe): number {
+  return SKILLS.filter((s) => skillVerfuegbar(s.befehl, stufe)).length;
+}
 
 /** Findet Skills, deren Befehl oder Name zur Eingabe passt (für "/"-Palette). */
 export function skillSuche(eingabe: string): Skill[] {

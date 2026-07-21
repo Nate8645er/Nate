@@ -8,7 +8,7 @@
 
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SKILLS, SKILL_KATEGORIEN } from "@/lib/skills";
+import { SKILLS, SKILL_KATEGORIEN, SKILL_AB_STUFE, skillAnzahlFuer, STUFEN_REIHENFOLGE } from "@/lib/skills";
 import WorkNav from "@/app/components/WorkNav";
 import WorkFooter from "@/app/components/WorkFooter";
 
@@ -43,6 +43,18 @@ export default function FaehigkeitenPage() {
             <span className="font-mono text-[#ffb35c]">/</span> tippen, Befehl
             wählen, Platzhalter ausfüllen, ausführen.
           </p>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-400">
+            Ein System, sechs Ausbaustufen: Jede Abo-Stufe schaltet zusätzliche
+            Skills frei –{" "}
+            {STUFEN_REIHENFOLGE.map((st, i) => (
+              <span key={st}>
+                {i > 0 && " · "}
+                <span className="font-semibold text-[#ffb35c]">{st}</span>{" "}
+                {skillAnzahlFuer(st)}
+              </span>
+            ))}
+            . Höhere Stufen enthalten immer alles aus den tieferen.
+          </p>
         </div>
 
         {SKILL_KATEGORIEN.map((kat) => (
@@ -55,6 +67,11 @@ export default function FaehigkeitenPage() {
                     <span className="font-mono text-sm font-bold text-[#ffb35c]">{s.befehl}</span>
                     <h3 className="truncate font-semibold text-white">{s.name}</h3>
                   </div>
+                  <p className="mt-1.5">
+                    <span className="rounded-full border border-[#ff8c2a]/30 bg-[#ff8c2a]/8 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#ffb35c]/80">
+                      {(SKILL_AB_STUFE[s.befehl] ?? "FREE") === "FREE" ? "In jedem Abo" : `ab ${SKILL_AB_STUFE[s.befehl]}`}
+                    </span>
+                  </p>
                   <p className="mt-2 flex-1 text-sm leading-relaxed text-zinc-400">
                     {s.beschreibung}
                   </p>

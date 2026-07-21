@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SKILL_ANZAHL } from "@/lib/skills";
+import { SKILL_ANZAHL, skillAnzahlFuer } from "@/lib/skills";
 
 export const metadata: Metadata = {
   title: "AI Command Center | Die digitale KI-Belegschaft für Ihr Unternehmen",
@@ -31,6 +31,7 @@ const PLANS: Plan[] = [
     benefits: [
       "4 KI-Agenten zum Kennenlernen",
       "5 Missionen pro Monat",
+      `${skillAnzahlFuer("FREE")} Basis-Skills zum Kennenlernen`,
       "Ergebnis-Vorschau direkt im Browser",
       "Ohne Kreditkarte, ohne Risiko",
     ],
@@ -44,7 +45,7 @@ const PLANS: Plan[] = [
     benefits: [
       "10 Missionen pro Tag",
       "Fertige Dateien mit Download",
-      `Alle ${SKILL_ANZAHL} Skills inklusive`,
+      `${skillAnzahlFuer("PERSONAL")} Skills für den Alltag`,
       "E-Mail-Zentrale, CRM & Autopilot",
       "Perfekt für Einzelpersonen",
     ],
@@ -60,6 +61,7 @@ const PLANS: Plan[] = [
     benefits: [
       "12 spezialisierte KI-Agenten",
       "Unbegrenzte Missionen",
+      `${skillAnzahlFuer("STARTER")} Skills inkl. Verkauf & Marketing`,
       "Echte Dateien und Code mit Download",
       "Quality-Score je Ergebnis",
       "E-Mail-Support",
@@ -73,6 +75,7 @@ const PLANS: Plan[] = [
     team: "Team: 50 Agenten",
     benefits: [
       "50 Agenten in Fachteams organisiert",
+      `${skillAnzahlFuer("PROFESSIONAL")} Skills inkl. Finanzen & Analyse`,
       "Dokumente analysieren: PDF, Word, Excel",
       "5 Firmen-Integrationen inklusive",
       "Prioritäts-Verarbeitung",
@@ -89,6 +92,7 @@ const PLANS: Plan[] = [
     highlight: true,
     benefits: [
       "250 Agenten als digitale Abteilung",
+      `${skillAnzahlFuer("BUSINESS")} Skills inkl. Personal & Recht`,
       "Alle 15 Firmen-Integrationen",
       "Eigene Workflows und Freigaben",
       "Zugänge für Ihr ganzes Team",
@@ -103,6 +107,7 @@ const PLANS: Plan[] = [
     team: "Belegschaft: 1000 Mitarbeitende",
     benefits: [
       "Bis 1000 virtuelle Mitarbeitende",
+      `Alle ${SKILL_ANZAHL} Skills + KI-Strategie exklusiv`,
       "Individuelle KI-Infrastruktur",
       "Private Cloud oder On-Premise möglich",
       "SLA und Sicherheit nach Mass",
