@@ -9,7 +9,6 @@
  * Datei-Downloads und aufklappbarem Bericht.
  */
 
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { ArtifactFile } from "@/lib/agents/types";
 import WorkNav from "@/app/components/WorkNav";

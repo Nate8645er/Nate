@@ -16,7 +16,6 @@
  * Kunden und ist Teil der Enterprise-Anbindung.
  */
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import WorkNav from "@/app/components/WorkNav";
 

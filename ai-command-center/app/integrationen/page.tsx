@@ -11,6 +11,7 @@
  * die werden pro Unternehmen als Enterprise-Projekt eingerichtet.
  */
 
+import Link from "next/link";
 import { memo, useEffect, useRef, useState } from "react";
 import {
   CONNECTORS,
@@ -261,7 +262,7 @@ const KategorieSektion = memo(function KategorieSektion({
       <div className="mb-3 flex items-center gap-3">
         <span aria-hidden className="h-2 w-2 rounded-full" style={{ background: akzent, boxShadow: `0 0 8px ${akzent}` }} />
         <h2 className="hud-label !text-[11px]">
-          {kategorie} // {connectors.length} System{connectors.length === 1 ? "" : "e"}
+          {kategorie}{" // "}{connectors.length} System{connectors.length === 1 ? "" : "e"}
         </h2>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -289,9 +290,9 @@ export default function IntegrationenPage() {
       <header className="sticky top-0 z-20 border-b border-[#ff8c2a]/15 bg-[#0b0a08]/85 backdrop-blur">
         <div className="mx-auto flex min-h-16 max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-2">
           <div>
-            <a href="/" className="text-lg font-bold tracking-tight text-[#fff3e2]">
+            <Link href="/" className="text-lg font-bold tracking-tight text-[#fff3e2]">
               AI <span className="text-[#ff8c2a]">Command Center</span>
-            </a>
+            </Link>
             <div className="hud-label">Integration-Center // Katalog</div>
           </div>
           <a

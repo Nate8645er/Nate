@@ -9,7 +9,6 @@
  * Geräte hinweg ist Teil der Enterprise-Einrichtung pro Kunde.
  */
 
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import WorkNav from "@/app/components/WorkNav";
 

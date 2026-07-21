@@ -347,6 +347,44 @@
         "titel": "10 Wächter schützen Ihre Arbeit.",
         "untertitel": "Jede Schutzschicht ist im Code verankert und greift bei jedem Aufruf – rund um die Uhr, an jedem Tag."
       }
+    },
+    "einblicke": {
+      "type": "einblicke",
+      "blocks": {
+        "e1": {
+          "type": "einblick",
+          "settings": {
+            "motiv": "kommando",
+            "titel": "Die Kommandozentrale: Sie befehlen, Ihr Team liefert.",
+            "text": "Sie schreiben einen Auftrag in normaler Sprache – zum Beispiel «Erstelle eine Landingpage für unser Frühlingsangebot». Ihr Commander zerlegt die Aufgabe, verteilt sie an spezialisierte Agenten, und die Qualitätsprüfung bewertet das Ergebnis mit einem Score von 0 bis 100, bevor Sie es sehen. Am Ende steht keine Chat-Antwort, sondern eine fertige Datei zum Herunterladen: Website, Dokument, Präsentation oder Analyse. Mit 24 geprüften Befehlen (Skills) von der Offerte über die Rechnung bis zum Code – tippen Sie einfach « / »."
+          }
+        },
+        "e2": {
+          "type": "einblick",
+          "settings": {
+            "motiv": "email",
+            "titel": "Die E-Mail-Zentrale: Antworten in Sekunden statt Stunden.",
+            "text": "Fügen Sie eine eingehende Kundenmail ein und geben Sie die Richtung vor – etwa «Preisnachlass freundlich ablehnen, Ratenzahlung anbieten». Ihre KI schreibt die versandfertige Antwort mit Betreff, professionellem Ton und Ihrer Signatur. Ein Klick öffnet Gmail mit allem bereits ausgefüllt: Sie prüfen kurz und drücken auf Senden. Sicherheit inklusive: Versteckte Anweisungen in einer Kundenmail können Ihre KI nicht umsteuern."
+          }
+        },
+        "e3": {
+          "type": "einblick",
+          "settings": {
+            "motiv": "autopilot",
+            "titel": "Autopilot, Berichte und Analysen: Ihr Betrieb, im Griff.",
+            "text": "Wiederkehrende Aufträge legen Sie einmal an – Social-Media-Wochenplan, Angebotsideen, Wochenbericht für die Geschäftsleitung – und führen sie mit einem Klick aus, sobald sie fällig sind. Jedes Ergebnis landet im durchsuchbaren Archiv mit Datum, Dateien und Quality-Score. Der Statistikbereich zeigt Ihnen auf einen Blick, wie viel Ihre KI-Abteilung leistet. Dazu: Kundenverwaltung mit Pipeline, Benutzerrollen für Ihr Team und ein Sicherheitssystem mit zehn Wächtern."
+          }
+        }
+      },
+      "block_order": [
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "settings": {
+        "label": "So arbeitet Ihre KI-Abteilung",
+        "titel": "Genau erklärt – Schritt für Schritt"
+      }
     }
   },
   "order": [
@@ -354,6 +392,7 @@
     "logoleiste",
     "vorteile",
     "zahlen",
+    "einblicke",
     "produkt-grid",
     "ablauf",
     "zitate",

@@ -16,6 +16,7 @@
  */
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import type { AgentEvent, AgentRole, AgentStatus, ArtifactFile } from "@/lib/agents/types";
 
 /* ------------------------------- Konstanten ------------------------------- */
@@ -1395,9 +1396,9 @@ export default function DashboardPage() {
       <header className="sticky top-0 z-20 border-b border-[#ff8c2a]/15 bg-[#0b0a08]/85 backdrop-blur">
         <div className="mx-auto flex min-h-16 max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-2">
           <div>
-            <a href="/" className="text-lg font-bold tracking-tight text-[#fff3e2]">
+            <Link href="/" className="text-lg font-bold tracking-tight text-[#fff3e2]">
               AI <span className="text-[#ff8c2a]">Command Center</span>
-            </a>
+            </Link>
             <div className="hud-label">Mission Control // Online</div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
