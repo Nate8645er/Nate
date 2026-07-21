@@ -121,6 +121,20 @@
       </div>
     </div>
 
+    {%- comment -%} Trailer: das Video dieses Abos, prominent vor dem Kauf. {%- endcomment -%}
+    {%- assign trailer = product.media | where: 'media_type', 'video' | first -%}
+    {%- if trailer -%}
+      <div class="acc-trailer acc-reveal">
+        <div class="acc-trailer__head">
+          <span class="acc-micro">{{ section.settings.trailer_label | default: '▶ TRAILER · 15 SEKUNDEN' }}</span>
+          <h2>{{ section.settings.trailer_titel | default: 'Sehen Sie dieses Abo in Aktion.' }}</h2>
+        </div>
+        <div class="acc-trailer__frame">
+          {{ trailer | media_tag: image_size: '1280x', autoplay: false, loop: true, muted: true, controls: true, preload: 'metadata' }}
+        </div>
+      </div>
+    {%- endif -%}
+
     {%- comment -%} Cross-Sell: andere Stufen aus derselben Kollektion {%- endcomment -%}
     {%- assign xsell_coll = product.collections.first -%}
     {%- if xsell_coll and xsell_coll.products.size > 1 -%}
@@ -178,7 +192,9 @@
   "tag": "section",
   "settings": [
     { "type": "text", "id": "badge_text", "label": "Badge", "default": "Monatsabo, monatlich kündbar" },
-    { "type": "richtext", "id": "hint_text", "label": "Hinweisbox", "default": "<p>Im Zweifel: <strong>STARTER</strong> ist unser Bestseller.</p>" }
+    { "type": "richtext", "id": "hint_text", "label": "Hinweisbox", "default": "<p>Im Zweifel: <strong>STARTER</strong> ist unser Bestseller.</p>" },
+    { "type": "text", "id": "trailer_label", "label": "Trailer-Label", "default": "▶ TRAILER · 15 SEKUNDEN" },
+    { "type": "text", "id": "trailer_titel", "label": "Trailer-Titel", "default": "Sehen Sie dieses Abo in Aktion." }
   ]
 }
 {% endschema %}

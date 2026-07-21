@@ -1136,3 +1136,27 @@ h1, h2, h3, h4 { font-family: var(--acc-head); line-height: 1.12; letter-spacing
 .acc-step:nth-child(3) .acc-step__num { background: linear-gradient(135deg, #9d7ff0, #7c5cd6); }
 .acc-step:nth-child(4) .acc-step__num { background: linear-gradient(135deg, #f473a4, #e0447c); }
 .acc-badge--bestseller { background: linear-gradient(90deg, #f473a4, #e0447c); color: #fff; }
+
+/* ---------- Produkt-Trailer (Video unter dem Abo) ---------- */
+.acc-trailer {
+  margin-top: var(--sp-8);
+  padding-top: var(--sp-7);
+  border-top: 1px solid var(--acc-line-faint);
+}
+.acc-trailer__head { text-align: center; }
+.acc-trailer__head h2 { margin-top: var(--sp-2); }
+.acc-trailer__frame {
+  max-width: 900px;
+  margin: var(--sp-5) auto 0;
+  border-radius: var(--acc-radius-lg);
+  overflow: hidden;
+  border: 1px solid rgba(238, 119, 18, 0.25);
+  box-shadow: 0 30px 60px -30px rgba(230, 120, 30, 0.4), 0 0 0 1px rgba(255,255,255,0.03) inset;
+  background: #120d08;
+}
+.acc-trailer__frame video,
+.acc-trailer__frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
