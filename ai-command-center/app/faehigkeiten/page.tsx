@@ -10,6 +10,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SKILLS, SKILL_KATEGORIEN } from "@/lib/skills";
 import WorkNav from "@/app/components/WorkNav";
+import WorkFooter from "@/app/components/WorkFooter";
 
 export const metadata: Metadata = {
   title: "Fähigkeiten | AI Command Center",
@@ -78,6 +79,7 @@ export default function FaehigkeitenPage() {
           <Link href="/dashboard" className="text-[#ffb35c] hover:underline">Missions-Ansicht</Link>{" "}
           mit Live-Organigramm.
         </p>
+        <WorkFooter variante="dunkel" />
       </div>
     </div>
   );

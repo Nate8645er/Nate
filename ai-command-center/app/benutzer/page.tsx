@@ -11,6 +11,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import WorkNav from "@/app/components/WorkNav";
+import WorkFooter from "@/app/components/WorkFooter";
 
 const BENUTZER_KEY = "acc-benutzer";
 
@@ -185,6 +186,7 @@ export default function BenutzerPage() {
             </div>
           ))}
         </div>
+        <WorkFooter variante="hell" />
       </div>
     </div>
   );

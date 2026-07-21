@@ -17,6 +17,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import WorkNav from "@/app/components/WorkNav";
+import WorkFooter from "@/app/components/WorkFooter";
 
 const WORKFLOWS_KEY = "acc-workflows";
 const LICENSE_TOKEN_KEY = "acc-license-token";
@@ -424,6 +425,7 @@ export default function WorkflowsPage() {
             );
           })}
         </div>
+        <WorkFooter variante="dunkel" />
       </div>
     </div>
   );

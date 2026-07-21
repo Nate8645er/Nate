@@ -17,6 +17,7 @@ import type { AgentRole, PlanId } from "@/lib/agents/types";
  *  damit rotieren auch die Talent-Pool-Beispiele halbstündlich. */
 export const revalidate = 1800;
 import WorkNav from "@/app/components/WorkNav";
+import WorkFooter from "@/app/components/WorkFooter";
 
 export const metadata: Metadata = {
   title: "Ihre Belegschaft | AI Command Center",
@@ -137,6 +138,7 @@ export default function TeamPage() {
 
         {/* Talent-Pool: ueber 1 Milliarde adressierbare Profile */}
         <TalentPool />
+        <WorkFooter variante="dunkel" />
       </div>
     </div>
   );

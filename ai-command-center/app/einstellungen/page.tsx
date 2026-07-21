@@ -13,6 +13,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import WorkNav from "@/app/components/WorkNav";
+import WorkFooter from "@/app/components/WorkFooter";
 
 const BRANCHE_KEY = "acc-branche";
 const GROESSE_KEY = "acc-groesse";
@@ -222,6 +223,7 @@ export default function EinstellungenPage() {
             </button>
           </div>
         </section>
+        <WorkFooter variante="hell" />
       </div>
     </div>
   );

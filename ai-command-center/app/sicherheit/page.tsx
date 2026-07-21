@@ -11,6 +11,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import WorkNav from "@/app/components/WorkNav";
+import WorkFooter from "@/app/components/WorkFooter";
 
 export const revalidate = 1800;
 
@@ -145,6 +146,7 @@ export default function SicherheitPage() {
           </Link>
           .
         </p>
+        <WorkFooter variante="dunkel" />
       </div>
     </div>
   );

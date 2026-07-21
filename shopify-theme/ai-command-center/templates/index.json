@@ -385,6 +385,216 @@
         "label": "So arbeitet Ihre KI-Abteilung",
         "titel": "Genau erklärt – Schritt für Schritt"
       }
+    },
+    "branchen": {
+      "type": "branchen",
+      "blocks": {
+        "b1": {
+          "type": "branche",
+          "settings": {
+            "symbol": "🍽",
+            "name": "Gastronomie & Hotellerie",
+            "beispiele": "Wochenkarte texten, Aktionen planen, Bewertungen und Reklamationen professionell beantworten."
+          }
+        },
+        "b2": {
+          "type": "branche",
+          "settings": {
+            "symbol": "🔨",
+            "name": "Handwerk & Bau",
+            "beispiele": "Offerten in Minuten, Baustellenberichte, Nachfass-Mails an Interessenten."
+          }
+        },
+        "b3": {
+          "type": "branche",
+          "settings": {
+            "symbol": "🧾",
+            "name": "Treuhand & Finanzen",
+            "beispiele": "Kundenschreiben, Fristen-Erinnerungen, Zusammenfassungen langer Dokumente."
+          }
+        },
+        "b4": {
+          "type": "branche",
+          "settings": {
+            "symbol": "🛍",
+            "name": "Handel & E-Commerce",
+            "beispiele": "Produkttexte, Preisanalysen, Newsletter und Aktions-Kampagnen."
+          }
+        },
+        "b5": {
+          "type": "branche",
+          "settings": {
+            "symbol": "💻",
+            "name": "Software & IT",
+            "beispiele": "Echter Code, Code-Reviews, technische Dokumentation, Stellenanzeigen."
+          }
+        },
+        "b6": {
+          "type": "branche",
+          "settings": {
+            "symbol": "🏥",
+            "name": "Gesundheit & Pflege",
+            "beispiele": "Patienteninformationen, Dienstplan-Vorlagen, Stellenanzeigen die passen."
+          }
+        },
+        "b7": {
+          "type": "branche",
+          "settings": {
+            "symbol": "📣",
+            "name": "Agenturen & Medien",
+            "beispiele": "Kampagnen, Content-Serien, Kundenpräsentationen – in Ihrem Ton."
+          }
+        },
+        "b8": {
+          "type": "branche",
+          "settings": {
+            "symbol": "🏢",
+            "name": "Immobilien & Verwaltung",
+            "beispiele": "Exposé-Texte, Mieterkommunikation, Marktanalysen pro Region."
+          }
+        }
+      },
+      "block_order": [
+        "b1",
+        "b2",
+        "b3",
+        "b4",
+        "b5",
+        "b6",
+        "b7",
+        "b8"
+      ],
+      "settings": {
+        "label": "Für Ihre Branche gebaut",
+        "titel": "Was Ihre KI-Abteilung für Sie erledigt",
+        "untertitel": "Acht Beispiele aus dem Alltag – Ihre Branche ist dabei."
+      }
+    },
+    "bereiche": {
+      "type": "bereiche",
+      "blocks": {
+        "a1": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "🎛",
+            "name": "Kommandozentrale",
+            "text": "Befehl geben, fertige Datei erhalten – mit 24 Skills."
+          }
+        },
+        "a2": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "🛰",
+            "name": "Missionen",
+            "text": "Dem Team live zusehen: Organigramm, Status, Score."
+          }
+        },
+        "a3": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "👥",
+            "name": "Kunden (CRM)",
+            "text": "Pipeline vom Lead bis zum Kunden – mit Ein-Klick-Aktionen."
+          }
+        },
+        "a4": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "✉️",
+            "name": "E-Mail-Zentrale",
+            "text": "Kundenmails beantwortet die KI – Sie drücken nur Senden."
+          }
+        },
+        "a5": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "🔁",
+            "name": "Autopilot",
+            "text": "Wiederkehrende Aufträge, per Klick ausgeführt."
+          }
+        },
+        "a6": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "🗂",
+            "name": "Berichte",
+            "text": "Alle Ergebnisse durchsuchbar, mit Dateien und Score."
+          }
+        },
+        "a7": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "📊",
+            "name": "Analysen",
+            "text": "Kennzahlen und Aktivität Ihrer KI-Abteilung."
+          }
+        },
+        "a8": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "🧠",
+            "name": "Skills",
+            "text": "24 geprüfte Befehle – von /offerte bis /code."
+          }
+        },
+        "a9": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "🏛",
+            "name": "Team & Talent-Pool",
+            "text": "Über 1 Milliarde adressierbare Spezialisten-Profile."
+          }
+        },
+        "a10": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "🔐",
+            "name": "Sicherheit",
+            "text": "10 Wächter, bei jedem Aufruf im Dienst."
+          }
+        },
+        "a11": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "🔌",
+            "name": "Integrationen",
+            "text": "15 Firmen-Systeme im Katalog (Enterprise-Anbindung)."
+          }
+        },
+        "a12": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "⚙️",
+            "name": "Benutzer & Einstellungen",
+            "text": "Rollen fürs Team, Profil, Datenexport per Klick."
+          }
+        }
+      },
+      "block_order": [
+        "a1",
+        "a2",
+        "a3",
+        "a4",
+        "a5",
+        "a6",
+        "a7",
+        "a8",
+        "a9",
+        "a10",
+        "a11",
+        "a12"
+      ],
+      "settings": {
+        "label": "Alles in einem System",
+        "titel": "13 Arbeitsbereiche. Ein Abo."
+      }
+    },
+    "vergleich": {
+      "type": "vergleich",
+      "settings": {
+        "label": "Der ehrliche Vergleich",
+        "titel": "Chatbot? Agentur? Oder eine ganze KI-Abteilung."
+      }
     }
   },
   "order": [
@@ -392,9 +602,12 @@
     "logoleiste",
     "vorteile",
     "zahlen",
+    "branchen",
     "einblicke",
+    "bereiche",
     "produkt-grid",
     "ablauf",
+    "vergleich",
     "zitate",
     "sicherheit",
     "faq",

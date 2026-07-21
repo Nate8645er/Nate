@@ -18,6 +18,7 @@
 
 import { useEffect, useState } from "react";
 import WorkNav from "@/app/components/WorkNav";
+import WorkFooter from "@/app/components/WorkFooter";
 
 const LICENSE_TOKEN_KEY = "acc-license-token";
 const USAGE_TOKEN_KEY = "acc-usage-token";
@@ -315,6 +316,7 @@ export default function EmailPage() {
             )}
           </section>
         </div>
+        <WorkFooter variante="dunkel" />
       </div>
     </div>
   );

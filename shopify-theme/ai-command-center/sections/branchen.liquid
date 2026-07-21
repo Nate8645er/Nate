@@ -1,0 +1,67 @@
+{% comment %}
+  Branchen-Sektion: acht Branchen mit konkreten Einsatz-Beispielen.
+  Zeigt Firmenkunden sofort: "Das ist für MICH gebaut."
+{% endcomment %}
+
+<section class="acc-section acc-branchen">
+  <div class="acc-wrap">
+    <div class="acc-shead acc-reveal">
+      <span class="acc-micro">{{ section.settings.label }}</span>
+      <h2>{{ section.settings.titel }}</h2>
+      <p class="acc-shead__sub">{{ section.settings.untertitel }}</p>
+    </div>
+    <div class="acc-branchen__grid">
+      {% for block in section.blocks %}
+        <div class="acc-panel acc-branchen__item acc-reveal" {{ block.shopify_attributes }}>
+          <div class="acc-branchen__icon">{{ block.settings.symbol }}</div>
+          <h3>{{ block.settings.name }}</h3>
+          <p>{{ block.settings.beispiele }}</p>
+        </div>
+      {% endfor %}
+    </div>
+    <p class="acc-branchen__hinweis acc-reveal">
+      Beim Start wählen Sie Ihre Branche – ab dann liefert Ihre KI-Abteilung
+      passende Lösungen statt Allerwelts-Texte.
+    </p>
+  </div>
+</section>
+
+<style>
+  .acc-branchen__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--sp-5);
+    margin-top: var(--sp-7);
+  }
+  .acc-branchen__item { padding: var(--sp-5); border-radius: var(--acc-radius-lg); }
+  .acc-branchen__icon { font-size: 28px; margin-bottom: var(--sp-3); }
+  .acc-branchen__item h3 { font-size: var(--fs-h3); }
+  .acc-branchen__item p { margin: var(--sp-2) 0 0; color: var(--acc-text-dim); font-size: var(--fs-sm); line-height: 1.65; }
+  .acc-branchen__hinweis { margin-top: var(--sp-6); text-align: center; color: var(--acc-text-dim); font-size: var(--fs-sm); }
+  @media (max-width: 1000px) { .acc-branchen__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .acc-branchen__grid { grid-template-columns: 1fr; } }
+</style>
+
+{% schema %}
+{
+  "name": "Branchen",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Micro-Label", "default": "Für Ihre Branche gebaut" },
+    { "type": "text", "id": "titel", "label": "Überschrift", "default": "Was Ihre KI-Abteilung für Sie erledigt" },
+    { "type": "text", "id": "untertitel", "label": "Untertitel", "default": "Acht Beispiele aus dem Alltag – Ihre Branche ist dabei." }
+  ],
+  "blocks": [
+    {
+      "type": "branche",
+      "name": "Branche",
+      "settings": [
+        { "type": "text", "id": "symbol", "label": "Symbol (Emoji)", "default": "🍽" },
+        { "type": "text", "id": "name", "label": "Branche", "default": "Gastronomie" },
+        { "type": "textarea", "id": "beispiele", "label": "Beispiele", "default": "Wochenkarte texten, Aktionen planen, Reklamationen beantworten." }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [{ "name": "Branchen" }]
+}
+{% endschema %}

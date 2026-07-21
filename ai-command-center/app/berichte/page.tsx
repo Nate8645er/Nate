@@ -12,6 +12,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ArtifactFile } from "@/lib/agents/types";
 import WorkNav from "@/app/components/WorkNav";
+import WorkFooter from "@/app/components/WorkFooter";
 
 const HISTORY_KEY = "acc-mission-history";
 const KOMMANDOS_KEY = "acc-kommandos";
@@ -194,6 +195,7 @@ export default function BerichtePage() {
             </article>
           ))}
         </div>
+        <WorkFooter variante="dunkel" />
       </div>
     </div>
   );

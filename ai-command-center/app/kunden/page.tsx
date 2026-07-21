@@ -17,6 +17,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import WorkNav from "@/app/components/WorkNav";
+import WorkFooter from "@/app/components/WorkFooter";
 
 const KUNDEN_KEY = "acc-kunden";
 
@@ -233,6 +234,7 @@ export default function KundenPage() {
             </article>
           ))}
         </div>
+        <WorkFooter variante="hell" />
       </div>
     </div>
   );

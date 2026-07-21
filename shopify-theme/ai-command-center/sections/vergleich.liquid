@@ -1,0 +1,70 @@
+{% comment %}
+  Vergleichs-Sektion: AI Command Center vs. einzelner Chatbot vs. Agentur.
+  Das stärkste Kauf-Argument als ehrliche Tabelle.
+{% endcomment %}
+
+<section class="acc-section acc-vgl">
+  <div class="acc-wrap">
+    <div class="acc-shead acc-reveal">
+      <span class="acc-micro">{{ section.settings.label }}</span>
+      <h2>{{ section.settings.titel }}</h2>
+    </div>
+    <div class="acc-vgl__scroll acc-reveal">
+      <table class="acc-vgl__tabelle">
+        <thead>
+          <tr>
+            <th></th>
+            <th class="acc-vgl__wir">AI Command Center</th>
+            <th>Einzelner KI-Chatbot</th>
+            <th>Klassische Agentur</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Ergebnis</td><td class="acc-vgl__wir">Fertige Dateien: Website, Offerte, Bericht</td><td>Text-Antwort zum Selbst-Weiterverarbeiten</td><td>Fertige Arbeit</td></tr>
+          <tr><td>Qualitätsprüfung</td><td class="acc-vgl__wir">Eigener Prüf-Agent, Score 0–100</td><td>Keine</td><td>Projektleitung</td></tr>
+          <tr><td>Geschwindigkeit</td><td class="acc-vgl__wir">Minuten</td><td>Sekunden (aber nur Text)</td><td>Tage bis Wochen</td></tr>
+          <tr><td>Branchen-Anpassung</td><td class="acc-vgl__wir">Automatisch, ab dem ersten Auftrag</td><td>Jedes Mal neu erklären</td><td>Nach Einarbeitung</td></tr>
+          <tr><td>E-Mail, CRM, Rechnungen, Autopilot</td><td class="acc-vgl__wir">Eingebaut, verbunden</td><td>Nicht vorhanden</td><td>Separat beauftragen</td></tr>
+          <tr><td>Ausfallsicherheit</td><td class="acc-vgl__wir">3 KI-Anbieter in der Kette</td><td>1 Anbieter</td><td>Personenabhängig</td></tr>
+          <tr><td>Kosten pro Monat</td><td class="acc-vgl__wir">Ab 199 CHF, monatlich kündbar</td><td>~20–60 CHF (nur Chat)</td><td>Ab 5'000 CHF</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="acc-vgl__fair acc-reveal">
+      Fair bleibt fair: Für einzelne schnelle Fragen reicht ein Chatbot.
+      Sobald echte Arbeitsergebnisse zählen, arbeitet hier eine ganze Abteilung.
+    </p>
+  </div>
+</section>
+
+<style>
+  .acc-vgl__scroll { overflow-x: auto; margin-top: var(--sp-7); }
+  .acc-vgl__tabelle { width: 100%; min-width: 760px; border-collapse: collapse; font-size: var(--fs-sm); }
+  .acc-vgl__tabelle th, .acc-vgl__tabelle td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--acc-line-faint);
+    text-align: left;
+    vertical-align: top;
+  }
+  .acc-vgl__tabelle thead th { font-family: var(--acc-head); font-size: var(--fs-base); }
+  .acc-vgl__tabelle td:first-child { font-weight: 600; width: 22%; }
+  .acc-vgl__wir {
+    background: var(--acc-panel-hi);
+    border-left: 1px solid var(--acc-line);
+    border-right: 1px solid var(--acc-line);
+    font-weight: 600;
+  }
+  thead .acc-vgl__wir { color: var(--acc-amber); border-top: 1px solid var(--acc-line); border-radius: 10px 10px 0 0; }
+  .acc-vgl__fair { margin-top: var(--sp-5); text-align: center; color: var(--acc-text-dim); font-size: var(--fs-sm); }
+</style>
+
+{% schema %}
+{
+  "name": "Vergleich",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Micro-Label", "default": "Der ehrliche Vergleich" },
+    { "type": "text", "id": "titel", "label": "Überschrift", "default": "Chatbot? Agentur? Oder eine ganze KI-Abteilung." }
+  ],
+  "presets": [{ "name": "Vergleich" }]
+}
+{% endschema %}

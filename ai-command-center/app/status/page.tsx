@@ -11,6 +11,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import WorkNav from "@/app/components/WorkNav";
+import WorkFooter from "@/app/components/WorkFooter";
 import { hasApiKey } from "@/lib/agents/providers";
 import { SKILLS } from "@/lib/skills";
 import { talentpoolFormatiert } from "@/lib/talentpool";
@@ -131,6 +132,7 @@ export default function StatusPage() {
             ))}
           </div>
         </section>
+        <WorkFooter variante="dunkel" />
       </div>
     </div>
   );

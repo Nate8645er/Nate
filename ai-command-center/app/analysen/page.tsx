@@ -12,6 +12,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import WorkNav from "@/app/components/WorkNav";
+import WorkFooter from "@/app/components/WorkFooter";
 
 const HISTORY_KEY = "acc-mission-history";
 const KOMMANDOS_KEY = "acc-kommandos";
@@ -174,6 +175,7 @@ export default function AnalysenPage() {
             </div>
           )}
         </section>
+        <WorkFooter variante="hell" />
       </div>
     </div>
   );
