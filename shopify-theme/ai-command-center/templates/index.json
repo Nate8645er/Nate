@@ -225,6 +225,13 @@
             "question": "Kann ich in Euro bezahlen?",
             "answer": "<p>Die Preise sind in Schweizer Franken angegeben. Über den Shopify-Checkout können Kundinnen und Kunden aus dem Ausland je nach Zahlungsmethode in ihrer Währung bezahlen; die Umrechnung übernimmt der Zahlungsanbieter automatisch.</p>"
           }
+        },
+        "f11": {
+          "type": "qa",
+          "settings": {
+            "question": "Welche KI steckt dahinter?",
+            "answer": "<p>Ihr System hat einen Kopf mit klarer Hierarchie: <strong>Claude von Anthropic ist der Boss</strong> – er plant jede Mission, verteilt die Arbeit und prüft jedes Ergebnis. <strong>GPT von OpenAI und Kimi von Moonshot arbeiten als Worker</strong> – für Texte, Analysen und echten Code. Und aus einem Pool von über einer Milliarde Spezialisten-Profilen stellt der Boss für jeden Auftrag <strong>die passenden Assistenten</strong> zusammen. Fällt ein Anbieter aus, übernimmt automatisch der nächste.</p>"
+          }
         }
       },
       "block_order": [
@@ -235,7 +242,8 @@
         "f5",
         "f6",
         "f9",
-        "f10"
+        "f10",
+        "f11"
       ]
     },
     "cta-band": {
@@ -264,8 +272,8 @@
           "type": "zahl",
           "settings": {
             "wert": "3",
-            "name": "KI-Anbieter",
-            "notiz": "Ausfallsicher mit Fallback-Kette"
+            "name": "KI-Ebenen",
+            "notiz": "Boss · Worker · Assistenten"
           }
         },
         "z4": {
@@ -595,6 +603,14 @@
         "label": "Der ehrliche Vergleich",
         "titel": "Chatbot? Agentur? Oder eine ganze KI-Abteilung."
       }
+    },
+    "gehirn": {
+      "type": "gehirn",
+      "settings": {
+        "label": "So denkt Ihr System",
+        "titel": "Ein Kopf. Zwei Worker. Milliarden Assistenten.",
+        "untertitel": "Kein einzelner Chatbot – eine Organisation aus den stärksten KIs der Welt, mit klarer Hierarchie."
+      }
     }
   },
   "order": [
@@ -602,6 +618,7 @@
     "logoleiste",
     "vorteile",
     "zahlen",
+    "gehirn",
     "branchen",
     "einblicke",
     "bereiche",
