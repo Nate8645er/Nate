@@ -135,3 +135,90 @@ body {
     transition: none !important;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Landing / Premium-Shop                                             */
+/* Nur transform und opacity werden animiert.                         */
+/* ------------------------------------------------------------------ */
+
+/* Produktbühne: leicht geneigtes Schaufenster wie ein Produktfoto */
+.shop-stage {
+  perspective: 1600px;
+}
+.shop-mock {
+  transform: rotateX(7deg) rotateY(-5deg) rotateZ(0.6deg);
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+@media (hover: hover) {
+  .shop-stage:hover .shop-mock {
+    transform: rotateX(2deg) rotateY(-1.5deg) rotateZ(0deg);
+  }
+}
+
+/* Warmer Glow hinter dem Schaufenster */
+.shop-glow {
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 140, 42, 0.16),
+    rgba(255, 140, 42, 0.05) 55%,
+    transparent 75%
+  );
+  pointer-events: none;
+}
+
+/* Produkt-Karte: Hover-Lift (transform) + Glow-Rand (opacity) */
+.shop-card {
+  position: relative;
+  transition: transform 0.25s ease;
+  will-change: transform;
+}
+.shop-card::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow:
+    0 24px 48px -24px rgba(255, 140, 42, 0.35),
+    0 0 0 1px rgba(255, 140, 42, 0.45);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+@media (hover: hover) {
+  .shop-card:hover {
+    transform: translateY(-6px);
+  }
+  .shop-card:hover::after {
+    opacity: 1;
+  }
+}
+
+/* Buttons: klarer Active-Zustand, animiert nur transform */
+.shop-btn {
+  transition: transform 0.15s ease;
+}
+.shop-btn:active {
+  transform: translateY(1px) scale(0.99);
+}
+.shop-btn:focus-visible {
+  outline: 2px solid var(--hud-amber);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-mock,
+  .shop-card,
+  .shop-card::after,
+  .shop-btn {
+    transition: none !important;
+  }
+  .shop-mock,
+  .shop-stage:hover .shop-mock {
+    transform: rotateX(7deg) rotateY(-5deg) rotateZ(0.6deg);
+  }
+  .shop-card:hover,
+  .shop-btn:active {
+    transform: none !important;
+  }
+}
