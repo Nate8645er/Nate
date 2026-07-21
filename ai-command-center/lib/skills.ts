@@ -465,6 +465,52 @@ export const SKILLS: Skill[] = [
       "Grundlage: [Beschreibung einfügen oder Datei anhängen]",
   },
 
+  {
+    befehl: "/jahresplanung",
+    name: "Jahresplanung",
+    beschreibung: "Das ganze Firmenjahr strukturiert: Ziele, Quartale, Meilensteine.",
+    kategorie: "Planung & Büro",
+    vorlage:
+      "Erstelle eine Jahresplanung für [Firma/Bereich] für das Jahr [Jahr]: " +
+      "Hauptziele [Ziele auflisten], wichtige Termine [Messen/Saison/etc.]. " +
+      "Mit Quartals-Meilensteinen, Verantwortlichkeiten, Budget-Eckpunkten " +
+      "und einem Prüfrhythmus (was schauen wir monatlich an).",
+  },
+  {
+    befehl: "/schulung",
+    name: "Schulungsunterlagen",
+    beschreibung: "Fertige Schulung für Ihr Team: Ablauf, Inhalte, Übungen, Handout.",
+    kategorie: "Personal & Recht",
+    vorlage:
+      "Erstelle komplette Schulungsunterlagen zum Thema [Thema] für " +
+      "[Zielgruppe, z. B. neue Mitarbeitende/Verkaufsteam]: Lernziele, " +
+      "Ablaufplan für [Dauer], verständliche Inhalte mit Beispielen aus " +
+      "[Branche], 3 Übungen mit Lösungen und ein einseitiges Handout.",
+  },
+  {
+    befehl: "/lieferanten-vergleich",
+    name: "Lieferanten-Vergleich",
+    beschreibung: "Angebote strukturiert vergleichen und sauber verhandeln.",
+    kategorie: "Finanzen",
+    vorlage:
+      "Vergleiche folgende Lieferanten-Angebote strukturiert: " +
+      "[Angebote mit Preisen/Konditionen einfügen oder Dateien anhängen]. " +
+      "Mit Vergleichstabelle (Preis, Qualität, Lieferzeit, Risiken), " +
+      "Empfehlung, Verhandlungspunkten je Anbieter und einem " +
+      "versandfertigen Nachverhandlungs-Text.",
+  },
+  {
+    befehl: "/krisenplan",
+    name: "Krisen- / Notfallplan",
+    beschreibung: "Vorbereitet, wenn es brennt: Szenarien, Abläufe, Kommunikation.",
+    kategorie: "Planung & Büro",
+    vorlage:
+      "Erstelle einen Krisen- und Notfallplan für [Firma, Branche]: die 5 " +
+      "wahrscheinlichsten Szenarien [z. B. IT-Ausfall, Schlüsselperson fällt " +
+      "aus, Lieferengpass, Reklamationswelle], je Szenario Sofortmassnahmen, " +
+      "Verantwortliche, Kommunikationsvorlagen für Kunden und Team sowie " +
+      "eine Prüf-Checkliste fürs Jahr.",
+  },
   /* ---------- Exklusiv ab BUSINESS ---------- */
   {
     befehl: "/prozess-automatisierung",
@@ -589,7 +635,12 @@ export const SKILL_AB_STUFE: Record<string, SkillStufe> = {
   "/datenschutz": "BUSINESS",
   "/prozess-automatisierung": "BUSINESS",
   "/abteilungs-bericht": "BUSINESS",
-  /* ENTERPRISE – Strategie und Systemlandschaft (+4 = 44) */
+  /* Firmen-Paket 2026 (+4 = 48 total) */
+  "/jahresplanung": "PERSONAL",
+  "/schulung": "STARTER",
+  "/lieferanten-vergleich": "PROFESSIONAL",
+  "/krisenplan": "BUSINESS",
+  /* ENTERPRISE – Strategie und Systemlandschaft */
   "/businessplan": "ENTERPRISE",
   "/api-doku": "ENTERPRISE",
   "/ki-strategie": "ENTERPRISE",
