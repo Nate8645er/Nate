@@ -32,6 +32,7 @@ import type { PlanId } from "./agents/types";
 /** Bezahlte Pläne, für die Schlüssel verkauft werden. */
 export type PaidPlan = Exclude<PlanId, "FREE">;
 export const PAID_PLANS: readonly PaidPlan[] = [
+  "PERSONAL",
   "STARTER",
   "PROFESSIONAL",
   "BUSINESS",
@@ -41,6 +42,7 @@ export const PAID_PLANS: readonly PaidPlan[] = [
 /** Missionen pro Kalendertag (UTC) – wird SERVERSEITIG erzwungen. */
 export const PLAN_LIMITS: Record<PlanId, number> = {
   FREE: 3,
+  PERSONAL: 10,
   STARTER: 25,
   PROFESSIONAL: 100,
   BUSINESS: 400,
@@ -49,7 +51,8 @@ export const PLAN_LIMITS: Record<PlanId, number> = {
 
 /** Nächsthöherer Plan für die Upgrade-Empfehlung im Limit-Fehler. */
 const NEXT_PLAN: Record<PlanId, PaidPlan | null> = {
-  FREE: "STARTER",
+  FREE: "PERSONAL",
+  PERSONAL: "STARTER",
   STARTER: "PROFESSIONAL",
   PROFESSIONAL: "BUSINESS",
   BUSINESS: "ENTERPRISE",
@@ -127,7 +130,7 @@ function readToken(token: string): Record<string, unknown> | null {
 
 const BASE32_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 const KEY_RANDOM_LENGTH = 16;
-const KEY_RE = /^ACC-(STARTER|PROFESSIONAL|BUSINESS|ENTERPRISE)-([A-Z2-7]{16})-([0-9A-F]{8})$/;
+const KEY_RE = /^ACC-(PERSONAL|STARTER|PROFESSIONAL|BUSINESS|ENTERPRISE)-([A-Z2-7]{16})-([0-9A-F]{8})$/;
 
 function keySignature(payload: string): string {
   return hmacHex(payload).slice(0, 8).toUpperCase();

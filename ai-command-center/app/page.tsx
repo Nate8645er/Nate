@@ -36,6 +36,20 @@ const PLANS: Plan[] = [
     handle: "free-demo-ki-team-kostenlos-testen",
   },
   {
+    name: "Personal",
+    price: "19.90",
+    priceNote: "CHF pro Monat",
+    team: "Ihr Kern-Team",
+    benefits: [
+      "10 Missionen pro Tag",
+      "Fertige Dateien mit Download",
+      "Alle 24 Skills inklusive",
+      "E-Mail-Zentrale, CRM & Autopilot",
+      "Perfekt für Einzelpersonen",
+    ],
+    handle: "personal-ai-ihr-personlicher-ki-assistent-monatsabo",
+  },
+  {
     name: "Starter",
     price: "199",
     priceNote: "CHF pro Monat",
@@ -453,7 +467,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {PLANS.map((plan) => (
                 <article
                   key={plan.name}

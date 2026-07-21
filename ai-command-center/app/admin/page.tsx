@@ -12,7 +12,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-const PLANS = ["STARTER", "PROFESSIONAL", "BUSINESS", "ENTERPRISE"] as const;
+const PLANS = ["PERSONAL", "STARTER", "PROFESSIONAL", "BUSINESS", "ENTERPRISE"] as const;
 type Plan = (typeof PLANS)[number];
 
 const PASSWORD_KEY = "acc-admin-password";

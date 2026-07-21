@@ -27,10 +27,11 @@ export const metadata: Metadata = {
 
 const KERN: AgentRole[] = ["commander", "builder", "analyst", "quality"];
 const SPEZIALISTEN: AgentRole[] = ["marketing", "coding", "research", "business"];
-const PLAN_REIHENFOLGE: PlanId[] = ["FREE", "STARTER", "PROFESSIONAL", "BUSINESS", "ENTERPRISE"];
+const PLAN_REIHENFOLGE: PlanId[] = ["FREE", "PERSONAL", "STARTER", "PROFESSIONAL", "BUSINESS", "ENTERPRISE"];
 
 const PLAN_NOTIZ: Record<PlanId, string> = {
   FREE: "Kern-Team zum Kennenlernen",
+  PERSONAL: "Kern-Team für Einzelpersonen – der günstige Einstieg",
   STARTER: "Kern-Team, jeden Tag einsatzbereit",
   PROFESSIONAL: "Kern-Team + alle 4 Spezialisten parallel",
   BUSINESS: `Virtuelle Firma: dynamische Abteilungen, bis ${MAX_DYN_AGENTS.BUSINESS} Spezialisten live pro Auftrag`,

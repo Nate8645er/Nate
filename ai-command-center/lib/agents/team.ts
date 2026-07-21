@@ -42,6 +42,7 @@ export const FILE_OUTPUT_INSTRUCTION = [
  */
 export const WORKERS_BY_PLAN: Record<PlanId, readonly WorkerRole[]> = {
   FREE: ["builder", "analyst"],
+  PERSONAL: ["builder", "analyst"],
   STARTER: ["builder", "analyst"],
   PROFESSIONAL: ["builder", "analyst", "marketing", "research"],
   BUSINESS: ["builder", "analyst", "marketing", "research", "coding", "business"],
@@ -67,6 +68,7 @@ export const MAX_DYN_AGENTS: Record<"BUSINESS" | "ENTERPRISE", number> = {
  */
 export const WORKFORCE_BY_PLAN: Record<PlanId, number> = {
   FREE: 4,
+  PERSONAL: 6,
   STARTER: 8,
   PROFESSIONAL: 24,
   BUSINESS: 150,

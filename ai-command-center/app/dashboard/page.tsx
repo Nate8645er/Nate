@@ -54,14 +54,15 @@ const STATUS_LABEL: Record<AgentStatus, string> = {
   error: "Fehler",
 };
 
-type Plan = "FREE" | "STARTER" | "PROFESSIONAL" | "BUSINESS" | "ENTERPRISE";
-const PLANS: Plan[] = ["FREE", "STARTER", "PROFESSIONAL", "BUSINESS", "ENTERPRISE"];
+type Plan = "FREE" | "PERSONAL" | "STARTER" | "PROFESSIONAL" | "BUSINESS" | "ENTERPRISE";
+const PLANS: Plan[] = ["FREE", "PERSONAL", "STARTER", "PROFESSIONAL", "BUSINESS", "ENTERPRISE"];
 const PLAN_LEVEL: Record<Plan, number> = {
   FREE: 0,
-  STARTER: 1,
-  PROFESSIONAL: 2,
-  BUSINESS: 3,
-  ENTERPRISE: 4,
+  PERSONAL: 1,
+  STARTER: 2,
+  PROFESSIONAL: 3,
+  BUSINESS: 4,
+  ENTERPRISE: 5,
 };
 
 /**
@@ -71,6 +72,7 @@ const PLAN_LEVEL: Record<Plan, number> = {
  */
 const WORKFORCE_BY_PLAN: Record<Plan, number> = {
   FREE: 4,
+  PERSONAL: 6,
   STARTER: 8,
   PROFESSIONAL: 24,
   BUSINESS: 150,

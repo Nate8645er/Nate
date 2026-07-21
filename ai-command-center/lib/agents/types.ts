@@ -10,7 +10,7 @@
 export type Provider = "anthropic" | "openai" | "moonshot";
 
 /** Abo-Pläne. FREE gilt ohne (gültiges) Lizenz-Token. */
-export type PlanId = "FREE" | "STARTER" | "PROFESSIONAL" | "BUSINESS" | "ENTERPRISE";
+export type PlanId = "FREE" | "PERSONAL" | "STARTER" | "PROFESSIONAL" | "BUSINESS" | "ENTERPRISE";
 
 /**
  * Unternehmenskontext aus dem Branchen-Onboarding.
