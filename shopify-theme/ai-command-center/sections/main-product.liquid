@@ -1,0 +1,79 @@
+<section class="acc-section acc-product-section">
+  <div class="acc-wrap acc-product">
+    <div class="acc-product__media">
+      <div class="acc-panel acc-corner acc-product__frame">
+        <span class="acc-c1" aria-hidden="true"></span>
+        <span class="acc-c2" aria-hidden="true"></span>
+        {%- assign feat = product.selected_or_first_available_variant.featured_media | default: product.featured_media -%}
+        {%- if feat -%}
+          {%- if feat.media_type == 'video' -%}
+            {{ feat | media_tag: image_size: '800x', autoplay: false, loop: false, muted: true, controls: true }}
+          {%- else -%}
+            {{ feat | image_url: width: 900 | image_tag: alt: product.title | escape }}
+          {%- endif -%}
+        {%- else -%}
+          <div class="acc-product__ph">// KEIN BILD</div>
+        {%- endif -%}
+      </div>
+
+      {%- if product.media.size > 1 -%}
+        <div class="acc-thumbs">
+          {%- for media in product.media limit: 6 -%}
+            <div class="acc-thumbs__i">
+              {%- if media.media_type == 'video' -%}
+                {%- if media.preview_image -%}{{ media.preview_image | image_url: width: 150 | image_tag: loading: 'lazy', alt: product.title | escape }}{%- endif -%}
+              {%- else -%}
+                {{ media | image_url: width: 150 | image_tag: loading: 'lazy', alt: product.title | escape }}
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="acc-product__info">
+      <p class="acc-micro">// {{ product.type | default: 'KI-ABO' | escape | upcase }}</p>
+      <h1>{{ product.title | escape }}</h1>
+      <div class="acc-product__price">{{ product.price | money }}<span class="acc-micro"> / Monat</span></div>
+      <span class="acc-product__badge">{{ section.settings.badge_text | escape }}</span>
+
+      <div class="acc-product__desc acc-rte">{{ product.description }}</div>
+
+      {%- if product.available -%}
+        {%- form 'product', product, class: 'acc-form' -%}
+          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+          {%- if product.variants.size > 1 -%}
+            <label class="acc-micro" for="acc-variant">// VARIANTE</label>
+            <select id="acc-variant" name="id" class="acc-btn acc-btn--ghost" style="text-align:left;">
+              {%- for variant in product.variants -%}
+                <option value="{{ variant.id }}" {% if variant == product.selected_or_first_available_variant %}selected{% endif %} {% unless variant.available %}disabled{% endunless %}>
+                  {{ variant.title }} &middot; {{ variant.price | money }}
+                </option>
+              {%- endfor -%}
+            </select>
+          {%- endif -%}
+          <button type="submit" name="add" class="acc-btn acc-btn--block">Abo starten</button>
+        {%- endform -%}
+      {%- else -%}
+        <button class="acc-btn acc-btn--block" disabled>Aktuell nicht verfuegbar</button>
+      {%- endif -%}
+
+      <div class="acc-panel acc-corner acc-product__hint">
+        <span class="acc-c1" aria-hidden="true"></span>
+        <span class="acc-c2" aria-hidden="true"></span>
+        {{ section.settings.hint_text }}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Produkt",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "badge_text", "label": "Badge", "default": "Monatsabo, monatlich kuendbar" },
+    { "type": "richtext", "id": "hint_text", "label": "Hinweisbox", "default": "<p>Im Zweifel: <strong>STARTER</strong> ist unser Bestseller.</p>" }
+  ]
+}
+{% endschema %}

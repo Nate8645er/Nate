@@ -1,0 +1,15 @@
+<section class="acc-section acc-page-section">
+  <div class="acc-wrap acc-page">
+    <p class="acc-micro">// {{ page.title | escape | upcase }}</p>
+    <h1>{{ page.title | escape }}</h1>
+    <div class="acc-rte">{{ page.content }}</div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Seite",
+  "tag": "section",
+  "settings": []
+}
+{% endschema %}

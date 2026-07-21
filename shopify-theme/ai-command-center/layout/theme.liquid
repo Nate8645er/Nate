@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0b0a08">
+    <link rel="canonical" href="{{ canonical_url }}">
+    {%- if settings.favicon != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+    {%- endif -%}
+    <title>
+      {{ page_title }}{% if current_tags %} &ndash; {{ current_tags | join: ', ' }}{% endif %}{% if current_page != 1 %} &ndash; {{ 'general.page' | t: page: current_page }}{% endif %}
+      {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+    </title>
+    {%- if page_description -%}
+      <meta name="description" content="{{ page_description | escape }}">
+    {%- endif -%}
+    {{ 'theme.css' | asset_url | stylesheet_tag }}
+    {{ content_for_header }}
+  </head>
+  <body class="acc-body">
+    <header class="acc-header">
+      <div class="acc-header__inner">
+        <a href="{{ routes.root_url }}" class="acc-logo">
+          <span class="acc-logo__dot" aria-hidden="true"></span>
+          AI Command Center
+        </a>
+        <nav class="acc-nav" aria-label="Hauptnavigation">
+          <a href="{{ routes.all_products_collection_url }}">Abos</a>
+          <a href="{{ routes.root_url }}#faq">FAQ</a>
+          <a href="/pages/agb">AGB</a>
+          <a href="/pages/kontakt">Kontakt</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="MainContent" role="main">
+      {{ content_for_layout }}
+    </main>
+
+    <footer class="acc-footer">
+      <div class="acc-wrap acc-footer__inner">
+        <div class="acc-micro">AI Command Center &copy; {{ 'now' | date: '%Y' }} &middot; Ihre KI-Abteilung im Abo</div>
+        <nav class="acc-footer__links" aria-label="Rechtliches">
+          <a href="/pages/agb">AGB</a>
+          <a href="/pages/datenschutz">Datenschutz</a>
+          <a href="/pages/impressum">Impressum</a>
+          <a href="/pages/widerruf">Widerruf</a>
+          <a href="/pages/kontakt">Kontakt</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>

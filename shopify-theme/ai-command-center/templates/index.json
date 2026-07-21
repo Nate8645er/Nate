@@ -1,0 +1,34 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero"
+    },
+    "vorteile": {
+      "type": "vorteile",
+      "blocks": {
+        "b1": { "type": "usp", "settings": { "title": "Sofort startklar", "text": "In Tagen live statt in Monaten. Fertige KI-Prozesse, keine Baustellen." } },
+        "b2": { "type": "usp", "settings": { "title": "Planbare Kosten", "text": "Ein fixer Monatspreis statt teurer Festanstellungen. Monatlich kuendbar." } },
+        "b3": { "type": "usp", "settings": { "title": "Ganzes Team inklusive", "text": "Strategie, Automatisierung und Umsetzung aus einer Hand, ohne Recruiting." } },
+        "b4": { "type": "usp", "settings": { "title": "Skaliert mit Ihnen", "text": "Abo hoch- oder runterstufen, wann immer Ihr Bedarf sich aendert." } }
+      },
+      "block_order": ["b1", "b2", "b3", "b4"]
+    },
+    "produkt-grid": {
+      "type": "produkt-grid",
+      "settings": { "limit": 6 }
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "f1": { "type": "qa", "settings": { "question": "Wie schnell bin ich startklar?", "answer": "<p>In der Regel innerhalb weniger Tage nach Aboabschluss. Onboarding und erste Prozesse gehen sofort los.</p>" } },
+        "f2": { "type": "qa", "settings": { "question": "Kann ich monatlich kuendigen?", "answer": "<p>Ja. Alle Abos sind monatlich kuendbar, ohne lange Bindung.</p>" } },
+        "f3": { "type": "qa", "settings": { "question": "Was ist im Abo enthalten?", "answer": "<p>Strategie, Automatisierung und die laufende Umsetzung Ihrer KI-Prozesse. Details je Abostufe.</p>" } },
+        "f4": { "type": "qa", "settings": { "question": "Brauche ich technisches Vorwissen?", "answer": "<p>Nein. Wir uebernehmen Einrichtung und Betrieb, Sie geben die Richtung vor.</p>" } },
+        "f5": { "type": "qa", "settings": { "question": "Kann ich das Abo wechseln?", "answer": "<p>Jederzeit hoch- oder runterstufen, passend zu Ihrem aktuellen Bedarf.</p>" } },
+        "f6": { "type": "qa", "settings": { "question": "Wie funktioniert der Support?", "answer": "<p>Sie erreichen uns ueber die Kontaktseite. Reaktionszeiten richten sich nach Ihrer Abostufe.</p>" } }
+      },
+      "block_order": ["f1", "f2", "f3", "f4", "f5", "f6"]
+    }
+  },
+  "order": ["hero", "vorteile", "produkt-grid", "faq"]
+}

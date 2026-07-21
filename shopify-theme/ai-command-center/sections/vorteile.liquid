@@ -1,0 +1,52 @@
+<section class="acc-section acc-vorteile">
+  <div class="acc-wrap">
+    <div class="acc-shead">
+      <p class="acc-micro">{{ section.settings.eyebrow | escape }}</p>
+      <h2>{{ section.settings.heading | escape }}</h2>
+    </div>
+    <div class="acc-grid4">
+      {%- for block in section.blocks -%}
+        <div class="acc-panel acc-corner acc-usp" {{ block.shopify_attributes }}>
+          <span class="acc-c1" aria-hidden="true"></span>
+          <span class="acc-c2" aria-hidden="true"></span>
+          <div class="acc-usp__num">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</div>
+          <h3>{{ block.settings.title | escape }}</h3>
+          <p>{{ block.settings.text | escape }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Vorteile",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Micro-Label", "default": "// WARUM AI COMMAND CENTER" },
+    { "type": "text", "id": "heading", "label": "Ueberschrift", "default": "Vier Vorteile, ein Abo" }
+  ],
+  "blocks": [
+    {
+      "type": "usp",
+      "name": "Vorteil",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Titel", "default": "Sofort startklar" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "In Tagen live statt in Monaten. Wir liefern fertige KI-Prozesse, keine Baustellen." }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "Vorteile",
+      "blocks": [
+        { "type": "usp", "settings": { "title": "Sofort startklar", "text": "In Tagen live statt in Monaten. Fertige KI-Prozesse, keine Baustellen." } },
+        { "type": "usp", "settings": { "title": "Planbare Kosten", "text": "Ein fixer Monatspreis statt teurer Festanstellungen. Monatlich kuendbar." } },
+        { "type": "usp", "settings": { "title": "Ganzes Team inklusive", "text": "Strategie, Automatisierung und Umsetzung aus einer Hand, ohne Recruiting." } },
+        { "type": "usp", "settings": { "title": "Skaliert mit Ihnen", "text": "Abo hoch- oder runterstufen, wann immer Ihr Bedarf sich aendert." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

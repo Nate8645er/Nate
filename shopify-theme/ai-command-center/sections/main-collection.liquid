@@ -1,0 +1,53 @@
+<section class="acc-section acc-collection-section">
+  <div class="acc-wrap">
+    <div class="acc-shead">
+      <p class="acc-micro">// KOLLEKTION</p>
+      <h2>{{ collection.title | escape }}</h2>
+    </div>
+
+    {%- if collection.description != blank -%}
+      <div class="acc-rte" style="max-width:820px;margin:0 auto 40px;text-align:center;">{{ collection.description }}</div>
+    {%- endif -%}
+
+    {%- if collection.products.size > 0 -%}
+      <div class="acc-products">
+        {%- for product in collection.products -%}
+          <article class="acc-panel acc-corner acc-card">
+            <span class="acc-c1" aria-hidden="true"></span>
+            <span class="acc-c2" aria-hidden="true"></span>
+            <a class="acc-card__media" href="{{ product.url }}">
+              {%- if product.tags contains 'bestseller' -%}<span class="acc-badge">Bestseller</span>{%- endif -%}
+              {%- if product.featured_media -%}
+                {{ product.featured_media | image_url: width: 640 | image_tag: loading: 'lazy', alt: product.title | escape }}
+              {%- else -%}
+                <div class="acc-card__ph">// KEIN BILD</div>
+              {%- endif -%}
+            </a>
+            <div class="acc-card__body">
+              <h3 class="acc-card__title"><a href="{{ product.url }}">{{ product.title | escape }}</a></h3>
+              <div class="acc-card__price">ab {{ product.price | money }}</div>
+              <div class="acc-card__cta">
+                <a class="acc-btn acc-btn--block" href="{{ product.url }}">Details</a>
+              </div>
+            </div>
+          </article>
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      <div class="acc-panel acc-corner acc-empty">
+        <span class="acc-c1" aria-hidden="true"></span>
+        <span class="acc-c2" aria-hidden="true"></span>
+        <p class="acc-micro">// KEINE PRODUKTE</p>
+        <p>In dieser Kollektion sind aktuell keine Produkte.</p>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Kollektion",
+  "tag": "section",
+  "settings": []
+}
+{% endschema %}

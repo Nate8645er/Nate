@@ -1,0 +1,33 @@
+<section class="acc-hero">
+  <div class="acc-hero__grid" aria-hidden="true"></div>
+  <div class="acc-wrap acc-hero__inner">
+    <p class="acc-micro">{{ section.settings.eyebrow | escape }}</p>
+    <h1>{{ section.settings.headline }}</h1>
+    <p class="acc-hero__sub">{{ section.settings.subheadline | escape }}</p>
+    <div class="acc-hero__cta">
+      {%- if section.settings.cta_label != blank -%}
+        <a class="acc-btn" href="{{ section.settings.cta_link | default: routes.all_products_collection_url }}">{{ section.settings.cta_label | escape }}</a>
+      {%- endif -%}
+      {%- if section.settings.cta2_label != blank -%}
+        <a class="acc-btn acc-btn--ghost" href="{{ section.settings.cta2_link | default: '#faq' }}">{{ section.settings.cta2_label | escape }}</a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Micro-Label", "default": "// SYSTEM ONLINE" },
+    { "type": "html", "id": "headline", "label": "Headline", "default": "Ihre komplette KI-Abteilung im <span class=\"acc-hl\">Abo</span>" },
+    { "type": "text", "id": "subheadline", "label": "Subheadline", "default": "Strategie, Automatisierung und Umsetzung als monatliches Abo. Kein Team aufbauen, keine Fixkosten, monatlich kuendbar." },
+    { "type": "text", "id": "cta_label", "label": "CTA Text", "default": "Abos ansehen" },
+    { "type": "url", "id": "cta_link", "label": "CTA Link" },
+    { "type": "text", "id": "cta2_label", "label": "Sekundaerer CTA Text", "default": "Haeufige Fragen" },
+    { "type": "url", "id": "cta2_link", "label": "Sekundaerer CTA Link" }
+  ],
+  "presets": [{ "name": "Hero" }]
+}
+{% endschema %}
