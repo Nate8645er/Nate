@@ -36,16 +36,17 @@ const PLAETZE: { x: number; y: number }[] = [
   { x: 86, y: 82 },
 ];
 
-/** Figuren-Farben je Platz (Verlauf von/bis). */
-const FARBEN: [string, string][] = [
-  ["#ff8c2a", "#ff5f1f"],
-  ["#2dd4bf", "#0e9488"],
-  ["#a78bfa", "#7c5cd6"],
-  ["#ffd257", "#f5a623"],
-  ["#f472b6", "#e0447c"],
-  ["#60a5fa", "#3b82f6"],
-  ["#4ade80", "#16a34a"],
-  ["#fb923c", "#ea580c"],
+/** Figuren-Farben je Platz: grüne KI-Roboter (Meta-Grün-Familie) mit
+ *  leichter Ton-Variation, dazu ein Mint-Leuchtakzent für die Antenne. */
+const FARBEN: [string, string, string][] = [
+  ["#22c55e", "#15a34a", "#86efac"],
+  ["#34d399", "#059669", "#a7f3d0"],
+  ["#4ade80", "#16a34a", "#bbf7d0"],
+  ["#2dd4bf", "#0d9488", "#99f6e4"],
+  ["#10b981", "#047857", "#6ee7b7"],
+  ["#84cc16", "#4d7c0f", "#d9f99d"],
+  ["#14b8a6", "#0f766e", "#5eead4"],
+  ["#22c55e", "#166534", "#86efac"],
 ];
 
 const ROUTEN = ["route-a", "route-b", "route-c", "route-d"] as const;
@@ -55,10 +56,10 @@ export default memo(function AgentOffice({ agents }: { agents: OfficeAgent[] }) 
     <div className="office" role="img" aria-label="Ihre KI-Belegschaft bei der Arbeit im virtuellen Büro">
       {agents.slice(0, 8).map((a, i) => {
         const platz = PLAETZE[i];
-        const [c1, c2] = FARBEN[i % FARBEN.length];
+        const [c1, c2, mint] = FARBEN[i % FARBEN.length];
         const deskCls =
           a.locked ? "is-locked" : a.status === "working" ? "is-working" : a.status === "done" ? "is-done" : a.status === "error" ? "is-error" : "";
-        // Bereit => durchs Büro laufen; sonst am Platz sitzen.
+        // Bereit => durchs Büro laufen; sonst am Platz sitzen und tippen.
         const laeuft = !a.locked && a.status === "idle";
         const botCls = a.locked
           ? "is-sitzend"
@@ -68,7 +69,8 @@ export default memo(function AgentOffice({ agents }: { agents: OfficeAgent[] }) 
         return (
           <div key={a.id}>
             <div className={`office-desk ${deskCls}`} style={{ left: `${platz.x}%`, top: `${platz.y}%` }}>
-              <div className="desk-screen"><span className="desk-glow" /></div>
+              <div className="desk-screen"><span className="desk-glow" /><span className="desk-scan" /></div>
+              <div className="desk-kbd" />
               <div className="desk-top" />
               <div className="desk-name">{a.locked ? `🔒 ${a.name}` : a.name}</div>
             </div>
@@ -81,6 +83,7 @@ export default memo(function AgentOffice({ agents }: { agents: OfficeAgent[] }) 
                     top: `${platz.y + (laeuft ? 14 : 6)}%`,
                     "--bot-farbe": c1,
                     "--bot-farbe-2": c2,
+                    "--bot-mint": mint,
                     animationDelay: laeuft ? `${(i % 4) * -3.5}s` : undefined,
                   } as React.CSSProperties
                 }
@@ -88,7 +91,9 @@ export default memo(function AgentOffice({ agents }: { agents: OfficeAgent[] }) 
                 {a.status === "done" && <span className="bot-bubble">✓</span>}
                 {a.status === "error" && <span className="bot-bubble is-fehler">!</span>}
                 <div className="bot-inner">
-                  <div className="bot-head" />
+                  <span className="bot-arm bot-arm--l" />
+                  <span className="bot-arm bot-arm--r" />
+                  <div className="bot-head"><i className="bot-eye" /></div>
                   <div className="bot-body" />
                   <div className="bot-legs"><span /><span /></div>
                 </div>
