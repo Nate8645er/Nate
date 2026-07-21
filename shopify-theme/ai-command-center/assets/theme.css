@@ -6,21 +6,26 @@
 
 /* ---------- Tokens ---------- */
 :root {
-  --acc-bg: #0b0a08;
-  --acc-bg-elev: #12100d;
-  --acc-panel: #161310;
-  --acc-panel-hi: #1c1813;
-  --acc-amber: #ff8c2a;
-  --acc-amber-soft: #ffb066;
-  --acc-orange: #ff5f1f;
+  /* Helle, warme Palette: freundlich, farbig, kundennah. */
+  --acc-bg: #fdfaf4;
+  --acc-bg-elev: #f7f2e8;
+  --acc-panel: #ffffff;
+  --acc-panel-hi: #fff7ec;
+  --acc-amber: #ee7712;
+  --acc-amber-soft: #ff9d45;
+  --acc-orange: #e8590c;
   --acc-grad: linear-gradient(135deg, #ffb066 0%, #ff8c2a 45%, #ff5f1f 100%);
-  --acc-line: rgba(255, 140, 42, 0.22);
-  --acc-line-strong: rgba(255, 140, 42, 0.5);
-  --acc-line-faint: rgba(255, 140, 42, 0.1);
-  --acc-text: #f2ede3;
-  --acc-text-dim: #b0a795;
-  --acc-text-faint: #756d5c;
-  --acc-glow: 0 0 0 1px var(--acc-line), 0 0 24px rgba(255, 140, 42, 0.1);
+  --acc-line: rgba(232, 120, 30, 0.28);
+  --acc-line-strong: rgba(232, 120, 30, 0.55);
+  --acc-line-faint: rgba(232, 120, 30, 0.12);
+  --acc-text: #27211a;
+  --acc-text-dim: #6d6355;
+  --acc-text-faint: #a2988a;
+  /* Zweit- und Drittfarben fuer mehr Lebendigkeit */
+  --acc-teal: #0e9488;
+  --acc-violet: #7c5cd6;
+  --acc-rose: #e0447c;
+  --acc-glow: 0 1px 3px rgba(70, 45, 10, 0.06), 0 10px 32px rgba(230, 120, 30, 0.10);
   --acc-radius: 6px;
   --acc-radius-lg: 12px;
   --acc-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, "Fira Mono", Menlo, Consolas, monospace;
@@ -67,22 +72,17 @@ body {
   padding-top: var(--acc-header-h);
 }
 
-/* Dezente Scanlines */
+/* Warmer Farbschimmer statt Scanlines: freundlich, hell, lebendig. */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 9990;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(255, 140, 42, 0.03) 0,
-    rgba(255, 140, 42, 0.03) 1px,
-    transparent 1px,
-    transparent 4px
-  );
-  mix-blend-mode: screen;
-  opacity: 0.4;
+  z-index: -1;
+  background:
+    radial-gradient(900px 500px at 15% -5%, rgba(255, 160, 70, 0.14), transparent 60%),
+    radial-gradient(800px 500px at 90% 10%, rgba(124, 92, 214, 0.08), transparent 55%),
+    radial-gradient(700px 500px at 50% 110%, rgba(14, 148, 136, 0.07), transparent 55%);
 }
 
 img { max-width: 100%; height: auto; display: block; }
@@ -190,10 +190,11 @@ h1, h2, h3, h4 { font-family: var(--acc-head); line-height: 1.12; letter-spacing
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 100;
-  background: rgba(11, 10, 8, 0.78);
+  background: rgba(253, 250, 244, 0.88);
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--acc-line);
+  border-bottom: 1px solid var(--acc-line-faint);
+  box-shadow: 0 1px 12px rgba(70, 45, 10, 0.05);
 }
 .acc-header__inner {
   display: flex;
@@ -571,7 +572,7 @@ h1, h2, h3, h4 { font-family: var(--acc-head); line-height: 1.12; letter-spacing
 .acc-usp:hover {
   transform: translateY(-6px);
   border-color: var(--acc-line-strong);
-  box-shadow: 0 0 0 1px var(--acc-line-strong), 0 16px 44px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 140, 42, 0.14);
+  box-shadow: 0 0 0 1px var(--acc-line-strong), 0 16px 44px rgba(70, 45, 10, 0.12), 0 0 30px rgba(255, 140, 42, 0.12);
 }
 .acc-usp__icon {
   width: 46px; height: 46px;
@@ -599,12 +600,12 @@ h1, h2, h3, h4 { font-family: var(--acc-head); line-height: 1.12; letter-spacing
 }
 .acc-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 0 0 1px var(--acc-line-strong), 0 20px 48px rgba(0, 0, 0, 0.55), 0 0 34px rgba(255, 140, 42, 0.16);
+  box-shadow: 0 0 0 1px var(--acc-line-strong), 0 20px 48px rgba(70, 45, 10, 0.14), 0 0 34px rgba(255, 140, 42, 0.14);
 }
 .acc-card__media {
   position: relative;
   aspect-ratio: 4 / 3;
-  background: #0f0d0a;
+  background: #fff3e4;
   overflow: hidden;
   display: block;
 }
@@ -826,7 +827,7 @@ h1, h2, h3, h4 { font-family: var(--acc-head); line-height: 1.12; letter-spacing
 .acc-product__frame {
   position: relative;
   aspect-ratio: 1 / 1;
-  background: #0f0d0a;
+  background: #f4ede1;
   overflow: hidden;
   border-radius: var(--acc-radius-lg);
 }
@@ -845,7 +846,7 @@ h1, h2, h3, h4 { font-family: var(--acc-head); line-height: 1.12; letter-spacing
   border: 1px solid var(--acc-line);
   border-radius: var(--acc-radius);
   overflow: hidden;
-  background: #0f0d0a;
+  background: #f4ede1;
   padding: 0;
   cursor: pointer;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -949,9 +950,10 @@ h1, h2, h3, h4 { font-family: var(--acc-head); line-height: 1.12; letter-spacing
   gap: var(--sp-4);
   padding: var(--sp-3) var(--sp-4);
   padding-bottom: calc(var(--sp-3) + env(safe-area-inset-bottom, 0px));
-  background: rgba(11, 10, 8, 0.92);
+  background: rgba(253, 250, 244, 0.95);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
+  box-shadow: 0 -4px 20px rgba(70, 45, 10, 0.08);
   border-top: 1px solid var(--acc-line);
   transform: translateY(110%);
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -978,7 +980,7 @@ h1, h2, h3, h4 { font-family: var(--acc-head); line-height: 1.12; letter-spacing
   border: 1px solid var(--acc-line);
   border-radius: var(--acc-radius);
   overflow: hidden;
-  background: #0f0d0a;
+  background: #f4ede1;
 }
 .acc-cart__img img { width: 100%; height: 100%; object-fit: cover; }
 .acc-cart__meta { flex: 1; min-width: 0; }
@@ -1095,3 +1097,21 @@ h1, h2, h3, h4 { font-family: var(--acc-head); line-height: 1.12; letter-spacing
   .acc-marquee__track { animation: none !important; }
   .acc-buybar { transform: none; }
 }
+
+/* ==========================================================================
+   FARB-AKZENTE (helle Version): Abwechslung in Kacheln und Schritten
+   ========================================================================== */
+.acc-usp:nth-child(3n+2) .acc-usp__icon {
+  color: var(--acc-teal);
+  border-color: rgba(14, 148, 136, 0.35);
+  background: rgba(14, 148, 136, 0.08);
+}
+.acc-usp:nth-child(3n) .acc-usp__icon {
+  color: var(--acc-violet);
+  border-color: rgba(124, 92, 214, 0.35);
+  background: rgba(124, 92, 214, 0.08);
+}
+.acc-step:nth-child(2) .acc-step__num { background: linear-gradient(135deg, #2fc4b2, #0e9488); }
+.acc-step:nth-child(3) .acc-step__num { background: linear-gradient(135deg, #9d7ff0, #7c5cd6); }
+.acc-step:nth-child(4) .acc-step__num { background: linear-gradient(135deg, #f473a4, #e0447c); }
+.acc-badge--bestseller { background: linear-gradient(90deg, #f473a4, #e0447c); color: #fff; }

@@ -1,12 +1,16 @@
 "use client";
 
 /**
- * Kommandozentrale – der Chef gibt Befehle, die Belegschaft FÜHRT AUS.
+ * Kommandozentrale – heller, freundlicher Arbeitsbereich im Stil moderner
+ * KI-Assistenten (warmes Creme, weisse Karten, Marken-Orange als Akzent).
  *
- * Bewusst KEIN Chatbot: Jeder Befehl startet eine echte Mission über
- * /api/mission. Im Verlauf sieht man live, welche Agenten arbeiten, und
- * am Ende stehen fertige Dateien (Download + Vorschau) plus Bericht –
- * nicht eine Chat-Antwort.
+ * Kein Chatbot: Jeder Befehl startet eine echte Mission über /api/mission,
+ * zeigt live die arbeitende Belegschaft und endet mit fertigen Dateien
+ * (Vorschau/Download) plus Bericht und Quality-Score.
+ *
+ * Dateien: PDF (Server-Extraktion via /api/extract) sowie TXT/MD/CSV/HTML
+ * (Client-seitig gelesen) können angehängt werden – die Belegschaft
+ * arbeitet mit dem Inhalt (context.dokument der Mission).
  *
  * Verlauf in localStorage (acc-kommandos); Lizenz-/Usage-Token und
  * Branchen-Kontext werden mit dem Dashboard geteilt.
@@ -23,6 +27,7 @@ const USAGE_TOKEN_KEY = "acc-usage-token";
 const BRANCHE_KEY = "acc-branche";
 const GROESSE_KEY = "acc-groesse";
 const MAX_ENTRIES = 20;
+const MAX_DOK_ZEICHEN = 20_000;
 
 interface Kommando {
   id: string;
@@ -33,11 +38,17 @@ interface Kommando {
   artifacts: ArtifactFile[];
   workforce: number | null;
   fehler: string | null;
+  dokumentName?: string;
 }
 
 interface LiveState {
   entryId: string;
   aktivitaet: string[];
+}
+
+interface Dok {
+  name: string;
+  text: string;
 }
 
 const BEISPIELE = [
@@ -63,7 +74,11 @@ export default function KommandoPage() {
   const [live, setLive] = useState<LiveState | null>(null);
   const [usageInfo, setUsageInfo] = useState<{ used: number; limit: number; plan: string } | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [dokument, setDokument] = useState<Dok | null>(null);
+  const [dokFehler, setDokFehler] = useState<string | null>(null);
+  const [dokLaedt, setDokLaedt] = useState(false);
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const fileRef = useRef<HTMLInputElement | null>(null);
 
   const active = entries.find((e) => e.id === activeId) ?? null;
   const running = live !== null;
@@ -88,7 +103,6 @@ export default function KommandoPage() {
     try {
       localStorage.setItem(KOMMANDOS_KEY, JSON.stringify(next.slice(0, MAX_ENTRIES)));
     } catch {
-      // Storage voll (grosse Artefakte): ohne Artefakte erneut versuchen.
       try {
         localStorage.setItem(
           KOMMANDOS_KEY,
@@ -121,12 +135,48 @@ export default function KommandoPage() {
 
   const skillTreffer = skillSuche(input);
 
+  /** Datei anhängen: PDF via /api/extract, Text-Formate direkt lesen. */
+  const dateiWaehlen = useCallback(async (file: File) => {
+    setDokFehler(null);
+    setDokLaedt(true);
+    try {
+      const name = file.name.replace(/\s+/g, " ").trim().slice(0, 80);
+      if (/\.pdf$/i.test(file.name)) {
+        const form = new FormData();
+        form.append("file", file);
+        const res = await fetch("/api/extract", { method: "POST", body: form });
+        const data = (await res.json()) as { text?: string; error?: string };
+        if (!res.ok || !data.text) {
+          setDokFehler(data.error ?? "PDF konnte nicht gelesen werden.");
+          return;
+        }
+        setDokument({ name, text: data.text.slice(0, MAX_DOK_ZEICHEN) });
+      } else if (/\.(txt|md|csv|html?)$/i.test(file.name)) {
+        const text = (await file.text()).slice(0, MAX_DOK_ZEICHEN).trim();
+        if (!text) {
+          setDokFehler("Die Datei ist leer.");
+          return;
+        }
+        setDokument({ name, text });
+      } else {
+        setDokFehler("Unterstützt: PDF, TXT, MD, CSV, HTML (Word/Excel: bitte als PDF oder CSV speichern).");
+      }
+    } catch {
+      setDokFehler("Datei konnte nicht gelesen werden.");
+    } finally {
+      setDokLaedt(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  }, []);
+
   /** Befehl ausführen = echte Mission starten und Events live rendern. */
   const ausfuehren = useCallback(
     async (text: string) => {
       const befehl = text.trim();
       if (!befehl || running) return;
       setInput("");
+      const dok = dokument;
+      setDokument(null);
 
       const entry: Kommando = {
         id: `k${Date.now().toString(36)}`,
@@ -137,6 +187,7 @@ export default function KommandoPage() {
         artifacts: [],
         workforce: null,
         fehler: null,
+        ...(dok ? { dokumentName: dok.name } : {}),
       };
       const rest = entries;
       persist([entry, ...rest]);
@@ -154,7 +205,11 @@ export default function KommandoPage() {
         } catch {
           /* Storage nicht lesbar */
         }
-        const context = { branche: safeGet(BRANCHE_KEY), groesse: safeGet(GROESSE_KEY) };
+        const context = {
+          branche: safeGet(BRANCHE_KEY),
+          groesse: safeGet(GROESSE_KEY),
+          ...(dok ? { dokument: dok } : {}),
+        };
         const res = await fetch("/api/mission", {
           method: "POST",
           headers,
@@ -248,33 +303,34 @@ export default function KommandoPage() {
         setLive(null);
       }
     },
-    [entries, running, persist],
+    [entries, running, persist, dokument],
   );
 
   return (
-    <div className="flex h-dvh bg-[#0b0a08] text-zinc-200">
-      <div className="hud-texture" aria-hidden="true" />
-
+    <div className="flex h-dvh bg-[#faf8f3] text-[#241f17]">
       {/* Seitenleiste: Befehls-Verlauf */}
       <aside
-        className={`${sidebarOpen ? "flex" : "hidden"} fixed inset-y-0 left-0 z-40 w-72 flex-col border-r border-[#ff8c2a]/15 bg-[#0e0c0a] md:static md:flex`}
+        className={`${sidebarOpen ? "flex" : "hidden"} fixed inset-y-0 left-0 z-40 w-72 flex-col border-r border-[#e8e1d2] bg-[#f3efe6] md:static md:flex`}
       >
-        <div className="flex items-center gap-2 border-b border-[#ff8c2a]/15 px-4 py-4">
-          <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" />
-          <span className="hud-label">AI Command Center</span>
+        <div className="flex items-center gap-2.5 px-5 py-5">
+          <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f] shadow-[0_0_10px_rgba(255,140,42,0.5)]" />
+          <span className="text-sm font-bold tracking-tight">AI Command Center</span>
         </div>
-        <div className="p-3">
+        <div className="px-3">
           <button
             onClick={() => {
               setActiveId(null);
               setSidebarOpen(false);
             }}
-            className="shop-btn w-full rounded-lg border border-[#ff8c2a]/40 bg-[#ff8c2a]/10 px-4 py-2.5 text-sm font-semibold text-[#ffb35c] transition hover:bg-[#ff8c2a]/20"
+            className="shop-btn w-full rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:shadow-md"
           >
             + Neuer Befehl
           </button>
         </div>
-        <nav className="flex-1 space-y-1 overflow-y-auto px-3 pb-3" aria-label="Befehls-Verlauf">
+        <p className="px-5 pb-1 pt-5 text-[11px] font-semibold uppercase tracking-wider text-[#a2988a]">
+          Verlauf
+        </p>
+        <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 pb-3" aria-label="Befehls-Verlauf">
           {entries.map((e) => (
             <button
               key={e.id}
@@ -284,8 +340,8 @@ export default function KommandoPage() {
               }}
               className={`block w-full truncate rounded-lg px-3 py-2 text-left text-sm ${
                 e.id === activeId
-                  ? "bg-[#ff8c2a]/15 text-[#ffb35c]"
-                  : "text-zinc-400 hover:bg-[#ff8c2a]/5 hover:text-zinc-200"
+                  ? "bg-[#ffe9d4] font-medium text-[#8a4a12]"
+                  : "text-[#6f6557] hover:bg-[#ebe6da]"
               }`}
               title={e.befehl}
             >
@@ -293,9 +349,11 @@ export default function KommandoPage() {
               {e.befehl}
             </button>
           ))}
-          {entries.length === 0 && <p className="px-3 py-2 text-xs text-zinc-600">Noch keine Befehle.</p>}
+          {entries.length === 0 && (
+            <p className="px-3 py-2 text-xs text-[#a2988a]">Noch keine Befehle.</p>
+          )}
         </nav>
-        <div className="border-t border-[#ff8c2a]/15 p-3 text-xs text-zinc-500">
+        <div className="border-t border-[#e8e1d2] p-4 text-xs text-[#8d8172]">
           {usageInfo ? (
             <p>
               {usageInfo.plan} · {usageInfo.used} von {usageInfo.limit} Missionen heute
@@ -307,51 +365,52 @@ export default function KommandoPage() {
       </aside>
 
       {/* Hauptbereich */}
-      <div className="relative z-10 flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between border-b border-[#ff8c2a]/15 bg-[#0b0a08]/80 px-4 py-3 backdrop-blur">
+      <div className="relative flex min-w-0 flex-1 flex-col">
+        <header className="flex items-center justify-between border-b border-[#e8e1d2] bg-[#faf8f3]/90 px-5 py-3 backdrop-blur">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen((v) => !v)}
-              className="rounded-md border border-[#ff8c2a]/25 px-2.5 py-1.5 text-sm text-[#ffb35c] md:hidden"
+              className="rounded-lg border border-[#e0d8c6] px-2.5 py-1.5 text-sm text-[#8a4a12] md:hidden"
               aria-label="Befehls-Verlauf öffnen"
             >
               ☰
             </button>
-            <h1 className="text-sm font-semibold text-white">Kommandozentrale</h1>
+            <h1 className="text-sm font-bold tracking-tight">Kommandozentrale</h1>
           </div>
-          <nav className="flex items-center gap-4 text-sm text-zinc-400" aria-label="Bereiche">
-            <Link href="/dashboard" className="hover:text-[#ffb35c]">Missionen</Link>
-            <span className="text-[#ffb35c]">Kommando</span>
-            <Link href="/email" className="hover:text-[#ffb35c]">E-Mail</Link>
-            <Link href="/workflows" className="hover:text-[#ffb35c]">Autopilot</Link>
-            <Link href="/berichte" className="hidden hover:text-[#ffb35c] sm:inline">Berichte</Link>
-            <Link href="/team" className="hidden hover:text-[#ffb35c] sm:inline">Team</Link>
+          <nav className="flex items-center gap-4 text-sm text-[#6f6557]" aria-label="Bereiche">
+            <Link href="/dashboard" className="hover:text-[#c25e0e]">Missionen</Link>
+            <span className="font-semibold text-[#c25e0e]">Kommando</span>
+            <Link href="/faehigkeiten" className="hover:text-[#c25e0e]">Skills</Link>
+            <Link href="/email" className="hidden hover:text-[#c25e0e] sm:inline">E-Mail</Link>
+            <Link href="/workflows" className="hidden hover:text-[#c25e0e] sm:inline">Autopilot</Link>
+            <Link href="/berichte" className="hidden hover:text-[#c25e0e] md:inline">Berichte</Link>
           </nav>
         </header>
 
-        <main className="flex-1 overflow-y-auto px-4 py-6">
+        <main className="flex-1 overflow-y-auto px-4 py-8">
           <div className="mx-auto max-w-3xl">
             {!active && !running && (
-              <div className="flex min-h-[50vh] flex-col items-center justify-center text-center">
-                <p className="hud-label mb-4">Sie befehlen. Ihre Belegschaft liefert.</p>
-                <h2 className="text-balance text-3xl font-semibold text-white sm:text-4xl">
-                  Was soll Ihre Belegschaft erledigen?
+              <div className="flex min-h-[52vh] flex-col items-center justify-center text-center">
+                <span className="mb-6 inline-block h-11 w-11 rounded-2xl bg-gradient-to-br from-[#ffb066] to-[#ff5f1f] shadow-[0_8px_30px_rgba(255,120,40,0.35)]" />
+                <h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-[40px] sm:leading-tight">
+                  Womit darf Ihre Belegschaft helfen?
                 </h2>
-                <p className="mt-3 max-w-md text-sm text-zinc-500">
-                  Kein Chatbot: Jeder Befehl startet Ihr KI-Team und endet mit einem
-                  fertigen Ergebnis – Dateien, Berichte, Analysen. Tippen Sie{" "}
-                  <span className="font-mono text-[#ffb35c]">/</span> für alle{" "}
-                  <Link href="/faehigkeiten" className="text-[#ffb35c] hover:underline">
+                <p className="mt-3 max-w-md text-[15px] leading-relaxed text-[#8d8172]">
+                  Geben Sie einen Befehl – Ihr KI-Team führt ihn aus und liefert
+                  ein fertiges Ergebnis. Tippen Sie{" "}
+                  <span className="rounded bg-[#f0ebe0] px-1.5 py-0.5 font-mono text-[#c25e0e]">/</span>{" "}
+                  für alle{" "}
+                  <Link href="/faehigkeiten" className="font-medium text-[#c25e0e] hover:underline">
                     {SKILLS.length} Befehle
                   </Link>
                   .
                 </p>
-                <div className="mt-8 grid w-full gap-2 sm:grid-cols-2">
+                <div className="mt-9 grid w-full gap-2.5 sm:grid-cols-2">
                   {BEISPIELE.map((b) => (
                     <button
                       key={b}
                       onClick={() => ausfuehren(b)}
-                      className="shop-btn rounded-xl border border-[#ff8c2a]/20 bg-[#ff8c2a]/[0.04] px-4 py-3 text-left text-sm text-zinc-300 transition hover:border-[#ff8c2a]/50 hover:bg-[#ff8c2a]/10"
+                      className="shop-btn rounded-2xl border border-[#e8e1d2] bg-white px-4 py-3.5 text-left text-sm leading-snug text-[#4a4335] shadow-[0_1px_3px_rgba(40,30,10,0.05)] transition hover:border-[#ffb066] hover:shadow-[0_4px_16px_rgba(255,140,42,0.14)]"
                     >
                       {b}
                     </button>
@@ -364,20 +423,28 @@ export default function KommandoPage() {
               <>
                 {/* Befehl */}
                 <div className="mb-6 flex justify-end">
-                  <div className="max-w-[85%] rounded-2xl rounded-br-md border border-[#ff8c2a]/25 bg-[#ff8c2a]/10 px-4 py-3 text-sm leading-relaxed text-zinc-100">
+                  <div className="max-w-[85%] rounded-3xl rounded-br-lg bg-[#f0ebe0] px-5 py-3.5 text-[15px] leading-relaxed text-[#33291b]">
                     {active.befehl}
+                    {active.dokumentName && (
+                      <span className="mt-1.5 block text-xs text-[#8d8172]">📎 {active.dokumentName}</span>
+                    )}
                   </div>
                 </div>
 
                 {/* Live-Aktivität */}
                 {running && live?.entryId === active.id && (
-                  <div className="hud-panel mb-6 rounded-xl p-4">
-                    <p className="hud-label mb-3">Belegschaft arbeitet</p>
-                    <ul className="space-y-1.5 text-sm text-zinc-400">
+                  <div className="mb-6 rounded-2xl border border-[#f0e2cc] bg-white p-5 shadow-[0_1px_3px_rgba(40,30,10,0.05)]">
+                    <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">
+                      <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" />
+                      Ihre Belegschaft arbeitet
+                    </p>
+                    <ul className="mt-3 space-y-1.5 text-sm text-[#6f6557]">
                       {live.aktivitaet.map((a, i) => (
-                        <li key={i} className="flex items-center gap-2">
+                        <li key={i} className="flex items-center gap-2.5">
                           <span
-                            className={`inline-block h-1.5 w-1.5 rounded-full ${i === live.aktivitaet.length - 1 ? "hud-pulse bg-[#ff8c2a]" : "bg-[#ff8c2a]/30"}`}
+                            className={`inline-block h-1.5 w-1.5 rounded-full ${
+                              i === live.aktivitaet.length - 1 ? "hud-pulse bg-[#ff8c2a]" : "bg-[#e5d9c4]"
+                            }`}
                           />
                           {a}
                         </li>
@@ -386,20 +453,24 @@ export default function KommandoPage() {
                   </div>
                 )}
 
-                {/* Ergebnis */}
+                {/* Fehler */}
                 {!running && active.fehler && (
-                  <p className="mb-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                  <p className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-5 py-3.5 text-sm text-red-700">
                     {active.fehler}
                   </p>
                 )}
+
+                {/* Ergebnis */}
                 {active.final && (
-                  <div className="hud-panel hud-corners relative mb-6 rounded-xl p-5">
+                  <div className="mb-6 rounded-2xl border border-[#eee7d8] bg-white p-6 shadow-[0_2px_12px_rgba(40,30,10,0.06)]">
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="hud-label">Ausgeführt – Ihr Ergebnis</p>
-                      <div className="flex items-center gap-3 text-xs text-zinc-400">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">
+                        Ausgeführt – Ihr Ergebnis
+                      </p>
+                      <div className="flex items-center gap-3 text-xs text-[#8d8172]">
                         {active.workforce && <span>{active.workforce} Mitarbeitende im Einsatz</span>}
                         {typeof active.score === "number" && (
-                          <span className="rounded-full border border-[#ffd257]/50 bg-[#ffd257]/10 px-2.5 py-0.5 font-semibold text-[#ffd257]">
+                          <span className="rounded-full bg-gradient-to-r from-[#ffb066] to-[#ff5f1f] px-3 py-1 text-[11px] font-bold text-white">
                             Quality-Score {active.score}
                           </span>
                         )}
@@ -411,11 +482,11 @@ export default function KommandoPage() {
                         {active.artifacts.map((f) => (
                           <div
                             key={f.path}
-                            className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[#ff8c2a]/25 bg-[#ff8c2a]/[0.05] px-4 py-3"
+                            className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[#f4e4cb] bg-[#fff8ef] px-4 py-3"
                           >
                             <div className="min-w-0">
-                              <p className="truncate font-mono text-sm text-[#ffb35c]">📄 {f.path}</p>
-                              <p className="text-xs text-zinc-500">
+                              <p className="truncate font-mono text-sm font-semibold text-[#8a4a12]">📄 {f.path}</p>
+                              <p className="text-xs text-[#a2988a]">
                                 {f.language.toUpperCase()} · {Math.max(1, Math.round(f.content.length / 1024))} KB
                               </p>
                             </div>
@@ -423,14 +494,14 @@ export default function KommandoPage() {
                               {f.language === "html" && (
                                 <button
                                   onClick={() => vorschau(f)}
-                                  className="shop-btn rounded-md border border-[#ff8c2a]/40 px-3 py-1.5 text-xs font-semibold text-[#ffb35c]"
+                                  className="shop-btn rounded-lg border border-[#f0ceA0] bg-white px-3.5 py-1.5 text-xs font-bold text-[#c25e0e]"
                                 >
                                   Vorschau
                                 </button>
                               )}
                               <button
                                 onClick={() => download(f)}
-                                className="shop-btn rounded-md bg-gradient-to-r from-[#ffb066] to-[#ff5f1f] px-3 py-1.5 text-xs font-bold text-[#1a0f04]"
+                                className="shop-btn rounded-lg bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-3.5 py-1.5 text-xs font-bold text-white"
                               >
                                 Download
                               </button>
@@ -441,10 +512,10 @@ export default function KommandoPage() {
                     )}
 
                     <details className="mt-4">
-                      <summary className="cursor-pointer text-sm text-zinc-400 hover:text-[#ffb35c]">
+                      <summary className="cursor-pointer text-sm font-medium text-[#8d8172] hover:text-[#c25e0e]">
                         Bericht der Belegschaft anzeigen
                       </summary>
-                      <div className="mt-3 whitespace-pre-wrap border-t border-[#ff8c2a]/15 pt-3 text-sm leading-relaxed text-zinc-300">
+                      <div className="mt-3 whitespace-pre-wrap border-t border-[#f0ebe0] pt-3 text-sm leading-relaxed text-[#4a4335]">
                         {active.final}
                       </div>
                     </details>
@@ -457,61 +528,103 @@ export default function KommandoPage() {
         </main>
 
         {/* Befehlseingabe */}
-        <footer className="border-t border-[#ff8c2a]/15 bg-[#0b0a08]/90 px-4 py-4 backdrop-blur">
-          {/* Slash-Befehlspalette */}
-          {skillTreffer.length > 0 && !running && (
-            <div className="mx-auto mb-2 max-w-3xl overflow-hidden rounded-xl border border-[#ff8c2a]/30 bg-[#12100d]">
-              <p className="hud-label border-b border-[#ff8c2a]/15 px-4 py-2">Befehle</p>
-              {skillTreffer.map((s) => (
-                <button
-                  key={s.befehl}
-                  onClick={() => setInput(s.vorlage)}
-                  className="flex w-full items-baseline gap-3 px-4 py-2.5 text-left hover:bg-[#ff8c2a]/10"
-                >
-                  <span className="shrink-0 font-mono text-sm font-bold text-[#ffb35c]">{s.befehl}</span>
-                  <span className="truncate text-sm text-zinc-300">{s.name}</span>
-                  <span className="hidden truncate text-xs text-zinc-500 sm:inline">{s.beschreibung}</span>
-                </button>
-              ))}
-            </div>
-          )}
-          <form
-            className="mx-auto flex max-w-3xl items-end gap-2"
-            onSubmit={(e) => {
-              e.preventDefault();
-              ausfuehren(input);
-            }}
-          >
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  ausfuehren(input);
-                }
+        <footer className="px-4 pb-5 pt-2">
+          <div className="mx-auto max-w-3xl">
+            {/* Slash-Befehlspalette */}
+            {skillTreffer.length > 0 && !running && (
+              <div className="mb-2 overflow-hidden rounded-2xl border border-[#e8e1d2] bg-white shadow-[0_8px_30px_rgba(40,30,10,0.10)]">
+                <p className="border-b border-[#f0ebe0] px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-[#a2988a]">
+                  Befehle
+                </p>
+                {skillTreffer.map((s) => (
+                  <button
+                    key={s.befehl}
+                    onClick={() => setInput(s.vorlage)}
+                    className="flex w-full items-baseline gap-3 px-4 py-2.5 text-left hover:bg-[#fff4e6]"
+                  >
+                    <span className="shrink-0 font-mono text-sm font-bold text-[#c25e0e]">{s.befehl}</span>
+                    <span className="truncate text-sm text-[#33291b]">{s.name}</span>
+                    <span className="hidden truncate text-xs text-[#a2988a] sm:inline">{s.beschreibung}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Angehängte Datei */}
+            {(dokument || dokFehler || dokLaedt) && (
+              <div className="mb-2 flex items-center gap-2">
+                {dokLaedt && <span className="text-xs text-[#8d8172]">Datei wird gelesen …</span>}
+                {dokument && (
+                  <span className="inline-flex items-center gap-2 rounded-full border border-[#f0ceA0] bg-[#fff4e6] px-3 py-1.5 text-xs font-medium text-[#8a4a12]">
+                    📎 {dokument.name}
+                    <button
+                      onClick={() => setDokument(null)}
+                      className="text-[#c25e0e] hover:text-red-600"
+                      aria-label="Datei entfernen"
+                    >
+                      ✕
+                    </button>
+                  </span>
+                )}
+                {dokFehler && <span className="text-xs text-red-600">{dokFehler}</span>}
+              </div>
+            )}
+
+            <form
+              className="flex items-end gap-2 rounded-3xl border border-[#e0d8c6] bg-white p-2.5 shadow-[0_8px_30px_rgba(40,30,10,0.08)] focus-within:border-[#ffb066]"
+              onSubmit={(e) => {
+                e.preventDefault();
+                ausfuehren(input);
               }}
-              rows={Math.min(6, Math.max(1, input.split("\n").length))}
-              placeholder='Befehl an Ihre Belegschaft … («Erstelle …», «Kontrolliere …», «Analysiere …»)'
-              className="min-h-[48px] flex-1 resize-none rounded-xl border border-[#ff8c2a]/25 bg-[#12100d] px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-[#ff8c2a]/60 focus:outline-none"
-              aria-label="Befehl eingeben"
-              disabled={running}
-            />
-            <button
-              type="submit"
-              disabled={running || !input.trim()}
-              className="shop-btn rounded-xl bg-gradient-to-r from-[#ffb066] via-[#ff8c2a] to-[#ff5f1f] px-5 py-3 text-sm font-bold text-[#1a0f04] disabled:opacity-40"
             >
-              {running ? "Läuft …" : "Ausführen"}
-            </button>
-          </form>
-          <p className="mx-auto mt-2 max-w-3xl text-center text-[11px] text-zinc-600">
-            Tippen Sie <span className="font-mono text-[#ffb35c]">/</span> für Befehle ·{" "}
-            <Link href="/faehigkeiten" className="text-[#ffb35c]/80 hover:underline">
-              alle {SKILLS.length} Fähigkeiten ansehen
-            </Link>{" "}
-            · Jeder Befehl endet mit einem fertigen Ergebnis.
-          </p>
+              <input
+                ref={fileRef}
+                type="file"
+                accept=".pdf,.txt,.md,.csv,.html,.htm"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) dateiWaehlen(f);
+                }}
+                aria-label="Datei anhängen"
+              />
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                disabled={running || dokLaedt}
+                className="shrink-0 rounded-xl px-3 py-3 text-lg text-[#a2988a] transition hover:bg-[#f7f2e8] hover:text-[#c25e0e] disabled:opacity-40"
+                aria-label="Datei anhängen (PDF, TXT, MD, CSV, HTML)"
+                title="Datei anhängen (PDF, TXT, MD, CSV, HTML)"
+              >
+                📎
+              </button>
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    ausfuehren(input);
+                  }
+                }}
+                rows={Math.min(6, Math.max(1, input.split("\n").length))}
+                placeholder="Befehl an Ihre Belegschaft … («Erstelle …», «Kontrolliere …», «Analysiere …»)"
+                className="min-h-[44px] flex-1 resize-none bg-transparent px-2 py-2.5 text-[15px] text-[#241f17] placeholder:text-[#b3a894] focus:outline-none"
+                aria-label="Befehl eingeben"
+                disabled={running}
+              />
+              <button
+                type="submit"
+                disabled={running || !input.trim()}
+                className="shop-btn shrink-0 rounded-2xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-5 py-3 text-sm font-bold text-white shadow-sm disabled:opacity-40"
+              >
+                {running ? "Läuft …" : "Ausführen"}
+              </button>
+            </form>
+            <p className="mt-2 text-center text-[11px] text-[#b3a894]">
+              📎 Dateien anhängen (PDF, Text, CSV) · Jeder Befehl endet mit einem fertigen Ergebnis.
+            </p>
+          </div>
         </footer>
       </div>
     </div>

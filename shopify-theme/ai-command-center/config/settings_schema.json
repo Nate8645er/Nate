@@ -30,19 +30,19 @@
         "type": "color",
         "id": "color_bg",
         "label": "Hintergrund",
-        "default": "#0b0a08"
+        "default": "#fdfaf4"
       },
       {
         "type": "color",
         "id": "color_accent",
         "label": "Akzent (Amber/Orange)",
-        "default": "#ff8c2a"
+        "default": "#ee7712"
       },
       {
         "type": "color",
         "id": "color_text",
         "label": "Text",
-        "default": "#f2ede3"
+        "default": "#27211a"
       }
     ]
   }
