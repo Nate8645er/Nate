@@ -1392,6 +1392,12 @@ export default function DashboardPage() {
               Kommando
             </a>
             <a
+              href="/email"
+              className={`rounded-sm px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+            >
+              E-Mail
+            </a>
+            <a
               href="/berichte"
               className={`rounded-sm px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
             >

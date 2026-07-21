@@ -203,6 +203,18 @@ const FEATURES = [
     linkLabel: "Kommandozentrale öffnen",
   },
   {
+    title: "E-Mail-Arbeit erledigt die KI",
+    text: "Eingehende Mail einfügen, fertige Antwort erhalten – oder ganze Offerten schreiben lassen. Ein Klick öffnet Gmail, Sie drücken nur noch Senden.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" className="h-7 w-7">
+        <path d="M3.5 6h17v12h-17z" strokeLinejoin="round" />
+        <path d="m4 7 8 6 8-6" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+    href: "/email",
+    linkLabel: "E-Mail-Zentrale öffnen",
+  },
+  {
     title: "Autopilot-Workflows",
     text: "Wiederkehrende Aufträge einmal anlegen – Ihre Belegschaft erledigt sie regelmässig: Wochenpläne, Berichte, Angebotsideen.",
     icon: (

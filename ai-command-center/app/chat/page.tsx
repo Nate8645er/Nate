@@ -304,6 +304,7 @@ export default function KommandoPage() {
           <nav className="flex items-center gap-4 text-sm text-zinc-400" aria-label="Bereiche">
             <Link href="/dashboard" className="hover:text-[#ffb35c]">Missionen</Link>
             <span className="text-[#ffb35c]">Kommando</span>
+            <Link href="/email" className="hover:text-[#ffb35c]">E-Mail</Link>
             <Link href="/workflows" className="hover:text-[#ffb35c]">Autopilot</Link>
             <Link href="/berichte" className="hidden hover:text-[#ffb35c] sm:inline">Berichte</Link>
             <Link href="/team" className="hidden hover:text-[#ffb35c] sm:inline">Team</Link>
