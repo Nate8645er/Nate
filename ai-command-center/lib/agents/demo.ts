@@ -43,25 +43,52 @@ function escapeHtml(text: string): string {
     .replace(/"/g, "&quot;");
 }
 
-/**
- * Erkennt buildbare Ziele: verlangt das Ziel eine Website/Seite/App/ein Script,
- * liefert der Demo-Modus echte Beispiel-Dateien statt nur Text.
- */
-export function isBuildableGoal(goal: string): boolean {
-  return /(bauen|erstell|website|webseite|web-seite|kasse|shop|landing\s*page|landingpage|app|script|skript|prototyp|seite)/i.test(
+/** Web-Ziele: das Ziel verlangt eine Website/Seite/App/einen Prototyp. */
+function isWebGoal(goal: string): boolean {
+  return /(website|webseite|web-seite|homepage|kasse|shop|landing\s*page|landingpage|app|prototyp|seite)/i.test(
     goal,
   );
 }
 
+/** Dokument-Ziele: Plaene, Strategien, Kampagnen, Berichte, Analysen usw. */
+function isDocumentGoal(goal: string): boolean {
+  return /(plan|strategie|kampagne|bericht|report|analyse|konzept|studie|marketing|angebot|offerte)/i.test(
+    goal,
+  );
+}
+
+/** Generische Bau-Ziele ohne klaren Web-/Dokument-Bezug (z. B. "erstelle ..."). */
+function isGenericBuildGoal(goal: string): boolean {
+  return /(bauen|erstell|script|skript|entwickl|entwirf|generier)/i.test(goal);
+}
+
+/**
+ * Erkennt buildbare Ziele: Web-Auftraege liefern eine echte index.html,
+ * Dokument-Auftraege (Plan/Strategie/Kampagne/Bericht/Analyse) liefern ein
+ * dokument.md plus praesentation.html, generische Bau-Auftraege eine index.html.
+ */
+export function isBuildableGoal(goal: string): boolean {
+  return isWebGoal(goal) || isDocumentGoal(goal) || isGenericBuildGoal(goal);
+}
+
 /**
  * Erzeugt fuer buildbare Ziele eine kleine, ECHTE Beispiel-Datei-Ausgabe:
- * eine eigenstaendige (inline gestylte) index.html mit sichtbarem Inhalt plus
- * eine README.md. Nicht buildbare Ziele liefern eine leere Liste.
+ * Web-/generische Bau-Ziele erhalten eine eigenstaendige (inline gestylte)
+ * index.html plus README.md, Dokument-Ziele (Plan/Strategie/Kampagne/Bericht/
+ * Analyse) ein professionell formatiertes dokument.md plus praesentation.html.
+ * Nicht buildbare Ziele liefern eine leere Liste.
  *
  * Deterministisch (kein Zufall): gleiches Ziel => gleiche Dateien.
  */
 export function demoArtifactFiles(goal: string): ArtifactFile[] {
-  if (!isBuildableGoal(goal)) return [];
+  if (isWebGoal(goal)) return webArtifactFiles(goal);
+  if (isDocumentGoal(goal)) return documentArtifactFiles(goal);
+  if (isGenericBuildGoal(goal)) return webArtifactFiles(goal);
+  return [];
+}
+
+/** Web-Startpaket: eigenstaendige index.html + README.md. */
+function webArtifactFiles(goal: string): ArtifactFile[] {
   const g = shortGoal(goal);
   const safe = escapeHtml(g);
 
@@ -120,6 +147,136 @@ export function demoArtifactFiles(goal: string): ArtifactFile[] {
   return [
     { path: "index.html", language: "html", content: html },
     { path: "README.md", language: "markdown", content: readme },
+  ];
+}
+
+/**
+ * Dokument-Paket: professionell formatiertes dokument.md (Titel, Abschnitte,
+ * Tabellen) plus praesentation.html (scrollbare Slide-Sektionen, pures
+ * HTML/CSS ohne externe Libraries).
+ */
+function documentArtifactFiles(goal: string): ArtifactFile[] {
+  const g = shortGoal(goal);
+  const safe = escapeHtml(g);
+
+  const dokument = [
+    `# ${g}`,
+    "",
+    `> Erstellt von **AI Command Center**, direkt verwendbares Arbeitsdokument.`,
+    "",
+    "## 1. Zusammenfassung",
+    `Dieses Dokument uebersetzt die Mission "${g}" in einen konkreten, umsetzbaren Fahrplan:`,
+    "Ausgangslage, Zielbild, Massnahmen mit Zeitplan sowie messbare Erfolgskriterien.",
+    "",
+    "## 2. Ausgangslage und Zielbild",
+    "- Ausgangslage: Das Vorhaben ist definiert, die Umsetzung braucht Struktur und Prioritaeten.",
+    "- Zielbild: Ein klar positioniertes Angebot mit messbarem Effekt innerhalb von 90 Tagen.",
+    "- Annahme: Es liegen noch keine internen Daten vor; alle Werte sind konservative Annahmen.",
+    "",
+    "## 3. Zielgruppen",
+    "| Segment | Beschreibung | Prioritaet |",
+    "| --- | --- | --- |",
+    "| Kernzielgruppe | Kaufbereite mit konkretem Bedarf, direkte und nutzenorientierte Ansprache | Hoch |",
+    "| Ausbauzielgruppe | Interessierte ohne Dringlichkeit, Ansprache ueber Inhalte mit Mehrwert | Mittel |",
+    "| Multiplikatoren | Partner und Empfehler mit Reichweite im Umfeld | Mittel |",
+    "",
+    "## 4. Massnahmenplan (90 Tage)",
+    "| Phase | Zeitraum | Massnahme | Ergebnis |",
+    "| --- | --- | --- | --- |",
+    "| 1. Fundament | Woche 1 bis 2 | Positionierung und Kernbotschaft festziehen | Ein Satz Nutzenversprechen |",
+    "| 2. Sichtbarkeit | Woche 3 bis 6 | Kanaele aktivieren, Inhalte nach Redaktionsplan | Erste messbare Reichweite |",
+    "| 3. Konversion | Woche 7 bis 10 | Angebot mit klarem Handlungsaufruf testen | Erste Anfragen/Abschluesse |",
+    "| 4. Skalierung | Woche 11 bis 13 | Bestes Format verstaerken, Schwaches stoppen | Wiederholbarer Prozess |",
+    "",
+    "## 5. Budget und Erfolgskriterien",
+    "| Kennzahl | Zielwert | Messung |",
+    "| --- | --- | --- |",
+    "| Anfragen pro Woche | Definierter Zielwert ab Woche 6 | Woechentliches Reporting |",
+    "| Kosten pro Anfrage | Obergrenze vorab fixieren | Laufende Auswertung je Kanal |",
+    "| Wiederkehrquote | Steigend ab Phase 3 | Monatlicher Vergleich |",
+    "",
+    "## 6. Naechste Schritte",
+    "1. Kernbotschaft und Zielwert bestaetigen (Entscheid des Auftraggebers).",
+    "2. Phase 1 starten und Verantwortlichkeiten mit Terminen hinterlegen.",
+    "3. Nach 4 Wochen Zwischenbilanz ziehen und den Plan nachschaerfen.",
+  ].join("\n");
+
+  const slideCss = [
+    "    :root { --bg:#0f0d0b; --accent:#ff8c2a; --text:#f3ead9; --muted:#c9b391; }",
+    "    * { box-sizing: border-box; margin: 0; }",
+    "    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:var(--bg); color:var(--text); }",
+    "    section.slide { min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:8vh 8vw; border-bottom:1px solid rgba(255,140,42,0.25); }",
+    "    .kicker { color:var(--accent); font-size:14px; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:16px; }",
+    "    h1 { font-size:clamp(30px,6vw,58px); letter-spacing:-0.02em; line-height:1.1; }",
+    "    h2 { font-size:clamp(24px,4vw,40px); margin-bottom:20px; }",
+    "    p, li { color:var(--muted); font-size:18px; line-height:1.7; max-width:720px; }",
+    "    ul, ol { padding-left:24px; display:grid; gap:10px; }",
+    "    .hint { margin-top:auto; padding-top:32px; font-size:13px; color:rgba(201,179,145,0.6); }",
+  ].join("\n");
+
+  const praesentation = [
+    "<!doctype html>",
+    '<html lang="de">',
+    "<head>",
+    '  <meta charset="utf-8" />',
+    '  <meta name="viewport" content="width=device-width, initial-scale=1" />',
+    `  <title>${safe}</title>`,
+    "  <style>",
+    slideCss,
+    "  </style>",
+    "</head>",
+    "<body>",
+    '  <section class="slide">',
+    '    <div class="kicker">Praesentation</div>',
+    `    <h1>${safe}</h1>`,
+    "    <p>Fahrplan mit Zielbild, Massnahmen und messbaren Erfolgskriterien. Erstellt von Ihrer KI-Abteilung.</p>",
+    '    <div class="hint">Scrollen fuer die naechste Folie</div>',
+    "  </section>",
+    '  <section class="slide">',
+    '    <div class="kicker">Folie 2</div>',
+    "    <h2>Ausgangslage und Zielbild</h2>",
+    "    <ul>",
+    "      <li>Ausgangslage: Das Vorhaben ist definiert, die Umsetzung braucht Struktur und Prioritaeten.</li>",
+    "      <li>Zielbild: Ein klar positioniertes Angebot mit messbarem Effekt innerhalb von 90 Tagen.</li>",
+    "      <li>Alle Werte sind konservative Annahmen, bis eigene Daten vorliegen.</li>",
+    "    </ul>",
+    "  </section>",
+    '  <section class="slide">',
+    '    <div class="kicker">Folie 3</div>',
+    "    <h2>Zielgruppen</h2>",
+    "    <ul>",
+    "      <li><strong>Kernzielgruppe:</strong> Kaufbereite mit konkretem Bedarf, direkte Ansprache.</li>",
+    "      <li><strong>Ausbauzielgruppe:</strong> Interessierte ohne Dringlichkeit, Inhalte mit Mehrwert.</li>",
+    "      <li><strong>Multiplikatoren:</strong> Partner und Empfehler mit Reichweite.</li>",
+    "    </ul>",
+    "  </section>",
+    '  <section class="slide">',
+    '    <div class="kicker">Folie 4</div>',
+    "    <h2>Massnahmenplan (90 Tage)</h2>",
+    "    <ol>",
+    "      <li>Fundament: Positionierung und Kernbotschaft festziehen (Woche 1 bis 2).</li>",
+    "      <li>Sichtbarkeit: Kanaele aktivieren, Inhalte nach Redaktionsplan (Woche 3 bis 6).</li>",
+    "      <li>Konversion: Angebot mit klarem Handlungsaufruf testen (Woche 7 bis 10).</li>",
+    "      <li>Skalierung: Bestes Format verstaerken, Schwaches stoppen (Woche 11 bis 13).</li>",
+    "    </ol>",
+    "  </section>",
+    '  <section class="slide">',
+    '    <div class="kicker">Folie 5</div>',
+    "    <h2>Naechste Schritte</h2>",
+    "    <ol>",
+    "      <li>Kernbotschaft und Zielwert bestaetigen.</li>",
+    "      <li>Phase 1 starten, Verantwortlichkeiten mit Terminen hinterlegen.</li>",
+    "      <li>Nach 4 Wochen Zwischenbilanz ziehen und nachschaerfen.</li>",
+    "    </ol>",
+    '    <div class="hint">Von AI Command Center generiert, Details im dokument.md</div>',
+    "  </section>",
+    "</body>",
+    "</html>",
+  ].join("\n");
+
+  return [
+    { path: "dokument.md", language: "markdown", content: dokument },
+    { path: "praesentation.html", language: "html", content: praesentation },
   ];
 }
 

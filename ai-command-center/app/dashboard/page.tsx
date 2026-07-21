@@ -151,6 +151,14 @@ function findIndexHtml(files: readonly ArtifactFile[]): ArtifactFile | undefined
   return files.find((f) => baseName(f.path).toLowerCase() === "index.html");
 }
 
+/**
+ * HTML-Datei fuer die Live-Vorschau: index.html bevorzugt, sonst die erste
+ * .html/.htm-Datei (z. B. praesentation.html).
+ */
+function findPreviewHtml(files: readonly ArtifactFile[]): ArtifactFile | undefined {
+  return findIndexHtml(files) ?? files.find((f) => /\.html?$/i.test(baseName(f.path)));
+}
+
 /** Laedt eine einzelne Datei ueber einen Blob herunter. */
 function downloadArtifact(file: ArtifactFile): void {
   const mime = MIME_BY_LANGUAGE[file.language] ?? "text/plain";
@@ -610,23 +618,27 @@ const OrgChart = memo(function OrgChart({
 
 /**
  * "Erzeugte Dateien": Datei-Liste links, Code-Ansicht rechts (monospace,
- * scrollbar). Pro Datei Download, "Alle herunterladen" und – wenn eine
- * index.html dabei ist – eine Live-Vorschau via <iframe srcdoc>.
+ * scrollbar). Pro Datei Download, "Alle herunterladen" und eine automatisch
+ * geoeffnete Live-Vorschau der ersten HTML-Datei via <iframe srcdoc>.
  */
 const ArtifactViewer = memo(function ArtifactViewer({ files }: { files: ArtifactFile[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const indexHtml = useMemo(() => findIndexHtml(files), [files]);
+  // Vorschau automatisch geoeffnet: das gebaute Ergebnis fuehrt die Ansicht an.
+  const [previewOpen, setPreviewOpen] = useState(true);
+  const previewHtml = useMemo(() => findPreviewHtml(files), [files]);
   const active = files[Math.min(activeIndex, files.length - 1)] ?? files[0];
 
   if (!active) return null;
 
   return (
     <section aria-label="Erzeugte Dateien" className="mt-8">
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <div className="hud-label">Erzeugte Dateien // Artefakte</div>
+      <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <div className="hud-label">Erzeugte Dateien // Direkt verwendbar</div>
+          <h2 className="mt-1 text-lg font-bold text-[#fff3e2]">Ihr Ergebnis: fertig gebaut</h2>
+        </div>
         <div className="flex flex-wrap items-center gap-2">
-          {indexHtml && (
+          {previewHtml && (
             <button
               onClick={() => setPreviewOpen((v) => !v)}
               aria-pressed={previewOpen}
@@ -644,16 +656,16 @@ const ArtifactViewer = memo(function ArtifactViewer({ files }: { files: Artifact
         </div>
       </div>
 
-      {/* Live-Vorschau der index.html im HUD-Panel */}
-      {indexHtml && previewOpen && (
+      {/* Live-Vorschau der ersten HTML-Datei im HUD-Panel (automatisch offen) */}
+      {previewHtml && previewOpen && (
         <div className="hud-panel hud-corners mb-4 rounded-sm">
           <div className="flex items-center justify-between border-b border-[#ff8c2a]/15 px-4 py-2">
-            <span className="hud-label">Live-Vorschau // {baseName(indexHtml.path)}</span>
+            <span className="hud-label">Live-Vorschau // {baseName(previewHtml.path)}</span>
             <span className="hud-pulse h-1.5 w-1.5 rounded-full bg-[#ff8c2a]" aria-hidden />
           </div>
           <iframe
             title="Live-Vorschau"
-            srcDoc={indexHtml.content}
+            srcDoc={previewHtml.content}
             sandbox="allow-scripts"
             className="h-[420px] w-full rounded-b-sm border-0 bg-white"
           />
@@ -694,7 +706,7 @@ const ArtifactViewer = memo(function ArtifactViewer({ files }: { files: Artifact
             <span className="truncate font-mono text-xs text-[#e8dcc8]">{active.path}</span>
             <button
               onClick={() => downloadArtifact(active)}
-              className={`shrink-0 rounded-sm border border-[#ff8c2a]/30 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ff8c2a] transition-colors hover:bg-[#ff8c2a]/10 ${FOCUS_RING}`}
+              className={`shrink-0 rounded-sm bg-[#ff8c2a] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em] font-semibold text-[#1a0f04] transition hover:bg-[#ffb35c] active:scale-[0.98] ${FOCUS_RING}`}
             >
               Herunterladen
             </button>
@@ -1592,8 +1604,19 @@ export default function DashboardPage() {
             <ArtifactViewer key={artifacts.map((f) => f.path).join("|")} files={artifacts} />
           )}
 
-          {/* Finales Ergebnis */}
-          {finalResult && (
+          {/* Finales Ergebnis: mit Dateien eingeklappt hinter den Artefakten */}
+          {finalResult && artifacts.length > 0 && (
+            <section aria-label="Ergebnis" className="mt-6">
+              <details className={`rounded-sm border border-[#ff8c2a]/30 bg-gradient-to-b from-[#ff8c2a]/[0.07] to-transparent ${fancy ? "hud-corners relative" : ""}`}>
+                <summary className={`cursor-pointer select-none p-5 text-lg font-bold text-[#fff3e2] transition-colors hover:text-[#ffb35c] ${FOCUS_RING}`}>
+                  Vollstaendiger Bericht
+                  <span className="ml-3 font-mono text-[10px] font-normal uppercase tracking-[0.18em] text-[#ffb35c]/70">Zum Aufklappen</span>
+                </summary>
+                <div className="px-6 pb-6 text-sm leading-relaxed text-[#e8dcc8]">{renderMarkdown(finalResult)}</div>
+              </details>
+            </section>
+          )}
+          {finalResult && artifacts.length === 0 && (
             <section aria-label="Ergebnis" className={`mt-8 rounded-sm border border-[#ff8c2a]/30 bg-gradient-to-b from-[#ff8c2a]/[0.07] to-transparent p-6 ${fancy ? "hud-corners relative" : ""}`}>
               {fancy && <div className="hud-label mb-1">Mission Complete</div>}
               <h2 className="text-lg font-bold text-[#fff3e2]">Ergebnis Ihrer KI-Abteilung</h2>

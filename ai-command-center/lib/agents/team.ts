@@ -15,22 +15,24 @@ import type { AgentConfig, AgentRole, PlanId, WorkerRole } from "./types";
 export const BRAND = "AI Command Center";
 
 /**
- * Anweisung fuer datei-produzierende Agenten (Builder, Coding). Verlangt die
- * Aufgabe konkreten Code/Dateien (Website, Landingpage, Script, Prototyp wie
- * ein Kassensystem-UI), MUSS der Agent vollstaendige Dateien in exakt diesem
- * Block-Format liefern. Der Orchestrator parst diese Bloecke und emittiert
- * daraus ein artifact-Event (siehe orchestrator.ts).
+ * Anweisung fuer datei-produzierende Agenten (Builder, Coding). Der Agent
+ * liefert IMMER mindestens eine vollstaendige Datei in exakt diesem
+ * Block-Format, passend zur Art des Auftrags (Web, Dokument, Daten).
+ * Der Orchestrator parst diese Bloecke und emittiert daraus ein
+ * artifact-Event (siehe orchestrator.ts).
  */
 export const FILE_OUTPUT_INSTRUCTION = [
-  "WICHTIG – Datei-Ausgabe: Wenn die Aufgabe das Erstellen von Code oder Dateien verlangt",
-  "(z. B. Website, Landingpage, Script, Prototyp wie ein Kassensystem-UI), MUSST du jede Datei",
-  "VOLLSTAENDIG und lauffaehig liefern – ohne Auslassungen, Platzhalter oder \"...\" – und zwar in",
-  "genau diesem Block-Format (die Markierungen exakt so, jeweils auf eigener Zeile):",
+  "WICHTIG, Datei-Ausgabe: Du lieferst IMMER mindestens eine Datei als Datei-Block, passend zum Auftrag:",
+  "- Website, Landingpage, App, Shop oder Prototyp: eine vollstaendige, eigenstaendige index.html (Styles inline, direkt im Browser lauffaehig).",
+  "- Plan, Strategie, Kampagne, Bericht, Analyse oder Konzept: ein professionell formatiertes dokument.md (Titel, klare Abschnitte, Markdown-Tabellen) und, wenn sinnvoll, zusaetzlich eine praesentation.html (einfache scrollbare Slide-Sektionen, pures HTML/CSS ohne externe Libraries).",
+  "- Berechnungen, Listen oder Datensammlungen: zusaetzlich eine daten.csv mit den strukturierten Daten.",
+  "Jede Datei ist VOLLSTAENDIG und direkt verwendbar, ohne Auslassungen, Platzhalter oder \"...\",",
+  "und steht in genau diesem Block-Format (die Markierungen exakt so, jeweils auf eigener Zeile):",
   "=== FILE: pfad/name.ext ===",
   "<vollstaendiger Dateiinhalt>",
   "=== END FILE ===",
   "Mehrere solcher Datei-Bloecke sind erlaubt. Ausserhalb der Bloecke darfst du kurz erklaeren.",
-  "Wenn keine Datei sinnvoll ist, liefere normalen Text ohne diese Bloecke.",
+  "Passt keine der Kategorien, liefere den Kern deiner Antwort trotzdem als dokument.md-Block.",
 ].join("\n");
 
 /**
@@ -224,6 +226,7 @@ export const AGENTS: Record<AgentRole, AgentConfig> = {
     systemPrompt: [
       `Du bist der Builder von ${BRAND}, einer KI-Abteilung fuer Unternehmen.`,
       "Du erstellst konkrete, sofort verwendbare Arbeitsergebnisse: Texte, Konzepte, Plaene, Strukturen.",
+      "Du lieferst nie nur Fliesstext: Jedes Ergebnis enthaelt mindestens eine greifbare Datei als Datei-Block.",
       "Antworte auf Deutsch, strukturiert in Markdown, praezise und ohne Fuelltext.",
       "Liefere ein fertiges Ergebnis, keine Rueckfragen.",
       FILE_OUTPUT_INSTRUCTION,
@@ -285,6 +288,7 @@ export const AGENTS: Record<AgentRole, AgentConfig> = {
       `Du bist der Coding-Agent von ${BRAND}, einer KI-Abteilung fuer Unternehmen.`,
       "Du entwirfst technische Loesungen: Architektur-Skizzen, kurze Code-Beispiele und Automatisierungs-Vorschlaege (Tools, Schnittstellen, Ablaeufe).",
       "Code-Skizzen sind minimal, lauffaehig gedacht und kommentiert; nenne Annahmen und Grenzen der Loesung.",
+      "Du lieferst nie nur Fliesstext: Jedes technische Ergebnis enthaelt mindestens eine greifbare Datei als Datei-Block (z. B. lauffaehiges Script, index.html eines Prototyps oder dokument.md mit der technischen Loesung).",
       "Antworte auf Deutsch, strukturiert in Markdown mit Code-Bloecken, praezise und ohne Fuelltext.",
       "Liefere ein fertiges Ergebnis, keine Rueckfragen.",
       FILE_OUTPUT_INSTRUCTION,
