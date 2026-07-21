@@ -615,6 +615,18 @@
     "abo-wahl": {
       "type": "abo-wahl",
       "settings": {}
+    },
+    "funktionen-detail": {
+      "type": "funktionen-detail",
+      "settings": {}
+    },
+    "skills-katalog": {
+      "type": "skills-katalog",
+      "settings": {}
+    },
+    "stufen-tabelle": {
+      "type": "stufen-tabelle",
+      "settings": {}
     }
   },
   "order": [
@@ -626,7 +638,10 @@
     "branchen",
     "einblicke",
     "bereiche",
+    "funktionen-detail",
+    "skills-katalog",
     "produkt-grid",
+    "stufen-tabelle",
     "abo-wahl",
     "ablauf",
     "vergleich",
