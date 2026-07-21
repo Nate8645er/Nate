@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SKILL_ANZAHL, skillAnzahlFuer } from "@/lib/skills";
+import { RECHERCHE_QUELLEN } from "@/lib/agents/browser";
 
 export const metadata: Metadata = {
   title: "AI Command Center | Die digitale KI-Belegschaft für Ihr Unternehmen",
@@ -32,6 +33,7 @@ const PLANS: Plan[] = [
       "4 KI-Agenten zum Kennenlernen",
       "5 Missionen pro Monat",
       `${skillAnzahlFuer("FREE")} Basis-Skills zum Kennenlernen`,
+      `KI-Browser: recherchiert im Web (${RECHERCHE_QUELLEN.FREE} Quellen)`,
       "Ergebnis-Vorschau direkt im Browser",
       "Ohne Kreditkarte, ohne Risiko",
     ],
@@ -46,6 +48,7 @@ const PLANS: Plan[] = [
       "10 Missionen pro Tag",
       "Fertige Dateien mit Download",
       `${skillAnzahlFuer("PERSONAL")} Skills für den Alltag`,
+      `KI-Browser: recherchiert im Web (${RECHERCHE_QUELLEN.PERSONAL} Quellen)`,
       "E-Mail-Zentrale, CRM & Autopilot",
       "Perfekt für Einzelpersonen",
     ],
@@ -62,6 +65,7 @@ const PLANS: Plan[] = [
       "12 spezialisierte KI-Agenten",
       "Unbegrenzte Missionen",
       `${skillAnzahlFuer("STARTER")} Skills inkl. Verkauf & Marketing`,
+      `KI-Browser: recherchiert im Web (${RECHERCHE_QUELLEN.STARTER} Quellen)`,
       "Echte Dateien und Code mit Download",
       "Quality-Score je Ergebnis",
       "E-Mail-Support",
@@ -76,6 +80,7 @@ const PLANS: Plan[] = [
     benefits: [
       "50 Agenten in Fachteams organisiert",
       `${skillAnzahlFuer("PROFESSIONAL")} Skills inkl. Finanzen & Analyse`,
+      `KI-Browser: recherchiert im Web (${RECHERCHE_QUELLEN.PROFESSIONAL} Quellen)`,
       "Dokumente analysieren: PDF, Word, Excel",
       "5 Firmen-Integrationen inklusive",
       "Prioritäts-Verarbeitung",
@@ -93,6 +98,7 @@ const PLANS: Plan[] = [
     benefits: [
       "250 Agenten als digitale Abteilung",
       `${skillAnzahlFuer("BUSINESS")} Skills inkl. Personal & Recht`,
+      `KI-Browser: recherchiert im Web (${RECHERCHE_QUELLEN.BUSINESS} Quellen)`,
       "Alle 15 Firmen-Integrationen",
       "Eigene Workflows und Freigaben",
       "Zugänge für Ihr ganzes Team",
@@ -108,6 +114,7 @@ const PLANS: Plan[] = [
     benefits: [
       "Bis 1000 virtuelle Mitarbeitende",
       `Alle ${SKILL_ANZAHL} Skills + KI-Strategie exklusiv`,
+      `KI-Browser: recherchiert im Web (${RECHERCHE_QUELLEN.ENTERPRISE} Quellen)`,
       "Individuelle KI-Infrastruktur",
       "Private Cloud oder On-Premise möglich",
       "SLA und Sicherheit nach Mass",

@@ -58,6 +58,11 @@ Wichtig: Die Start-Datei auf der LIVE-Plattform (Vercel-URL) erzeugen,
 damit der Link in der Datei auf die richtige Adresse zeigt.
 
 ## Neu seit Update (Juli 2026)
+- Eingebauter KI-Browser: Belegschaft recherchiert vor jeder Mission im
+  Web (Suchketten-Fallback DuckDuckGo/Bing/Wikipedia, Quellen im Ergebnis).
+  Jede Stufe hat ihn; Quellen je Stufe: FREE 2 / PERSONAL 3 / STARTER 4 /
+  PROFESSIONAL 6 / BUSINESS 8 / ENTERPRISE 10. Schalter (Globus) in der
+  Kommandozentrale, standardmaessig AN.
 - 8 Bereiche: Missionen, Kommandozentrale (/chat), E-Mail-Zentrale (/email),
   Autopilot (/workflows), Berichte (/berichte), Team (/team),
   Integrationen, Admin. Alle nach Vercel-Deploy sofort nutzbar.

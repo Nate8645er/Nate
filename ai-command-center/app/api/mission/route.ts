@@ -14,6 +14,7 @@
  * - Ueberschrittenes Tageslimit => error-Event statt Mission.
  */
 
+import { webRecherche, RECHERCHE_QUELLEN } from "@/lib/agents/browser";
 import { runMission } from "@/lib/agents/orchestrator";
 import type { AgentEvent, MissionContext } from "@/lib/agents/types";
 import { consumeUsage, planFromLicenseToken } from "@/lib/license";
@@ -31,10 +32,12 @@ const MAX_DOKUMENT_TEXT_LENGTH = 20_000;
 export async function POST(request: Request): Promise<Response> {
   let goal: unknown;
   let rawContext: unknown;
+  let rechercheFlag = false;
   try {
     const body: unknown = await request.json();
     goal = (body as { goal?: unknown })?.goal;
     rawContext = (body as { context?: unknown })?.context;
+    rechercheFlag = (body as { recherche?: unknown })?.recherche === true;
   } catch {
     return jsonError("Ungültiger Request-Body (JSON erwartet).", 400);
   }
@@ -88,8 +91,38 @@ export async function POST(request: Request): Promise<Response> {
           });
           return;
         }
+        // Eingebauter KI-Browser: vor der Mission im Web recherchieren.
+        // Jede Stufe hat den Browser; hoehere Stufen lesen mehr Quellen.
+        let missionContext = context;
+        if (rechercheFlag) {
+          const maxQuellen = RECHERCHE_QUELLEN[plan];
+          emit({
+            type: "status",
+            agent: "research",
+            status: "working",
+            message: `KI-Browser recherchiert im Web (bis ${maxQuellen} Quellen) …`,
+          });
+          const quellen = await webRecherche(missionGoal, maxQuellen, (q) => {
+            emit({
+              type: "output",
+              agent: "research",
+              content: `Browser liest: ${q.titel.slice(0, 80)}`,
+            });
+          });
+          emit({
+            type: "status",
+            agent: "research",
+            status: "done",
+            message: quellen.length
+              ? `Recherche abgeschlossen – ${quellen.length} Quellen gelesen.`
+              : "Recherche ohne verwertbare Quellen – Mission läuft ohne Web-Daten.",
+          });
+          if (quellen.length) {
+            missionContext = { ...(missionContext ?? {}), recherche: quellen };
+          }
+        }
         // Plan aus dem validierten Lizenz-Token steuert den Agenten-Fan-out.
-        await runMission(missionGoal, emit, context, plan);
+        await runMission(missionGoal, emit, missionContext, plan);
       } catch (err) {
         emit({
           type: "error",

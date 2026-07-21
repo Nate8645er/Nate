@@ -29,6 +29,16 @@ export interface MissionContext {
     /** Extrahierter Text, serverseitig auf 20000 Zeichen gekappt. */
     text: string;
   };
+  /**
+   * Ergebnis des eingebauten KI-Browsers (Web-Recherche). Wird vom
+   * Mission-Endpoint VOR dem Missionsstart gefüllt und vom Orchestrator
+   * wie das Dokument als Datenblock an die Worker-USER-Messages gehängt.
+   */
+  recherche?: {
+    titel: string;
+    url: string;
+    auszug: string;
+  }[];
 }
 
 /** Rollen der Agenten im Team (Kern + plan-abhängige Zusatz-Worker). */

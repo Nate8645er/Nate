@@ -142,6 +142,9 @@ export default function KommandoPage() {
     }
   }, []);
 
+  /* Eingebauter KI-Browser: Web-Recherche vor jeder Mission (abschaltbar). */
+  const [webRecherche, setWebRecherche] = useState(true);
+
   /* Abo-Stufe des Nutzers (acc-plan aus der Lizenz-Aktivierung, sonst FREE):
    * verfügbare Skills sind wählbar, höhere zeigen die nötige Stufe. */
   const [stufe, setStufe] = useState<SkillStufe>("FREE");
@@ -238,7 +241,7 @@ export default function KommandoPage() {
         const res = await fetch("/api/mission", {
           method: "POST",
           headers,
-          body: JSON.stringify({ goal: befehl, context }),
+          body: JSON.stringify({ goal: befehl, context, recherche: webRecherche }),
         });
         if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
 
@@ -629,6 +632,21 @@ export default function KommandoPage() {
               >
                 📎
               </button>
+              <button
+                type="button"
+                onClick={() => setWebRecherche((v) => !v)}
+                disabled={running}
+                aria-pressed={webRecherche}
+                className={`shrink-0 rounded-xl px-3 py-3 text-lg transition disabled:opacity-40 ${
+                  webRecherche
+                    ? "bg-[#e7f6ee] text-[#177245] hover:bg-[#d8f0e4]"
+                    : "text-[#a2988a] hover:bg-[#f7f2e8] hover:text-[#c25e0e]"
+                }`}
+                aria-label={webRecherche ? "KI-Browser an – Belegschaft recherchiert im Web" : "KI-Browser aus"}
+                title={webRecherche ? "KI-Browser AN: Ihre Belegschaft recherchiert vor der Arbeit im Web (mit Quellen). Klicken zum Ausschalten." : "KI-Browser AUS. Klicken zum Einschalten."}
+              >
+                🌐
+              </button>
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -653,7 +671,9 @@ export default function KommandoPage() {
               </button>
             </form>
             <p className="mt-2 text-center text-[11px] text-[#b3a894]">
-              📎 Dateien anhängen (PDF, Text, CSV) · Jeder Befehl endet mit einem fertigen Ergebnis.
+              📎 Dateien anhängen (PDF, Text, CSV) · 🌐 KI-Browser{" "}
+              {webRecherche ? "an: Ihre Belegschaft recherchiert im Web, mit Quellenangaben" : "aus"} ·
+              Jeder Befehl endet mit einem fertigen Ergebnis.
             </p>
           </div>
         </footer>
