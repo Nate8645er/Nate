@@ -43,7 +43,7 @@ const PLANS: Plan[] = [
     benefits: [
       "10 Missionen pro Tag",
       "Fertige Dateien mit Download",
-      "Alle 24 Skills inklusive",
+      "Alle 25 Skills inklusive",
       "E-Mail-Zentrale, CRM & Autopilot",
       "Perfekt für Einzelpersonen",
     ],
