@@ -627,12 +627,17 @@
     "stufen-tabelle": {
       "type": "stufen-tabelle",
       "settings": {}
+    },
+    "buero-animation": {
+      "type": "buero-animation",
+      "settings": {}
     }
   },
   "order": [
     "hero",
     "logoleiste",
     "vorteile",
+    "buero-animation",
     "zahlen",
     "gehirn",
     "branchen",

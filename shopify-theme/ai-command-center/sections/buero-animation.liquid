@@ -1,0 +1,130 @@
+{% comment %}
+  Lebendiges KI-Büro: kleine Agenten-Figuren arbeiten an Schreibtischen
+  und laufen durchs Büro. Einzigartige Animation (reines CSS,
+  transform/opacity) – zeigt im Shop, dass hier eine echte Belegschaft
+  arbeitet, kein Chatbot.
+{% endcomment %}
+
+<section class="acc-section acc-buero">
+  <div class="acc-wrap">
+    <div class="acc-shead acc-reveal">
+      <span class="acc-micro">{{ section.settings.label }}</span>
+      <h2>{{ section.settings.titel }}</h2>
+      <p class="acc-buero__intro">{{ section.settings.intro }}</p>
+    </div>
+
+    <div class="acc-buero__stage acc-reveal">
+      {% assign namen = "Commander,Builder,Analyst,Quality,Marketing,Research,Coding,Business" | split: "," %}
+      {% assign posx = "14,38,62,86,14,38,62,86" | split: "," %}
+      {% assign posy = "36,32,32,36,80,84,84,80" | split: "," %}
+      {% assign farbe = "#ff8c2a,#2dd4bf,#a78bfa,#ffd257,#f472b6,#60a5fa,#4ade80,#fb923c" | split: "," %}
+      {% for n in namen %}
+        {% assign i = forloop.index0 %}
+        <div class="acc-desk" style="left: {{ posx[i] }}%; top: {{ posy[i] }}%;">
+          <div class="acc-screen"><span class="acc-glow" style="background: {{ farbe[i] }}"></span></div>
+          <div class="acc-top"></div>
+          <div class="acc-deskname">{{ n }}</div>
+        </div>
+        <div class="acc-bot acc-route-{{ i | modulo: 4 | plus: 1 }}"
+             style="left: {{ posx[i] }}%; top: {{ posy[i] | plus: 12 }}%; --f: {{ farbe[i] }}; animation-delay: -{{ i | times: 3 }}s;">
+          <span class="acc-head"></span>
+          <span class="acc-body"></span>
+          <span class="acc-legs"><i></i><i></i></span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .acc-buero__intro { max-width: 640px; margin: var(--sp-3) auto 0; color: var(--acc-text-dim); }
+  .acc-buero__stage {
+    position: relative;
+    height: 340px;
+    margin-top: var(--sp-6);
+    border-radius: 22px;
+    overflow: hidden;
+    border: 1px solid rgba(238, 119, 18, 0.18);
+    background:
+      radial-gradient(60rem 22rem at 50% -30%, rgba(238, 119, 18, 0.1), transparent 60%),
+      linear-gradient(180deg, #1c130b, #120d08);
+  }
+  .acc-buero__stage::before {
+    content: "";
+    position: absolute;
+    inset: 42% -20% -2% -20%;
+    background:
+      linear-gradient(rgba(255, 170, 90, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 170, 90, 0.08) 1px, transparent 1px);
+    background-size: 52px 40px;
+    transform: perspective(360px) rotateX(50deg);
+    transform-origin: top;
+  }
+  /* Schreibtisch */
+  .acc-desk { position: absolute; width: 96px; height: 66px; transform: translate(-50%, -50%); }
+  .acc-desk .acc-top {
+    position: absolute; left: 8px; right: 8px; bottom: 16px; height: 11px; border-radius: 4px;
+    background: linear-gradient(#6b4b2c, #503620); box-shadow: 0 6px 10px -4px rgba(0,0,0,.6);
+  }
+  .acc-desk .acc-screen {
+    position: absolute; left: 50%; bottom: 27px; width: 36px; height: 24px; transform: translateX(-50%);
+    border-radius: 4px; background: #241a10; border: 1.5px solid #4a3620;
+  }
+  .acc-desk .acc-glow { position: absolute; inset: 2px; border-radius: 2px; opacity: .5; animation: acc-scr 1.2s ease-in-out infinite; }
+  @keyframes acc-scr { 0%,100% { opacity: .8; } 50% { opacity: .4; } }
+  .acc-desk .acc-deskname {
+    position: absolute; left: 50%; bottom: -4px; transform: translateX(-50%);
+    font-family: var(--acc-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+    color: rgba(255, 200, 140, .8); white-space: nowrap;
+  }
+  /* Agenten-Figur */
+  .acc-bot { position: absolute; width: 24px; height: 32px; transform: translate(-50%, -100%); will-change: transform; }
+  .acc-bot .acc-head {
+    display: block; position: relative; width: 15px; height: 13px; margin: 0 auto; border-radius: 6px 6px 5px 5px;
+    background: linear-gradient(#fde9d2, #f5d5b0);
+  }
+  .acc-bot .acc-head::before {
+    content: ""; position: absolute; top: -5px; left: 50%; width: 2px; height: 5px; transform: translateX(-50%);
+    background: var(--f); border-radius: 1px; box-shadow: 0 -2px 5px var(--f);
+  }
+  .acc-bot .acc-head::after {
+    content: ""; position: absolute; top: 4px; left: 3.5px; width: 3px; height: 3px; border-radius: 50%;
+    background: #241505; box-shadow: 5px 0 0 #241505;
+  }
+  .acc-bot .acc-body {
+    display: block; width: 17px; height: 14px; margin: 1px auto 0; border-radius: 5px;
+    background: linear-gradient(150deg, var(--f), #ff5f1f); box-shadow: 0 3px 6px -2px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.35);
+  }
+  .acc-bot .acc-legs { display: flex; justify-content: center; gap: 3px; margin-top: 1px; }
+  .acc-bot .acc-legs i { width: 3px; height: 5px; border-radius: 1px; background: #2c1c0c; animation: acc-step .32s ease-in-out infinite; }
+  .acc-bot .acc-legs i:last-child { animation-direction: reverse; }
+  @keyframes acc-step { 50% { transform: translateY(-2px); } }
+  .acc-bot::after {
+    content: ""; position: absolute; bottom: -3px; left: 50%; width: 17px; height: 4px; transform: translateX(-50%);
+    border-radius: 50%; background: rgba(0,0,0,.4); filter: blur(1px);
+  }
+  .acc-route-1 { animation: acc-r1 13s ease-in-out infinite; }
+  .acc-route-2 { animation: acc-r2 17s ease-in-out infinite; }
+  .acc-route-3 { animation: acc-r3 15s ease-in-out infinite; }
+  .acc-route-4 { animation: acc-r4 19s ease-in-out infinite; }
+  @keyframes acc-r1 { 0%,100% { transform: translate(-50%,-100%); } 20% { transform: translate(calc(-50% + 90px), calc(-100% + 24px)); } 45% { transform: translate(calc(-50% + 150px), calc(-100% - 8px)); } 70% { transform: translate(calc(-50% - 40px), calc(-100% + 30px)); } }
+  @keyframes acc-r2 { 0%,100% { transform: translate(-50%,-100%); } 25% { transform: translate(calc(-50% - 110px), calc(-100% + 14px)); } 50% { transform: translate(calc(-50% - 60px), calc(-100% + 38px)); } 75% { transform: translate(calc(-50% + 70px), calc(-100% + 6px)); } }
+  @keyframes acc-r3 { 0%,100% { transform: translate(-50%,-100%); } 30% { transform: translate(calc(-50% + 60px), calc(-100% - 26px)); } 60% { transform: translate(calc(-50% - 90px), calc(-100% - 10px)); } }
+  @keyframes acc-r4 { 0%,100% { transform: translate(-50%,-100%); } 22% { transform: translate(calc(-50% - 70px), calc(-100% - 20px)); } 55% { transform: translate(calc(-50% + 120px), calc(-100% + 10px)); } 80% { transform: translate(calc(-50% + 30px), calc(-100% + 34px)); } }
+  @media (max-width: 700px) { .acc-buero__stage { height: 280px; } .acc-desk { transform: translate(-50%, -50%) scale(.82); } }
+  @media (prefers-reduced-motion: reduce) {
+    .acc-bot, .acc-bot .acc-legs i, .acc-desk .acc-glow { animation: none !important; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "KI-Büro Animation",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Micro-Label", "default": "IHRE BELEGSCHAFT LEBT" },
+    { "type": "text", "id": "titel", "label": "Titel", "default": "Kein Chatbot – ein ganzes Büro, das für Sie arbeitet." },
+    { "type": "textarea", "id": "intro", "label": "Intro", "default": "Bei jedem Auftrag setzt sich Ihre KI-Belegschaft an die Arbeit: Der Commander plant, die Spezialisten führen aus, Quality prüft. Sehen Sie live zu, wie Ihr Team arbeitet." }
+  ],
+  "presets": [{ "name": "KI-Büro Animation" }]
+}
+{% endschema %}
