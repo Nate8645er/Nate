@@ -39,6 +39,8 @@ export interface MissionContext {
     url: string;
     auszug: string;
   }[];
+  /** Ultra-Levelup aktiv (gültiger Ultra-Code zur Stufe): hebt Token-Budget an. */
+  ultra?: boolean;
 }
 
 /** Rollen der Agenten im Team (Kern + plan-abhängige Zusatz-Worker). */

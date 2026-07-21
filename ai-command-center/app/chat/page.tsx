@@ -150,9 +150,18 @@ export default function KommandoPage() {
   const [stufe, setStufe] = useState<SkillStufe>("FREE");
   useEffect(() => {
     try {
+      const reihenfolge = ["FREE", "PERSONAL", "STARTER", "PROFESSIONAL", "BUSINESS", "ENTERPRISE"];
       const p = localStorage.getItem("acc-plan");
-      if (p && ["FREE", "PERSONAL", "STARTER", "PROFESSIONAL", "BUSINESS", "ENTERPRISE"].includes(p)) {
-        setStufe(p as SkillStufe);
+      if (p && reihenfolge.includes(p)) {
+        // Ultra-Levelup: passender Ultra-Code schaltet die Skills der
+        // nächsthöheren Stufe frei (serverseitig steigen Limits/Budget).
+        const ultraPlan = localStorage.getItem("acc-ultra-plan");
+        const idx = reihenfolge.indexOf(p);
+        const effektiv =
+          ultraPlan === p && idx < reihenfolge.length - 1
+            ? reihenfolge[idx + 1]
+            : p;
+        setStufe(effektiv as SkillStufe);
       }
     } catch {
       /* Storage nicht lesbar */
@@ -228,8 +237,10 @@ export default function KommandoPage() {
         try {
           const lic = localStorage.getItem(LICENSE_TOKEN_KEY);
           const use = localStorage.getItem(USAGE_TOKEN_KEY);
+          const ult = localStorage.getItem("acc-ultra-token");
           if (lic) headers["x-acc-license"] = lic;
           if (use) headers["x-acc-usage"] = use;
+          if (ult) headers["x-acc-ultra"] = ult;
         } catch {
           /* Storage nicht lesbar */
         }

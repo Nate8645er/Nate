@@ -16,6 +16,8 @@ type Plan = {
   name: string;
   price: string;
   priceNote: string;
+  /** Jahresabo-Anzeige, z. B. "199 CHF/Jahr" (2 Monate geschenkt). */
+  priceYear?: string;
   team: string;
   badge?: string;
   highlight?: boolean;
@@ -35,6 +37,7 @@ const PLANS: Plan[] = [
       `${skillAnzahlFuer("FREE")} Basis-Skills zum Kennenlernen`,
       `KI-Browser: recherchiert im Web (${RECHERCHE_QUELLEN.FREE} Quellen)`,
       "Ergebnis-Vorschau direkt im Browser",
+      "Knappes Token-Budget – zum Kennenlernen",
       "Ohne Kreditkarte, ohne Risiko",
     ],
     handle: "free-demo-ki-team-kostenlos-testen",
@@ -43,6 +46,7 @@ const PLANS: Plan[] = [
     name: "Personal",
     price: "19.90",
     priceNote: "CHF pro Monat",
+    priceYear: "199 CHF/Jahr",
     team: "Ihr Kern-Team",
     benefits: [
       "10 Missionen pro Tag",
@@ -51,6 +55,7 @@ const PLANS: Plan[] = [
       `KI-Browser: recherchiert im Web (${RECHERCHE_QUELLEN.PERSONAL} Quellen)`,
       "E-Mail-Zentrale, CRM & Autopilot",
       "Perfekt für Einzelpersonen",
+      "⚡ Ultra-Levelup-Code erhältlich",
     ],
     handle: "personal-ai-ihr-personlicher-ki-assistent-monatsabo",
   },
@@ -58,6 +63,7 @@ const PLANS: Plan[] = [
     name: "Starter",
     price: "199",
     priceNote: "CHF pro Monat",
+    priceYear: "1'990 CHF/Jahr",
     team: "Team: 12 Agenten",
     badge: "Bestseller",
     highlight: true,
@@ -69,6 +75,7 @@ const PLANS: Plan[] = [
       "Echte Dateien und Code mit Download",
       "Quality-Score je Ergebnis",
       "E-Mail-Support",
+      "⚡ Ultra-Levelup-Code erhältlich",
     ],
     handle: "starter-ai-ihre-personliche-ki-abteilung-monatsabo",
   },
@@ -76,6 +83,7 @@ const PLANS: Plan[] = [
     name: "Professional",
     price: "799",
     priceNote: "CHF pro Monat",
+    priceYear: "7'990 CHF/Jahr",
     team: "Team: 50 Agenten",
     benefits: [
       "50 Agenten in Fachteams organisiert",
@@ -85,6 +93,7 @@ const PLANS: Plan[] = [
       "5 Firmen-Integrationen inklusive",
       "Prioritäts-Verarbeitung",
       "Support innert 24 Stunden",
+      "⚡ Ultra-Levelup-Code erhältlich",
     ],
     handle: "professional-ai-die-komplette-ki-arbeitsumgebung-monatsabo",
   },
@@ -92,6 +101,7 @@ const PLANS: Plan[] = [
     name: "Business",
     price: "2'499",
     priceNote: "CHF pro Monat",
+    priceYear: "24'990 CHF/Jahr",
     team: "Abteilung: 250 Agenten",
     badge: "Beliebt bei Firmen",
     highlight: true,
@@ -103,6 +113,7 @@ const PLANS: Plan[] = [
       "Eigene Workflows und Freigaben",
       "Zugänge für Ihr ganzes Team",
       "Dedizierter Ansprechpartner",
+      "⚡ Ultra-Levelup-Code erhältlich",
     ],
     handle: "business-ai-die-digitale-ki-abteilung-furs-unternehmen-monatsabo",
   },
@@ -110,6 +121,7 @@ const PLANS: Plan[] = [
     name: "Enterprise",
     price: "ab 8'900",
     priceNote: "CHF pro Monat",
+    priceYear: "ab 89'000 CHF/Jahr",
     team: "Belegschaft: 1000 Mitarbeitende",
     benefits: [
       "Bis 1000 virtuelle Mitarbeitende",
@@ -119,6 +131,7 @@ const PLANS: Plan[] = [
       "Private Cloud oder On-Premise möglich",
       "SLA und Sicherheit nach Mass",
       "Persönliche Begleitung beim Aufbau",
+      "⚡ Ultra-Levelup-Code erhältlich",
     ],
     handle: "enterprise-ai-individuelle-ki-infrastruktur-ab-10000-monat",
   },
@@ -498,6 +511,11 @@ export default function Home() {
                     <span className="text-4xl font-semibold tracking-tight text-white">{plan.price}</span>
                   </p>
                   <p className="mt-1 text-sm text-zinc-500">{plan.priceNote}</p>
+                  {plan.priceYear && (
+                    <p className="mt-1 text-xs font-medium text-[#2dd4bf]">
+                      oder {plan.priceYear} – 2 Monate geschenkt
+                    </p>
+                  )}
                   <p className="mt-3 inline-flex w-fit rounded-full border border-[#ff8c2a]/25 bg-[#ff8c2a]/5 px-3 py-1 text-xs text-[#ffb35c]">
                     {plan.team}
                   </p>

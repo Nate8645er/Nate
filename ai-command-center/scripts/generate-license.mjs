@@ -21,7 +21,10 @@ const KEY_RANDOM_LENGTH = 16;
 const DEV_FALLBACK_SECRET = "acc-dev-secret-nicht-fuer-produktion";
 
 const [, , planArg, countArg] = process.argv;
-const plan = (planArg ?? "").toUpperCase();
+let plan = (planArg ?? "").toUpperCase();
+// "ULTRA-<PLAN>" erzeugt Ultra-Levelup-Codes (ACC-ULTRA-<PLAN>-...).
+const ultra = plan.startsWith("ULTRA-");
+if (ultra) plan = plan.slice(6);
 
 if (!PLANS.includes(plan)) {
   console.error(
@@ -48,7 +51,7 @@ for (let i = 0; i < count; i++) {
   const bytes = randomBytes(KEY_RANDOM_LENGTH);
   let random = "";
   for (const b of bytes) random += BASE32_ALPHABET[b % 32];
-  const payload = `ACC-${plan}-${random}`;
+  const payload = ultra ? `ACC-ULTRA-${plan}-${random}` : `ACC-${plan}-${random}`;
   const sig = createHmac("sha256", secret)
     .update(payload)
     .digest("hex")

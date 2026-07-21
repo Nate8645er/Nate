@@ -49,6 +49,37 @@ export const PLAN_LIMITS: Record<PlanId, number> = {
   ENTERPRISE: 1000,
 };
 
+/**
+ * Token-Budget pro KI-Antwort (max_tokens je LLM-Call) – wird
+ * SERVERSEITIG erzwungen. FREE ist bewusst knapp gehalten: zum
+ * Kennenlernen reicht es, für ernsthafte Arbeit lohnt das Upgrade.
+ */
+export const TOKEN_BUDGET: Record<PlanId, number> = {
+  FREE: 700,
+  PERSONAL: 1400,
+  STARTER: 2000,
+  PROFESSIONAL: 2800,
+  BUSINESS: 3600,
+  ENTERPRISE: 4096,
+};
+
+/** Ultra-Levelup: Faktor auf Missionen/Tag und Token-Budget. */
+export const ULTRA_FAKTOR = 1.5;
+/** Ultra-Levelup: zusätzliche Web-Quellen für den KI-Browser. */
+export const ULTRA_EXTRA_QUELLEN = 2;
+
+/** Effektives Tageslimit (Ultra hebt es um den Faktor an). */
+export function effektivesLimit(plan: PlanId, ultra: boolean): number {
+  return ultra ? Math.ceil(PLAN_LIMITS[plan] * ULTRA_FAKTOR) : PLAN_LIMITS[plan];
+}
+
+/** Effektives Token-Budget pro Antwort. */
+export function effektivesTokenBudget(plan: PlanId, ultra: boolean): number {
+  return ultra
+    ? Math.min(4096, Math.ceil(TOKEN_BUDGET[plan] * ULTRA_FAKTOR))
+    : TOKEN_BUDGET[plan];
+}
+
 /** Nächsthöherer Plan für die Upgrade-Empfehlung im Limit-Fehler. */
 const NEXT_PLAN: Record<PlanId, PaidPlan | null> = {
   FREE: "PERSONAL",
@@ -158,6 +189,67 @@ export function verifyLicenseKey(
   return { valid: true, plan: plan as PaidPlan };
 }
 
+/* --------------------------- Ultra-Levelup-Codes -------------------------- */
+
+/**
+ * Ultra-Levelup-Codes "ACC-ULTRA-<PLAN>-<BASE32x16>-<HMAC8>" – nur für
+ * bezahlte Pläne. Ein Ultra-Code wird ZUSÄTZLICH zur Lizenz aktiviert
+ * und hebt genau diese Stufe an: +50% Missionen/Tag, +50% Token-Budget,
+ * +2 Browser-Quellen und die Skills der nächsthöheren Stufe.
+ */
+const ULTRA_KEY_RE =
+  /^ACC-ULTRA-(PERSONAL|STARTER|PROFESSIONAL|BUSINESS|ENTERPRISE)-([A-Z2-7]{16})-([0-9A-F]{8})$/;
+
+/** Erzeugt einen Ultra-Levelup-Code für die angegebene Bezahl-Stufe. */
+export function generateUltraKey(plan: PaidPlan): string {
+  const bytes = randomBytes(KEY_RANDOM_LENGTH);
+  let random = "";
+  for (const b of bytes) random += BASE32_ALPHABET[b % 32];
+  const payload = `ACC-ULTRA-${plan}-${random}`;
+  return `${payload}-${keySignature(payload)}`;
+}
+
+/** Prüft einen Ultra-Code; bei Erfolg inkl. Stufe, für die er gilt. */
+export function verifyUltraKey(
+  key: string,
+): { valid: true; plan: PaidPlan } | { valid: false } {
+  const match = ULTRA_KEY_RE.exec(key.trim().toUpperCase());
+  if (!match) return { valid: false };
+  const [, plan, random, sig] = match;
+  if (!safeEqual(keySignature(`ACC-ULTRA-${plan}-${random}`), sig)) {
+    return { valid: false };
+  }
+  return { valid: true, plan: plan as PaidPlan };
+}
+
+/** Erzeugt ein 30 Tage gültiges Ultra-Token (Header "x-acc-ultra"). */
+export function createUltraToken(plan: PaidPlan): {
+  token: string;
+  expiresAt: string;
+} {
+  const exp = Date.now() + LICENSE_TOKEN_TTL_MS;
+  return {
+    token: signToken({ ul: plan, exp }),
+    expiresAt: new Date(exp).toISOString(),
+  };
+}
+
+/**
+ * Ist für den aktiven Plan ein gültiges Ultra-Token vorhanden?
+ * Das Ultra-Token zählt nur, wenn es zur Stufe des Lizenz-Tokens passt –
+ * ein PERSONAL-Ultra-Code wertet keinen STARTER auf.
+ */
+export function ultraAktiv(token: string | null, plan: PlanId): boolean {
+  if (!token || plan === "FREE") return false;
+  const payload = readToken(token);
+  if (!payload) return false;
+  return (
+    payload.ul === plan &&
+    typeof payload.exp === "number" &&
+    payload.exp > Date.now()
+  );
+}
+
 /* ------------------------------ Lizenz-Token ------------------------------ */
 
 /** Erzeugt ein 30 Tage gültiges, signiertes Lizenz-Token. */
@@ -220,9 +312,10 @@ function todayUtc(): string {
 export function consumeUsage(
   usageToken: string | null,
   plan: PlanId,
+  ultra = false,
 ): UsageDecision {
   const today = todayUtc();
-  const limit = PLAN_LIMITS[plan];
+  const limit = effektivesLimit(plan, ultra);
 
   let used = 0;
   if (usageToken) {

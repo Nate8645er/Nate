@@ -8,7 +8,12 @@
  * sendet es bei POST /api/mission als Header "x-acc-license" mit.
  */
 
-import { createLicenseToken, verifyLicenseKey } from "@/lib/license";
+import {
+  createLicenseToken,
+  createUltraToken,
+  verifyLicenseKey,
+  verifyUltraKey,
+} from "@/lib/license";
 
 export const runtime = "nodejs";
 
@@ -28,6 +33,20 @@ export async function POST(request: Request): Promise<Response> {
   }
   if (key.length > MAX_KEY_LENGTH) {
     return jsonError("Ungültiger Lizenzschlüssel.", 401);
+  }
+
+  // Ultra-Levelup-Codes ("ACC-ULTRA-…") werden über dieselbe Eingabe
+  // eingelöst und liefern ein eigenes Token (Header "x-acc-ultra").
+  const ultra = verifyUltraKey(key);
+  if (ultra.valid) {
+    const { token, expiresAt } = createUltraToken(ultra.plan);
+    return Response.json({
+      valid: true,
+      ultra: true,
+      plan: ultra.plan,
+      token,
+      expiresAt,
+    });
   }
 
   const result = verifyLicenseKey(key);

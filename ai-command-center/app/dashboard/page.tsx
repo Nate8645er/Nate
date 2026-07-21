@@ -878,6 +878,7 @@ function LicenseModal({
 }) {
   const [key, setKey] = useState("");
   const [error, setError] = useState("");
+  const [ultraOk, setUltraOk] = useState("");
   const [busy, setBusy] = useState(false);
 
   const activate = useCallback(async () => {
@@ -892,9 +893,25 @@ function LicenseModal({
         body: JSON.stringify({ key: trimmed }),
       });
       const data = (await res.json().catch(() => null)) as
-        | { valid?: boolean; plan?: string; token?: string; error?: string }
+        | { valid?: boolean; ultra?: boolean; plan?: string; token?: string; error?: string }
         | null;
       if (
+        res.ok &&
+        data?.valid &&
+        data.ultra === true &&
+        typeof data.token === "string" &&
+        typeof data.plan === "string"
+      ) {
+        // Ultra-Levelup: zusätzliches Token, ersetzt die Lizenz NICHT.
+        try {
+          localStorage.setItem("acc-ultra-token", data.token);
+          localStorage.setItem("acc-ultra-plan", data.plan);
+        } catch {
+          /* Storage voll */
+        }
+        setUltraOk(data.plan);
+        setKey("");
+      } else if (
         res.ok &&
         data?.valid &&
         typeof data.token === "string" &&
@@ -939,6 +956,13 @@ function LicenseModal({
           {busy ? "Prüfe ..." : "Aktivieren"}
         </button>
       </div>
+      {ultraOk && (
+        <p className="mt-3 rounded-sm border border-[#ffd257]/40 bg-[#ffd257]/10 px-4 py-2 text-sm text-[#ffd257]">
+          ⚡ ULTRA-Levelup aktiviert für {ultraOk}: +50% Missionen pro Tag,
+          +50% Token-Budget, +2 Browser-Quellen und die Skills der
+          nächsthöheren Stufe. Gilt, solange Ihre {ultraOk}-Lizenz aktiv ist.
+        </p>
+      )}
       {error && (
         <p role="alert" className="mt-3 rounded-sm border border-red-400/30 bg-red-400/10 px-4 py-2 text-sm text-red-300">
           {error}

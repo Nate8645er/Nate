@@ -17,7 +17,7 @@
 import { webRecherche, RECHERCHE_QUELLEN } from "@/lib/agents/browser";
 import { runMission } from "@/lib/agents/orchestrator";
 import type { AgentEvent, MissionContext } from "@/lib/agents/types";
-import { consumeUsage, planFromLicenseToken } from "@/lib/license";
+import { consumeUsage, planFromLicenseToken, ultraAktiv, ULTRA_EXTRA_QUELLEN } from "@/lib/license";
 
 export const runtime = "nodejs";
 // Eine Mission umfasst 4 sequenzielle LLM-Phasen – grosszügig dimensionieren.
@@ -54,7 +54,9 @@ export async function POST(request: Request): Promise<Response> {
 
   // Plan + Tageslimit VOR dem Missionsstart durchsetzen (stateless).
   const plan = planFromLicenseToken(request.headers.get("x-acc-license"));
-  const usage = consumeUsage(request.headers.get("x-acc-usage"), plan);
+  // Ultra-Levelup: gültiger Ultra-Code zur Stufe hebt Limits an.
+  const ultra = ultraAktiv(request.headers.get("x-acc-ultra"), plan);
+  const usage = consumeUsage(request.headers.get("x-acc-usage"), plan, ultra);
 
   const encoder = new TextEncoder();
 
@@ -93,9 +95,9 @@ export async function POST(request: Request): Promise<Response> {
         }
         // Eingebauter KI-Browser: vor der Mission im Web recherchieren.
         // Jede Stufe hat den Browser; hoehere Stufen lesen mehr Quellen.
-        let missionContext = context;
+        let missionContext = ultra ? { ...(context ?? {}), ultra: true } : context;
         if (rechercheFlag) {
-          const maxQuellen = RECHERCHE_QUELLEN[plan];
+          const maxQuellen = RECHERCHE_QUELLEN[plan] + (ultra ? ULTRA_EXTRA_QUELLEN : 0);
           emit({
             type: "status",
             agent: "research",

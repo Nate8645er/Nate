@@ -29,7 +29,8 @@ import {
   demoQualityReport,
   demoSynthesis,
 } from "./demo";
-import { callLLM, hasApiKey } from "./providers";
+import { callLLM, hasApiKey, tokenBudgetStore } from "./providers";
+import { effektivesTokenBudget } from "@/lib/license";
 import {
   AGENTS,
   buildWorkforce,
@@ -182,9 +183,14 @@ export async function runMission(
   });
 
   // Org-Modus (BUSINESS/ENTERPRISE): dynamische Firma; sonst fester Fan-out.
-  const phases = isOrg
-    ? runOrgMissionPhases(trimmedGoal, guardedEmit, plan as "BUSINESS" | "ENTERPRISE", context)
-    : runMissionPhases(trimmedGoal, guardedEmit, workers, context);
+  // Das plan-abhängige Token-Budget umschliesst die gesamte Mission
+  // (AsyncLocalStorage) – jeder callLLM darin erbt das max_tokens.
+  const budget = effektivesTokenBudget(plan, context?.ultra === true);
+  const phases = tokenBudgetStore.run(budget, () =>
+    isOrg
+      ? runOrgMissionPhases(trimmedGoal, guardedEmit, plan as "BUSINESS" | "ENTERPRISE", context)
+      : runMissionPhases(trimmedGoal, guardedEmit, workers, context),
+  );
 
   try {
     const outcome = await Promise.race([

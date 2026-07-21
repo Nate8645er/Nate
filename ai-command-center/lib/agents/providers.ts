@@ -10,10 +10,24 @@
  * damit der Orchestrator pro Agent sauber degradieren kann.
  */
 
+import { AsyncLocalStorage } from "node:async_hooks";
 import type { ChatMessage, LLMResult, Provider } from "./types";
 
 const REQUEST_TIMEOUT_MS = 90_000;
 const MAX_TOKENS = 4096;
+
+/**
+ * Token-Budget der laufenden Mission (max_tokens je Antwort, plan-abhängig).
+ * Wird vom Orchestrator per run() um die Mission gelegt – AsyncLocalStorage
+ * hält das Budget pro Request getrennt, auch bei parallelen Missionen.
+ */
+export const tokenBudgetStore = new AsyncLocalStorage<number>();
+
+/** Aktives max_tokens: Mission-Budget, sonst Obergrenze. */
+function aktivesMaxTokens(): number {
+  const budget = tokenBudgetStore.getStore();
+  return budget && budget > 0 ? Math.min(budget, MAX_TOKENS) : MAX_TOKENS;
+}
 /** Ein Wiederholungsversuch bei Netz-/5xx-Fehlern. */
 const MAX_ATTEMPTS = 2;
 
@@ -164,7 +178,7 @@ function buildAnthropicRequest(
     // (Sonnet 5) lehnen Sampling-Parameter mit HTTP 400 ab.
     body: {
       model,
-      max_tokens: MAX_TOKENS,
+      max_tokens: aktivesMaxTokens(),
       system,
       messages,
     },
@@ -184,7 +198,7 @@ function buildOpenAIStyleRequest(
     },
     body: {
       model,
-      max_tokens: MAX_TOKENS,
+      max_tokens: aktivesMaxTokens(),
       messages: [{ role: "system", content: system }, ...messages],
     },
   };

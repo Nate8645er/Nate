@@ -4,7 +4,8 @@
  * Interne Admin-Route zum Erzeugen von Lizenzschlüsseln per Klick
  * (Ersatz für scripts/generate-license.mjs auf der Kommandozeile).
  *
- * Body: { password: string, plan: PaidPlan, count: number }
+ * Body: { password: string, plan: PaidPlan, count: number, ultra?: boolean }
+ * ultra:true erzeugt Ultra-Levelup-Codes (ACC-ULTRA-<PLAN>-...) statt Lizenzen.
  *
  * Auth: Das Passwort wird timing-sicher mit process.env.ADMIN_SECRET
  * verglichen. Ist ADMIN_SECRET nicht gesetzt, dient das Signatur-Secret
@@ -18,7 +19,7 @@
  */
 
 import { createHash, timingSafeEqual } from "node:crypto";
-import { generateLicenseKey, licenseSecret, PAID_PLANS, type PaidPlan } from "@/lib/license";
+import { generateLicenseKey, generateUltraKey, licenseSecret, PAID_PLANS, type PaidPlan } from "@/lib/license";
 
 export const runtime = "nodejs";
 
@@ -57,6 +58,7 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   const { password, plan, count } = body;
+  const ultra = (body as { ultra?: unknown }).ultra === true;
 
   if (typeof password !== "string" || !password) {
     return jsonError('Feld "password" ist erforderlich.', 400);
@@ -93,7 +95,9 @@ export async function POST(request: Request): Promise<Response> {
 
   const keys: string[] = [];
   for (let i = 0; i < clampedCount; i++) {
-    keys.push(generateLicenseKey(plan as PaidPlan));
+    keys.push(
+      ultra ? generateUltraKey(plan as PaidPlan) : generateLicenseKey(plan as PaidPlan),
+    );
   }
 
   return Response.json({ keys });

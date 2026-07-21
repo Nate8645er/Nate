@@ -116,6 +116,7 @@ export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [plan, setPlan] = useState<Plan>("STARTER");
   const [count, setCount] = useState(1);
+  const [ultra, setUltra] = useState(false);
   const [keys, setKeys] = useState<string[]>([]);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -149,7 +150,7 @@ export default function AdminPage() {
       const res = await fetch("/api/admin/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password, plan, count }),
+        body: JSON.stringify({ password, plan, count, ultra }),
       });
       const data = (await res.json().catch(() => null)) as
         | { keys?: string[]; error?: string }
@@ -164,7 +165,7 @@ export default function AdminPage() {
     } finally {
       setBusy(false);
     }
-  }, [busy, password, plan, count]);
+  }, [busy, password, plan, count, ultra]);
 
   const copyAll = useCallback(async () => {
     if (keys.length === 0) return;
@@ -251,12 +252,27 @@ export default function AdminPage() {
               </label>
             </div>
 
+            <label className="flex cursor-pointer items-center gap-3">
+              <input
+                type="checkbox"
+                checked={ultra}
+                onChange={(e) => setUltra(e.target.checked)}
+                disabled={busy}
+                className="h-4 w-4 accent-[#ffd257]"
+              />
+              <span className="text-sm text-[#ffd257]">
+                ⚡ Ultra-Levelup-Codes erzeugen (ACC-ULTRA-…): +50% Missionen,
+                +50% Token-Budget, +2 Browser-Quellen, Skills der nächsten
+                Stufe – als Zusatz zur Lizenz derselben Stufe.
+              </span>
+            </label>
+
             <button
               onClick={generate}
               disabled={!password.trim() || busy}
               className={`mt-1 w-full rounded-sm bg-[#ff8c2a] px-6 py-3 font-semibold text-[#1a0f04] transition hover:bg-[#ffb35c] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
             >
-              {busy ? "Erzeuge …" : "Schlüssel erzeugen"}
+              {busy ? "Erzeuge …" : ultra ? "Ultra-Codes erzeugen" : "Schlüssel erzeugen"}
             </button>
           </div>
 
