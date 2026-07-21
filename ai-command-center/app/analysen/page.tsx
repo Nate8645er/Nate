@@ -82,7 +82,7 @@ export default function AnalysenPage() {
   ];
 
   return (
-    <div className="min-h-dvh bg-[#faf8f3] text-[#241f17]">
+    <div className="acc-page min-h-dvh text-[#1c1917]">
       <div className="mx-auto max-w-5xl px-4 pb-24">
         <header className="flex items-center justify-between border-b border-[#e8e1d2] py-4">
           <div className="flex items-center gap-2.5">
@@ -109,7 +109,7 @@ export default function AnalysenPage() {
           {KACHELN.map((k) => (
             <div
               key={k.label}
-              className="rounded-2xl border border-[#eee7d8] bg-white p-5 shadow-[0_1px_3px_rgba(40,30,10,0.05)]"
+              className="rounded-2xl acc-card p-5"
             >
               <p className="text-3xl font-bold text-[#c25e0e]">{k.wert}</p>
               <p className="mt-1 text-xs font-medium text-[#8d8172]">{k.label}</p>
@@ -118,7 +118,7 @@ export default function AnalysenPage() {
         </div>
 
         {/* Aktivität */}
-        <section className="mt-8 rounded-2xl border border-[#eee7d8] bg-white p-6 shadow-[0_1px_3px_rgba(40,30,10,0.05)]">
+        <section className="mt-8 rounded-2xl acc-card p-6">
           <h2 className="text-lg font-semibold">Aktivität der letzten 14 Tage</h2>
           <svg viewBox="0 0 560 150" className="mt-4 w-full" role="img" aria-label="Aufträge pro Tag">
             {tage.map((t, i) => {
@@ -154,7 +154,7 @@ export default function AnalysenPage() {
         </section>
 
         {/* Score-Verlauf */}
-        <section className="mt-6 rounded-2xl border border-[#eee7d8] bg-white p-6 shadow-[0_1px_3px_rgba(40,30,10,0.05)]">
+        <section className="mt-6 rounded-2xl acc-card p-6">
           <h2 className="text-lg font-semibold">Quality-Score-Verlauf</h2>
           {scores.length === 0 ? (
             <p className="mt-3 text-sm text-[#8d8172]">

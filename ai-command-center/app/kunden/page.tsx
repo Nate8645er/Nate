@@ -115,7 +115,7 @@ export default function KundenPage() {
   const zaehler = (s: Status) => kunden.filter((k) => k.status === s).length;
 
   return (
-    <div className="min-h-dvh bg-[#faf8f3] text-[#241f17]">
+    <div className="acc-page min-h-dvh text-[#1c1917]">
       <div className="mx-auto max-w-5xl px-4 pb-24">
         <header className="flex items-center justify-between border-b border-[#e8e1d2] py-4">
           <div className="flex items-center gap-2.5">
@@ -151,7 +151,7 @@ export default function KundenPage() {
         {/* Pipeline-Zähler */}
         <div className="mt-8 grid grid-cols-3 gap-4">
           {STATUS_REIHENFOLGE.map((s) => (
-            <div key={s} className="rounded-2xl border border-[#eee7d8] bg-white p-4 text-center shadow-[0_1px_3px_rgba(40,30,10,0.05)]">
+            <div key={s} className="rounded-2xl acc-card p-4 text-center">
               <p className="text-2xl font-bold text-[#c25e0e]">{zaehler(s)}</p>
               <p className="mt-0.5 text-xs font-medium text-[#8d8172]">{s}</p>
             </div>
@@ -160,7 +160,7 @@ export default function KundenPage() {
 
         {/* Neu erfassen */}
         <form
-          className="mt-6 grid gap-3 rounded-2xl border border-[#eee7d8] bg-white p-5 shadow-[0_1px_3px_rgba(40,30,10,0.05)] sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_auto]"
+          className="mt-6 grid gap-3 rounded-2xl acc-card p-5 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_auto]"
           onSubmit={(e) => {
             e.preventDefault();
             hinzufuegen();
@@ -183,12 +183,12 @@ export default function KundenPage() {
         {/* Liste */}
         <div className="mt-6 space-y-3">
           {kunden.length === 0 && (
-            <p className="rounded-2xl border border-[#eee7d8] bg-white px-5 py-10 text-center text-sm text-[#8d8172]">
+            <p className="rounded-2xl acc-card px-5 py-10 text-center text-sm text-[#8d8172]">
               Noch keine Kunden erfasst. Beginnen Sie mit Ihrem wichtigsten Lead.
             </p>
           )}
           {kunden.map((k) => (
-            <article key={k.id} className="rounded-2xl border border-[#eee7d8] bg-white p-5 shadow-[0_1px_3px_rgba(40,30,10,0.05)]">
+            <article key={k.id} className="rounded-2xl acc-card p-5">
               <div className="flex flex-wrap items-center gap-3">
                 <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f] font-bold text-white">
                   {k.name.slice(0, 1).toUpperCase()}

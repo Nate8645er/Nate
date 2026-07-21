@@ -412,7 +412,7 @@ export default function KommandoPage() {
                     <button
                       key={b}
                       onClick={() => ausfuehren(b)}
-                      className="shop-btn rounded-2xl border border-[#e8e1d2] bg-white px-4 py-3.5 text-left text-sm leading-snug text-[#4a4335] shadow-[0_1px_3px_rgba(40,30,10,0.05)] transition hover:border-[#ffb066] hover:shadow-[0_4px_16px_rgba(255,140,42,0.14)]"
+                      className="shop-btn rounded-2xl border border-[#e8e1d2] bg-white px-4 py-3.5 text-left text-sm leading-snug text-[#4a4335] transition hover:border-[#ffb066] hover:shadow-[0_4px_16px_rgba(255,140,42,0.14)]"
                     >
                       {b}
                     </button>
@@ -435,7 +435,7 @@ export default function KommandoPage() {
 
                 {/* Live-Aktivität */}
                 {running && live?.entryId === active.id && (
-                  <div className="mb-6 rounded-2xl border border-[#f0e2cc] bg-white p-5 shadow-[0_1px_3px_rgba(40,30,10,0.05)]">
+                  <div className="mb-6 rounded-2xl border border-[#f0e2cc] bg-white p-5">
                     <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">
                       <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" />
                       Ihre Belegschaft arbeitet
@@ -464,7 +464,7 @@ export default function KommandoPage() {
 
                 {/* Ergebnis */}
                 {active.final && (
-                  <div className="mb-6 rounded-2xl border border-[#eee7d8] bg-white p-6 shadow-[0_2px_12px_rgba(40,30,10,0.06)]">
+                  <div className="mb-6 rounded-2xl acc-card p-6 shadow-[0_2px_12px_rgba(40,30,10,0.06)]">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <p className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">
                         Ausgeführt – Ihr Ergebnis

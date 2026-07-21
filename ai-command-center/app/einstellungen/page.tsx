@@ -101,7 +101,7 @@ export default function EinstellungenPage() {
   };
 
   return (
-    <div className="min-h-dvh bg-[#faf8f3] text-[#241f17]">
+    <div className="acc-page min-h-dvh text-[#1c1917]">
       <div className="mx-auto max-w-3xl px-4 pb-24">
         <header className="flex items-center justify-between border-b border-[#e8e1d2] py-4">
           <div className="flex items-center gap-2.5">
@@ -122,7 +122,7 @@ export default function EinstellungenPage() {
         </div>
 
         {/* Unternehmensprofil */}
-        <section className="mt-8 rounded-2xl border border-[#eee7d8] bg-white p-6 shadow-[0_1px_3px_rgba(40,30,10,0.05)]">
+        <section className="mt-8 rounded-2xl acc-card p-6">
           <h2 className="text-lg font-semibold">Unternehmensprofil</h2>
           <p className="mt-1 text-sm text-[#8d8172]">
             Branche und Grösse fliessen in jeden Auftrag ein – Ihre Belegschaft
@@ -161,7 +161,7 @@ export default function EinstellungenPage() {
         </section>
 
         {/* Signatur */}
-        <section className="mt-6 rounded-2xl border border-[#eee7d8] bg-white p-6 shadow-[0_1px_3px_rgba(40,30,10,0.05)]">
+        <section className="mt-6 rounded-2xl acc-card p-6">
           <h2 className="text-lg font-semibold">E-Mail-Signatur</h2>
           <p className="mt-1 text-sm text-[#8d8172]">
             Wird in der{" "}
@@ -180,7 +180,7 @@ export default function EinstellungenPage() {
         </section>
 
         {/* Lizenz */}
-        <section className="mt-6 rounded-2xl border border-[#eee7d8] bg-white p-6 shadow-[0_1px_3px_rgba(40,30,10,0.05)]">
+        <section className="mt-6 rounded-2xl acc-card p-6">
           <h2 className="text-lg font-semibold">Abo und Lizenz</h2>
           <div className="mt-3 flex flex-wrap items-center gap-3">
             <span className="rounded-full bg-gradient-to-r from-[#ffb066] to-[#ff5f1f] px-4 py-1.5 text-sm font-bold text-white">
@@ -196,7 +196,7 @@ export default function EinstellungenPage() {
         </section>
 
         {/* Daten */}
-        <section className="mt-6 rounded-2xl border border-[#eee7d8] bg-white p-6 shadow-[0_1px_3px_rgba(40,30,10,0.05)]">
+        <section className="mt-6 rounded-2xl acc-card p-6">
           <h2 className="text-lg font-semibold">Ihre Daten</h2>
           <p className="mt-1 text-sm text-[#8d8172]">
             Alle Arbeitsdaten liegen in diesem Browser – nichts wird ohne Ihren

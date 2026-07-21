@@ -15,7 +15,15 @@ export interface Skill {
   befehl: string;
   name: string;
   beschreibung: string;
-  kategorie: "Erstellen" | "Marketing" | "Analyse & Kontrolle" | "Planung & Büro" | "Informatik & Code";
+  kategorie:
+    | "Erstellen"
+    | "Marketing"
+    | "Verkauf & Kunden"
+    | "Analyse & Kontrolle"
+    | "Finanzen"
+    | "Personal & Recht"
+    | "Planung & Büro"
+    | "Informatik & Code";
   /** Struktur-Vorlage, wird als Missions-Ziel ausgeführt. */
   vorlage: string;
 }
@@ -253,6 +261,176 @@ export const SKILLS: Skill[] = [
       "für: Kunde [Name], Rechnung [Nr] über [Betrag] CHF, fällig seit [Datum]. " +
       "Ton: bestimmt aber beziehungserhaltend. Mit Betreff, versandfertig.",
   },
+  /* ---------- Verkauf & Kunden ---------- */
+  {
+    befehl: "/verkaufsskript",
+    name: "Verkaufsgespräch",
+    beschreibung: "Gesprächsleitfaden mit Einwand-Antworten für Ihr Angebot.",
+    kategorie: "Verkauf & Kunden",
+    vorlage:
+      "Erstelle einen Verkaufs-Gesprächsleitfaden für [Produkt/Dienstleistung]: " +
+      "Gesprächseinstieg, 5 Nutzen-Argumente, die 6 häufigsten Einwände mit " +
+      "überzeugenden Antworten, Preisnennung und Abschlussfragen. " +
+      "Zielkunde: [wer]. Ton: [beratend/direkt].",
+  },
+  {
+    befehl: "/nachfassen",
+    name: "Nachfassen / Follow-up",
+    beschreibung: "Versandfertige Nachfass-Nachrichten, die Abschlüsse holen.",
+    kategorie: "Verkauf & Kunden",
+    vorlage:
+      "Erstelle 3 versandfertige Nachfass-Nachrichten (E-Mail + WhatsApp + " +
+      "Telefon-Leitfaden) für: [Offerte/Angebot] an [Kunde], gesendet am " +
+      "[Datum], bisher keine Antwort. Ton: freundlich, wertstiftend, " +
+      "ohne Druck – mit klarem nächsten Schritt.",
+  },
+  {
+    befehl: "/kundenumfrage",
+    name: "Kundenumfrage",
+    beschreibung: "Fertige Zufriedenheits-Umfrage mit Auswertungsraster.",
+    kategorie: "Verkauf & Kunden",
+    vorlage:
+      "Erstelle eine Kundenumfrage für [Firma/Produkt]: 8-10 präzise Fragen " +
+      "(Zufriedenheit, Weiterempfehlung, Verbesserungen), Einladungstext für " +
+      "E-Mail/WhatsApp und ein Auswertungsraster mit Handlungsempfehlungen.",
+  },
+  {
+    befehl: "/reklamation",
+    name: "Reklamations-Antwort",
+    beschreibung: "Souveräne Antwort, die den Kunden hält statt verliert.",
+    kategorie: "Verkauf & Kunden",
+    vorlage:
+      "Schreibe eine professionelle Antwort auf folgende Reklamation: " +
+      "[Reklamation einfügen]. Mit ehrlicher Anerkennung, konkreter Lösung " +
+      "[was wir anbieten], Wiedergutmachung falls angebracht und " +
+      "versöhnlichem Abschluss. Versandfertig mit Betreff.",
+  },
+  /* ---------- Finanzen ---------- */
+  {
+    befehl: "/budget",
+    name: "Budget-Plan",
+    beschreibung: "Jahresbudget mit Monatsaufteilung und Reserven.",
+    kategorie: "Finanzen",
+    vorlage:
+      "Erstelle ein Jahresbudget für [Firma/Abteilung/Projekt]: erwartete " +
+      "Einnahmen [Betrag/Quellen], Fixkosten [auflisten], variable Kosten " +
+      "[auflisten]. Mit Monatsaufteilung, Reserve-Empfehlung, " +
+      "Kennzahlen und Warnsignalen, ab wann gehandelt werden muss.",
+  },
+  {
+    befehl: "/liquiditaet",
+    name: "Liquiditätsplan",
+    beschreibung: "13-Wochen-Vorschau: Kommt genug Geld rein?",
+    kategorie: "Finanzen",
+    vorlage:
+      "Erstelle einen 13-Wochen-Liquiditätsplan: Kontostand heute [Betrag], " +
+      "erwartete Zahlungseingänge [Rechnungen mit Fälligkeit], fixe Ausgaben " +
+      "[Miete/Löhne/etc. mit Terminen]. Zeige Engpässe, Puffer und 3 konkrete " +
+      "Massnahmen zur Verbesserung.",
+  },
+  {
+    befehl: "/kalkulation",
+    name: "Preis-Kalkulation",
+    beschreibung: "Stundensatz oder Produktpreis sauber durchgerechnet.",
+    kategorie: "Finanzen",
+    vorlage:
+      "Kalkuliere [Stundensatz/Produktpreis] für [Leistung/Produkt]: " +
+      "Kosten [Material/Einkauf/Lohn], Gemeinkosten [Miete/Versicherung/etc.], " +
+      "gewünschte Marge [%]. Zeige die Rechnung transparent, vergleiche mit " +
+      "marktüblichen Preisen und empfiehl einen Verkaufspreis.",
+  },
+  /* ---------- Personal & Recht ---------- */
+  {
+    befehl: "/bewerber-check",
+    name: "Bewerber-Analyse",
+    beschreibung: "Lebenslauf strukturiert prüfen + Interviewfragen.",
+    kategorie: "Personal & Recht",
+    vorlage:
+      "Analysiere folgende Bewerbung für die Stelle [Position]: Stärken, " +
+      "Lücken, offene Fragen, Passung zu unseren Anforderungen [Anforderungen]. " +
+      "Erstelle 10 gezielte Interviewfragen. Bewerbung: " +
+      "[Lebenslauf einfügen oder Datei anhängen]",
+  },
+  {
+    befehl: "/arbeitszeugnis",
+    name: "Arbeitszeugnis",
+    beschreibung: "Wohlwollend-korrektes Zeugnis nach Schweizer Praxis.",
+    kategorie: "Personal & Recht",
+    vorlage:
+      "Erstelle ein vollständiges Arbeitszeugnis nach Schweizer Praxis: " +
+      "Mitarbeiter [Name], Position [Funktion], Zeitraum [von-bis], " +
+      "Aufgaben [Hauptaufgaben], Leistung [sehr gut/gut/genügend], " +
+      "Austrittsgrund [Grund]. Wohlwollend, wahr und codefrei formuliert.",
+  },
+  {
+    befehl: "/mitarbeitergespraech",
+    name: "Mitarbeitergespräch",
+    beschreibung: "Leitfaden für Jahres-, Feedback- oder Konfliktgespräch.",
+    kategorie: "Personal & Recht",
+    vorlage:
+      "Erstelle einen Gesprächsleitfaden für ein [Jahresgespräch/Feedback-" +
+      "gespräch/Konfliktgespräch] mit [Mitarbeiter, Funktion]. Anlass/Themen: " +
+      "[was ansprechen]. Mit Gesprächsaufbau, konkreten Formulierungen, " +
+      "Zielvereinbarungs-Vorlage und Notizblatt.",
+  },
+  {
+    befehl: "/onboarding",
+    name: "Einarbeitungsplan",
+    beschreibung: "30-60-90-Tage-Plan für neue Mitarbeitende.",
+    kategorie: "Personal & Recht",
+    vorlage:
+      "Erstelle einen Einarbeitungsplan (erste Woche + 30/60/90 Tage) für " +
+      "[Position] in unserer Firma [Firma, Branche]. Aufgabenbereich: " +
+      "[Hauptaufgaben]. Mit Checkliste vor Arbeitsbeginn, Lernzielen, " +
+      "Verantwortlichkeiten und Meilenstein-Gesprächen.",
+  },
+  {
+    befehl: "/vertrag",
+    name: "Vertragsentwurf",
+    beschreibung: "Sauberer Vertragsentwurf zum Prüfen durch Ihren Anwalt.",
+    kategorie: "Personal & Recht",
+    vorlage:
+      "Erstelle einen Vertragsentwurf: [Dienstleistungsvertrag/Werkvertrag/" +
+      "Mietvertrag/NDA] zwischen [Partei A] und [Partei B]. Gegenstand: " +
+      "[was geregelt wird]. Eckpunkte: [Preis, Dauer, Kündigung, besondere " +
+      "Punkte]. Klar gegliedert, Schweizer Recht, mit Hinweis welche Klauseln " +
+      "anwaltlich geprüft werden sollten.",
+  },
+  {
+    befehl: "/datenschutz",
+    name: "Datenschutz-Check",
+    beschreibung: "DSG/DSGVO-Basisprüfung mit konkreter Massnahmenliste.",
+    kategorie: "Personal & Recht",
+    vorlage:
+      "Prüfe unsere Situation auf Datenschutz (Schweizer DSG + DSGVO wo " +
+      "relevant): Wir sind [Firma, Branche] und bearbeiten folgende Daten: " +
+      "[welche Kundendaten/Tools/Newsletter/Website]. Erstelle eine " +
+      "priorisierte Massnahmenliste und eine einfache Datenschutzerklärung " +
+      "als Entwurf.",
+  },
+  /* ---------- Planung & Büro (Ergänzung) ---------- */
+  {
+    befehl: "/sitzungsprotokoll",
+    name: "Sitzungsprotokoll",
+    beschreibung: "Aus Stichworten ein sauberes Protokoll mit Aufgabenliste.",
+    kategorie: "Planung & Büro",
+    vorlage:
+      "Erstelle aus folgenden Sitzungsnotizen ein professionelles Protokoll: " +
+      "Teilnehmende, besprochene Punkte, Entscheidungen, Aufgabenliste " +
+      "(wer/was/bis wann), offene Punkte für die nächste Sitzung. " +
+      "Notizen: [Stichworte einfügen oder Datei anhängen]",
+  },
+  {
+    befehl: "/geschaeftsbrief",
+    name: "Geschäftsbrief",
+    beschreibung: "Formeller Brief – von Kündigung bis Behördenschreiben.",
+    kategorie: "Planung & Büro",
+    vorlage:
+      "Schreibe einen formellen Geschäftsbrief: Anlass [Kündigung Vertrag/" +
+      "Anfrage/Einsprache/Behördenschreiben], Empfänger [wer], unser Anliegen: " +
+      "[was erreicht werden soll]. Korrekt aufgebaut mit Betreff, sachlichem " +
+      "Ton und klarer Forderung/Frist, versandfertig.",
+  },
   /* ---------- Informatik & Code ---------- */
   {
     befehl: "/code",
@@ -292,10 +470,16 @@ export const SKILLS: Skill[] = [
 export const SKILL_KATEGORIEN = [
   "Erstellen",
   "Marketing",
+  "Verkauf & Kunden",
   "Analyse & Kontrolle",
+  "Finanzen",
+  "Personal & Recht",
   "Planung & Büro",
   "Informatik & Code",
 ] as const;
+
+/** Gesamtzahl der Skills – überall dynamisch verwenden statt hart codieren. */
+export const SKILL_ANZAHL = SKILLS.length;
 
 /** Findet Skills, deren Befehl oder Name zur Eingabe passt (für "/"-Palette). */
 export function skillSuche(eingabe: string): Skill[] {

@@ -68,7 +68,7 @@ export default function BenutzerPage() {
   };
 
   return (
-    <div className="min-h-dvh bg-[#faf8f3] text-[#241f17]">
+    <div className="acc-page min-h-dvh text-[#1c1917]">
       <div className="mx-auto max-w-5xl px-4 pb-24">
         <header className="flex items-center justify-between border-b border-[#e8e1d2] py-4">
           <div className="flex items-center gap-2.5">
@@ -96,7 +96,7 @@ export default function BenutzerPage() {
         {/* Rollen-Erklärung */}
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
           {ROLLEN.map((r) => (
-            <div key={r.rolle} className="rounded-2xl border border-[#eee7d8] bg-white p-5 shadow-[0_1px_3px_rgba(40,30,10,0.05)]">
+            <div key={r.rolle} className="rounded-2xl acc-card p-5">
               <p className="font-bold text-[#c25e0e]">{r.rolle}</p>
               <p className="mt-1.5 text-sm leading-relaxed text-[#6f6557]">{r.rechte}</p>
             </div>
@@ -105,7 +105,7 @@ export default function BenutzerPage() {
 
         {/* Hinzufügen */}
         <form
-          className="mt-8 grid gap-3 rounded-2xl border border-[#eee7d8] bg-white p-5 shadow-[0_1px_3px_rgba(40,30,10,0.05)] sm:grid-cols-[1fr_1fr_160px_auto]"
+          className="mt-8 grid gap-3 rounded-2xl acc-card p-5 sm:grid-cols-[1fr_1fr_160px_auto]"
           onSubmit={(e) => {
             e.preventDefault();
             hinzufuegen();
@@ -146,7 +146,7 @@ export default function BenutzerPage() {
         </form>
 
         {/* Liste */}
-        <div className="mt-6 overflow-hidden rounded-2xl border border-[#eee7d8] bg-white shadow-[0_1px_3px_rgba(40,30,10,0.05)]">
+        <div className="mt-6 overflow-hidden rounded-2xl acc-card">
           {benutzer.length === 0 && (
             <p className="px-5 py-8 text-center text-sm text-[#8d8172]">
               Noch keine Team-Mitglieder erfasst.

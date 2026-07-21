@@ -23,12 +23,123 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), "Segoe UI", Arial, Helvetica, sans-serif;
+  font-feature-settings: "ss01", "cv05";
+  text-rendering: optimizeLegibility;
 }
 
 /* Marken-Typografie: Space Grotesk fuer alle Ueberschriften (wie im Shop) */
 h1, h2, h3, h4 {
   font-family: var(--font-space-grotesk), var(--font-geist-sans), sans-serif;
   letter-spacing: -0.02em;
+}
+
+/* ------------------------------------------------------------------ */
+/* 2026-Design-Kern: Aurora-Hintergruende, Glas-Flaechen, Micro-Motion */
+/* Animiert werden ausschliesslich transform und opacity.             */
+/* ------------------------------------------------------------------ */
+
+::selection {
+  background: rgba(255, 140, 42, 0.28);
+}
+
+/* Moderne, schmale Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 140, 42, 0.35) transparent;
+}
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-thumb {
+  background: rgba(255, 140, 42, 0.3);
+  border-radius: 99px;
+}
+*::-webkit-scrollbar-track { background: transparent; }
+
+/* Helle Arbeitsseiten: warmer Grund + farbiges Aurora-Mesh */
+.acc-page {
+  position: relative;
+  background-color: #fbfaf6;
+  isolation: isolate;
+}
+.acc-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(52rem 32rem at 12% -6%, rgba(255, 140, 42, 0.13), transparent 62%),
+    radial-gradient(44rem 30rem at 92% 4%, rgba(139, 92, 246, 0.1), transparent 60%),
+    radial-gradient(40rem 30rem at 70% 104%, rgba(45, 212, 191, 0.09), transparent 60%),
+    radial-gradient(34rem 26rem at -4% 88%, rgba(244, 114, 182, 0.07), transparent 62%);
+}
+.acc-page::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image:
+    linear-gradient(rgba(28, 25, 23, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(28, 25, 23, 0.028) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(80rem 50rem at 50% 0%, black, transparent 75%);
+}
+
+/* Glas-Karte (helle Seiten) */
+.acc-card {
+  border: 1px solid rgba(28, 25, 23, 0.08);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.66));
+  backdrop-filter: blur(14px) saturate(1.35);
+  -webkit-backdrop-filter: blur(14px) saturate(1.35);
+  box-shadow:
+    0 1px 2px rgba(28, 25, 23, 0.05),
+    0 12px 32px -20px rgba(28, 25, 23, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+@media (hover: hover) {
+  .acc-card-hover:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 2px 4px rgba(28, 25, 23, 0.05),
+      0 24px 48px -20px rgba(255, 120, 40, 0.22),
+      0 0 0 1px rgba(255, 140, 42, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+}
+
+/* Gradient-Akzent-Text (Markenverlauf) */
+.acc-grad-text {
+  background: linear-gradient(100deg, #ff8c2a 8%, #ff5f1f 42%, #c026d3 96%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Sanftes Erscheinen beim Laden (nur transform/opacity) */
+@keyframes acc-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+.acc-in { animation: acc-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.acc-in-1 { animation-delay: 0.05s; }
+.acc-in-2 { animation-delay: 0.12s; }
+.acc-in-3 { animation-delay: 0.19s; }
+
+/* Langsame Aurora-Drift fuer Hero-Flaechen */
+@keyframes acc-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(2%, -2%, 0) scale(1.06); }
+}
+.acc-drift { animation: acc-drift 18s ease-in-out infinite; will-change: transform; }
+
+@media (prefers-reduced-motion: reduce) {
+  .acc-in, .acc-in-1, .acc-in-2, .acc-in-3, .acc-drift {
+    animation: none !important;
+  }
+  .acc-card, .acc-card-hover:hover { transition: none !important; transform: none !important; }
 }
 
 /* ------------------------------------------------------------------ */
@@ -42,14 +153,30 @@ h1, h2, h3, h4 {
   --hud-gold: #ffd257;
 }
 
-/* Panel mit duenner Glow-Linie */
+/* Panel: Glas-Karte auf dunklem Grund (2026) */
 .hud-panel {
   position: relative;
-  border: 1px solid rgba(255, 140, 42, 0.22);
-  background: rgba(255, 140, 42, 0.03);
+  border: 1px solid rgba(255, 165, 90, 0.16);
+  background:
+    linear-gradient(150deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.015) 55%),
+    rgba(20, 16, 12, 0.55);
+  backdrop-filter: blur(12px) saturate(1.3);
+  -webkit-backdrop-filter: blur(12px) saturate(1.3);
   box-shadow:
-    0 0 14px rgba(255, 140, 42, 0.05),
-    inset 0 0 24px rgba(255, 140, 42, 0.03);
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 16px 40px -24px rgba(0, 0, 0, 0.7),
+    0 0 18px rgba(255, 140, 42, 0.05);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+@media (hover: hover) {
+  .hud-panel:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 165, 90, 0.34);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.08) inset,
+      0 22px 48px -22px rgba(0, 0, 0, 0.75),
+      0 0 32px rgba(255, 140, 42, 0.12);
+  }
 }
 
 /* Ecken-Markierungen (8 kurze Striche via Background-Gradients) */
@@ -80,23 +207,20 @@ h1, h2, h3, h4 {
   color: rgba(255, 179, 92, 0.72);
 }
 
-/* Dezente Scanline- + Grid-Textur als Overlay */
+/* Dunkler Grund: Aurora-Mesh statt Scanlines (2026) */
 .hud-texture {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
   background:
-    repeating-linear-gradient(
-      0deg,
-      rgba(255, 179, 92, 0.02) 0px,
-      rgba(255, 179, 92, 0.02) 1px,
-      transparent 1px,
-      transparent 3px
-    ),
-    linear-gradient(rgba(255, 140, 42, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 140, 42, 0.025) 1px, transparent 1px);
-  background-size: 100% 100%, 48px 48px, 48px 48px;
+    radial-gradient(56rem 36rem at 14% -8%, rgba(255, 120, 40, 0.14), transparent 60%),
+    radial-gradient(48rem 32rem at 96% 2%, rgba(139, 92, 246, 0.12), transparent 58%),
+    radial-gradient(44rem 34rem at 76% 106%, rgba(45, 212, 191, 0.08), transparent 58%),
+    radial-gradient(30rem 24rem at -6% 76%, rgba(244, 114, 182, 0.06), transparent 60%),
+    linear-gradient(rgba(255, 160, 90, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 160, 90, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 52px 52px, 52px 52px;
 }
 
 /* Gold-Rahmen (BUSINESS) */

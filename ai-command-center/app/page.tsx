@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SKILL_ANZAHL } from "@/lib/skills";
 
 export const metadata: Metadata = {
   title: "AI Command Center | Die digitale KI-Belegschaft für Ihr Unternehmen",
@@ -43,7 +44,7 @@ const PLANS: Plan[] = [
     benefits: [
       "10 Missionen pro Tag",
       "Fertige Dateien mit Download",
-      "Alle 25 Skills inklusive",
+      `Alle ${SKILL_ANZAHL} Skills inklusive`,
       "E-Mail-Zentrale, CRM & Autopilot",
       "Perfekt für Einzelpersonen",
     ],
