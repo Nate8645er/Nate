@@ -180,6 +180,36 @@ export const SKILLS: Skill[] = [
       "bis Rechnung]",
   },
   {
+    befehl: "/prognose",
+    name: "Prognose / Vorhersage",
+    beschreibung: "Aus Ihren Zahlen eine fundierte Vorhersage mit Szenarien.",
+    kategorie: "Analyse & Kontrolle",
+    vorlage:
+      "Erstelle aus folgenden Zahlen eine Prognose für die nächsten [3/6/12] " +
+      "Monate mit drei Szenarien (vorsichtig, realistisch, optimistisch), " +
+      "klaren Annahmen und Empfehlungen: [Zahlen einfügen oder Datei anhängen]",
+  },
+  {
+    befehl: "/termine",
+    name: "Terminplanung",
+    beschreibung: "Wochen-/Projektplan mit Prioritäten und Zeitfenstern.",
+    kategorie: "Planung & Büro",
+    vorlage:
+      "Erstelle einen realistischen [Wochen/Projekt]-Plan: Aufgaben: " +
+      "[Aufgaben auflisten]. Fixe Termine: [Termine]. Verfügbare Zeit: " +
+      "[Stunden pro Tag]. Mit Prioritäten, Zeitfenstern und Pufferzeiten.",
+  },
+  {
+    befehl: "/support",
+    name: "Kundensupport-Paket",
+    beschreibung: "FAQ + fertige Antwort-Vorlagen für Ihren Kundendienst.",
+    kategorie: "Planung & Büro",
+    vorlage:
+      "Erstelle ein Kundensupport-Paket für [Firma/Produkt]: die 10 häufigsten " +
+      "Kundenfragen mit fertigen Antwort-Vorlagen, eine Eskalations-Richtlinie " +
+      "(wann an einen Menschen übergeben) und Textbausteine für Reklamationen.",
+  },
+  {
     befehl: "/wochenbericht",
     name: "Wochenbericht",
     beschreibung: "Bericht für die Geschäftsleitung, klar und entscheidbar.",
