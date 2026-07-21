@@ -15,7 +15,7 @@ export interface Skill {
   befehl: string;
   name: string;
   beschreibung: string;
-  kategorie: "Erstellen" | "Marketing" | "Analyse & Kontrolle" | "Planung & Büro";
+  kategorie: "Erstellen" | "Marketing" | "Analyse & Kontrolle" | "Planung & Büro" | "Informatik & Code";
   /** Struktur-Vorlage, wird als Missions-Ziel ausgeführt. */
   vorlage: string;
 }
@@ -220,10 +220,49 @@ export const SKILLS: Skill[] = [
       "Fortschritte, Probleme mit Lösungsvorschlag, nächste Woche): " +
       "[Stichpunkte der Woche einfügen]",
   },
+  /* ---------- Informatik & Code ---------- */
+  {
+    befehl: "/code",
+    name: "Code schreiben",
+    beschreibung: "Lauffähiger Code als echte Datei: Script, Tool oder Webanwendung.",
+    kategorie: "Informatik & Code",
+    vorlage:
+      "Schreibe lauffähigen, sauber kommentierten Code: [was soll das Programm " +
+      "tun]. Sprache/Technologie: [z. B. Python, JavaScript, HTML/CSS]. " +
+      "Eingaben: [was kommt rein]. Ausgaben: [was soll rauskommen]. " +
+      "Liefere den vollständigen Code als Datei plus kurze Anleitung.",
+  },
+  {
+    befehl: "/bugfix",
+    name: "Code prüfen / Fehler finden",
+    beschreibung: "Code-Review: Fehler, Sicherheitslücken und Verbesserungen.",
+    kategorie: "Informatik & Code",
+    vorlage:
+      "Prüfe folgenden Code gründlich auf Fehler, Sicherheitslücken und " +
+      "Verbesserungsmöglichkeiten. Erstelle einen Review-Bericht und die " +
+      "korrigierte Version als Datei: [Code hier einfügen oder Datei anhängen]",
+  },
+  {
+    befehl: "/api-doku",
+    name: "Technische Dokumentation",
+    beschreibung: "README, API-Doku oder Anleitung für Ihr Software-Projekt.",
+    kategorie: "Informatik & Code",
+    vorlage:
+      "Erstelle eine professionelle technische Dokumentation für [Projekt/API]: " +
+      "Zweck, Installation, Verwendung mit Beispielen, [API-Endpunkte/Konfiguration], " +
+      "häufige Probleme. Zielgruppe: [Entwickler/Endnutzer]. " +
+      "Grundlage: [Beschreibung einfügen oder Datei anhängen]",
+  },
 ];
 
 /** Skills nach Kategorie gruppiert (für Katalog-Seite und Palette). */
-export const SKILL_KATEGORIEN = ["Erstellen", "Marketing", "Analyse & Kontrolle", "Planung & Büro"] as const;
+export const SKILL_KATEGORIEN = [
+  "Erstellen",
+  "Marketing",
+  "Analyse & Kontrolle",
+  "Planung & Büro",
+  "Informatik & Code",
+] as const;
 
 /** Findet Skills, deren Befehl oder Name zur Eingabe passt (für "/"-Palette). */
 export function skillSuche(eingabe: string): Skill[] {

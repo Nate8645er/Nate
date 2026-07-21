@@ -44,7 +44,44 @@ async function copyText(text: string): Promise<boolean> {
   }
 }
 
-/** Zeile mit einem erzeugten Schlüssel + Kopieren-Button. */
+/**
+ * Start-Datei für den Kunden: eine kleine HTML-Datei, die beim Anklicken
+ * (PC, Laptop oder Handy) die Plattform öffnet und die Lizenz automatisch
+ * aktiviert (/dashboard?key=...). Der Kunde muss nichts abtippen.
+ */
+function startDateiHtml(key: string, origin: string): string {
+  const ziel = `${origin}/dashboard?key=${encodeURIComponent(key)}`;
+  return [
+    "<!doctype html>",
+    '<html lang="de"><head><meta charset="utf-8">',
+    '<meta name="viewport" content="width=device-width, initial-scale=1">',
+    "<title>AI Command Center – Ihr Zugang</title>",
+    `<meta http-equiv="refresh" content="1;url=${ziel}">`,
+    "<style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;",
+    "background:#faf8f3;font-family:system-ui,sans-serif;color:#241f17;text-align:center;padding:24px}",
+    ".dot{width:18px;height:18px;border-radius:50%;margin:0 auto 18px;",
+    "background:linear-gradient(135deg,#ffb066,#ff5f1f);box-shadow:0 0 24px rgba(255,140,42,.6)}",
+    "h1{font-size:22px;margin:0 0 8px}p{color:#8d8172;font-size:14px;margin:0 0 20px}",
+    "a{display:inline-block;background:linear-gradient(90deg,#ff8c2a,#ff5f1f);color:#fff;",
+    "font-weight:700;padding:14px 28px;border-radius:12px;text-decoration:none}</style></head>",
+    '<body><div><div class="dot"></div><h1>Ihr AI Command Center startet …</h1>',
+    "<p>Ihre Lizenz wird automatisch aktiviert. Falls nichts passiert:</p>",
+    `<a href="${ziel}">Jetzt öffnen</a></div></body></html>`,
+  ].join("\n");
+}
+
+function downloadStartDatei(key: string) {
+  const html = startDateiHtml(key, window.location.origin);
+  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "AI-Command-Center-Start.html";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/** Zeile mit einem erzeugten Schlüssel + Kopieren- und Start-Datei-Button. */
 function KeyRow({ value }: { value: string }) {
   const [copied, setCopied] = useState(false);
   const onCopy = useCallback(async () => {
@@ -54,7 +91,7 @@ function KeyRow({ value }: { value: string }) {
     }
   }, [value]);
   return (
-    <li className="flex items-center gap-2 rounded-sm border border-[#ff8c2a]/15 bg-[#ff8c2a]/[0.03] px-3 py-2">
+    <li className="flex flex-wrap items-center gap-2 rounded-sm border border-[#ff8c2a]/15 bg-[#ff8c2a]/[0.03] px-3 py-2">
       <code className="flex-1 break-all font-mono text-xs text-[#fff3e2] sm:text-sm">
         {value}
       </code>
@@ -63,6 +100,13 @@ function KeyRow({ value }: { value: string }) {
         className={`shrink-0 rounded-sm border border-[#ff8c2a]/40 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c] transition-colors hover:bg-[#ff8c2a]/15 ${FOCUS_RING}`}
       >
         {copied ? "Kopiert" : "Kopieren"}
+      </button>
+      <button
+        onClick={() => downloadStartDatei(value)}
+        title="HTML-Datei für den Kunden: anklicken öffnet die Plattform und aktiviert die Lizenz automatisch"
+        className={`shrink-0 rounded-sm bg-[#ff8c2a] px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#1a0f04] transition-colors hover:bg-[#ffb35c] ${FOCUS_RING}`}
+      >
+        Start-Datei
       </button>
     </li>
   );

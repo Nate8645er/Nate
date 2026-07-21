@@ -21,7 +21,12 @@ Guten Tag {Vorname Name}
 
 Vielen Dank für Ihre Bestellung von {PLAN} bei AI Command Center.
 
-So starten Sie in 2 Minuten:
+SO EINFACH GEHT ES: Im Anhang finden Sie Ihre persönliche Start-Datei
+"AI-Command-Center-Start.html". Einfach anklicken – am PC, Laptop oder
+Handy. Die Plattform öffnet sich und Ihre Lizenz wird automatisch
+aktiviert. Fertig.
+
+Falls Sie lieber manuell starten:
 1. Öffnen Sie: {PLATTFORM-URL}/dashboard
 2. Klicken Sie oben rechts auf "Lizenz aktivieren"
 3. Geben Sie Ihren persönlichen Lizenzschlüssel ein:
@@ -40,6 +45,10 @@ AI Command Center
 
 ## Schlüssel erzeugen (pro Verkauf)
 {PLATTFORM-URL}/admin -> Passwort = LICENSE_SECRET -> Plan -> Erzeugen.
+Danach Button "Start-Datei": lädt die persönliche
+AI-Command-Center-Start.html herunter -> als Anhang in die Kunden-E-Mail.
+Wichtig: Die Start-Datei auf der LIVE-Plattform (Vercel-URL) erzeugen,
+damit der Link in der Datei auf die richtige Adresse zeigt.
 
 ## Neu seit Update (Juli 2026)
 - 8 Bereiche: Missionen, Kommandozentrale (/chat), E-Mail-Zentrale (/email),

@@ -1101,6 +1101,51 @@ export default function DashboardPage() {
     } catch { /* voll */ }
   }, []);
 
+  /**
+   * Sofort-Aktivierung über die Start-Datei: /dashboard?key=ACC-...
+   * aktiviert die Lizenz automatisch (ein Klick auf die Datei genügt,
+   * auf PC wie Handy). Der Schlüssel wird danach aus der URL entfernt.
+   */
+  useEffect(() => {
+    let cancelled = false;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const key = params.get("key")?.trim();
+      if (!key || !/^ACC-/i.test(key)) return;
+      // Schlüssel sofort aus URL/Verlauf entfernen (nicht liegen lassen).
+      window.history.replaceState(null, "", window.location.pathname);
+      void (async () => {
+        try {
+          const res = await fetch("/api/license", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ key }),
+          });
+          const data = (await res.json().catch(() => null)) as
+            | { valid?: boolean; plan?: string; token?: string }
+            | null;
+          if (
+            !cancelled &&
+            res.ok &&
+            data?.valid &&
+            typeof data.token === "string" &&
+            typeof data.plan === "string" &&
+            (PLANS as string[]).includes(data.plan)
+          ) {
+            handleLicenseActivated(data.plan as Plan, data.token);
+          }
+        } catch {
+          /* Ohne Netz bleibt FREE; Aktivierung manuell moeglich. */
+        }
+      })();
+    } catch {
+      /* URL nicht lesbar */
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [handleLicenseActivated]);
+
   const saveHistory = useCallback((entry: HistoryEntry) => {
     setHistory((prev) => {
       const next = [entry, ...prev].slice(0, 20);

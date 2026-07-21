@@ -215,6 +215,18 @@ const FEATURES = [
     linkLabel: "E-Mail-Zentrale öffnen",
   },
   {
+    title: "Schreibt echten Code",
+    text: "Auch für Informatik-Firmen: Scripts, Tools, Webanwendungen und Code-Reviews – als lauffähige Dateien geliefert, mit technischer Dokumentation.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" className="h-7 w-7">
+        <path d="m8 8-4.5 4L8 16M16 8l4.5 4L16 16" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="m13 5-2 14" strokeLinecap="round" />
+      </svg>
+    ),
+    href: "/faehigkeiten",
+    linkLabel: "Code-Skills ansehen",
+  },
+  {
     title: "Autopilot-Workflows",
     text: "Wiederkehrende Aufträge einmal anlegen – Ihre Belegschaft erledigt sie regelmässig: Wochenpläne, Berichte, Angebotsideen.",
     icon: (
