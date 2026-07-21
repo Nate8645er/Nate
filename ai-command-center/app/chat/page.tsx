@@ -15,6 +15,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ArtifactFile } from "@/lib/agents/types";
+import { SKILLS, skillSuche } from "@/lib/skills";
 
 const KOMMANDOS_KEY = "acc-kommandos";
 const LICENSE_TOKEN_KEY = "acc-license-token";
@@ -102,6 +103,23 @@ export default function KommandoPage() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [live?.aktivitaet.length, active?.final]);
+
+  /* ?befehl=/offerte aus der Skills-Seite -> Vorlage vorbefüllen. */
+  useEffect(() => {
+    try {
+      const b = new URLSearchParams(window.location.search).get("befehl");
+      if (!b) return;
+      const skill = SKILLS.find((s) => s.befehl === b);
+      if (skill) {
+        setActiveId(null);
+        setInput(skill.vorlage);
+      }
+    } catch {
+      /* Query nicht lesbar */
+    }
+  }, []);
+
+  const skillTreffer = skillSuche(input);
 
   /** Befehl ausführen = echte Mission starten und Events live rendern. */
   const ausfuehren = useCallback(
@@ -321,7 +339,12 @@ export default function KommandoPage() {
                 </h2>
                 <p className="mt-3 max-w-md text-sm text-zinc-500">
                   Kein Chatbot: Jeder Befehl startet Ihr KI-Team und endet mit einem
-                  fertigen Ergebnis – Dateien, Berichte, Analysen.
+                  fertigen Ergebnis – Dateien, Berichte, Analysen. Tippen Sie{" "}
+                  <span className="font-mono text-[#ffb35c]">/</span> für alle{" "}
+                  <Link href="/faehigkeiten" className="text-[#ffb35c] hover:underline">
+                    {SKILLS.length} Befehle
+                  </Link>
+                  .
                 </p>
                 <div className="mt-8 grid w-full gap-2 sm:grid-cols-2">
                   {BEISPIELE.map((b) => (
@@ -435,6 +458,23 @@ export default function KommandoPage() {
 
         {/* Befehlseingabe */}
         <footer className="border-t border-[#ff8c2a]/15 bg-[#0b0a08]/90 px-4 py-4 backdrop-blur">
+          {/* Slash-Befehlspalette */}
+          {skillTreffer.length > 0 && !running && (
+            <div className="mx-auto mb-2 max-w-3xl overflow-hidden rounded-xl border border-[#ff8c2a]/30 bg-[#12100d]">
+              <p className="hud-label border-b border-[#ff8c2a]/15 px-4 py-2">Befehle</p>
+              {skillTreffer.map((s) => (
+                <button
+                  key={s.befehl}
+                  onClick={() => setInput(s.vorlage)}
+                  className="flex w-full items-baseline gap-3 px-4 py-2.5 text-left hover:bg-[#ff8c2a]/10"
+                >
+                  <span className="shrink-0 font-mono text-sm font-bold text-[#ffb35c]">{s.befehl}</span>
+                  <span className="truncate text-sm text-zinc-300">{s.name}</span>
+                  <span className="hidden truncate text-xs text-zinc-500 sm:inline">{s.beschreibung}</span>
+                </button>
+              ))}
+            </div>
+          )}
           <form
             className="mx-auto flex max-w-3xl items-end gap-2"
             onSubmit={(e) => {
@@ -466,7 +506,11 @@ export default function KommandoPage() {
             </button>
           </form>
           <p className="mx-auto mt-2 max-w-3xl text-center text-[11px] text-zinc-600">
-            Jeder Befehl wird von Ihrer KI-Belegschaft ausgeführt und endet mit einem fertigen Ergebnis.
+            Tippen Sie <span className="font-mono text-[#ffb35c]">/</span> für Befehle ·{" "}
+            <Link href="/faehigkeiten" className="text-[#ffb35c]/80 hover:underline">
+              alle {SKILLS.length} Fähigkeiten ansehen
+            </Link>{" "}
+            · Jeder Befehl endet mit einem fertigen Ergebnis.
           </p>
         </footer>
       </div>
