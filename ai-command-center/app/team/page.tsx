@@ -10,7 +10,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AGENTS, WORKERS_BY_PLAN, WORKFORCE_BY_PLAN, MAX_DYN_AGENTS } from "@/lib/agents/team";
+import { talentBeispiele, talentpoolFormatiert } from "@/lib/talentpool";
 import type { AgentRole, PlanId } from "@/lib/agents/types";
+
+/** Seite wird serverseitig alle 30 Minuten neu erzeugt (ISR) –
+ *  damit rotieren auch die Talent-Pool-Beispiele halbstündlich. */
+export const revalidate = 1800;
 import WorkNav from "@/app/components/WorkNav";
 
 export const metadata: Metadata = {
@@ -129,7 +134,55 @@ export default function TeamPage() {
             </Link>
           </div>
         </section>
+
+        {/* Talent-Pool: ueber 1 Milliarde adressierbare Profile */}
+        <TalentPool />
       </div>
     </div>
+  );
+}
+
+/**
+ * Generativer Talent-Pool. Die Beispiel-Profile rotieren mit jeder
+ * ISR-Regeneration (alle 30 Minuten) – der Seed ist das aktuelle
+ * 30-Minuten-Fenster zum Zeitpunkt der Server-Erzeugung.
+ */
+function TalentPool() {
+  const seed = Math.floor(Date.now() / 1_800_000);
+  const beispiele = talentBeispiele(6, seed);
+  const stand = new Date().toLocaleTimeString("de-CH", { hour: "2-digit", minute: "2-digit" });
+  return (
+    <section className="mt-12">
+      <h2 className="text-xl font-semibold text-white">Der Talent-Pool dahinter</h2>
+      <p className="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-400">
+        Ihr Commander besetzt jede Mission aus einem generativen Pool von{" "}
+        <span className="font-semibold text-[#ffd257]">{talentpoolFormatiert()}</span>{" "}
+        adressierbaren Spezialisten-Profilen (Rolle × Fachgebiet × Branche ×
+        Spezialisierung × Markt × Stufe). Jedes Profil ist über seine Nummer
+        abrufbar und wird bei Bedarf instanziiert – rund um die Uhr, an jedem
+        Tag. Sechs Beispiele aus dem Pool (Auswahl rotiert alle 30 Minuten,
+        Stand {stand} Uhr):
+      </p>
+      <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {beispiele.map((p) => (
+          <div key={p.index} className="hud-panel rounded-xl p-4">
+            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#ffb35c]/60">
+              Profil #{p.index.toLocaleString("de-CH")}
+            </p>
+            <p className="mt-1.5 text-sm font-semibold text-[#ffb35c]">{p.titel}</p>
+            <p className="mt-1 text-xs leading-relaxed text-zinc-500">
+              {p.branche} · {p.spezialisierung} · Markt {p.markt}
+            </p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 max-w-2xl text-xs leading-relaxed text-zinc-500">
+        Ehrlich erklärt: Der Pool ist der Adressraum, aus dem live besetzt
+        wird – nicht eine Milliarde gleichzeitig laufender Rechenprozesse.
+        Wie viele Spezialisten pro Auftrag gleichzeitig rechnen, bestimmt
+        Ihre Abo-Stufe (Tabelle oben). Genau diese Kombination macht das
+        System gross UND schnell.
+      </p>
+    </section>
   );
 }
