@@ -79,6 +79,8 @@
             {%- else -%}
               <input type="hidden" name="id" value="{{ current_variant.id }}">
             {%- endif -%}
+            {%- comment -%} Shopify-Subscriptions-Widget: zeigt «Abonnieren / Einmalkauf». {%- endcomment -%}
+            <div class="subscriptions_app_embed_block"></div>
             <div class="acc-form__row">
               <button type="submit" name="add" class="acc-btn" data-buybar-anchor>In den Warenkorb</button>
               <button type="button" class="acc-btn acc-btn--ghost" data-buy-now data-variant-id="{{ current_variant.id }}">Direkt kaufen</button>
