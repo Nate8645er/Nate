@@ -689,152 +689,161 @@ h1, h2, h3, h4 {
 }
 
 /* ================================================================== */
-/* KI-WELT: animierte, bunte Stadt.                                   */
-/* Verschiedenfarbige Gebäude mit Beschriftung (CODING, MARKETING …), */
-/* bunte Roboter-Figuren laufen durch die Welt. Nur transform/opacity.*/
+/* KI-WELT v2: Vogelperspektive-Stadt bei Nacht im Weltraum.          */
+/* Draufsicht auf Gebäude, Strassen, Café & Restaurant; bunte Figuren */
+/* laufen umher, sitzen essend/trinkend oder fragen nach Aufgaben.    */
+/* Live-Monitore zeigen scrollende Apps/Websites. transform/opacity.  */
 /* ================================================================== */
 
 .world {
   position: relative;
-  height: 360px;
+  height: 440px;
   border-radius: 22px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background:
-    radial-gradient(50rem 24rem at 20% 0%, rgba(139, 92, 246, 0.28), transparent 60%),
-    radial-gradient(46rem 22rem at 80% 8%, rgba(59, 130, 246, 0.22), transparent 60%),
-    radial-gradient(40rem 22rem at 55% 100%, rgba(236, 72, 153, 0.16), transparent 60%),
-    linear-gradient(180deg, #120a26 0%, #0e1230 45%, #0a1024 100%);
+    radial-gradient(50rem 30rem at 15% -10%, rgba(139, 92, 246, 0.22), transparent 60%),
+    radial-gradient(46rem 28rem at 90% 0%, rgba(59, 130, 246, 0.18), transparent 60%),
+    radial-gradient(60rem 40rem at 60% 120%, rgba(236, 72, 153, 0.12), transparent 60%),
+    linear-gradient(160deg, #0a0820 0%, #0b1030 55%, #080a1e 100%);
 }
-/* Sternenhimmel */
+/* Funkelnde Sterne */
 .world::before {
   content: "";
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0; pointer-events: none;
   background-image:
-    radial-gradient(1.5px 1.5px at 12% 22%, rgba(255,255,255,0.8), transparent),
-    radial-gradient(1.5px 1.5px at 32% 12%, rgba(255,255,255,0.6), transparent),
-    radial-gradient(1.5px 1.5px at 58% 26%, rgba(255,255,255,0.7), transparent),
-    radial-gradient(1.5px 1.5px at 76% 14%, rgba(255,255,255,0.55), transparent),
-    radial-gradient(1.5px 1.5px at 90% 30%, rgba(255,255,255,0.7), transparent),
-    radial-gradient(1.5px 1.5px at 46% 18%, rgba(255,255,255,0.5), transparent);
-  animation: world-twinkle 4s ease-in-out infinite;
+    radial-gradient(1.5px 1.5px at 8% 12%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 22% 6%, rgba(255,255,255,.7), transparent),
+    radial-gradient(1.5px 1.5px at 40% 10%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 66% 5%, rgba(255,255,255,.7), transparent),
+    radial-gradient(1.5px 1.5px at 84% 9%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 94% 16%, rgba(255,255,255,.6), transparent),
+    radial-gradient(1.5px 1.5px at 14% 26%, rgba(255,255,255,.6), transparent),
+    radial-gradient(1.5px 1.5px at 54% 4%, rgba(255,255,255,.8), transparent);
+  animation: world-twinkle 3.5s ease-in-out infinite;
 }
-@keyframes world-twinkle { 0%,100% { opacity: 0.7; } 50% { opacity: 1; } }
-/* Strasse unten */
-.world::after {
-  content: "";
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: 84px;
+@keyframes world-twinkle { 0%,100% { opacity:.6; } 50% { opacity:1; } }
+
+/* Stadtboden mit Häuserblock-Raster (Draufsicht) */
+.world-ground {
+  position: absolute; inset: 8% 3% 3% 3%;
+  border-radius: 16px;
   background:
-    repeating-linear-gradient(90deg, transparent 0 46px, rgba(255,255,255,0.05) 46px 60px),
-    linear-gradient(180deg, #241a52, #0f0c26);
-  border-top: 2px solid rgba(255,255,255,0.14);
+    linear-gradient(#0f1330, #0c1028);
+  box-shadow: inset 0 0 60px rgba(0,0,0,.5);
+  overflow: hidden;
 }
+.world-ground::before {
+  content: ""; position: absolute; inset: 0; opacity: .5;
+  background-image:
+    linear-gradient(rgba(120,140,220,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120,140,220,.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+/* Strassen (Draufsicht) mit Mittellinie */
+.world-road { position: absolute; background: #171b38; box-shadow: inset 0 0 0 1px rgba(255,255,255,.04); }
+.world-road.h { left: 0; right: 0; height: 34px; background-image: repeating-linear-gradient(90deg, transparent 0 18px, rgba(255,220,120,.35) 18px 30px); background-size: 48px 2px; background-position: center; background-repeat: repeat-x; }
+.world-road.v { top: 0; bottom: 0; width: 34px; background-image: repeating-linear-gradient(0deg, transparent 0 18px, rgba(255,220,120,.35) 18px 30px); background-size: 2px 48px; background-position: center; background-repeat: repeat-y; }
 
-/* ---------- Gebäude ---------- */
-.world-city {
+/* ---------- Gebäude in Draufsicht ---------- */
+.world-bld {
   position: absolute;
-  left: 0; right: 0; bottom: 74px;
-  height: 250px;
+  border-radius: 7px;
+  background: linear-gradient(150deg, color-mix(in srgb, var(--c) 55%, #10132e), color-mix(in srgb, var(--c) 22%, #0b0e22));
+  border: 1px solid color-mix(in srgb, var(--c) 60%, transparent);
+  box-shadow: 0 10px 22px -8px rgba(0,0,0,.7), 0 0 26px -8px color-mix(in srgb, var(--c) 55%, transparent), inset 0 1px 0 rgba(255,255,255,.14);
 }
-.world-building {
-  position: absolute;
-  bottom: 0;
-  border-radius: 8px 8px 0 0;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--c) 42%, #0c0a1e), #0c0a1e 92%);
-  border: 1px solid color-mix(in srgb, var(--c) 55%, transparent);
-  box-shadow: 0 0 30px -6px color-mix(in srgb, var(--c) 60%, transparent), inset 0 1px 0 rgba(255,255,255,0.12);
+/* Dach-Details (Lüftung/Oberlichter von oben) */
+.world-bld .roof { position: absolute; inset: 16px 8px 8px 8px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+.world-bld .roof i { border-radius: 2px; background: color-mix(in srgb, var(--c) 45%, #000); box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); }
+.world-bld.is-working .roof i { animation: world-roof 1.6s ease-in-out infinite; background: color-mix(in srgb, var(--c) 70%, #fff 10%); }
+.world-bld .roof i:nth-child(3n) { animation-delay: .5s; }
+@keyframes world-roof { 0%,100% { opacity:.4; } 50% { opacity:1; } }
+/* Dach-Schild mit Beschriftung */
+.world-bld .tag {
+  position: absolute; top: 5px; left: 50%; transform: translateX(-50%);
+  padding: 2px 8px; border-radius: 999px; white-space: nowrap;
+  font-family: var(--font-geist-mono), monospace; font-size: 8.5px; font-weight: 700; letter-spacing: .1em; color: #fff;
+  background: color-mix(in srgb, var(--c) 88%, #000);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--c) 70%, transparent);
+  z-index: 2;
 }
-.world-building.is-back { filter: brightness(0.7) saturate(0.9); opacity: 0.85; }
-/* Fenster-Raster (leuchten, manche blinken) */
-.world-building .win {
-  position: absolute;
-  inset: 14px 10px 10px 10px;
-  display: grid;
-  gap: 5px 6px;
-  grid-auto-rows: 9px;
-}
-.world-building .win i {
-  border-radius: 1.5px;
-  background: color-mix(in srgb, var(--c) 70%, #fff 8%);
-  opacity: 0.28;
-}
-.world-building.is-working .win i { animation: world-win 1.4s ease-in-out infinite; }
-.world-building.is-working .win i:nth-child(3n) { animation-delay: 0.4s; }
-.world-building.is-working .win i:nth-child(4n) { animation-delay: 0.8s; }
-.world-building.is-done .win i { opacity: 0.9; }
-@keyframes world-win { 0%,100% { opacity: 0.25; } 50% { opacity: 0.95; } }
-/* Neon-Schild mit Beschriftung */
-.world-building .sign {
-  position: absolute;
-  top: -13px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 3px 9px;
-  border-radius: 999px;
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  white-space: nowrap;
-  color: #fff;
-  background: color-mix(in srgb, var(--c) 85%, #000);
-  box-shadow: 0 0 14px color-mix(in srgb, var(--c) 75%, transparent), inset 0 1px 0 rgba(255,255,255,0.3);
-}
-.world-building.is-locked { filter: grayscale(0.7) brightness(0.5); opacity: 0.5; }
-.world-building.is-locked .sign { background: #2a2740; box-shadow: none; }
+.world-bld.is-locked { filter: grayscale(.7) brightness(.55); opacity: .5; }
 
-/* ---------- Laufende Roboter-Figuren ---------- */
-.world-bot {
-  position: absolute;
-  z-index: 4;
-  width: 28px;
-  height: 36px;
-  will-change: transform;
-  filter: drop-shadow(0 0 7px color-mix(in srgb, var(--c) 75%, transparent)) drop-shadow(0 4px 4px rgba(0,0,0,0.5));
+/* ---------- Café & Restaurant ---------- */
+.world-spot {
+  position: absolute; border-radius: 10px;
+  background: linear-gradient(150deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+  border: 1px dashed rgba(255,255,255,.18);
 }
-.world-bot .wb-inner { animation: world-bob 0.5s ease-in-out infinite; }
-.world-bot .wb-head {
-  position: relative;
-  width: 18px; height: 15px;
-  margin: 0 auto;
-  border-radius: 5px 5px 4px 4px;
-  background: linear-gradient(var(--c), color-mix(in srgb, var(--c) 60%, #000));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
-}
-.world-bot .wb-head::before { /* Antenne */
-  content: ""; position: absolute; top: -6px; left: 50%; width: 2.5px; height: 6px;
-  transform: translateX(-50%); background: var(--c); border-radius: 1px; box-shadow: 0 -2px 7px var(--c);
-}
-.world-bot .wb-head::after { /* Augen */
-  content: ""; position: absolute; top: 5px; left: 3.5px; width: 4px; height: 4px; border-radius: 50%;
-  background: #fff; box-shadow: 6px 0 0 #fff, 0 0 5px rgba(255,255,255,0.8);
-}
-.world-bot .wb-body {
-  width: 20px; height: 15px; margin: 1px auto 0;
-  border-radius: 5px;
+.world-spot .tag { position: absolute; top: 5px; left: 8px; font-family: var(--font-geist-mono), monospace; font-size: 9px; font-weight: 700; letter-spacing: .08em; color: #ffd9a8; }
+.world-spot.rest .tag { color: #ffc0cb; }
+/* Runder Tisch (Draufsicht) */
+.world-table { position: absolute; width: 26px; height: 26px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, #3a2f22, #241c14); box-shadow: 0 4px 8px -3px rgba(0,0,0,.6), inset 0 0 0 2px rgba(255,255,255,.06); }
+.world-spot.rest .world-table { background: radial-gradient(circle at 50% 40%, #33283a, #211826); }
+.world-table .cup { position: absolute; top: 50%; left: 50%; width: 8px; height: 8px; transform: translate(-50%,-50%); border-radius: 50%; background: radial-gradient(circle at 50% 35%, #fff6e6, #caa46a); box-shadow: 0 0 6px rgba(255,220,150,.5); }
+.world-spot.rest .world-table .cup { background: radial-gradient(circle at 50% 35%, #fff, #d7c0ff); box-shadow: 0 0 6px rgba(220,200,255,.5); }
+/* kleine Dampf-/Duftpartikel steigen auf */
+.world-table .cup::after { content: ""; position: absolute; top: -6px; left: 50%; width: 2px; height: 6px; transform: translateX(-50%); border-radius: 2px; background: rgba(255,255,255,.4); animation: world-steam 1.8s ease-in-out infinite; }
+@keyframes world-steam { 0% { opacity: 0; transform: translate(-50%, 2px) scale(.6);} 40% { opacity:.7;} 100% { opacity: 0; transform: translate(-50%, -6px) scale(1.1);} }
+
+/* ---------- Figuren (Draufsicht) ---------- */
+.world-fig { position: absolute; width: 16px; height: 16px; z-index: 5; }
+.world-fig .f-body {
+  position: absolute; inset: 0; border-radius: 7px 7px 8px 8px;
   background: linear-gradient(150deg, var(--c), color-mix(in srgb, var(--c) 55%, #000));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+  box-shadow: 0 4px 6px -2px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.4);
 }
-.world-bot .wb-legs { display: flex; justify-content: center; gap: 3px; margin-top: 1px; }
-.world-bot .wb-legs i { width: 4px; height: 6px; border-radius: 1px; background: #1a1533;
-  animation: world-step 0.3s ease-in-out infinite; }
-.world-bot .wb-legs i:last-child { animation-direction: reverse; }
-.world-bot::after { /* Schatten */
-  content: ""; position: absolute; bottom: -2px; left: 50%; width: 20px; height: 4px;
-  transform: translateX(-50%); border-radius: 50%; background: rgba(0,0,0,0.5); filter: blur(1px);
+/* Kopf/Schulter-Punkt (von oben) + Antennen-Leuchtpunkt */
+.world-fig .f-body::before { content: ""; position: absolute; top: 2px; left: 50%; width: 8px; height: 8px; transform: translateX(-50%); border-radius: 50%; background: color-mix(in srgb, var(--c) 75%, #fff 30%); box-shadow: inset 0 0 0 1px rgba(0,0,0,.15); }
+.world-fig .f-body::after { content: ""; position: absolute; top: -2px; left: 50%; width: 3px; height: 3px; transform: translateX(-50%); border-radius: 50%; background: #fff; box-shadow: 0 0 5px #fff; }
+.world-fig::after { content: ""; position: absolute; bottom: -3px; left: 50%; width: 14px; height: 4px; transform: translateX(-50%); border-radius: 50%; background: rgba(0,0,0,.5); filter: blur(1.5px); }
+/* Laufende Figuren wippen leicht */
+.world-fig.walk .f-body { animation: world-wobble .5s ease-in-out infinite; }
+@keyframes world-wobble { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+/* Vier Laufrouten quer durch die Stadt (Draufsicht: x und y) */
+.world-fig.r1 { animation: world-p1 15s linear infinite; }
+.world-fig.r2 { animation: world-p2 19s linear infinite; }
+.world-fig.r3 { animation: world-p3 17s linear infinite; }
+.world-fig.r4 { animation: world-p4 21s linear infinite; }
+@keyframes world-p1 { 0% { left: 2%; top: 30%; } 30% { left: 40%; top: 30%; } 55% { left: 40%; top: 58%; } 80% { left: 80%; top: 58%; } 100% { left: 2%; top: 30%; } }
+@keyframes world-p2 { 0% { left: 80%; top: 58%; } 30% { left: 42%; top: 58%; } 60% { left: 42%; top: 30%; } 100% { left: 80%; top: 58%; } }
+@keyframes world-p3 { 0% { left: 42%; top: 4%; } 30% { left: 42%; top: 30%; } 60% { left: 6%; top: 30%; } 100% { left: 42%; top: 4%; } }
+@keyframes world-p4 { 0% { left: 80%; top: 30%; } 35% { left: 42%; top: 30%; } 65% { left: 42%; top: 58%; } 100% { left: 80%; top: 30%; } }
+/* Fragende Figur: "?"-Blase + Wippen (wartet auf Aufgabe) */
+.world-fig.ask { animation: world-hop 1.4s ease-in-out infinite; }
+@keyframes world-hop { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+.world-fig .ask-bubble {
+  position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+  font-size: 10px; font-weight: 900; line-height: 1; padding: 2px 5px; border-radius: 7px;
+  background: #fff; color: #12163a; box-shadow: 0 2px 6px rgba(0,0,0,.4); z-index: 6;
 }
-@keyframes world-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-1.5px); } }
-@keyframes world-step { 50% { transform: translateY(-2px); } }
-/* Laufrichtung rechts (Standard) und links (gespiegelt) */
-.world-bot.dir-l { transform: scaleX(-1); }
-@keyframes world-walk-r { from { left: -6%; } to { left: 106%; } }
-@keyframes world-walk-l { from { left: 106%; } to { left: -6%; } }
+
+/* ---------- Live-Monitore (was gerade gearbeitet wird) ---------- */
+.world-mon { position: absolute; z-index: 7; width: 92px; border-radius: 8px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,.16); background: #0a0f24; box-shadow: 0 12px 26px -10px rgba(0,0,0,.8), 0 0 22px -8px rgba(120,140,240,.4); }
+.world-mon .m-bar { display: flex; align-items: center; gap: 3px; padding: 3px 5px; background: #141a38; border-bottom: 1px solid rgba(255,255,255,.08); }
+.world-mon .m-bar b { width: 5px; height: 5px; border-radius: 50%; }
+.world-mon .m-bar .t { margin-left: 4px; font-family: var(--font-geist-mono), monospace; font-size: 6.5px; letter-spacing: .06em; color: #9fb2e6; }
+.world-mon .m-view { position: relative; height: 52px; overflow: hidden; background: #060a1a; }
+.world-mon .m-scroll { position: absolute; left: 6px; right: 6px; top: 6px; display: grid; gap: 4px; animation: world-mscroll 3.2s linear infinite; }
+@keyframes world-mscroll { from { transform: translateY(0); } to { transform: translateY(-52px); } }
+.world-mon .m-scroll span { height: 5px; border-radius: 2px; }
+/* Browser (Website) */
+.world-mon.browser .m-scroll span:nth-child(3n+1) { background: linear-gradient(90deg, #3b82f6 60%, transparent 60%); }
+.world-mon.browser .m-scroll span:nth-child(3n+2) { background: linear-gradient(90deg, #64748b 80%, transparent 80%); }
+.world-mon.browser .m-scroll span:nth-child(3n)   { background: linear-gradient(90deg, #94a3b8 45%, transparent 45%); }
+/* Code-Editor */
+.world-mon.code .m-view { background: #0a1020; }
+.world-mon.code .m-scroll span:nth-child(4n+1) { background: linear-gradient(90deg, #22c55e 40%, transparent 40%); }
+.world-mon.code .m-scroll span:nth-child(4n+2) { background: linear-gradient(90deg, #eab308 65%, transparent 65%); margin-left: 8px; }
+.world-mon.code .m-scroll span:nth-child(4n+3) { background: linear-gradient(90deg, #ec4899 55%, transparent 55%); margin-left: 4px; }
+.world-mon.code .m-scroll span:nth-child(4n)   { background: linear-gradient(90deg, #38bdf8 30%, transparent 30%); }
+/* E-Mail-App */
+.world-mon.mail .m-scroll span { background: linear-gradient(90deg, color-mix(in srgb, #a78bfa 70%, transparent) 92%, transparent 92%); position: relative; height: 6px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .world::before, .world-bot, .world-bot .wb-inner, .world-bot .wb-legs i, .world-building .win i {
-    animation: none !important;
-  }
+  .world::before, .world-fig, .world-fig .f-body, .world-mon .m-scroll, .world-bld .roof i, .world-table .cup::after { animation: none !important; }
 }
+
