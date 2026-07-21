@@ -58,6 +58,17 @@ Wichtig: Die Start-Datei auf der LIVE-Plattform (Vercel-URL) erzeugen,
 damit der Link in der Datei auf die richtige Adresse zeigt.
 
 ## Neu seit Update (Juli 2026)
+- Jahresabos im Shop (5 neue Shopify-Produkte, Tag "jahresabo"):
+  10x Monatspreis = 2 Monate geschenkt. PERSONAL 199 / STARTER 1'990 /
+  PROFESSIONAL 7'990 / BUSINESS 24'990 / ENTERPRISE ab 89'000 CHF/Jahr.
+- Ultra-Levelup-Codes (Zusatzverkauf pro Bezahl-Stufe): /admin ->
+  Checkbox "Ultra" oder scripts/generate-license.mjs ULTRA-<PLAN>.
+  Wirkung: +50% Missionen, +50% Token-Budget, +2 Browser-Quellen,
+  Skills der naechsten Stufe. Kunde gibt den Code im Lizenz-Fenster ein.
+- Token-Budgets pro Stufe serverseitig erzwungen (FREE bewusst knapp).
+- Pro Abo ein Komplett-Anleitungsvideo (acc-komplett-<plan>.mp4, ~6 Min,
+  16 Kapitel inkl. Firma-verbinden, KI-Browser, Ultra) - nach Kauf das
+  Video der gekauften Stufe beilegen.
 - Eingebauter KI-Browser: Belegschaft recherchiert vor jeder Mission im
   Web (Suchketten-Fallback DuckDuckGo/Bing/Wikipedia, Quellen im Ergebnis).
   Jede Stufe hat ihn; Quellen je Stufe: FREE 2 / PERSONAL 3 / STARTER 4 /
