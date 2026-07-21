@@ -39,7 +39,7 @@ const SEITE_TIMEOUT_MS = 6_000;
 const MAX_AUSZUG_ZEICHEN = 3_000;
 const MAX_GESAMT_ZEICHEN = 16_000;
 const USER_AGENT =
-  "Mozilla/5.0 (compatible; AI-Command-Center-Research/1.0; +https://www.katzenufos.com)";
+  "Mozilla/5.0 (compatible; AI-Command-Center-Research/1.0)";
 
 /** HTML zu lesbarem Text: Skripte/Styles raus, Tags raus, Whitespace glätten. */
 function htmlZuText(html: string): string {

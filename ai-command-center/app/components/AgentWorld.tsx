@@ -149,7 +149,7 @@ export default memo(function AgentWorld({ agents }: { agents: WorldAgent[] }) {
 
       {/* Live-Monitore: woran gerade gearbeitet wird */}
       <div className="world-mon browser" style={{ right: "6%", top: "12%" }}>
-        <div className="m-bar"><b style={{ background: "#f87171" }} /><b style={{ background: "#fbbf24" }} /><b style={{ background: "#34d399" }} /><span className="t">katzenufos.com</span></div>
+        <div className="m-bar"><b style={{ background: "#f87171" }} /><b style={{ background: "#fbbf24" }} /><b style={{ background: "#34d399" }} /><span className="t">ihre-firma.ch</span></div>
         <div className="m-view"><div className="m-scroll">{Array.from({ length: 16 }, (_, i) => <span key={i} />)}</div></div>
       </div>
       <div className="world-mon code" style={{ right: "6%", top: "44%" }}>

@@ -9,8 +9,11 @@ export const metadata: Metadata = {
     "Eine ganze KI-Belegschaft im Abo: plant, recherchiert, schreibt und programmiert – fertige Websites, Dokumente und Analysen in Minuten. Schweizer Anbieter, monatlich kündbar, Demo ohne Kreditkarte.",
 };
 
-/* Shop-Domain zentral definiert, später leicht austauschbar. */
-const SHOP_BASE = "https://www.katzenufos.com/products";
+/* Shop-Basis-URL zentral, per Env konfigurierbar (NEXT_PUBLIC_SHOP_BASE).
+ * Ohne gesetzte Env zeigen die Abo-Buttons auf den Preis-Anker der Seite,
+ * damit keine feste Fremd-Domain im Code steht. Für den Verkauf in Vercel
+ * NEXT_PUBLIC_SHOP_BASE auf die eigene Shop-Produkt-URL setzen. */
+const SHOP_BASE = process.env.NEXT_PUBLIC_SHOP_BASE || "#abos";
 
 type Plan = {
   name: string;
@@ -531,9 +534,8 @@ export default function Home() {
                   </ul>
                   <div className="mt-7 flex flex-col gap-2.5">
                     <a
-                      href={`${SHOP_BASE}/${plan.handle}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href={SHOP_BASE.startsWith("#") ? SHOP_BASE : `${SHOP_BASE}/${plan.handle}`}
+                      {...(SHOP_BASE.startsWith("#") ? {} : { target: "_blank", rel: "noopener noreferrer" })}
                       className="shop-btn inline-flex h-11 items-center justify-center rounded-full bg-[#ff8c2a] px-5 text-sm font-semibold text-[#0b0a08] hover:bg-[#ffb35c]"
                     >
                       Jetzt kaufen
