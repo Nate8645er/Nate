@@ -3,12 +3,12 @@
  *
  * Nimmt { goal: string, context?: { branche, groesse } } entgegen und
  * streamt den Missionsverlauf als Server-Sent-Events (AgentEvent-JSON
- * pro "data:"-Zeile) zurueck.
+ * pro "data:"-Zeile) zurück.
  *
  * Plan- und Limit-Durchsetzung (stateless, lib/license.ts):
  * - Header "x-acc-license": signiertes Lizenz-Token (30 Tage). Fehlend,
  *   manipuliert oder abgelaufen => Plan FREE.
- * - Header "x-acc-usage": signiertes Usage-Token (Tageszaehler). Der
+ * - Header "x-acc-usage": signiertes Usage-Token (Tageszähler). Der
  *   Server signiert es bei jeder Antwort neu und sendet es als erstes
  *   SSE-Event { type: "usage", token, used, limit, plan }.
  * - Ueberschrittenes Tageslimit => error-Event statt Mission.
@@ -19,12 +19,12 @@ import type { AgentEvent, MissionContext } from "@/lib/agents/types";
 import { consumeUsage, planFromLicenseToken } from "@/lib/license";
 
 export const runtime = "nodejs";
-// Eine Mission umfasst 4 sequenzielle LLM-Phasen – grosszuegig dimensionieren.
+// Eine Mission umfasst 4 sequenzielle LLM-Phasen – grosszügig dimensionieren.
 export const maxDuration = 300;
 
 const MAX_GOAL_LENGTH = 2000;
 const MAX_CONTEXT_FIELD_LENGTH = 80;
-/** Serverseitige Kappung des angehaengten Dokuments (Dokumenten-Analyse). */
+/** Serverseitige Kappung des angehängten Dokuments (Dokumenten-Analyse). */
 const MAX_DOKUMENT_NAME_LENGTH = 80;
 const MAX_DOKUMENT_TEXT_LENGTH = 20_000;
 
@@ -36,7 +36,7 @@ export async function POST(request: Request): Promise<Response> {
     goal = (body as { goal?: unknown })?.goal;
     rawContext = (body as { context?: unknown })?.context;
   } catch {
-    return jsonError("Ungueltiger Request-Body (JSON erwartet).", 400);
+    return jsonError("Ungültiger Request-Body (JSON erwartet).", 400);
   }
 
   if (typeof goal !== "string" || !goal.trim()) {
@@ -70,7 +70,7 @@ export async function POST(request: Request): Promise<Response> {
         }
       };
 
-      // Neu signiertes Usage-Token immer zuerst an den Client zurueckgeben.
+      // Neu signiertes Usage-Token immer zuerst an den Client zurückgeben.
       emit({
         type: "usage",
         token: usage.token,
@@ -95,7 +95,7 @@ export async function POST(request: Request): Promise<Response> {
           type: "error",
           agent: null,
           message:
-            // Interne Details nur serverseitig loggen, Client erhaelt generische Meldung.
+            // Interne Details nur serverseitig loggen, Client erhält generische Meldung.
             (console.error("[mission] Serverfehler:", err),
             "Die Mission konnte nicht abgeschlossen werden. Bitte erneut versuchen."),
         });
@@ -132,7 +132,7 @@ function sanitizeContext(raw: unknown): MissionContext | undefined {
 }
 
 /**
- * Validiert das optionale angehaengte Dokument und kappt serverseitig
+ * Validiert das optionale angehängte Dokument und kappt serverseitig
  * name (80) und text (20000 Zeichen); unbrauchbares => undefined.
  */
 function sanitizeDokument(raw: unknown): MissionContext["dokument"] | undefined {
@@ -145,7 +145,7 @@ function sanitizeDokument(raw: unknown): MissionContext["dokument"] | undefined 
   return { name: cleanName, text: cleanText };
 }
 
-/** Trimmt, entfernt Zeilenumbrueche und begrenzt die Laenge. */
+/** Trimmt, entfernt Zeilenumbrüche und begrenzt die Länge. */
 function cleanContextField(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const clean = value.replace(/\s+/g, " ").trim().slice(0, MAX_CONTEXT_FIELD_LENGTH);

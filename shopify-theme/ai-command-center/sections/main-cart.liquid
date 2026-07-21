@@ -33,7 +33,7 @@
                     value="{{ item.quantity }}"
                     min="0"
                     inputmode="numeric"
-                    aria-label="Menge fuer {{ item.product.title | escape }}">
+                    aria-label="Menge für {{ item.product.title | escape }}">
                 </span>
                 <a class="acc-cart__remove" href="{{ item.url_to_remove }}">Entfernen</a>
               </div>
@@ -52,14 +52,14 @@
             <button type="submit" name="checkout" class="acc-btn acc-btn--lg">Zur Kasse</button>
           </div>
         </div>
-        <p class="acc-micro" style="margin-top: var(--sp-4);">Versand und Steuern werden an der Kasse berechnet. Abos sind monatlich kuendbar.</p>
+        <p class="acc-micro" style="margin-top: var(--sp-4);">Versand und Steuern werden an der Kasse berechnet. Abos sind monatlich kündbar.</p>
       {%- endform -%}
     {%- else -%}
       <div class="acc-panel acc-corner acc-empty">
         <span class="acc-c1" aria-hidden="true"></span>
         <span class="acc-c2" aria-hidden="true"></span>
         <p class="acc-micro">// LEER</p>
-        <p>Ihr Warenkorb ist leer. Zeit fuer Ihre erste KI-Abteilung.</p>
+        <p>Ihr Warenkorb ist leer. Zeit für Ihre erste KI-Abteilung.</p>
         <a class="acc-btn" href="{{ routes.all_products_collection_url }}">Abos ansehen</a>
       </div>
     {%- endif -%}

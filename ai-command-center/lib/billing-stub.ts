@@ -1,5 +1,5 @@
 /**
- * Billing-Stub – Platzhalter-Interfaces fuer Phase 3 (Stripe).
+ * Billing-Stub – Platzhalter-Interfaces für Phase 3 (Stripe).
  *
  * Die Plan-Definitionen werden bereits jetzt von der Landing Page
  * (Preistabelle) genutzt; die Subscription-Logik folgt in Phase 3.
@@ -34,7 +34,7 @@ export interface Subscription {
   currentPeriodEnd: string; // ISO-8601
 }
 
-/** Preisstufen – Quelle fuer die Landing-Page-Preistabelle. */
+/** Preisstufen – Quelle für die Landing-Page-Preistabelle. */
 export const PLANS: Plan[] = [
   {
     id: "free",
@@ -71,9 +71,9 @@ export const PLANS: Plan[] = [
     features: [
       "500 Missionen pro Monat",
       "Alle 4 Agenten",
-      "Prioritaets-Verarbeitung",
+      "Prioritäts-Verarbeitung",
       "Bis zu 5 Teammitglieder",
-      "Prioritaets-Support",
+      "Prioritäts-Support",
     ],
     highlighted: true,
   },

@@ -7,7 +7,7 @@
       "type": "logoleiste",
       "blocks": {
         "t1": { "type": "item", "settings": { "text": "Schweizer Anbieter" } },
-        "t2": { "type": "item", "settings": { "text": "Monatlich kuendbar" } },
+        "t2": { "type": "item", "settings": { "text": "Monatlich kündbar" } },
         "t3": { "type": "item", "settings": { "text": "Quality-Score in jeder Mission" } },
         "t4": { "type": "item", "settings": { "text": "Demo gratis testen" } }
       },
@@ -17,11 +17,11 @@
       "type": "vorteile",
       "blocks": {
         "b1": { "type": "usp", "settings": { "icon": "blitz", "title": "Sofort startklar", "text": "In Tagen live statt in Monaten. Fertige KI-Prozesse, keine Baustellen." } },
-        "b2": { "type": "usp", "settings": { "icon": "chart", "title": "Planbare Kosten", "text": "Ein fixer Monatspreis statt teurer Festanstellungen. Monatlich kuendbar." } },
+        "b2": { "type": "usp", "settings": { "icon": "chart", "title": "Planbare Kosten", "text": "Ein fixer Monatspreis statt teurer Festanstellungen. Monatlich kündbar." } },
         "b3": { "type": "usp", "settings": { "icon": "team", "title": "Ganzes Team inklusive", "text": "Strategie, Automatisierung und Umsetzung aus einer Hand, ohne Recruiting." } },
-        "b4": { "type": "usp", "settings": { "icon": "stufen", "title": "Skaliert mit Ihnen", "text": "Abo hoch- oder runterstufen, wann immer Ihr Bedarf sich aendert." } },
-        "b5": { "type": "usp", "settings": { "icon": "schild", "title": "Quality-Score inklusive", "text": "Jede Mission wird geprueft und bewertet, bevor Sie das Ergebnis erhalten." } },
-        "b6": { "type": "usp", "settings": { "icon": "uhr", "title": "Arbeitet rund um die Uhr", "text": "Ihre KI-Abteilung kennt keine Buerozeiten. Missionen laufen auch nachts." } }
+        "b4": { "type": "usp", "settings": { "icon": "stufen", "title": "Skaliert mit Ihnen", "text": "Abo hoch- oder runterstufen, wann immer Ihr Bedarf sich ändert." } },
+        "b5": { "type": "usp", "settings": { "icon": "schild", "title": "Quality-Score inklusive", "text": "Jede Mission wird geprüft und bewertet, bevor Sie das Ergebnis erhalten." } },
+        "b6": { "type": "usp", "settings": { "icon": "uhr", "title": "Arbeitet rund um die Uhr", "text": "Ihre KI-Abteilung kennt keine Bürozeiten. Missionen laufen auch nachts." } }
       },
       "block_order": ["b1", "b2", "b3", "b4", "b5", "b6"]
     },
@@ -32,8 +32,8 @@
     "ablauf": {
       "type": "ablauf",
       "blocks": {
-        "s1": { "type": "step", "settings": { "title": "Abo waehlen", "text": "Waehlen Sie die Abostufe, die zu Ihrem Bedarf passt. Monatlich kuendbar, ohne Risiko." } },
-        "s2": { "type": "step", "settings": { "title": "Zugang erhalten", "text": "Nach dem Kauf erhalten Sie Ihren Lizenzschluessel per E-Mail. Einloggen, fertig." } },
+        "s1": { "type": "step", "settings": { "title": "Abo wählen", "text": "Wählen Sie die Abostufe, die zu Ihrem Bedarf passt. Monatlich kündbar, ohne Risiko." } },
+        "s2": { "type": "step", "settings": { "title": "Zugang erhalten", "text": "Nach dem Kauf erhalten Sie Ihren Lizenzschlüssel per E-Mail. Einloggen, fertig." } },
         "s3": { "type": "step", "settings": { "title": "Missionen starten", "text": "Beschreiben Sie die Aufgabe, Ihre KI-Abteilung liefert das Ergebnis mit Quality-Score." } }
       },
       "block_order": ["s1", "s2", "s3"]
@@ -41,9 +41,9 @@
     "zitate": {
       "type": "zitate",
       "blocks": {
-        "z1": { "type": "quote", "settings": { "text": "Mission gestartet, 20 Minuten spaeter lag der fertige Newsletter mit Betreffzeilen-Varianten bereit.", "label": "Einsatz: Marketing-Texte" } },
-        "z2": { "type": "quote", "settings": { "text": "Das System hat unser Skript geprueft, zwei Fehler gefunden und die korrigierte Version gleich mitgeliefert.", "label": "Einsatz: Code-Review" } },
-        "z3": { "type": "quote", "settings": { "text": "Jeden Montag ein fertiger Wochenreport aus unseren Zahlen, inklusive Zusammenfassung fuer die Geschaeftsleitung.", "label": "Einsatz: Reporting" } }
+        "z1": { "type": "quote", "settings": { "text": "Mission gestartet, 20 Minuten später lag der fertige Newsletter mit Betreffzeilen-Varianten bereit.", "label": "Einsatz: Marketing-Texte" } },
+        "z2": { "type": "quote", "settings": { "text": "Das System hat unser Skript geprüft, zwei Fehler gefunden und die korrigierte Version gleich mitgeliefert.", "label": "Einsatz: Code-Review" } },
+        "z3": { "type": "quote", "settings": { "text": "Jeden Montag ein fertiger Wochenreport aus unseren Zahlen, inklusive Zusammenfassung für die Geschäftsleitung.", "label": "Einsatz: Reporting" } }
       },
       "block_order": ["z1", "z2", "z3"]
     },
@@ -51,11 +51,11 @@
       "type": "faq",
       "blocks": {
         "f1": { "type": "qa", "settings": { "question": "Wie schnell bin ich startklar?", "answer": "<p>In der Regel innerhalb weniger Tage nach Aboabschluss. Onboarding und erste Prozesse gehen sofort los.</p>" } },
-        "f2": { "type": "qa", "settings": { "question": "Kann ich monatlich kuendigen?", "answer": "<p>Ja. Alle Abos sind monatlich kuendbar, ohne lange Bindung.</p>" } },
+        "f2": { "type": "qa", "settings": { "question": "Kann ich monatlich kündigen?", "answer": "<p>Ja. Alle Abos sind monatlich kündbar, ohne lange Bindung.</p>" } },
         "f3": { "type": "qa", "settings": { "question": "Was ist im Abo enthalten?", "answer": "<p>Strategie, Automatisierung und die laufende Umsetzung Ihrer KI-Prozesse. Details je Abostufe.</p>" } },
-        "f4": { "type": "qa", "settings": { "question": "Brauche ich technisches Vorwissen?", "answer": "<p>Nein. Wir uebernehmen Einrichtung und Betrieb, Sie geben die Richtung vor.</p>" } },
+        "f4": { "type": "qa", "settings": { "question": "Brauche ich technisches Vorwissen?", "answer": "<p>Nein. Wir übernehmen Einrichtung und Betrieb, Sie geben die Richtung vor.</p>" } },
         "f5": { "type": "qa", "settings": { "question": "Kann ich das Abo wechseln?", "answer": "<p>Jederzeit hoch- oder runterstufen, passend zu Ihrem aktuellen Bedarf.</p>" } },
-        "f6": { "type": "qa", "settings": { "question": "Wie funktioniert der Support?", "answer": "<p>Sie erreichen uns ueber die Kontaktseite. Reaktionszeiten richten sich nach Ihrer Abostufe.</p>" } }
+        "f6": { "type": "qa", "settings": { "question": "Wie funktioniert der Support?", "answer": "<p>Sie erreichen uns über die Kontaktseite. Reaktionszeiten richten sich nach Ihrer Abostufe.</p>" } }
       },
       "block_order": ["f1", "f2", "f3", "f4", "f5", "f6"]
     },

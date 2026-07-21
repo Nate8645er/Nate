@@ -1,8 +1,8 @@
 /**
  * POST /api/admin/generate
  *
- * Interne Admin-Route zum Erzeugen von Lizenzschluesseln per Klick
- * (Ersatz fuer scripts/generate-license.mjs auf der Kommandozeile).
+ * Interne Admin-Route zum Erzeugen von Lizenzschlüsseln per Klick
+ * (Ersatz für scripts/generate-license.mjs auf der Kommandozeile).
  *
  * Body: { password: string, plan: PaidPlan, count: number }
  *
@@ -12,8 +12,8 @@
  * funktioniert die Seite ohne Zusatz-Konfiguration. Bei falschem Passwort
  * antwortet die Route generisch mit 401 (kein Hinweis auf das Secret).
  *
- * Die Schluessel werden mit generateLicenseKey() aus lib/license.ts
- * erzeugt – dieselbe Logik/Format wie /api/license sie prueft. Antwort:
+ * Die Schlüssel werden mit generateLicenseKey() aus lib/license.ts
+ * erzeugt – dieselbe Logik/Format wie /api/license sie prüft. Antwort:
  * { keys: string[] }.
  */
 
@@ -27,9 +27,9 @@ const MIN_COUNT = 1;
 const MAX_PASSWORD_LENGTH = 512;
 
 /**
- * Timing-sicherer Passwort-Vergleich fuer beliebig lange Eingaben:
- * beide Seiten werden zuerst auf einen SHA-256-Digest fester Laenge
- * abgebildet, sodass timingSafeEqual keine Laengen-Info preisgibt.
+ * Timing-sicherer Passwort-Vergleich für beliebig lange Eingaben:
+ * beide Seiten werden zuerst auf einen SHA-256-Digest fester Länge
+ * abgebildet, sodass timingSafeEqual keine Längen-Info preisgibt.
  */
 function passwordMatches(provided: string, expected: string): boolean {
   const a = createHash("sha256").update(provided, "utf8").digest();
@@ -53,7 +53,7 @@ export async function POST(request: Request): Promise<Response> {
   try {
     body = (await request.json()) as typeof body;
   } catch {
-    return jsonError("Ungueltiger Request-Body (JSON erwartet).", 400);
+    return jsonError("Ungültiger Request-Body (JSON erwartet).", 400);
   }
 
   const { password, plan, count } = body;
@@ -66,8 +66,8 @@ export async function POST(request: Request): Promise<Response> {
     return jsonError("Falsches Passwort.", 401);
   }
 
-  // Auth zuerst pruefen, damit ungueltige Eingaben nichts ueber die
-  // Existenz/Gueltigkeit von Plan/Anzahl verraten.
+  // Auth zuerst prüfen, damit ungültige Eingaben nichts über die
+  // Existenz/Gültigkeit von Plan/Anzahl verraten.
   let expected: string;
   try {
     expected = adminSecret();
@@ -81,12 +81,12 @@ export async function POST(request: Request): Promise<Response> {
 
   if (typeof plan !== "string" || !(PAID_PLANS as readonly string[]).includes(plan)) {
     return jsonError(
-      `Ungueltiger Plan. Erlaubt: ${PAID_PLANS.join(", ")}.`,
+      `Ungültiger Plan. Erlaubt: ${PAID_PLANS.join(", ")}.`,
       400,
     );
   }
 
-  // count 1..50 clampen; ungueltige/fehlende Angabe => 1.
+  // count 1..50 clampen; ungültige/fehlende Angabe => 1.
   const parsedCount =
     typeof count === "number" && Number.isFinite(count) ? Math.floor(count) : 1;
   const clampedCount = Math.min(MAX_COUNT, Math.max(MIN_COUNT, parsedCount));

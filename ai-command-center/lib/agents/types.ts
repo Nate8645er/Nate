@@ -1,23 +1,23 @@
 /**
- * Zentrale Typdefinitionen fuer das Agenten-System.
+ * Zentrale Typdefinitionen für das Agenten-System.
  *
  * Alle Module (providers, team, orchestrator, API-Route, Dashboard)
  * arbeiten ausschliesslich gegen diese Typen, damit Phase 2/3
- * (Persistenz, Billing-Limits pro Plan) ohne Umbau andocken koennen.
+ * (Persistenz, Billing-Limits pro Plan) ohne Umbau andocken können.
  */
 
-/** Unterstuetzte LLM-Provider. */
+/** Unterstützte LLM-Provider. */
 export type Provider = "anthropic" | "openai" | "moonshot";
 
-/** Abo-Plaene. FREE gilt ohne (gueltiges) Lizenz-Token. */
+/** Abo-Pläne. FREE gilt ohne (gültiges) Lizenz-Token. */
 export type PlanId = "FREE" | "STARTER" | "PROFESSIONAL" | "BUSINESS" | "ENTERPRISE";
 
 /**
  * Unternehmenskontext aus dem Branchen-Onboarding.
  * Wird optional mit POST /api/mission gesendet und vom Orchestrator
- * als Kontextzeile an den Commander-System-Prompt gehaengt.
- * `dokument` (optional) ist ein vom Nutzer angehaengtes Text-Dokument
- * (Dokumenten-Analyse); der Orchestrator haengt es als abgegrenzten
+ * als Kontextzeile an den Commander-System-Prompt gehängt.
+ * `dokument` (optional) ist ein vom Nutzer angehängtes Text-Dokument
+ * (Dokumenten-Analyse); der Orchestrator hängt es als abgegrenzten
  * DATENBLOCK an die USER-Messages der Worker – nie an System-Prompts.
  */
 export interface MissionContext {
@@ -31,7 +31,7 @@ export interface MissionContext {
   };
 }
 
-/** Rollen der Agenten im Team (Kern + plan-abhaengige Zusatz-Worker). */
+/** Rollen der Agenten im Team (Kern + plan-abhängige Zusatz-Worker). */
 export type AgentRole =
   | "commander"
   | "builder"
@@ -42,22 +42,22 @@ export type AgentRole =
   | "research"
   | "business";
 
-/** Ausfuehrende Worker-Rollen (alle ausser Commander und Quality). */
+/** Ausführende Worker-Rollen (alle ausser Commander und Quality). */
 export type WorkerRole = Exclude<AgentRole, "commander" | "quality">;
 
 /**
- * Agenten-Identitaet in Events: feste Rolle ODER dynamischer Agent aus dem
+ * Agenten-Identität in Events: feste Rolle ODER dynamischer Agent aus dem
  * Organisations-Modus (BUSINESS/ENTERPRISE), z. B. "dyn:marktanalyst".
  */
 export type AgentId = AgentRole | `dyn:${string}`;
 
 /** Eine dynamische Spezialisten-Rolle aus dem ORG-PLAN des Commanders. */
 export interface OrgRoleSpec {
-  /** Eindeutige Event-Id, immer mit Praefix "dyn:". */
+  /** Eindeutige Event-Id, immer mit Präfix "dyn:". */
   id: `dyn:${string}`;
   /** Anzeigename, z. B. "Marktanalyst". */
   rolle: string;
-  /** Fachgebiet fuer den generierten System-Prompt. */
+  /** Fachgebiet für den generierten System-Prompt. */
   fachgebiet: string;
   /** Konkrete Teilaufgabe innerhalb der Mission. */
   teilaufgabe: string;
@@ -74,7 +74,7 @@ export interface AgentConfig {
   role: AgentRole;
   /** Anzeigename im UI, z. B. "Commander" */
   name: string;
-  /** Kurzbeschreibung der Funktion (fuer Landing Page + Dashboard) */
+  /** Kurzbeschreibung der Funktion (für Landing Page + Dashboard) */
   description: string;
   provider: Provider;
   model: string;
@@ -88,37 +88,37 @@ export interface AgentConfig {
  */
 export type TaskPlan = Partial<Record<WorkerRole, string>>;
 
-/** Ergebnis der Quality-Pruefung. */
+/** Ergebnis der Quality-Prüfung. */
 export interface QualityReport {
   /** Gesamtbewertung 0-100 */
   score: number;
-  /** Konkrete Verbesserungsvorschlaege */
+  /** Konkrete Verbesserungsvorschläge */
   improvements: string[];
 }
 
 /**
  * Eine vom Team erzeugte Datei (echtes Artefakt einer Mission).
  * Der Orchestrator parst sie aus den Builder-/Coding-Ausgaben; das
- * Dashboard zeigt sie an, oeffnet die Vorschau und laedt sie herunter.
+ * Dashboard zeigt sie an, öffnet die Vorschau und lädt sie herunter.
  */
 export interface ArtifactFile {
   /** Relativer Pfad inkl. Dateiname, z. B. "index.html" oder "src/app.ts". */
   path: string;
   /** Aus der Endung abgeleitete Sprache (z. B. "html", "typescript"). */
   language: string;
-  /** Vollstaendiger Dateiinhalt. */
+  /** Vollständiger Dateiinhalt. */
   content: string;
 }
 
 /**
- * Discriminated Union fuer Server-Sent Events der Mission-API.
+ * Discriminated Union für Server-Sent Events der Mission-API.
  * Das Dashboard rendert den Live-Status ausschliesslich aus diesen Events.
  */
 export type AgentEvent =
   /**
    * Statuswechsel eines Agenten (z. B. "plant", "arbeitet", "fertig").
-   * Dynamische Agenten (agent = "dyn:...") tragen zusaetzlich label
-   * (Anzeigename) und department (Abteilung) fuer das Dashboard.
+   * Dynamische Agenten (agent = "dyn:...") tragen zusätzlich label
+   * (Anzeigename) und department (Abteilung) für das Dashboard.
    */
   | {
       type: "status";
@@ -139,7 +139,7 @@ export type AgentEvent =
   /**
    * ORG-PLAN des Commanders (nur BUSINESS/ENTERPRISE): die virtuelle Firma
    * als Abteilungen mit dynamischen Rollen – das Dashboard rendert daraus
-   * das Organigramm und legt fuer jede Rolle eine Live-Karte an.
+   * das Organigramm und legt für jede Rolle eine Live-Karte an.
    *
    * `roles` sind die echten, live-arbeitenden Spezialisten (rufen ein LLM auf,
    * gedeckelt durch MAX_DYN_AGENTS). `assistants` ist die statisch generierte
@@ -166,9 +166,9 @@ export type AgentEvent =
   /** Finales, synthetisiertes Ergebnis (Markdown) */
   | { type: "final"; content: string }
   /**
-   * Signiertes Usage-Token (stateless Tageszaehler). Der Client haelt das
-   * Token in localStorage und sendet es beim naechsten Start als Header
-   * "x-acc-usage" zurueck; der Server signiert es bei jeder Antwort neu.
+   * Signiertes Usage-Token (stateless Tageszähler). Der Client hält das
+   * Token in localStorage und sendet es beim nächsten Start als Header
+   * "x-acc-usage" zurück; der Server signiert es bei jeder Antwort neu.
    */
   | { type: "usage"; token: string; used: number; limit: number; plan: PlanId }
   /** Fehler eines Agenten oder der Pipeline */
@@ -176,7 +176,7 @@ export type AgentEvent =
 
 export type AgentStatus = "idle" | "working" | "done" | "error";
 
-/** Callback, ueber den der Orchestrator Events an den SSE-Stream sendet. */
+/** Callback, über den der Orchestrator Events an den SSE-Stream sendet. */
 export type EmitFn = (event: AgentEvent) => void;
 
 /** Einzelne Chat-Nachricht im providerneutralen Format. */

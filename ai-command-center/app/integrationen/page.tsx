@@ -1,13 +1,13 @@
 "use client";
 
 /**
- * Integration-Center — Anbindungs-Katalog fuer Firmensysteme (JARVIS-HUD).
+ * Integration-Center — Anbindungs-Katalog für Firmensysteme (JARVIS-HUD).
  *
  * Rein statischer Katalog aus lib/connectors.ts: Kategorie-Gruppen mit
  * Connector-Karten (Monogramm-Badge statt Markenlogo, Plan- und
- * Status-Badge). "Anbindung anfragen" oeffnet ein HUD-Modal, das den
- * ehrlichen 3-Schritte-Ablauf erklaert und per mailto eine Anfrage mit
- * vorbefuelltem Betreff startet. Keine Live-Verbindungen auf dieser Seite —
+ * Status-Badge). "Anbindung anfragen" öffnet ein HUD-Modal, das den
+ * ehrlichen 3-Schritte-Ablauf erklärt und per mailto eine Anfrage mit
+ * vorbefülltem Betreff startet. Keine Live-Verbindungen auf dieser Seite —
  * die werden pro Unternehmen als Enterprise-Projekt eingerichtet.
  */
 
@@ -21,18 +21,18 @@ import {
   type ConnectorKategorie,
 } from "@/lib/connectors";
 
-/** Ziel-Adresse fuer Anbindungs-Anfragen. */
+/** Ziel-Adresse für Anbindungs-Anfragen. */
 const KONTAKT_EMAIL = "beamswiss@gmail.com";
 
-/** Fokus-Ring fuer Tastaturbedienung (focus-visible) im HUD-Stil. */
+/** Fokus-Ring für Tastaturbedienung (focus-visible) im HUD-Stil. */
 const FOCUS_RING =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff8c2a]/70";
 
-/** mailto-Link mit vorbefuelltem Betreff "Anbindung <Name>". */
+/** mailto-Link mit vorbefülltem Betreff "Anbindung <Name>". */
 function mailtoHref(connectorName: string): string {
   const subject = encodeURIComponent(`Anbindung ${connectorName}`);
   const body = encodeURIComponent(
-    `Guten Tag\n\nWir moechten die Anbindung "${connectorName}" fuer unser Unternehmen anfragen.\n\nFirma:\nAnsprechperson:\nAktueller Plan (BUSINESS/ENTERPRISE):\n\nFreundliche Gruesse`,
+    `Guten Tag\n\nWir möchten die Anbindung "${connectorName}" für unser Unternehmen anfragen.\n\nFirma:\nAnsprechperson:\nAktueller Plan (BUSINESS/ENTERPRISE):\n\nFreundliche Grüsse`,
   );
   return `mailto:${KONTAKT_EMAIL}?subject=${subject}&body=${body}`;
 }
@@ -77,9 +77,9 @@ const PlanBadge = memo(function PlanBadge({ planStufe }: { planStufe: Connector[
   );
 });
 
-/** Status-Badge: Verfuegbar auf Anfrage / In Entwicklung. */
+/** Status-Badge: Verfügbar auf Anfrage / In Entwicklung. */
 const StatusBadge = memo(function StatusBadge({ status }: { status: Connector["status"] }) {
-  const available = status === "verfuegbar-auf-anfrage";
+  const available = status === "verfügbar-auf-anfrage";
   return (
     <span
       className={`flex items-center gap-1.5 rounded-sm border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em] ${
@@ -99,7 +99,7 @@ const StatusBadge = memo(function StatusBadge({ status }: { status: Connector["s
 
 /**
  * HUD-Modal-Shell (Spiegel des Dashboard-Modals): role=dialog, Escape und
- * Klick auf den Hintergrund schliessen, Fokus springt hinein und zurueck.
+ * Klick auf den Hintergrund schliessen, Fokus springt hinein und zurück.
  */
 function HudModal({
   labelId,
@@ -155,15 +155,15 @@ function HudModal({
 const ABLAUF_SCHRITTE: readonly { titel: string; text: string }[] = [
   {
     titel: "Zugriff freigeben",
-    text: "Sie geben der KI in IHREM System per OAuth oder API-Schluessel Zugriff frei — ohne diese Freigabe kommt niemand an Ihre Firmendaten.",
+    text: "Sie geben der KI in IHREM System per OAuth oder API-Schlüssel Zugriff frei — ohne diese Freigabe kommt niemand an Ihre Firmendaten.",
   },
   {
     titel: "Connector einrichten",
-    text: "Wir richten den Connector fuer Ihre Firma ein: Rechte-Umfang, Datenfelder und Sicherheitsregeln nach Ihren Vorgaben.",
+    text: "Wir richten den Connector für Ihre Firma ein: Rechte-Umfang, Datenfelder und Sicherheitsregeln nach Ihren Vorgaben.",
   },
   {
     titel: "Agenten arbeiten",
-    text: "Ihre KI-Agenten koennen im angebundenen System lesen und schreiben und liefern Ergebnisse direkt in Ihre Ablaeufe.",
+    text: "Ihre KI-Agenten können im angebundenen System lesen und schreiben und liefern Ergebnisse direkt in Ihre Abläufe.",
   },
 ];
 
@@ -180,7 +180,7 @@ function AnfrageModal({ connector, onClose }: { connector: Connector; onClose: (
         </h2>
       </div>
       <p className="mt-3 text-sm text-[#c9b391]">
-        So laeuft eine Live-Anbindung ehrlich ab — sie wird pro Unternehmen eingerichtet:
+        So läuft eine Live-Anbindung ehrlich ab — sie wird pro Unternehmen eingerichtet:
       </p>
 
       <ol className="mt-4 space-y-3">
@@ -285,7 +285,7 @@ export default function IntegrationenPage() {
     <main className="relative min-h-screen bg-[#0b0a08] text-[#e8dcc8]">
       <div className="hud-texture" aria-hidden />
 
-      {/* Header im Dashboard-Stil mit Link zurueck */}
+      {/* Header im Dashboard-Stil mit Link zurück */}
       <header className="sticky top-0 z-20 border-b border-[#ff8c2a]/15 bg-[#0b0a08]/85 backdrop-blur">
         <div className="mx-auto flex min-h-16 max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-2">
           <div>
@@ -298,7 +298,7 @@ export default function IntegrationenPage() {
             href="/dashboard"
             className={`rounded-sm border border-[#ff8c2a]/40 bg-[#ff8c2a]/[0.06] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ff8c2a] transition-colors hover:bg-[#ff8c2a]/15 ${FOCUS_RING}`}
           >
-            ← Zurueck zum Dashboard
+            ← Zurück zum Dashboard
           </a>
         </div>
       </header>
@@ -312,7 +312,7 @@ export default function IntegrationenPage() {
           </h1>
           <p className="mt-1 max-w-3xl text-sm text-[#c9b391]">
             Jede Anbindung wird pro Unternehmen eingerichtet: Sie geben der KI in Ihrem
-            System Zugriff frei, wir bauen den Connector — danach koennen Ihre Agenten
+            System Zugriff frei, wir bauen den Connector — danach können Ihre Agenten
             dort lesen und schreiben.
           </p>
         </section>
@@ -335,7 +335,7 @@ export default function IntegrationenPage() {
               Ihre Firmensoftware ist nicht dabei?
             </h2>
             <p className="mt-1 max-w-3xl text-sm text-[#c9b391]">
-              Ueber den generischen REST/Webhook-Connector binden wir jede eigene
+              Über den generischen REST/Webhook-Connector binden wir jede eigene
               Firmen-API an — gleicher Ablauf: Zugriff freigeben, Connector einrichten,
               Agenten arbeiten.
             </p>

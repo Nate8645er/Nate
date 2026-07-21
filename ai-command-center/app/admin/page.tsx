@@ -1,11 +1,11 @@
 "use client";
 
 /**
- * Admin-Konsole // Lizenzschluessel erzeugen (JARVIS-HUD-Stil).
+ * Admin-Konsole // Lizenzschlüssel erzeugen (JARVIS-HUD-Stil).
  *
- * Interne Seite (KEIN Link von Landing/Dashboard – nur ueber die URL /admin
- * erreichbar). Erzeugt Lizenzschluessel per Klick gegen POST
- * /api/admin/generate: Passwort + Plan + Anzahl -> Liste von Schluesseln
+ * Interne Seite (KEIN Link von Landing/Dashboard – nur über die URL /admin
+ * erreichbar). Erzeugt Lizenzschlüssel per Klick gegen POST
+ * /api/admin/generate: Passwort + Plan + Anzahl -> Liste von Schlüsseln
  * mit Kopier-Funktion. Das Passwort wird bis zum Schliessen des Tabs in
  * sessionStorage gehalten, aber nie im localStorage persistiert.
  */
@@ -19,7 +19,7 @@ const PASSWORD_KEY = "acc-admin-password";
 const FOCUS_RING =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff8c2a]/70";
 
-/** Kopiert Text; gibt true bei Erfolg. Fallback fuer aeltere Browser. */
+/** Kopiert Text; gibt true bei Erfolg. Fallback für ältere Browser. */
 async function copyText(text: string): Promise<boolean> {
   try {
     if (navigator.clipboard?.writeText) {
@@ -27,7 +27,7 @@ async function copyText(text: string): Promise<boolean> {
       return true;
     }
   } catch {
-    /* faellt unten auf execCommand zurueck */
+    /* fällt unten auf execCommand zurück */
   }
   try {
     const ta = document.createElement("textarea");
@@ -44,7 +44,7 @@ async function copyText(text: string): Promise<boolean> {
   }
 }
 
-/** Zeile mit einem erzeugten Schluessel + Kopieren-Button. */
+/** Zeile mit einem erzeugten Schlüssel + Kopieren-Button. */
 function KeyRow({ value }: { value: string }) {
   const [copied, setCopied] = useState(false);
   const onCopy = useCallback(async () => {
@@ -83,7 +83,7 @@ export default function AdminPage() {
       const saved = sessionStorage.getItem(PASSWORD_KEY);
       if (saved) setPassword(saved);
     } catch {
-      /* sessionStorage nicht verfuegbar */
+      /* sessionStorage nicht verfügbar */
     }
   }, []);
 
@@ -147,12 +147,12 @@ export default function AdminPage() {
       </header>
 
       <div className="relative z-10 mx-auto max-w-3xl px-5 py-8">
-        <section aria-label="Schluessel erzeugen" className="hud-panel hud-corners rounded-sm p-5 sm:p-6">
+        <section aria-label="Schlüssel erzeugen" className="hud-panel hud-corners rounded-sm p-5 sm:p-6">
           <div className="hud-label mb-2">Lizenz // Generator</div>
-          <h1 className="text-2xl font-bold text-[#fff3e2]">Lizenzschluessel erzeugen</h1>
+          <h1 className="text-2xl font-bold text-[#fff3e2]">Lizenzschlüssel erzeugen</h1>
           <p className="mt-1 text-sm text-[#c9b391]">
-            Pro Kundenkauf einen Schluessel erzeugen und per E-Mail senden. Die
-            Schluessel passen zum LICENSE_SECRET dieser Installation.
+            Pro Kundenkauf einen Schlüssel erzeugen und per E-Mail senden. Die
+            Schlüssel passen zum LICENSE_SECRET dieser Installation.
           </p>
 
           <div className="mt-6 grid grid-cols-1 gap-4">
@@ -212,7 +212,7 @@ export default function AdminPage() {
               disabled={!password.trim() || busy}
               className={`mt-1 w-full rounded-sm bg-[#ff8c2a] px-6 py-3 font-semibold text-[#1a0f04] transition hover:bg-[#ffb35c] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
             >
-              {busy ? "Erzeuge …" : "Schluessel erzeugen"}
+              {busy ? "Erzeuge …" : "Schlüssel erzeugen"}
             </button>
           </div>
 
@@ -228,12 +228,12 @@ export default function AdminPage() {
 
         {keys.length > 0 && (
           <section
-            aria-label="Erzeugte Schluessel"
+            aria-label="Erzeugte Schlüssel"
             className="hud-panel hud-corners mt-6 rounded-sm p-5 sm:p-6"
           >
             <div className="mb-3 flex items-center justify-between gap-2">
               <div className="hud-label">
-                Ergebnis // {keys.length} {keys.length === 1 ? "Schluessel" : "Schluessel"} ({plan})
+                Ergebnis // {keys.length} {keys.length === 1 ? "Schlüssel" : "Schlüssel"} ({plan})
               </div>
               <button
                 onClick={copyAll}

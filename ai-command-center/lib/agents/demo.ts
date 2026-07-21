@@ -1,9 +1,9 @@
 /**
  * Demo-Modus: deterministische, simulierte Agentenantworten.
  *
- * Wird vom Orchestrator verwendet, wenn fuer einen Provider kein API-Key
- * gesetzt ist oder der Call endgueltig scheitert. Die Mission laeuft damit
- * IMMER vollstaendig durch – ohne Netzwerk, ohne Zufall (gleiche Eingabe
+ * Wird vom Orchestrator verwendet, wenn für einen Provider kein API-Key
+ * gesetzt ist oder der Call endgültig scheitert. Die Mission läuft damit
+ * IMMER vollständig durch – ohne Netzwerk, ohne Zufall (gleiche Eingabe
  * ergibt exakt dieselbe Ausgabe).
  */
 
@@ -16,7 +16,7 @@ import type {
   WorkerRole,
 } from "./types";
 
-/** Deterministischer Hash (FNV-1a) fuer stabile "Bewertungen" aus Text. */
+/** Deterministischer Hash (FNV-1a) für stabile "Bewertungen" aus Text. */
 function hash(text: string): number {
   let h = 0x811c9dc5;
   for (let i = 0; i < text.length; i++) {
@@ -26,7 +26,7 @@ function hash(text: string): number {
   return h >>> 0;
 }
 
-/** Kuerzt das Ziel fuer Ueberschriften auf eine handliche Laenge. */
+/** Kürzt das Ziel für Ueberschriften auf eine handliche Länge. */
 function shortGoal(goal: string): string {
   const g = goal.trim().replace(/\s+/g, " ");
   return g.length > 80 ? `${g.slice(0, 77)}…` : g;
@@ -34,7 +34,7 @@ function shortGoal(goal: string): string {
 
 /* --------------------------- Datei-Artefakte (Demo) --------------------------- */
 
-/** HTML-escapen (Attribut/Textkontext) fuer sicher eingebettete Nutzertexte. */
+/** HTML-escapen (Attribut/Textkontext) für sicher eingebettete Nutzertexte. */
 function escapeHtml(text: string): string {
   return text
     .replace(/&/g, "&amp;")
@@ -50,7 +50,7 @@ function isWebGoal(goal: string): boolean {
   );
 }
 
-/** Dokument-Ziele: Plaene, Strategien, Kampagnen, Berichte, Analysen usw. */
+/** Dokument-Ziele: Pläne, Strategien, Kampagnen, Berichte, Analysen usw. */
 function isDocumentGoal(goal: string): boolean {
   return /(plan|strategie|kampagne|bericht|report|analyse|konzept|studie|marketing|angebot|offerte)/i.test(
     goal,
@@ -63,17 +63,17 @@ function isGenericBuildGoal(goal: string): boolean {
 }
 
 /**
- * Erkennt buildbare Ziele: Web-Auftraege liefern eine echte index.html,
- * Dokument-Auftraege (Plan/Strategie/Kampagne/Bericht/Analyse) liefern ein
- * dokument.md plus praesentation.html, generische Bau-Auftraege eine index.html.
+ * Erkennt buildbare Ziele: Web-Aufträge liefern eine echte index.html,
+ * Dokument-Aufträge (Plan/Strategie/Kampagne/Bericht/Analyse) liefern ein
+ * dokument.md plus praesentation.html, generische Bau-Aufträge eine index.html.
  */
 export function isBuildableGoal(goal: string): boolean {
   return isWebGoal(goal) || isDocumentGoal(goal) || isGenericBuildGoal(goal);
 }
 
 /**
- * Erzeugt fuer buildbare Ziele eine kleine, ECHTE Beispiel-Datei-Ausgabe:
- * Web-/generische Bau-Ziele erhalten eine eigenstaendige (inline gestylte)
+ * Erzeugt für buildbare Ziele eine kleine, ECHTE Beispiel-Datei-Ausgabe:
+ * Web-/generische Bau-Ziele erhalten eine eigenständige (inline gestylte)
  * index.html plus README.md, Dokument-Ziele (Plan/Strategie/Kampagne/Bericht/
  * Analyse) ein professionell formatiertes dokument.md plus praesentation.html.
  * Nicht buildbare Ziele liefern eine leere Liste.
@@ -87,7 +87,7 @@ export function demoArtifactFiles(goal: string): ArtifactFile[] {
   return [];
 }
 
-/** Web-Startpaket: eigenstaendige index.html + README.md. */
+/** Web-Startpaket: eigenständige index.html + README.md. */
 function webArtifactFiles(goal: string): ArtifactFile[] {
   const g = shortGoal(goal);
   const safe = escapeHtml(g);
@@ -121,8 +121,8 @@ function webArtifactFiles(goal: string): ArtifactFile[] {
     '    <a class="cta" href="#kontakt">Jetzt Kontakt aufnehmen</a>',
     "  </header>",
     "  <main>",
-    '    <section class="card"><h2>Ueber uns</h2><p>Kurze, klare Vorstellung Ihres Angebots. Ersetzen Sie diesen Text durch Ihre eigene Geschichte.</p></section>',
-    '    <section class="card"><h2>Leistungen</h2><p>Drei bis fuenf Kernleistungen als klare Stichpunkte &ndash; damit Besucher den Nutzen sofort erkennen.</p></section>',
+    '    <section class="card"><h2>Über uns</h2><p>Kurze, klare Vorstellung Ihres Angebots. Ersetzen Sie diesen Text durch Ihre eigene Geschichte.</p></section>',
+    '    <section class="card"><h2>Leistungen</h2><p>Drei bis fünf Kernleistungen als klare Stichpunkte &ndash; damit Besucher den Nutzen sofort erkennen.</p></section>',
     '    <section class="card" id="kontakt"><h2>Kontakt</h2><p>Telefon, E-Mail und Oeffnungszeiten. Ein klarer Handlungsaufruf schliesst die Seite ab.</p></section>',
     "  </main>",
     "  <footer>Demo-Ausgabe &middot; von AI Command Center generiert</footer>",
@@ -136,9 +136,9 @@ function webArtifactFiles(goal: string): ArtifactFile[] {
     "Diese Dateien wurden von **AI Command Center** als Beispiel-Startpaket erzeugt.",
     "",
     "## Inhalt",
-    "- `index.html` – eigenstaendige Landingpage (Styles inline, direkt im Browser oder in der Live-Vorschau lauffaehig).",
+    "- `index.html` – eigenständige Landingpage (Styles inline, direkt im Browser oder in der Live-Vorschau lauffähig).",
     "",
-    "## Naechste Schritte",
+    "## Nächste Schritte",
     "1. Texte durch Ihre eigenen Inhalte ersetzen.",
     "2. Farben in `:root` an Ihr Branding anpassen.",
     "3. Datei auf einen beliebigen Webspace hochladen.",
@@ -165,40 +165,40 @@ function documentArtifactFiles(goal: string): ArtifactFile[] {
     `> Erstellt von **AI Command Center**, direkt verwendbares Arbeitsdokument.`,
     "",
     "## 1. Zusammenfassung",
-    `Dieses Dokument uebersetzt die Mission "${g}" in einen konkreten, umsetzbaren Fahrplan:`,
+    `Dieses Dokument übersetzt die Mission "${g}" in einen konkreten, umsetzbaren Fahrplan:`,
     "Ausgangslage, Zielbild, Massnahmen mit Zeitplan sowie messbare Erfolgskriterien.",
     "",
     "## 2. Ausgangslage und Zielbild",
-    "- Ausgangslage: Das Vorhaben ist definiert, die Umsetzung braucht Struktur und Prioritaeten.",
+    "- Ausgangslage: Das Vorhaben ist definiert, die Umsetzung braucht Struktur und Prioritäten.",
     "- Zielbild: Ein klar positioniertes Angebot mit messbarem Effekt innerhalb von 90 Tagen.",
     "- Annahme: Es liegen noch keine internen Daten vor; alle Werte sind konservative Annahmen.",
     "",
     "## 3. Zielgruppen",
-    "| Segment | Beschreibung | Prioritaet |",
+    "| Segment | Beschreibung | Priorität |",
     "| --- | --- | --- |",
     "| Kernzielgruppe | Kaufbereite mit konkretem Bedarf, direkte und nutzenorientierte Ansprache | Hoch |",
-    "| Ausbauzielgruppe | Interessierte ohne Dringlichkeit, Ansprache ueber Inhalte mit Mehrwert | Mittel |",
+    "| Ausbauzielgruppe | Interessierte ohne Dringlichkeit, Ansprache über Inhalte mit Mehrwert | Mittel |",
     "| Multiplikatoren | Partner und Empfehler mit Reichweite im Umfeld | Mittel |",
     "",
     "## 4. Massnahmenplan (90 Tage)",
     "| Phase | Zeitraum | Massnahme | Ergebnis |",
     "| --- | --- | --- | --- |",
     "| 1. Fundament | Woche 1 bis 2 | Positionierung und Kernbotschaft festziehen | Ein Satz Nutzenversprechen |",
-    "| 2. Sichtbarkeit | Woche 3 bis 6 | Kanaele aktivieren, Inhalte nach Redaktionsplan | Erste messbare Reichweite |",
-    "| 3. Konversion | Woche 7 bis 10 | Angebot mit klarem Handlungsaufruf testen | Erste Anfragen/Abschluesse |",
-    "| 4. Skalierung | Woche 11 bis 13 | Bestes Format verstaerken, Schwaches stoppen | Wiederholbarer Prozess |",
+    "| 2. Sichtbarkeit | Woche 3 bis 6 | Kanäle aktivieren, Inhalte nach Redaktionsplan | Erste messbare Reichweite |",
+    "| 3. Konversion | Woche 7 bis 10 | Angebot mit klarem Handlungsaufruf testen | Erste Anfragen/Abschlüsse |",
+    "| 4. Skalierung | Woche 11 bis 13 | Bestes Format verstärken, Schwaches stoppen | Wiederholbarer Prozess |",
     "",
     "## 5. Budget und Erfolgskriterien",
     "| Kennzahl | Zielwert | Messung |",
     "| --- | --- | --- |",
-    "| Anfragen pro Woche | Definierter Zielwert ab Woche 6 | Woechentliches Reporting |",
+    "| Anfragen pro Woche | Definierter Zielwert ab Woche 6 | Wöchentliches Reporting |",
     "| Kosten pro Anfrage | Obergrenze vorab fixieren | Laufende Auswertung je Kanal |",
     "| Wiederkehrquote | Steigend ab Phase 3 | Monatlicher Vergleich |",
     "",
-    "## 6. Naechste Schritte",
-    "1. Kernbotschaft und Zielwert bestaetigen (Entscheid des Auftraggebers).",
+    "## 6. Nächste Schritte",
+    "1. Kernbotschaft und Zielwert bestätigen (Entscheid des Auftraggebers).",
     "2. Phase 1 starten und Verantwortlichkeiten mit Terminen hinterlegen.",
-    "3. Nach 4 Wochen Zwischenbilanz ziehen und den Plan nachschaerfen.",
+    "3. Nach 4 Wochen Zwischenbilanz ziehen und den Plan nachschärfen.",
   ].join("\n");
 
   const slideCss = [
@@ -227,16 +227,16 @@ function documentArtifactFiles(goal: string): ArtifactFile[] {
     "</head>",
     "<body>",
     '  <section class="slide">',
-    '    <div class="kicker">Praesentation</div>',
+    '    <div class="kicker">Präsentation</div>',
     `    <h1>${safe}</h1>`,
     "    <p>Fahrplan mit Zielbild, Massnahmen und messbaren Erfolgskriterien. Erstellt von Ihrer KI-Abteilung.</p>",
-    '    <div class="hint">Scrollen fuer die naechste Folie</div>',
+    '    <div class="hint">Scrollen für die nächste Folie</div>',
     "  </section>",
     '  <section class="slide">',
     '    <div class="kicker">Folie 2</div>',
     "    <h2>Ausgangslage und Zielbild</h2>",
     "    <ul>",
-    "      <li>Ausgangslage: Das Vorhaben ist definiert, die Umsetzung braucht Struktur und Prioritaeten.</li>",
+    "      <li>Ausgangslage: Das Vorhaben ist definiert, die Umsetzung braucht Struktur und Prioritäten.</li>",
     "      <li>Zielbild: Ein klar positioniertes Angebot mit messbarem Effekt innerhalb von 90 Tagen.</li>",
     "      <li>Alle Werte sind konservative Annahmen, bis eigene Daten vorliegen.</li>",
     "    </ul>",
@@ -255,18 +255,18 @@ function documentArtifactFiles(goal: string): ArtifactFile[] {
     "    <h2>Massnahmenplan (90 Tage)</h2>",
     "    <ol>",
     "      <li>Fundament: Positionierung und Kernbotschaft festziehen (Woche 1 bis 2).</li>",
-    "      <li>Sichtbarkeit: Kanaele aktivieren, Inhalte nach Redaktionsplan (Woche 3 bis 6).</li>",
+    "      <li>Sichtbarkeit: Kanäle aktivieren, Inhalte nach Redaktionsplan (Woche 3 bis 6).</li>",
     "      <li>Konversion: Angebot mit klarem Handlungsaufruf testen (Woche 7 bis 10).</li>",
-    "      <li>Skalierung: Bestes Format verstaerken, Schwaches stoppen (Woche 11 bis 13).</li>",
+    "      <li>Skalierung: Bestes Format verstärken, Schwaches stoppen (Woche 11 bis 13).</li>",
     "    </ol>",
     "  </section>",
     '  <section class="slide">',
     '    <div class="kicker">Folie 5</div>',
-    "    <h2>Naechste Schritte</h2>",
+    "    <h2>Nächste Schritte</h2>",
     "    <ol>",
-    "      <li>Kernbotschaft und Zielwert bestaetigen.</li>",
+    "      <li>Kernbotschaft und Zielwert bestätigen.</li>",
     "      <li>Phase 1 starten, Verantwortlichkeiten mit Terminen hinterlegen.</li>",
-    "      <li>Nach 4 Wochen Zwischenbilanz ziehen und nachschaerfen.</li>",
+    "      <li>Nach 4 Wochen Zwischenbilanz ziehen und nachschärfen.</li>",
     "    </ol>",
     '    <div class="hint">Von AI Command Center generiert, Details im dokument.md</div>',
     "  </section>",
@@ -280,27 +280,27 @@ function documentArtifactFiles(goal: string): ArtifactFile[] {
   ];
 }
 
-/** Rendert Artefakt-Dateien als FILE-Bloecke fuer die Agenten-Textausgabe. */
+/** Rendert Artefakt-Dateien als FILE-Blöcke für die Agenten-Textausgabe. */
 function renderFileBlocks(files: readonly ArtifactFile[]): string {
   return files
     .map((f) => `=== FILE: ${f.path} ===\n${f.content}\n=== END FILE ===`)
     .join("\n\n");
 }
 
-/** Demo-Teilaufgabe je Worker (fuer den Commander-Plan im Demo-Modus). */
+/** Demo-Teilaufgabe je Worker (für den Commander-Plan im Demo-Modus). */
 const DEMO_TASKS: Record<WorkerRole, (g: string) => string> = {
   builder: (g) =>
-    `Erstelle ein konkretes, sofort verwendbares Umsetzungspaket fuer "${g}": Struktur, Kerninhalte und naechste Schritte.`,
+    `Erstelle ein konkretes, sofort verwendbares Umsetzungspaket für "${g}": Struktur, Kerninhalte und nächste Schritte.`,
   analyst: (g) =>
-    `Analysiere fuer "${g}" Zielgruppe, Marktkontext, Chancen und Risiken und leite drei priorisierte Empfehlungen ab.`,
+    `Analysiere für "${g}" Zielgruppe, Marktkontext, Chancen und Risiken und leite drei priorisierte Empfehlungen ab.`,
   marketing: (g) =>
-    `Entwickle fuer "${g}" eine Kampagnenidee mit Zielgruppen-Profilen und einem 4-Wochen-Content-Plan.`,
+    `Entwickle für "${g}" eine Kampagnenidee mit Zielgruppen-Profilen und einem 4-Wochen-Content-Plan.`,
   research: (g) =>
-    `Recherchiere fuer "${g}" Hintergruende und Alternativen, vergleiche die Optionen strukturiert und bewerte die Quellenlage.`,
+    `Recherchiere für "${g}" Hintergründe und Alternativen, vergleiche die Optionen strukturiert und bewerte die Quellenlage.`,
   coding: (g) =>
-    `Entwirf fuer "${g}" eine technische Loesung mit Code-Skizze und einem konkreten Automatisierungs-Vorschlag.`,
+    `Entwirf für "${g}" eine technische Lösung mit Code-Skizze und einem konkreten Automatisierungs-Vorschlag.`,
   business: (g) =>
-    `Bewerte fuer "${g}" Strategie, grobe Zahlen (Kosten/Ertrag) und die drei wichtigsten Risiken inkl. Gegenmassnahmen.`,
+    `Bewerte für "${g}" Strategie, grobe Zahlen (Kosten/Ertrag) und die drei wichtigsten Risiken inkl. Gegenmassnahmen.`,
 };
 
 /** Commander-Plan im Demo-Modus: je eine Teilaufgabe pro aktivem Worker. */
@@ -320,28 +320,28 @@ export function demoBuilderOutput(goal: string, task: string): string {
     `**Auftrag:** ${task}`,
     "",
     "### 1. Konzept",
-    `- Klarer Kern: Die Mission "${g}" wird in ein umsetzbares Ergebnis mit definiertem Umfang uebersetzt.`,
+    `- Klarer Kern: Die Mission "${g}" wird in ein umsetzbares Ergebnis mit definiertem Umfang übersetzt.`,
     "- Aufbau in drei Ebenen: Fundament (Ziel & Zielgruppe), Ausarbeitung (Inhalte & Struktur), Feinschliff (Ton & Details).",
     "",
     "### 2. Struktur",
-    "1. Ausgangslage und Zielbild in zwei Saetzen festhalten.",
+    "1. Ausgangslage und Zielbild in zwei Sätzen festhalten.",
     "2. Kerninhalte als nummerierte Bausteine ausarbeiten – jeder Baustein direkt verwendbar.",
     "3. Offene Punkte als konkrete Entscheidungsfragen an den Auftraggeber formulieren.",
     "",
-    "### 3. Naechste Schritte",
-    "- Entwurf intern gegen das Missionsziel pruefen.",
+    "### 3. Nächste Schritte",
+    "- Entwurf intern gegen das Missionsziel prüfen.",
     "- Eine Feedbackrunde einplanen, danach finalisieren.",
-    "- Ergebnis in den Zielkanal (Dokument, Website, Praesentation) ueberfuehren.",
+    "- Ergebnis in den Zielkanal (Dokument, Website, Präsentation) überführen.",
   ];
 
-  // Buildbare Ziele erhalten echte Beispiel-Dateien als FILE-Bloecke, die der
+  // Buildbare Ziele erhalten echte Beispiel-Dateien als FILE-Blöcke, die der
   // Orchestrator zum artifact-Event parst.
   const files = demoArtifactFiles(goal);
   if (files.length) {
     lines.push(
       "",
       "### 4. Erzeugte Dateien",
-      "Direkt verwendbares Startpaket (siehe Datei-Bloecke):",
+      "Direkt verwendbares Startpaket (siehe Datei-Blöcke):",
       "",
       renderFileBlocks(files),
     );
@@ -359,24 +359,24 @@ export function demoAnalystOutput(goal: string, task: string): string {
     `**Auftrag:** ${task}`,
     "",
     "### Zielgruppe",
-    "- Primaer: Entscheider mit klarem Bedarf und wenig Zeit – erwartet ein direkt verwendbares Ergebnis.",
-    "- Sekundaer: Umsetzende Teams, die mit dem Ergebnis weiterarbeiten.",
+    "- Primär: Entscheider mit klarem Bedarf und wenig Zeit – erwartet ein direkt verwendbares Ergebnis.",
+    "- Sekundär: Umsetzende Teams, die mit dem Ergebnis weiterarbeiten.",
     "",
     "### Marktkontext",
-    "- Annahme: Der Wettbewerb liefert generische Loesungen; Differenzierung entsteht durch Praezision und Tempo.",
-    "- Annahme: Der groesste Hebel liegt in einer klaren Positionierung, nicht in mehr Umfang.",
+    "- Annahme: Der Wettbewerb liefert generische Lösungen; Differenzierung entsteht durch Präzision und Tempo.",
+    "- Annahme: Der grösste Hebel liegt in einer klaren Positionierung, nicht in mehr Umfang.",
     "",
     "### Chancen",
     "- Schneller sichtbarer Mehrwert durch ein fokussiertes erstes Ergebnis.",
-    "- Wiederverwendbare Struktur fuer Folgemissionen.",
+    "- Wiederverwendbare Struktur für Folgemissionen.",
     "",
     "### Risiken",
-    "- Unklare Zieldefinition fuehrt zu Streuverlust – Gegenmassnahme: Zielbild in Satz 1 fixieren.",
+    "- Unklare Zieldefinition führt zu Streuverlust – Gegenmassnahme: Zielbild in Satz 1 fixieren.",
     "- Ueberladung des Ergebnisses – Gegenmassnahme: maximal drei Kernaussagen.",
     "",
     "### Priorisierte Empfehlungen",
     "1. Zielbild und Kernbotschaft zuerst festziehen.",
-    "2. Ein minimal vollstaendiges Ergebnis liefern, dann iterieren.",
+    "2. Ein minimal vollständiges Ergebnis liefern, dann iterieren.",
     "3. Erfolgskriterium definieren (woran wird das Ergebnis gemessen?).",
   ].join("\n");
 }
@@ -390,20 +390,20 @@ export function demoMarketingOutput(goal: string, task: string): string {
     `**Auftrag:** ${task}`,
     "",
     "### Kampagnenidee",
-    `- Leitmotiv: "${g}" als greifbaren Kundennutzen erzaehlen – eine Kernbotschaft, ueberall konsistent.`,
+    `- Leitmotiv: "${g}" als greifbaren Kundennutzen erzählen – eine Kernbotschaft, überall konsistent.`,
     "- Mechanik: Aufmerksamkeit (Reichweiten-Kanal) -> Vertrauen (Beweis/Story) -> Handlung (klares Angebot mit CTA).",
     "",
     "### Zielgruppen",
     "- Kernzielgruppe: Bestandsnahe Kaufbereite mit konkretem Bedarf – Ansprache direkt und nutzenorientiert.",
-    "- Ausbauzielgruppe: Interessierte ohne Dringlichkeit – Ansprache ueber Inhalte mit Mehrwert statt Rabatt.",
+    "- Ausbauzielgruppe: Interessierte ohne Dringlichkeit – Ansprache über Inhalte mit Mehrwert statt Rabatt.",
     "",
     "### Content-Plan (4 Wochen)",
     "1. Woche 1: Kernbotschaft + Vorstellung (1 Hero-Beitrag, 2 Kurzformate).",
-    "2. Woche 2: Beweis – Kundenstimme oder Blick hinter die Kulissen (2 Beitraege).",
+    "2. Woche 2: Beweis – Kundenstimme oder Blick hinter die Kulissen (2 Beiträge).",
     "3. Woche 3: Angebot mit klarem CTA (1 Kampagnen-Beitrag, 1 Reminder).",
-    "4. Woche 4: Auswertung + bestes Format wiederholen (2 Beitraege).",
+    "4. Woche 4: Auswertung + bestes Format wiederholen (2 Beiträge).",
     "",
-    "### Messbarer naechster Schritt",
+    "### Messbarer nächster Schritt",
     "- Ein Kanal, ein Angebot, zwei Wochen testen; Erfolgskriterium vorab festlegen (z. B. Anfragen pro Woche).",
   ].join("\n");
 }
@@ -412,11 +412,11 @@ export function demoMarketingOutput(goal: string, task: string): string {
 export function demoCodingOutput(goal: string, task: string): string {
   const g = shortGoal(goal);
   return [
-    `## Technische Loesung: ${g}`,
+    `## Technische Lösung: ${g}`,
     "",
     `**Auftrag:** ${task}`,
     "",
-    "### Loesungsskizze",
+    "### Lösungsskizze",
     "- Kleinster sinnvoller Aufbau: ein Eingang (Formular/API), ein Verarbeitungsschritt, ein Ausgang (Benachrichtigung/Ablage).",
     "- Erst manuell validieren, dann automatisieren – keine Infrastruktur vor dem ersten Nutzen.",
     "",
@@ -434,7 +434,7 @@ export function demoCodingOutput(goal: string, task: string): string {
     "```",
     "",
     "### Automatisierungs-Vorschlag",
-    "1. Wiederkehrenden manuellen Schritt identifizieren (hoechste Frequenz zuerst).",
+    "1. Wiederkehrenden manuellen Schritt identifizieren (höchste Frequenz zuerst).",
     "2. Mit einem No-Code-Workflow oder kleinem Skript abbilden; Fehlerfall mit Benachrichtigung absichern.",
     "3. Annahme: Es existiert noch keine Systemlandschaft – die Skizze bleibt bewusst anschlussoffen.",
   ].join("\n");
@@ -449,19 +449,19 @@ export function demoResearchOutput(goal: string, task: string): string {
     `**Auftrag:** ${task}`,
     "",
     "### Hintergrund",
-    `- Die Fragestellung "${g}" laesst sich in drei Optionen zerlegen: Status quo behalten, punktuell verbessern, neu aufsetzen.`,
+    `- Die Fragestellung "${g}" lässt sich in drei Optionen zerlegen: Status quo behalten, punktuell verbessern, neu aufsetzen.`,
     "",
     "### Vergleich der Optionen",
     "1. Status quo: kein Aufwand, aber ungenutztes Potenzial – sinnvoll nur bei fehlenden Ressourcen.",
-    "2. Punktuell verbessern: bestes Aufwand-Nutzen-Verhaeltnis; schnell messbar.",
-    "3. Neu aufsetzen: hoechstes Potenzial, aber laengste Amortisation und groesstes Risiko.",
+    "2. Punktuell verbessern: bestes Aufwand-Nutzen-Verhältnis; schnell messbar.",
+    "3. Neu aufsetzen: höchstes Potenzial, aber längste Amortisation und grösstes Risiko.",
     "",
     "### Quellenlage",
     "- Demo-Modus: Es wurden keine Live-Quellen abgerufen; alle Aussagen sind als Annahmen gekennzeichnet.",
-    "- Fuer eine belastbare Entscheidung: zwei bis drei Branchenquellen und eigene Zahlen ergaenzen.",
+    "- Für eine belastbare Entscheidung: zwei bis drei Branchenquellen und eigene Zahlen ergänzen.",
     "",
     "### Empfehlung",
-    "- Mit Option 2 starten und ein Erfolgskriterium definieren; Option 3 nur bei belegtem Engpass pruefen.",
+    "- Mit Option 2 starten und ein Erfolgskriterium definieren; Option 3 nur bei belegtem Engpass prüfen.",
   ].join("\n");
 }
 
@@ -474,25 +474,25 @@ export function demoBusinessOutput(goal: string, task: string): string {
     `**Auftrag:** ${task}`,
     "",
     "### Strategie",
-    `- "${g}" auf ein klares Nutzenversprechen fuer eine Kernzielgruppe zuspitzen; Breite folgt nach dem ersten Beleg.`,
+    `- "${g}" auf ein klares Nutzenversprechen für eine Kernzielgruppe zuspitzen; Breite folgt nach dem ersten Beleg.`,
     "",
     "### Zahlen (Annahmen)",
-    "- Aufwand: ueberschaubares Startbudget plus laufende Zeit pro Woche – vorab als Obergrenze fixieren.",
+    "- Aufwand: überschaubares Startbudget plus laufende Zeit pro Woche – vorab als Obergrenze fixieren.",
     "- Ertrag: erster messbarer Effekt nach 4 bis 8 Wochen realistisch; Break-even konservativ planen.",
     "",
     "### Risiken und Gegenmassnahmen",
     "1. Nachfrage bleibt aus (hoch/mittel): mit kleinem Test validieren, bevor investiert wird.",
-    "2. Aufwand unterschaetzt (mittel/mittel): Umfang fest deckeln, Zusatzwuensche in Phase 2 schieben.",
-    "3. Kein messbarer Effekt (mittel/hoch): Erfolgskriterium vorab definieren und woechentlich pruefen.",
+    "2. Aufwand unterschätzt (mittel/mittel): Umfang fest deckeln, Zusatzwünsche in Phase 2 schieben.",
+    "3. Kein messbarer Effekt (mittel/hoch): Erfolgskriterium vorab definieren und wöchentlich prüfen.",
     "",
     "### Entscheidungsvorlage",
-    "- Weiterfuehren, wenn das Erfolgskriterium nach dem Testzeitraum erreicht ist; sonst stoppen oder anpassen.",
+    "- Weiterführen, wenn das Erfolgskriterium nach dem Testzeitraum erreicht ist; sonst stoppen oder anpassen.",
   ].join("\n");
 }
 
 /**
- * Demo-Ausgabe je Worker-Rolle – der Orchestrator waehlt darueber den
- * passenden Fallback fuer jeden aktiven Worker.
+ * Demo-Ausgabe je Worker-Rolle – der Orchestrator wählt darüber den
+ * passenden Fallback für jeden aktiven Worker.
  */
 export const DEMO_WORKER_OUTPUTS: Record<
   WorkerRole,
@@ -524,19 +524,19 @@ const DEMO_ORG_BLUEPRINT: readonly {
         rolle: "Marktanalyst",
         fachgebiet: "Marktforschung",
         teilaufgabe: (g) =>
-          `Analysiere fuer "${g}" den Markt: Groesse, Trends, Zielsegmente und die drei wichtigsten Wachstumstreiber.`,
+          `Analysiere für "${g}" den Markt: Grösse, Trends, Zielsegmente und die drei wichtigsten Wachstumstreiber.`,
       },
       {
         rolle: "Wettbewerbsanalyst",
         fachgebiet: "Wettbewerbsanalyse",
         teilaufgabe: (g) =>
-          `Vergleiche fuer "${g}" die relevanten Wettbewerber und leite drei Differenzierungschancen ab.`,
+          `Vergleiche für "${g}" die relevanten Wettbewerber und leite drei Differenzierungschancen ab.`,
       },
       {
         rolle: "Finanzplaner",
         fachgebiet: "Finanzplanung",
         teilaufgabe: (g) =>
-          `Erstelle fuer "${g}" eine grobe Kosten-/Ertragsrechnung mit Annahmen und Break-even-Einschaetzung.`,
+          `Erstelle für "${g}" eine grobe Kosten-/Ertragsrechnung mit Annahmen und Break-even-Einschätzung.`,
       },
     ],
   },
@@ -547,19 +547,19 @@ const DEMO_ORG_BLUEPRINT: readonly {
         rolle: "Konzeptentwickler",
         fachgebiet: "Konzeption",
         teilaufgabe: (g) =>
-          `Entwickle fuer "${g}" das inhaltliche Kernkonzept mit Struktur und priorisierten Bausteinen.`,
+          `Entwickle für "${g}" das inhaltliche Kernkonzept mit Struktur und priorisierten Bausteinen.`,
       },
       {
         rolle: "Umsetzungsplaner",
         fachgebiet: "Projektplanung",
         teilaufgabe: (g) =>
-          `Plane fuer "${g}" die Umsetzung in Phasen mit Meilensteinen, Aufwaenden und Abhaengigkeiten.`,
+          `Plane für "${g}" die Umsetzung in Phasen mit Meilensteinen, Aufwänden und Abhängigkeiten.`,
       },
       {
         rolle: "Prozessoptimierer",
         fachgebiet: "Prozesse & Automatisierung",
         teilaufgabe: (g) =>
-          `Identifiziere fuer "${g}" die wichtigsten Prozesse und schlage je eine Automatisierung vor.`,
+          `Identifiziere für "${g}" die wichtigsten Prozesse und schlage je eine Automatisierung vor.`,
       },
     ],
   },
@@ -570,19 +570,19 @@ const DEMO_ORG_BLUEPRINT: readonly {
         rolle: "Kampagnenmanager",
         fachgebiet: "Kampagnenplanung",
         teilaufgabe: (g) =>
-          `Entwirf fuer "${g}" eine Kampagne mit Kernbotschaft, Kanaelen und 4-Wochen-Plan.`,
+          `Entwirf für "${g}" eine Kampagne mit Kernbotschaft, Kanälen und 4-Wochen-Plan.`,
       },
       {
         rolle: "Content-Stratege",
         fachgebiet: "Content-Strategie",
         teilaufgabe: (g) =>
-          `Erstelle fuer "${g}" eine Content-Strategie mit Formaten, Frequenz und Erfolgskriterien.`,
+          `Erstelle für "${g}" eine Content-Strategie mit Formaten, Frequenz und Erfolgskriterien.`,
       },
       {
         rolle: "Vertriebsplaner",
         fachgebiet: "Vertriebsstrategie",
         teilaufgabe: (g) =>
-          `Definiere fuer "${g}" den Vertriebsweg: Zielkunden, Angebotslogik und messbare naechste Schritte.`,
+          `Definiere für "${g}" den Vertriebsweg: Zielkunden, Angebotslogik und messbare nächste Schritte.`,
       },
     ],
   },
@@ -590,7 +590,7 @@ const DEMO_ORG_BLUEPRINT: readonly {
 
 /**
  * ORG-PLAN im Demo-Modus: deterministische virtuelle Firma (3 Abteilungen,
- * 9 Rollen) im selben JSON-Format, das der Commander liefern wuerde.
+ * 9 Rollen) im selben JSON-Format, das der Commander liefern würde.
  * Die ids vergibt der Orchestrator beim Parsen (Slug aus der Rolle).
  */
 export function demoOrgPlan(goal: string): {
@@ -611,15 +611,15 @@ export function demoOrgPlan(goal: string): {
 
 /**
  * Deterministische Demo-Antwort einer dynamischen Rolle – aus rolle,
- * fachgebiet und teilaufgabe generiert (auch fuer LLM-erdachte Rollen).
+ * fachgebiet und teilaufgabe generiert (auch für LLM-erdachte Rollen).
  */
 export function demoDynOutput(goal: string, role: OrgRoleSpec): string {
   const g = shortGoal(goal);
   const variant = hash(`${role.rolle}|${role.teilaufgabe}`) % 3;
   const empfehlung = [
-    "Mit dem kleinsten messbaren Schritt starten und woechentlich nachsteuern.",
+    "Mit dem kleinsten messbaren Schritt starten und wöchentlich nachsteuern.",
     "Eine Verantwortlichkeit und einen Termin je Massnahme festlegen.",
-    "Erfolgskriterium vorab definieren und nach vier Wochen pruefen.",
+    "Erfolgskriterium vorab definieren und nach vier Wochen prüfen.",
   ][variant];
   return [
     `## ${role.rolle}: ${g}`,
@@ -629,14 +629,14 @@ export function demoDynOutput(goal: string, role: OrgRoleSpec): string {
     `**Auftrag:** ${role.teilaufgabe}`,
     "",
     "### Ergebnis",
-    `- Kernbefund: Aus Sicht ${role.fachgebiet} liegt der groesste Hebel fuer "${g}" in Fokus und klarer Priorisierung.`,
+    `- Kernbefund: Aus Sicht ${role.fachgebiet} liegt der grösste Hebel für "${g}" in Fokus und klarer Priorisierung.`,
     `- Vorgehen: Der Auftrag wurde in drei umsetzbare Schritte zerlegt – Analyse, Massnahme, Messung.`,
     "- Annahme: Es liegen keine internen Daten vor; alle Aussagen sind als Annahmen gekennzeichnet.",
     "",
     "### Empfehlung",
     `1. ${empfehlung}`,
     "2. Ergebnis mit den Nachbar-Rollen der Abteilung abgleichen, um Doppelarbeit zu vermeiden.",
-    "3. Offene Entscheidungsfragen an den Commander zurueckmelden.",
+    "3. Offene Entscheidungsfragen an den Commander zurückmelden.",
   ].join("\n");
 }
 
@@ -646,9 +646,9 @@ export function demoDepartmentSummary(dept: OrgDepartmentSpec, goal: string): st
   return [
     `- Die Abteilung ${dept.name} hat ${dept.roles.length} Spezialisten-Ergebnisse zu "${g}" geliefert.`,
     ...dept.roles.map(
-      (r) => `- ${r.rolle} (${r.fachgebiet}): Teilaufgabe bearbeitet, Empfehlung mit messbarem naechstem Schritt.`,
+      (r) => `- ${r.rolle} (${r.fachgebiet}): Teilaufgabe bearbeitet, Empfehlung mit messbarem nächstem Schritt.`,
     ),
-    "- Gemeinsame Linie: klein starten, Erfolgskriterium definieren, woechentlich nachsteuern.",
+    "- Gemeinsame Linie: klein starten, Erfolgskriterium definieren, wöchentlich nachsteuern.",
   ].join("\n");
 }
 
@@ -659,7 +659,7 @@ export function demoQualityReport(combinedOutputs: string): QualityReport {
     improvements: [
       "Kernaussagen mit konkreten Zahlen oder Beispielen unterlegen.",
       "Annahmen durch kurze Validierung (Kundenfeedback, Daten) absichern.",
-      "Naechste Schritte mit Verantwortlichkeiten und Terminen versehen.",
+      "Nächste Schritte mit Verantwortlichkeiten und Terminen versehen.",
     ],
   };
 }
@@ -669,18 +669,18 @@ export function demoSynthesis(goal: string, combinedOutputs: string): string {
   const g = shortGoal(goal);
   const body = combinedOutputs.trim()
     ? combinedOutputs.trim()
-    : "_Keine Worker-Ergebnisse verfuegbar – Kurzfassung aus dem Missionsziel abgeleitet._";
+    : "_Keine Worker-Ergebnisse verfügbar – Kurzfassung aus dem Missionsziel abgeleitet._";
   return [
     `# Ergebnis: ${g}`,
     "",
     "## Zusammenfassung",
-    `Die Mission "${g}" wurde vom Team bearbeitet: Jeder aktive Worker hat seine Teilaufgabe geliefert – vom umsetzbaren Paket bis zu Kontext, Chancen und Risiken. Alles ist unten zu einem verwendbaren Gesamtergebnis zusammengefuehrt.`,
+    `Die Mission "${g}" wurde vom Team bearbeitet: Jeder aktive Worker hat seine Teilaufgabe geliefert – vom umsetzbaren Paket bis zu Kontext, Chancen und Risiken. Alles ist unten zu einem verwendbaren Gesamtergebnis zusammengeführt.`,
     "",
     body,
     "",
     "## Empfohlenes Vorgehen",
-    "1. Ergebnis reviewen und Zielbild bestaetigen.",
+    "1. Ergebnis reviewen und Zielbild bestätigen.",
     "2. Die priorisierten Empfehlungen des Analysten umsetzen.",
-    "3. Verbesserungsvorschlaege des Quality-Agenten einarbeiten und finalisieren.",
+    "3. Verbesserungsvorschläge des Quality-Agenten einarbeiten und finalisieren.",
   ].join("\n");
 }

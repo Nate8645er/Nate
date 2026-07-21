@@ -1,9 +1,9 @@
 /**
- * Connector-Registry fuer das Integration-Center.
+ * Connector-Registry für das Integration-Center.
  *
  * Rein statischer Katalog (keine Live-Verbindungen): beschreibt, welche
- * Firmensysteme als Anbindung angefragt werden koennen, in welcher
- * Plan-Stufe sie verfuegbar sind und in welchem Ausbau-Status sie stehen.
+ * Firmensysteme als Anbindung angefragt werden können, in welcher
+ * Plan-Stufe sie verfügbar sind und in welchem Ausbau-Status sie stehen.
  * Live-Anbindungen werden pro Unternehmen als Enterprise-Projekt
  * eingerichtet (siehe ARCHITEKTUR-ENTERPRISE.md, Adapter-Muster).
  *
@@ -13,7 +13,7 @@
  */
 
 export type ConnectorKategorie =
-  | "Produktivitaet"
+  | "Produktivität"
   | "CRM + Vertrieb"
   | "ERP + Finanzen"
   | "Kommunikation"
@@ -21,7 +21,7 @@ export type ConnectorKategorie =
   | "E-Commerce"
   | "Eigene Systeme";
 
-export type ConnectorStatus = "verfuegbar-auf-anfrage" | "in-entwicklung";
+export type ConnectorStatus = "verfügbar-auf-anfrage" | "in-entwicklung";
 
 export type ConnectorPlanStufe = "BUSINESS" | "ENTERPRISE";
 
@@ -42,7 +42,7 @@ export interface Connector {
 
 /** Anzeige-Reihenfolge der Kategorien plus Akzentnuance je Kategorie. */
 export const KATEGORIE_AKZENT: Record<ConnectorKategorie, string> = {
-  Produktivitaet: "#ffb35c",
+  Produktivität: "#ffb35c",
   "CRM + Vertrieb": "#ff8c2a",
   "ERP + Finanzen": "#ffd257",
   Kommunikation: "#ffc98a",
@@ -52,7 +52,7 @@ export const KATEGORIE_AKZENT: Record<ConnectorKategorie, string> = {
 };
 
 export const KATEGORIEN: readonly ConnectorKategorie[] = [
-  "Produktivitaet",
+  "Produktivität",
   "CRM + Vertrieb",
   "ERP + Finanzen",
   "Kommunikation",
@@ -62,30 +62,30 @@ export const KATEGORIEN: readonly ConnectorKategorie[] = [
 ];
 
 export const STATUS_LABEL: Record<ConnectorStatus, string> = {
-  "verfuegbar-auf-anfrage": "Verfuegbar auf Anfrage",
+  "verfügbar-auf-anfrage": "Verfügbar auf Anfrage",
   "in-entwicklung": "In Entwicklung",
 };
 
 export const CONNECTORS: readonly Connector[] = [
-  // --- Produktivitaet ---
+  // --- Produktivität ---
   {
     id: "microsoft365",
     name: "Microsoft 365",
     monogramm: "MS",
-    kategorie: "Produktivitaet",
+    kategorie: "Produktivität",
     beschreibung:
       "Die KI liest und entwirft Mails in Outlook, plant Termine und erstellt Word- und Excel-Dokumente direkt in Ihrem Tenant.",
-    status: "verfuegbar-auf-anfrage",
+    status: "verfügbar-auf-anfrage",
     planStufe: "BUSINESS",
   },
   {
     id: "google-workspace",
     name: "Google Workspace",
     monogramm: "GW",
-    kategorie: "Produktivitaet",
+    kategorie: "Produktivität",
     beschreibung:
-      "Die KI arbeitet mit Gmail, Kalender, Docs und Sheets: Entwuerfe schreiben, Termine koordinieren, Tabellen befuellen.",
-    status: "verfuegbar-auf-anfrage",
+      "Die KI arbeitet mit Gmail, Kalender, Docs und Sheets: Entwürfe schreiben, Termine koordinieren, Tabellen befüllen.",
+    status: "verfügbar-auf-anfrage",
     planStufe: "BUSINESS",
   },
   // --- CRM + Vertrieb ---
@@ -96,7 +96,7 @@ export const CONNECTORS: readonly Connector[] = [
     kategorie: "CRM + Vertrieb",
     beschreibung:
       "Die KI pflegt Leads und Opportunities, fasst Accounts zusammen und bereitet Vertriebsreports aus Ihren CRM-Daten auf.",
-    status: "verfuegbar-auf-anfrage",
+    status: "verfügbar-auf-anfrage",
     planStufe: "ENTERPRISE",
   },
   {
@@ -105,8 +105,8 @@ export const CONNECTORS: readonly Connector[] = [
     monogramm: "HS",
     kategorie: "CRM + Vertrieb",
     beschreibung:
-      "Die KI qualifiziert Kontakte, schreibt Follow-up-Mails und haelt Deals und Pipelines in HubSpot aktuell.",
-    status: "verfuegbar-auf-anfrage",
+      "Die KI qualifiziert Kontakte, schreibt Follow-up-Mails und hält Deals und Pipelines in HubSpot aktuell.",
+    status: "verfügbar-auf-anfrage",
     planStufe: "BUSINESS",
   },
   // --- ERP + Finanzen ---
@@ -116,7 +116,7 @@ export const CONNECTORS: readonly Connector[] = [
     monogramm: "SP",
     kategorie: "ERP + Finanzen",
     beschreibung:
-      "Die KI liest Stammdaten, Bestellungen und Belege aus Ihrem SAP-System und bereitet sie fuer Entscheidungen auf.",
+      "Die KI liest Stammdaten, Bestellungen und Belege aus Ihrem SAP-System und bereitet sie für Entscheidungen auf.",
     status: "in-entwicklung",
     planStufe: "ENTERPRISE",
   },
@@ -126,8 +126,8 @@ export const CONNECTORS: readonly Connector[] = [
     monogramm: "ST",
     kategorie: "ERP + Finanzen",
     beschreibung:
-      "Die KI ueberwacht Zahlungen und Abos, erkennt Auffaelligkeiten und erstellt Umsatz-Auswertungen aus Ihren Stripe-Daten.",
-    status: "verfuegbar-auf-anfrage",
+      "Die KI überwacht Zahlungen und Abos, erkennt Auffälligkeiten und erstellt Umsatz-Auswertungen aus Ihren Stripe-Daten.",
+    status: "verfügbar-auf-anfrage",
     planStufe: "BUSINESS",
   },
   // --- Kommunikation ---
@@ -138,7 +138,7 @@ export const CONNECTORS: readonly Connector[] = [
     kategorie: "Kommunikation",
     beschreibung:
       "Die KI fasst Channels zusammen, beantwortet Team-Fragen und liefert Missions-Ergebnisse direkt in Ihren Workspace.",
-    status: "verfuegbar-auf-anfrage",
+    status: "verfügbar-auf-anfrage",
     planStufe: "BUSINESS",
   },
   {
@@ -147,8 +147,8 @@ export const CONNECTORS: readonly Connector[] = [
     monogramm: "MT",
     kategorie: "Kommunikation",
     beschreibung:
-      "Die KI meldet Ergebnisse in Teams-Kanaele, fasst Chats zusammen und erinnert an offene Aufgaben.",
-    status: "verfuegbar-auf-anfrage",
+      "Die KI meldet Ergebnisse in Teams-Kanäle, fasst Chats zusammen und erinnert an offene Aufgaben.",
+    status: "verfügbar-auf-anfrage",
     planStufe: "BUSINESS",
   },
   // --- Cloud + Dateien ---
@@ -159,7 +159,7 @@ export const CONNECTORS: readonly Connector[] = [
     kategorie: "Cloud + Dateien",
     beschreibung:
       "Die KI durchsucht Ihre Ablage, fasst Dokumente zusammen und legt erzeugte Dateien strukturiert ab.",
-    status: "verfuegbar-auf-anfrage",
+    status: "verfügbar-auf-anfrage",
     planStufe: "BUSINESS",
   },
   {
@@ -168,8 +168,8 @@ export const CONNECTORS: readonly Connector[] = [
     monogramm: "OD",
     kategorie: "Cloud + Dateien",
     beschreibung:
-      "Die KI liest und schreibt Dateien in OneDrive/SharePoint und haelt Team-Ordner automatisch aktuell.",
-    status: "verfuegbar-auf-anfrage",
+      "Die KI liest und schreibt Dateien in OneDrive/SharePoint und hält Team-Ordner automatisch aktuell.",
+    status: "verfügbar-auf-anfrage",
     planStufe: "BUSINESS",
   },
   {
@@ -178,7 +178,7 @@ export const CONNECTORS: readonly Connector[] = [
     monogramm: "AW",
     kategorie: "Cloud + Dateien",
     beschreibung:
-      "Die KI liest S3-Daten und Cloud-Metriken, ueberwacht Kosten und schlaegt Optimierungen fuer Ihre AWS-Umgebung vor.",
+      "Die KI liest S3-Daten und Cloud-Metriken, überwacht Kosten und schlägt Optimierungen für Ihre AWS-Umgebung vor.",
     status: "in-entwicklung",
     planStufe: "ENTERPRISE",
   },
@@ -188,7 +188,7 @@ export const CONNECTORS: readonly Connector[] = [
     monogramm: "AZ",
     kategorie: "Cloud + Dateien",
     beschreibung:
-      "Die KI wertet Azure-Ressourcen, Logs und Kosten aus und unterstuetzt Ihr IT-Team bei Betrieb und Planung.",
+      "Die KI wertet Azure-Ressourcen, Logs und Kosten aus und unterstützt Ihr IT-Team bei Betrieb und Planung.",
     status: "in-entwicklung",
     planStufe: "ENTERPRISE",
   },
@@ -199,8 +199,8 @@ export const CONNECTORS: readonly Connector[] = [
     monogramm: "SH",
     kategorie: "E-Commerce",
     beschreibung:
-      "Die KI pflegt Produkte und Lagerbestaende, analysiert Bestellungen und schreibt Produkttexte direkt in Ihren Shop.",
-    status: "verfuegbar-auf-anfrage",
+      "Die KI pflegt Produkte und Lagerbestände, analysiert Bestellungen und schreibt Produkttexte direkt in Ihren Shop.",
+    status: "verfügbar-auf-anfrage",
     planStufe: "BUSINESS",
   },
   {
@@ -221,7 +221,7 @@ export const CONNECTORS: readonly Connector[] = [
     kategorie: "Eigene Systeme",
     beschreibung:
       "Die KI wird per REST-API und Webhooks an Ihre eigene Firmensoftware angebunden und kann dort lesen und schreiben.",
-    status: "verfuegbar-auf-anfrage",
+    status: "verfügbar-auf-anfrage",
     planStufe: "ENTERPRISE",
   },
 ];

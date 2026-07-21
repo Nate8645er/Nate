@@ -6,7 +6,7 @@
  *  - openai     -> Chat Completions (api.openai.com/v1/chat/completions)
  *  - moonshot   -> Chat Completions im OpenAI-Format (api.moonshot.ai)
  *
- * Fehler werden nie geworfen, sondern als { ok: false, error } zurueckgegeben,
+ * Fehler werden nie geworfen, sondern als { ok: false, error } zurückgegeben,
  * damit der Orchestrator pro Agent sauber degradieren kann.
  */
 
@@ -38,7 +38,7 @@ const ENDPOINTS: Record<Provider, ProviderEndpoint> = {
 };
 
 /**
- * Prueft, ob fuer den Provider ein API-Key in process.env hinterlegt ist.
+ * Prüft, ob für den Provider ein API-Key in process.env hinterlegt ist.
  * Der Orchestrator nutzt das, um ohne Key direkt in den Demo-Modus zu gehen.
  */
 export function hasApiKey(provider: Provider): boolean {
@@ -49,7 +49,7 @@ export function hasApiKey(provider: Provider): boolean {
  * Ruft das angegebene Modell beim jeweiligen Provider auf.
  *
  * Netz-/Timeout-Fehler und HTTP 5xx werden genau einmal wiederholt;
- * 4xx-Fehler (falscher Key, ungueltiges Modell) sofort zurueckgegeben.
+ * 4xx-Fehler (falscher Key, ungültiges Modell) sofort zurückgegeben.
  *
  * @param provider  anthropic | openai | moonshot
  * @param model     Modell-ID, z. B. "claude-sonnet-5" oder "gpt-4o-mini"
@@ -68,11 +68,11 @@ export async function callLLM(
   if (!apiKey) {
     return {
       ok: false,
-      error: `${endpoint.envKey} ist nicht gesetzt (.env pruefen).`,
+      error: `${endpoint.envKey} ist nicht gesetzt (.env prüfen).`,
     };
   }
   if (messages.length === 0) {
-    return { ok: false, error: "Leere Nachrichtenliste uebergeben." };
+    return { ok: false, error: "Leere Nachrichtenliste übergeben." };
   }
 
   const { headers, body } =
@@ -114,7 +114,7 @@ async function attemptRequest(
       return {
         ok: false,
         error: `${provider} antwortete mit HTTP ${response.status}: ${detail}`,
-        // Nur Server-Fehler wiederholen; 4xx aendert ein Retry nicht.
+        // Nur Server-Fehler wiederholen; 4xx ändert ein Retry nicht.
         retryable: response.status >= 500,
       };
     }

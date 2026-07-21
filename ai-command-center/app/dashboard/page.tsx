@@ -10,7 +10,7 @@
  * Abo-Stufen (FREE/STARTER/PROFESSIONAL/BUSINESS) schalten HUD-Module
  * frei; Stufen oberhalb der lizenzierten Stufe (Lizenz-Modal, POST
  * /api/license) sind gesperrt. Branchen-Onboarding-Modal liefert den
- * Mission-Kontext, das SSE-Event "usage" den Tageszaehler im Header.
+ * Mission-Kontext, das SSE-Event "usage" den Tageszähler im Header.
  *
  * TODO Phase 2: Verlauf + Plan serverseitig je Benutzer persistieren.
  */
@@ -24,7 +24,7 @@ const AGENT_META: Record<AgentRole, { name: string; tagline: string }> = {
   commander: { name: "Commander", tagline: "Der digitale CEO" },
   builder: { name: "Builder", tagline: "Der Entwickler" },
   analyst: { name: "Analyst", tagline: "Der Stratege" },
-  quality: { name: "Quality", tagline: "Der Pruefer" },
+  quality: { name: "Quality", tagline: "Der Prüfer" },
   marketing: { name: "Marketing", tagline: "Kampagnen & Content" },
   coding: { name: "Coding", tagline: "Software & Automation" },
   research: { name: "Research", tagline: "Tiefenrecherche" },
@@ -76,7 +76,7 @@ const WORKFORCE_BY_PLAN: Record<Plan, number> = {
   ENTERPRISE: 1000,
 };
 
-/** Plaene im Organisations-Modus (dynamische Firma + Belegschaft). */
+/** Pläne im Organisations-Modus (dynamische Firma + Belegschaft). */
 const ORG_MODE_PLANS: ReadonlySet<Plan> = new Set<Plan>(["BUSINESS", "ENTERPRISE"]);
 
 /** Eine Abteilung der virtuellen Firma im Dashboard (aus dem org-Event). */
@@ -101,7 +101,7 @@ const HISTORY_KEY = "acc-mission-history";
 const PLAN_KEY = "acc-plan";
 /** Lizenz-Token (30 Tage, HMAC-signiert) aus POST /api/license. */
 const LICENSE_TOKEN_KEY = "acc-license-token";
-/** Usage-Token (Tageszaehler), vom Server per SSE-Event "usage" erneuert. */
+/** Usage-Token (Tageszähler), vom Server per SSE-Event "usage" erneuert. */
 const USAGE_TOKEN_KEY = "acc-usage-token";
 const BRANCHE_KEY = "acc-branche";
 const GROESSE_KEY = "acc-groesse";
@@ -125,11 +125,11 @@ interface HistoryEntry {
   final: string;
   score: number | null;
   at: string;
-  /** Erzeugte Dateien der Mission (optional, aeltere Eintraege haben keine). */
+  /** Erzeugte Dateien der Mission (optional, ältere Einträge haben keine). */
   artifacts?: ArtifactFile[];
 }
 
-/** MIME-Typ je Sprache fuer den Datei-Download (sonst text/plain). */
+/** MIME-Typ je Sprache für den Datei-Download (sonst text/plain). */
 const MIME_BY_LANGUAGE: Record<string, string> = {
   html: "text/html",
   css: "text/css",
@@ -146,20 +146,20 @@ function baseName(path: string): string {
   return path.split("/").pop() || path;
 }
 
-/** Findet die index.html unter den Dateien (fuer die Live-Vorschau). */
+/** Findet die index.html unter den Dateien (für die Live-Vorschau). */
 function findIndexHtml(files: readonly ArtifactFile[]): ArtifactFile | undefined {
   return files.find((f) => baseName(f.path).toLowerCase() === "index.html");
 }
 
 /**
- * HTML-Datei fuer die Live-Vorschau: index.html bevorzugt, sonst die erste
+ * HTML-Datei für die Live-Vorschau: index.html bevorzugt, sonst die erste
  * .html/.htm-Datei (z. B. praesentation.html).
  */
 function findPreviewHtml(files: readonly ArtifactFile[]): ArtifactFile | undefined {
   return findIndexHtml(files) ?? files.find((f) => /\.html?$/i.test(baseName(f.path)));
 }
 
-/** Laedt eine einzelne Datei ueber einen Blob herunter. */
+/** Lädt eine einzelne Datei über einen Blob herunter. */
 function downloadArtifact(file: ArtifactFile): void {
   const mime = MIME_BY_LANGUAGE[file.language] ?? "text/plain";
   const blob = new Blob([file.content], { type: `${mime};charset=utf-8` });
@@ -173,7 +173,7 @@ function downloadArtifact(file: ArtifactFile): void {
   URL.revokeObjectURL(url);
 }
 
-/** Laedt alle Dateien nacheinander herunter (leichte Staffelung fuer Browser). */
+/** Lädt alle Dateien nacheinander herunter (leichte Staffelung für Browser). */
 function downloadAllArtifacts(files: readonly ArtifactFile[]): void {
   files.forEach((file, i) => {
     window.setTimeout(() => downloadArtifact(file), i * 250);
@@ -195,7 +195,7 @@ function formatElapsed(ms: number): string {
 
 /**
  * Liest das Payload eines signierten Tokens ("base64url(JSON).hmac") zur
- * ANZEIGE. Die HMAC-Pruefung passiert ausschliesslich serverseitig.
+ * ANZEIGE. Die HMAC-Prüfung passiert ausschliesslich serverseitig.
  */
 function decodeTokenPayload(token: string): Record<string, unknown> | null {
   const dot = token.lastIndexOf(".");
@@ -268,7 +268,7 @@ const WireframeGlobe = memo(function WireframeGlobe() {
   );
 });
 
-/** Radial-HUD-Gauge fuer den Quality-Score (animierter Kreisbogen). */
+/** Radial-HUD-Gauge für den Quality-Score (animierter Kreisbogen). */
 const RadialGauge = memo(function RadialGauge({ score }: { score: number | null }) {
   const r = 54;
   const c = 2 * Math.PI * r;
@@ -510,7 +510,7 @@ const LockedAgentCard = memo(function LockedAgentCard({ name, tagline }: { name:
   );
 });
 
-/** Status-Punkt-Klassen fuer die dynamischen Rollen im Organigramm. */
+/** Status-Punkt-Klassen für die dynamischen Rollen im Organigramm. */
 function dynDotClass(status: AgentStatus): string {
   return status === "working"
     ? "hud-pulse bg-[#ff8c2a]"
@@ -591,7 +591,7 @@ const DepartmentCard = memo(function DepartmentCard({
   );
 });
 
-/** Organigramm der virtuellen Firma (nur Org-Plaene). */
+/** Organigramm der virtuellen Firma (nur Org-Pläne). */
 const OrgChart = memo(function OrgChart({
   org,
   dynStatuses,
@@ -619,11 +619,11 @@ const OrgChart = memo(function OrgChart({
 /**
  * "Erzeugte Dateien": Datei-Liste links, Code-Ansicht rechts (monospace,
  * scrollbar). Pro Datei Download, "Alle herunterladen" und eine automatisch
- * geoeffnete Live-Vorschau der ersten HTML-Datei via <iframe srcdoc>.
+ * geöffnete Live-Vorschau der ersten HTML-Datei via <iframe srcdoc>.
  */
 const ArtifactViewer = memo(function ArtifactViewer({ files }: { files: ArtifactFile[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
-  // Vorschau automatisch geoeffnet: das gebaute Ergebnis fuehrt die Ansicht an.
+  // Vorschau automatisch geöffnet: das gebaute Ergebnis führt die Ansicht an.
   const [previewOpen, setPreviewOpen] = useState(true);
   const previewHtml = useMemo(() => findPreviewHtml(files), [files]);
   const active = files[Math.min(activeIndex, files.length - 1)] ?? files[0];
@@ -722,11 +722,11 @@ const ArtifactViewer = memo(function ArtifactViewer({ files }: { files: Artifact
 
 /* --------------------------------- Modals --------------------------------- */
 
-/** Fokus-Ring fuer Tastaturbedienung (focus-visible) im HUD-Stil. */
+/** Fokus-Ring für Tastaturbedienung (focus-visible) im HUD-Stil. */
 const FOCUS_RING =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff8c2a]/70";
 
-/** Kleines Schloss-Symbol fuer gesperrte Plan-Stufen. */
+/** Kleines Schloss-Symbol für gesperrte Plan-Stufen. */
 const LockIcon = memo(function LockIcon() {
   return (
     <svg viewBox="0 0 12 12" className="h-2.5 w-2.5" aria-hidden fill="none" stroke="currentColor" strokeWidth="1.3">
@@ -738,7 +738,7 @@ const LockIcon = memo(function LockIcon() {
 
 /**
  * HUD-Modal-Shell: role=dialog, Escape schliesst, Klick auf den Hintergrund
- * schliesst, Fokus springt beim Oeffnen in den Dialog und danach zurueck.
+ * schliesst, Fokus springt beim Öffnen in den Dialog und danach zurück.
  */
 function HudModal({
   labelId,
@@ -790,7 +790,7 @@ function HudModal({
   );
 }
 
-/** Auswahl-Button (Branche/Groesse) im Onboarding-Modal. */
+/** Auswahl-Button (Branche/Grösse) im Onboarding-Modal. */
 const ChoiceButton = memo(function ChoiceButton({
   label,
   selected,
@@ -815,7 +815,7 @@ const ChoiceButton = memo(function ChoiceButton({
   );
 });
 
-/** Branchen-Onboarding: Branche + Unternehmensgroesse waehlen. */
+/** Branchen-Onboarding: Branche + Unternehmensgrösse wählen. */
 function OnboardingModal({
   initialBranche,
   initialGroesse,
@@ -835,7 +835,7 @@ function OnboardingModal({
       <div className="hud-label mb-1">Onboarding // Kontext</div>
       <h2 id="onboarding-title" className="text-xl font-bold text-[#fff3e2]">Ihr Unternehmen</h2>
       <p className="mt-1 text-sm text-[#c9b391]">
-        Ihre KI-Abteilung passt Plaene und Ergebnisse an Branche und Teamgroesse an.
+        Ihre KI-Abteilung passt Pläne und Ergebnisse an Branche und Teamgrösse an.
       </p>
 
       <div className="hud-label mt-5 mb-2">Branche</div>
@@ -845,7 +845,7 @@ function OnboardingModal({
         ))}
       </div>
 
-      <div className="hud-label mt-5 mb-2">Unternehmensgroesse</div>
+      <div className="hud-label mt-5 mb-2">Unternehmensgrösse</div>
       <div className="grid grid-cols-4 gap-2">
         {GROESSEN.map((g) => (
           <ChoiceButton key={g} label={g} selected={groesse === g} onSelect={setGroesse} />
@@ -863,7 +863,7 @@ function OnboardingModal({
   );
 }
 
-/** Lizenz-Aktivierung: Schluessel eingeben, gegen POST /api/license tauschen. */
+/** Lizenz-Aktivierung: Schlüssel eingeben, gegen POST /api/license tauschen. */
 function LicenseModal({
   licensedPlan,
   onActivated,
@@ -900,7 +900,7 @@ function LicenseModal({
       ) {
         onActivated(data.plan as Plan, data.token);
       } else {
-        setError(data?.error ?? "Ungueltiger Lizenzschluessel.");
+        setError(data?.error ?? "Ungültiger Lizenzschlüssel.");
       }
     } catch {
       setError("Verbindung fehlgeschlagen. Bitte erneut versuchen.");
@@ -915,8 +915,8 @@ function LicenseModal({
       <h2 id="license-title" className="text-xl font-bold text-[#fff3e2]">Lizenz aktivieren</h2>
       <p className="mt-1 text-sm text-[#c9b391]">
         {licensedPlan === "FREE"
-          ? "Geben Sie Ihren Lizenzschluessel ein, um STARTER, PROFESSIONAL oder BUSINESS freizuschalten."
-          : `Aktive Lizenz: ${licensedPlan}. Ein neuer Schluessel ersetzt die aktuelle Lizenz.`}
+          ? "Geben Sie Ihren Lizenzschlüssel ein, um STARTER, PROFESSIONAL oder BUSINESS freizuschalten."
+          : `Aktive Lizenz: ${licensedPlan}. Ein neuer Schlüssel ersetzt die aktuelle Lizenz.`}
       </p>
       <div className="mt-5 flex flex-col gap-3 sm:flex-row">
         <input
@@ -925,7 +925,7 @@ function LicenseModal({
           onKeyDown={(e) => e.key === "Enter" && activate()}
           placeholder="ACC-STARTER-..."
           disabled={busy}
-          aria-label="Lizenzschluessel"
+          aria-label="Lizenzschlüssel"
           className={`flex-1 rounded-sm border border-[#ff8c2a]/25 bg-[#ff8c2a]/[0.04] px-4 py-3 font-mono text-sm text-[#fff3e2] placeholder:text-[#8a7455] outline-none transition focus:border-[#ff8c2a]/70 focus:ring-2 focus:ring-[#ff8c2a]/20 ${FOCUS_RING}`}
         />
         <button
@@ -933,7 +933,7 @@ function LicenseModal({
           disabled={!key.trim() || busy}
           className={`rounded-sm bg-[#ff8c2a] px-6 py-3 font-semibold text-[#1a0f04] transition hover:bg-[#ffb35c] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
         >
-          {busy ? "Pruefe ..." : "Aktivieren"}
+          {busy ? "Prüfe ..." : "Aktivieren"}
         </button>
       </div>
       {error && (
@@ -983,7 +983,7 @@ export default function DashboardPage() {
   const [dynStatuses, setDynStatuses] = useState<Record<string, DynStatus>>({});
   const [logs, setLogs] = useState<string[]>([]);
   const [startedAt, setStartedAt] = useState<number | null>(null);
-  /** Angehaengtes Dokument (Dokumenten-Analyse) fuer die naechste Mission. */
+  /** Angehängtes Dokument (Dokumenten-Analyse) für die nächste Mission. */
   const [dokument, setDokument] = useState<{ name: string; text: string } | null>(null);
   const [docBusy, setDocBusy] = useState(false);
   const [docError, setDocError] = useState("");
@@ -1007,7 +1007,7 @@ export default function DashboardPage() {
     () => (org ? org.departments.reduce((n, d) => n + d.roles.length, 0) : 0),
     [org],
   );
-  // Org-Modus zaehlt echte, LLM-aufrufende Rollen (+ Commander/Quality).
+  // Org-Modus zählt echte, LLM-aufrufende Rollen (+ Commander/Quality).
   const totalAgents = isOrgPlan
     ? (org ? dynRoleCount + 2 : 2)
     : showExtraAgents
@@ -1019,7 +1019,7 @@ export default function DashboardPage() {
       const raw = localStorage.getItem(HISTORY_KEY);
       if (raw) setHistory(JSON.parse(raw) as HistoryEntry[]);
 
-      // Lizenz-Token lesen (nur Anzeige; die HMAC-Pruefung macht der Server).
+      // Lizenz-Token lesen (nur Anzeige; die HMAC-Prüfung macht der Server).
       let licensed: Plan = "FREE";
       const storedToken = localStorage.getItem(LICENSE_TOKEN_KEY);
       if (storedToken) {
@@ -1038,7 +1038,7 @@ export default function DashboardPage() {
         }
       }
 
-      // Gewaehlten Plan laden, aber auf die lizenzierte Stufe begrenzen.
+      // Gewählten Plan laden, aber auf die lizenzierte Stufe begrenzen.
       const storedPlan = localStorage.getItem(PLAN_KEY);
       if (storedPlan && (PLANS as string[]).includes(storedPlan)) {
         const wanted = storedPlan as Plan;
@@ -1056,7 +1056,7 @@ export default function DashboardPage() {
         }
       }
 
-      // Branchen-Onboarding: ohne gespeicherte Branche Modal oeffnen.
+      // Branchen-Onboarding: ohne gespeicherte Branche Modal öffnen.
       const storedBranche = localStorage.getItem(BRANCHE_KEY);
       const storedGroesse = localStorage.getItem(GROESSE_KEY);
       if (storedBranche) setBranche(storedBranche);
@@ -1070,7 +1070,7 @@ export default function DashboardPage() {
     try { localStorage.setItem(PLAN_KEY, p); } catch { /* voll */ }
   }, []);
 
-  /** Plan-Schalter: gesperrte Stufen oeffnen das Lizenz-Modal. */
+  /** Plan-Schalter: gesperrte Stufen öffnen das Lizenz-Modal. */
   const handlePlanClick = useCallback((p: Plan) => {
     if (PLAN_LEVEL[p] > PLAN_LEVEL[licensedPlan]) {
       setLicenseOpen(true);
@@ -1123,7 +1123,7 @@ export default function DashboardPage() {
 
     switch (ev.type) {
       case "org": {
-        // Firma uebernehmen; Live-Rollen zunaechst auf "Bereit" setzen.
+        // Firma übernehmen; Live-Rollen zunächst auf "Bereit" setzen.
         setOrg({ workforce: ev.workforce, departments: ev.departments });
         const roleCount = ev.departments.reduce((n, d) => n + d.roles.length, 0);
         const seed: Record<string, DynStatus> = {};
@@ -1131,7 +1131,7 @@ export default function DashboardPage() {
           for (const r of d.roles) seed[r.id] = { status: "idle", message: "Bereit" };
         }
         setDynStatuses(seed);
-        pushLog("commander", `Firma gegruendet: ${ev.departments.length} Abteilungen, ${roleCount} Rollen, Belegschaft ${ev.workforce}`);
+        pushLog("commander", `Firma gegründet: ${ev.departments.length} Abteilungen, ${roleCount} Rollen, Belegschaft ${ev.workforce}`);
         break;
       }
       case "status":
@@ -1162,10 +1162,10 @@ export default function DashboardPage() {
       case "final":
         ctx.final = ev.content;
         setFinalResult(ev.content);
-        pushLog("commander", "Finales Ergebnis uebermittelt");
+        pushLog("commander", "Finales Ergebnis übermittelt");
         break;
       case "usage":
-        // Neu signierten Tageszaehler uebernehmen und fuer den naechsten
+        // Neu signierten Tageszähler übernehmen und für den nächsten
         // Start als Header "x-acc-usage" bereithalten.
         setUsage({ used: ev.used, limit: ev.limit });
         setUsageToken(ev.token);
@@ -1181,8 +1181,8 @@ export default function DashboardPage() {
 
   /**
    * Dokumenten-Analyse: liest .txt/.md/.csv/.html direkt per FileReader,
-   * schickt PDFs an POST /api/extract und haengt den Text (gekappt auf
-   * MAX_DOC_CHARS) als Dokument an die naechste Mission.
+   * schickt PDFs an POST /api/extract und hängt den Text (gekappt auf
+   * MAX_DOC_CHARS) als Dokument an die nächste Mission.
    */
   const attachDocument = useCallback(async (file: File) => {
     setDocError("");
@@ -1204,7 +1204,7 @@ export default function DashboardPage() {
       } else if (TEXT_DOC_EXTENSIONS.has(ext)) {
         text = await readFileAsText(file);
       } else {
-        setDocError("Nur .txt, .md, .csv, .html oder .pdf werden unterstuetzt.");
+        setDocError("Nur .txt, .md, .csv, .html oder .pdf werden unterstützt.");
         return;
       }
       const clean = text.trim().slice(0, MAX_DOC_CHARS);
@@ -1307,7 +1307,7 @@ export default function DashboardPage() {
           if (!line.startsWith("data: ")) continue;
           try {
             handleEvent(JSON.parse(line.slice(6)) as AgentEvent, ctx);
-          } catch { /* defektes Event ueberspringen */ }
+          } catch { /* defektes Event überspringen */ }
         }
       }
       if (ctx.final) {
@@ -1427,7 +1427,7 @@ export default function DashboardPage() {
             {fancy && <div className="hud-label mb-2">Mission Input</div>}
             <h1 className="text-2xl font-bold text-[#fff3e2]">Was soll Ihre KI-Abteilung erledigen?</h1>
             <p className="mt-1 text-sm text-[#c9b391]">
-              Commander plant, Builder und Analyst arbeiten parallel, Quality prueft. Sie erhalten ein fertiges Ergebnis.
+              Commander plant, Builder und Analyst arbeiten parallel, Quality prüft. Sie erhalten ein fertiges Ergebnis.
             </p>
             <div className="mt-5 flex flex-col gap-3 sm:flex-row">
               <input
@@ -1437,7 +1437,7 @@ export default function DashboardPage() {
                 placeholder={
                   dokument
                     ? "z. B. Fasse dieses Dokument zusammen"
-                    : 'z. B. "Erstelle eine Marketingstrategie fuer eine Zuercher Baeckerei"'
+                    : 'z. B. "Erstelle eine Marketingstrategie für eine Zürcher Bäckerei"'
                 }
                 disabled={running}
                 className="flex-1 rounded-sm border border-[#ff8c2a]/25 bg-[#ff8c2a]/[0.04] px-4 py-3 text-[#fff3e2] placeholder:text-[#8a7455] outline-none transition focus:border-[#ff8c2a]/70 focus:ring-2 focus:ring-[#ff8c2a]/20"
@@ -1451,7 +1451,7 @@ export default function DashboardPage() {
                 tabIndex={-1}
                 onChange={(e) => {
                   const file = e.target.files?.[0];
-                  // Zuruecksetzen, damit dieselbe Datei erneut waehlbar ist.
+                  // Zurücksetzen, damit dieselbe Datei erneut wählbar ist.
                   e.target.value = "";
                   if (file) void attachDocument(file);
                 }}
@@ -1461,7 +1461,7 @@ export default function DashboardPage() {
                 disabled={running || docBusy}
                 className={`rounded-sm border border-[#ff8c2a]/40 px-4 py-3 font-semibold text-[#ffb35c] transition hover:bg-[#ff8c2a]/10 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
               >
-                {docBusy ? "Liest Dokument …" : "Dokument anhaengen"}
+                {docBusy ? "Liest Dokument …" : "Dokument anhängen"}
               </button>
               {running ? (
                 <button onClick={stopMission} className="rounded-sm border border-red-400/40 px-6 py-3 font-semibold text-red-300 transition hover:bg-red-400/10 active:scale-[0.98]">
@@ -1581,7 +1581,7 @@ export default function DashboardPage() {
 
           {/* Quality-Score als Text (unterhalb PROFESSIONAL) */}
           {!showGauge && score !== null && (
-            <section aria-label="Qualitaetsbewertung" className="mt-8 rounded-sm border border-[#ff8c2a]/20 bg-[#ff8c2a]/[0.02] p-5">
+            <section aria-label="Qualitätsbewertung" className="mt-8 rounded-sm border border-[#ff8c2a]/20 bg-[#ff8c2a]/[0.02] p-5">
               <div className="flex items-center gap-4">
                 <div className={`font-mono text-3xl font-extrabold ${score >= 80 ? "text-[#ffb35c]" : score >= 60 ? "text-amber-400" : "text-red-400"}`}>{score}/100</div>
                 <div className="text-sm text-[#c9b391]">Bewertung durch Quality AI</div>
@@ -1590,7 +1590,7 @@ export default function DashboardPage() {
           )}
           {improvements.length > 0 && (
             <section aria-label="Verbesserungen" className={`mt-4 rounded-sm border border-[#ff8c2a]/15 bg-[#ff8c2a]/[0.02] p-5 ${fancy ? "hud-corners relative" : ""}`}>
-              <div className={fancy ? "hud-label mb-2" : "mb-2 text-sm font-semibold text-[#fff3e2]"}>Verbesserungsvorschlaege</div>
+              <div className={fancy ? "hud-label mb-2" : "mb-2 text-sm font-semibold text-[#fff3e2]"}>Verbesserungsvorschläge</div>
               <ul className="space-y-1 text-sm text-[#e8dcc8]">
                 {improvements.map((imp, i) => (
                   <li key={i} className="ml-5 list-disc">{imp}</li>
@@ -1609,7 +1609,7 @@ export default function DashboardPage() {
             <section aria-label="Ergebnis" className="mt-6">
               <details className={`rounded-sm border border-[#ff8c2a]/30 bg-gradient-to-b from-[#ff8c2a]/[0.07] to-transparent ${fancy ? "hud-corners relative" : ""}`}>
                 <summary className={`cursor-pointer select-none p-5 text-lg font-bold text-[#fff3e2] transition-colors hover:text-[#ffb35c] ${FOCUS_RING}`}>
-                  Vollstaendiger Bericht
+                  Vollständiger Bericht
                   <span className="ml-3 font-mono text-[10px] font-normal uppercase tracking-[0.18em] text-[#ffb35c]/70">Zum Aufklappen</span>
                 </summary>
                 <div className="px-6 pb-6 text-sm leading-relaxed text-[#e8dcc8]">{renderMarkdown(finalResult)}</div>

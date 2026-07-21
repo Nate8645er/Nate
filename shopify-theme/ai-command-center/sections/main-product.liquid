@@ -55,7 +55,7 @@
         <h1>{{ product.title | escape }}</h1>
         <div class="acc-product__price">
           <strong data-product-price>{{ current_variant.price | money }}</strong>
-          <span class="acc-micro">/ Monat, monatlich kuendbar</span>
+          <span class="acc-micro">/ Monat, monatlich kündbar</span>
         </div>
         <span class="acc-product__badge">{{ section.settings.badge_text | escape }}</span>
 
@@ -85,7 +85,7 @@
             </div>
           {%- endform -%}
         {%- else -%}
-          <button class="acc-btn acc-btn--block" disabled>Aktuell nicht verfuegbar</button>
+          <button class="acc-btn acc-btn--block" disabled>Aktuell nicht verfügbar</button>
         {%- endif -%}
 
         <div class="acc-panel acc-corner acc-product__hint">
@@ -100,14 +100,14 @@
             <span class="acc-ministep__num" aria-hidden="true">1</span>
             <div>
               <h4>Abo kaufen</h4>
-              <p>Sicher bezahlen ueber den Shopify-Checkout. Monatlich kuendbar.</p>
+              <p>Sicher bezahlen über den Shopify-Checkout. Monatlich kündbar.</p>
             </div>
           </div>
           <div class="acc-ministep">
             <span class="acc-ministep__num" aria-hidden="true">2</span>
             <div>
-              <h4>Schluessel per E-Mail</h4>
-              <p>Ihr Lizenzschluessel kommt direkt nach dem Kauf in Ihr Postfach.</p>
+              <h4>Schlüssel per E-Mail</h4>
+              <p>Ihr Lizenzschlüssel kommt direkt nach dem Kauf in Ihr Postfach.</p>
             </div>
           </div>
           <div class="acc-ministep">
@@ -177,7 +177,7 @@
   "name": "Produkt",
   "tag": "section",
   "settings": [
-    { "type": "text", "id": "badge_text", "label": "Badge", "default": "Monatsabo, monatlich kuendbar" },
+    { "type": "text", "id": "badge_text", "label": "Badge", "default": "Monatsabo, monatlich kündbar" },
     { "type": "richtext", "id": "hint_text", "label": "Hinweisbox", "default": "<p>Im Zweifel: <strong>STARTER</strong> ist unser Bestseller.</p>" }
   ]
 }

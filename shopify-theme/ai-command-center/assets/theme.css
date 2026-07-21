@@ -1,6 +1,6 @@
 /* ==========================================================================
    AI COMMAND CENTER - Premium Theme v2
-   Fast-schwarz #0b0a08, Amber #ff8c2a, Verlaeufe amber->orange,
+   Fast-schwarz #0b0a08, Amber #ff8c2a, Verläufe amber->orange,
    viel Raum, grosse fluide Typo, ruhige Motion mit Zweck.
    ========================================================================== */
 
@@ -23,8 +23,9 @@
   --acc-glow: 0 0 0 1px var(--acc-line), 0 0 24px rgba(255, 140, 42, 0.1);
   --acc-radius: 6px;
   --acc-radius-lg: 12px;
-  --acc-mono: "SFMono-Regular", ui-monospace, "JetBrains Mono", "Fira Mono", Menlo, Consolas, monospace;
-  --acc-sans: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  --acc-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, "Fira Mono", Menlo, Consolas, monospace;
+  --acc-sans: "Inter", "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  --acc-head: "Space Grotesk", "Inter", "Segoe UI", system-ui, sans-serif;
   --acc-maxw: 1200px;
   --acc-header-h: 72px;
 
@@ -88,7 +89,7 @@ img { max-width: 100%; height: auto; display: block; }
 a { color: var(--acc-amber); text-decoration: none; transition: color 0.2s ease; }
 a:hover { color: var(--acc-amber-soft); }
 
-h1, h2, h3, h4 { line-height: 1.12; letter-spacing: -0.015em; margin: 0; text-wrap: balance; }
+h1, h2, h3, h4 { font-family: var(--acc-head); line-height: 1.12; letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
 
 .acc-wrap { max-width: var(--acc-maxw); margin: 0 auto; padding: 0 var(--sp-5); }
 .acc-section { padding: var(--sp-9) 0; }
@@ -324,7 +325,7 @@ h1, h2, h3, h4 { line-height: 1.12; letter-spacing: -0.015em; margin: 0; text-wr
 .acc-footer__bottom .acc-micro { color: var(--acc-text-faint); }
 
 /* ==========================================================================
-   HERO (volle Hoehe, Glow-Blobs, Wort-Fade, HUD-Motiv)
+   HERO (volle Höhe, Glow-Blobs, Wort-Fade, HUD-Motiv)
    ========================================================================== */
 .acc-hero {
   position: relative;

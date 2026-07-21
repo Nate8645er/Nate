@@ -36,8 +36,8 @@
       observer.observe(el);
     });
 
-    /* Sicherheitsnetz 1: kurz nach vollstaendigem Laden alles zeigen,
-       was bereits im Viewport haette sein muessen. */
+    /* Sicherheitsnetz 1: kurz nach vollständigem Laden alles zeigen,
+       was bereits im Viewport hätte sein müssen. */
     window.addEventListener('load', function () {
       window.setTimeout(function () {
         document.querySelectorAll('.acc-reveal:not(.is-in)').forEach(function (el) {

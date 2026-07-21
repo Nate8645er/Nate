@@ -4,32 +4,32 @@
  * Drei Artefakte, alle mit demselben Secret signiert:
  *
  * 1. LIZENZSCHLUESSEL  "ACC-<PLAN>-<BASE32RANDOM>-<HMAC8>"
- *    HMAC-SHA256 ueber "ACC-<PLAN>-<RANDOM>", erste 8 Hex-Zeichen
+ *    HMAC-SHA256 über "ACC-<PLAN>-<RANDOM>", erste 8 Hex-Zeichen
  *    (uppercase). Wird verkauft (Shopify) und einmalig gegen ein
  *    Lizenz-Token eingetauscht (POST /api/license).
  *
  * 2. LIZENZ-TOKEN  base64url(JSON{p,exp}) + "." + HMAC-Hex
- *    30 Tage gueltig, liegt im localStorage des Clients und wird als
- *    Header "x-acc-license" mitgesendet. Ungueltig/abgelaufen => FREE.
+ *    30 Tage gültig, liegt im localStorage des Clients und wird als
+ *    Header "x-acc-license" mitgesendet. Ungültig/abgelaufen => FREE.
  *
  * 3. USAGE-TOKEN  base64url(JSON{d,u}) + "." + HMAC-Hex
- *    Stateless Tageszaehler (UTC-Datum + verbrauchte Missionen).
+ *    Stateless Tageszähler (UTC-Datum + verbrauchte Missionen).
  *    Der Server signiert ihn bei jeder Antwort neu (SSE-Event "usage"),
- *    der Client sendet ihn als Header "x-acc-usage" zurueck.
- *    Manipulation faellt durch die HMAC-Pruefung auf => Zaehler 0,
+ *    der Client sendet ihn als Header "x-acc-usage" zurück.
+ *    Manipulation fällt durch die HMAC-Prüfung auf => Zähler 0,
  *    aber der Plan bleibt durch das Lizenz-Token begrenzt.
  *
  * Grenze des Ansatzes (bewusst akzeptiert, Vercel-tauglich ohne DB):
  * Ein Client, der sein Usage-Token verwirft, beginnt den Tag bei 0.
  *
- * Die Schluessel-Logik ist in scripts/generate-license.mjs dupliziert –
+ * Die Schlüssel-Logik ist in scripts/generate-license.mjs dupliziert –
  * Aenderungen an Format oder Fallback-Secret dort nachziehen.
  */
 
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import type { PlanId } from "./agents/types";
 
-/** Bezahlte Plaene, fuer die Schluessel verkauft werden. */
+/** Bezahlte Pläne, für die Schlüssel verkauft werden. */
 export type PaidPlan = Exclude<PlanId, "FREE">;
 export const PAID_PLANS: readonly PaidPlan[] = [
   "STARTER",
@@ -47,7 +47,7 @@ export const PLAN_LIMITS: Record<PlanId, number> = {
   ENTERPRISE: 1000,
 };
 
-/** Naechsthoeherer Plan fuer die Upgrade-Empfehlung im Limit-Fehler. */
+/** Nächsthöherer Plan für die Upgrade-Empfehlung im Limit-Fehler. */
 const NEXT_PLAN: Record<PlanId, PaidPlan | null> = {
   FREE: "STARTER",
   STARTER: "PROFESSIONAL",
@@ -60,17 +60,17 @@ const NEXT_PLAN: Record<PlanId, PaidPlan | null> = {
 const LICENSE_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 /**
- * WARNUNG: Fallback-Secret NUR fuer die lokale Entwicklung.
+ * WARNUNG: Fallback-Secret NUR für die lokale Entwicklung.
  * In Produktion MUSS process.env.LICENSE_SECRET gesetzt sein, sonst
- * kann jeder mit Quellcode-Zugriff gueltige Schluessel/Token erzeugen.
+ * kann jeder mit Quellcode-Zugriff gültige Schlüssel/Token erzeugen.
  * (Identische Konstante in scripts/generate-license.mjs.)
  */
-const DEV_FALLBACK_SECRET = "acc-dev-secret-nicht-fuer-produktion";
+const DEV_FALLBACK_SECRET = "acc-dev-secret-nicht-für-produktion";
 
 /**
  * Liefert das aktive Signatur-Secret (LICENSE_SECRET, sonst Dev-Fallback).
- * Wird ausser fuer die HMAC-Signatur auch von der Admin-Route als Fallback
- * fuer die Passwort-Pruefung genutzt (POST /api/admin/generate).
+ * Wird ausser für die HMAC-Signatur auch von der Admin-Route als Fallback
+ * für die Passwort-Prüfung genutzt (POST /api/admin/generate).
  */
 export function licenseSecret(): string {
   const s = process.env.LICENSE_SECRET;
@@ -123,7 +123,7 @@ function readToken(token: string): Record<string, unknown> | null {
   }
 }
 
-/* ---------------------------- Lizenzschluessel ---------------------------- */
+/* ---------------------------- Lizenzschlüssel ---------------------------- */
 
 const BASE32_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 const KEY_RANDOM_LENGTH = 16;
@@ -133,7 +133,7 @@ function keySignature(payload: string): string {
   return hmacHex(payload).slice(0, 8).toUpperCase();
 }
 
-/** Erzeugt einen neuen Schluessel "ACC-<PLAN>-<BASE32x16>-<HMAC8>". */
+/** Erzeugt einen neuen Schlüssel "ACC-<PLAN>-<BASE32x16>-<HMAC8>". */
 export function generateLicenseKey(plan: PaidPlan): string {
   const bytes = randomBytes(KEY_RANDOM_LENGTH);
   let random = "";
@@ -142,7 +142,7 @@ export function generateLicenseKey(plan: PaidPlan): string {
   return `${payload}-${keySignature(payload)}`;
 }
 
-/** Prueft einen Schluessel; bei Erfolg inkl. Plan. */
+/** Prüft einen Schlüssel; bei Erfolg inkl. Plan. */
 export function verifyLicenseKey(
   key: string,
 ): { valid: true; plan: PaidPlan } | { valid: false } {
@@ -157,7 +157,7 @@ export function verifyLicenseKey(
 
 /* ------------------------------ Lizenz-Token ------------------------------ */
 
-/** Erzeugt ein 30 Tage gueltiges, signiertes Lizenz-Token. */
+/** Erzeugt ein 30 Tage gültiges, signiertes Lizenz-Token. */
 export function createLicenseToken(plan: PaidPlan): {
   token: string;
   expiresAt: string;
@@ -195,23 +195,23 @@ export function planFromLicenseToken(token: string | null): PlanId {
 export interface UsageDecision {
   /** false => Tageslimit erreicht, Mission NICHT starten. */
   allowed: boolean;
-  /** Zaehlerstand nach dieser Entscheidung (inkl. der neuen Mission). */
+  /** Zählerstand nach dieser Entscheidung (inkl. der neuen Mission). */
   used: number;
   limit: number;
-  /** Neu signiertes Token fuer den Client. */
+  /** Neu signiertes Token für den Client. */
   token: string;
   /** Deutsche Fehlermeldung, wenn nicht erlaubt. */
   message?: string;
 }
 
-/** Aktuelles UTC-Datum als "YYYY-MM-DD" (Zaehl-Periode). */
+/** Aktuelles UTC-Datum als "YYYY-MM-DD" (Zähl-Periode). */
 function todayUtc(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
 /**
- * Prueft das Usage-Token gegen das Tageslimit des Plans und verbraucht
- * bei Erfolg eine Mission. Manipulierte/fremde/veraltete Token zaehlen
+ * Prüft das Usage-Token gegen das Tageslimit des Plans und verbraucht
+ * bei Erfolg eine Mission. Manipulierte/fremde/veraltete Token zählen
  * als 0 (neuer Tag).
  */
 export function consumeUsage(
@@ -238,7 +238,7 @@ export function consumeUsage(
   if (used >= limit) {
     const next = NEXT_PLAN[plan];
     const message = next
-      ? `Tageslimit erreicht (${limit} Missionen/Tag im Plan ${plan}) – Upgrade auf ${next} fuer ${PLAN_LIMITS[next]} Missionen/Tag.`
+      ? `Tageslimit erreicht (${limit} Missionen/Tag im Plan ${plan}) – Upgrade auf ${next} für ${PLAN_LIMITS[next]} Missionen/Tag.`
       : `Tageslimit erreicht (${limit} Missionen/Tag im Plan ${plan}) – morgen geht es weiter.`;
     return {
       allowed: false,
