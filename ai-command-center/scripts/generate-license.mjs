@@ -18,7 +18,7 @@ const KEY_RANDOM_LENGTH = 16;
 
 // WARNUNG: Fallback nur fuer die lokale Entwicklung – in Produktion
 // LICENSE_SECRET setzen. Identische Konstante in lib/license.ts.
-const DEV_FALLBACK_SECRET = "acc-dev-secret-nicht-fuer-produktion";
+const DEV_FALLBACK_SECRET = "acc-dev-secret-nicht-für-produktion";
 
 const [, , planArg, countArg] = process.argv;
 let plan = (planArg ?? "").toUpperCase();
