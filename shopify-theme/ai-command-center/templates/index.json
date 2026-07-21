@@ -611,6 +611,10 @@
         "titel": "Ein Kopf. Zwei Worker. Milliarden Assistenten.",
         "untertitel": "Kein einzelner Chatbot – eine Organisation aus den stärksten KIs der Welt, mit klarer Hierarchie."
       }
+    },
+    "abo-wahl": {
+      "type": "abo-wahl",
+      "settings": {}
     }
   },
   "order": [
@@ -623,6 +627,7 @@
     "einblicke",
     "bereiche",
     "produkt-grid",
+    "abo-wahl",
     "ablauf",
     "vergleich",
     "zitate",

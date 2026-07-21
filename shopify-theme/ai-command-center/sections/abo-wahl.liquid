@@ -1,0 +1,115 @@
+{% comment %}
+  Abo-Wahl + Ultra-Levelup: Monatlich oder jährlich (2 Monate geschenkt)
+  und die Ultra-Levelup-Codes als Zusatz für jede Bezahl-Stufe.
+{% endcomment %}
+
+<section class="acc-section acc-abowahl">
+  <div class="acc-wrap">
+    <div class="acc-shead acc-reveal">
+      <span class="acc-micro">{{ section.settings.label }}</span>
+      <h2>{{ section.settings.titel }}</h2>
+      <p class="acc-abowahl__intro">{{ section.settings.intro }}</p>
+    </div>
+
+    <div class="acc-abowahl__grid">
+      <div class="acc-panel acc-abowahl__karte acc-reveal">
+        <div class="acc-abowahl__icon">📅</div>
+        <h3>Monatlich</h3>
+        <p class="acc-abowahl__preisnote">Volle Flexibilität</p>
+        <ul class="acc-abowahl__liste">
+          <li>Jederzeit monatlich kündbar</li>
+          <li>Sofort starten, sofort wechseln</li>
+          <li>Upgrade auf jede höhere Stufe möglich</li>
+        </ul>
+      </div>
+
+      <div class="acc-panel acc-abowahl__karte acc-abowahl__karte--jahr acc-reveal">
+        <span class="acc-abowahl__badge">2 Monate geschenkt</span>
+        <div class="acc-abowahl__icon">🎁</div>
+        <h3>Jährlich</h3>
+        <p class="acc-abowahl__preisnote">12 Monate nutzen, 10 bezahlen</p>
+        <ul class="acc-abowahl__liste">
+          <li>PERSONAL: 199 statt 238.80 CHF/Jahr</li>
+          <li>STARTER: 1'990 statt 2'388 CHF/Jahr</li>
+          <li>PROFESSIONAL: 7'990 statt 9'588 CHF/Jahr</li>
+          <li>BUSINESS: 24'990 statt 29'988 CHF/Jahr</li>
+          <li>ENTERPRISE: ab 89'000 CHF/Jahr</li>
+        </ul>
+      </div>
+
+      <div class="acc-panel acc-abowahl__karte acc-abowahl__karte--ultra acc-reveal">
+        <span class="acc-abowahl__badge acc-abowahl__badge--ultra">⚡ Levelup</span>
+        <div class="acc-abowahl__icon">⚡</div>
+        <h3>Ultra-Levelup-Code</h3>
+        <p class="acc-abowahl__preisnote">Der Turbo für Ihre Stufe (Zusatz-Code)</p>
+        <ul class="acc-abowahl__liste">
+          <li>+50% Missionen pro Tag</li>
+          <li>+50% Token-Budget pro Antwort</li>
+          <li>+2 Web-Quellen für den KI-Browser</li>
+          <li>Skills der nächsthöheren Stufe inklusive</li>
+          <li>Für jede Bezahl-Stufe erhältlich</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .acc-abowahl__intro { max-width: 640px; margin: var(--sp-3) auto 0; color: var(--acc-text-dim); }
+  .acc-abowahl__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-5);
+    margin-top: var(--sp-7);
+  }
+  .acc-abowahl__karte {
+    position: relative;
+    padding: var(--sp-6);
+    border-radius: var(--acc-radius-lg);
+    text-align: center;
+  }
+  .acc-abowahl__karte--jahr { border-color: rgba(14, 148, 136, 0.45); }
+  .acc-abowahl__karte--ultra { border-color: rgba(238, 180, 20, 0.5); }
+  .acc-abowahl__badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #2fc4b2, #0e9488);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .acc-abowahl__badge--ultra { background: linear-gradient(135deg, #f5c518, #ee7712); color: #1a0f04; }
+  .acc-abowahl__icon { font-size: 30px; }
+  .acc-abowahl__karte h3 { margin-top: var(--sp-2); }
+  .acc-abowahl__preisnote { margin-top: var(--sp-1); font-size: var(--fs-sm); color: var(--acc-text-dim); }
+  .acc-abowahl__liste {
+    list-style: none;
+    margin: var(--sp-4) 0 0;
+    padding: 0;
+    text-align: left;
+    font-size: var(--fs-sm);
+    display: grid;
+    gap: var(--sp-2);
+  }
+  .acc-abowahl__liste li::before { content: "✓ "; color: var(--acc-amber); font-weight: 700; }
+  @media (max-width: 860px) {
+    .acc-abowahl__grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Abo-Wahl + Ultra",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Micro-Label", "default": "MONATLICH ODER JÄHRLICH" },
+    { "type": "text", "id": "titel", "label": "Titel", "default": "Sie entscheiden: monatlich flexibel oder jährlich mit Geschenk." },
+    { "type": "textarea", "id": "intro", "label": "Intro", "default": "Jede Stufe gibt es als Monats- und als Jahresabo – beim Jahresabo zahlen Sie nur 10 von 12 Monaten. Und mit einem Ultra-Levelup-Code holt jede Stufe noch mehr aus sich heraus." }
+  ],
+  "presets": [{ "name": "Abo-Wahl + Ultra" }]
+}
+{% endschema %}
