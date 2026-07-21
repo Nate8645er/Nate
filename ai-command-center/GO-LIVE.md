@@ -40,3 +40,11 @@ AI Command Center
 
 ## Schlüssel erzeugen (pro Verkauf)
 {PLATTFORM-URL}/admin -> Passwort = LICENSE_SECRET -> Plan -> Erzeugen.
+
+## Neu seit Update (Juli 2026)
+- 8 Bereiche: Missionen, Kommandozentrale (/chat), E-Mail-Zentrale (/email),
+  Autopilot (/workflows), Berichte (/berichte), Team (/team),
+  Integrationen, Admin. Alle nach Vercel-Deploy sofort nutzbar.
+- Werbevideo fuer TikTok/Reels/Shorts: acc-werbevideo-tiktok.mp4
+  (1080x1920, 58s, ohne Musik -- Sound in der App hinzufuegen).
+  Hochladen: TikTok -> Upload -> Video waehlen -> Trend-Sound drueber.

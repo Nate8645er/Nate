@@ -45,7 +45,6 @@ import {
 } from "./team";
 import type {
   AgentConfig,
-  AgentId,
   AgentRole,
   ArtifactFile,
   ChatMessage,
