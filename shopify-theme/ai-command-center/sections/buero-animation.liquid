@@ -1,40 +1,46 @@
 {% comment %}
-  Lebendiges KI-Büro: grüne KI-Roboter (Meta-Grün) tippen mit schwingenden
-  Armen an Schreibtischen, blinzeln und laufen durchs Büro; die Monitore
-  zeigen scrollende Code-Zeilen. Einzigartige Animation, reines CSS
-  (transform/opacity) – zeigt, dass hier eine echte Belegschaft arbeitet.
+  KI-Welt: eine bunte animierte Stadt. Verschiedenfarbige Gebäude mit
+  Neon-Schildern (CODING, MARKETING, ANALYSE …), leuchtende Fenster und
+  bunte Roboter-Figuren, die durch die Welt laufen. Einzigartige
+  Animation, reines CSS (transform/opacity).
 {% endcomment %}
 
-<section class="acc-section acc-buero">
+<section class="acc-section acc-welt-sec">
   <div class="acc-wrap">
     <div class="acc-shead acc-reveal">
       <span class="acc-micro">{{ section.settings.label }}</span>
       <h2>{{ section.settings.titel }}</h2>
-      <p class="acc-buero__intro">{{ section.settings.intro }}</p>
+      <p class="acc-welt__intro">{{ section.settings.intro }}</p>
     </div>
 
-    <div class="acc-buero__stage acc-reveal">
-      {% assign namen = "Commander,Builder,Analyst,Quality,Marketing,Research,Coding,Business" | split: "," %}
-      {% assign posx = "14,38,62,86,14,38,62,86" | split: "," %}
-      {% assign posy = "36,32,32,36,80,84,84,80" | split: "," %}
-      {% assign f1 = "#22c55e,#34d399,#4ade80,#2dd4bf,#10b981,#84cc16,#14b8a6,#22c55e" | split: "," %}
-      {% assign f2 = "#15a34a,#059669,#16a34a,#0d9488,#047857,#4d7c0f,#0f766e,#166534" | split: "," %}
-      {% assign fm = "#86efac,#a7f3d0,#bbf7d0,#99f6e4,#6ee7b7,#d9f99d,#5eead4,#86efac" | split: "," %}
-      {% for n in namen %}
+    <div class="acc-welt acc-reveal">
+      {% assign labels = "HAUPTQUARTIER,WERKSTATT,ANALYSE,QUALITÄT,MARKETING,RESEARCH,CODING,FINANZEN" | split: "," %}
+      {% assign farben = "#ff8c2a,#3b82f6,#06b6d4,#eab308,#ec4899,#8b5cf6,#22c55e,#14b8a6" | split: "," %}
+      {% assign hoehen = "210,165,190,150,185,200,170,160" | split: "," %}
+      <div class="acc-welt__city">
+        {% for lb in labels %}
+          {% assign i = forloop.index0 %}
+          {% assign left = i | times: 94 | divided_by: 8 | plus: 3 %}
+          <div class="acc-bld acc-bld--work" style="left: {{ left }}%; width: 9.6%; height: {{ hoehen[i] }}px; --c: {{ farben[i] }};">
+            <span class="acc-bld__sign">{{ lb }}</span>
+            <div class="acc-bld__win">
+              {% assign wins = hoehen[i] | minus: 30 | divided_by: 18 | times: 3 %}
+              {% for w in (1..wins) %}<i></i>{% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      {% assign botcol = "#ff8c2a,#3b82f6,#22c55e,#ec4899,#8b5cf6,#06b6d4,#eab308,#14b8a6,#f43f5e,#a3e635,#fb923c,#38bdf8,#22c55e,#ec4899" | split: "," %}
+      {% for c in botcol %}
         {% assign i = forloop.index0 %}
-        <div class="acc-desk acc-desk--work" style="left: {{ posx[i] }}%; top: {{ posy[i] }}%;">
-          <div class="acc-screen"><span class="acc-glow"></span><span class="acc-scan"></span></div>
-          <div class="acc-kbd"></div>
-          <div class="acc-top"></div>
-          <div class="acc-deskname">{{ n }}</div>
-        </div>
-        <div class="acc-bot acc-route-{{ i | modulo: 4 | plus: 1 }}"
-             style="left: {{ posx[i] }}%; top: {{ posy[i] | plus: 12 }}%; --f: {{ f1[i] }}; --f2: {{ f2[i] }}; --fm: {{ fm[i] }}; animation-delay: -{{ i | times: 3 }}s;">
-          <span class="acc-arm acc-arm--l"></span>
-          <span class="acc-arm acc-arm--r"></span>
-          <span class="acc-head"><i class="acc-eye"></i></span>
-          <span class="acc-body"></span>
-          <span class="acc-legs"><i></i><i></i></span>
+        {% assign lane = i | times: 37 | modulo: 60 | plus: 4 %}
+        {% assign dauer = i | times: 5 | modulo: 9 | plus: 8 %}
+        {% assign delay = i | times: 13 | modulo: 16 %}
+        {% assign rechts = i | modulo: 2 %}
+        <div class="acc-wbot {% if rechts == 0 %}acc-walk-r{% else %}acc-walk-l{% endif %}"
+             style="bottom: {{ lane }}px; --c: {{ c }}; animation-duration: {{ dauer }}s; animation-delay: -{{ delay }}s;">
+          <span class="acc-wb-inner"><span class="acc-wb-head"></span><span class="acc-wb-body"></span><span class="acc-wb-legs"><i></i><i></i></span></span>
         </div>
       {% endfor %}
     </div>
@@ -42,109 +48,80 @@
 </section>
 
 <style>
-  .acc-buero__intro { max-width: 640px; margin: var(--sp-3) auto 0; color: var(--acc-text-dim); }
-  .acc-buero__stage {
-    position: relative;
-    height: 360px;
-    margin-top: var(--sp-6);
-    border-radius: 22px;
-    overflow: hidden;
-    border: 1px solid rgba(34, 197, 94, 0.24);
+  .acc-welt__intro { max-width: 640px; margin: var(--sp-3) auto 0; color: var(--acc-text-dim); }
+  .acc-welt {
+    position: relative; height: 380px; margin-top: var(--sp-6); border-radius: 22px; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
     background:
-      radial-gradient(60rem 22rem at 50% -30%, rgba(34, 197, 94, 0.14), transparent 60%),
-      radial-gradient(40rem 20rem at 85% 120%, rgba(20, 163, 74, 0.1), transparent 60%),
-      linear-gradient(180deg, #0c1a15, #081210);
+      radial-gradient(50rem 24rem at 20% 0%, rgba(139,92,246,.28), transparent 60%),
+      radial-gradient(46rem 22rem at 80% 8%, rgba(59,130,246,.22), transparent 60%),
+      radial-gradient(40rem 22rem at 55% 100%, rgba(236,72,153,.16), transparent 60%),
+      linear-gradient(180deg, #120a26 0%, #0e1230 45%, #0a1024 100%);
   }
-  .acc-buero__stage::before {
-    content: "";
-    position: absolute;
-    inset: 42% -20% -2% -20%;
-    background:
-      linear-gradient(rgba(52, 211, 153, 0.1) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(52, 211, 153, 0.1) 1px, transparent 1px);
-    background-size: 52px 40px;
-    transform: perspective(360px) rotateX(50deg);
-    transform-origin: top;
+  .acc-welt::before {
+    content: ""; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1.5px 1.5px at 12% 22%, rgba(255,255,255,.8), transparent),
+      radial-gradient(1.5px 1.5px at 32% 12%, rgba(255,255,255,.6), transparent),
+      radial-gradient(1.5px 1.5px at 58% 26%, rgba(255,255,255,.7), transparent),
+      radial-gradient(1.5px 1.5px at 76% 14%, rgba(255,255,255,.55), transparent),
+      radial-gradient(1.5px 1.5px at 90% 30%, rgba(255,255,255,.7), transparent);
+    animation: acc-tw 4s ease-in-out infinite;
   }
-  /* Schreibtisch (modern, dunkel) */
-  .acc-desk { position: absolute; width: 96px; height: 66px; transform: translate(-50%, -50%); }
-  .acc-desk .acc-top {
-    position: absolute; left: 8px; right: 8px; bottom: 16px; height: 11px; border-radius: 4px;
-    background: linear-gradient(#243b34, #16241f); box-shadow: 0 6px 10px -4px rgba(0,0,0,.6), inset 0 1px 0 rgba(74,222,128,.15);
+  @keyframes acc-tw { 0%,100% { opacity:.7; } 50% { opacity:1; } }
+  .acc-welt::after {
+    content: ""; position: absolute; left:0; right:0; bottom:0; height: 84px;
+    background: repeating-linear-gradient(90deg, transparent 0 46px, rgba(255,255,255,.05) 46px 60px), linear-gradient(180deg, #241a52, #0f0c26);
+    border-top: 2px solid rgba(255,255,255,.14);
   }
-  .acc-desk .acc-kbd {
-    position: absolute; left: 50%; bottom: 13px; width: 28px; height: 5px; transform: translateX(-50%);
-    border-radius: 2px; background: repeating-linear-gradient(90deg, #2b463d 0 3px, #1b2e28 3px 4px);
+  .acc-welt__city { position: absolute; left:0; right:0; bottom: 74px; height: 250px; }
+  .acc-bld {
+    position: absolute; bottom: 0; border-radius: 8px 8px 0 0;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--c) 42%, #0c0a1e), #0c0a1e 92%);
+    border: 1px solid color-mix(in srgb, var(--c) 55%, transparent);
+    box-shadow: 0 0 30px -6px color-mix(in srgb, var(--c) 60%, transparent), inset 0 1px 0 rgba(255,255,255,.12);
   }
-  .acc-desk .acc-screen {
-    position: absolute; left: 50%; bottom: 27px; width: 38px; height: 25px; transform: translateX(-50%);
-    border-radius: 4px; background: #06120e; border: 1.5px solid #4ade80; overflow: hidden;
-    box-shadow: 0 0 12px rgba(74,222,128,.35); animation: acc-mon 3.4s ease-in-out infinite;
+  .acc-bld__win { position: absolute; inset: 14px 10px 10px 10px; display: grid; grid-template-columns: repeat(3,1fr); gap: 5px 6px; grid-auto-rows: 9px; }
+  .acc-bld__win i { border-radius: 1.5px; background: color-mix(in srgb, var(--c) 70%, #fff 8%); opacity:.28; animation: acc-win 1.5s ease-in-out infinite; }
+  .acc-bld__win i:nth-child(3n) { animation-delay: .4s; }
+  .acc-bld__win i:nth-child(4n) { animation-delay: .8s; }
+  @keyframes acc-win { 0%,100% { opacity:.25; } 50% { opacity:.95; } }
+  .acc-bld__sign {
+    position: absolute; top: -13px; left: 50%; transform: translateX(-50%); padding: 3px 9px; border-radius: 999px;
+    font-family: var(--acc-mono); font-size: 9px; font-weight: 700; letter-spacing: .12em; white-space: nowrap; color: #fff;
+    background: color-mix(in srgb, var(--c) 85%, #000); box-shadow: 0 0 14px color-mix(in srgb, var(--c) 75%, transparent), inset 0 1px 0 rgba(255,255,255,.3);
   }
-  @keyframes acc-mon { 0%,100% { transform: translateX(-50%) rotate(0); } 50% { transform: translateX(-50%) rotate(-.6deg) translateY(-.4px); } }
-  .acc-desk .acc-glow { position: absolute; inset: 0; background: linear-gradient(160deg, rgba(74,222,128,.5), rgba(21,163,74,.25)); opacity: .2; }
-  .acc-desk .acc-scan {
-    position: absolute; left: 3px; right: 3px; top: 3px; height: 200%;
-    background:
-      linear-gradient(90deg, rgba(134,239,172,.9) 55%, transparent 55%) 0 2px / 22px 2px,
-      linear-gradient(90deg, rgba(134,239,172,.6) 35%, transparent 35%) 0 6px / 16px 2px,
-      linear-gradient(90deg, rgba(134,239,172,.75) 70%, transparent 70%) 0 10px / 26px 2px,
-      linear-gradient(90deg, rgba(134,239,172,.5) 45%, transparent 45%) 0 14px / 20px 2px;
-    background-repeat: repeat-y; animation: acc-scroll 1.2s linear infinite;
-  }
-  @keyframes acc-scroll { from { transform: translateY(-50%); } to { transform: translateY(0); } }
-  .acc-desk .acc-deskname {
-    position: absolute; left: 50%; bottom: -4px; transform: translateX(-50%);
-    font-family: var(--acc-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
-    color: rgba(134, 239, 172, .85); white-space: nowrap;
-  }
-  /* Grüner Roboter */
-  .acc-bot { position: absolute; width: 26px; height: 34px; transform: translate(-50%, -100%); will-change: transform; }
-  .acc-bot .acc-head {
-    display: block; position: relative; width: 16px; height: 13px; margin: 0 auto; border-radius: 6px 6px 5px 5px;
-    background: linear-gradient(var(--f), var(--f2)); box-shadow: inset 0 -2px 3px rgba(0,40,20,.35), inset 0 1px 0 rgba(255,255,255,.4);
-  }
-  .acc-bot .acc-head::before { content: ""; position: absolute; top: -6px; left: 50%; width: 2px; height: 6px; transform: translateX(-50%); background: var(--f); border-radius: 1px; }
-  .acc-bot .acc-head::after { content: ""; position: absolute; top: -9px; left: 50%; width: 4px; height: 4px; transform: translateX(-50%); border-radius: 50%; background: var(--fm); box-shadow: 0 0 6px var(--fm); animation: acc-anten 1.6s ease-in-out infinite; }
-  @keyframes acc-anten { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
-  .acc-bot .acc-eye { position: absolute; top: 4px; left: 3.5px; width: 3.5px; height: 3.5px; border-radius: 50%; background: #eafff2; box-shadow: 5.5px 0 0 #eafff2, 0 0 4px rgba(255,255,255,.6); animation: acc-blink 4s infinite; }
-  @keyframes acc-blink { 0%,92%,100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
-  .acc-bot .acc-body {
-    display: block; position: relative; width: 18px; height: 15px; margin: 1px auto 0; border-radius: 5px;
-    background: linear-gradient(150deg, var(--f), var(--f2)); box-shadow: 0 3px 6px -2px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.35);
-  }
-  .acc-bot .acc-body::before { content: ""; position: absolute; top: 4px; left: 50%; width: 5px; height: 5px; transform: translateX(-50%); border-radius: 50%; background: rgba(234,255,242,.85); box-shadow: 0 0 5px rgba(134,239,172,.9); }
-  .acc-bot .acc-arm { position: absolute; top: 14px; width: 3px; height: 8px; border-radius: 2px; background: linear-gradient(var(--f), var(--f2)); transform-origin: top center; z-index: -1; }
-  .acc-bot .acc-arm--l { left: 2px; animation: acc-swing .34s ease-in-out infinite; }
-  .acc-bot .acc-arm--r { right: 2px; animation: acc-swing .34s ease-in-out infinite reverse; }
-  @keyframes acc-swing { 0%,100% { transform: rotate(22deg); } 50% { transform: rotate(-22deg); } }
-  .acc-bot .acc-legs { display: flex; justify-content: center; gap: 3px; margin-top: 1px; }
-  .acc-bot .acc-legs i { width: 3px; height: 5px; border-radius: 1px; background: #0f2c22; animation: acc-step .34s ease-in-out infinite; }
-  .acc-bot .acc-legs i:last-child { animation-direction: reverse; }
-  @keyframes acc-step { 50% { transform: translateY(-2px); } }
-  .acc-bot::after { content: ""; position: absolute; bottom: -3px; left: 50%; width: 18px; height: 4px; transform: translateX(-50%); border-radius: 50%; background: rgba(0,0,0,.4); filter: blur(1px); }
-  .acc-route-1 { animation: acc-r1 13s ease-in-out infinite; }
-  .acc-route-2 { animation: acc-r2 17s ease-in-out infinite; }
-  .acc-route-3 { animation: acc-r3 15s ease-in-out infinite; }
-  .acc-route-4 { animation: acc-r4 19s ease-in-out infinite; }
-  @keyframes acc-r1 { 0%,100% { transform: translate(-50%,-100%); } 20% { transform: translate(calc(-50% + 90px), calc(-100% + 24px)); } 45% { transform: translate(calc(-50% + 150px), calc(-100% - 8px)); } 70% { transform: translate(calc(-50% - 40px), calc(-100% + 30px)); } }
-  @keyframes acc-r2 { 0%,100% { transform: translate(-50%,-100%); } 25% { transform: translate(calc(-50% - 110px), calc(-100% + 14px)); } 50% { transform: translate(calc(-50% - 60px), calc(-100% + 38px)); } 75% { transform: translate(calc(-50% + 70px), calc(-100% + 6px)); } }
-  @keyframes acc-r3 { 0%,100% { transform: translate(-50%,-100%); } 30% { transform: translate(calc(-50% + 60px), calc(-100% - 26px)); } 60% { transform: translate(calc(-50% - 90px), calc(-100% - 10px)); } }
-  @keyframes acc-r4 { 0%,100% { transform: translate(-50%,-100%); } 22% { transform: translate(calc(-50% - 70px), calc(-100% - 20px)); } 55% { transform: translate(calc(-50% + 120px), calc(-100% + 10px)); } 80% { transform: translate(calc(-50% + 30px), calc(-100% + 34px)); } }
-  @media (max-width: 700px) { .acc-buero__stage { height: 300px; } .acc-desk { transform: translate(-50%, -50%) scale(.82); } }
-  @media (prefers-reduced-motion: reduce) {
-    .acc-bot, .acc-bot .acc-arm, .acc-bot .acc-legs i, .acc-bot .acc-eye, .acc-bot .acc-head::after, .acc-desk .acc-screen, .acc-desk .acc-scan { animation: none !important; }
-  }
+  /* Roboter */
+  .acc-wbot { position: absolute; z-index: 4; width: 28px; height: 36px;
+    filter: drop-shadow(0 0 7px color-mix(in srgb, var(--c) 75%, transparent)) drop-shadow(0 4px 4px rgba(0,0,0,.5));
+    animation-timing-function: linear; animation-iteration-count: infinite; }
+  .acc-walk-r { animation-name: acc-wr; }
+  .acc-walk-l { animation-name: acc-wl; }
+  @keyframes acc-wr { from { left: -6%; } to { left: 106%; } }
+  @keyframes acc-wl { from { left: 106%; transform: scaleX(-1); } to { left: -6%; transform: scaleX(-1); } }
+  .acc-wb-inner { display:block; animation: acc-bob .5s ease-in-out infinite; }
+  @keyframes acc-bob { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-1.5px);} }
+  .acc-wb-head { display:block; position: relative; width: 18px; height: 15px; margin: 0 auto; border-radius: 5px 5px 4px 4px; background: linear-gradient(var(--c), color-mix(in srgb, var(--c) 60%, #000)); box-shadow: inset 0 1px 0 rgba(255,255,255,.4); }
+  .acc-wb-head::before { content:""; position:absolute; top:-6px; left:50%; width:2.5px; height:6px; transform:translateX(-50%); background:var(--c); border-radius:1px; box-shadow:0 -2px 7px var(--c); }
+  .acc-wb-head::after { content:""; position:absolute; top:5px; left:3.5px; width:4px; height:4px; border-radius:50%; background:#fff; box-shadow:6px 0 0 #fff, 0 0 5px rgba(255,255,255,.8); }
+  .acc-wb-body { display:block; width: 20px; height: 15px; margin: 1px auto 0; border-radius: 5px; background: linear-gradient(150deg, var(--c), color-mix(in srgb, var(--c) 55%, #000)); box-shadow: inset 0 1px 0 rgba(255,255,255,.35); }
+  .acc-wb-legs { display:flex; justify-content:center; gap:3px; margin-top:1px; }
+  .acc-wb-legs i { width:4px; height:6px; border-radius:1px; background:#1a1533; animation: acc-step .3s ease-in-out infinite; }
+  .acc-wb-legs i:last-child { animation-direction: reverse; }
+  @keyframes acc-step { 50% { transform: translateY(-2px);} }
+  .acc-wbot::after { content:""; position:absolute; bottom:-2px; left:50%; width:20px; height:4px; transform:translateX(-50%); border-radius:50%; background:rgba(0,0,0,.5); filter: blur(1px); }
+  @media (max-width: 700px) { .acc-welt { height: 320px; } }
+  @media (prefers-reduced-motion: reduce) { .acc-welt::before, .acc-wbot, .acc-wb-inner, .acc-wb-legs i, .acc-bld__win i { animation: none !important; } }
 </style>
 
 {% schema %}
 {
-  "name": "KI-Büro Animation",
+  "name": "KI-Welt Animation",
   "settings": [
     { "type": "text", "id": "label", "label": "Micro-Label", "default": "IHRE BELEGSCHAFT LEBT" },
-    { "type": "text", "id": "titel", "label": "Titel", "default": "Kein Chatbot – ein ganzes Büro, das für Sie arbeitet." },
-    { "type": "textarea", "id": "intro", "label": "Intro", "default": "Bei jedem Auftrag setzt sich Ihre KI-Belegschaft an die Arbeit: Der Commander plant, die Spezialisten führen aus, Quality prüft. Sehen Sie live zu, wie Ihr Team arbeitet." }
+    { "type": "text", "id": "titel", "label": "Titel", "default": "Eine ganze KI-Stadt, die für Sie arbeitet." },
+    { "type": "textarea", "id": "intro", "label": "Intro", "default": "Jede Abteilung ein eigenes Gebäude – Coding, Marketing, Analyse, Finanzen und mehr. Ihre bunte KI-Belegschaft läuft durch die Welt und erledigt Auftrag für Auftrag. Kein Chatbot." }
   ],
-  "presets": [{ "name": "KI-Büro Animation" }]
+  "presets": [{ "name": "KI-Welt Animation" }]
 }
 {% endschema %}
