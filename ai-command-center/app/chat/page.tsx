@@ -1,138 +1,130 @@
 "use client";
 
 /**
- * KI-Chat für Mitarbeitende – aufgeräumtes Chat-Interface im Stil moderner
- * KI-Assistenten, in der Markenwelt des AI Command Center (dunkel + Amber).
+ * Kommandozentrale – der Chef gibt Befehle, die Belegschaft FÜHRT AUS.
  *
- * - Konversationen liegen in localStorage (acc-chat-conversations).
- * - Lizenz-/Usage-Token werden mit dem Dashboard geteilt (gleiche Keys),
- *   jede Antwort zählt auf das Tageslimit des Plans.
- * - Kein Streaming: /api/chat antwortet als JSON; die UI zeigt einen
- *   Denk-Indikator und blendet die Antwort weich ein.
+ * Bewusst KEIN Chatbot: Jeder Befehl startet eine echte Mission über
+ * /api/mission. Im Verlauf sieht man live, welche Agenten arbeiten, und
+ * am Ende stehen fertige Dateien (Download + Vorschau) plus Bericht –
+ * nicht eine Chat-Antwort.
+ *
+ * Verlauf in localStorage (acc-kommandos); Lizenz-/Usage-Token und
+ * Branchen-Kontext werden mit dem Dashboard geteilt.
  */
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { ArtifactFile } from "@/lib/agents/types";
 
-const CONVERSATIONS_KEY = "acc-chat-conversations";
+const KOMMANDOS_KEY = "acc-kommandos";
 const LICENSE_TOKEN_KEY = "acc-license-token";
 const USAGE_TOKEN_KEY = "acc-usage-token";
 const BRANCHE_KEY = "acc-branche";
 const GROESSE_KEY = "acc-groesse";
-const MAX_CONVERSATIONS = 30;
+const MAX_ENTRIES = 20;
 
-interface ChatMsg {
-  role: "user" | "assistant";
-  content: string;
-}
-
-interface Conversation {
+interface Kommando {
   id: string;
-  title: string;
-  messages: ChatMsg[];
-  updatedAt: number;
+  befehl: string;
+  at: string;
+  score: number | null;
+  final: string | null;
+  artifacts: ArtifactFile[];
+  workforce: number | null;
+  fehler: string | null;
 }
 
-interface UsageInfo {
-  used: number;
-  limit: number;
-  plan: string;
+interface LiveState {
+  entryId: string;
+  aktivitaet: string[];
 }
 
 const BEISPIELE = [
-  "Schreib mir eine freundliche Antwort auf eine Kundenreklamation",
-  "5 Social-Media-Ideen für diese Woche",
-  "Erkläre mir kurz, was ein Deckungsbeitrag ist",
-  "Formuliere ein Angebot für einen Website-Auftrag über 4'500 CHF",
+  "Erstelle eine Landingpage für unsere neue Dienstleistung",
+  "Kontrolliere dieses Angebot auf Schwachstellen: 3 Websites für 12'000 CHF, Lieferzeit 2 Wochen",
+  "Erstelle einen kompletten Marketingplan für das nächste Quartal",
+  "Analysiere unsere Preisstruktur und mach konkrete Verbesserungsvorschläge",
 ];
 
-export default function ChatPage() {
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+const MIME_BY_LANGUAGE: Record<string, string> = {
+  html: "text/html",
+  css: "text/css",
+  javascript: "text/javascript",
+  typescript: "text/plain",
+  markdown: "text/markdown",
+  json: "application/json",
+};
+
+export default function KommandoPage() {
+  const [entries, setEntries] = useState<Kommando[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [usage, setUsage] = useState<UsageInfo | null>(null);
+  const [live, setLive] = useState<LiveState | null>(null);
+  const [usageInfo, setUsageInfo] = useState<{ used: number; limit: number; plan: string } | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const bottomRef = useRef<HTMLDivElement | null>(null);
-  const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
-  const active = conversations.find((c) => c.id === activeId) ?? null;
+  const active = entries.find((e) => e.id === activeId) ?? null;
+  const running = live !== null;
 
-  /* Konversationen laden */
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(CONVERSATIONS_KEY);
+      const raw = localStorage.getItem(KOMMANDOS_KEY);
       if (raw) {
-        const parsed = JSON.parse(raw) as Conversation[];
+        const parsed = JSON.parse(raw) as Kommando[];
         if (Array.isArray(parsed)) {
-          setConversations(parsed);
+          setEntries(parsed);
           if (parsed.length > 0) setActiveId(parsed[0].id);
         }
       }
     } catch {
-      /* defekter Storage => leer starten */
+      /* defekter Storage => leer */
     }
   }, []);
 
-  const persist = useCallback((next: Conversation[]) => {
-    setConversations(next);
+  const persist = useCallback((next: Kommando[]) => {
+    setEntries(next);
     try {
-      localStorage.setItem(CONVERSATIONS_KEY, JSON.stringify(next.slice(0, MAX_CONVERSATIONS)));
+      localStorage.setItem(KOMMANDOS_KEY, JSON.stringify(next.slice(0, MAX_ENTRIES)));
     } catch {
-      /* Storage voll */
+      // Storage voll (grosse Artefakte): ohne Artefakte erneut versuchen.
+      try {
+        localStorage.setItem(
+          KOMMANDOS_KEY,
+          JSON.stringify(next.slice(0, 10).map((e) => ({ ...e, artifacts: [] }))),
+        );
+      } catch {
+        /* endgültig voll */
+      }
     }
   }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [active?.messages.length, loading]);
+  }, [live?.aktivitaet.length, active?.final]);
 
-  const newConversation = useCallback(() => {
-    setActiveId(null);
-    setError(null);
-    setSidebarOpen(false);
-    inputRef.current?.focus();
-  }, []);
-
-  const deleteConversation = useCallback(
-    (id: string) => {
-      const next = conversations.filter((c) => c.id !== id);
-      persist(next);
-      if (activeId === id) setActiveId(next[0]?.id ?? null);
-    },
-    [conversations, activeId, persist],
-  );
-
-  const send = useCallback(
+  /** Befehl ausführen = echte Mission starten und Events live rendern. */
+  const ausfuehren = useCallback(
     async (text: string) => {
-      const frage = text.trim();
-      if (!frage || loading) return;
-      setError(null);
+      const befehl = text.trim();
+      if (!befehl || running) return;
       setInput("");
-      setLoading(true);
 
-      /* Konversation anlegen oder erweitern */
-      let conv: Conversation;
-      let rest: Conversation[];
-      if (active) {
-        conv = {
-          ...active,
-          messages: [...active.messages, { role: "user", content: frage }],
-          updatedAt: Date.now(),
-        };
-        rest = conversations.filter((c) => c.id !== active.id);
-      } else {
-        conv = {
-          id: `c${Date.now().toString(36)}`,
-          title: frage.slice(0, 60),
-          messages: [{ role: "user", content: frage }],
-          updatedAt: Date.now(),
-        };
-        rest = conversations;
-        setActiveId(conv.id);
-      }
-      persist([conv, ...rest]);
+      const entry: Kommando = {
+        id: `k${Date.now().toString(36)}`,
+        befehl,
+        at: new Date().toISOString(),
+        score: null,
+        final: null,
+        artifacts: [],
+        workforce: null,
+        fehler: null,
+      };
+      const rest = entries;
+      persist([entry, ...rest]);
+      setActiveId(entry.id);
+      setSidebarOpen(false);
+      setLive({ entryId: entry.id, aktivitaet: ["Belegschaft wird zusammengestellt …"] });
 
       try {
         const headers: Record<string, string> = { "content-type": "application/json" };
@@ -144,53 +136,108 @@ export default function ChatPage() {
         } catch {
           /* Storage nicht lesbar */
         }
-        const context = {
-          branche: safeGet(BRANCHE_KEY),
-          groesse: safeGet(GROESSE_KEY),
-        };
-        const res = await fetch("/api/chat", {
+        const context = { branche: safeGet(BRANCHE_KEY), groesse: safeGet(GROESSE_KEY) };
+        const res = await fetch("/api/mission", {
           method: "POST",
           headers,
-          body: JSON.stringify({ messages: conv.messages, context }),
+          body: JSON.stringify({ goal: befehl, context }),
         });
-        const data = (await res.json()) as {
-          ok: boolean;
-          text?: string;
-          error?: string;
-          usage?: { token: string; used: number; limit: number; plan: string };
-        };
-        if (data.usage) {
-          setUsage({ used: data.usage.used, limit: data.usage.limit, plan: data.usage.plan });
-          try {
-            localStorage.setItem(USAGE_TOKEN_KEY, data.usage.token);
-          } catch {
-            /* Storage voll */
+        if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        const ergebnis: Partial<Kommando> = {};
+
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const parts = buffer.split("\n\n");
+          buffer = parts.pop() ?? "";
+          for (const part of parts) {
+            const line = part.split("\n").find((l) => l.startsWith("data: "));
+            if (!line) continue;
+            let ev: {
+              type: string;
+              status?: string;
+              message?: string;
+              label?: string;
+              agent?: string;
+              department?: string;
+              workforce?: number;
+              score?: number;
+              content?: string;
+              files?: ArtifactFile[];
+              token?: string;
+              used?: number;
+              limit?: number;
+              plan?: string;
+            };
+            try {
+              ev = JSON.parse(line.slice(6));
+            } catch {
+              continue;
+            }
+            if (ev.type === "usage" && ev.token) {
+              try {
+                localStorage.setItem(USAGE_TOKEN_KEY, ev.token);
+              } catch {
+                /* voll */
+              }
+              if (typeof ev.used === "number" && typeof ev.limit === "number" && ev.plan) {
+                setUsageInfo({ used: ev.used, limit: ev.limit, plan: ev.plan });
+              }
+            } else if (ev.type === "status" && ev.status === "working") {
+              const wer = ev.label ?? rollenName(ev.agent) ?? "Team";
+              const abteilung = ev.department ? ` (${ev.department})` : "";
+              setLive((l) =>
+                l ? { ...l, aktivitaet: [...l.aktivitaet.slice(-7), `${wer}${abteilung}: ${ev.message ?? "arbeitet"}`] } : l,
+              );
+            } else if (ev.type === "org" && typeof ev.workforce === "number") {
+              ergebnis.workforce = ev.workforce;
+              setLive((l) =>
+                l
+                  ? { ...l, aktivitaet: [...l.aktivitaet.slice(-7), `Virtuelle Firma gegründet: ${ev.workforce} Mitarbeitende`] }
+                  : l,
+              );
+            } else if (ev.type === "score" && typeof ev.score === "number") {
+              ergebnis.score = ev.score;
+            } else if (ev.type === "artifact" && Array.isArray(ev.files)) {
+              ergebnis.artifacts = ev.files;
+            } else if (ev.type === "final" && typeof ev.content === "string") {
+              ergebnis.final = ev.content;
+            } else if (ev.type === "error" && typeof ev.message === "string") {
+              ergebnis.fehler = ev.message;
+            }
           }
         }
-        if (!data.ok || !data.text) {
-          setError(data.error ?? "Die Antwort konnte nicht erstellt werden.");
-        } else {
-          const withAnswer: Conversation = {
-            ...conv,
-            messages: [...conv.messages, { role: "assistant", content: data.text }],
-            updatedAt: Date.now(),
-          };
-          persist([withAnswer, ...rest]);
-        }
+
+        persist([
+          {
+            ...entry,
+            score: ergebnis.score ?? null,
+            final: ergebnis.final ?? null,
+            artifacts: ergebnis.artifacts ?? [],
+            workforce: ergebnis.workforce ?? null,
+            fehler: ergebnis.final ? null : (ergebnis.fehler ?? null),
+          },
+          ...rest,
+        ]);
       } catch {
-        setError("Netzwerkfehler – bitte erneut versuchen.");
+        persist([{ ...entry, fehler: "Netzwerkfehler – bitte erneut versuchen." }, ...rest]);
       } finally {
-        setLoading(false);
+        setLive(null);
       }
     },
-    [active, conversations, loading, persist],
+    [entries, running, persist],
   );
 
   return (
     <div className="flex h-dvh bg-[#0b0a08] text-zinc-200">
       <div className="hud-texture" aria-hidden="true" />
 
-      {/* Sidebar */}
+      {/* Seitenleiste: Befehls-Verlauf */}
       <aside
         className={`${sidebarOpen ? "flex" : "hidden"} fixed inset-y-0 left-0 z-40 w-72 flex-col border-r border-[#ff8c2a]/15 bg-[#0e0c0a] md:static md:flex`}
       >
@@ -200,96 +247,86 @@ export default function ChatPage() {
         </div>
         <div className="p-3">
           <button
-            onClick={newConversation}
+            onClick={() => {
+              setActiveId(null);
+              setSidebarOpen(false);
+            }}
             className="shop-btn w-full rounded-lg border border-[#ff8c2a]/40 bg-[#ff8c2a]/10 px-4 py-2.5 text-sm font-semibold text-[#ffb35c] transition hover:bg-[#ff8c2a]/20"
           >
-            + Neuer Chat
+            + Neuer Befehl
           </button>
         </div>
-        <nav className="flex-1 space-y-1 overflow-y-auto px-3 pb-3" aria-label="Chat-Verlauf">
-          {conversations.map((c) => (
-            <div
-              key={c.id}
-              className={`group flex items-center gap-2 rounded-lg px-3 py-2 text-sm ${
-                c.id === activeId
+        <nav className="flex-1 space-y-1 overflow-y-auto px-3 pb-3" aria-label="Befehls-Verlauf">
+          {entries.map((e) => (
+            <button
+              key={e.id}
+              onClick={() => {
+                setActiveId(e.id);
+                setSidebarOpen(false);
+              }}
+              className={`block w-full truncate rounded-lg px-3 py-2 text-left text-sm ${
+                e.id === activeId
                   ? "bg-[#ff8c2a]/15 text-[#ffb35c]"
                   : "text-zinc-400 hover:bg-[#ff8c2a]/5 hover:text-zinc-200"
               }`}
+              title={e.befehl}
             >
-              <button
-                onClick={() => {
-                  setActiveId(c.id);
-                  setSidebarOpen(false);
-                }}
-                className="flex-1 truncate text-left"
-                title={c.title}
-              >
-                {c.title}
-              </button>
-              <button
-                onClick={() => deleteConversation(c.id)}
-                className="hidden text-zinc-600 hover:text-red-400 group-hover:block"
-                aria-label={`Chat "${c.title}" löschen`}
-              >
-                ✕
-              </button>
-            </div>
+              {e.artifacts.length > 0 && <span aria-hidden="true">📄 </span>}
+              {e.befehl}
+            </button>
           ))}
-          {conversations.length === 0 && (
-            <p className="px-3 py-2 text-xs text-zinc-600">Noch keine Chats.</p>
-          )}
+          {entries.length === 0 && <p className="px-3 py-2 text-xs text-zinc-600">Noch keine Befehle.</p>}
         </nav>
         <div className="border-t border-[#ff8c2a]/15 p-3 text-xs text-zinc-500">
-          {usage ? (
+          {usageInfo ? (
             <p>
-              {usage.plan} · {usage.used} von {usage.limit} heute
+              {usageInfo.plan} · {usageInfo.used} von {usageInfo.limit} Missionen heute
             </p>
           ) : (
-            <p>Jede Antwort zählt als Mission.</p>
+            <p>Jeder Befehl ist eine echte Mission.</p>
           )}
         </div>
       </aside>
 
       {/* Hauptbereich */}
       <div className="relative z-10 flex min-w-0 flex-1 flex-col">
-        {/* Kopfzeile */}
         <header className="flex items-center justify-between border-b border-[#ff8c2a]/15 bg-[#0b0a08]/80 px-4 py-3 backdrop-blur">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen((v) => !v)}
               className="rounded-md border border-[#ff8c2a]/25 px-2.5 py-1.5 text-sm text-[#ffb35c] md:hidden"
-              aria-label="Chat-Verlauf öffnen"
+              aria-label="Befehls-Verlauf öffnen"
             >
               ☰
             </button>
-            <h1 className="text-sm font-semibold text-white">KI-Chat</h1>
+            <h1 className="text-sm font-semibold text-white">Kommandozentrale</h1>
           </div>
           <nav className="flex items-center gap-4 text-sm text-zinc-400" aria-label="Bereiche">
             <Link href="/dashboard" className="hover:text-[#ffb35c]">Missionen</Link>
-            <span className="text-[#ffb35c]">Chat</span>
+            <span className="text-[#ffb35c]">Kommando</span>
             <Link href="/workflows" className="hover:text-[#ffb35c]">Autopilot</Link>
-            <Link href="/integrationen" className="hidden hover:text-[#ffb35c] sm:inline">Integrationen</Link>
+            <Link href="/berichte" className="hidden hover:text-[#ffb35c] sm:inline">Berichte</Link>
+            <Link href="/team" className="hidden hover:text-[#ffb35c] sm:inline">Team</Link>
           </nav>
         </header>
 
-        {/* Nachrichten */}
         <main className="flex-1 overflow-y-auto px-4 py-6">
           <div className="mx-auto max-w-3xl">
-            {!active && (
+            {!active && !running && (
               <div className="flex min-h-[50vh] flex-col items-center justify-center text-center">
-                <p className="hud-label mb-4">Ihr persönlicher Assistent</p>
+                <p className="hud-label mb-4">Sie befehlen. Ihre Belegschaft liefert.</p>
                 <h2 className="text-balance text-3xl font-semibold text-white sm:text-4xl">
-                  Womit kann Ihr KI-Team helfen?
+                  Was soll Ihre Belegschaft erledigen?
                 </h2>
                 <p className="mt-3 max-w-md text-sm text-zinc-500">
-                  Schnelle Fragen, Texte und Ideen hier im Chat – grosse fertige
-                  Ergebnisse als Mission im Dashboard.
+                  Kein Chatbot: Jeder Befehl startet Ihr KI-Team und endet mit einem
+                  fertigen Ergebnis – Dateien, Berichte, Analysen.
                 </p>
                 <div className="mt-8 grid w-full gap-2 sm:grid-cols-2">
                   {BEISPIELE.map((b) => (
                     <button
                       key={b}
-                      onClick={() => send(b)}
+                      onClick={() => ausfuehren(b)}
                       className="shop-btn rounded-xl border border-[#ff8c2a]/20 bg-[#ff8c2a]/[0.04] px-4 py-3 text-left text-sm text-zinc-300 transition hover:border-[#ff8c2a]/50 hover:bg-[#ff8c2a]/10"
                     >
                       {b}
@@ -299,75 +336,136 @@ export default function ChatPage() {
               </div>
             )}
 
-            {active?.messages.map((m, i) =>
-              m.role === "user" ? (
-                <div key={i} className="mb-6 flex justify-end">
+            {active && (
+              <>
+                {/* Befehl */}
+                <div className="mb-6 flex justify-end">
                   <div className="max-w-[85%] rounded-2xl rounded-br-md border border-[#ff8c2a]/25 bg-[#ff8c2a]/10 px-4 py-3 text-sm leading-relaxed text-zinc-100">
-                    {m.content}
+                    {active.befehl}
                   </div>
                 </div>
-              ) : (
-                <div key={i} className="mb-8 flex gap-3">
-                  <span
-                    className="mt-1.5 inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f]"
-                    aria-hidden="true"
-                  />
-                  <div className="hud-modal-in min-w-0 flex-1 text-sm leading-relaxed text-zinc-200">
-                    <Rendered text={m.content} />
-                  </div>
-                </div>
-              ),
-            )}
 
-            {loading && (
-              <div className="mb-8 flex items-center gap-3 text-sm text-zinc-500">
-                <span className="hud-pulse inline-block h-2.5 w-2.5 rounded-full bg-[#ff8c2a]" />
-                Ihr Assistent denkt nach …
-              </div>
-            )}
-            {error && (
-              <p className="mb-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-                {error}
-              </p>
+                {/* Live-Aktivität */}
+                {running && live?.entryId === active.id && (
+                  <div className="hud-panel mb-6 rounded-xl p-4">
+                    <p className="hud-label mb-3">Belegschaft arbeitet</p>
+                    <ul className="space-y-1.5 text-sm text-zinc-400">
+                      {live.aktivitaet.map((a, i) => (
+                        <li key={i} className="flex items-center gap-2">
+                          <span
+                            className={`inline-block h-1.5 w-1.5 rounded-full ${i === live.aktivitaet.length - 1 ? "hud-pulse bg-[#ff8c2a]" : "bg-[#ff8c2a]/30"}`}
+                          />
+                          {a}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Ergebnis */}
+                {!running && active.fehler && (
+                  <p className="mb-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                    {active.fehler}
+                  </p>
+                )}
+                {active.final && (
+                  <div className="hud-panel hud-corners relative mb-6 rounded-xl p-5">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="hud-label">Ausgeführt – Ihr Ergebnis</p>
+                      <div className="flex items-center gap-3 text-xs text-zinc-400">
+                        {active.workforce && <span>{active.workforce} Mitarbeitende im Einsatz</span>}
+                        {typeof active.score === "number" && (
+                          <span className="rounded-full border border-[#ffd257]/50 bg-[#ffd257]/10 px-2.5 py-0.5 font-semibold text-[#ffd257]">
+                            Quality-Score {active.score}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {active.artifacts.length > 0 && (
+                      <div className="mt-4 space-y-2">
+                        {active.artifacts.map((f) => (
+                          <div
+                            key={f.path}
+                            className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[#ff8c2a]/25 bg-[#ff8c2a]/[0.05] px-4 py-3"
+                          >
+                            <div className="min-w-0">
+                              <p className="truncate font-mono text-sm text-[#ffb35c]">📄 {f.path}</p>
+                              <p className="text-xs text-zinc-500">
+                                {f.language.toUpperCase()} · {Math.max(1, Math.round(f.content.length / 1024))} KB
+                              </p>
+                            </div>
+                            <div className="flex gap-2">
+                              {f.language === "html" && (
+                                <button
+                                  onClick={() => vorschau(f)}
+                                  className="shop-btn rounded-md border border-[#ff8c2a]/40 px-3 py-1.5 text-xs font-semibold text-[#ffb35c]"
+                                >
+                                  Vorschau
+                                </button>
+                              )}
+                              <button
+                                onClick={() => download(f)}
+                                className="shop-btn rounded-md bg-gradient-to-r from-[#ffb066] to-[#ff5f1f] px-3 py-1.5 text-xs font-bold text-[#1a0f04]"
+                              >
+                                Download
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <details className="mt-4">
+                      <summary className="cursor-pointer text-sm text-zinc-400 hover:text-[#ffb35c]">
+                        Bericht der Belegschaft anzeigen
+                      </summary>
+                      <div className="mt-3 whitespace-pre-wrap border-t border-[#ff8c2a]/15 pt-3 text-sm leading-relaxed text-zinc-300">
+                        {active.final}
+                      </div>
+                    </details>
+                  </div>
+                )}
+              </>
             )}
             <div ref={bottomRef} />
           </div>
         </main>
 
-        {/* Eingabe */}
+        {/* Befehlseingabe */}
         <footer className="border-t border-[#ff8c2a]/15 bg-[#0b0a08]/90 px-4 py-4 backdrop-blur">
           <form
             className="mx-auto flex max-w-3xl items-end gap-2"
             onSubmit={(e) => {
               e.preventDefault();
-              send(input);
+              ausfuehren(input);
             }}
           >
             <textarea
-              ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
-                  send(input);
+                  ausfuehren(input);
                 }
               }}
               rows={Math.min(6, Math.max(1, input.split("\n").length))}
-              placeholder="Frage oder Auftrag eingeben … (Enter zum Senden)"
+              placeholder='Befehl an Ihre Belegschaft … («Erstelle …», «Kontrolliere …», «Analysiere …»)'
               className="min-h-[48px] flex-1 resize-none rounded-xl border border-[#ff8c2a]/25 bg-[#12100d] px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-[#ff8c2a]/60 focus:outline-none"
-              aria-label="Chat-Eingabe"
+              aria-label="Befehl eingeben"
+              disabled={running}
             />
             <button
               type="submit"
-              disabled={loading || !input.trim()}
+              disabled={running || !input.trim()}
               className="shop-btn rounded-xl bg-gradient-to-r from-[#ffb066] via-[#ff8c2a] to-[#ff5f1f] px-5 py-3 text-sm font-bold text-[#1a0f04] disabled:opacity-40"
             >
-              Senden
+              {running ? "Läuft …" : "Ausführen"}
             </button>
           </form>
           <p className="mx-auto mt-2 max-w-3xl text-center text-[11px] text-zinc-600">
-            KI-Antworten können Fehler enthalten. Wichtige Angaben bitte prüfen.
+            Jeder Befehl wird von Ihrer KI-Belegschaft ausgeführt und endet mit einem fertigen Ergebnis.
           </p>
         </footer>
       </div>
@@ -375,53 +473,38 @@ export default function ChatPage() {
   );
 }
 
-/** Sehr schlanke Markdown-Darstellung: Absätze, Listen, **fett**. */
-function Rendered({ text }: { text: string }) {
-  const blocks = text.split(/\n{2,}/);
-  return (
-    <div className="space-y-3">
-      {blocks.map((block, bi) => {
-        const lines = block.split("\n");
-        const isList = lines.every((l) => /^\s*([-*]|\d+\.)\s+/.test(l.trim()) || !l.trim());
-        if (isList) {
-          return (
-            <ul key={bi} className="list-disc space-y-1 pl-5">
-              {lines
-                .filter((l) => l.trim())
-                .map((l, li) => (
-                  <li key={li}>
-                    <Bold text={l.replace(/^\s*([-*]|\d+\.)\s+/, "")} />
-                  </li>
-                ))}
-            </ul>
-          );
-        }
-        return (
-          <p key={bi} className="whitespace-pre-wrap">
-            <Bold text={block} />
-          </p>
-        );
-      })}
-    </div>
-  );
+function rollenName(agent: string | undefined): string | null {
+  if (!agent) return null;
+  const NAMEN: Record<string, string> = {
+    commander: "Commander",
+    builder: "Builder",
+    analyst: "Analyst",
+    quality: "Quality",
+    marketing: "Marketing",
+    coding: "Coding",
+    research: "Research",
+    business: "Business",
+  };
+  return NAMEN[agent] ?? agent.replace(/^dyn:/, "");
 }
 
-/** Ersetzt **fett** durch <strong>, alles andere bleibt Text. */
-function Bold({ text }: { text: string }) {
-  const parts = text.split(/\*\*(.+?)\*\*/g);
-  return (
-    <>
-      {parts.map((p, i) =>
-        i % 2 === 1 ? (
-          <strong key={i} className="font-semibold text-white">
-            {p}
-          </strong>
-        ) : (
-          p
-        ),
-      )}
-    </>
-  );
+function download(f: ArtifactFile) {
+  const blob = new Blob([f.content], {
+    type: `${MIME_BY_LANGUAGE[f.language] ?? "text/plain"};charset=utf-8`,
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = f.path.split("/").pop() ?? "datei.txt";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function vorschau(f: ArtifactFile) {
+  const blob = new Blob([f.content], { type: "text/html;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  window.open(url, "_blank", "noopener");
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }
 
 function safeGet(key: string): string | undefined {

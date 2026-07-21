@@ -243,9 +243,10 @@ export default function WorkflowsPage() {
           </div>
           <nav className="flex items-center gap-4 text-sm text-zinc-400" aria-label="Bereiche">
             <Link href="/dashboard" className="hover:text-[#ffb35c]">Missionen</Link>
-            <Link href="/chat" className="hover:text-[#ffb35c]">Chat</Link>
+            <Link href="/chat" className="hover:text-[#ffb35c]">Kommando</Link>
             <span className="text-[#ffb35c]">Autopilot</span>
-            <Link href="/integrationen" className="hidden hover:text-[#ffb35c] sm:inline">Integrationen</Link>
+            <Link href="/berichte" className="hidden hover:text-[#ffb35c] sm:inline">Berichte</Link>
+            <Link href="/team" className="hidden hover:text-[#ffb35c] sm:inline">Team</Link>
           </nav>
         </header>
 

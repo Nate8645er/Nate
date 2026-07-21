@@ -190,16 +190,17 @@ const FEATURES = [
     ),
   },
   {
-    title: "KI-Chat für Mitarbeitende",
-    text: "Schnelle Fragen, Texte und Ideen im direkten Gespräch mit Ihrem Assistenten – zugeschnitten auf Ihre Branche.",
+    title: "Kommandozentrale für den Chef",
+    text: "Kein Chatbot: Sie geben Befehle – «Erstelle», «Kontrolliere», «Analysiere» – und Ihre Belegschaft führt aus, bis das fertige Ergebnis mit Dateien vorliegt.",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" className="h-7 w-7">
-        <path d="M4 5.5h16v10.5H9L4.5 20V5.5Z" strokeLinejoin="round" />
-        <path d="M8 9.5h8M8 12.5h5" strokeLinecap="round" />
+        <path d="M4 5h16v12H4z" strokeLinejoin="round" />
+        <path d="m7 9 3 2.5L7 14M12.5 14H17" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M9 20.5h6" strokeLinecap="round" />
       </svg>
     ),
     href: "/chat",
-    linkLabel: "Chat öffnen",
+    linkLabel: "Kommandozentrale öffnen",
   },
   {
     title: "Autopilot-Workflows",
