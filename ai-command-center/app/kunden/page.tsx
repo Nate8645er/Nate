@@ -28,6 +28,8 @@ interface Kunde {
   name: string;
   firma: string;
   email: string;
+  /** Optional, mit Ländervorwahl (z. B. +41 79 123 45 67) – für WhatsApp. */
+  telefon?: string;
   status: Status;
   notiz: string;
 }
@@ -44,6 +46,7 @@ export default function KundenPage() {
   const [name, setName] = useState("");
   const [firma, setFirma] = useState("");
   const [email, setEmail] = useState("");
+  const [telefon, setTelefon] = useState("");
   const [offenNotiz, setOffenNotiz] = useState<string | null>(null);
 
   useEffect(() => {
@@ -76,6 +79,7 @@ export default function KundenPage() {
         name: n,
         firma: firma.trim().slice(0, 80),
         email: email.trim().slice(0, 120),
+        telefon: telefon.trim().slice(0, 30),
         status: "Lead",
         notiz: "",
       },
@@ -84,6 +88,7 @@ export default function KundenPage() {
     setName("");
     setFirma("");
     setEmail("");
+    setTelefon("");
   };
 
   /** Verbindung 1: Offerte in der Kommandozentrale, Befehl vorbefüllt. */
@@ -97,6 +102,15 @@ export default function KundenPage() {
     `/email?an=${encodeURIComponent(k.email)}&auftrag=${encodeURIComponent(
       `E-Mail an ${k.name}${k.firma ? ` von ${k.firma}` : ""}: [worum geht es]`,
     )}`;
+
+  /** Verbindung 3: WhatsApp Click-to-Chat (wa.me) – öffnet den Chat mit
+   *  vorbefüllter Nachricht direkt in WhatsApp (PC und Handy), ohne API. */
+  const whatsappLink = (k: Kunde) => {
+    const nummer = (k.telefon ?? "").replace(/\D/g, "");
+    if (!nummer) return null;
+    const text = `Guten Tag ${k.name}${k.firma ? ` (${k.firma})` : ""}, `;
+    return `https://wa.me/${nummer}?text=${encodeURIComponent(text)}`;
+  };
 
   const zaehler = (s: Status) => kunden.filter((k) => k.status === s).length;
 
@@ -118,8 +132,11 @@ export default function KundenPage() {
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#8d8172]">
             Vom Lead bis zum Kunden: Kontakte verwalten und direkt handeln –
-            ein Klick, und Ihre KI schreibt die E-Mail oder erstellt die
-            Offerte für genau diesen Kunden. Rechnungen und Mahnungen:{" "}
+            ein Klick, und Ihre KI schreibt die E-Mail, die WhatsApp-Nachricht
+            oder die Offerte für genau diesen Kunden. Mit Telefonnummer öffnet
+            sich der WhatsApp-Chat direkt vorbefüllt ({" "}
+            <Link href="/chat?befehl=%2Fwhatsapp" className="font-medium text-[#c25e0e] hover:underline">/whatsapp</Link>
+            {" "}). Rechnungen und Mahnungen:{" "}
             <Link href="/chat?befehl=%2Frechnung" className="font-medium text-[#c25e0e] hover:underline">/rechnung</Link>{" "}
             und{" "}
             <Link href="/chat?befehl=%2Fmahnung" className="font-medium text-[#c25e0e] hover:underline">/mahnung</Link>.
@@ -143,7 +160,7 @@ export default function KundenPage() {
 
         {/* Neu erfassen */}
         <form
-          className="mt-6 grid gap-3 rounded-2xl border border-[#eee7d8] bg-white p-5 shadow-[0_1px_3px_rgba(40,30,10,0.05)] sm:grid-cols-[1fr_1fr_1fr_auto]"
+          className="mt-6 grid gap-3 rounded-2xl border border-[#eee7d8] bg-white p-5 shadow-[0_1px_3px_rgba(40,30,10,0.05)] sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_auto]"
           onSubmit={(e) => {
             e.preventDefault();
             hinzufuegen();
@@ -155,6 +172,8 @@ export default function KundenPage() {
             className="rounded-xl border border-[#e0d8c6] bg-[#faf8f3] px-4 py-2.5 text-sm focus:border-[#ffb066] focus:outline-none" aria-label="Firma" />
           <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="E-Mail"
             className="rounded-xl border border-[#e0d8c6] bg-[#faf8f3] px-4 py-2.5 text-sm focus:border-[#ffb066] focus:outline-none" aria-label="E-Mail" />
+          <input value={telefon} onChange={(e) => setTelefon(e.target.value)} type="tel" placeholder="Telefon (+41 …)"
+            className="rounded-xl border border-[#e0d8c6] bg-[#faf8f3] px-4 py-2.5 text-sm focus:border-[#ffb066] focus:outline-none" aria-label="Telefon" />
           <button type="submit" disabled={!name.trim()}
             className="shop-btn rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-5 py-2.5 text-sm font-bold text-white disabled:opacity-40">
             + Kunde
@@ -179,7 +198,11 @@ export default function KundenPage() {
                     {k.name}
                     {k.firma && <span className="font-normal text-[#8d8172]"> · {k.firma}</span>}
                   </p>
-                  {k.email && <p className="truncate text-xs text-[#a2988a]">{k.email}</p>}
+                  {(k.email || k.telefon) && (
+                    <p className="truncate text-xs text-[#a2988a]">
+                      {[k.email, k.telefon].filter(Boolean).join(" · ")}
+                    </p>
+                  )}
                 </div>
                 <select
                   value={k.status}
@@ -203,6 +226,24 @@ export default function KundenPage() {
                 <Link href={offerteLink(k)}
                   className="shop-btn rounded-lg border border-[#f0ceA0] bg-[#fff4e6] px-3.5 py-2 text-xs font-bold text-[#8a4a12]">
                   📄 Offerte erstellen lassen
+                </Link>
+                {whatsappLink(k) && (
+                  <a
+                    href={whatsappLink(k)!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shop-btn rounded-lg border border-[#c6ecd7] bg-[#e7f6ee] px-3.5 py-2 text-xs font-bold text-[#177245]"
+                  >
+                    💬 WhatsApp öffnen
+                  </a>
+                )}
+                <Link
+                  href={`/chat?text=${encodeURIComponent(
+                    `Erstelle versandfertige WhatsApp-Nachrichten an ${k.name}${k.firma ? ` (${k.firma})` : ""}: Anlass [Kundenanfrage beantworten / Terminbestätigung / Angebot nachfassen]. Kontext: [worum geht es]. 3 Varianten: kurz, mittel, mit Emoji – freundlich und professionell.`,
+                  )}`}
+                  className="shop-btn rounded-lg border border-[#c6ecd7] bg-white px-3.5 py-2 text-xs font-bold text-[#177245]"
+                >
+                  💬 WhatsApp-Text schreiben lassen
                 </Link>
                 <button
                   onClick={() => setOffenNotiz(offenNotiz === k.id ? null : k.id)}

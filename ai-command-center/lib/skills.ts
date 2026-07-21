@@ -106,6 +106,18 @@ export const SKILLS: Skill[] = [
       "Wichtigster Nutzen: [Nutzen]. Zielgruppe: [wer].",
   },
   {
+    befehl: "/whatsapp",
+    name: "WhatsApp-Nachrichten",
+    beschreibung: "Versandfertige WhatsApp-Antworten für Kunden – kurz, persönlich, professionell.",
+    kategorie: "Marketing",
+    vorlage:
+      "Erstelle versandfertige WhatsApp-Nachrichten für [Firma]: Anlass " +
+      "[Kundenanfrage beantworten / Terminbestätigung / Angebot nachfassen / " +
+      "Status-Update]. Kunde: [Name]. Kontext: [worum geht es]. " +
+      "3 Varianten: kurz (2 Sätze), mittel, mit Emoji – jeweils per Du und per Sie. " +
+      "Ton: freundlich, professionell, sofort kopierbar.",
+  },
+  {
     befehl: "/newsletter",
     name: "Newsletter",
     beschreibung: "Fertiger Newsletter mit Betreff, Text und Handlungsaufruf.",
