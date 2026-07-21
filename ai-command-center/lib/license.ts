@@ -67,7 +67,12 @@ const LICENSE_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
  */
 const DEV_FALLBACK_SECRET = "acc-dev-secret-nicht-fuer-produktion";
 
-function secret(): string {
+/**
+ * Liefert das aktive Signatur-Secret (LICENSE_SECRET, sonst Dev-Fallback).
+ * Wird ausser fuer die HMAC-Signatur auch von der Admin-Route als Fallback
+ * fuer die Passwort-Pruefung genutzt (POST /api/admin/generate).
+ */
+export function licenseSecret(): string {
   const s = process.env.LICENSE_SECRET;
   if (!s) {
     if (process.env.NODE_ENV === "production") {
@@ -83,7 +88,7 @@ function secret(): string {
 /* ------------------------------ HMAC-Helfer ------------------------------- */
 
 function hmacHex(data: string): string {
-  return createHmac("sha256", secret()).update(data).digest("hex");
+  return createHmac("sha256", licenseSecret()).update(data).digest("hex");
 }
 
 /** Timing-sicherer Vergleich zweier Hex-/ASCII-Strings. */

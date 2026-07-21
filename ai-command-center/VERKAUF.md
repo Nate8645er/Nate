@@ -23,6 +23,16 @@ Auf einem Rechner mit gesetztem LICENSE_SECRET (dasselbe wie in Vercel):
     node scripts/generate-license.mjs STARTER 1
     node scripts/generate-license.mjs BUSINESS 5   # 5 auf Vorrat
 
+## Schluessel per Admin-Seite (/admin)
+Statt Kommandozeile koennen Schluessel auch per Klick erzeugt werden:
+1. Plattform-URL + "/admin" oeffnen (z. B. ai-command-center-xxx.vercel.app/admin).
+   Es gibt keinen Link dorthin – nur wer die URL kennt, erreicht die Seite.
+2. Admin-Passwort eingeben. Standard ist das LICENSE_SECRET dieser Installation;
+   optional ein eigenes ADMIN_SECRET setzen (Env-Variable, siehe .env.example).
+3. Plan + Anzahl (1–50) waehlen, "Schluessel erzeugen" klicken.
+4. Schluessel je einzeln oder alle auf einmal kopieren und per E-Mail an den
+   Kunden senden. Die Schluessel passen automatisch zum LICENSE_SECRET.
+
 ## Plan-Limits (serverseitig erzwungen)
 FREE 3/Tag, STARTER 25, PROFESSIONAL 100, BUSINESS 400, ENTERPRISE 1000.
 Team-Groesse sichtbar: FREE 4 ... BUSINESS 150 ... ENTERPRISE 1000.
