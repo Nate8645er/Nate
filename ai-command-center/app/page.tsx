@@ -37,7 +37,7 @@ const PLANS: Plan[] = [
   },
   {
     name: "Starter",
-    price: "249",
+    price: "199",
     priceNote: "CHF pro Monat",
     team: "Team: 12 Agenten",
     badge: "Bestseller",
@@ -53,7 +53,7 @@ const PLANS: Plan[] = [
   },
   {
     name: "Professional",
-    price: "890",
+    price: "799",
     priceNote: "CHF pro Monat",
     team: "Team: 50 Agenten",
     benefits: [
@@ -67,7 +67,7 @@ const PLANS: Plan[] = [
   },
   {
     name: "Business",
-    price: "2'790",
+    price: "2'499",
     priceNote: "CHF pro Monat",
     team: "Abteilung: 250 Agenten",
     badge: "Beliebt bei Firmen",
@@ -83,7 +83,7 @@ const PLANS: Plan[] = [
   },
   {
     name: "Enterprise",
-    price: "ab 9'800",
+    price: "ab 8'900",
     priceNote: "CHF pro Monat",
     team: "Belegschaft: 1000 Mitarbeitende",
     benefits: [
