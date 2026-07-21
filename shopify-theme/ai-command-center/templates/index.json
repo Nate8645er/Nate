@@ -211,6 +211,20 @@
             "question": "Wie funktioniert der Support?",
             "answer": "<p>Sie erreichen uns über die Kontaktseite. Reaktionszeiten richten sich nach Ihrer Abostufe.</p>"
           }
+        },
+        "f9": {
+          "type": "qa",
+          "settings": {
+            "question": "Wie sicher sind meine Daten?",
+            "answer": "<p>Zehn Schutzschichten sind direkt im Code verankert: signierte Lizenzen, Injection-Schutz, verschlüsselte Übertragung, Sicherheits-Header und Datensparsamkeit – Ihre Arbeitsdaten bleiben in Ihrem Browser statt auf fremden Servern. Bezahlt wird über den zertifizierten Shopify-Checkout (PCI-DSS Level 1).</p>"
+          }
+        },
+        "f10": {
+          "type": "qa",
+          "settings": {
+            "question": "Kann ich in Euro bezahlen?",
+            "answer": "<p>Die Preise sind in Schweizer Franken angegeben. Über den Shopify-Checkout können Kundinnen und Kunden aus dem Ausland je nach Zahlungsmethode in ihrer Währung bezahlen; die Umrechnung übernimmt der Zahlungsanbieter automatisch.</p>"
+          }
         }
       },
       "block_order": [
@@ -219,7 +233,9 @@
         "f3",
         "f4",
         "f5",
-        "f6"
+        "f6",
+        "f9",
+        "f10"
       ]
     },
     "cta-band": {
@@ -271,6 +287,66 @@
         "label": "Für Unternehmen gebaut",
         "titel": "Professionell. Sicher. Sofort einsatzbereit."
       }
+    },
+    "sicherheit": {
+      "type": "sicherheit",
+      "blocks": {
+        "w1": {
+          "type": "waechter",
+          "settings": {
+            "name": "Lizenz-Wächter",
+            "text": "Signierte Lizenzschlüssel nach Industriestandard (HMAC-SHA256) – gefälschte Zugänge prallen ab."
+          }
+        },
+        "w2": {
+          "type": "waechter",
+          "settings": {
+            "name": "Injection-Wächter",
+            "text": "Dokumente und Kundenmails werden als Daten behandelt, nie als Befehle – versteckte Kommandos steuern Ihre KI nicht um."
+          }
+        },
+        "w3": {
+          "type": "waechter",
+          "settings": {
+            "name": "Daten-Wächter",
+            "text": "Datensparsamkeit ab Werk: Ihre Arbeitsdaten bleiben in Ihrem Browser – mit Export und Löschung per Klick."
+          }
+        },
+        "w4": {
+          "type": "waechter",
+          "settings": {
+            "name": "Transport-Wächter",
+            "text": "Alles verschlüsselt über HTTPS/TLS; HSTS erzwingt sichere Verbindungen bei jedem Besuch."
+          }
+        },
+        "w5": {
+          "type": "waechter",
+          "settings": {
+            "name": "Limit-Wächter",
+            "text": "Serverseitige Tageslimits pro Abo-Stufe verhindern Missbrauch und unkontrollierte Kosten."
+          }
+        },
+        "w6": {
+          "type": "waechter",
+          "settings": {
+            "name": "Ausfall-Wächter",
+            "text": "Drei KI-Anbieter in einer Fallback-Kette – fällt einer aus, übernimmt automatisch der nächste."
+          }
+        }
+      },
+      "block_order": [
+        "w1",
+        "w2",
+        "w3",
+        "w4",
+        "w5",
+        "w6"
+      ],
+      "settings": {
+        "label": "Sicherheitssystem",
+        "titel": "10 Wächter schützen Ihre Arbeit.",
+        "untertitel": "Jede Schutzschicht ist im Code verankert und greift bei jedem Aufruf – rund um die Uhr, an jedem Tag."
+      }
     }
   },
   "order": [
@@ -281,6 +357,7 @@
     "produkt-grid",
     "ablauf",
     "zitate",
+    "sicherheit",
     "faq",
     "cta-band"
   ]
