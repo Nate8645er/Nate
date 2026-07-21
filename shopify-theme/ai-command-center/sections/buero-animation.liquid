@@ -1,8 +1,8 @@
 {% comment %}
-  KI-Welt: eine bunte animierte Stadt. Verschiedenfarbige Gebäude mit
-  Neon-Schildern (CODING, MARKETING, ANALYSE …), leuchtende Fenster und
-  bunte Roboter-Figuren, die durch die Welt laufen. Einzigartige
-  Animation, reines CSS (transform/opacity).
+  KI-Welt v2: Vogelperspektive-Stadt bei Nacht im Weltraum. Draufsicht auf
+  bunte Gebaeude mit Beschriftung, Strassen, Cafe & Bistro; Figuren laufen
+  umher, sitzen essend/trinkend oder fragen nach Aufgaben. Live-Monitore
+  zeigen scrollend Website/Code/E-Mail. Reines CSS (transform/opacity).
 {% endcomment %}
 
 <section class="acc-section acc-welt-sec">
@@ -12,116 +12,209 @@
       <h2>{{ section.settings.titel }}</h2>
       <p class="acc-welt__intro">{{ section.settings.intro }}</p>
     </div>
-
-    <div class="acc-welt acc-reveal">
-      {% assign labels = "HAUPTQUARTIER,WERKSTATT,ANALYSE,QUALITÄT,MARKETING,RESEARCH,CODING,FINANZEN" | split: "," %}
-      {% assign farben = "#ff8c2a,#3b82f6,#06b6d4,#eab308,#ec4899,#8b5cf6,#22c55e,#14b8a6" | split: "," %}
-      {% assign hoehen = "210,165,190,150,185,200,170,160" | split: "," %}
-      <div class="acc-welt__city">
-        {% for lb in labels %}
-          {% assign i = forloop.index0 %}
-          {% assign left = i | times: 94 | divided_by: 8 | plus: 3 %}
-          <div class="acc-bld acc-bld--work" style="left: {{ left }}%; width: 9.6%; height: {{ hoehen[i] }}px; --c: {{ farben[i] }};">
-            <span class="acc-bld__sign">{{ lb }}</span>
-            <div class="acc-bld__win">
-              {% assign wins = hoehen[i] | minus: 30 | divided_by: 18 | times: 3 %}
-              {% for w in (1..wins) %}<i></i>{% endfor %}
-            </div>
-          </div>
-        {% endfor %}
+    <div class="world acc-reveal">
+      <div class="world-ground">
+        <div class="world-road h" style="top:30%"></div>
+        <div class="world-road h" style="top:58%"></div>
+        <div class="world-road v" style="left:42%"></div>
+        <div class="world-road v" style="left:84%"></div>
+<div class="world-bld" style="left:3%;top:7%;width:20%;height:24%;--c:#ff8c2a"><span class="tag">HAUPTQUARTIER</span><div class="roof"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+<div class="world-bld" style="left:27%;top:7%;width:16%;height:20%;--c:#3b82f6"><span class="tag">WERKSTATT</span><div class="roof"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+<div class="world-bld" style="left:47%;top:7%;width:16%;height:20%;--c:#06b6d4"><span class="tag">ANALYSE</span><div class="roof"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+<div class="world-bld" style="left:66%;top:7%;width:16%;height:22%;--c:#8b5cf6"><span class="tag">RESEARCH</span><div class="roof"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+<div class="world-bld" style="left:3%;top:36%;width:15%;height:16%;--c:#eab308"><span class="tag">QUALITÄT</span><div class="roof"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+<div class="world-bld" style="left:22%;top:34%;width:17%;height:18%;--c:#22c55e"><span class="tag">CODING</span><div class="roof"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+<div class="world-bld" style="left:45%;top:34%;width:17%;height:18%;--c:#ec4899"><span class="tag">MARKETING</span><div class="roof"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+<div class="world-bld" style="left:66%;top:36%;width:16%;height:16%;--c:#14b8a6"><span class="tag">FINANZEN</span><div class="roof"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+<div class="world-spot cafe" style="left:3%;top:64%;width:34%;height:33%"><span class="tag">☕ CAFÉ</span><div class="world-table" style="left:16%;top:28%"><span class="cup"></span></div><div class="world-table" style="left:16%;top:64%"><span class="cup"></span></div><div class="world-fig" style="--c:#fb923c;left:6%;top:24%;position:absolute"><div class="f-body"></div></div><div class="world-fig" style="--c:#38bdf8;left:30%;top:20%;position:absolute"><div class="f-body"></div></div><div class="world-fig" style="--c:#a3e635;left:6%;top:66%;position:absolute"><div class="f-body"></div></div><div class="world-fig" style="--c:#f43f5e;left:30%;top:70%;position:absolute"><div class="f-body"></div></div></div>
+<div class="world-spot rest" style="left:42%;top:64%;width:38%;height:33%"><span class="tag">🍽 BISTRO</span><div class="world-table" style="left:16%;top:26%"><span class="cup"></span></div><div class="world-table" style="left:16%;top:66%"><span class="cup"></span></div><div class="world-table" style="left:52%;top:44%"><span class="cup"></span></div><div class="world-fig" style="--c:#8b5cf6;left:8%;top:26%;position:absolute"><div class="f-body"></div></div><div class="world-fig" style="--c:#22c55e;left:34%;top:22%;position:absolute"><div class="f-body"></div></div><div class="world-fig" style="--c:#eab308;left:8%;top:68%;position:absolute"><div class="f-body"></div></div><div class="world-fig" style="--c:#ec4899;left:34%;top:72%;position:absolute"><div class="f-body"></div></div><div class="world-fig" style="--c:#38bdf8;left:60%;top:46%;position:absolute"><div class="f-body"></div></div></div>
+<div class="world-fig walk r1" style="--c:#ff8c2a;animation-delay:-0s"><div class="f-body"></div></div>
+<div class="world-fig walk r2" style="--c:#3b82f6;animation-delay:-17s"><div class="f-body"></div></div>
+<div class="world-fig walk r3" style="--c:#22c55e;animation-delay:-14s"><div class="f-body"></div></div>
+<div class="world-fig walk r4" style="--c:#ec4899;animation-delay:-11s"><div class="f-body"></div></div>
+<div class="world-fig walk r1" style="--c:#8b5cf6;animation-delay:-8s"><div class="f-body"></div></div>
+<div class="world-fig walk r2" style="--c:#06b6d4;animation-delay:-5s"><div class="f-body"></div></div>
+<div class="world-fig walk r3" style="--c:#eab308;animation-delay:-2s"><div class="f-body"></div></div>
+<div class="world-fig walk r4" style="--c:#14b8a6;animation-delay:-19s"><div class="f-body"></div></div>
+<div class="world-fig walk r1" style="--c:#f43f5e;animation-delay:-16s"><div class="f-body"></div></div>
+<div class="world-fig ask" style="--c:#ff8c2a;left:26%;top:18%"><span class="ask-bubble">?</span><div class="f-body"></div></div>
+<div class="world-fig ask" style="--c:#38bdf8;left:24%;top:24%"><span class="ask-bubble">?</span><div class="f-body"></div></div>
       </div>
-
-      {% assign botcol = "#ff8c2a,#3b82f6,#22c55e,#ec4899,#8b5cf6,#06b6d4,#eab308,#14b8a6,#f43f5e,#a3e635,#fb923c,#38bdf8,#22c55e,#ec4899" | split: "," %}
-      {% for c in botcol %}
-        {% assign i = forloop.index0 %}
-        {% assign lane = i | times: 37 | modulo: 60 | plus: 4 %}
-        {% assign dauer = i | times: 5 | modulo: 9 | plus: 8 %}
-        {% assign delay = i | times: 13 | modulo: 16 %}
-        {% assign rechts = i | modulo: 2 %}
-        <div class="acc-wbot {% if rechts == 0 %}acc-walk-r{% else %}acc-walk-l{% endif %}"
-             style="bottom: {{ lane }}px; --c: {{ c }}; animation-duration: {{ dauer }}s; animation-delay: -{{ delay }}s;">
-          <span class="acc-wb-inner"><span class="acc-wb-head"></span><span class="acc-wb-body"></span><span class="acc-wb-legs"><i></i><i></i></span></span>
-        </div>
-      {% endfor %}
-    </div>
+<div class="world-mon browser" style="right:2%;top:12%"><div class="m-bar"><b style="background:#f87171"></b><b style="background:#fbbf24"></b><b style="background:#34d399"></b><span class="t">katzenufos.com</span></div><div class="m-view"><div class="m-scroll"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div></div><div class="world-mon code" style="right:2%;top:44%"><div class="m-bar"><b style="background:#22c55e"></b><span class="t">mission.ts</span></div><div class="m-view"><div class="m-scroll"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div></div><div class="world-mon mail" style="right:2%;top:76%"><div class="m-bar"><b style="background:#a78bfa"></b><span class="t">E-Mail</span></div><div class="m-view"><div class="m-scroll"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div></div>    </div>
   </div>
 </section>
 
 <style>
-  .acc-welt__intro { max-width: 640px; margin: var(--sp-3) auto 0; color: var(--acc-text-dim); }
-  .acc-welt {
-    position: relative; height: 380px; margin-top: var(--sp-6); border-radius: 22px; overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.1);
-    background:
-      radial-gradient(50rem 24rem at 20% 0%, rgba(139,92,246,.28), transparent 60%),
-      radial-gradient(46rem 22rem at 80% 8%, rgba(59,130,246,.22), transparent 60%),
-      radial-gradient(40rem 22rem at 55% 100%, rgba(236,72,153,.16), transparent 60%),
-      linear-gradient(180deg, #120a26 0%, #0e1230 45%, #0a1024 100%);
-  }
-  .acc-welt::before {
-    content: ""; position: absolute; inset: 0;
-    background-image:
-      radial-gradient(1.5px 1.5px at 12% 22%, rgba(255,255,255,.8), transparent),
-      radial-gradient(1.5px 1.5px at 32% 12%, rgba(255,255,255,.6), transparent),
-      radial-gradient(1.5px 1.5px at 58% 26%, rgba(255,255,255,.7), transparent),
-      radial-gradient(1.5px 1.5px at 76% 14%, rgba(255,255,255,.55), transparent),
-      radial-gradient(1.5px 1.5px at 90% 30%, rgba(255,255,255,.7), transparent);
-    animation: acc-tw 4s ease-in-out infinite;
-  }
-  @keyframes acc-tw { 0%,100% { opacity:.7; } 50% { opacity:1; } }
-  .acc-welt::after {
-    content: ""; position: absolute; left:0; right:0; bottom:0; height: 84px;
-    background: repeating-linear-gradient(90deg, transparent 0 46px, rgba(255,255,255,.05) 46px 60px), linear-gradient(180deg, #241a52, #0f0c26);
-    border-top: 2px solid rgba(255,255,255,.14);
-  }
-  .acc-welt__city { position: absolute; left:0; right:0; bottom: 74px; height: 250px; }
-  .acc-bld {
-    position: absolute; bottom: 0; border-radius: 8px 8px 0 0;
-    background: linear-gradient(180deg, color-mix(in srgb, var(--c) 42%, #0c0a1e), #0c0a1e 92%);
-    border: 1px solid color-mix(in srgb, var(--c) 55%, transparent);
-    box-shadow: 0 0 30px -6px color-mix(in srgb, var(--c) 60%, transparent), inset 0 1px 0 rgba(255,255,255,.12);
-  }
-  .acc-bld__win { position: absolute; inset: 14px 10px 10px 10px; display: grid; grid-template-columns: repeat(3,1fr); gap: 5px 6px; grid-auto-rows: 9px; }
-  .acc-bld__win i { border-radius: 1.5px; background: color-mix(in srgb, var(--c) 70%, #fff 8%); opacity:.28; animation: acc-win 1.5s ease-in-out infinite; }
-  .acc-bld__win i:nth-child(3n) { animation-delay: .4s; }
-  .acc-bld__win i:nth-child(4n) { animation-delay: .8s; }
-  @keyframes acc-win { 0%,100% { opacity:.25; } 50% { opacity:.95; } }
-  .acc-bld__sign {
-    position: absolute; top: -13px; left: 50%; transform: translateX(-50%); padding: 3px 9px; border-radius: 999px;
-    font-family: var(--acc-mono); font-size: 9px; font-weight: 700; letter-spacing: .12em; white-space: nowrap; color: #fff;
-    background: color-mix(in srgb, var(--c) 85%, #000); box-shadow: 0 0 14px color-mix(in srgb, var(--c) 75%, transparent), inset 0 1px 0 rgba(255,255,255,.3);
-  }
-  /* Roboter */
-  .acc-wbot { position: absolute; z-index: 4; width: 28px; height: 36px;
-    filter: drop-shadow(0 0 7px color-mix(in srgb, var(--c) 75%, transparent)) drop-shadow(0 4px 4px rgba(0,0,0,.5));
-    animation-timing-function: linear; animation-iteration-count: infinite; }
-  .acc-walk-r { animation-name: acc-wr; }
-  .acc-walk-l { animation-name: acc-wl; }
-  @keyframes acc-wr { from { left: -6%; } to { left: 106%; } }
-  @keyframes acc-wl { from { left: 106%; transform: scaleX(-1); } to { left: -6%; transform: scaleX(-1); } }
-  .acc-wb-inner { display:block; animation: acc-bob .5s ease-in-out infinite; }
-  @keyframes acc-bob { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-1.5px);} }
-  .acc-wb-head { display:block; position: relative; width: 18px; height: 15px; margin: 0 auto; border-radius: 5px 5px 4px 4px; background: linear-gradient(var(--c), color-mix(in srgb, var(--c) 60%, #000)); box-shadow: inset 0 1px 0 rgba(255,255,255,.4); }
-  .acc-wb-head::before { content:""; position:absolute; top:-6px; left:50%; width:2.5px; height:6px; transform:translateX(-50%); background:var(--c); border-radius:1px; box-shadow:0 -2px 7px var(--c); }
-  .acc-wb-head::after { content:""; position:absolute; top:5px; left:3.5px; width:4px; height:4px; border-radius:50%; background:#fff; box-shadow:6px 0 0 #fff, 0 0 5px rgba(255,255,255,.8); }
-  .acc-wb-body { display:block; width: 20px; height: 15px; margin: 1px auto 0; border-radius: 5px; background: linear-gradient(150deg, var(--c), color-mix(in srgb, var(--c) 55%, #000)); box-shadow: inset 0 1px 0 rgba(255,255,255,.35); }
-  .acc-wb-legs { display:flex; justify-content:center; gap:3px; margin-top:1px; }
-  .acc-wb-legs i { width:4px; height:6px; border-radius:1px; background:#1a1533; animation: acc-step .3s ease-in-out infinite; }
-  .acc-wb-legs i:last-child { animation-direction: reverse; }
-  @keyframes acc-step { 50% { transform: translateY(-2px);} }
-  .acc-wbot::after { content:""; position:absolute; bottom:-2px; left:50%; width:20px; height:4px; transform:translateX(-50%); border-radius:50%; background:rgba(0,0,0,.5); filter: blur(1px); }
-  @media (max-width: 700px) { .acc-welt { height: 320px; } }
-  @media (prefers-reduced-motion: reduce) { .acc-welt::before, .acc-wbot, .acc-wb-inner, .acc-wb-legs i, .acc-bld__win i { animation: none !important; } }
+.acc-welt__intro { max-width: 640px; margin: var(--sp-3) auto 0; color: var(--acc-text-dim); }
+/* KI-WELT v2: Vogelperspektive-Stadt bei Nacht im Weltraum.          */
+/* Draufsicht auf Gebäude, Strassen, Café & Restaurant; bunte Figuren */
+/* laufen umher, sitzen essend/trinkend oder fragen nach Aufgaben.    */
+/* Live-Monitore zeigen scrollende Apps/Websites. transform/opacity.  */
+/* ================================================================== */
+
+.world {
+  position: relative;
+  height: 440px;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background:
+    radial-gradient(50rem 30rem at 15% -10%, rgba(139, 92, 246, 0.22), transparent 60%),
+    radial-gradient(46rem 28rem at 90% 0%, rgba(59, 130, 246, 0.18), transparent 60%),
+    radial-gradient(60rem 40rem at 60% 120%, rgba(236, 72, 153, 0.12), transparent 60%),
+    linear-gradient(160deg, #0a0820 0%, #0b1030 55%, #080a1e 100%);
+}
+/* Funkelnde Sterne */
+.world::before {
+  content: "";
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    radial-gradient(1.5px 1.5px at 8% 12%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 22% 6%, rgba(255,255,255,.7), transparent),
+    radial-gradient(1.5px 1.5px at 40% 10%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 66% 5%, rgba(255,255,255,.7), transparent),
+    radial-gradient(1.5px 1.5px at 84% 9%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 94% 16%, rgba(255,255,255,.6), transparent),
+    radial-gradient(1.5px 1.5px at 14% 26%, rgba(255,255,255,.6), transparent),
+    radial-gradient(1.5px 1.5px at 54% 4%, rgba(255,255,255,.8), transparent);
+  animation: world-twinkle 3.5s ease-in-out infinite;
+}
+@keyframes world-twinkle { 0%,100% { opacity:.6; } 50% { opacity:1; } }
+
+/* Stadtboden mit Häuserblock-Raster (Draufsicht) */
+.world-ground {
+  position: absolute; inset: 8% 3% 3% 3%;
+  border-radius: 16px;
+  background:
+    linear-gradient(#0f1330, #0c1028);
+  box-shadow: inset 0 0 60px rgba(0,0,0,.5);
+  overflow: hidden;
+}
+.world-ground::before {
+  content: ""; position: absolute; inset: 0; opacity: .5;
+  background-image:
+    linear-gradient(rgba(120,140,220,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120,140,220,.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+/* Strassen (Draufsicht) mit Mittellinie */
+.world-road { position: absolute; background: #171b38; box-shadow: inset 0 0 0 1px rgba(255,255,255,.04); }
+.world-road.h { left: 0; right: 0; height: 34px; background-image: repeating-linear-gradient(90deg, transparent 0 18px, rgba(255,220,120,.35) 18px 30px); background-size: 48px 2px; background-position: center; background-repeat: repeat-x; }
+.world-road.v { top: 0; bottom: 0; width: 34px; background-image: repeating-linear-gradient(0deg, transparent 0 18px, rgba(255,220,120,.35) 18px 30px); background-size: 2px 48px; background-position: center; background-repeat: repeat-y; }
+
+/* ---------- Gebäude in Draufsicht ---------- */
+.world-bld {
+  position: absolute;
+  border-radius: 7px;
+  background: linear-gradient(150deg, color-mix(in srgb, var(--c) 55%, #10132e), color-mix(in srgb, var(--c) 22%, #0b0e22));
+  border: 1px solid color-mix(in srgb, var(--c) 60%, transparent);
+  box-shadow: 0 10px 22px -8px rgba(0,0,0,.7), 0 0 26px -8px color-mix(in srgb, var(--c) 55%, transparent), inset 0 1px 0 rgba(255,255,255,.14);
+}
+/* Dach-Details (Lüftung/Oberlichter von oben) */
+.world-bld .roof { position: absolute; inset: 16px 8px 8px 8px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+.world-bld .roof i { border-radius: 2px; background: color-mix(in srgb, var(--c) 45%, #000); box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); }
+.world-bld.is-working .roof i { animation: world-roof 1.6s ease-in-out infinite; background: color-mix(in srgb, var(--c) 70%, #fff 10%); }
+.world-bld .roof i:nth-child(3n) { animation-delay: .5s; }
+@keyframes world-roof { 0%,100% { opacity:.4; } 50% { opacity:1; } }
+/* Dach-Schild mit Beschriftung */
+.world-bld .tag {
+  position: absolute; top: 5px; left: 50%; transform: translateX(-50%);
+  padding: 2px 8px; border-radius: 999px; white-space: nowrap;
+  font-family: var(--acc-mono); font-size: 8.5px; font-weight: 700; letter-spacing: .1em; color: #fff;
+  background: color-mix(in srgb, var(--c) 88%, #000);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--c) 70%, transparent);
+  z-index: 2;
+}
+.world-bld.is-locked { filter: grayscale(.7) brightness(.55); opacity: .5; }
+
+/* ---------- Café & Restaurant ---------- */
+.world-spot {
+  position: absolute; border-radius: 10px;
+  background: linear-gradient(150deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+  border: 1px dashed rgba(255,255,255,.18);
+}
+.world-spot .tag { position: absolute; top: 5px; left: 8px; font-family: var(--acc-mono); font-size: 9px; font-weight: 700; letter-spacing: .08em; color: #ffd9a8; }
+.world-spot.rest .tag { color: #ffc0cb; }
+/* Runder Tisch (Draufsicht) */
+.world-table { position: absolute; width: 26px; height: 26px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, #3a2f22, #241c14); box-shadow: 0 4px 8px -3px rgba(0,0,0,.6), inset 0 0 0 2px rgba(255,255,255,.06); }
+.world-spot.rest .world-table { background: radial-gradient(circle at 50% 40%, #33283a, #211826); }
+.world-table .cup { position: absolute; top: 50%; left: 50%; width: 8px; height: 8px; transform: translate(-50%,-50%); border-radius: 50%; background: radial-gradient(circle at 50% 35%, #fff6e6, #caa46a); box-shadow: 0 0 6px rgba(255,220,150,.5); }
+.world-spot.rest .world-table .cup { background: radial-gradient(circle at 50% 35%, #fff, #d7c0ff); box-shadow: 0 0 6px rgba(220,200,255,.5); }
+/* kleine Dampf-/Duftpartikel steigen auf */
+.world-table .cup::after { content: ""; position: absolute; top: -6px; left: 50%; width: 2px; height: 6px; transform: translateX(-50%); border-radius: 2px; background: rgba(255,255,255,.4); animation: world-steam 1.8s ease-in-out infinite; }
+@keyframes world-steam { 0% { opacity: 0; transform: translate(-50%, 2px) scale(.6);} 40% { opacity:.7;} 100% { opacity: 0; transform: translate(-50%, -6px) scale(1.1);} }
+
+/* ---------- Figuren (Draufsicht) ---------- */
+.world-fig { position: absolute; width: 16px; height: 16px; z-index: 5; }
+.world-fig .f-body {
+  position: absolute; inset: 0; border-radius: 7px 7px 8px 8px;
+  background: linear-gradient(150deg, var(--c), color-mix(in srgb, var(--c) 55%, #000));
+  box-shadow: 0 4px 6px -2px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.4);
+}
+/* Kopf/Schulter-Punkt (von oben) + Antennen-Leuchtpunkt */
+.world-fig .f-body::before { content: ""; position: absolute; top: 2px; left: 50%; width: 8px; height: 8px; transform: translateX(-50%); border-radius: 50%; background: color-mix(in srgb, var(--c) 75%, #fff 30%); box-shadow: inset 0 0 0 1px rgba(0,0,0,.15); }
+.world-fig .f-body::after { content: ""; position: absolute; top: -2px; left: 50%; width: 3px; height: 3px; transform: translateX(-50%); border-radius: 50%; background: #fff; box-shadow: 0 0 5px #fff; }
+.world-fig::after { content: ""; position: absolute; bottom: -3px; left: 50%; width: 14px; height: 4px; transform: translateX(-50%); border-radius: 50%; background: rgba(0,0,0,.5); filter: blur(1.5px); }
+/* Laufende Figuren wippen leicht */
+.world-fig.walk .f-body { animation: world-wobble .5s ease-in-out infinite; }
+@keyframes world-wobble { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+/* Vier Laufrouten quer durch die Stadt (Draufsicht: x und y) */
+.world-fig.r1 { animation: world-p1 15s linear infinite; }
+.world-fig.r2 { animation: world-p2 19s linear infinite; }
+.world-fig.r3 { animation: world-p3 17s linear infinite; }
+.world-fig.r4 { animation: world-p4 21s linear infinite; }
+@keyframes world-p1 { 0% { left: 2%; top: 30%; } 30% { left: 40%; top: 30%; } 55% { left: 40%; top: 58%; } 80% { left: 80%; top: 58%; } 100% { left: 2%; top: 30%; } }
+@keyframes world-p2 { 0% { left: 80%; top: 58%; } 30% { left: 42%; top: 58%; } 60% { left: 42%; top: 30%; } 100% { left: 80%; top: 58%; } }
+@keyframes world-p3 { 0% { left: 42%; top: 4%; } 30% { left: 42%; top: 30%; } 60% { left: 6%; top: 30%; } 100% { left: 42%; top: 4%; } }
+@keyframes world-p4 { 0% { left: 80%; top: 30%; } 35% { left: 42%; top: 30%; } 65% { left: 42%; top: 58%; } 100% { left: 80%; top: 30%; } }
+/* Fragende Figur: "?"-Blase + Wippen (wartet auf Aufgabe) */
+.world-fig.ask { animation: world-hop 1.4s ease-in-out infinite; }
+@keyframes world-hop { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+.world-fig .ask-bubble {
+  position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+  font-size: 10px; font-weight: 900; line-height: 1; padding: 2px 5px; border-radius: 7px;
+  background: #fff; color: #12163a; box-shadow: 0 2px 6px rgba(0,0,0,.4); z-index: 6;
+}
+
+/* ---------- Live-Monitore (was gerade gearbeitet wird) ---------- */
+.world-mon { position: absolute; z-index: 7; width: 92px; border-radius: 8px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,.16); background: #0a0f24; box-shadow: 0 12px 26px -10px rgba(0,0,0,.8), 0 0 22px -8px rgba(120,140,240,.4); }
+.world-mon .m-bar { display: flex; align-items: center; gap: 3px; padding: 3px 5px; background: #141a38; border-bottom: 1px solid rgba(255,255,255,.08); }
+.world-mon .m-bar b { width: 5px; height: 5px; border-radius: 50%; }
+.world-mon .m-bar .t { margin-left: 4px; font-family: var(--acc-mono); font-size: 6.5px; letter-spacing: .06em; color: #9fb2e6; }
+.world-mon .m-view { position: relative; height: 52px; overflow: hidden; background: #060a1a; }
+.world-mon .m-scroll { position: absolute; left: 6px; right: 6px; top: 6px; display: grid; gap: 4px; animation: world-mscroll 3.2s linear infinite; }
+@keyframes world-mscroll { from { transform: translateY(0); } to { transform: translateY(-52px); } }
+.world-mon .m-scroll span { height: 5px; border-radius: 2px; }
+/* Browser (Website) */
+.world-mon.browser .m-scroll span:nth-child(3n+1) { background: linear-gradient(90deg, #3b82f6 60%, transparent 60%); }
+.world-mon.browser .m-scroll span:nth-child(3n+2) { background: linear-gradient(90deg, #64748b 80%, transparent 80%); }
+.world-mon.browser .m-scroll span:nth-child(3n)   { background: linear-gradient(90deg, #94a3b8 45%, transparent 45%); }
+/* Code-Editor */
+.world-mon.code .m-view { background: #0a1020; }
+.world-mon.code .m-scroll span:nth-child(4n+1) { background: linear-gradient(90deg, #22c55e 40%, transparent 40%); }
+.world-mon.code .m-scroll span:nth-child(4n+2) { background: linear-gradient(90deg, #eab308 65%, transparent 65%); margin-left: 8px; }
+.world-mon.code .m-scroll span:nth-child(4n+3) { background: linear-gradient(90deg, #ec4899 55%, transparent 55%); margin-left: 4px; }
+.world-mon.code .m-scroll span:nth-child(4n)   { background: linear-gradient(90deg, #38bdf8 30%, transparent 30%); }
+/* E-Mail-App */
+.world-mon.mail .m-scroll span { background: linear-gradient(90deg, color-mix(in srgb, #a78bfa 70%, transparent) 92%, transparent 92%); position: relative; height: 6px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .world::before, .world-fig, .world-fig .f-body, .world-mon .m-scroll, .world-bld .roof i, .world-table .cup::after { animation: none !important; }
+}
+
+
 </style>
 
 {% schema %}
 {
-  "name": "KI-Welt Animation",
+  "name": "KI-Welt (Vogelperspektive)",
   "settings": [
     { "type": "text", "id": "label", "label": "Micro-Label", "default": "IHRE BELEGSCHAFT LEBT" },
     { "type": "text", "id": "titel", "label": "Titel", "default": "Eine ganze KI-Stadt, die für Sie arbeitet." },
-    { "type": "textarea", "id": "intro", "label": "Intro", "default": "Jede Abteilung ein eigenes Gebäude – Coding, Marketing, Analyse, Finanzen und mehr. Ihre bunte KI-Belegschaft läuft durch die Welt und erledigt Auftrag für Auftrag. Kein Chatbot." }
+    { "type": "textarea", "id": "intro", "label": "Intro", "default": "Aus der Vogelperspektive: Jede Abteilung ein Gebäude – Coding, Marketing, Analyse und mehr. Ihre bunte Belegschaft läuft durch die Stadt, holt sich neue Aufgaben oder macht Pause im Café. Auf den Monitoren sehen Sie live, woran gerade gearbeitet wird." }
   ],
-  "presets": [{ "name": "KI-Welt Animation" }]
+  "presets": [{ "name": "KI-Welt (Vogelperspektive)" }]
 }
 {% endschema %}
