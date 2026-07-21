@@ -540,6 +540,33 @@ export default function Home() {
           </div>
         </section>
 
+        {/* 3a) Erklär-Video mit Sprecher */}
+        <section id="video" className="scroll-mt-24 border-t border-[#ff8c2a]/10 px-6 py-24">
+          <div className="mx-auto max-w-4xl">
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="hud-label mb-4">In 70 Sekunden erklärt</p>
+              <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+                Sehen Sie Ihrer Belegschaft bei der Arbeit zu
+              </h2>
+              <p className="mt-4 text-zinc-400">
+                Vom Befehl bis zur fertigen Datei – alle Bereiche im Überblick,
+                professionell erklärt.
+              </p>
+            </div>
+            <div className="shop-stage mt-10">
+              <video
+                controls
+                preload="metadata"
+                poster="/erklaervideo-poster.jpg"
+                className="w-full rounded-2xl border border-[#ff8c2a]/25 shadow-[0_24px_80px_rgba(255,120,40,0.18)]"
+              >
+                <source src="/erklaervideo.mp4" type="video/mp4" />
+                Ihr Browser kann dieses Video nicht abspielen.
+              </video>
+            </div>
+          </div>
+        </section>
+
         {/* 3b) Für Unternehmen: Sicherheit, Zahlen, Enterprise-Kontakt */}
         <section id="unternehmen" className="scroll-mt-24 border-t border-[#ff8c2a]/10 px-6 py-24">
           <div className="mx-auto max-w-6xl">
