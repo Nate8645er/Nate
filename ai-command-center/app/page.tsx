@@ -60,6 +60,14 @@ export default function Home() {
           </a>
         </div>
       </main>
+      <footer className="flex w-full max-w-3xl items-center justify-center gap-6 border-t border-black/[.08] bg-white px-16 py-6 text-sm dark:border-white/[.145] dark:bg-black">
+        <a
+          href="/integrationen"
+          className="font-medium text-zinc-600 underline underline-offset-4 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50"
+        >
+          Integrationen ansehen
+        </a>
+      </footer>
     </div>
   );
 }

@@ -1299,6 +1299,12 @@ export default function DashboardPage() {
             >
               {licensedPlan === "FREE" ? "Lizenz aktivieren" : `Lizenz: ${licensedPlan}`}
             </button>
+            <a
+              href="/integrationen"
+              className={`rounded-sm px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+            >
+              Integrationen
+            </a>
             <div className="flex overflow-hidden rounded-sm border border-[#ff8c2a]/30" role="group" aria-label="Abo-Stufe">
               {PLANS.map((p) => {
                 const locked = PLAN_LEVEL[p] > PLAN_LEVEL[licensedPlan];
