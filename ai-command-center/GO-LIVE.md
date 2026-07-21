@@ -36,6 +36,11 @@ Falls Sie lieber manuell starten:
 4. Wählen Sie Ihre Branche, geben Sie Ihrer KI-Abteilung den ersten
    Auftrag und sehen Sie Ihrem Team live bei der Arbeit zu.
 
+IHR ANLEITUNGSVIDEO: Ebenfalls im Anhang finden Sie das Video
+"acc-anleitung.mp4" (knapp 3 Minuten). Einmal anschauen und Sie wissen,
+wie Sie Ihr System einrichten und im Alltag nutzen – von der Aktivierung
+über den ersten Befehl bis zu E-Mail, Kunden und Autopilot.
+
 Ihr Abo ist monatlich kündbar. Bei Fragen antworten Sie einfach auf
 diese E-Mail.
 
