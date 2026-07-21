@@ -18,7 +18,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import type { AgentEvent, AgentRole, AgentStatus, ArtifactFile } from "@/lib/agents/types";
-import AgentOffice, { type OfficeAgent } from "@/app/components/AgentOffice";
+import AgentWorld, { type WorldAgent } from "@/app/components/AgentWorld";
 
 /* ------------------------------- Konstanten ------------------------------- */
 
@@ -956,7 +956,7 @@ export default function DashboardPage() {
 
   // Agenten fürs animierte Büro: Kern-Team + (ab PROFESSIONAL) Spezialisten.
   // Darunter erscheinen die Spezialisten als gesperrte, gedimmte Plätze.
-  const officeAgents = useMemo<OfficeAgent[]>(
+  const officeAgents = useMemo<WorldAgent[]>(
     () =>
       ALL_ROLES.map((role) => ({
         id: role,
@@ -1580,9 +1580,9 @@ export default function DashboardPage() {
           )}
 
           {/* Agenten-Büro: animierte Belegschaft statt statischer Karten */}
-          <section aria-label="Ihre KI-Belegschaft" className="mt-8">
-            {fancy && <div className="hud-label mb-3">Ihr Büro // Belegschaft live</div>}
-            <AgentOffice agents={officeAgents} />
+          <section aria-label="Ihre KI-Welt" className="mt-8">
+            {fancy && <div className="hud-label mb-3">Ihre KI-Welt // Belegschaft live</div>}
+            <AgentWorld agents={officeAgents} />
             {/* Kompakte Legende + Ausgabe-Zugriff je Agent */}
             <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-4">
               {ALL_ROLES.map((role) => {
