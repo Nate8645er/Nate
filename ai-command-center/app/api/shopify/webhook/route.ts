@@ -69,12 +69,22 @@ async function anBestellungHaengen(order: ChildOrderRef, keysText: string): Prom
   if (!res.ok) throw new Error(`Admin-API ${res.status}`);
 }
 
+/** Escapt HTML-Sonderzeichen, damit Kundenangaben nicht als Markup interpretiert werden. */
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 /** Schickt dem Kunden die Schlüssel per E-Mail (nur wenn Resend konfiguriert). */
 async function perMailSchicken(email: string, vorname: string, keysHtml: string): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.ACC_FROM_EMAIL;
   if (!apiKey || !from || !email) return;
-  const html = `<p>Hallo ${vorname || ""},</p>
+  const html = `<p>Hallo ${escapeHtml(vorname || "")},</p>
 <p>vielen Dank für Ihren Kauf des AI Command Center. Hier ist Ihr Zugang:</p>
 ${keysHtml}
 <p>So starten Sie: Öffnen Sie den Link <code>/dashboard?key=IHR-SCHLÜSSEL</code> auf PC oder Handy – die Lizenz aktiviert sich automatisch.</p>
