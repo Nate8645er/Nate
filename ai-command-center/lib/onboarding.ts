@@ -41,12 +41,12 @@ export interface TierTutorial {
   schritte: OnboardingStep[];
 }
 
-/** Übersichtsvideo (real vorhanden) – gilt für alle Tarife als Einstieg. */
+/** Systemrundgang (echte Bildschirm-Aufnahme aller Bereiche) – gilt für alle Tarife. */
 export const UEBERSICHT_VIDEO = {
-  src: "/erklaervideo.mp4",
+  src: "/ki-system-tour.webm",
   poster: "/shop-hero.webp",
-  titel: "So funktioniert das AI Command Center",
-  dauer: "ca. 70 Sekunden",
+  titel: "Systemrundgang: Ihr AI Command Center in Aktion",
+  dauer: "echter Rundgang durch alle Bereiche",
 };
 
 /* ------------------------------------------------------------------ */
@@ -138,7 +138,7 @@ export const TUTORIALS: readonly TierTutorial[] = [
     name: "Free",
     kurz: "Lernen Sie Ihr KI-Team in wenigen Minuten kennen.",
     videoVersion: "1.0",
-    videoSrc: null,
+    videoSrc: "/ki-system-tour.webm",
     enthalten: [
       "4 KI-Agenten zum Kennenlernen",
       "3 Missionen pro Tag",
@@ -151,7 +151,7 @@ export const TUTORIALS: readonly TierTutorial[] = [
     name: "Personal",
     kurz: "Ihr persönliches Kern-Team für den Alltag – inkl. E-Mail und Autopilot.",
     videoVersion: "1.0",
-    videoSrc: null,
+    videoSrc: "/ki-system-tour.webm",
     enthalten: [
       "Kern-Team (Commander, Builder, Analyst, Quality)",
       "10 Missionen pro Tag, fertige Dateien mit Download",
@@ -164,7 +164,7 @@ export const TUTORIALS: readonly TierTutorial[] = [
     name: "Starter",
     kurz: "Ihre kompakte KI-Abteilung inkl. Verkauf & Marketing.",
     videoVersion: "1.0",
-    videoSrc: null,
+    videoSrc: "/ki-system-tour.webm",
     enthalten: [
       "12 spezialisierte Agenten, 25 Missionen pro Tag",
       "Skills inkl. Verkauf & Marketing, Quality-Score je Ergebnis",
@@ -177,7 +177,7 @@ export const TUTORIALS: readonly TierTutorial[] = [
     name: "Professional",
     kurz: "50 Agenten in Fachteams inkl. Finanzen, Analyse und ersten Integrationen.",
     videoVersion: "1.0",
-    videoSrc: null,
+    videoSrc: "/ki-system-tour.webm",
     enthalten: [
       "50 Agenten in Fachteams organisiert",
       "Dokumentenanalyse (PDF, Word, Excel)",
@@ -190,7 +190,7 @@ export const TUTORIALS: readonly TierTutorial[] = [
     name: "Business",
     kurz: "Ihre digitale Abteilung mit 250 Agenten, allen Integrationen und Team-Zugängen.",
     videoVersion: "1.0",
-    videoSrc: null,
+    videoSrc: "/ki-system-tour.webm",
     enthalten: [
       "250 Agenten als digitale Abteilung",
       "Alle Firmen-Integrationen, eigene Workflows und Freigaben",
@@ -203,7 +203,7 @@ export const TUTORIALS: readonly TierTutorial[] = [
     name: "Enterprise",
     kurz: "Bis 1000 virtuelle Mitarbeitende, individuelle Infrastruktur und persönliche Begleitung.",
     videoVersion: "1.0",
-    videoSrc: null,
+    videoSrc: "/ki-system-tour.webm",
     enthalten: [
       "Bis 1000 virtuelle Mitarbeitende, alle Skills + KI-Strategie",
       "Individuelle KI-Infrastruktur, private Cloud oder On-Premise",

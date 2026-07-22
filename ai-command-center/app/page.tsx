@@ -630,13 +630,13 @@ export default function Home() {
         <section id="video" className="scroll-mt-24 border-t border-[#e8e1d2] px-6 py-24">
           <div className="mx-auto max-w-4xl">
             <div className="mx-auto max-w-2xl text-center">
-              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">In 70 Sekunden erklärt</p>
+              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Echter Systemrundgang</p>
               <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                Sehen Sie Ihrer <span className="acc-grad-text">Belegschaft</span> bei der Arbeit zu
+                Sehen Sie das <span className="acc-grad-text">echte System</span> – Bereich für Bereich
               </h2>
               <p className="mt-4 text-[#6f6557]">
-                Vom Befehl bis zur fertigen Datei – alle Bereiche im Überblick,
-                professionell erklärt.
+                Eine echte Bildschirm-Aufnahme aller Bereiche: Dashboard, Einrichtung,
+                Integrationen, Skills, Autopilot und mehr.
               </p>
             </div>
             <div className="shop-stage mt-10">
@@ -646,7 +646,7 @@ export default function Home() {
                 poster="/shop-hero.webp"
                 className="w-full rounded-2xl border border-[#e8e1d2] shadow-[0_24px_80px_-24px_rgba(255,120,40,0.28)]"
               >
-                <source src="/erklaervideo.mp4" type="video/mp4" />
+                <source src="/ki-system-tour.webm" type="video/webm" />
                 Ihr Browser kann dieses Video nicht abspielen.
               </video>
             </div>
