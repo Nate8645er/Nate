@@ -169,7 +169,12 @@ export function slug(text: string): { slug: string; titel: string } {
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
-  const titel = text.trim().replace(/\s+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  // Ersten Buchstaben jedes Wortes gross – unicode-sicher (Umlaute bleiben
+  // mitten im Wort klein: "für" -> "Für", nicht "FüR").
+  const titel = text
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/(^|\s)(\p{L})/gu, (_m, sp: string, c: string) => sp + c.toUpperCase());
   return { slug: clean, titel };
 }
 
