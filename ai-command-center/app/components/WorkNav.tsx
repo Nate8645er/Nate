@@ -11,6 +11,7 @@ import Link from "next/link";
 
 export type BereichId =
   | "missionen"
+  | "onboarding"
   | "assistent"
   | "kommando"
   | "kunden"
@@ -40,6 +41,7 @@ const PRIMAER: { id: BereichId; label: string; href: string }[] = [
 ];
 
 const MEHR: { id: BereichId; label: string; href: string }[] = [
+  { id: "onboarding", label: "Einrichtung & Tutorials", href: "/onboarding" },
   { id: "studio", label: "KI-Studio", href: "/studio" },
   { id: "werkzeuge", label: "Blitz-Werkzeuge", href: "/werkzeuge" },
   { id: "berichte", label: "Berichte", href: "/berichte" },
