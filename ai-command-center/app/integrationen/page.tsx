@@ -69,8 +69,8 @@ const PlanBadge = memo(function PlanBadge({ planStufe }: { planStufe: Connector[
     <span
       className={`rounded-xl border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em] ${
         enterprise
-          ? "border-[#ffd257]/50 bg-[#ffd257]/10 text-[#ffd257]"
-          : "border-[#ff8c2a]/40 bg-[#ff8c2a]/[0.08] text-[#ffb35c]"
+          ? "border-[#ffd257]/50 bg-[#ffd257]/10 text-[#b45309]"
+          : "border-[#ff8c2a]/40 bg-[#ff8c2a]/[0.08] text-[#c25e0e]"
       }`}
     >
       ab {planStufe}
@@ -85,7 +85,7 @@ const StatusBadge = memo(function StatusBadge({ status }: { status: Connector["s
     <span
       className={`flex items-center gap-1.5 rounded-xl border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em] ${
         available
-          ? "border-[#ffb35c]/35 bg-[#ffb35c]/[0.06] text-[#ffb35c]/90"
+          ? "border-[#ffb35c]/35 bg-[#ffb35c]/[0.06] text-[#9a4d12]"
           : "border-[#8a7455]/50 bg-[#8a7455]/10 text-[#c9b391]"
       }`}
     >
@@ -128,7 +128,7 @@ function HudModal({
 
   return (
     <div
-      className="fixed inset-0 z-40 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-40 flex items-center justify-center bg-[#1c1917]/45 p-4 backdrop-blur-sm"
       onMouseDown={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
@@ -137,12 +137,12 @@ function HudModal({
         aria-modal="true"
         aria-labelledby={labelId}
         tabIndex={-1}
-        className="hud-panel hud-corners hud-modal-in relative w-full max-w-lg rounded-xl border border-[#ff8c2a]/30 bg-[#0b0a08] p-6 outline-none"
+        className="acc-card hud-corners hud-modal-in relative w-full max-w-lg rounded-xl border border-[#1c1917]/10 bg-white/95 p-6 outline-none"
       >
         <button
           onClick={onClose}
           aria-label="Schliessen"
-          className={`absolute right-3 top-3 rounded-xl px-2 py-1 font-mono text-xs text-[#ffb35c]/70 transition hover:text-[#fff3e2] ${FOCUS_RING}`}
+          className={`absolute right-3 top-3 rounded-xl px-2 py-1 font-mono text-xs text-[#c25e0e]/70 transition hover:text-[#fff3e2] ${FOCUS_RING}`}
         >
           ✕
         </button>
@@ -173,7 +173,7 @@ function AnfrageModal({ connector, onClose }: { connector: Connector; onClose: (
   const akzent = KATEGORIE_AKZENT[connector.kategorie];
   return (
     <HudModal labelId="anfrage-title" onClose={onClose}>
-      <div className="hud-label mb-1">Integration // Anfrage</div>
+      <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#c25e0e]/85 mb-1">Integration // Anfrage</div>
       <div className="flex items-center gap-3">
         <MonogrammBadge monogramm={connector.monogramm} akzent={akzent} />
         <h2 id="anfrage-title" className="text-xl font-bold text-[#fff3e2]">
@@ -224,7 +224,7 @@ const ConnectorCard = memo(function ConnectorCard({
 }) {
   const akzent = KATEGORIE_AKZENT[connector.kategorie];
   return (
-    <div className="hud-panel hud-corners flex flex-col rounded-xl p-4">
+    <div className="acc-card hud-corners flex flex-col rounded-xl p-4">
       <div className="flex items-start gap-3">
         <MonogrammBadge monogramm={connector.monogramm} akzent={akzent} />
         <div className="min-w-0">
@@ -261,7 +261,7 @@ const KategorieSektion = memo(function KategorieSektion({
     <section aria-label={kategorie} className="mt-8">
       <div className="mb-3 flex items-center gap-3">
         <span aria-hidden className="h-2 w-2 rounded-full" style={{ background: akzent, boxShadow: `0 0 8px ${akzent}` }} />
-        <h2 className="hud-label !text-[11px]">
+        <h2 className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#c25e0e]/85 !text-[11px]">
           {kategorie}{" // "}{connectors.length} System{connectors.length === 1 ? "" : "e"}
         </h2>
       </div>
@@ -283,17 +283,16 @@ export default function IntegrationenPage() {
   const eigeneSysteme = CONNECTORS.filter((c) => c.kategorie === "Eigene Systeme");
 
   return (
-    <main className="relative min-h-screen bg-[#0b0a08] text-[#e8dcc8]">
-      <div className="hud-texture" aria-hidden />
+    <main className="acc-page relative min-h-screen text-[#2a2521]">
 
       {/* Header im Dashboard-Stil mit Link zurück */}
-      <header className="sticky top-0 z-20 border-b border-[#ff8c2a]/15 bg-[#0b0a08]/85 backdrop-blur">
+      <header className="sticky top-0 z-20 border-b border-[#1c1917]/10 bg-[#fbfaf6]/85 backdrop-blur">
         <div className="mx-auto flex min-h-16 max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-2">
           <div>
             <Link href="/" className="text-lg font-bold tracking-tight text-[#fff3e2]">
               AI <span className="text-[#ff8c2a]">Command Center</span>
             </Link>
-            <div className="hud-label">Integration-Center // Katalog</div>
+            <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#c25e0e]/85">Integration-Center // Katalog</div>
           </div>
           <a
             href="/dashboard"
@@ -306,8 +305,8 @@ export default function IntegrationenPage() {
 
       <div className="relative z-10 mx-auto max-w-7xl px-5 py-8">
         {/* Hero */}
-        <section aria-label="Integration-Center" className="hud-panel hud-corners rounded-xl p-5">
-          <div className="hud-label mb-2">Anbindungen // Firmensysteme</div>
+        <section aria-label="Integration-Center" className="acc-card hud-corners rounded-xl p-5">
+          <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#c25e0e]/85 mb-2">Anbindungen // Firmensysteme</div>
           <h1 className="text-2xl font-bold text-[#fff3e2]">
             Integration-Center: Verbinden Sie Ihre KI-Abteilung mit Ihren Systemen
           </h1>
@@ -330,8 +329,8 @@ export default function IntegrationenPage() {
 
         {/* Eigene Systeme: generischer REST/Webhook-Connector */}
         <section aria-label="Eigene Systeme" className="mt-10">
-          <div className="hud-panel hud-corners rounded-xl p-5">
-            <div className="hud-label mb-2">Eigene Systeme // REST + Webhooks</div>
+          <div className="acc-card hud-corners rounded-xl p-5">
+            <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#c25e0e]/85 mb-2">Eigene Systeme // REST + Webhooks</div>
             <h2 className="text-xl font-bold text-[#fff3e2]">
               Ihre Firmensoftware ist nicht dabei?
             </h2>

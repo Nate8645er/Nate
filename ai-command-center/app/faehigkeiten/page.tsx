@@ -20,36 +20,36 @@ export const metadata: Metadata = {
 
 export default function FaehigkeitenPage() {
   return (
-    <div className="min-h-dvh bg-[#0b0a08] text-zinc-200">
-      <div className="hud-texture" aria-hidden="true" />
+    <div className="acc-page min-h-dvh text-[#2a2521]">
+      
       <div className="relative z-10 mx-auto max-w-5xl px-4 pb-24">
-        <header className="flex items-center justify-between border-b border-[#ff8c2a]/15 py-4">
+        <header className="flex items-center justify-between border-b border-[#1c1917]/10 py-4">
           <div className="flex items-center gap-2">
             <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" />
-            <span className="hud-label">AI Command Center</span>
+            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#c25e0e]/85">AI Command Center</span>
           </div>
-          <WorkNav aktiv="skills" variante="dunkel" />
+          <WorkNav aktiv="skills" variante="hell" />
         </header>
 
         <div className="pt-10">
-          <p className="hud-label mb-3">Skill-Katalog</p>
-          <h1 className="text-3xl font-semibold text-white sm:text-4xl">
+          <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#c25e0e]/85 mb-3">Skill-Katalog</p>
+          <h1 className="text-3xl font-semibold text-[#1c1917] sm:text-4xl">
             {SKILLS.length} Fähigkeiten. Ein Befehl genügt.
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-400">
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#5c5346]">
             Jeder Skill ist ein geprüfter Befehl mit strukturierter Vorlage –
             dadurch liefert Ihre Belegschaft zuverlässig vollständige,
             professionelle Ergebnisse. In der Kommandozentrale einfach{" "}
-            <span className="font-mono text-[#ffb35c]">/</span> tippen, Befehl
+            <span className="font-mono text-[#c25e0e]">/</span> tippen, Befehl
             wählen, Platzhalter ausfüllen, ausführen.
           </p>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-400">
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#5c5346]">
             Ein System, sechs Ausbaustufen: Jede Abo-Stufe schaltet zusätzliche
             Skills frei –{" "}
             {STUFEN_REIHENFOLGE.map((st, i) => (
               <span key={st}>
                 {i > 0 && " · "}
-                <span className="font-semibold text-[#ffb35c]">{st}</span>{" "}
+                <span className="font-semibold text-[#c25e0e]">{st}</span>{" "}
                 {skillAnzahlFuer(st)}
               </span>
             ))}
@@ -59,25 +59,25 @@ export default function FaehigkeitenPage() {
 
         {SKILL_KATEGORIEN.map((kat) => (
           <section key={kat} className="mt-10">
-            <h2 className="text-xl font-semibold text-white">{kat}</h2>
+            <h2 className="text-xl font-semibold text-[#1c1917]">{kat}</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               {SKILLS.filter((s) => s.kategorie === kat).map((s) => (
-                <article key={s.befehl} className="hud-panel flex flex-col rounded-xl p-5">
+                <article key={s.befehl} className="acc-card flex flex-col rounded-xl p-5">
                   <div className="flex items-baseline justify-between gap-2">
-                    <span className="font-mono text-sm font-bold text-[#ffb35c]">{s.befehl}</span>
-                    <h3 className="truncate font-semibold text-white">{s.name}</h3>
+                    <span className="font-mono text-sm font-bold text-[#c25e0e]">{s.befehl}</span>
+                    <h3 className="truncate font-semibold text-[#1c1917]">{s.name}</h3>
                   </div>
                   <p className="mt-1.5">
-                    <span className="rounded-full border border-[#ff8c2a]/30 bg-[#ff8c2a]/8 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#ffb35c]/80">
+                    <span className="rounded-full border border-[#ff8c2a]/30 bg-[#ff8c2a]/8 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#9a4d12]/85">
                       {(SKILL_AB_STUFE[s.befehl] ?? "FREE") === "FREE" ? "In jedem Abo" : `ab ${SKILL_AB_STUFE[s.befehl]}`}
                     </span>
                   </p>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-zinc-400">
+                  <p className="mt-2 flex-1 text-sm leading-relaxed text-[#5c5346]">
                     {s.beschreibung}
                   </p>
                   <Link
                     href={`/chat?befehl=${encodeURIComponent(s.befehl)}`}
-                    className="shop-btn mt-4 inline-block self-start rounded-lg border border-[#ff8c2a]/40 bg-[#ff8c2a]/10 px-4 py-2 text-sm font-semibold text-[#ffb35c] hover:bg-[#ff8c2a]/20"
+                    className="shop-btn mt-4 inline-block self-start rounded-lg border border-[#ff8c2a]/40 bg-[#ff8c2a]/10 px-4 py-2 text-sm font-semibold text-[#c25e0e] hover:bg-[#ff8c2a]/20"
                   >
                     Ausführen
                   </Link>
@@ -87,16 +87,16 @@ export default function FaehigkeitenPage() {
           </section>
         ))}
 
-        <p className="mt-12 max-w-2xl text-xs leading-relaxed text-zinc-500">
+        <p className="mt-12 max-w-2xl text-xs leading-relaxed text-[#8d8172]">
           Dazu kommen die freien Bereiche: eigene Befehle in der{" "}
-          <Link href="/chat" className="text-[#ffb35c] hover:underline">Kommandozentrale</Link>, die{" "}
-          <Link href="/email" className="text-[#ffb35c] hover:underline">E-Mail-Zentrale</Link>, der{" "}
-          <Link href="/workflows" className="text-[#ffb35c] hover:underline">Autopilot</Link> für
+          <Link href="/chat" className="text-[#c25e0e] hover:underline">Kommandozentrale</Link>, die{" "}
+          <Link href="/email" className="text-[#c25e0e] hover:underline">E-Mail-Zentrale</Link>, der{" "}
+          <Link href="/workflows" className="text-[#c25e0e] hover:underline">Autopilot</Link> für
           wiederkehrende Aufträge und die{" "}
-          <Link href="/dashboard" className="text-[#ffb35c] hover:underline">Missions-Ansicht</Link>{" "}
+          <Link href="/dashboard" className="text-[#c25e0e] hover:underline">Missions-Ansicht</Link>{" "}
           mit Live-Organigramm.
         </p>
-        <WorkFooter variante="dunkel" />
+        <WorkFooter variante="hell" />
       </div>
     </div>
   );

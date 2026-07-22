@@ -48,24 +48,24 @@ export default function StatusPage() {
   const aktiveAnbieter = anbieter.filter(([, ok]) => ok).length;
 
   return (
-    <div className="min-h-dvh bg-[#0b0a08] text-zinc-200">
-      <div className="hud-texture" aria-hidden="true" />
+    <div className="acc-page min-h-dvh text-[#2a2521]">
+      
       <div className="relative z-10 mx-auto max-w-4xl px-4 pb-24">
-        <header className="flex items-center justify-between border-b border-[#ff8c2a]/15 py-4">
+        <header className="flex items-center justify-between border-b border-[#1c1917]/10 py-4">
           <div className="flex items-center gap-2">
             <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" />
-            <span className="hud-label">AI Command Center</span>
+            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#c25e0e]/85">AI Command Center</span>
           </div>
-          <WorkNav aktiv="status" variante="dunkel" />
+          <WorkNav aktiv="status" variante="hell" />
         </header>
 
         <div className="pt-10">
-          <p className="hud-label mb-3">System-Status</p>
-          <h1 className="text-3xl font-semibold text-white sm:text-4xl">
+          <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#c25e0e]/85 mb-3">System-Status</p>
+          <h1 className="text-3xl font-semibold text-[#1c1917] sm:text-4xl">
             24/7 im Dienst. Automatisch überwacht.
           </h1>
-          <p className="mt-3 flex flex-wrap items-center gap-2 text-sm text-zinc-400">
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#22c55e]/40 bg-[#22c55e]/10 px-3 py-1 font-semibold text-[#4ade80]">
+          <p className="mt-3 flex flex-wrap items-center gap-2 text-sm text-[#5c5346]">
+            <span className="inline-flex items-center gap-2 rounded-full border border-[#22c55e]/40 bg-[#22c55e]/10 px-3 py-1 font-semibold text-emerald-600">
               <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#4ade80]" />
               Alle Systeme betriebsbereit
             </span>
@@ -86,26 +86,26 @@ export default function StatusPage() {
             [`${aktiveAnbieter}/3`, "KI-Anbieter aktiv"],
             [talentpoolFormatiert(), "Talent-Profile adressierbar"],
           ].map(([wert, label]) => (
-            <div key={label} className="hud-panel rounded-xl p-4 text-center">
-              <p className="text-xl font-bold text-[#ffd257] sm:text-2xl">{wert}</p>
-              <p className="mt-1 text-xs text-zinc-500">{label}</p>
+            <div key={label} className="acc-card rounded-xl p-4 text-center">
+              <p className="text-xl font-bold text-[#b45309] sm:text-2xl">{wert}</p>
+              <p className="mt-1 text-xs text-[#8d8172]">{label}</p>
             </div>
           ))}
         </div>
 
         {/* Bereiche */}
         <section className="mt-8">
-          <h2 className="text-lg font-semibold text-white">Bereiche</h2>
+          <h2 className="text-lg font-semibold text-[#1c1917]">Bereiche</h2>
           <div className="mt-4 overflow-hidden rounded-xl border border-[#ff8c2a]/15">
             {BEREICHE.map(([name, href], i) => (
               <div
                 key={name}
-                className={`flex items-center justify-between px-4 py-3 ${i > 0 ? "border-t border-[#ff8c2a]/10" : ""}`}
+                className={`flex items-center justify-between px-4 py-3 ${i > 0 ? "border-t border-[#1c1917]/8" : ""}`}
               >
-                <Link href={href} className="text-sm text-zinc-300 hover:text-[#ffb35c]">
+                <Link href={href} className="text-sm text-[#4a4335] hover:text-[#c25e0e]">
                   {name}
                 </Link>
-                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#4ade80]">
+                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600">
                   <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#4ade80]" />
                   Online
                 </span>
@@ -116,23 +116,23 @@ export default function StatusPage() {
 
         {/* Anbieter-Kette */}
         <section className="mt-8">
-          <h2 className="text-lg font-semibold text-white">KI-Anbieter-Kette</h2>
-          <p className="mt-1 text-sm text-zinc-500">
+          <h2 className="text-lg font-semibold text-[#1c1917]">KI-Anbieter-Kette</h2>
+          <p className="mt-1 text-sm text-[#8d8172]">
             Fällt ein Anbieter aus, übernimmt automatisch der nächste – Ihre
             Befehle bleiben ausführbar.
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
             {anbieter.map(([name, ok]) => (
-              <div key={name} className="hud-panel rounded-xl p-4">
-                <p className="text-sm font-semibold text-zinc-200">{name}</p>
-                <p className={`mt-1 text-xs font-semibold ${ok ? "text-[#4ade80]" : "text-zinc-500"}`}>
+              <div key={name} className="acc-card rounded-xl p-4">
+                <p className="text-sm font-semibold text-[#2a2521]">{name}</p>
+                <p className={`mt-1 text-xs font-semibold ${ok ? "text-emerald-600" : "text-[#8d8172]"}`}>
                   {ok ? "● Konfiguriert" : "○ Nicht konfiguriert"}
                 </p>
               </div>
             ))}
           </div>
         </section>
-        <WorkFooter variante="dunkel" />
+        <WorkFooter variante="hell" />
       </div>
     </div>
   );
