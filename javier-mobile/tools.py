@@ -497,6 +497,47 @@ def run_safe_command(action, target="downloads"):
                      "list_files, screenshot" % action}
 
 
+# --------------------------------------------------------- system status
+
+def _next_event():
+    # Nearest upcoming event (from now on), or None.
+    now = datetime.now()
+    upcoming = []
+    for ev in _read_events():
+        dt = _parse_dt(ev.get("DTSTART", ""))
+        if dt and dt >= now:
+            upcoming.append((dt, ev.get("SUMMARY", "(ohne Titel)")))
+    if not upcoming:
+        return None
+    dt, summary = min(upcoming, key=lambda e: e[0])
+    return {"summary": summary, "start": dt.isoformat(timespec="minutes")}
+
+
+def get_system_status():
+    # JARVIS-style read-only systems check: a single at-a-glance overview
+    # of JAVIER's state and which integrations are wired up. No external
+    # calls - fast and offline-safe.
+    todos = _load_todos()
+    open_todos = [t for t in todos if not t.get("done")]
+    contacts = _load_contacts()
+    custom_apps = _load_custom_apps()
+    return {
+        "time": datetime.now().isoformat(timespec="minutes"),
+        "todos_open": len(open_todos),
+        "todos_total": len(todos),
+        "next_event": _next_event(),
+        "contacts": len(contacts),
+        "custom_apps": len(custom_apps),
+        "integrations": {
+            "shopify": bool(os.environ.get("SHOPIFY_STORE")) and
+            bool(os.environ.get("SHOPIFY_ACCESS_TOKEN")),
+            "instagram": instagram.is_configured(),
+            "voice_elevenlabs": bool(os.environ.get("ELEVENLABS_API_KEY")) and
+            bool(os.environ.get("ELEVENLABS_VOICE_ID")),
+        },
+    }
+
+
 # ------------------------------------------------------ tool definitions
 
 def tool_definitions():
@@ -551,6 +592,17 @@ def tool_definitions():
             "name": "get_weather",
             "description": "Aktuelles Wetter und 3-Tage-Prognose fuer "
                            "Rapperswil-Jona (Open-Meteo).",
+            "input_schema": {"type": "object", "properties": {}},
+        },
+        {
+            "name": "get_system_status",
+            "description": "JAVIERs eigener Statusbericht (Systemcheck): "
+                           "offene Todos, naechster Termin, Anzahl Kontakte "
+                           "und eigener Apps sowie welche Integrationen "
+                           "(Shopify, Instagram, eigene Stimme) aktiv sind. "
+                           "Read-only, keine externen Abfragen. Ideal bei "
+                           "Fragen wie 'Statusbericht' oder 'Wie ist der "
+                           "Stand?'.",
             "input_schema": {"type": "object", "properties": {}},
         },
         {
@@ -675,6 +727,7 @@ TOOL_FUNCTIONS = {
     "read_calendar": read_calendar,
     "add_event": add_event,
     "get_weather": get_weather,
+    "get_system_status": get_system_status,
     "get_shopify_status": get_shopify_status,
     "list_contacts": list_contacts,
     "prepare_message": prepare_message,
