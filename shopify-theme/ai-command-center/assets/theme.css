@@ -1270,4 +1270,10 @@ h1, h2, h3, h4 { font-family: var(--acc-head); line-height: 1.12; letter-spacing
 }
 .acc-abovid__play:hover .acc-abovid__pbtn { transform: scale(1.06); }
 .acc-abovid.is-playing .acc-abovid__play { display: none; }
+/* Puls des Play-Buttons – global definiert, damit er auch auf der
+   Produktseite laeuft (nicht nur im Trailer der Startseite). */
+@keyframes accPulse {
+  0%, 100% { box-shadow: 0 12px 34px -8px rgba(255,110,30,0.7), 0 0 0 0 rgba(255,140,42,0.5); }
+  50% { box-shadow: 0 12px 34px -8px rgba(255,110,30,0.7), 0 0 0 16px rgba(255,140,42,0); }
+}
 @media (prefers-reduced-motion: reduce) { .acc-abovid__pbtn { animation: none; } }
