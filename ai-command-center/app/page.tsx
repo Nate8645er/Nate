@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { RECHERCHE_QUELLEN } from "@/lib/agents/browser";
 import AgentWorld, { type WorldAgent } from "@/app/components/AgentWorld";
+import WerbespotPlayer from "@/app/components/WerbespotPlayer";
 
 /** Demo-Belegschaft für die lebendige Büro-Animation auf der Startseite. */
 const BUERO_AGENTS: WorldAgent[] = [
@@ -648,23 +649,18 @@ export default function Home() {
                 Eine cinematische Impression – den realen Rundgang sehen Sie direkt darunter.
               </p>
             </div>
-            <div className="mt-10 overflow-hidden rounded-2xl border border-[#1c1917]/10 bg-[#0b0b0f] shadow-[0_30px_90px_-30px_rgba(28,25,23,0.6)]">
-              <video
-                controls
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                className="w-full"
-              >
-                <source src="/werbespot.mp4" type="video/mp4" />
-                Ihr Browser kann dieses Video nicht abspielen.
-              </video>
+            <div className="mt-10">
+              <WerbespotPlayer
+                szenen={[
+                  { src: "/werbespot.mp4", label: "KI-Abteilung ab Tag 1" },
+                  { src: "/werbespot-2.mp4", label: "Ihre Firma verbunden" },
+                  { src: "/werbespot-3.mp4", label: "Echte Ergebnisse" },
+                ]}
+              />
             </div>
             <p className="mt-3 text-center text-xs text-[#7c7161]">
-              Cinematische Werbe-Impression (KI-generiert). Die tatsächliche Oberfläche
-              zeigt der Systemrundgang unten.
+              Cinematische Werbe-Impression (KI-generiert), 3 Szenen. Die tatsächliche
+              Oberfläche zeigt der Systemrundgang unten.
             </p>
           </div>
         </section>
