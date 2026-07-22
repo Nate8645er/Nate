@@ -49,17 +49,32 @@ dunkel/braun. Merkmale:
 Aktuell sind die ~14 echten Seiten noch im ALTEN dunklen HUD-Look
 (globals.css `--hud-*`/`.hud-*` + inline bg-[#0b0a08]).
 
-## Offene Aufgaben (Reihenfolge)
-1. **Neues Design REAL ausrollen** über alle ~14 Seiten (dashboard, assistent,
-   studio, team, faehigkeiten, agenten, email, kunden, workflows, berichte,
-   analysen, benutzer, einstellungen, integrationen, status, sicherheit) +
-   größere Belegschaft im echten Roster (lib/agents/roster.ts). Schritt für
-   Schritt, jede Seite getestet, kleine grüne Commits.
-2. **DANACH** pro Abo EIN langes, detailliertes Tutorial-Video vom FERTIGEN
-   System (mit Higgsfield): jede Seite geöffnet & erklärt, KI-Stimme drüber,
-   inkl. „so verbindet man seine Firma/E-Mail/Shop/Systeme". Jedes Video ans
-   passende Shopify-Produkt hängen (Kunde bekommt es beim Kauf) und dem Kunden
-   einzeln schicken. KEINE Videos vorher – erst wenn das System fertig ist.
+## ERLEDIGT (Branch claude/ki-system-redesign-rollout-5nhzzg, PR #41)
+- **Design-Rollout KOMPLETT:** alle ~14 Seiten + Startseite + Dashboard auf
+  hellen acc-Look (Build grün, je Seite per Screenshot verifiziert). Fähigkeiten
+  beschrieben statt gezählt. Dashboard: KI-Büro-Animation als helles
+  „Live-Büro"-Panel eingebettet (AgentWorld/.aw-* dunkel belassen = Live-Monitor).
+- **Belegschaft ausgebaut:** lib/agents/roster.ts 37 → 55 benannte Spezialisten.
+- **Phase 0 Bestandsaufnahme:** ai-command-center/BESTANDSAUFNAHME.md (Ist-Zustand,
+  Schwachstellen kritisch/hoch/mittel, Phasenplan).
+- **Video-Onboarding-System:** app/onboarding (pro-Abo Tutorial + Übersichtsvideo
+  + interaktive Checkliste mit localStorage-Fortschritt + Tooltips). Inhalte
+  zentral/versioniert in lib/onboarding.ts (Tarif-Videos leicht einhängbar).
+- **Absichern (Phase 4 Anfang):** Vitest + 14 Unit-Tests (lib/license.ts),
+  GitHub-CI (.github/workflows/ci.yml: install+typecheck+test+build; Lint
+  nicht-blockierend), Security-Fix (vorname in Webhook-Mail escaped).
+
+## NÄCHSTE OFFENE AUFGABEN (Reihenfolge)
+1. **Fundament (Enterprise-Blocker, braucht Provider-Entscheidung + Zustimmung
+   für externen Dienst):** Postgres + echte Anmeldung + Mandantentrennung/RBAC,
+   serverseitige Datenhaltung + Quota-Enforcement. Siehe BESTANDSAUFNAHME.md.
+2. **Integrations-Hub real:** OAuth2-Route + verschlüsselter Token-Store +
+   Adapter (erst 1–2 echte Connectors) + Human-in-the-Loop + Audit-Log.
+3. **Lint-Bereinigung:** 29 vorbestehende Next-16-Befunde, dann CI-Lint blockierend.
+4. **Higgsfield (autorisiert):** Büroszene/Shop-Visuals + pro-Abo Tutorial-Videos
+   (eine KI-Stimme). Videos an passendes Shopify-Produkt hängen. Erst wenn System
+   fertig; Videos dann in lib/onboarding.ts pro Tarif einhängen.
+5. **Shop-Theme** an den hellen Look angleichen.
 
 ## Regeln
 - Ehrlich: nur behaupten, was real läuft & geprüft ist (echtes Ausführen,
