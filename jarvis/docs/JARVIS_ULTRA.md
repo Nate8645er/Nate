@@ -28,7 +28,7 @@ mitarbeiter(t)   = Σ N^d   für d = 1..t
 unternehmen(t)   = mitarbeiter(t)          # jeder besitzt genau eines
 developer(t)     = mitarbeiter(t) · D
 mitglieder(t)    = 1 (Jarvis) + mitarbeiter(t) + developer(t)
-loadout_items(t) = mitglieder(t) · 58
+loadout_items(t) = mitglieder(t) · 84
 ```
 
 `org_totals(depth)` berechnet diese Werte exakt mit Python-Ganzzahlen;
@@ -38,11 +38,18 @@ Zahlwörtern (Billion 10¹², Quadrillion 10²⁴, Sextillion 10³⁶ …).
 ## Katalog
 
 `jarvis_ultra/catalog.py` definiert den kanonischen Loadout: 16 Plugins,
-24 Skills, 18 Tools (58 pro Kopf). `full_loadout()` wird jedem Mitarbeiter und
-jedem Unternehmen zugewiesen; `has_full_loadout()` prüft Vollständigkeit. Die
-zehn Agentenrollen des `ultra-enterprise-os`-Plugins (architect, fullstack, qa,
-security, devops, data-ml, design, docs, business, orchestrator) sind Teil des
-Skill-Katalogs.
+50 Skills, 18 Tools (84 pro Kopf). `full_loadout()` wird jedem Mitarbeiter und
+jedem Unternehmen zugewiesen; `has_full_loadout()` prüft Vollständigkeit. Der
+Skill-Katalog enthält das komplette Team: die zehn Agentenrollen des
+`ultra-enterprise-os`-Plugins (architect, fullstack, qa, security, devops,
+data-ml, design, docs, business, orchestrator), die Betriebsmodi (cod,
+jarvis-omega, omega-jarvis, omega-enterprise, javier-architect,
+ultimate-performance), die komplette Fable-5-Leiter (fable-5, turbo, max,
+ultra, milliarden) samt milliarden-unternehmen, die Shopify-Ebene
+(shopify-godmode, shopify-operations), die Design-Suite (design-taste,
+impeccable, canvas-design, theme-factory, web-artifacts-builder,
+artifact-design) sowie Dokument- und Hilfs-Skills (docx, pdf, pptx, xlsx,
+skill-creator, morning).
 
 ## Terminal-Live-Ticker
 

@@ -12,10 +12,10 @@ D = mega_org.DEVELOPERS_PER_COMPANY
 
 def test_catalog_sizes_and_summary() -> None:
     assert len(catalog.all_plugins()) == 16
-    assert len(catalog.all_skills()) == 24
+    assert len(catalog.all_skills()) == 50
     assert len(catalog.all_tools()) == 18
-    assert catalog.loadout_size() == 58
-    assert catalog.loadout_summary() == "16 Plugins · 24 Skills · 18 Tools — alle aktiv"
+    assert catalog.loadout_size() == 84
+    assert catalog.loadout_summary() == "16 Plugins · 50 Skills · 18 Tools — alle aktiv"
 
 
 def test_employee_is_deterministic_and_distinct() -> None:
@@ -39,7 +39,7 @@ def test_everyone_has_the_full_loadout() -> None:
     for entity in [mega_org.employee((0,)), mega_org.company((5, 5))] + mega_org.sample_employees(5, depth=2):
         assert catalog.has_full_loadout(entity)
         assert len(entity["loadout"]["plugins"]) == 16
-        assert len(entity["loadout"]["skills"]) == 24
+        assert len(entity["loadout"]["skills"]) == 50
         assert len(entity["loadout"]["tools"]) == 18
 
 
@@ -53,7 +53,7 @@ def test_org_totals_exact_math() -> None:
     depth2 = mega_org.org_totals(2)
     assert depth2["total_employees"] == N + N**2
     assert depth2["total_developers"] == (N + N**2) * D
-    assert depth2["total_loadout_items"] == depth2["total_members"] * 58
+    assert depth2["total_loadout_items"] == depth2["total_members"] * 84
 
 
 def test_sample_employees_deterministic() -> None:

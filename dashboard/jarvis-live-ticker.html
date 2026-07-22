@@ -252,7 +252,7 @@
   <details class="jloadout" open>
     <summary>Jarvis Loadout — alle Plugins · Skills · Tools</summary>
     <div class="inner">
-      <p class="allok">✔ 16 Plugins · 24 Skills · 18 Tools — alle aktiv, für Jarvis und jedes Mitglied der Organisation</p>
+      <p class="allok">✔ 16 Plugins · 50 Skills · 18 Tools — alle aktiv, für Jarvis und jedes Mitglied der Organisation</p>
       <div id="jarvisLoadout"></div>
     </div>
   </details>
@@ -265,7 +265,7 @@
 
 /* ---------- catalog (mirrors jarvis_ultra/catalog.py) ---------- */
 const PLUGINS = ["spotify_control","groq_ai_fallback","gemini_bridge","local_llm","desktop_automation","memory_vault","voice_engine","wake_word","url_safety","provider_health","plugin_marketplace","security_center","health_center","release_toolkit","ultra_enterprise_os","mega_org_live_ticker"];
-const SKILLS = ["ultra-enterprise-os","ultra-review","ultra-team","deep-research","dataviz","security-review","code-review","simplify","run","loop","voice-control","automation","memory-privacy","diagnostics","architect","fullstack","qa","security","devops","data-ml","design","docs","business","orchestrator"];
+const SKILLS = ["ultra-enterprise-os","ultra-review","ultra-team","deep-research","dataviz","security-review","code-review","simplify","run","loop","voice-control","automation","memory-privacy","diagnostics","architect","fullstack","qa","security","devops","data-ml","design","docs","business","orchestrator","cod","jarvis-omega","omega-jarvis","omega-enterprise","javier-architect","fable-5","fable-5-turbo","fable-5-max","fable-5-ultra","fable-5-milliarden","milliarden-unternehmen","ultimate-performance","shopify-godmode","shopify-operations","design-taste","impeccable","canvas-design","theme-factory","web-artifacts-builder","skill-creator","morning","docx","pdf","pptx","xlsx","artifact-design"];
 const TOOLS = ["Read","Write","Edit","Glob","Grep","Bash","WebSearch","WebFetch","Agent","Workflow","Artifact","Task","Monitor","NotebookEdit","SendMessage","Skill","Cron","Terminal"];
 const LOADOUT_PER_HEAD = BigInt(PLUGINS.length + SKILLS.length + TOOLS.length);
 
@@ -344,7 +344,7 @@ const TILES = [
   { label: "Unternehmen", target: N, word: "1 je Mitarbeiter — 1 Billion" },
   { label: "Developer (Tiefe 1)", target: N * D, word: "1 Quadrillion (10^24)" },
   { label: "Mitarbeiter bis Tiefe 3", target: totalEmployees(3), word: fmtWord(totalEmployees(3)) },
-  { label: "Loadout-Items (Tiefe 3)", target: depth3Members * LOADOUT_PER_HEAD, word: "58 pro Kopf — überall aktiv" },
+  { label: "Loadout-Items (Tiefe 3)", target: depth3Members * LOADOUT_PER_HEAD, word: LOADOUT_PER_HEAD + " pro Kopf — überall aktiv" },
   { label: "Events / s", target: null, word: "live" },
 ];
 const statsEl = document.getElementById("stats");
@@ -396,7 +396,7 @@ function makeEvent() {
   const firm = companyOf(emp.path);
   let text;
   switch (def.key) {
-    case "einstellung": text = `${emp.name} (${emp.role}) tritt ${firm.name} bei — Loadout sofort aktiv: 16 Plugins · 24 Skills · 18 Tools`; break;
+    case "einstellung": text = `${emp.name} (${emp.role}) tritt ${firm.name} bei — Loadout sofort aktiv: 16 Plugins · 50 Skills · 18 Tools`; break;
     case "deployment": text = `${firm.name}: Release v${1 + hash32(emp.addr + ":v") % 9}.${hash32(emp.addr + ":m") % 30}.${hash32(emp.addr + ":p") % 100} durch ${emp.name} (${emp.role})`; break;
     case "gruendung": text = `${emp.name} gründet ${firm.name} — 1 Billion Mitarbeiter, 1 Billion Developer, alle mit vollem Loadout`; break;
     case "skill": text = `${emp.name} aktiviert Skill '${pick(SKILLS, emp.addr + ":s")}' bei ${firm.name}`; break;
@@ -463,7 +463,7 @@ const crumbsEl = document.getElementById("crumbs");
 const navBody = document.getElementById("navBody");
 
 function renderLoadoutGroups(container) {
-  const groups = [["Plugins (16)", PLUGINS], ["Skills (24)", SKILLS], ["Tools (18)", TOOLS]];
+  const groups = [[`Plugins (${PLUGINS.length})`, PLUGINS], [`Skills (${SKILLS.length})`, SKILLS], [`Tools (${TOOLS.length})`, TOOLS]];
   for (const [title, items] of groups) {
     const g = document.createElement("div");
     g.className = "loadout-group";
@@ -563,7 +563,7 @@ function fillTape() {
     const ev = makeEvent();
     bits.push(`${ev.def.icon} <b>${ev.def.label.toUpperCase()}</b> ${ev.text}`);
   }
-  bits.push(`◆ MEGA-ORG: <b>${fmtWord(totalEmployees(3))}</b> Mitarbeiter bis Tiefe 3 · <b>58</b> Loadout-Items pro Kopf · ALLE SYSTEME ONLINE ◆`);
+  bits.push(`◆ MEGA-ORG: <b>${fmtWord(totalEmployees(3))}</b> Mitarbeiter bis Tiefe 3 · <b>${LOADOUT_PER_HEAD}</b> Loadout-Items pro Kopf · ALLE SYSTEME ONLINE ◆`);
   tapeEl.innerHTML = bits.join(" &nbsp;·&nbsp; ");
 }
 fillTape();

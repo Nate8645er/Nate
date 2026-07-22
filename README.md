@@ -4,7 +4,7 @@ Jarvis mit **allen Plugins, Skills und Tools** — plus ein **Live-Ticker** übe
 simulierte Mega-Organisation mit 1 Billion (1000 Milliarden) Mitarbeitern, in der
 jeder Mitarbeiter ein eigenes Unternehmen mit wiederum 1 Billion Mitarbeitern und
 einem 1-Billion-starken Developer-Team besitzt. Alle Mitglieder — und Jarvis
-selbst — tragen den vollen Loadout: 16 Plugins · 24 Skills · 18 Tools.
+selbst — tragen den vollen Loadout: 16 Plugins · 50 Skills · 18 Tools.
 
 > Die Organisation ist eine **deterministische Simulation**: Sie wird nie
 > materialisiert, sondern prozedural auf Abruf erzeugt. Dieselbe Adresse liefert
@@ -20,7 +20,7 @@ selbst — tragen den vollen Loadout: 16 Plugins · 24 Skills · 18 Tools.
 | Developer je Unternehmen | 10¹² → gesamt 10²⁴ (1 Quadrillion) auf Tiefe 1 |
 | Mitarbeiter bis Tiefe 2 | 10¹² + 10²⁴ |
 | Mitarbeiter bis Tiefe 3 | 10¹² + 10²⁴ + 10³⁶ (≈ 1 Sextillion) |
-| Loadout pro Kopf | 16 Plugins + 24 Skills + 18 Tools = 58 — **alle aktiv** |
+| Loadout pro Kopf | 16 Plugins + 50 Skills + 18 Tools = 84 — **alle aktiv** |
 
 Die Rekursion ist unendlich: Jeder Mitarbeiter jedes Unternehmens besitzt wieder
 ein eigenes Unternehmen derselben Größe. Adressiert wird per Pfad, z. B.
@@ -65,10 +65,15 @@ desktop_automation, memory_vault, voice_engine, wake_word, url_safety,
 provider_health, plugin_marketplace, security_center, health_center,
 release_toolkit, ultra_enterprise_os, mega_org_live_ticker
 
-**Skills (24):** ultra-enterprise-os, ultra-review, ultra-team, deep-research,
+**Skills (50):** ultra-enterprise-os, ultra-review, ultra-team, deep-research,
 dataviz, security-review, code-review, simplify, run, loop, voice-control,
 automation, memory-privacy, diagnostics, architect, fullstack, qa, security,
-devops, data-ml, design, docs, business, orchestrator
+devops, data-ml, design, docs, business, orchestrator, cod, jarvis-omega,
+omega-jarvis, omega-enterprise, javier-architect, fable-5, fable-5-turbo,
+fable-5-max, fable-5-ultra, fable-5-milliarden, milliarden-unternehmen,
+ultimate-performance, shopify-godmode, shopify-operations, design-taste,
+impeccable, canvas-design, theme-factory, web-artifacts-builder, skill-creator,
+morning, docx, pdf, pptx, xlsx, artifact-design
 
 **Tools (18):** Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, Agent,
 Workflow, Artifact, Task, Monitor, NotebookEdit, SendMessage, Skill, Cron,
