@@ -13,6 +13,7 @@
 
 import Link from "next/link";
 import { memo, useEffect, useRef, useState } from "react";
+import OnboardingWizard from "./OnboardingWizard";
 import {
   CONNECTORS,
   KATEGORIEN,
@@ -332,6 +333,12 @@ export default function IntegrationenPage() {
             System Zugriff frei, wir bauen den Connector — danach können Ihre Agenten
             dort lesen und schreiben.
           </p>
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <OnboardingWizard />
+            <span className="text-xs text-[#8d8172]">
+              Schritt für Schritt: Systeme wählen, Firma hinterlegen, Anbindung anfragen.
+            </span>
+          </div>
         </section>
 
         {/* Kategorie-Gruppen */}

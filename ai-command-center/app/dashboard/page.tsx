@@ -908,6 +908,7 @@ export default function DashboardPage() {
   const [usage, setUsage] = useState<{ used: number; limit: number } | null>(null);
   const [branche, setBranche] = useState<string | null>(null);
   const [groesse, setGroesse] = useState<string | null>(null);
+  const [firma, setFirma] = useState<string | null>(null);
   const [onboardingOpen, setOnboardingOpen] = useState(false);
   const [licenseOpen, setLicenseOpen] = useState(false);
   const [statuses, setStatuses] = useState<Record<AgentRole, { status: AgentStatus; message: string }>>(initialStatuses);
@@ -1014,6 +1015,8 @@ export default function DashboardPage() {
       const storedGroesse = localStorage.getItem(GROESSE_KEY);
       if (storedBranche) setBranche(storedBranche);
       if (storedGroesse) setGroesse(storedGroesse);
+      const storedFirma = localStorage.getItem("acc-firma");
+      if (storedFirma) setFirma(storedFirma);
       if (!storedBranche) setOnboardingOpen(true);
     } catch { /* korrupter Zustand wird ignoriert */ }
   }, []);
@@ -1586,7 +1589,7 @@ export default function DashboardPage() {
                 <span className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Ihr KI-Büro // live bei der Arbeit</span>
               </div>
               {/* Dunkles Büro-Panel: bewusst wie ein Live-Monitor – nicht umfärben. */}
-              <AgentWorld agents={officeAgents} />
+              <AgentWorld agents={officeAgents} firma={firma ?? undefined} />
             </div>
             {/* Kompakte Legende + Ausgabe-Zugriff je Agent */}
             <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-4">
