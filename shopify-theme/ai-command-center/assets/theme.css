@@ -1160,3 +1160,14 @@ h1, h2, h3, h4 { font-family: var(--acc-head); line-height: 1.12; letter-spacing
   width: 100%;
   height: auto;
 }
+
+/* ---- Hero-Produktbild (Higgsfield Command-Center-Look) ---- */
+.acc-hero__shot { position: relative; justify-self: center; width: 100%; max-width: 620px; }
+.acc-hero__glow { position: absolute; inset: -12% -8% -18% -8%; z-index: 0; border-radius: 40px;
+  background: radial-gradient(60% 60% at 60% 30%, rgba(255,140,42,.28), transparent 70%); filter: blur(20px); }
+.acc-hero__img { position: relative; z-index: 1; width: 100%; height: auto; display: block;
+  border-radius: 18px; border: 1px solid var(--acc-line-strong);
+  box-shadow: 0 30px 70px -30px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.04), inset 0 1px 0 rgba(255,255,255,.06);
+  animation: acc-hero-float 7s ease-in-out infinite; }
+@keyframes acc-hero-float { 0%,100% { transform: translateY(0) rotate(-.3deg); } 50% { transform: translateY(-10px) rotate(.3deg); } }
+@media (prefers-reduced-motion: reduce) { .acc-hero__img { animation: none; } }

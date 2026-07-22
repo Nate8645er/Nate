@@ -33,36 +33,15 @@
       </div>
     </div>
 
-    <div class="acc-panel acc-corner acc-hud" aria-hidden="true">
-      <span class="acc-c1"></span>
-      <span class="acc-c2"></span>
-      <div class="acc-hud__head">
-        <span class="acc-micro">// MISSION CONTROL</span>
-        <span class="acc-hud__status acc-micro"><i></i>LIVE</span>
-      </div>
-      <div class="acc-hud__ring">
-        <svg viewBox="0 0 160 160">
-          <defs>
-            <linearGradient id="accRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#ffb066"/>
-              <stop offset="55%" stop-color="#ff8c2a"/>
-              <stop offset="100%" stop-color="#ff5f1f"/>
-            </linearGradient>
-          </defs>
-          <circle class="acc-ring-bg" cx="80" cy="80" r="70"/>
-          <circle class="acc-ring-fg" cx="80" cy="80" r="70"/>
-        </svg>
-        <div class="acc-hud__score">
-          <strong>100</strong>
-          <span>Quality-Score</span>
-        </div>
-      </div>
-      <div class="acc-hud__chips">
-        <span class="acc-chip"><i></i>Agent: Texte</span>
-        <span class="acc-chip"><i></i>Agent: Code</span>
-        <span class="acc-chip"><i></i>Agent: Analyse</span>
-        <span class="acc-chip"><i></i>Agent: Review</span>
-      </div>
+    <div class="acc-hero__shot acc-reveal" aria-hidden="true">
+      <span class="acc-hero__glow"></span>
+      <img
+        src="{{ 'acc-dashboard.png' | asset_url }}"
+        alt="AI Command Center Dashboard"
+        width="1376" height="768"
+        loading="eager"
+        class="acc-hero__img"
+      >
     </div>
   </div>
 </section>
