@@ -44,7 +44,7 @@ export interface TierTutorial {
 /** Übersichtsvideo (real vorhanden) – gilt für alle Tarife als Einstieg. */
 export const UEBERSICHT_VIDEO = {
   src: "/erklaervideo.mp4",
-  poster: "/erklaervideo-poster.jpg",
+  poster: "/shop-hero.webp",
   titel: "So funktioniert das AI Command Center",
   dauer: "ca. 70 Sekunden",
 };

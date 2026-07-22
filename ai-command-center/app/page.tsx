@@ -639,7 +639,7 @@ export default function Home() {
               <video
                 controls
                 preload="metadata"
-                poster="/erklaervideo-poster.jpg"
+                poster="/shop-hero.webp"
                 className="w-full rounded-2xl border border-[#e8e1d2] shadow-[0_24px_80px_-24px_rgba(255,120,40,0.28)]"
               >
                 <source src="/erklaervideo.mp4" type="video/mp4" />
