@@ -635,6 +635,40 @@ export default function Home() {
           </div>
         </section>
 
+        {/* 3-Werbespot) Cinematischer Werbespot (Kino-Impression) */}
+        <section id="werbespot" className="scroll-mt-24 border-t border-[#e8e1d2] px-6 py-24">
+          <div className="mx-auto max-w-4xl">
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Werbespot</p>
+              <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+                Ihre ganze <span className="acc-grad-text">KI-Abteilung</span> – in Bewegung
+              </h2>
+              <p className="mt-4 text-[#6f6557]">
+                Team ab Tag 1, Ihre Firma verbunden, echte Ergebnisse statt Chatbot.
+                Eine cinematische Impression – den realen Rundgang sehen Sie direkt darunter.
+              </p>
+            </div>
+            <div className="mt-10 overflow-hidden rounded-2xl border border-[#1c1917]/10 bg-[#0b0b0f] shadow-[0_30px_90px_-30px_rgba(28,25,23,0.6)]">
+              <video
+                controls
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                className="w-full"
+              >
+                <source src="/werbespot.mp4" type="video/mp4" />
+                Ihr Browser kann dieses Video nicht abspielen.
+              </video>
+            </div>
+            <p className="mt-3 text-center text-xs text-[#7c7161]">
+              Cinematische Werbe-Impression (KI-generiert). Die tatsächliche Oberfläche
+              zeigt der Systemrundgang unten.
+            </p>
+          </div>
+        </section>
+
         {/* 3a) Erklär-Video mit Sprecher */}
         <section id="video" className="scroll-mt-24 border-t border-[#e8e1d2] px-6 py-24">
           <div className="mx-auto max-w-4xl">
