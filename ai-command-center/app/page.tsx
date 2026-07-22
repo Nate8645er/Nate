@@ -36,7 +36,7 @@ const PLANS: Plan[] = [
     team: "Team: 4 Agenten",
     benefits: [
       "4 KI-Agenten zum Kennenlernen",
-      "5 Missionen pro Monat",
+      "3 Missionen pro Tag",
       `${skillAnzahlFuer("FREE")} Basis-Skills zum Kennenlernen`,
       `KI-Browser: recherchiert im Web (${RECHERCHE_QUELLEN.FREE} Quellen)`,
       "Ergebnis-Vorschau direkt im Browser",
@@ -72,7 +72,7 @@ const PLANS: Plan[] = [
     highlight: true,
     benefits: [
       "12 spezialisierte KI-Agenten",
-      "Unbegrenzte Missionen",
+      "25 Missionen pro Tag",
       `${skillAnzahlFuer("STARTER")} Skills inkl. Verkauf & Marketing`,
       `KI-Browser: recherchiert im Web (${RECHERCHE_QUELLEN.STARTER} Quellen)`,
       "Echte Dateien und Code mit Download",
