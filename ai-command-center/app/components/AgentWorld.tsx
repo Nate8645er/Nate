@@ -39,16 +39,23 @@ const MONITOR_ART: Record<string, "code" | "mail" | "doc"> = {
   commander: "doc", builder: "code", analyst: "code", research: "doc",
   quality: "doc", coding: "code", marketing: "mail", business: "mail",
 };
-const WALK_FARBEN = ["#ff8c2a", "#3b82f6", "#22c55e", "#a78bfa"];
+const WALK_FARBEN = ["#ff8c2a", "#3b82f6", "#22c55e", "#a78bfa", "#ec4899"];
 
-export default memo(function AgentWorld({ agents }: { agents: WorldAgent[] }) {
+export default memo(function AgentWorld({
+  agents,
+  firma,
+}: {
+  agents: WorldAgent[];
+  /** Name der verbundenen Firma – erscheint im Häuser-Bezirk, sobald gesetzt. */
+  firma?: string;
+}) {
   const liste = agents.slice(0, 8);
 
   return (
     <div
       className="aw"
       role="img"
-      aria-label="Ihr KI-Büro aus der Vogelperspektive: acht Abteilungen mit Mitarbeitern am Rechner; arbeitende Plätze leuchten, gesperrte sind gedimmt. Figuren laufen umher, ein Drucker gibt Ergebnisse aus."
+      aria-label={`Ihr KI-Büro aus der Vogelperspektive: acht Abteilungen mit Mitarbeitern am Rechner; arbeitende Plätze leuchten. Figuren laufen auf verschiedenen Wegen umher, ein Drucker gibt Ergebnisse aus. Daneben kleine Häuser für ${firma ? `die verbundene Firma ${firma}` : "Ihre Firma"}.`}
     >
       <div className="aw-floor">
         {/* Gang-Linien */}
@@ -105,6 +112,20 @@ export default memo(function AgentWorld({ agents }: { agents: WorldAgent[] }) {
           <span className="aw-plabel">DRUCKER</span>
           <div className="aw-pbody"><span className="aw-led" /><div className="aw-slot" /><div className="aw-sheet"><i /><i /><i /></div></div>
           <div className="aw-tray"><span className="aw-stack s1" /><span className="aw-stack s2" /><span className="aw-stack s3" /></div>
+        </div>
+
+        {/* Verbundene-Firma-Bezirk: kleine Häuser + Firmenname (erscheint bei Verbindung) */}
+        <div className="aw-district">
+          <span className="aw-dlabel">VERBUNDENE FIRMA</span>
+          <div className="aw-houses">
+            <div className="aw-house" style={{ ["--c" as string]: "#3b82f6" } as React.CSSProperties} />
+            <div className="aw-house" style={{ ["--c" as string]: "#22c55e" } as React.CSSProperties} />
+            <div className="aw-house" style={{ ["--c" as string]: "#ec4899" } as React.CSSProperties} />
+          </div>
+          <div className={`aw-firma ${firma ? "" : "is-leer"}`}>
+            <span className="k">{firma ? "Verbunden" : "Noch nicht verbunden"}</span>
+            <span className="n">{firma || "Ihre Firma"}</span>
+          </div>
         </div>
       </div>
 
