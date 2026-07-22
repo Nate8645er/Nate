@@ -15,6 +15,7 @@
  * Stufen: Jedes Abo hat den Browser; höhere Stufen lesen mehr Quellen.
  */
 
+import { lookup } from "node:dns/promises";
 import type { PlanId } from "./types";
 
 export interface RechercheQuelle {
@@ -59,19 +60,99 @@ function htmlZuText(html: string): string {
     .trim();
 }
 
+/** Maximal so viele Weiterleitungen folgen wir (jede wird neu geprüft). */
+const MAX_REDIRECTS = 4;
+
+/**
+ * SSRF-Schutz: private/interne IP-Bereiche, Loopback und Link-Local
+ * (inkl. Cloud-Metadaten 169.254.169.254) sind als Ziel verboten.
+ */
+function istPrivateIp(ip: string): boolean {
+  const v4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(ip);
+  if (v4) {
+    const a = Number(v4[1]);
+    const b = Number(v4[2]);
+    if (a === 0 || a === 10 || a === 127) return true; // this-net, privat, loopback
+    if (a === 169 && b === 254) return true; // Link-Local + Cloud-Metadaten
+    if (a === 172 && b >= 16 && b <= 31) return true; // privat
+    if (a === 192 && b === 168) return true; // privat
+    if (a === 100 && b >= 64 && b <= 127) return true; // CGNAT
+    return false;
+  }
+  const ip6 = ip.toLowerCase();
+  if (ip6 === "::1" || ip6 === "::") return true; // Loopback / unspezifiziert
+  if (ip6.startsWith("::ffff:")) return istPrivateIp(ip6.slice(7)); // v4-mapped
+  if (ip6.startsWith("fe80")) return true; // Link-Local
+  if (/^f[cd]/.test(ip6)) return true; // Unique-Local fc00::/7
+  return false;
+}
+
+/**
+ * Prüft, ob eine URL ein erlaubtes, externes http(s)-Ziel ist. Hostnamen
+ * werden per DNS aufgelöst und ALLE Adressen geprüft (Schutz auch gegen
+ * DNS-Rebinding auf interne Adressen).
+ */
+async function istErlaubtesZiel(rawUrl: string): Promise<boolean> {
+  let u: URL;
+  try {
+    u = new URL(rawUrl);
+  } catch {
+    return false;
+  }
+  if (u.protocol !== "http:" && u.protocol !== "https:") return false;
+  const host = u.hostname.replace(/^\[|\]$/g, "").toLowerCase();
+  if (!host) return false;
+  if (
+    host === "localhost" ||
+    host.endsWith(".localhost") ||
+    host.endsWith(".local") ||
+    host.endsWith(".internal")
+  ) {
+    return false;
+  }
+  // Host ist bereits ein IP-Literal?
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(host) || host.includes(":")) {
+    return !istPrivateIp(host);
+  }
+  // Hostname: auflösen und jede Adresse prüfen.
+  try {
+    const adressen = await lookup(host, { all: true });
+    return adressen.length > 0 && adressen.every((a) => !istPrivateIp(a.address));
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Sicherer HTML/Text-Abruf mit Timeout. Weiterleitungen werden MANUELL
+ * verfolgt und bei jedem Sprung erneut gegen die SSRF-Regeln geprüft,
+ * damit ein Redirect nicht auf ein internes Ziel führen kann.
+ */
 async function fetchMitTimeout(url: string, timeoutMs: number): Promise<string | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const res = await fetch(url, {
-      signal: controller.signal,
-      headers: { "User-Agent": USER_AGENT, Accept: "text/html,*/*" },
-      redirect: "follow",
-    });
-    if (!res.ok) return null;
-    const typ = res.headers.get("content-type") ?? "";
-    if (!typ.includes("text/html") && !typ.includes("text/plain") && !typ.includes("json")) return null;
-    return await res.text();
+    let ziel = url;
+    for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
+      if (!(await istErlaubtesZiel(ziel))) return null;
+      const res = await fetch(ziel, {
+        signal: controller.signal,
+        headers: { "User-Agent": USER_AGENT, Accept: "text/html,*/*" },
+        redirect: "manual",
+      });
+      // Weiterleitung: Location auflösen und erneut prüfen.
+      if (res.status >= 300 && res.status < 400) {
+        const loc = res.headers.get("location");
+        if (!loc) return null;
+        ziel = new URL(loc, ziel).toString();
+        continue;
+      }
+      if (!res.ok) return null;
+      const typ = res.headers.get("content-type") ?? "";
+      if (!typ.includes("text/html") && !typ.includes("text/plain") && !typ.includes("json")) return null;
+      return await res.text();
+    }
+    return null; // zu viele Weiterleitungen
   } catch {
     return null;
   } finally {

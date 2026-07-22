@@ -631,12 +631,23 @@
     "buero-animation": {
       "type": "buero-animation",
       "settings": {}
+    },
+    "echt-bild": {
+      "type": "echt-bild",
+      "settings": {
+        "label": "// IHRE KI-ABTEILUNG IM EINSATZ",
+        "titel": "Ein echtes Arbeitswerkzeug für Ihre Firma",
+        "text": "Kein Spielzeug, kein Chatbot: Ihre digitale Belegschaft arbeitet an echten Aufgaben und liefert fertige Ergebnisse – zugeschnitten auf Ihre Branche.",
+        "alt": "Team arbeitet mit dem AI Command Center",
+        "bild": "acc-office-real.jpg"
+      }
     }
   },
   "order": [
     "hero",
     "logoleiste",
     "vorteile",
+    "echt-bild",
     "buero-animation",
     "zahlen",
     "gehirn",

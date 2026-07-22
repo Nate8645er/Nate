@@ -11,6 +11,7 @@ import Link from "next/link";
 
 export type BereichId =
   | "missionen"
+  | "assistent"
   | "kommando"
   | "kunden"
   | "email"
@@ -28,6 +29,7 @@ export type BereichId =
 
 const PRIMAER: { id: BereichId; label: string; href: string }[] = [
   { id: "missionen", label: "Missionen", href: "/dashboard" },
+  { id: "assistent", label: "KI-Chat", href: "/assistent" },
   { id: "kommando", label: "Kommando", href: "/chat" },
   { id: "kunden", label: "Kunden", href: "/kunden" },
   { id: "email", label: "E-Mail", href: "/email" },
