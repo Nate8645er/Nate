@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { RECHERCHE_QUELLEN } from "@/lib/agents/browser";
 
 export const metadata: Metadata = {
@@ -509,14 +508,19 @@ export default function Home() {
               </p>
             </div>
             <div className="mt-10 overflow-hidden rounded-3xl border border-[#e8e1d2] bg-white p-2 shadow-[0_30px_80px_-40px_rgba(28,25,23,0.28)] sm:p-3">
-              <Image
-                src="/ki-buero.webp"
-                alt="Illustration der digitalen KI-Belegschaft: Figuren arbeiten im Büro an Computern, recherchieren, schreiben und besprechen sich"
-                width={2688}
-                height={1536}
-                sizes="(max-width: 1152px) 100vw, 1152px"
+              {/* Animierter Trailer (Higgsfield) mit Standbild als Poster/Fallback */}
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                poster="/ki-buero.webp"
+                aria-label="Animierte Szene der digitalen KI-Belegschaft: Figuren arbeiten im Büro an Computern, recherchieren, schreiben und besprechen sich"
                 className="h-auto w-full rounded-2xl"
-              />
+              >
+                <source src="/ki-trailer.mp4" type="video/mp4" />
+              </video>
             </div>
           </div>
         </section>
