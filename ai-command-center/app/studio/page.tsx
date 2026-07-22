@@ -40,6 +40,56 @@ const START: Projekt = {
   open: "index.ts",
 };
 
+/* Startvorlagen: schnell ein neues Projekt beginnen. Die Web-Vorlagen sind
+   direkt in der Live-Vorschau lauffähig. */
+const VORLAGEN: { id: string; label: string; hinweis: string; projekt: Projekt }[] = [
+  {
+    id: "landing",
+    label: "Landing-Page",
+    hinweis: "HTML + CSS + JS, direkt in der Vorschau lauffähig",
+    projekt: {
+      name: "landing-page",
+      open: "index.html",
+      files: {
+        "index.html":
+          '<!doctype html>\n<html lang="de">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Meine Firma</title>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <header>\n    <h1>Willkommen bei <span>Meine Firma</span></h1>\n    <p>Wir machen Ihr Geschäft schneller, klarer, besser.</p>\n    <button id="cta">Kontakt aufnehmen</button>\n  </header>\n  <script src="app.js"></script>\n</body>\n</html>\n',
+        "style.css":
+          "* { box-sizing: border-box; margin: 0; }\nbody { font-family: system-ui, sans-serif; background: #0b0a0f; color: #f4f1ea; }\nheader { min-height: 100vh; display: grid; place-content: center; text-align: center; gap: 20px; padding: 24px; }\nh1 { font-size: clamp(28px, 6vw, 56px); }\nh1 span { color: #ff8c2a; }\np { color: #a8a29e; font-size: 18px; }\nbutton { justify-self: center; margin-top: 8px; padding: 12px 26px; border: 0; border-radius: 10px;\n  background: linear-gradient(135deg, #ff8c2a, #ff5f1f); color: #fff; font-weight: 700; font-size: 16px; cursor: pointer; }\n",
+        "app.js":
+          'document.getElementById("cta").addEventListener("click", () => {\n  alert("Danke! Wir melden uns.");\n});\n',
+      },
+    },
+  },
+  {
+    id: "python",
+    label: "Python-Skript",
+    hinweis: "Startgerüst für ein Automations-Skript",
+    projekt: {
+      name: "python-skript",
+      open: "main.py",
+      files: {
+        "main.py":
+          'def main() -> None:\n    """Kurzes Beispiel – bitten Sie die KI, es zu erweitern."""\n    zahlen = [1, 2, 3, 4, 5]\n    print("Summe:", sum(zahlen))\n\n\nif __name__ == "__main__":\n    main()\n',
+        "README.md": "# Python-Skript\n\nAusführen: `python main.py`\n",
+      },
+    },
+  },
+  {
+    id: "api",
+    label: "Node-API",
+    hinweis: "Minimaler HTTP-Server ohne Framework",
+    projekt: {
+      name: "node-api",
+      open: "server.js",
+      files: {
+        "server.js":
+          'const http = require("http");\n\nconst server = http.createServer((req, res) => {\n  res.setHeader("content-type", "application/json");\n  res.end(JSON.stringify({ ok: true, pfad: req.url }));\n});\n\nserver.listen(3000, () => console.log("API läuft auf http://localhost:3000"));\n',
+        "README.md": "# Node-API\n\nStarten: `node server.js`\n",
+      },
+    },
+  },
+];
+
 /* ---------- leichtgewichtiges Syntax-Highlighting (sicher, ein Durchgang) ----------
  * Ein kombinierter Tokenizer läuft über den ROHEN Code; jedes Token und jede
  * Lücke werden EINZELN escaped und dann in <span> gepackt. Dadurch matcht keine
@@ -514,6 +564,13 @@ export default function StudioPage() {
     oeffneTab(path);
     setProj((p) => ({ ...p, files: { ...p.files, [path]: content }, open: path }));
   }
+  function neuesProjekt(p: Projekt) {
+    if (!confirm(`Neues Projekt «${p.name}» starten? Das aktuelle Projekt wird ersetzt (vorher ggf. als ZIP sichern).`)) return;
+    setProj(p);
+    setTabs([p.open]);
+    setChat([]);
+    setAnsicht("code");
+  }
   function uebernehmeAlle() {
     if (!echteVorschlaege.length) return;
     const neu: Record<string, string> = {};
@@ -530,6 +587,26 @@ export default function StudioPage() {
           <span className="inline-block h-2 w-2 rounded-full bg-[#ff8c2a] shadow-[0_0_10px_2px_rgba(255,140,42,0.7)]" />
           <span className="font-mono text-[11px] tracking-[0.2em] text-zinc-400">KI-STUDIO</span>
           <span className="ml-2 rounded-md bg-white/[0.05] px-2 py-0.5 font-mono text-[11px] text-zinc-400">{proj.name}</span>
+          <details className="group relative ml-1">
+            <summary className="flex cursor-pointer list-none items-center gap-1 rounded-md px-2 py-0.5 text-[11px] text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-200">
+              ＋ Neu
+              <svg viewBox="0 0 12 12" className="h-2.5 w-2.5 transition-transform group-open:rotate-180" aria-hidden="true">
+                <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </summary>
+            <div className="absolute left-0 z-50 mt-2 w-64 overflow-hidden rounded-xl border border-white/10 bg-[#14100c]/95 py-1 shadow-[0_16px_44px_-8px_rgba(0,0,0,0.7)] backdrop-blur-xl">
+              {VORLAGEN.map((v) => (
+                <button
+                  key={v.id}
+                  onClick={() => neuesProjekt(v.projekt)}
+                  className="block w-full px-3 py-2 text-left hover:bg-[#ff8c2a]/12"
+                >
+                  <span className="block text-[12.5px] font-semibold text-zinc-100">{v.label}</span>
+                  <span className="block text-[10.5px] text-zinc-500">{v.hinweis}</span>
+                </button>
+              ))}
+            </div>
+          </details>
         </div>
         <WorkNav aktiv="studio" variante="dunkel" />
       </header>
