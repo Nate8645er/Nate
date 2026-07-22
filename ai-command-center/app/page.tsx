@@ -1,6 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { RECHERCHE_QUELLEN } from "@/lib/agents/browser";
+import AgentWorld, { type WorldAgent } from "@/app/components/AgentWorld";
+
+/** Demo-Belegschaft für die lebendige Büro-Animation auf der Startseite. */
+const BUERO_AGENTS: WorldAgent[] = [
+  { id: "commander", name: "Führung", status: "working" },
+  { id: "research", name: "Forschung", status: "working" },
+  { id: "coding", name: "Entwicklung", status: "done" },
+  { id: "marketing", name: "Marketing", status: "working" },
+  { id: "business", name: "Finanzen", status: "working" },
+  { id: "analyst", name: "Analyse", status: "done" },
+  { id: "quality", name: "Qualität", status: "working" },
+  { id: "builder", name: "Umsetzung", status: "working" },
+];
 
 export const metadata: Metadata = {
   title: "AI Command Center | Die digitale KI-Belegschaft für Ihr Unternehmen",
@@ -507,20 +520,16 @@ export default function Home() {
                 schreiben, rechnen und prüfen, bis das fertige Ergebnis vorliegt.
               </p>
             </div>
-            <div className="mt-10 overflow-hidden rounded-3xl border border-[#e8e1d2] bg-white p-2 shadow-[0_30px_80px_-40px_rgba(28,25,23,0.28)] sm:p-3">
-              {/* Animierter Trailer (Higgsfield) mit Standbild als Poster/Fallback */}
-              <video
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                poster="/ki-buero.webp"
-                aria-label="Animierte Szene der digitalen KI-Belegschaft: Figuren arbeiten im Büro an Computern, recherchieren, schreiben und besprechen sich"
-                className="h-auto w-full rounded-2xl"
-              >
-                <source src="/ki-trailer.mp4" type="video/mp4" />
-              </video>
+            {/* Lebendige Büro-Animation: kleine farbige Figuren arbeiten, laufen,
+                drucken – dieselbe Live-Ansicht wie im KI-System (Dashboard). */}
+            <div className="mt-10 rounded-3xl border border-[#e8e1d2] bg-white/70 p-3 shadow-[0_30px_80px_-40px_rgba(28,25,23,0.28)] sm:p-4">
+              <div className="mb-2.5 flex items-center gap-2 px-1">
+                <span className="inline-block h-2.5 w-2.5 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f]" />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">
+                  Ihr KI-Büro · live bei der Arbeit
+                </span>
+              </div>
+              <AgentWorld agents={BUERO_AGENTS} />
             </div>
           </div>
         </section>
