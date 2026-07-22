@@ -482,15 +482,82 @@ export default function StudioPage() {
 
   // Editor: Tab-Einrückung + Highlight-Overlay-Scroll synchron.
   function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    const el = e.currentTarget;
+    const s = el.selectionStart;
+    const eEnd = el.selectionEnd;
+    // Cursor/Selektion nach dem Neu-Rendern setzen.
+    const setzen = (next: string, ss: number, se: number = ss) => {
+      setCode(next);
+      requestAnimationFrame(() => { el.selectionStart = ss; el.selectionEnd = se; });
+    };
+    const OFFEN: Record<string, string> = { "(": ")", "[": "]", "{": "}" };
+    const ZU = new Set([")", "]", "}"]);
+    const QUOTE = new Set(['"', "'", "`"]);
+
     if (e.key === "Tab") {
       e.preventDefault();
-      const el = e.currentTarget;
-      const s = el.selectionStart;
-      const next = code.slice(0, s) + "  " + code.slice(el.selectionEnd);
-      setCode(next);
-      requestAnimationFrame(() => {
-        el.selectionStart = el.selectionEnd = s + 2;
-      });
+      setzen(code.slice(0, s) + "  " + code.slice(eEnd), s + 2);
+      return;
+    }
+
+    // Enter: Einrückung der Vorzeile übernehmen; leeres Klammerpaar ausklappen.
+    if (e.key === "Enter" && !e.shiftKey && s === eEnd) {
+      const zeilenStart = code.lastIndexOf("\n", s - 1) + 1;
+      const vorher = code.slice(zeilenStart, s);
+      const einzug = /^[ \t]*/.exec(vorher)?.[0] ?? "";
+      const davor = code[s - 1];
+      const danach = code[s];
+      if (davor && danach && OFFEN[davor] === danach) {
+        e.preventDefault();
+        const ins = "\n" + einzug + "  " + "\n" + einzug;
+        setzen(code.slice(0, s) + ins + code.slice(s), s + 1 + einzug.length + 2);
+        return;
+      }
+      if (einzug || /[([{:]\s*$/.test(vorher)) {
+        e.preventDefault();
+        const extra = /[([{:]\s*$/.test(vorher) ? "  " : "";
+        const ins = "\n" + einzug + extra;
+        setzen(code.slice(0, s) + ins + code.slice(s), s + ins.length);
+        return;
+      }
+      return;
+    }
+
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+    // Öffnende Klammer: Paar einsetzen oder Selektion umschliessen.
+    if (OFFEN[e.key]) {
+      e.preventDefault();
+      const zu = OFFEN[e.key];
+      if (s !== eEnd) { setzen(code.slice(0, s) + e.key + code.slice(s, eEnd) + zu + code.slice(eEnd), s + 1, eEnd + 1); return; }
+      setzen(code.slice(0, s) + e.key + zu + code.slice(s), s + 1);
+      return;
+    }
+    // Schliessende Klammer direkt vor dem Cursor: überspringen statt einfügen.
+    if (ZU.has(e.key) && s === eEnd && code[s] === e.key) {
+      e.preventDefault();
+      requestAnimationFrame(() => { el.selectionStart = el.selectionEnd = s + 1; });
+      return;
+    }
+    // Anführungszeichen: überspringen / Selektion umschliessen / Paar einsetzen.
+    if (QUOTE.has(e.key)) {
+      if (s === eEnd && code[s] === e.key) { e.preventDefault(); requestAnimationFrame(() => { el.selectionStart = el.selectionEnd = s + 1; }); return; }
+      if (s !== eEnd) { e.preventDefault(); setzen(code.slice(0, s) + e.key + code.slice(s, eEnd) + e.key + code.slice(eEnd), s + 1, eEnd + 1); return; }
+      // Nicht doppeln, wenn direkt an Wort/Quote (z. B. Apostroph in Text).
+      const davor = code[s - 1];
+      if (davor && /[\w"'`]/.test(davor)) return;
+      e.preventDefault();
+      setzen(code.slice(0, s) + e.key + e.key + code.slice(s), s + 1);
+      return;
+    }
+    // Backspace zwischen leerem Paar: beide Zeichen löschen.
+    if (e.key === "Backspace" && s === eEnd && s > 0) {
+      const davor = code[s - 1];
+      const danach = code[s];
+      if ((OFFEN[davor] === danach) || (QUOTE.has(davor) && davor === danach)) {
+        e.preventDefault();
+        setzen(code.slice(0, s - 1) + code.slice(s + 1), s - 1);
+      }
     }
   }
   function syncScroll() {
