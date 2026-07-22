@@ -1,23 +1,23 @@
 /**
- * Auth-Stub – Platzhalter-Interfaces fuer Phase 2 (NextAuth + Postgres).
+ * Auth-Stub – Platzhalter-Interfaces für Phase 2 (NextAuth + Postgres).
  *
  * Diese Datei definiert die Datenmodelle, gegen die die App bereits jetzt
  * typisiert werden kann. In Phase 2 wird die Implementierung durch
  * NextAuth (Session-Handling) und Postgres (Persistenz) ersetzt,
- * ohne dass sich die Aufrufer-Schnittstelle aendert.
+ * ohne dass sich die Aufrufer-Schnittstelle ändert.
  *
  * TODO Phase 2:
  *  - NextAuth mit E-Mail-Magic-Link + Google-OAuth konfigurieren
  *  - User/Team in Postgres persistieren (z. B. Drizzle ORM)
  *  - getCurrentUser() aus der Server-Session lesen
- *  - Middleware: /dashboard und /api/mission nur fuer eingeloggte Nutzer
+ *  - Middleware: /dashboard und /api/mission nur für eingeloggte Nutzer
  */
 
 export interface User {
   id: string;
   email: string;
   name: string;
-  /** Team, dem der Nutzer angehoert (1 Team pro Nutzer im MVP-Modell). */
+  /** Team, dem der Nutzer angehört (1 Team pro Nutzer im MVP-Modell). */
   teamId: string;
   createdAt: string; // ISO-8601
 }
@@ -34,7 +34,7 @@ export interface Team {
  * Liefert den aktuellen Nutzer der Session.
  *
  * MVP: immer ein Demo-Nutzer, damit Dashboard und API ohne Login laufen.
- * Phase 2: echte Session-Aufloesung via NextAuth; `null` bei fehlender Session.
+ * Phase 2: echte Session-Auflösung via NextAuth; `null` bei fehlender Session.
  */
 export async function getCurrentUser(): Promise<User | null> {
   return {

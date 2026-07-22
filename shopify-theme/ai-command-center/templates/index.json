@@ -1,0 +1,691 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero"
+    },
+    "logoleiste": {
+      "type": "logoleiste",
+      "blocks": {
+        "t1": {
+          "type": "item",
+          "settings": {
+            "text": "Schweizer Anbieter"
+          }
+        },
+        "t2": {
+          "type": "item",
+          "settings": {
+            "text": "Monatlich kündbar"
+          }
+        },
+        "t3": {
+          "type": "item",
+          "settings": {
+            "text": "Quality-Score in jeder Mission"
+          }
+        },
+        "t4": {
+          "type": "item",
+          "settings": {
+            "text": "Demo gratis testen"
+          }
+        }
+      },
+      "block_order": [
+        "t1",
+        "t2",
+        "t3",
+        "t4"
+      ]
+    },
+    "vorteile": {
+      "type": "vorteile",
+      "blocks": {
+        "b1": {
+          "type": "usp",
+          "settings": {
+            "icon": "blitz",
+            "title": "Sofort startklar",
+            "text": "In Tagen live statt in Monaten. Fertige KI-Prozesse, keine Baustellen."
+          }
+        },
+        "b2": {
+          "type": "usp",
+          "settings": {
+            "icon": "chart",
+            "title": "Planbare Kosten",
+            "text": "Ein fixer Monatspreis statt teurer Festanstellungen. Monatlich kündbar."
+          }
+        },
+        "b3": {
+          "type": "usp",
+          "settings": {
+            "icon": "team",
+            "title": "Ganzes Team inklusive",
+            "text": "Strategie, Automatisierung und Umsetzung aus einer Hand, ohne Recruiting."
+          }
+        },
+        "b4": {
+          "type": "usp",
+          "settings": {
+            "icon": "stufen",
+            "title": "Skaliert mit Ihnen",
+            "text": "Abo hoch- oder runterstufen, wann immer Ihr Bedarf sich ändert."
+          }
+        },
+        "b5": {
+          "type": "usp",
+          "settings": {
+            "icon": "schild",
+            "title": "Quality-Score inklusive",
+            "text": "Jede Mission wird geprüft und bewertet, bevor Sie das Ergebnis erhalten."
+          }
+        },
+        "b6": {
+          "type": "usp",
+          "settings": {
+            "icon": "uhr",
+            "title": "Arbeitet rund um die Uhr",
+            "text": "Ihre KI-Abteilung kennt keine Bürozeiten. Missionen laufen auch nachts."
+          }
+        }
+      },
+      "block_order": [
+        "b1",
+        "b2",
+        "b3",
+        "b4",
+        "b5",
+        "b6"
+      ]
+    },
+    "produkt-grid": {
+      "type": "produkt-grid",
+      "settings": {
+        "limit": 6
+      }
+    },
+    "ablauf": {
+      "type": "ablauf",
+      "blocks": {
+        "s1": {
+          "type": "step",
+          "settings": {
+            "title": "Abo wählen",
+            "text": "Wählen Sie die Abostufe, die zu Ihrem Bedarf passt. Monatlich kündbar, ohne Risiko."
+          }
+        },
+        "s2": {
+          "type": "step",
+          "settings": {
+            "title": "Zugang erhalten",
+            "text": "Nach dem Kauf erhalten Sie Ihren Lizenzschlüssel per E-Mail. Einloggen, fertig."
+          }
+        },
+        "s3": {
+          "type": "step",
+          "settings": {
+            "title": "Missionen starten",
+            "text": "Beschreiben Sie die Aufgabe, Ihre KI-Abteilung liefert das Ergebnis mit Quality-Score."
+          }
+        }
+      },
+      "block_order": [
+        "s1",
+        "s2",
+        "s3"
+      ]
+    },
+    "zitate": {
+      "type": "zitate",
+      "blocks": {
+        "z1": {
+          "type": "quote",
+          "settings": {
+            "text": "Mission gestartet, 20 Minuten später lag der fertige Newsletter mit Betreffzeilen-Varianten bereit.",
+            "label": "Einsatz: Marketing-Texte"
+          }
+        },
+        "z2": {
+          "type": "quote",
+          "settings": {
+            "text": "Das System hat unser Skript geprüft, zwei Fehler gefunden und die korrigierte Version gleich mitgeliefert.",
+            "label": "Einsatz: Code-Review"
+          }
+        },
+        "z3": {
+          "type": "quote",
+          "settings": {
+            "text": "Jeden Montag ein fertiger Wochenreport aus unseren Zahlen, inklusive Zusammenfassung für die Geschäftsleitung.",
+            "label": "Einsatz: Reporting"
+          }
+        }
+      },
+      "block_order": [
+        "z1",
+        "z2",
+        "z3"
+      ]
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "f1": {
+          "type": "qa",
+          "settings": {
+            "question": "Wie schnell bin ich startklar?",
+            "answer": "<p>In der Regel innerhalb weniger Tage nach Aboabschluss. Onboarding und erste Prozesse gehen sofort los.</p>"
+          }
+        },
+        "f2": {
+          "type": "qa",
+          "settings": {
+            "question": "Kann ich monatlich kündigen?",
+            "answer": "<p>Ja. Alle Abos sind monatlich kündbar, ohne lange Bindung.</p>"
+          }
+        },
+        "f3": {
+          "type": "qa",
+          "settings": {
+            "question": "Was ist im Abo enthalten?",
+            "answer": "<p>Strategie, Automatisierung und die laufende Umsetzung Ihrer KI-Prozesse. Details je Abostufe.</p>"
+          }
+        },
+        "f4": {
+          "type": "qa",
+          "settings": {
+            "question": "Brauche ich technisches Vorwissen?",
+            "answer": "<p>Nein. Wir übernehmen Einrichtung und Betrieb, Sie geben die Richtung vor.</p>"
+          }
+        },
+        "f5": {
+          "type": "qa",
+          "settings": {
+            "question": "Kann ich das Abo wechseln?",
+            "answer": "<p>Jederzeit hoch- oder runterstufen, passend zu Ihrem aktuellen Bedarf.</p>"
+          }
+        },
+        "f6": {
+          "type": "qa",
+          "settings": {
+            "question": "Wie funktioniert der Support?",
+            "answer": "<p>Sie erreichen uns über die Kontaktseite. Reaktionszeiten richten sich nach Ihrer Abostufe.</p>"
+          }
+        },
+        "f9": {
+          "type": "qa",
+          "settings": {
+            "question": "Wie sicher sind meine Daten?",
+            "answer": "<p>Zehn Schutzschichten sind direkt im Code verankert: signierte Lizenzen, Injection-Schutz, verschlüsselte Übertragung, Sicherheits-Header und Datensparsamkeit – Ihre Arbeitsdaten bleiben in Ihrem Browser statt auf fremden Servern. Bezahlt wird über den zertifizierten Shopify-Checkout (PCI-DSS Level 1).</p>"
+          }
+        },
+        "f10": {
+          "type": "qa",
+          "settings": {
+            "question": "Kann ich in Euro bezahlen?",
+            "answer": "<p>Die Preise sind in Schweizer Franken angegeben. Über den Shopify-Checkout können Kundinnen und Kunden aus dem Ausland je nach Zahlungsmethode in ihrer Währung bezahlen; die Umrechnung übernimmt der Zahlungsanbieter automatisch.</p>"
+          }
+        },
+        "f11": {
+          "type": "qa",
+          "settings": {
+            "question": "Welche KI steckt dahinter?",
+            "answer": "<p>Ihr System hat einen Kopf mit klarer Hierarchie: <strong>Claude von Anthropic ist der Boss</strong> – er plant jede Mission, verteilt die Arbeit und prüft jedes Ergebnis. <strong>GPT von OpenAI und Kimi von Moonshot arbeiten als Worker</strong> – für Texte, Analysen und echten Code. Und aus einem Pool von über einer Milliarde Spezialisten-Profilen stellt der Boss für jeden Auftrag <strong>die passenden Assistenten</strong> zusammen. Fällt ein Anbieter aus, übernimmt automatisch der nächste.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f9",
+        "f10",
+        "f11"
+      ]
+    },
+    "cta-band": {
+      "type": "cta-band"
+    },
+    "zahlen": {
+      "type": "zahlen",
+      "blocks": {
+        "z1": {
+          "type": "zahl",
+          "settings": {
+            "wert": "13",
+            "name": "Arbeitsbereiche",
+            "notiz": "Vom CRM bis zur Kommandozentrale"
+          }
+        },
+        "z2": {
+          "type": "zahl",
+          "settings": {
+            "wert": "24",
+            "name": "Skills",
+            "notiz": "Geprüfte Befehle für jede Abteilung"
+          }
+        },
+        "z3": {
+          "type": "zahl",
+          "settings": {
+            "wert": "3",
+            "name": "KI-Ebenen",
+            "notiz": "Boss · Worker · Assistenten"
+          }
+        },
+        "z4": {
+          "type": "zahl",
+          "settings": {
+            "wert": "1000",
+            "name": "Mitarbeitende",
+            "notiz": "Belegschaft im Enterprise-Ausbau"
+          }
+        }
+      },
+      "block_order": [
+        "z1",
+        "z2",
+        "z3",
+        "z4"
+      ],
+      "settings": {
+        "label": "Für Unternehmen gebaut",
+        "titel": "Professionell. Sicher. Sofort einsatzbereit."
+      }
+    },
+    "sicherheit": {
+      "type": "sicherheit",
+      "blocks": {
+        "w1": {
+          "type": "waechter",
+          "settings": {
+            "name": "Lizenz-Wächter",
+            "text": "Signierte Lizenzschlüssel nach Industriestandard (HMAC-SHA256) – gefälschte Zugänge prallen ab."
+          }
+        },
+        "w2": {
+          "type": "waechter",
+          "settings": {
+            "name": "Injection-Wächter",
+            "text": "Dokumente und Kundenmails werden als Daten behandelt, nie als Befehle – versteckte Kommandos steuern Ihre KI nicht um."
+          }
+        },
+        "w3": {
+          "type": "waechter",
+          "settings": {
+            "name": "Daten-Wächter",
+            "text": "Datensparsamkeit ab Werk: Ihre Arbeitsdaten bleiben in Ihrem Browser – mit Export und Löschung per Klick."
+          }
+        },
+        "w4": {
+          "type": "waechter",
+          "settings": {
+            "name": "Transport-Wächter",
+            "text": "Alles verschlüsselt über HTTPS/TLS; HSTS erzwingt sichere Verbindungen bei jedem Besuch."
+          }
+        },
+        "w5": {
+          "type": "waechter",
+          "settings": {
+            "name": "Limit-Wächter",
+            "text": "Serverseitige Tageslimits pro Abo-Stufe verhindern Missbrauch und unkontrollierte Kosten."
+          }
+        },
+        "w6": {
+          "type": "waechter",
+          "settings": {
+            "name": "Ausfall-Wächter",
+            "text": "Drei KI-Anbieter in einer Fallback-Kette – fällt einer aus, übernimmt automatisch der nächste."
+          }
+        }
+      },
+      "block_order": [
+        "w1",
+        "w2",
+        "w3",
+        "w4",
+        "w5",
+        "w6"
+      ],
+      "settings": {
+        "label": "Sicherheitssystem",
+        "titel": "10 Wächter schützen Ihre Arbeit.",
+        "untertitel": "Jede Schutzschicht ist im Code verankert und greift bei jedem Aufruf – rund um die Uhr, an jedem Tag."
+      }
+    },
+    "einblicke": {
+      "type": "einblicke",
+      "blocks": {
+        "e1": {
+          "type": "einblick",
+          "settings": {
+            "motiv": "kommando",
+            "titel": "Die Kommandozentrale: Sie befehlen, Ihr Team liefert.",
+            "text": "Sie schreiben einen Auftrag in normaler Sprache – zum Beispiel «Erstelle eine Landingpage für unser Frühlingsangebot». Ihr Commander zerlegt die Aufgabe, verteilt sie an spezialisierte Agenten, und die Qualitätsprüfung bewertet das Ergebnis mit einem Score von 0 bis 100, bevor Sie es sehen. Am Ende steht keine Chat-Antwort, sondern eine fertige Datei zum Herunterladen: Website, Dokument, Präsentation oder Analyse. Mit 24 geprüften Befehlen (Skills) von der Offerte über die Rechnung bis zum Code – tippen Sie einfach « / »."
+          }
+        },
+        "e2": {
+          "type": "einblick",
+          "settings": {
+            "motiv": "email",
+            "titel": "E-Mail & WhatsApp: Antworten in Sekunden statt Stunden.",
+            "text": "Fügen Sie eine eingehende Kundenmail oder WhatsApp-Nachricht ein und geben Sie die Richtung vor – etwa «Preisnachlass freundlich ablehnen, Ratenzahlung anbieten». Ihre KI schreibt die versandfertige Antwort mit Betreff, professionellem Ton und Ihrer Signatur. Ein Klick öffnet Gmail oder WhatsApp mit allem bereits ausgefüllt: Sie prüfen kurz und drücken auf Senden. Sicherheit inklusive: Versteckte Anweisungen in einer Nachricht können Ihre KI nicht umsteuern."
+          }
+        },
+        "e3": {
+          "type": "einblick",
+          "settings": {
+            "motiv": "autopilot",
+            "titel": "Autopilot, Berichte und Analysen: Ihr Betrieb, im Griff.",
+            "text": "Wiederkehrende Aufträge legen Sie einmal an – Social-Media-Wochenplan, Angebotsideen, Wochenbericht für die Geschäftsleitung – und führen sie mit einem Klick aus, sobald sie fällig sind. Jedes Ergebnis landet im durchsuchbaren Archiv mit Datum, Dateien und Quality-Score. Der Statistikbereich zeigt Ihnen auf einen Blick, wie viel Ihre KI-Abteilung leistet. Dazu: Kundenverwaltung mit Pipeline, Benutzerrollen für Ihr Team und ein Sicherheitssystem mit zehn Wächtern."
+          }
+        }
+      },
+      "block_order": [
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "settings": {
+        "label": "So arbeitet Ihre KI-Abteilung",
+        "titel": "Genau erklärt – Schritt für Schritt"
+      }
+    },
+    "branchen": {
+      "type": "branchen",
+      "blocks": {
+        "b1": {
+          "type": "branche",
+          "settings": {
+            "symbol": "🍽",
+            "name": "Gastronomie & Hotellerie",
+            "beispiele": "Wochenkarte texten, Aktionen planen, Bewertungen und Reklamationen professionell beantworten."
+          }
+        },
+        "b2": {
+          "type": "branche",
+          "settings": {
+            "symbol": "🔨",
+            "name": "Handwerk & Bau",
+            "beispiele": "Offerten in Minuten, Baustellenberichte, Nachfass-Mails an Interessenten."
+          }
+        },
+        "b3": {
+          "type": "branche",
+          "settings": {
+            "symbol": "🧾",
+            "name": "Treuhand & Finanzen",
+            "beispiele": "Kundenschreiben, Fristen-Erinnerungen, Zusammenfassungen langer Dokumente."
+          }
+        },
+        "b4": {
+          "type": "branche",
+          "settings": {
+            "symbol": "🛍",
+            "name": "Handel & E-Commerce",
+            "beispiele": "Produkttexte, Preisanalysen, Newsletter und Aktions-Kampagnen."
+          }
+        },
+        "b5": {
+          "type": "branche",
+          "settings": {
+            "symbol": "💻",
+            "name": "Software & IT",
+            "beispiele": "Echter Code, Code-Reviews, technische Dokumentation, Stellenanzeigen."
+          }
+        },
+        "b6": {
+          "type": "branche",
+          "settings": {
+            "symbol": "🏥",
+            "name": "Gesundheit & Pflege",
+            "beispiele": "Patienteninformationen, Dienstplan-Vorlagen, Stellenanzeigen die passen."
+          }
+        },
+        "b7": {
+          "type": "branche",
+          "settings": {
+            "symbol": "📣",
+            "name": "Agenturen & Medien",
+            "beispiele": "Kampagnen, Content-Serien, Kundenpräsentationen – in Ihrem Ton."
+          }
+        },
+        "b8": {
+          "type": "branche",
+          "settings": {
+            "symbol": "🏢",
+            "name": "Immobilien & Verwaltung",
+            "beispiele": "Exposé-Texte, Mieterkommunikation, Marktanalysen pro Region."
+          }
+        }
+      },
+      "block_order": [
+        "b1",
+        "b2",
+        "b3",
+        "b4",
+        "b5",
+        "b6",
+        "b7",
+        "b8"
+      ],
+      "settings": {
+        "label": "Für Ihre Branche gebaut",
+        "titel": "Was Ihre KI-Abteilung für Sie erledigt",
+        "untertitel": "Acht Beispiele aus dem Alltag – Ihre Branche ist dabei."
+      }
+    },
+    "bereiche": {
+      "type": "bereiche",
+      "blocks": {
+        "a1": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "🎛",
+            "name": "Kommandozentrale",
+            "text": "Befehl geben, fertige Datei erhalten – mit 48 Skills – jede Abo-Stufe schaltet mehr frei. Eingebauter KI-Browser: Ihre Belegschaft recherchiert live im Web, mit Quellenangaben."
+          }
+        },
+        "a2": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "🛰",
+            "name": "Missionen",
+            "text": "Dem Team live zusehen: Organigramm, Status, Score."
+          }
+        },
+        "a3": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "👥",
+            "name": "Kunden (CRM)",
+            "text": "Pipeline vom Lead bis zum Kunden – mit Ein-Klick-Aktionen."
+          }
+        },
+        "a4": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "✉️",
+            "name": "E-Mail & WhatsApp",
+            "text": "Kundenmails und WhatsApp-Nachrichten beantwortet die KI – Sie drücken nur Senden."
+          }
+        },
+        "a5": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "🔁",
+            "name": "Autopilot",
+            "text": "Wiederkehrende Aufträge, per Klick ausgeführt."
+          }
+        },
+        "a6": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "🗂",
+            "name": "Berichte",
+            "text": "Alle Ergebnisse durchsuchbar, mit Dateien und Score."
+          }
+        },
+        "a7": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "📊",
+            "name": "Analysen",
+            "text": "Kennzahlen und Aktivität Ihrer KI-Abteilung."
+          }
+        },
+        "a8": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "🧠",
+            "name": "Skills",
+            "text": "44 geprüfte Befehle – von /offerte über /vertrag bis /ki-strategie. Jede Stufe schaltet mehr frei."
+          }
+        },
+        "a9": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "🏛",
+            "name": "Team & Talent-Pool",
+            "text": "Über 1 Milliarde adressierbare Spezialisten-Profile."
+          }
+        },
+        "a10": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "🔐",
+            "name": "Sicherheit",
+            "text": "10 Wächter, bei jedem Aufruf im Dienst."
+          }
+        },
+        "a11": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "🔌",
+            "name": "Integrationen",
+            "text": "15 Firmen-Systeme im Katalog (Enterprise-Anbindung)."
+          }
+        },
+        "a12": {
+          "type": "bereich",
+          "settings": {
+            "symbol": "⚙️",
+            "name": "Benutzer & Einstellungen",
+            "text": "Rollen fürs Team, Profil, Datenexport per Klick."
+          }
+        }
+      },
+      "block_order": [
+        "a1",
+        "a2",
+        "a3",
+        "a4",
+        "a5",
+        "a6",
+        "a7",
+        "a8",
+        "a9",
+        "a10",
+        "a11",
+        "a12"
+      ],
+      "settings": {
+        "label": "Alles in einem System",
+        "titel": "13 Arbeitsbereiche. Ein Abo."
+      }
+    },
+    "vergleich": {
+      "type": "vergleich",
+      "settings": {
+        "label": "Der ehrliche Vergleich",
+        "titel": "Chatbot? Agentur? Oder eine ganze KI-Abteilung."
+      }
+    },
+    "gehirn": {
+      "type": "gehirn",
+      "settings": {
+        "label": "So denkt Ihr System",
+        "titel": "Ein Kopf. Zwei Worker. Milliarden Assistenten.",
+        "untertitel": "Kein einzelner Chatbot – eine Organisation aus den stärksten KIs der Welt, mit klarer Hierarchie."
+      }
+    },
+    "abo-wahl": {
+      "type": "abo-wahl",
+      "settings": {}
+    },
+    "funktionen-detail": {
+      "type": "funktionen-detail",
+      "settings": {}
+    },
+    "skills-katalog": {
+      "type": "skills-katalog",
+      "settings": {}
+    },
+    "stufen-tabelle": {
+      "type": "stufen-tabelle",
+      "settings": {}
+    },
+    "buero-animation": {
+      "type": "buero-animation",
+      "settings": {}
+    },
+    "echt-bild": {
+      "type": "echt-bild",
+      "settings": {
+        "label": "// IHRE KI-ABTEILUNG IM EINSATZ",
+        "titel": "Ein echtes Arbeitswerkzeug für Ihre Firma",
+        "text": "Kein Spielzeug, kein Chatbot: Ihre digitale Belegschaft arbeitet an echten Aufgaben und liefert fertige Ergebnisse – zugeschnitten auf Ihre Branche.",
+        "alt": "Team arbeitet mit dem AI Command Center",
+        "bild": "acc-office-bright.jpg"
+      }
+    },
+    "trailer": {
+      "type": "trailer",
+      "settings": {
+        "label": "// IN 40 SEKUNDEN ERKLÄRT",
+        "titel": "Sehen Sie Ihre KI-Abteilung in Aktion",
+        "text": "Vom Auftrag zur fertigen Datei, KI-Chat mit Browser und Quellen, sechs Stufen für jede Firmengrösse.",
+        "play_label": "Trailer ansehen",
+        "video": "acc-trailer.mp4",
+        "poster": "acc-trailer-poster.jpg"
+      }
+    },
+    "kann-grenzen": {
+      "type": "kann-grenzen",
+      "settings": {
+        "label": "EHRLICH STATT ÜBERTRIEBEN",
+        "titel": "Was Ihr KI-System kann – und was (noch) nicht",
+        "intro": "Wir versprechen nichts, was das System nicht hält. So wissen Sie vor dem Kauf genau, was Sie bekommen.",
+        "fuss": "Alles, was heute geht, ist im Vollbetrieb sofort nutzbar. Was in Vorbereitung ist, kommt als Update – ohne Aufpreis für bestehende Abos."
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "trailer",
+    "logoleiste",
+    "vorteile",
+    "echt-bild",
+    "buero-animation",
+    "zahlen",
+    "gehirn",
+    "branchen",
+    "einblicke",
+    "bereiche",
+    "funktionen-detail",
+    "skills-katalog",
+    "produkt-grid",
+    "stufen-tabelle",
+    "kann-grenzen",
+    "abo-wahl",
+    "ablauf",
+    "vergleich",
+    "zitate",
+    "sicherheit",
+    "faq",
+    "cta-band"
+  ]
+}
