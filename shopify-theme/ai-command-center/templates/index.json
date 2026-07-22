@@ -639,12 +639,24 @@
         "titel": "Ein echtes Arbeitswerkzeug für Ihre Firma",
         "text": "Kein Spielzeug, kein Chatbot: Ihre digitale Belegschaft arbeitet an echten Aufgaben und liefert fertige Ergebnisse – zugeschnitten auf Ihre Branche.",
         "alt": "Team arbeitet mit dem AI Command Center",
-        "bild": "acc-office-real.jpg"
+        "bild": "acc-office-bright.jpg"
+      }
+    },
+    "trailer": {
+      "type": "trailer",
+      "settings": {
+        "label": "// IN 40 SEKUNDEN ERKLÄRT",
+        "titel": "Sehen Sie Ihre KI-Abteilung in Aktion",
+        "text": "Vom Auftrag zur fertigen Datei, KI-Chat mit Browser und Quellen, sechs Stufen für jede Firmengrösse.",
+        "play_label": "Trailer ansehen",
+        "video": "acc-trailer.mp4",
+        "poster": "acc-trailer-poster.jpg"
       }
     }
   },
   "order": [
     "hero",
+    "trailer",
     "logoleiste",
     "vorteile",
     "echt-bild",

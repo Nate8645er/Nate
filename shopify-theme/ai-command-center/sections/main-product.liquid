@@ -61,6 +61,31 @@
 
         <div class="acc-product__desc acc-rte">{{ product.description }}</div>
 
+        {%- comment -%}
+          Abo-Video: passend zur Stufe (per plan-Tag). Klick-zum-Abspielen,
+          laedt erst bei Klick. Zeigt, was genau dieses Abo kann.
+        {%- endcomment -%}
+        {%- assign abo_video = '' -%}
+        {%- if product.tags contains 'plan-1-free' -%}{%- assign abo_video = 'acc-abo-free.mp4' -%}
+        {%- elsif product.tags contains 'plan-1b-personal' -%}{%- assign abo_video = 'acc-abo-personal.mp4' -%}
+        {%- elsif product.tags contains 'plan-2-starter' -%}{%- assign abo_video = 'acc-abo-starter.mp4' -%}
+        {%- elsif product.tags contains 'plan-3-professional' -%}{%- assign abo_video = 'acc-abo-professional.mp4' -%}
+        {%- elsif product.tags contains 'plan-4-business' -%}{%- assign abo_video = 'acc-abo-business.mp4' -%}
+        {%- elsif product.tags contains 'plan-5-enterprise' -%}{%- assign abo_video = 'acc-abo-enterprise.mp4' -%}
+        {%- endif -%}
+        {%- if abo_video != '' -%}
+          <div class="acc-abovid" data-abovid>
+            <video class="acc-abovid__v" preload="none" playsinline controls
+              poster="{{ 'acc-trailer-poster.jpg' | asset_url }}">
+              <source src="{{ abo_video | asset_url }}" type="video/mp4">
+            </video>
+            <button class="acc-abovid__play" type="button" aria-label="Abo-Video abspielen">
+              <span class="acc-abovid__pbtn"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span>
+              <span>Dieses Abo im Video ansehen</span>
+            </button>
+          </div>
+        {%- endif -%}
+
         {%- if product.available -%}
           {%- form 'product', product, class: 'acc-form', id: form_id -%}
             {%- if product.variants.size > 1 -%}

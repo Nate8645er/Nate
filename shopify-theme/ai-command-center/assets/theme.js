@@ -180,3 +180,20 @@
     init();
   }
 })();
+
+/* Abo-Video / Trailer: Klick-zum-Abspielen (laedt Video erst bei Klick). */
+(function () {
+  function wire(sel) {
+    document.querySelectorAll(sel).forEach(function (box) {
+      var v = box.querySelector('video');
+      var b = box.querySelector('button');
+      if (!v || !b || b.dataset.wired) return;
+      b.dataset.wired = '1';
+      b.addEventListener('click', function () { box.classList.add('is-playing'); v.play(); });
+      v.addEventListener('pause', function () { if (v.currentTime === 0) box.classList.remove('is-playing'); });
+    });
+  }
+  function init() { wire('[data-abovid]'); }
+  if (document.readyState !== 'loading') init();
+  else document.addEventListener('DOMContentLoaded', init);
+})();
