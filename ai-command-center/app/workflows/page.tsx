@@ -234,30 +234,29 @@ export default function WorkflowsPage() {
   const dueList = workflows.filter(isDue);
 
   return (
-    <div className="min-h-dvh bg-[#0b0a08] text-zinc-200">
-      <div className="hud-texture" aria-hidden="true" />
-      <div className="relative z-10 mx-auto max-w-5xl px-4 pb-24">
+    <div className="acc-page min-h-dvh text-[#1c1917]">
+      <div className="mx-auto max-w-5xl px-4 pb-24">
         {/* Kopfzeile */}
-        <header className="flex items-center justify-between border-b border-[#ff8c2a]/15 py-4">
-          <div className="flex items-center gap-2">
-            <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" />
-            <span className="hud-label">AI Command Center</span>
+        <header className="flex items-center justify-between border-b border-[#e8e1d2] py-4">
+          <div className="flex items-center gap-2.5">
+            <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f]" />
+            <span className="text-sm font-bold">AI Command Center</span>
           </div>
-          <WorkNav aktiv="autopilot" variante="dunkel" />
+          <WorkNav aktiv="autopilot" variante="hell" />
         </header>
 
-        <div className="pt-10">
-          <p className="hud-label mb-3">Workflow-Manager</p>
-          <h1 className="text-3xl font-semibold text-white sm:text-4xl">
-            Autopilot: wiederkehrende Aufträge
+        <div className="pt-10 acc-in">
+          <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Workflow-Manager</p>
+          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+            <span className="acc-grad-text">Autopilot</span>: wiederkehrende Aufträge
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-400">
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#8d8172]">
             Legen Sie Aufträge an, die Ihre KI-Belegschaft regelmässig erledigt –
             vom Social-Media-Wochenplan bis zum Bericht für die Geschäftsleitung.
             Fällige Workflows starten Sie mit einem Klick; jede Ausführung ist
             eine echte Mission und zählt auf Ihr Tageslimit.
           </p>
-          <p className="mt-3 max-w-2xl rounded-lg border border-[#ff8c2a]/20 bg-[#ff8c2a]/[0.05] px-4 py-3 text-xs leading-relaxed text-[#ffb35c]/90">
+          <p className="mt-3 max-w-2xl rounded-xl border border-[#ffb066]/40 bg-[#fff4e6] px-4 py-3 text-xs leading-relaxed text-[#c25e0e]">
             Ehrlich gesagt: Der Autopilot arbeitet, solange diese Seite geöffnet
             ist. Vollautomatischer Betrieb rund um die Uhr (Server-seitig, ohne
             Browser) gehört zum Enterprise-Ausbau und wird pro Kunde eingerichtet.
@@ -266,13 +265,13 @@ export default function WorkflowsPage() {
 
         {/* Fällige Workflows */}
         {dueList.length > 0 && (
-          <div className="mt-8 flex items-center justify-between rounded-xl border border-[#ffd257]/40 bg-[#ffd257]/[0.06] px-4 py-3">
-            <p className="text-sm text-[#ffd257]">
+          <div className="mt-8 flex items-center justify-between rounded-2xl border border-[#f0c95c]/60 bg-[#fdf6e3] px-4 py-3">
+            <p className="text-sm font-semibold text-[#8a6d1f]">
               {dueList.length} Workflow{dueList.length > 1 ? "s" : ""} fällig
             </p>
             <button
               onClick={() => dueList.forEach((w) => run(w))}
-              className="shop-btn rounded-lg bg-[#ffd257] px-4 py-2 text-sm font-bold text-[#1a0f04]"
+              className="shop-btn rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-4 py-2 text-sm font-bold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)]"
             >
               Alle fälligen ausführen
             </button>
@@ -285,16 +284,16 @@ export default function WorkflowsPage() {
             <div className="flex flex-wrap items-center gap-3">
               <button
                 onClick={() => setFormOpen(true)}
-                className="shop-btn rounded-lg bg-gradient-to-r from-[#ffb066] via-[#ff8c2a] to-[#ff5f1f] px-5 py-2.5 text-sm font-bold text-[#1a0f04]"
+                className="shop-btn rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-5 py-2.5 text-sm font-bold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)]"
               >
                 + Eigener Workflow
               </button>
-              <span className="text-xs text-zinc-500">oder Vorlage übernehmen:</span>
+              <span className="text-xs text-[#8d8172]">oder Vorlage übernehmen:</span>
               {VORLAGEN.map((v) => (
                 <button
                   key={v.name}
                   onClick={() => addWorkflow(v.name, v.goal, v.frequenz)}
-                  className="shop-btn rounded-lg border border-[#ff8c2a]/25 px-3 py-2 text-xs text-[#ffb35c] hover:border-[#ff8c2a]/60"
+                  className="rounded-xl border border-[#e0d8c6] bg-white/70 px-3 py-2 text-xs font-semibold text-[#4a4335] hover:border-[#ffb066]"
                 >
                   {v.name}
                 </button>
@@ -302,25 +301,25 @@ export default function WorkflowsPage() {
             </div>
           ) : (
             <form
-              className="hud-panel hud-corners relative rounded-xl p-5"
+              className="acc-card rounded-2xl p-5"
               onSubmit={(e) => {
                 e.preventDefault();
                 addWorkflow(name, goal, frequenz);
               }}
             >
-              <h2 className="text-lg font-semibold text-white">Neuer Workflow</h2>
+              <h2 className="text-lg font-semibold">Neuer Workflow</h2>
               <div className="mt-4 grid gap-4 sm:grid-cols-[1fr_180px]">
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Name, z. B. Social-Media-Woche"
-                  className="rounded-lg border border-[#ff8c2a]/25 bg-[#12100d] px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-[#ff8c2a]/60 focus:outline-none"
+                  className="w-full rounded-xl border border-[#e0d8c6] bg-white/70 px-4 py-2.5 text-sm focus:border-[#ffb066] focus:outline-none"
                   aria-label="Workflow-Name"
                 />
                 <select
                   value={frequenz}
                   onChange={(e) => setFrequenz(e.target.value as Frequenz)}
-                  className="rounded-lg border border-[#ff8c2a]/25 bg-[#12100d] px-3 py-2.5 text-sm text-zinc-100 focus:border-[#ff8c2a]/60 focus:outline-none"
+                  className="w-full rounded-xl border border-[#e0d8c6] bg-white/70 px-3 py-2.5 text-sm focus:border-[#ffb066] focus:outline-none"
                   aria-label="Frequenz"
                 >
                   <option value="taeglich">Täglich</option>
@@ -333,21 +332,21 @@ export default function WorkflowsPage() {
                 onChange={(e) => setGoal(e.target.value)}
                 rows={3}
                 placeholder="Auftrag an Ihre KI-Belegschaft …"
-                className="mt-4 w-full resize-none rounded-lg border border-[#ff8c2a]/25 bg-[#12100d] px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-[#ff8c2a]/60 focus:outline-none"
+                className="mt-4 w-full resize-none rounded-xl border border-[#e0d8c6] bg-white/70 px-4 py-3 text-sm focus:border-[#ffb066] focus:outline-none"
                 aria-label="Workflow-Auftrag"
               />
               <div className="mt-4 flex gap-3">
                 <button
                   type="submit"
                   disabled={!name.trim() || !goal.trim()}
-                  className="shop-btn rounded-lg bg-gradient-to-r from-[#ffb066] via-[#ff8c2a] to-[#ff5f1f] px-5 py-2.5 text-sm font-bold text-[#1a0f04] disabled:opacity-40"
+                  className="shop-btn rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-5 py-2.5 text-sm font-bold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)] disabled:opacity-40"
                 >
                   Anlegen
                 </button>
                 <button
                   type="button"
                   onClick={() => setFormOpen(false)}
-                  className="rounded-lg border border-[#ff8c2a]/25 px-5 py-2.5 text-sm text-zinc-400"
+                  className="rounded-xl border border-[#e0d8c6] bg-white/70 px-5 py-2.5 text-sm font-semibold text-[#4a4335] hover:border-[#ffb066]"
                 >
                   Abbrechen
                 </button>
@@ -359,7 +358,7 @@ export default function WorkflowsPage() {
         {/* Liste */}
         <div className="mt-8 space-y-4">
           {workflows.length === 0 && (
-            <p className="rounded-xl border border-[#ff8c2a]/15 px-5 py-8 text-center text-sm text-zinc-500">
+            <p className="rounded-2xl border border-[#e8e1d2] px-5 py-8 text-center text-sm text-[#8d8172]">
               Noch keine Workflows. Übernehmen Sie eine Vorlage oder legen Sie
               einen eigenen an.
             </p>
@@ -367,33 +366,33 @@ export default function WorkflowsPage() {
           {workflows.map((w) => {
             const state = running[w.id] ?? null;
             return (
-              <article key={w.id} className="hud-panel relative rounded-xl p-5">
+              <article key={w.id} className="acc-card acc-card-hover rounded-2xl p-5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-semibold text-white">{w.name}</h3>
-                      <span className="rounded-full border border-[#ff8c2a]/30 px-2 py-0.5 text-[11px] text-[#ffb35c]">
+                      <h3 className="font-semibold">{w.name}</h3>
+                      <span className="rounded-full border border-[#ffb066]/40 bg-[#fff4e6] px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#c25e0e]">
                         {FREQUENZ_LABEL[w.frequenz]}
                       </span>
                       {isDue(w) && (
-                        <span className="rounded-full border border-[#ffd257]/50 bg-[#ffd257]/10 px-2 py-0.5 text-[11px] text-[#ffd257]">
+                        <span className="rounded-full border border-[#f0c95c]/60 bg-[#fdf6e3] px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#8a6d1f]">
                           Fällig
                         </span>
                       )}
                     </div>
-                    <p className="mt-1.5 max-w-2xl text-sm text-zinc-400">{w.goal}</p>
+                    <p className="mt-1.5 max-w-2xl text-sm text-[#8d8172]">{w.goal}</p>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
                     <button
                       onClick={() => run(w)}
                       disabled={state?.status === "laeuft"}
-                      className="shop-btn rounded-lg border border-[#ff8c2a]/40 bg-[#ff8c2a]/10 px-4 py-2 text-sm font-semibold text-[#ffb35c] hover:bg-[#ff8c2a]/20 disabled:opacity-40"
+                      className="shop-btn rounded-xl border border-[#e0d8c6] bg-white/70 px-4 py-2 text-sm font-semibold text-[#4a4335] hover:border-[#ffb066] disabled:opacity-40"
                     >
                       {state?.status === "laeuft" ? "Läuft …" : "Jetzt ausführen"}
                     </button>
                     <button
                       onClick={() => removeWorkflow(w.id)}
-                      className="rounded-lg border border-zinc-700 px-3 py-2 text-sm text-zinc-500 hover:border-red-500/50 hover:text-red-400"
+                      className="rounded-xl border border-[#e0d8c6] bg-white/70 px-3 py-2 text-sm text-[#a89c8a] hover:border-red-300 hover:text-red-600"
                       aria-label={`Workflow "${w.name}" löschen`}
                     >
                       ✕
@@ -402,21 +401,21 @@ export default function WorkflowsPage() {
                 </div>
 
                 {state?.status === "laeuft" && (
-                  <p className="mt-3 flex items-center gap-2 text-sm text-[#ffb35c]">
+                  <p className="mt-3 flex items-center gap-2 text-sm text-[#c25e0e]">
                     <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" />
                     {state.note}
                   </p>
                 )}
                 {state?.status === "fehler" && (
-                  <p className="mt-3 text-sm text-red-300">{state.note}</p>
+                  <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-sm font-semibold text-red-600">{state.note}</p>
                 )}
                 {!state && w.lastRun && (
-                  <p className="mt-3 text-xs text-zinc-500">
+                  <p className="mt-3 text-xs text-[#8d8172]">
                     Zuletzt: {new Date(w.lastRun).toLocaleString("de-CH")}
                     {typeof w.lastScore === "number" && ` · Quality-Score ${w.lastScore}`}
                     {w.lastSummary && ` · ${w.lastSummary}`}
                     {" · "}
-                    <Link href="/dashboard" className="text-[#ffb35c] hover:underline">
+                    <Link href="/dashboard" className="font-semibold text-[#c25e0e] hover:underline">
                       Ergebnis im Dashboard
                     </Link>
                   </p>
@@ -425,7 +424,7 @@ export default function WorkflowsPage() {
             );
           })}
         </div>
-        <WorkFooter variante="dunkel" />
+        <WorkFooter variante="hell" />
       </div>
     </div>
   );

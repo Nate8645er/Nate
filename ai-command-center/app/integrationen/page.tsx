@@ -1,11 +1,11 @@
 "use client";
 
 /**
- * Integration-Center — Anbindungs-Katalog für Firmensysteme (JARVIS-HUD).
+ * Integration-Center — Anbindungs-Katalog für Firmensysteme (heller acc-Look).
  *
  * Rein statischer Katalog aus lib/connectors.ts: Kategorie-Gruppen mit
  * Connector-Karten (Monogramm-Badge statt Markenlogo, Plan- und
- * Status-Badge). "Anbindung anfragen" öffnet ein HUD-Modal, das den
+ * Status-Badge). "Anbindung anfragen" öffnet ein Modal, das den
  * ehrlichen 3-Schritte-Ablauf erklärt und per mailto eine Anfrage mit
  * vorbefülltem Betreff startet. Keine Live-Verbindungen auf dieser Seite —
  * die werden pro Unternehmen als Enterprise-Projekt eingerichtet.
@@ -16,7 +16,6 @@ import { memo, useEffect, useRef, useState } from "react";
 import {
   CONNECTORS,
   KATEGORIEN,
-  KATEGORIE_AKZENT,
   STATUS_LABEL,
   type Connector,
   type ConnectorKategorie,
@@ -25,9 +24,26 @@ import {
 /** Ziel-Adresse für Anbindungs-Anfragen. */
 const KONTAKT_EMAIL = "beamswiss@gmail.com";
 
-/** Fokus-Ring für Tastaturbedienung (focus-visible) im HUD-Stil. */
+/** Fokus-Ring für Tastaturbedienung (focus-visible), heller Look. */
 const FOCUS_RING =
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff8c2a]/70";
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff8c2a]/60";
+
+/**
+ * Heller, WCAG-tauglicher Akzent je Kategorie (dezenter Farbakzent pro Dienst).
+ * Ersetzt die für den dunklen HUD gedachten warmen Nuancen aus connectors.ts.
+ */
+const KATEGORIE_FARBE: Record<ConnectorKategorie, string> = {
+  Produktivität: "#c25e0e",
+  "CRM + Vertrieb": "#5b52d6",
+  "ERP + Finanzen": "#0f766e",
+  Kommunikation: "#be185d",
+  "Cloud + Dateien": "#1d63c9",
+  "E-Commerce": "#9a6b0f",
+  "Eigene Systeme": "#7c3aed",
+};
+
+/** Kleines Akzent-Eyebrow (Label über einem Block). */
+const EYEBROW = "text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]";
 
 /** mailto-Link mit vorbefülltem Betreff "Anbindung <Name>". */
 function mailtoHref(connectorName: string): string {
@@ -38,7 +54,7 @@ function mailtoHref(connectorName: string): string {
   return `mailto:${KONTAKT_EMAIL}?subject=${subject}&body=${body}`;
 }
 
-/** Monogramm-Badge (2 Buchstaben) im HUD-Stil — bewusst kein Markenlogo. */
+/** Monogramm-Badge (2 Buchstaben) — bewusst kein Markenlogo. */
 const MonogrammBadge = memo(function MonogrammBadge({
   monogramm,
   akzent,
@@ -49,12 +65,11 @@ const MonogrammBadge = memo(function MonogrammBadge({
   return (
     <span
       aria-hidden
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border font-mono text-sm font-bold tracking-[0.08em]"
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border font-mono text-sm font-bold tracking-[0.08em]"
       style={{
         color: akzent,
-        borderColor: `${akzent}59`,
-        background: `${akzent}0f`,
-        boxShadow: `0 0 12px ${akzent}26, inset 0 0 10px ${akzent}14`,
+        borderColor: `${akzent}33`,
+        background: `${akzent}12`,
       }}
     >
       {monogramm}
@@ -67,10 +82,10 @@ const PlanBadge = memo(function PlanBadge({ planStufe }: { planStufe: Connector[
   const enterprise = planStufe === "ENTERPRISE";
   return (
     <span
-      className={`rounded-xl border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em] ${
+      className={`rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em] ${
         enterprise
-          ? "border-[#ffd257]/50 bg-[#ffd257]/10 text-[#ffd257]"
-          : "border-[#ff8c2a]/40 bg-[#ff8c2a]/[0.08] text-[#ffb35c]"
+          ? "border-[#f0c674] bg-[#fdf6e3] text-[#9a6b0f]"
+          : "border-[#ffb066]/50 bg-[#fff4e6] text-[#c25e0e]"
       }`}
     >
       ab {planStufe}
@@ -78,20 +93,20 @@ const PlanBadge = memo(function PlanBadge({ planStufe }: { planStufe: Connector[
   );
 });
 
-/** Status-Badge: Verfügbar auf Anfrage / In Entwicklung. */
+/** Status-Badge: Verfügbar auf Anfrage (grün) / In Entwicklung (gelb). */
 const StatusBadge = memo(function StatusBadge({ status }: { status: Connector["status"] }) {
   const available = status === "verfügbar-auf-anfrage";
   return (
     <span
-      className={`flex items-center gap-1.5 rounded-xl border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em] ${
+      className={`flex items-center gap-1.5 rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em] ${
         available
-          ? "border-[#ffb35c]/35 bg-[#ffb35c]/[0.06] text-[#ffb35c]/90"
-          : "border-[#8a7455]/50 bg-[#8a7455]/10 text-[#c9b391]"
+          ? "border-[#a7d8bd] bg-[#e7f6ee] text-[#177245]"
+          : "border-[#f0d68a] bg-[#fdf6e3] text-[#8a6d1f]"
       }`}
     >
       <span
         aria-hidden
-        className={`h-1.5 w-1.5 rounded-full ${available ? "hud-pulse bg-[#ffb35c]" : "bg-[#8a7455]"}`}
+        className={`h-1.5 w-1.5 rounded-full ${available ? "animate-pulse bg-[#22a06b]" : "bg-[#d9a91e]"}`}
       />
       {STATUS_LABEL[status]}
     </span>
@@ -99,7 +114,7 @@ const StatusBadge = memo(function StatusBadge({ status }: { status: Connector["s
 });
 
 /**
- * HUD-Modal-Shell (Spiegel des Dashboard-Modals): role=dialog, Escape und
+ * Modal-Shell (Spiegel des Dashboard-Modals): role=dialog, Escape und
  * Klick auf den Hintergrund schliessen, Fokus springt hinein und zurück.
  */
 function HudModal({
@@ -128,7 +143,7 @@ function HudModal({
 
   return (
     <div
-      className="fixed inset-0 z-40 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-40 flex items-center justify-center bg-[#1c1917]/40 p-4 backdrop-blur-sm"
       onMouseDown={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
@@ -137,12 +152,12 @@ function HudModal({
         aria-modal="true"
         aria-labelledby={labelId}
         tabIndex={-1}
-        className="hud-panel hud-corners hud-modal-in relative w-full max-w-lg rounded-xl border border-[#ff8c2a]/30 bg-[#0b0a08] p-6 outline-none"
+        className="acc-card acc-in relative w-full max-w-lg rounded-2xl border border-[#e8e1d2] bg-white p-6 outline-none"
       >
         <button
           onClick={onClose}
           aria-label="Schliessen"
-          className={`absolute right-3 top-3 rounded-xl px-2 py-1 font-mono text-xs text-[#ffb35c]/70 transition hover:text-[#fff3e2] ${FOCUS_RING}`}
+          className={`absolute right-3 top-3 rounded-xl px-2 py-1 font-mono text-xs text-[#8d8172] transition hover:text-[#1c1917] ${FOCUS_RING}`}
         >
           ✕
         </button>
@@ -170,17 +185,17 @@ const ABLAUF_SCHRITTE: readonly { titel: string; text: string }[] = [
 
 /** Anfrage-Modal: ehrlicher 3-Schritte-Ablauf + mailto-Anfrage. */
 function AnfrageModal({ connector, onClose }: { connector: Connector; onClose: () => void }) {
-  const akzent = KATEGORIE_AKZENT[connector.kategorie];
+  const akzent = KATEGORIE_FARBE[connector.kategorie];
   return (
     <HudModal labelId="anfrage-title" onClose={onClose}>
-      <div className="hud-label mb-1">Integration // Anfrage</div>
+      <div className={`${EYEBROW} mb-1`}>Integration // Anfrage</div>
       <div className="flex items-center gap-3">
         <MonogrammBadge monogramm={connector.monogramm} akzent={akzent} />
-        <h2 id="anfrage-title" className="text-xl font-bold text-[#fff3e2]">
+        <h2 id="anfrage-title" className="text-xl font-bold text-[#1c1917]">
           Anbindung {connector.name}
         </h2>
       </div>
-      <p className="mt-3 text-sm text-[#c9b391]">
+      <p className="mt-3 text-sm text-[#8d8172]">
         So läuft eine Live-Anbindung ehrlich ab — sie wird pro Unternehmen eingerichtet:
       </p>
 
@@ -189,13 +204,13 @@ function AnfrageModal({ connector, onClose }: { connector: Connector; onClose: (
           <li key={s.titel} className="flex gap-3">
             <span
               aria-hidden
-              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-[#ff8c2a]/40 bg-[#ff8c2a]/[0.06] font-mono text-xs font-bold text-[#ff8c2a]"
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-[#ffb066]/50 bg-[#fff4e6] font-mono text-xs font-bold text-[#c25e0e]"
             >
               {i + 1}
             </span>
             <div>
-              <div className="text-sm font-semibold text-[#fff3e2]">{s.titel}</div>
-              <p className="mt-0.5 text-sm leading-relaxed text-[#c9b391]">{s.text}</p>
+              <div className="text-sm font-semibold text-[#1c1917]">{s.titel}</div>
+              <p className="mt-0.5 text-sm leading-relaxed text-[#8d8172]">{s.text}</p>
             </div>
           </li>
         ))}
@@ -203,11 +218,11 @@ function AnfrageModal({ connector, onClose }: { connector: Connector; onClose: (
 
       <a
         href={mailtoHref(connector.name)}
-        className={`mt-6 block w-full rounded-xl bg-[#ff8c2a] px-6 py-3 text-center font-semibold text-[#1a0f04] transition hover:bg-[#ffb35c] active:scale-[0.98] ${FOCUS_RING}`}
+        className={`mt-6 block w-full rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-6 py-3 text-center font-semibold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)] transition hover:brightness-105 active:scale-[0.98] ${FOCUS_RING}`}
       >
         Anfrage per E-Mail senden
       </a>
-      <p className="mt-2 text-center font-mono text-[10px] uppercase tracking-[0.14em] text-[#8a7455]">
+      <p className="mt-2 text-center font-mono text-[10px] uppercase tracking-[0.14em] text-[#a89c8a]">
         Betreff: Anbindung {connector.name}
       </p>
     </HudModal>
@@ -222,23 +237,23 @@ const ConnectorCard = memo(function ConnectorCard({
   connector: Connector;
   onRequest: (c: Connector) => void;
 }) {
-  const akzent = KATEGORIE_AKZENT[connector.kategorie];
+  const akzent = KATEGORIE_FARBE[connector.kategorie];
   return (
-    <div className="hud-panel hud-corners flex flex-col rounded-xl p-4">
+    <div className="acc-card acc-card-hover flex flex-col rounded-2xl p-4">
       <div className="flex items-start gap-3">
         <MonogrammBadge monogramm={connector.monogramm} akzent={akzent} />
         <div className="min-w-0">
-          <h3 className="font-semibold text-[#fff3e2]">{connector.name}</h3>
+          <h3 className="font-semibold text-[#1c1917]">{connector.name}</h3>
           <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
             <PlanBadge planStufe={connector.planStufe} />
             <StatusBadge status={connector.status} />
           </div>
         </div>
       </div>
-      <p className="mt-3 flex-1 text-sm leading-relaxed text-[#c9b391]">{connector.beschreibung}</p>
+      <p className="mt-3 flex-1 text-sm leading-relaxed text-[#8d8172]">{connector.beschreibung}</p>
       <button
         onClick={() => onRequest(connector)}
-        className={`mt-4 w-full rounded-xl border border-[#ff8c2a]/40 bg-[#ff8c2a]/[0.06] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ff8c2a] transition-colors hover:bg-[#ff8c2a]/15 ${FOCUS_RING}`}
+        className={`mt-4 w-full rounded-xl border border-[#e0d8c6] bg-white/70 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#4a4335] transition-colors hover:border-[#ffb066] hover:text-[#c25e0e] ${FOCUS_RING}`}
       >
         Anbindung anfragen
       </button>
@@ -256,12 +271,12 @@ const KategorieSektion = memo(function KategorieSektion({
   connectors: Connector[];
   onRequest: (c: Connector) => void;
 }) {
-  const akzent = KATEGORIE_AKZENT[kategorie];
+  const akzent = KATEGORIE_FARBE[kategorie];
   return (
     <section aria-label={kategorie} className="mt-8">
       <div className="mb-3 flex items-center gap-3">
-        <span aria-hidden className="h-2 w-2 rounded-full" style={{ background: akzent, boxShadow: `0 0 8px ${akzent}` }} />
-        <h2 className="hud-label !text-[11px]">
+        <span aria-hidden className="h-2 w-2 rounded-full" style={{ background: akzent }} />
+        <h2 className="text-[11px] font-bold uppercase tracking-wider text-[#8d8172]">
           {kategorie}{" // "}{connectors.length} System{connectors.length === 1 ? "" : "e"}
         </h2>
       </div>
@@ -283,21 +298,21 @@ export default function IntegrationenPage() {
   const eigeneSysteme = CONNECTORS.filter((c) => c.kategorie === "Eigene Systeme");
 
   return (
-    <main className="relative min-h-screen bg-[#0b0a08] text-[#e8dcc8]">
-      <div className="hud-texture" aria-hidden />
-
-      {/* Header im Dashboard-Stil mit Link zurück */}
-      <header className="sticky top-0 z-20 border-b border-[#ff8c2a]/15 bg-[#0b0a08]/85 backdrop-blur">
+    <main className="acc-page relative min-h-screen text-[#1c1917]">
+      {/* Header im hellen Stil mit Link zurück */}
+      <header className="sticky top-0 z-20 border-b border-[#e8e1d2] bg-white/80 backdrop-blur">
         <div className="mx-auto flex min-h-16 max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-2">
           <div>
-            <Link href="/" className="text-lg font-bold tracking-tight text-[#fff3e2]">
-              AI <span className="text-[#ff8c2a]">Command Center</span>
+            <Link href="/" className="text-lg font-bold tracking-tight text-[#1c1917]">
+              AI <span className="acc-grad-text">Command Center</span>
             </Link>
-            <div className="hud-label">Integration-Center // Katalog</div>
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-[#8d8172]">
+              Integration-Center // Katalog
+            </div>
           </div>
           <a
             href="/dashboard"
-            className={`rounded-xl border border-[#ff8c2a]/40 bg-[#ff8c2a]/[0.06] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ff8c2a] transition-colors hover:bg-[#ff8c2a]/15 ${FOCUS_RING}`}
+            className={`rounded-xl border border-[#e0d8c6] bg-white/70 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#4a4335] transition-colors hover:border-[#ffb066] hover:text-[#c25e0e] ${FOCUS_RING}`}
           >
             ← Zurück zum Dashboard
           </a>
@@ -306,12 +321,13 @@ export default function IntegrationenPage() {
 
       <div className="relative z-10 mx-auto max-w-7xl px-5 py-8">
         {/* Hero */}
-        <section aria-label="Integration-Center" className="hud-panel hud-corners rounded-xl p-5">
-          <div className="hud-label mb-2">Anbindungen // Firmensysteme</div>
-          <h1 className="text-2xl font-bold text-[#fff3e2]">
-            Integration-Center: Verbinden Sie Ihre KI-Abteilung mit Ihren Systemen
+        <section aria-label="Integration-Center" className="acc-card acc-in rounded-2xl p-5">
+          <div className={`${EYEBROW} mb-2`}>Anbindungen // Firmensysteme</div>
+          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+            Integration-Center: Verbinden Sie Ihre KI-Abteilung mit Ihren{" "}
+            <span className="acc-grad-text">Systemen</span>
           </h1>
-          <p className="mt-1 max-w-3xl text-sm text-[#c9b391]">
+          <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[#8d8172]">
             Jede Anbindung wird pro Unternehmen eingerichtet: Sie geben der KI in Ihrem
             System Zugriff frei, wir bauen den Connector — danach können Ihre Agenten
             dort lesen und schreiben.
@@ -330,12 +346,12 @@ export default function IntegrationenPage() {
 
         {/* Eigene Systeme: generischer REST/Webhook-Connector */}
         <section aria-label="Eigene Systeme" className="mt-10">
-          <div className="hud-panel hud-corners rounded-xl p-5">
-            <div className="hud-label mb-2">Eigene Systeme // REST + Webhooks</div>
-            <h2 className="text-xl font-bold text-[#fff3e2]">
+          <div className="acc-card rounded-2xl p-5">
+            <div className={`${EYEBROW} mb-2`}>Eigene Systeme // REST + Webhooks</div>
+            <h2 className="text-xl font-bold text-[#1c1917]">
               Ihre Firmensoftware ist nicht dabei?
             </h2>
-            <p className="mt-1 max-w-3xl text-sm text-[#c9b391]">
+            <p className="mt-1 max-w-3xl text-sm text-[#8d8172]">
               Über den generischen REST/Webhook-Connector binden wir jede eigene
               Firmen-API an — gleicher Ablauf: Zugriff freigeben, Connector einrichten,
               Agenten arbeiten.
@@ -349,8 +365,8 @@ export default function IntegrationenPage() {
         </section>
 
         {/* Ehrlicher Footer-Hinweis */}
-        <footer className="mt-10 border-t border-[#ff8c2a]/15 pt-4 pb-8">
-          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#8a7455]">
+        <footer className="mt-10 border-t border-[#e8e1d2] pt-4 pb-8">
+          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#a89c8a]">
             Live-Anbindungen werden pro Unternehmen eingerichtet (Enterprise).
             Prototypen und Datei-Ausgabe funktionieren sofort.
           </p>
