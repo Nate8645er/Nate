@@ -75,7 +75,14 @@ export default function AgentenPage() {
                       className="group rounded-2xl border border-white/8 bg-white/[0.03] p-4 transition-colors hover:border-white/15 hover:bg-white/[0.05]"
                       style={{ borderTopColor: akzent, borderTopWidth: 2 }}
                     >
-                      <h3 className="text-[14px] font-semibold text-white">{a.name}</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-[14px] font-semibold text-white">{a.name}</h3>
+                        {a.geplant && (
+                          <span className="rounded-full border border-zinc-500/40 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wider text-zinc-400">
+                            geplant
+                          </span>
+                        )}
+                      </div>
                       <p className="mt-1.5 text-[13px] leading-relaxed text-zinc-400">{a.aufgabe}</p>
                       <div className="mt-3 flex flex-wrap gap-1.5">
                         {a.kann.map((k) => (

@@ -12,7 +12,7 @@
 
 import { hasApiKey, callLLM } from "@/lib/agents/providers";
 import type { ChatMessage, Provider } from "@/lib/agents/types";
-import { consumeUsage, planFromLicenseToken } from "@/lib/license";
+import { consumeUsage, planFromLicenseToken, ultraAktiv } from "@/lib/license";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -70,7 +70,9 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   const plan = planFromLicenseToken(request.headers.get("x-acc-license"));
-  const usage = consumeUsage(request.headers.get("x-acc-usage"), plan);
+  // Ultra-Levelup hebt auch hier das Tageslimit – konsistent zu mission/chat.
+  const ultra = ultraAktiv(request.headers.get("x-acc-ultra"), plan);
+  const usage = consumeUsage(request.headers.get("x-acc-usage"), plan, ultra);
   const usagePayload = { token: usage.token, used: usage.used, limit: usage.limit, plan };
   if (!usage.allowed) {
     return Response.json({ ok: false, error: usage.message ?? "Tageslimit erreicht.", usage: usagePayload });

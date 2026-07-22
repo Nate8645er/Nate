@@ -33,6 +33,12 @@ export interface RosterAgent {
   aufgabe: string;
   /** 2–3 konkrete Fähigkeiten für die Übersicht. */
   kann: readonly string[];
+  /**
+   * true = Rolle ist im Katalog, aber die Laufzeit-Fähigkeit (z. B. echte
+   * Bild-/Video-/Sprach-Verarbeitung) ist noch im Ausbau. Ehrlich als
+   * "geplant" gekennzeichnet, statt mehr zu versprechen als der Code liefert.
+   */
+  geplant?: boolean;
 }
 
 /** Reihenfolge der Abteilungen in der Übersicht. */
@@ -252,6 +258,7 @@ export const AGENT_ROSTER: readonly RosterAgent[] = [
     abteilung: "Kundenservice & Kommunikation",
     aufgabe: "Verarbeitet gesprochene Sprache und formuliert klare Texte daraus.",
     kann: ["Diktat verstehen", "Formulieren", "Übersetzen"],
+    geplant: true,
   },
 
   // ---------- Dokumente & Recht ----------
@@ -307,6 +314,7 @@ export const AGENT_ROSTER: readonly RosterAgent[] = [
     abteilung: "Medien & Kreation",
     aufgabe: "Analysiert Bilder und beschreibt Motive für weitere Aufgaben.",
     kann: ["Bilder verstehen", "Beschreiben", "Konzepte"],
+    geplant: true,
   },
   {
     id: "video",
@@ -314,6 +322,7 @@ export const AGENT_ROSTER: readonly RosterAgent[] = [
     abteilung: "Medien & Kreation",
     aufgabe: "Erstellt Drehbücher, Storyboards und Konzepte für Videos.",
     kann: ["Drehbuch", "Storyboard", "Konzept"],
+    geplant: true,
   },
 
   // ---------- Betrieb & Sicherheit ----------
@@ -347,6 +356,3 @@ export const AGENT_ANZAHL = AGENT_ROSTER.length;
 export function agentenNach(abteilung: Abteilung): RosterAgent[] {
   return AGENT_ROSTER.filter((a) => a.abteilung === abteilung);
 }
-
-/** Nur die Namen (für den Org-Planer und die Workforce-Anzeige). */
-export const AGENT_NAMEN: readonly string[] = AGENT_ROSTER.map((a) => a.name);

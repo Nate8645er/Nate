@@ -60,10 +60,13 @@ import type {
   WorkerRole,
 } from "./types";
 
-/** Harter Deckel über der Gesamtmission (Route erlaubt 480s). */
+// Beide Deckel müssen UNTER dem maxDuration der Mission-Route (300s) liegen,
+// damit der interne Guard sein sauberes final-Event noch senden kann, bevor
+// die Serverless-Function hart abgebrochen wird.
+/** Harter Deckel über der Gesamtmission (Standard-Fan-out). */
 const MISSION_TIMEOUT_MS = 270_000;
-/** Organisations-Modus (BUSINESS/ENTERPRISE): mehr Agenten, mehr Zeit. */
-const ORG_MISSION_TIMEOUT_MS = 480_000;
+/** Organisations-Modus (BUSINESS/ENTERPRISE): mehr Agenten, etwas mehr Zeit. */
+const ORG_MISSION_TIMEOUT_MS = 290_000;
 
 /** Max. gleichzeitige LLM-Calls dynamischer Agenten (Provider-Rate-Limits). */
 const DYN_BATCH_SIZE = 4;

@@ -81,16 +81,39 @@ function istPrivateIp(ip: string): boolean {
   }
   const ip6 = ip.toLowerCase();
   if (ip6 === "::1" || ip6 === "::") return true; // Loopback / unspezifiziert
-  if (ip6.startsWith("::ffff:")) return istPrivateIp(ip6.slice(7)); // v4-mapped
   if (ip6.startsWith("fe80")) return true; // Link-Local
   if (/^f[cd]/.test(ip6)) return true; // Unique-Local fc00::/7
+  // IPv4-mapped IPv6 (::ffff:x) in JEDER Form – deckt sowohl die dotted-quad-Form
+  // (::ffff:127.0.0.1) als auch die Hex-Gruppen-Form (::ffff:a9fe:a9fe =
+  // 169.254.169.254, Cloud-Metadaten) ab. Beide werden zur v4-Adresse aufgelöst
+  // und geprüft; unbekannte mapped-Formen sicherheitshalber ablehnen.
+  const mapped = /::ffff:([0-9a-f.:]+)$/.exec(ip6);
+  if (mapped) {
+    const rest = mapped[1];
+    if (rest.includes(".")) return istPrivateIp(rest); // dotted quad
+    const teile = rest.split(":");
+    if (teile.length === 2) {
+      const hi = parseInt(teile[0], 16);
+      const lo = parseInt(teile[1], 16);
+      if (Number.isFinite(hi) && Number.isFinite(lo)) {
+        const dq = `${(hi >> 8) & 255}.${hi & 255}.${(lo >> 8) & 255}.${lo & 255}`;
+        return istPrivateIp(dq);
+      }
+    }
+    return true; // unklare mapped-Form → ablehnen
+  }
   return false;
 }
 
 /**
  * Prüft, ob eine URL ein erlaubtes, externes http(s)-Ziel ist. Hostnamen
- * werden per DNS aufgelöst und ALLE Adressen geprüft (Schutz auch gegen
- * DNS-Rebinding auf interne Adressen).
+ * werden per DNS aufgelöst und ALLE aufgelösten Adressen geprüft; interne
+ * Ziele (privat/Loopback/Link-Local inkl. IPv4-mapped) werden abgelehnt.
+ *
+ * Hinweis: Das blockt Hostnamen, die (statisch) auf interne Adressen zeigen,
+ * sowie Redirect-Hops. Gegen aktives DNS-Rebinding mit TTL 0 (Auflösung
+ * ändert sich zwischen dieser Prüfung und dem fetch) schützt das NICHT
+ * vollständig – dafür wäre IP-Pinning der Verbindung nötig (Roadmap).
  */
 async function istErlaubtesZiel(rawUrl: string): Promise<boolean> {
   let u: URL;
