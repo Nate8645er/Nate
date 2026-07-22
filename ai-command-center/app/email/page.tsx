@@ -147,29 +147,29 @@ export default function EmailPage() {
   };
 
   return (
-    <div className="min-h-dvh bg-[#0b0a08] text-zinc-200">
-      <div className="hud-texture" aria-hidden="true" />
+    <div className="acc-page min-h-dvh text-[#2a2521]">
+      
       <div className="relative z-10 mx-auto max-w-5xl px-4 pb-24">
-        <header className="flex items-center justify-between border-b border-[#ff8c2a]/15 py-4">
+        <header className="flex items-center justify-between border-b border-[#1c1917]/10 py-4">
           <div className="flex items-center gap-2">
             <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" />
-            <span className="hud-label">AI Command Center</span>
+            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#c25e0e]/85">AI Command Center</span>
           </div>
-          <WorkNav aktiv="email" variante="dunkel" />
+          <WorkNav aktiv="email" variante="hell" />
         </header>
 
         <div className="pt-10">
-          <p className="hud-label mb-3">E-Mail-Zentrale</p>
-          <h1 className="text-3xl font-semibold text-white sm:text-4xl">
+          <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#c25e0e]/85 mb-3">E-Mail-Zentrale</p>
+          <h1 className="text-3xl font-semibold text-[#1c1917] sm:text-4xl">
             Ihre KI erledigt die E-Mail-Arbeit
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-400">
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#5c5346]">
             Eingehende E-Mail einfügen und die fertige Antwort erhalten – oder
             der KI sagen, welche E-Mail sie schreiben soll. Ein Klick öffnet
             Gmail mit Empfänger, Betreff und Text bereits ausgefüllt: Sie
             drücken nur noch auf Senden.
           </p>
-          <p className="mt-3 max-w-2xl rounded-lg border border-[#ff8c2a]/20 bg-[#ff8c2a]/[0.05] px-4 py-3 text-xs leading-relaxed text-[#ffb35c]/90">
+          <p className="mt-3 max-w-2xl rounded-lg border border-[#ff8c2a]/20 bg-[#ff8c2a]/[0.05] px-4 py-3 text-xs leading-relaxed text-[#9a4d12]">
             Transparenz: Vollautomatischer Versand direkt aus Ihrem Postfach
             (ganz ohne Klick) braucht die OAuth-Freigabe Ihres Google-Kontos –
             das richten wir als Enterprise-Anbindung pro Kunde ein.
@@ -178,7 +178,7 @@ export default function EmailPage() {
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_1fr]">
           {/* Eingabe */}
-          <section className="hud-panel hud-corners relative rounded-xl p-5">
+          <section className="acc-card hud-corners relative rounded-xl p-5">
             <div className="flex gap-2" role="group" aria-label="Modus">
               <button
                 onClick={() => setModus("antwort")}
@@ -186,7 +186,7 @@ export default function EmailPage() {
                 className={`shop-btn rounded-lg px-4 py-2 text-sm font-semibold ${
                   modus === "antwort"
                     ? "bg-[#ff8c2a] text-[#1a0f04]"
-                    : "border border-[#ff8c2a]/30 text-[#ffb35c]"
+                    : "border border-[#ff8c2a]/30 text-[#c25e0e]"
                 }`}
               >
                 Antworten
@@ -197,7 +197,7 @@ export default function EmailPage() {
                 className={`shop-btn rounded-lg px-4 py-2 text-sm font-semibold ${
                   modus === "neu"
                     ? "bg-[#ff8c2a] text-[#1a0f04]"
-                    : "border border-[#ff8c2a]/30 text-[#ffb35c]"
+                    : "border border-[#ff8c2a]/30 text-[#c25e0e]"
                 }`}
               >
                 Neu schreiben
@@ -210,7 +210,7 @@ export default function EmailPage() {
                 onChange={(e) => setEingehend(e.target.value)}
                 rows={8}
                 placeholder="Eingehende E-Mail hier einfügen …"
-                className="mt-4 w-full resize-y rounded-lg border border-[#ff8c2a]/25 bg-[#12100d] px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-[#ff8c2a]/60 focus:outline-none"
+                className="mt-4 w-full resize-y rounded-lg border border-[#ff8c2a]/25 bg-white/80 px-4 py-3 text-sm text-[#241f17] placeholder:text-[#a89e8d] focus:border-[#ff8c2a]/60 focus:outline-none"
                 aria-label="Eingehende E-Mail"
               />
             )}
@@ -224,7 +224,7 @@ export default function EmailPage() {
                   ? "Was soll die E-Mail sagen? z. B. «Offerte an Firma Muster: Website-Redesign, 4'500 CHF, Lieferzeit 3 Wochen, freundlich aber bestimmt»"
                   : "Optionale Vorgabe für die Antwort, z. B. «Preisnachlass ablehnen, aber Alternativtermin anbieten»"
               }
-              className="mt-3 w-full resize-y rounded-lg border border-[#ff8c2a]/25 bg-[#12100d] px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-[#ff8c2a]/60 focus:outline-none"
+              className="mt-3 w-full resize-y rounded-lg border border-[#ff8c2a]/25 bg-white/80 px-4 py-3 text-sm text-[#241f17] placeholder:text-[#a89e8d] focus:border-[#ff8c2a]/60 focus:outline-none"
               aria-label="Auftrag an die KI"
             />
 
@@ -234,14 +234,14 @@ export default function EmailPage() {
                 onChange={(e) => setEmpfaenger(e.target.value)}
                 type="email"
                 placeholder="Empfänger (optional)"
-                className="rounded-lg border border-[#ff8c2a]/25 bg-[#12100d] px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-[#ff8c2a]/60 focus:outline-none"
+                className="rounded-lg border border-[#ff8c2a]/25 bg-white/80 px-4 py-2.5 text-sm text-[#241f17] placeholder:text-[#a89e8d] focus:border-[#ff8c2a]/60 focus:outline-none"
                 aria-label="Empfänger-Adresse"
               />
               <input
                 value={signatur}
                 onChange={(e) => signaturSpeichern(e.target.value)}
                 placeholder="Ihre Signatur, z. B. «Blin Murseli, ZEHNTAGE»"
-                className="rounded-lg border border-[#ff8c2a]/25 bg-[#12100d] px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-[#ff8c2a]/60 focus:outline-none"
+                className="rounded-lg border border-[#ff8c2a]/25 bg-white/80 px-4 py-2.5 text-sm text-[#241f17] placeholder:text-[#a89e8d] focus:border-[#ff8c2a]/60 focus:outline-none"
                 aria-label="Signatur (wird gespeichert)"
               />
             </div>
@@ -254,23 +254,23 @@ export default function EmailPage() {
               {loading ? "Ihre E-Mail-Abteilung schreibt …" : "E-Mail erstellen lassen"}
             </button>
             {usage && (
-              <p className="mt-2 text-center text-[11px] text-zinc-600">
+              <p className="mt-2 text-center text-[11px] text-[#a89e8d]">
                 {usage.plan} · {usage.used} von {usage.limit} heute
               </p>
             )}
           </section>
 
           {/* Ergebnis */}
-          <section className="hud-panel relative rounded-xl p-5">
-            <p className="hud-label">Versandfertige E-Mail</p>
+          <section className="acc-card relative rounded-xl p-5">
+            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#c25e0e]/85">Versandfertige E-Mail</p>
             {!ergebnis && !loading && !error && (
-              <p className="mt-4 text-sm text-zinc-500">
+              <p className="mt-4 text-sm text-[#8d8172]">
                 Hier erscheint Ihre fertige E-Mail – mit Betreff, Text und
                 Ihrer Signatur.
               </p>
             )}
             {loading && (
-              <p className="mt-4 flex items-center gap-2 text-sm text-[#ffb35c]">
+              <p className="mt-4 flex items-center gap-2 text-sm text-[#c25e0e]">
                 <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" />
                 Entwurf wird geschrieben …
               </p>
@@ -282,11 +282,11 @@ export default function EmailPage() {
             )}
             {ergebnis && (
               <>
-                <div className="mt-4 rounded-lg border border-[#ff8c2a]/25 bg-[#12100d] p-4">
-                  <p className="text-xs text-zinc-500">Betreff</p>
-                  <p className="mt-0.5 font-semibold text-white">{ergebnis.betreff}</p>
-                  <p className="mt-3 text-xs text-zinc-500">Text</p>
-                  <p className="mt-0.5 whitespace-pre-wrap text-sm leading-relaxed text-zinc-200">
+                <div className="mt-4 rounded-lg border border-[#ff8c2a]/25 bg-white/80 p-4">
+                  <p className="text-xs text-[#8d8172]">Betreff</p>
+                  <p className="mt-0.5 font-semibold text-[#1c1917]">{ergebnis.betreff}</p>
+                  <p className="mt-3 text-xs text-[#8d8172]">Text</p>
+                  <p className="mt-0.5 whitespace-pre-wrap text-sm leading-relaxed text-[#2a2521]">
                     {ergebnis.text}
                   </p>
                 </div>
@@ -301,13 +301,13 @@ export default function EmailPage() {
                   </a>
                   <button
                     onClick={kopieren}
-                    className="shop-btn rounded-lg border border-[#ff8c2a]/40 px-4 py-2.5 text-sm font-semibold text-[#ffb35c]"
+                    className="shop-btn rounded-lg border border-[#ff8c2a]/40 px-4 py-2.5 text-sm font-semibold text-[#c25e0e]"
                   >
                     {kopiert ? "Kopiert ✓" : "Kopieren"}
                   </button>
                   <a
                     href={`mailto:${encodeURIComponent(empfaenger.trim())}?subject=${encodeURIComponent(ergebnis.betreff)}&body=${encodeURIComponent(ergebnis.text.slice(0, 1800))}`}
-                    className="shop-btn rounded-lg border border-[#ff8c2a]/25 px-4 py-2.5 text-sm text-zinc-400"
+                    className="shop-btn rounded-lg border border-[#ff8c2a]/25 px-4 py-2.5 text-sm text-[#5c5346]"
                   >
                     Anderes Mailprogramm
                   </a>
@@ -316,7 +316,7 @@ export default function EmailPage() {
             )}
           </section>
         </div>
-        <WorkFooter variante="dunkel" />
+        <WorkFooter variante="hell" />
       </div>
     </div>
   );

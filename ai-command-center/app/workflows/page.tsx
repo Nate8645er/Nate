@@ -234,30 +234,30 @@ export default function WorkflowsPage() {
   const dueList = workflows.filter(isDue);
 
   return (
-    <div className="min-h-dvh bg-[#0b0a08] text-zinc-200">
-      <div className="hud-texture" aria-hidden="true" />
+    <div className="acc-page min-h-dvh text-[#2a2521]">
+      
       <div className="relative z-10 mx-auto max-w-5xl px-4 pb-24">
         {/* Kopfzeile */}
-        <header className="flex items-center justify-between border-b border-[#ff8c2a]/15 py-4">
+        <header className="flex items-center justify-between border-b border-[#1c1917]/10 py-4">
           <div className="flex items-center gap-2">
             <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" />
-            <span className="hud-label">AI Command Center</span>
+            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#c25e0e]/85">AI Command Center</span>
           </div>
-          <WorkNav aktiv="autopilot" variante="dunkel" />
+          <WorkNav aktiv="autopilot" variante="hell" />
         </header>
 
         <div className="pt-10">
-          <p className="hud-label mb-3">Workflow-Manager</p>
-          <h1 className="text-3xl font-semibold text-white sm:text-4xl">
+          <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#c25e0e]/85 mb-3">Workflow-Manager</p>
+          <h1 className="text-3xl font-semibold text-[#1c1917] sm:text-4xl">
             Autopilot: wiederkehrende Aufträge
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-400">
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#5c5346]">
             Legen Sie Aufträge an, die Ihre KI-Belegschaft regelmässig erledigt –
             vom Social-Media-Wochenplan bis zum Bericht für die Geschäftsleitung.
             Fällige Workflows starten Sie mit einem Klick; jede Ausführung ist
             eine echte Mission und zählt auf Ihr Tageslimit.
           </p>
-          <p className="mt-3 max-w-2xl rounded-lg border border-[#ff8c2a]/20 bg-[#ff8c2a]/[0.05] px-4 py-3 text-xs leading-relaxed text-[#ffb35c]/90">
+          <p className="mt-3 max-w-2xl rounded-lg border border-[#ff8c2a]/20 bg-[#ff8c2a]/[0.05] px-4 py-3 text-xs leading-relaxed text-[#9a4d12]">
             Ehrlich gesagt: Der Autopilot arbeitet, solange diese Seite geöffnet
             ist. Vollautomatischer Betrieb rund um die Uhr (Server-seitig, ohne
             Browser) gehört zum Enterprise-Ausbau und wird pro Kunde eingerichtet.
@@ -267,7 +267,7 @@ export default function WorkflowsPage() {
         {/* Fällige Workflows */}
         {dueList.length > 0 && (
           <div className="mt-8 flex items-center justify-between rounded-xl border border-[#ffd257]/40 bg-[#ffd257]/[0.06] px-4 py-3">
-            <p className="text-sm text-[#ffd257]">
+            <p className="text-sm text-[#b45309]">
               {dueList.length} Workflow{dueList.length > 1 ? "s" : ""} fällig
             </p>
             <button
@@ -289,12 +289,12 @@ export default function WorkflowsPage() {
               >
                 + Eigener Workflow
               </button>
-              <span className="text-xs text-zinc-500">oder Vorlage übernehmen:</span>
+              <span className="text-xs text-[#8d8172]">oder Vorlage übernehmen:</span>
               {VORLAGEN.map((v) => (
                 <button
                   key={v.name}
                   onClick={() => addWorkflow(v.name, v.goal, v.frequenz)}
-                  className="shop-btn rounded-lg border border-[#ff8c2a]/25 px-3 py-2 text-xs text-[#ffb35c] hover:border-[#ff8c2a]/60"
+                  className="shop-btn rounded-lg border border-[#ff8c2a]/25 px-3 py-2 text-xs text-[#c25e0e] hover:border-[#ff8c2a]/60"
                 >
                   {v.name}
                 </button>
@@ -302,25 +302,25 @@ export default function WorkflowsPage() {
             </div>
           ) : (
             <form
-              className="hud-panel hud-corners relative rounded-xl p-5"
+              className="acc-card hud-corners relative rounded-xl p-5"
               onSubmit={(e) => {
                 e.preventDefault();
                 addWorkflow(name, goal, frequenz);
               }}
             >
-              <h2 className="text-lg font-semibold text-white">Neuer Workflow</h2>
+              <h2 className="text-lg font-semibold text-[#1c1917]">Neuer Workflow</h2>
               <div className="mt-4 grid gap-4 sm:grid-cols-[1fr_180px]">
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Name, z. B. Social-Media-Woche"
-                  className="rounded-lg border border-[#ff8c2a]/25 bg-[#12100d] px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-[#ff8c2a]/60 focus:outline-none"
+                  className="rounded-lg border border-[#ff8c2a]/25 bg-white/80 px-4 py-2.5 text-sm text-[#241f17] placeholder:text-[#a89e8d] focus:border-[#ff8c2a]/60 focus:outline-none"
                   aria-label="Workflow-Name"
                 />
                 <select
                   value={frequenz}
                   onChange={(e) => setFrequenz(e.target.value as Frequenz)}
-                  className="rounded-lg border border-[#ff8c2a]/25 bg-[#12100d] px-3 py-2.5 text-sm text-zinc-100 focus:border-[#ff8c2a]/60 focus:outline-none"
+                  className="rounded-lg border border-[#ff8c2a]/25 bg-white/80 px-3 py-2.5 text-sm text-[#241f17] focus:border-[#ff8c2a]/60 focus:outline-none"
                   aria-label="Frequenz"
                 >
                   <option value="taeglich">Täglich</option>
@@ -333,7 +333,7 @@ export default function WorkflowsPage() {
                 onChange={(e) => setGoal(e.target.value)}
                 rows={3}
                 placeholder="Auftrag an Ihre KI-Belegschaft …"
-                className="mt-4 w-full resize-none rounded-lg border border-[#ff8c2a]/25 bg-[#12100d] px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-[#ff8c2a]/60 focus:outline-none"
+                className="mt-4 w-full resize-none rounded-lg border border-[#ff8c2a]/25 bg-white/80 px-4 py-3 text-sm text-[#241f17] placeholder:text-[#a89e8d] focus:border-[#ff8c2a]/60 focus:outline-none"
                 aria-label="Workflow-Auftrag"
               />
               <div className="mt-4 flex gap-3">
@@ -347,7 +347,7 @@ export default function WorkflowsPage() {
                 <button
                   type="button"
                   onClick={() => setFormOpen(false)}
-                  className="rounded-lg border border-[#ff8c2a]/25 px-5 py-2.5 text-sm text-zinc-400"
+                  className="rounded-lg border border-[#ff8c2a]/25 px-5 py-2.5 text-sm text-[#5c5346]"
                 >
                   Abbrechen
                 </button>
@@ -359,7 +359,7 @@ export default function WorkflowsPage() {
         {/* Liste */}
         <div className="mt-8 space-y-4">
           {workflows.length === 0 && (
-            <p className="rounded-xl border border-[#ff8c2a]/15 px-5 py-8 text-center text-sm text-zinc-500">
+            <p className="rounded-xl border border-[#ff8c2a]/15 px-5 py-8 text-center text-sm text-[#8d8172]">
               Noch keine Workflows. Übernehmen Sie eine Vorlage oder legen Sie
               einen eigenen an.
             </p>
@@ -367,33 +367,33 @@ export default function WorkflowsPage() {
           {workflows.map((w) => {
             const state = running[w.id] ?? null;
             return (
-              <article key={w.id} className="hud-panel relative rounded-xl p-5">
+              <article key={w.id} className="acc-card relative rounded-xl p-5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-semibold text-white">{w.name}</h3>
-                      <span className="rounded-full border border-[#ff8c2a]/30 px-2 py-0.5 text-[11px] text-[#ffb35c]">
+                      <h3 className="font-semibold text-[#1c1917]">{w.name}</h3>
+                      <span className="rounded-full border border-[#ff8c2a]/30 px-2 py-0.5 text-[11px] text-[#c25e0e]">
                         {FREQUENZ_LABEL[w.frequenz]}
                       </span>
                       {isDue(w) && (
-                        <span className="rounded-full border border-[#ffd257]/50 bg-[#ffd257]/10 px-2 py-0.5 text-[11px] text-[#ffd257]">
+                        <span className="rounded-full border border-[#ffd257]/50 bg-[#ffd257]/10 px-2 py-0.5 text-[11px] text-[#b45309]">
                           Fällig
                         </span>
                       )}
                     </div>
-                    <p className="mt-1.5 max-w-2xl text-sm text-zinc-400">{w.goal}</p>
+                    <p className="mt-1.5 max-w-2xl text-sm text-[#5c5346]">{w.goal}</p>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
                     <button
                       onClick={() => run(w)}
                       disabled={state?.status === "laeuft"}
-                      className="shop-btn rounded-lg border border-[#ff8c2a]/40 bg-[#ff8c2a]/10 px-4 py-2 text-sm font-semibold text-[#ffb35c] hover:bg-[#ff8c2a]/20 disabled:opacity-40"
+                      className="shop-btn rounded-lg border border-[#ff8c2a]/40 bg-[#ff8c2a]/10 px-4 py-2 text-sm font-semibold text-[#c25e0e] hover:bg-[#ff8c2a]/20 disabled:opacity-40"
                     >
                       {state?.status === "laeuft" ? "Läuft …" : "Jetzt ausführen"}
                     </button>
                     <button
                       onClick={() => removeWorkflow(w.id)}
-                      className="rounded-lg border border-zinc-700 px-3 py-2 text-sm text-zinc-500 hover:border-red-500/50 hover:text-red-400"
+                      className="rounded-lg border border-zinc-700 px-3 py-2 text-sm text-[#8d8172] hover:border-red-500/50 hover:text-red-400"
                       aria-label={`Workflow "${w.name}" löschen`}
                     >
                       ✕
@@ -402,7 +402,7 @@ export default function WorkflowsPage() {
                 </div>
 
                 {state?.status === "laeuft" && (
-                  <p className="mt-3 flex items-center gap-2 text-sm text-[#ffb35c]">
+                  <p className="mt-3 flex items-center gap-2 text-sm text-[#c25e0e]">
                     <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" />
                     {state.note}
                   </p>
@@ -411,12 +411,12 @@ export default function WorkflowsPage() {
                   <p className="mt-3 text-sm text-red-300">{state.note}</p>
                 )}
                 {!state && w.lastRun && (
-                  <p className="mt-3 text-xs text-zinc-500">
+                  <p className="mt-3 text-xs text-[#8d8172]">
                     Zuletzt: {new Date(w.lastRun).toLocaleString("de-CH")}
                     {typeof w.lastScore === "number" && ` · Quality-Score ${w.lastScore}`}
                     {w.lastSummary && ` · ${w.lastSummary}`}
                     {" · "}
-                    <Link href="/dashboard" className="text-[#ffb35c] hover:underline">
+                    <Link href="/dashboard" className="text-[#c25e0e] hover:underline">
                       Ergebnis im Dashboard
                     </Link>
                   </p>
@@ -425,7 +425,7 @@ export default function WorkflowsPage() {
             );
           })}
         </div>
-        <WorkFooter variante="dunkel" />
+        <WorkFooter variante="hell" />
       </div>
     </div>
   );
