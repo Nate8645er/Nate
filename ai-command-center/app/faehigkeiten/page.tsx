@@ -8,7 +8,7 @@
 
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SKILLS, SKILL_KATEGORIEN, SKILL_AB_STUFE, skillAnzahlFuer, STUFEN_REIHENFOLGE } from "@/lib/skills";
+import { SKILLS, SKILL_KATEGORIEN, SKILL_AB_STUFE } from "@/lib/skills";
 import WorkNav from "@/app/components/WorkNav";
 import WorkFooter from "@/app/components/WorkFooter";
 
@@ -34,7 +34,7 @@ export default function FaehigkeitenPage() {
         <div className="pt-10">
           <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#c25e0e]/85 mb-3">Skill-Katalog</p>
           <h1 className="text-3xl font-semibold text-[#1c1917] sm:text-4xl">
-            {SKILLS.length} Fähigkeiten. Ein Befehl genügt.
+            Für jede Aufgabe der richtige Befehl.
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#5c5346]">
             Jeder Skill ist ein geprüfter Befehl mit strukturierter Vorlage –
@@ -44,16 +44,15 @@ export default function FaehigkeitenPage() {
             wählen, Platzhalter ausfüllen, ausführen.
           </p>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#5c5346]">
-            Ein System, sechs Ausbaustufen: Jede Abo-Stufe schaltet zusätzliche
-            Skills frei –{" "}
-            {STUFEN_REIHENFOLGE.map((st, i) => (
-              <span key={st}>
-                {i > 0 && " · "}
-                <span className="font-semibold text-[#c25e0e]">{st}</span>{" "}
-                {skillAnzahlFuer(st)}
-              </span>
-            ))}
-            . Höhere Stufen enthalten immer alles aus den tieferen.
+            Ein System, sechs Ausbaustufen: Jede Abo-Stufe schaltet weitere
+            Skills frei – von den Grundlagen wie{" "}
+            <span className="font-semibold text-[#c25e0e]">Website</span>,{" "}
+            <span className="font-semibold text-[#c25e0e]">Offerte</span> und{" "}
+            <span className="font-semibold text-[#c25e0e]">Dokument</span> in
+            jedem Abo über Marketing, Analysen und Kampagnen bis zu
+            spezialisierten Business- und Coding-Skills in den höheren Stufen.
+            Bei jedem Skill unten steht, ab welcher Stufe er verfügbar ist;
+            höhere Stufen enthalten immer alles aus den tieferen.
           </p>
         </div>
 
