@@ -35,12 +35,11 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
-      # Lint meldet aktuell vorbestehende Befunde (v. a. react-hooks/set-state-in-effect
-      # aus den strengeren Next-16-Regeln). Bewusst nicht-blockierend, bis der
-      # Lint-Bereinigungslauf abgeschlossen ist – Typecheck/Test/Build bleiben verpflichtend.
-      - name: Lint (nicht-blockierend)
+      # Lint ist blockierend (0 Fehler). Die strengeren React-19-/Next-16-Regeln
+      # zum SSR-localStorage-Muster und zur Dashboard-HUD sind in eslint.config.mjs
+      # bewusst als Warnung eingestuft (dort dokumentiert) – Warnungen blockieren nicht.
+      - name: Lint
         run: pnpm lint
-        continue-on-error: true
 
       - name: Typecheck
         run: pnpm typecheck

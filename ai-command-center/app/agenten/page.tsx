@@ -34,7 +34,7 @@ export default function AgentenPage() {
 
       <main className="mx-auto w-full max-w-6xl px-4 pb-24 pt-6 sm:px-6">
         <div className="acc-in max-w-3xl">
-          <p className="font-mono text-[11px] tracking-[0.22em] text-[#c25e0e]">// IHRE KI-BELEGSCHAFT</p>
+          <p className="font-mono text-[11px] tracking-[0.22em] text-[#c25e0e]">{"// IHRE KI-BELEGSCHAFT"}</p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
             {AGENT_ANZAHL} Spezialisten-Agenten – ein <span className="acc-grad-text">Team</span> für alles
           </h1>
