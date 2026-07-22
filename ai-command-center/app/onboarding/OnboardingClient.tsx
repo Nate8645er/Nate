@@ -24,7 +24,7 @@ function Tooltip({ text }: { text: string }) {
       <button
         type="button"
         aria-label={`Hinweis: ${text}`}
-        className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-[#e0d8c6] bg-white text-[10px] font-bold text-[#8d8172] hover:border-[#ffb066] hover:text-[#c25e0e] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ffb066]"
+        className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-[#e0d8c6] bg-white text-[10px] font-bold text-[#6f6557] hover:border-[#ffb066] hover:text-[#c25e0e] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ffb066]"
       >
         ?
       </button>
@@ -140,7 +140,7 @@ export default function OnboardingClient() {
           <h2 className="text-lg font-semibold">
             Ihr <span className="acc-grad-text">{tut.name}</span>-Tutorial
           </h2>
-          <p className="mt-1 text-sm text-[#8d8172]">{tut.kurz}</p>
+          <p className="mt-1 text-sm text-[#6f6557]">{tut.kurz}</p>
 
           {tut.videoSrc ? (
             <video
@@ -162,7 +162,7 @@ export default function OnboardingClient() {
               <p className="mt-3 text-sm font-semibold text-[#4a4335]">
                 Ihr persönliches {tut.name}-Video wird gerade produziert.
               </p>
-              <p className="mt-1 max-w-sm text-xs text-[#8d8172]">
+              <p className="mt-1 max-w-sm text-xs text-[#6f6557]">
                 Bis dahin führt Sie das Übersichtsvideo oben plus die Checkliste rechts
                 sicher durch die Einrichtung. Sobald das Tarif-Video fertig ist,
                 erscheint es automatisch hier.
@@ -198,7 +198,7 @@ export default function OnboardingClient() {
               style={{ width: `${prozent}%` }}
             />
           </div>
-          <p className="mt-2 text-xs text-[#8d8172]">
+          <p className="mt-2 text-xs text-[#6f6557]">
             {prozent === 100
               ? "Alles erledigt – Ihr System ist startklar. 🎉"
               : `Ihr Fortschritt: ${prozent}%. Der Stand wird in diesem Browser gespeichert.`}
@@ -223,7 +223,7 @@ export default function OnboardingClient() {
                       className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-bold transition-colors ${
                         done
                           ? "border-[#177245] bg-[#177245] text-white"
-                          : "border-[#d9cfbd] bg-white text-[#a89c8a] hover:border-[#ffb066]"
+                          : "border-[#d9cfbd] bg-white text-[#7c7161] hover:border-[#ffb066]"
                       }`}
                     >
                       {done ? (
@@ -239,7 +239,7 @@ export default function OnboardingClient() {
                         {s.titel}
                         {s.tooltip && <Tooltip text={s.tooltip} />}
                       </p>
-                      <p className="mt-0.5 text-xs leading-relaxed text-[#8d8172]">{s.text}</p>
+                      <p className="mt-0.5 text-xs leading-relaxed text-[#6f6557]">{s.text}</p>
                       {s.href && (
                         <Link
                           href={s.href}

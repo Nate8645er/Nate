@@ -37,7 +37,7 @@ export default function OnboardingPage() {
           <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
             In wenigen Schritten <span className="acc-grad-text">startklar</span>
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#8d8172]">
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#6f6557]">
             Ihr persönlicher Einrichtungs-Bereich: Sehen Sie im Video, wie das System
             funktioniert, und haken Sie die Schritte für Ihren Tarif nacheinander ab –
             von Zugang und Firma über die Anbindung Ihrer Dienste bis zu den ersten

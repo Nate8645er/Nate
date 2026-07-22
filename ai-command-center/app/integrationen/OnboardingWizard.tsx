@@ -27,7 +27,7 @@ const SYSTEME: { id: string; name: string; desc: string; c: string }[] = [
 ];
 
 const FOCUS = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffb066]";
-const INP = `w-full rounded-xl border border-[#e0d8c6] bg-white/70 px-3 py-2 text-sm text-[#1c1917] placeholder:text-[#a89c8a] focus:border-[#ffb066] focus:outline-none ${FOCUS}`;
+const INP = `w-full rounded-xl border border-[#e0d8c6] bg-white/70 px-3 py-2 text-sm text-[#1c1917] placeholder:text-[#7c7161] focus:border-[#ffb066] focus:outline-none ${FOCUS}`;
 const BTN_PRIMARY = `shop-btn rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-4 py-2 text-sm font-bold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)] ${FOCUS}`;
 const BTN_SEK = `rounded-xl border border-[#e0d8c6] bg-white/70 px-4 py-2 text-sm font-semibold text-[#4a4335] hover:border-[#ffb066] ${FOCUS}`;
 
@@ -123,7 +123,7 @@ export default function OnboardingWizard() {
                         : "Zusammenfassung"}
                 </h2>
               </div>
-              <button type="button" onClick={schliessen} aria-label="Schliessen" className={`rounded-lg px-2 py-1 text-[#8d8172] hover:text-[#1c1917] ${FOCUS}`}>
+              <button type="button" onClick={schliessen} aria-label="Schliessen" className={`rounded-lg px-2 py-1 text-[#6f6557] hover:text-[#1c1917] ${FOCUS}`}>
                 ✕
               </button>
             </div>
@@ -151,7 +151,7 @@ export default function OnboardingWizard() {
                     Ihre Anbindungs-Anfrage für <span className="font-semibold">{firma.trim() || "Ihr Unternehmen"}</span> wurde
                     vorbereitet (E-Mail-Entwurf geöffnet). Wir richten die sichere Verbindung pro Unternehmen ein.
                   </p>
-                  <p className="mt-2 text-xs text-[#8d8172]">
+                  <p className="mt-2 text-xs text-[#6f6557]">
                     Ihr Firmenname erscheint jetzt im KI-Büro (Dashboard).
                   </p>
                   <div className="mt-5 flex justify-center gap-2">
@@ -161,7 +161,7 @@ export default function OnboardingWizard() {
                 </div>
               ) : schritt === 1 ? (
                 <>
-                  <p className="text-sm text-[#8d8172]">Mehrfachauswahl möglich – Sie können jederzeit weitere hinzufügen.</p>
+                  <p className="text-sm text-[#6f6557]">Mehrfachauswahl möglich – Sie können jederzeit weitere hinzufügen.</p>
                   <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
                     {SYSTEME.map((s) => {
                       const an = gewaehlt.has(s.id);
@@ -183,7 +183,7 @@ export default function OnboardingWizard() {
                           </span>
                           <span className="min-w-0 flex-1">
                             <span className="block text-sm font-semibold text-[#1c1917]">{s.name}</span>
-                            <span className="block truncate text-xs text-[#8d8172]">{s.desc}</span>
+                            <span className="block truncate text-xs text-[#6f6557]">{s.desc}</span>
                           </span>
                           <span
                             className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[10px] ${
@@ -201,11 +201,11 @@ export default function OnboardingWizard() {
               ) : schritt === 2 ? (
                 <div className="grid gap-3">
                   <label className="block">
-                    <span className="text-xs font-semibold text-[#8d8172]">Firmenname</span>
+                    <span className="text-xs font-semibold text-[#6f6557]">Firmenname</span>
                     <input className={`${INP} mt-1`} value={firma} onChange={(e) => setFirma(e.target.value)} placeholder="Ihr Firmenname" autoFocus />
                   </label>
                   <label className="block">
-                    <span className="text-xs font-semibold text-[#8d8172]">Ansprechperson (optional)</span>
+                    <span className="text-xs font-semibold text-[#6f6557]">Ansprechperson (optional)</span>
                     <input className={`${INP} mt-1`} value={ansprech} onChange={(e) => setAnsprech(e.target.value)} placeholder="Name, E-Mail oder Telefon" />
                   </label>
                   <p className="rounded-xl bg-[#fff4e6] px-3 py-2 text-xs text-[#c25e0e]">
@@ -216,7 +216,7 @@ export default function OnboardingWizard() {
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Gewählte Systeme</p>
                   {anzahl === 0 ? (
-                    <p className="mt-2 text-sm text-[#8d8172]">Noch keine Systeme gewählt – gehen Sie zurück zu Schritt 1.</p>
+                    <p className="mt-2 text-sm text-[#6f6557]">Noch keine Systeme gewählt – gehen Sie zurück zu Schritt 1.</p>
                   ) : (
                     <ul className="mt-2 flex flex-wrap gap-2">
                       {SYSTEME.filter((s) => gewaehlt.has(s.id)).map((s) => (
@@ -230,7 +230,7 @@ export default function OnboardingWizard() {
                     Firma: <span className="font-semibold">{firma.trim() || "—"}</span>
                     {ansprech.trim() && <> · Ansprechperson: {ansprech.trim()}</>}
                   </p>
-                  <p className="mt-3 rounded-xl bg-[#faf6ee] px-3 py-2 text-xs leading-relaxed text-[#8d8172]">
+                  <p className="mt-3 rounded-xl bg-[#faf6ee] px-3 py-2 text-xs leading-relaxed text-[#6f6557]">
                     Mit „Anbindung anfragen" öffnet sich ein E-Mail-Entwurf mit Ihrer Auswahl. Die sichere
                     Verbindung (OAuth wo möglich, verschlüsselte Zugänge) richten wir pro Unternehmen ein.
                   </p>

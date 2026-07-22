@@ -126,7 +126,7 @@ export default function BerichtePage() {
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
             Berichte und <span className="acc-grad-text">Ergebnisse</span>
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#8d8172]">
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#6f6557]">
             Alles, was Ihre Belegschaft geliefert hat, an einem Ort:{" "}
             {berichte.length} Ergebnis{berichte.length === 1 ? "" : "se"}, {dateienGesamt}{" "}
             erzeugte Datei{dateienGesamt === 1 ? "" : "en"}. Gespeichert in diesem Browser.
@@ -135,14 +135,14 @@ export default function BerichtePage() {
             value={suche}
             onChange={(e) => setSuche(e.target.value)}
             placeholder="Berichte durchsuchen …"
-            className="mt-6 w-full max-w-md rounded-xl border border-[#e0d8c6] bg-white/70 px-4 py-2.5 text-sm placeholder:text-[#a89c8a] focus:border-[#ffb066] focus:outline-none"
+            className="mt-6 w-full max-w-md rounded-xl border border-[#e0d8c6] bg-white/70 px-4 py-2.5 text-sm placeholder:text-[#7c7161] focus:border-[#ffb066] focus:outline-none"
             aria-label="Berichte durchsuchen"
           />
         </div>
 
         <div className="mt-8 space-y-4">
           {gefiltert.length === 0 && (
-            <p className="rounded-2xl border border-[#e8e1d2] bg-white/60 px-5 py-8 text-center text-sm text-[#8d8172]">
+            <p className="rounded-2xl border border-[#e8e1d2] bg-white/60 px-5 py-8 text-center text-sm text-[#6f6557]">
               {berichte.length === 0
                 ? "Noch keine Ergebnisse. Starten Sie eine Mission im Dashboard oder geben Sie einen Befehl in der Kommandozentrale."
                 : "Keine Treffer für diese Suche."}
@@ -163,7 +163,7 @@ export default function BerichtePage() {
                       {b.quelle}
                     </span>
                     {b.at && (
-                      <span className="text-xs text-[#a89c8a]">
+                      <span className="text-xs text-[#7c7161]">
                         {new Date(b.at).toLocaleString("de-CH")}
                       </span>
                     )}
@@ -192,10 +192,10 @@ export default function BerichtePage() {
               )}
 
               <details className="mt-3">
-                <summary className="cursor-pointer text-sm text-[#8d8172] hover:text-[#c25e0e]">
+                <summary className="cursor-pointer text-sm text-[#6f6557] hover:text-[#c25e0e]">
                   Bericht anzeigen
                 </summary>
-                <div className="mt-3 whitespace-pre-wrap border-t border-[#e8e1d2] pt-3 text-sm leading-relaxed text-[#8d8172]">
+                <div className="mt-3 whitespace-pre-wrap border-t border-[#e8e1d2] pt-3 text-sm leading-relaxed text-[#6f6557]">
                   {b.final}
                 </div>
               </details>

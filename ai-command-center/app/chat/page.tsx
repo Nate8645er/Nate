@@ -392,7 +392,7 @@ export default function KommandoPage() {
             <p className="px-3 py-2 text-xs text-[#a2988a]">Noch keine Befehle.</p>
           )}
         </nav>
-        <div className="border-t border-[#e8e1d2] p-4 text-xs text-[#8d8172]">
+        <div className="border-t border-[#e8e1d2] p-4 text-xs text-[#6f6557]">
           {usageInfo ? (
             <p>
               {usageInfo.plan} · {usageInfo.used} von {usageInfo.limit} Missionen heute
@@ -427,7 +427,7 @@ export default function KommandoPage() {
                 <h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-[40px] sm:leading-tight">
                   Womit darf Ihre Belegschaft helfen?
                 </h2>
-                <p className="mt-3 max-w-md text-[15px] leading-relaxed text-[#8d8172]">
+                <p className="mt-3 max-w-md text-[15px] leading-relaxed text-[#6f6557]">
                   Geben Sie einen Befehl – Ihr KI-Team führt ihn aus und liefert
                   ein fertiges Ergebnis. Tippen Sie{" "}
                   <span className="rounded bg-[#f0ebe0] px-1.5 py-0.5 font-mono text-[#c25e0e]">/</span>{" "}
@@ -458,7 +458,7 @@ export default function KommandoPage() {
                   <div className="max-w-[85%] rounded-3xl rounded-br-lg bg-[#f0ebe0] px-5 py-3.5 text-[15px] leading-relaxed text-[#33291b]">
                     {active.befehl}
                     {active.dokumentName && (
-                      <span className="mt-1.5 block text-xs text-[#8d8172]">📎 {active.dokumentName}</span>
+                      <span className="mt-1.5 block text-xs text-[#6f6557]">📎 {active.dokumentName}</span>
                     )}
                   </div>
                 </div>
@@ -499,7 +499,7 @@ export default function KommandoPage() {
                       <p className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">
                         Ausgeführt – Ihr Ergebnis
                       </p>
-                      <div className="flex items-center gap-3 text-xs text-[#8d8172]">
+                      <div className="flex items-center gap-3 text-xs text-[#6f6557]">
                         {active.workforce && <span>{active.workforce} Mitarbeitende im Einsatz</span>}
                         {typeof active.score === "number" && (
                           <span className="rounded-full bg-gradient-to-r from-[#ffb066] to-[#ff5f1f] px-3 py-1 text-[11px] font-bold text-white">
@@ -544,7 +544,7 @@ export default function KommandoPage() {
                     )}
 
                     <details className="mt-4">
-                      <summary className="cursor-pointer text-sm font-medium text-[#8d8172] hover:text-[#c25e0e]">
+                      <summary className="cursor-pointer text-sm font-medium text-[#6f6557] hover:text-[#c25e0e]">
                         Bericht der Belegschaft anzeigen
                       </summary>
                       <div className="mt-3 whitespace-pre-wrap border-t border-[#f0ebe0] pt-3 text-sm leading-relaxed text-[#4a4335]">
@@ -586,8 +586,8 @@ export default function KommandoPage() {
                     aria-disabled="true"
                   >
                     <span className="shrink-0 font-mono text-sm font-bold text-[#a2988a]">{s.befehl}</span>
-                    <span className="truncate text-sm text-[#8d8172]">{s.name}</span>
-                    <span className="ml-auto shrink-0 rounded-full border border-[#e0d8c6] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#8d8172]">
+                    <span className="truncate text-sm text-[#6f6557]">{s.name}</span>
+                    <span className="ml-auto shrink-0 rounded-full border border-[#e0d8c6] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#6f6557]">
                       ab {SKILL_AB_STUFE[s.befehl]}
                     </span>
                   </div>
@@ -598,7 +598,7 @@ export default function KommandoPage() {
             {/* Angehängte Datei */}
             {(dokument || dokFehler || dokLaedt) && (
               <div className="mb-2 flex items-center gap-2">
-                {dokLaedt && <span className="text-xs text-[#8d8172]">Datei wird gelesen …</span>}
+                {dokLaedt && <span className="text-xs text-[#6f6557]">Datei wird gelesen …</span>}
                 {dokument && (
                   <span className="inline-flex items-center gap-2 rounded-full border border-[#f0ceA0] bg-[#fff4e6] px-3 py-1.5 text-xs font-medium text-[#8a4a12]">
                     📎 {dokument.name}

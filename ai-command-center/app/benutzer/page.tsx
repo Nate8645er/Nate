@@ -81,7 +81,7 @@ export default function BenutzerPage() {
         <div className="pt-10">
           <p className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Benutzerverwaltung</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Ihr Team und seine Rollen</h1>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#8d8172]">
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#6f6557]">
             Legen Sie fest, wer in Ihrem Unternehmen mit der KI-Belegschaft
             arbeitet und mit welcher Rolle. Der Lizenzschlüssel gilt für Ihr
             ganzes Team (je nach Abo-Stufe).
@@ -148,7 +148,7 @@ export default function BenutzerPage() {
         {/* Liste */}
         <div className="mt-6 overflow-hidden rounded-2xl acc-card">
           {benutzer.length === 0 && (
-            <p className="px-5 py-8 text-center text-sm text-[#8d8172]">
+            <p className="px-5 py-8 text-center text-sm text-[#6f6557]">
               Noch keine Team-Mitglieder erfasst.
             </p>
           )}

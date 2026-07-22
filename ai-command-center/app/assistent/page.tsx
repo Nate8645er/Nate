@@ -227,7 +227,7 @@ export default function AssistentPage() {
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
             <span className="acc-grad-text">KI</span>-Chat
           </h1>
-          <p className="mt-2 text-sm leading-relaxed text-[#8d8172]">
+          <p className="mt-2 text-sm leading-relaxed text-[#6f6557]">
             Ihr persönlicher KI-Assistent – wie ChatGPT oder Claude, mit eingebautem Browser für
             aktuelle Fakten und Quellen.
           </p>
@@ -274,7 +274,7 @@ export default function AssistentPage() {
                     )}
                     {m.sources && m.sources.length > 0 && (
                       <div className="mt-3 border-t border-[#e8e1d2] pt-2.5">
-                        <p className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-[#a89c8a]">
+                        <p className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-[#7c7161]">
                           Quellen ({m.sources.length})
                         </p>
                         <div className="flex flex-wrap gap-1.5">
@@ -310,7 +310,7 @@ export default function AssistentPage() {
                   {status}
                 </div>
                 {liveQuellen.length > 0 && (
-                  <ul className="mt-2 space-y-1 text-[12px] text-[#8d8172]">
+                  <ul className="mt-2 space-y-1 text-[12px] text-[#6f6557]">
                     {liveQuellen.map((q, j) => (
                       <li key={j} className="truncate">↳ liest: {q.titel}</li>
                     ))}
@@ -344,7 +344,7 @@ export default function AssistentPage() {
               className={`flex shrink-0 items-center gap-1.5 rounded-xl px-2.5 py-2 text-[12px] font-medium transition-colors ${
                 browse
                   ? "bg-[#fff4e6] text-[#c25e0e] ring-1 ring-[#ffb066]/50"
-                  : "text-[#8d8172] hover:bg-[#faf7f0] hover:text-[#4a4335]"
+                  : "text-[#6f6557] hover:bg-[#faf7f0] hover:text-[#4a4335]"
               }`}
             >
               <GlobeIcon />
@@ -361,7 +361,7 @@ export default function AssistentPage() {
               }}
               rows={1}
               placeholder="Fragen Sie den KI-Assistenten … (Enter sendet, Shift+Enter = neue Zeile)"
-              className="max-h-40 flex-1 resize-none bg-transparent px-2 py-2 text-[14px] text-[#1c1917] outline-none placeholder:text-[#a89c8a]"
+              className="max-h-40 flex-1 resize-none bg-transparent px-2 py-2 text-[14px] text-[#1c1917] outline-none placeholder:text-[#7c7161]"
               disabled={streaming}
             />
             <button
@@ -374,7 +374,7 @@ export default function AssistentPage() {
               {streaming ? <Spinner /> : <SendIcon />}
             </button>
           </div>
-          <div className="mt-1.5 flex items-center justify-between px-1 text-[11px] text-[#a89c8a]">
+          <div className="mt-1.5 flex items-center justify-between px-1 text-[11px] text-[#7c7161]">
             <span>
               {browse ? "🌐 Browser aktiv – Antworten mit Web-Quellen" : "Tipp: Globus einschalten für aktuelle Fakten"}
             </span>

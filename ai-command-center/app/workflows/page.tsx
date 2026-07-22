@@ -250,7 +250,7 @@ export default function WorkflowsPage() {
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
             <span className="acc-grad-text">Autopilot</span>: wiederkehrende Aufträge
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#8d8172]">
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#6f6557]">
             Legen Sie Aufträge an, die Ihre KI-Belegschaft regelmässig erledigt –
             vom Social-Media-Wochenplan bis zum Bericht für die Geschäftsleitung.
             Fällige Workflows starten Sie mit einem Klick; jede Ausführung ist
@@ -288,7 +288,7 @@ export default function WorkflowsPage() {
               >
                 + Eigener Workflow
               </button>
-              <span className="text-xs text-[#8d8172]">oder Vorlage übernehmen:</span>
+              <span className="text-xs text-[#6f6557]">oder Vorlage übernehmen:</span>
               {VORLAGEN.map((v) => (
                 <button
                   key={v.name}
@@ -358,7 +358,7 @@ export default function WorkflowsPage() {
         {/* Liste */}
         <div className="mt-8 space-y-4">
           {workflows.length === 0 && (
-            <p className="rounded-2xl border border-[#e8e1d2] px-5 py-8 text-center text-sm text-[#8d8172]">
+            <p className="rounded-2xl border border-[#e8e1d2] px-5 py-8 text-center text-sm text-[#6f6557]">
               Noch keine Workflows. Übernehmen Sie eine Vorlage oder legen Sie
               einen eigenen an.
             </p>
@@ -380,7 +380,7 @@ export default function WorkflowsPage() {
                         </span>
                       )}
                     </div>
-                    <p className="mt-1.5 max-w-2xl text-sm text-[#8d8172]">{w.goal}</p>
+                    <p className="mt-1.5 max-w-2xl text-sm text-[#6f6557]">{w.goal}</p>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
                     <button
@@ -392,7 +392,7 @@ export default function WorkflowsPage() {
                     </button>
                     <button
                       onClick={() => removeWorkflow(w.id)}
-                      className="rounded-xl border border-[#e0d8c6] bg-white/70 px-3 py-2 text-sm text-[#a89c8a] hover:border-red-300 hover:text-red-600"
+                      className="rounded-xl border border-[#e0d8c6] bg-white/70 px-3 py-2 text-sm text-[#7c7161] hover:border-red-300 hover:text-red-600"
                       aria-label={`Workflow "${w.name}" löschen`}
                     >
                       ✕
@@ -410,7 +410,7 @@ export default function WorkflowsPage() {
                   <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-sm font-semibold text-red-600">{state.note}</p>
                 )}
                 {!state && w.lastRun && (
-                  <p className="mt-3 text-xs text-[#8d8172]">
+                  <p className="mt-3 text-xs text-[#6f6557]">
                     Zuletzt: {new Date(w.lastRun).toLocaleString("de-CH")}
                     {typeof w.lastScore === "number" && ` · Quality-Score ${w.lastScore}`}
                     {w.lastSummary && ` · ${w.lastSummary}`}

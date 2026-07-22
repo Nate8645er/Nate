@@ -60,7 +60,7 @@ export default function TeamPage() {
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
             Das <span className="acc-grad-text">Team</span> hinter jedem Befehl
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#8d8172]">
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#6f6557]">
             Kein einzelner Chatbot, sondern eine Organisation: Der Commander
             plant und delegiert, Spezialisten führen aus, Quality prüft jedes
             Ergebnis, bevor Sie es sehen. Je höher die Stufe, desto grösser die
@@ -72,9 +72,9 @@ export default function TeamPage() {
         <section className="mt-10">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <h2 className="text-xl font-semibold">Modell-Rat</h2>
-            <span className="text-xs text-[#8d8172]">{ratAktiv} von {rat.length} Modellen einsatzbereit</span>
+            <span className="text-xs text-[#6f6557]">{ratAktiv} von {rat.length} Modellen einsatzbereit</span>
           </div>
-          <p className="mt-1 max-w-2xl text-sm text-[#8d8172]">
+          <p className="mt-1 max-w-2xl text-sm text-[#6f6557]">
             Nicht ein Modell, sondern ein Team führender KI-Modelle. Der Boss
             verteilt jeden Auftrag an die Worker und führt ihre Antworten
             zusammen. Jedes Modell wird aktiv, sobald sein Zugang hinterlegt ist.
@@ -86,12 +86,12 @@ export default function TeamPage() {
                 <div>
                   <span className="text-[10px] uppercase tracking-wider text-[#c25e0e]">Boss · Orchestrator</span>
                   <h3 className="mt-0.5 font-semibold text-[#c25e0e]">
-                    {ratBoss.label} <span className="text-xs font-normal text-[#8d8172]">· {ratBoss.hersteller}</span>
+                    {ratBoss.label} <span className="text-xs font-normal text-[#6f6557]">· {ratBoss.hersteller}</span>
                   </h3>
                 </div>
                 <StatusBadge aktiv={ratBoss.aktiv} />
               </div>
-              <p className="mt-2 text-sm leading-relaxed text-[#8d8172]">{ratBoss.rolle}</p>
+              <p className="mt-2 text-sm leading-relaxed text-[#6f6557]">{ratBoss.rolle}</p>
             </article>
           )}
 
@@ -100,15 +100,15 @@ export default function TeamPage() {
               <article key={m.id} className="acc-card acc-card-hover rounded-2xl p-5">
                 <div className="flex items-center justify-between gap-3">
                   <h3 className="font-semibold text-[#c25e0e]">
-                    {m.label} <span className="text-xs font-normal text-[#8d8172]">· {m.hersteller}</span>
+                    {m.label} <span className="text-xs font-normal text-[#6f6557]">· {m.hersteller}</span>
                   </h3>
                   <StatusBadge aktiv={m.aktiv} />
                 </div>
-                <p className="mt-2 text-sm leading-relaxed text-[#8d8172]">{m.rolle}</p>
+                <p className="mt-2 text-sm leading-relaxed text-[#6f6557]">{m.rolle}</p>
               </article>
             ))}
           </div>
-          <p className="mt-3 text-xs text-[#a89c8a]">
+          <p className="mt-3 text-xs text-[#7c7161]">
             Zugänge werden serverseitig als Umgebungsvariablen hinterlegt
             (siehe .env.example). Ohne Zugang bleibt ein Modell sichtbar, aber
             inaktiv – wir versprechen nichts, was nicht real läuft.
@@ -118,12 +118,12 @@ export default function TeamPage() {
         {/* Kern-Team – Akzent Indigo */}
         <section className="mt-10">
           <h2 className="text-xl font-semibold">Kern-Team</h2>
-          <p className="mt-1 text-sm text-[#8d8172]">In jeder Stufe dabei – von FREE bis ENTERPRISE.</p>
+          <p className="mt-1 text-sm text-[#6f6557]">In jeder Stufe dabei – von FREE bis ENTERPRISE.</p>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {KERN.map((r) => (
               <article key={r} className="acc-card acc-card-hover rounded-2xl border-l-2 border-[#8b5cf6] p-5">
                 <h3 className="font-semibold text-[#5b52d6]">{AGENTS[r].name}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-[#8d8172]">{AGENTS[r].description}</p>
+                <p className="mt-2 text-sm leading-relaxed text-[#6f6557]">{AGENTS[r].description}</p>
               </article>
             ))}
           </div>
@@ -132,14 +132,14 @@ export default function TeamPage() {
         {/* Spezialisten – Akzent Teal */}
         <section className="mt-10">
           <h2 className="text-xl font-semibold">Spezialisten</h2>
-          <p className="mt-1 text-sm text-[#8d8172]">
+          <p className="mt-1 text-sm text-[#6f6557]">
             Ab PROFESSIONAL kommen Marketing &amp; Research parallel dazu; Coding &amp; Business schalten ab BUSINESS frei. Jeder mit eigenem Fachgebiet und eigenem KI-Modell.
           </p>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {SPEZIALISTEN.map((r) => (
               <article key={r} className="acc-card acc-card-hover rounded-2xl border-l-2 border-[#2dd4bf] p-5">
                 <h3 className="font-semibold text-[#0f766e]">{AGENTS[r].name}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-[#8d8172]">{AGENTS[r].description}</p>
+                <p className="mt-2 text-sm leading-relaxed text-[#6f6557]">{AGENTS[r].description}</p>
               </article>
             ))}
           </div>
@@ -162,17 +162,17 @@ export default function TeamPage() {
                 {PLAN_REIHENFOLGE.map((p) => (
                   <tr key={p} className="border-b border-[#e8e1d2]">
                     <td className="py-3 pr-4 font-semibold text-[#1c1917]">{p}</td>
-                    <td className="py-3 pr-4 text-[#8d8172]">
+                    <td className="py-3 pr-4 text-[#6f6557]">
                       {WORKERS_BY_PLAN[p].length} + Commander + Quality
                     </td>
                     <td className="py-3 pr-4 font-semibold text-[#c25e0e]">{WORKFORCE_BY_PLAN[p]}</td>
-                    <td className="py-3 text-[#8d8172]">{PLAN_NOTIZ[p]}</td>
+                    <td className="py-3 text-[#6f6557]">{PLAN_NOTIZ[p]}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <p className="mt-4 max-w-2xl text-xs leading-relaxed text-[#8d8172]">
+          <p className="mt-4 max-w-2xl text-xs leading-relaxed text-[#6f6557]">
             Transparenz: «Belegschaft» ist die sichtbare virtuelle Organisation
             Ihrer Firma (Abteilungen, Rollen, Assistenzen). Die Zahl der
             gleichzeitig live rechnenden KI-Spezialisten ist pro Stufe begrenzt
@@ -203,7 +203,7 @@ function StatusBadge({ aktiv }: { aktiv: boolean }) {
       <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#22c55e]" /> aktiv
     </span>
   ) : (
-    <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#f3efe6] px-2 py-0.5 text-[10px] font-medium text-[#8d8172]">
+    <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#f3efe6] px-2 py-0.5 text-[10px] font-medium text-[#6f6557]">
       <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#c9bfae]" /> Zugang nötig
     </span>
   );
@@ -221,7 +221,7 @@ function TalentPool() {
   return (
     <section className="mt-12">
       <h2 className="text-xl font-semibold">Der Talent-Pool dahinter</h2>
-      <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#8d8172]">
+      <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#6f6557]">
         Ihr Commander besetzt jede Mission aus einem generativen Pool von{" "}
         <span className="font-semibold text-[#c25e0e]">{talentpoolFormatiert()}</span>{" "}
         adressierbaren Spezialisten-Profilen (Rolle × Fachgebiet × Branche ×
@@ -237,13 +237,13 @@ function TalentPool() {
               Profil #{p.index.toLocaleString("de-CH")}
             </p>
             <p className="mt-1.5 text-sm font-semibold text-[#be185d]">{p.titel}</p>
-            <p className="mt-1 text-xs leading-relaxed text-[#8d8172]">
+            <p className="mt-1 text-xs leading-relaxed text-[#6f6557]">
               {p.branche} · {p.spezialisierung} · Markt {p.markt}
             </p>
           </div>
         ))}
       </div>
-      <p className="mt-4 max-w-2xl text-xs leading-relaxed text-[#8d8172]">
+      <p className="mt-4 max-w-2xl text-xs leading-relaxed text-[#6f6557]">
         Ehrlich erklärt: Der Pool ist der Adressraum, aus dem live besetzt
         wird – nicht eine Milliarde gleichzeitig laufender Rechenprozesse.
         Wie viele Spezialisten pro Auftrag gleichzeitig rechnen, bestimmt

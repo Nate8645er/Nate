@@ -501,7 +501,7 @@ export default function Home() {
                 Abos ansehen
               </a>
             </div>
-            <p className="mt-4 text-sm text-[#8d8172]">Ohne Kreditkarte. In 2 Minuten startklar.</p>
+            <p className="mt-4 text-sm text-[#6f6557]">Ohne Kreditkarte. In 2 Minuten startklar.</p>
           </div>
 
           <ProductShowcase />
@@ -564,7 +564,7 @@ export default function Home() {
                   <p className="mt-4 flex items-baseline gap-2">
                     <span className="text-4xl font-semibold tracking-tight">{plan.price}</span>
                   </p>
-                  <p className="mt-1 text-sm text-[#8d8172]">{plan.priceNote}</p>
+                  <p className="mt-1 text-sm text-[#6f6557]">{plan.priceNote}</p>
                   {plan.priceYear && (
                     <p className="mt-1 text-xs font-semibold text-[#0f766e]">
                       oder {plan.priceYear} – 2 Monate geschenkt
@@ -685,7 +685,7 @@ export default function Home() {
                     {wert}
                   </p>
                   <p className="mt-1 font-semibold">{label}</p>
-                  <p className="mt-1 text-xs text-[#8d8172]">{note}</p>
+                  <p className="mt-1 text-xs text-[#6f6557]">{note}</p>
                 </div>
               ))}
             </div>
@@ -740,7 +740,7 @@ export default function Home() {
             {TRUST.map((t) => (
               <div key={t.label} className="text-center">
                 <p className="text-base font-semibold">{t.label}</p>
-                <p className="mt-1 text-sm text-[#8d8172]">{t.note}</p>
+                <p className="mt-1 text-sm text-[#6f6557]">{t.note}</p>
               </div>
             ))}
           </div>
@@ -820,7 +820,7 @@ export default function Home() {
               Dashboard
             </Link>
           </div>
-          <p className="text-sm text-[#a89c8a]">Schweizer Anbieter</p>
+          <p className="text-sm text-[#7c7161]">Schweizer Anbieter</p>
         </div>
       </footer>
     </div>

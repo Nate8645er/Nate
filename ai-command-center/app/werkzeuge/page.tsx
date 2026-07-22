@@ -35,7 +35,7 @@ function download(name: string, inhalt: string, typ = "text/html") {
 const card = "acc-card rounded-2xl p-5";
 const inp = "w-full rounded-xl border border-[#e0d8c6] bg-white/70 px-3 py-2 text-sm focus:border-[#ffb066] focus:outline-none";
 const btn = "shop-btn rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-4 py-2 text-sm font-bold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)]";
-const lbl = "text-xs font-semibold text-[#8d8172]";
+const lbl = "text-xs font-semibold text-[#6f6557]";
 
 export default function WerkzeugePage() {
   return (
@@ -54,7 +54,7 @@ export default function WerkzeugePage() {
           <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
             Echte Arbeit. In Sekunden erledigt.
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#8d8172]">
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#6f6557]">
             Diese Werkzeuge rechnen und erzeugen sofort – direkt in Ihrem Browser,
             ohne Warten. Keine Vorschau, echte Ergebnisse: geprüfte IBANs,
             versandfertige Rechnungen, sichere Passwörter, fertige Signaturen.
@@ -83,7 +83,7 @@ function IbanTool() {
   return (
     <section className={card}>
       <h2 className="font-semibold">IBAN prüfen</h2>
-      <p className="mt-1 text-xs text-[#8d8172]">Sofort geprüft (Modulo-97, ISO 13616).</p>
+      <p className="mt-1 text-xs text-[#6f6557]">Sofort geprüft (Modulo-97, ISO 13616).</p>
       <input aria-label="IBAN" className={`${inp} mt-3 font-mono`} placeholder="CH93 0076 2011 6238 5295 7" value={iban} onChange={(e) => setIban(e.target.value)} />
       {r && (
         <p className={`mt-3 rounded-xl px-3 py-2 text-sm font-semibold ${r.valid ? "bg-[#e7f6ee] text-[#177245]" : "bg-red-50 text-red-600"}`}>
@@ -102,7 +102,7 @@ function PasswortTool() {
   return (
     <section className={card}>
       <h2 className="font-semibold">Sicheres Passwort</h2>
-      <p className="mt-1 text-xs text-[#8d8172]">Kryptographisch zufällig, sofort.</p>
+      <p className="mt-1 text-xs text-[#6f6557]">Kryptographisch zufällig, sofort.</p>
       <div className="mt-3 flex items-center gap-3">
         <label className={lbl}>Länge {laenge}</label>
         <input aria-label="Länge" type="range" min={8} max={40} value={laenge} onChange={(e) => setLaenge(Number(e.target.value))} className="flex-1 accent-[#ff8c2a]" />
@@ -141,7 +141,7 @@ function RechnungTool() {
   return (
     <section className={`${card} md:col-span-2`}>
       <h2 className="font-semibold">Rechnung erstellen</h2>
-      <p className="mt-1 text-xs text-[#8d8172]">Positionen eintragen → fertige HTML-Rechnung herunterladen (druck-/PDF-fähig).</p>
+      <p className="mt-1 text-xs text-[#6f6557]">Positionen eintragen → fertige HTML-Rechnung herunterladen (druck-/PDF-fähig).</p>
       <input aria-label="Empfänger" className={`${inp} mt-3`} placeholder="Empfänger (Name, Firma)" value={empfaenger} onChange={(e) => setEmpfaenger(e.target.value)} />
       <div className="mt-3 space-y-2">
         {positionen.map((p, i) => (
@@ -175,9 +175,9 @@ function MargeTool() {
         <div><label className={lbl}>Verkauf CHF</label><input aria-label="Verkauf" className={inp} type="number" value={vk} onChange={(e) => setVk(Number(e.target.value))} /></div>
       </div>
       <div className="mt-3 grid grid-cols-3 gap-2 text-center">
-        <div className="rounded-xl bg-[#fff4e6] py-2"><p className="text-lg font-bold text-[#c25e0e]">{chf(m.gewinn)}</p><p className="text-[10px] text-[#8d8172]">Gewinn</p></div>
-        <div className="rounded-xl bg-[#fff4e6] py-2"><p className="text-lg font-bold text-[#c25e0e]">{m.margeProz}%</p><p className="text-[10px] text-[#8d8172]">Marge</p></div>
-        <div className="rounded-xl bg-[#fff4e6] py-2"><p className="text-lg font-bold text-[#c25e0e]">{m.aufschlagProz}%</p><p className="text-[10px] text-[#8d8172]">Aufschlag</p></div>
+        <div className="rounded-xl bg-[#fff4e6] py-2"><p className="text-lg font-bold text-[#c25e0e]">{chf(m.gewinn)}</p><p className="text-[10px] text-[#6f6557]">Gewinn</p></div>
+        <div className="rounded-xl bg-[#fff4e6] py-2"><p className="text-lg font-bold text-[#c25e0e]">{m.margeProz}%</p><p className="text-[10px] text-[#6f6557]">Marge</p></div>
+        <div className="rounded-xl bg-[#fff4e6] py-2"><p className="text-lg font-bold text-[#c25e0e]">{m.aufschlagProz}%</p><p className="text-[10px] text-[#6f6557]">Aufschlag</p></div>
       </div>
     </section>
   );
@@ -191,7 +191,7 @@ function StundensatzTool() {
   return (
     <section className={card}>
       <h2 className="font-semibold">Stundensatz</h2>
-      <p className="mt-1 text-xs text-[#8d8172]">Kostendeckend inkl. Zielmarge.</p>
+      <p className="mt-1 text-xs text-[#6f6557]">Kostendeckend inkl. Zielmarge.</p>
       <div className="mt-3 grid grid-cols-3 gap-2">
         <div><label className={lbl}>Jahreskosten</label><input aria-label="Jahreskosten" className={inp} type="number" value={jk} onChange={(e) => setJk(Number(e.target.value))} /></div>
         <div><label className={lbl}>Fakt. Std/Jahr</label><input aria-label="Stunden" className={inp} type="number" value={std} onChange={(e) => setStd(Number(e.target.value))} /></div>

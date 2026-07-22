@@ -102,7 +102,7 @@ export default function SicherheitPage() {
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
             10 <span className="acc-grad-text">Wächter</span>. Bei jedem Aufruf im Dienst.
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#8d8172]">
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#6f6557]">
             Jeder Wächter ist eine im Code verankerte Schutzschicht, die bei
             jeder einzelnen Anfrage greift – rund um die Uhr, an jedem Tag.
             Zuletzt automatisch geprüft: {stand.toLocaleDateString("de-CH")} um{" "}
@@ -129,12 +129,12 @@ export default function SicherheitPage() {
               <p className="mt-2.5 text-xs font-semibold uppercase tracking-wider text-[#0f766e]">
                 Schützt vor: {w.schutz}
               </p>
-              <p className="mt-2 text-sm leading-relaxed text-[#8d8172]">{w.detail}</p>
+              <p className="mt-2 text-sm leading-relaxed text-[#6f6557]">{w.detail}</p>
             </article>
           ))}
         </div>
 
-        <p className="mt-8 max-w-2xl rounded-2xl border border-[#ffb066]/40 bg-[#fff4e6] px-5 py-4 text-xs leading-relaxed text-[#8d8172]">
+        <p className="mt-8 max-w-2xl rounded-2xl border border-[#ffb066]/40 bg-[#fff4e6] px-5 py-4 text-xs leading-relaxed text-[#6f6557]">
           Ehrlich eingeordnet: Diese Wächter schützen die Plattform und Ihre
           Arbeit darin. Sie ersetzen keinen Virenschutz auf Ihren eigenen
           Geräten. Für Grosskunden ergänzen wir als Enterprise-Projekt

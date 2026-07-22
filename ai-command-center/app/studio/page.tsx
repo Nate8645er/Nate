@@ -721,9 +721,9 @@ export default function StudioPage() {
         <div className="flex items-center gap-2.5">
           <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f]" />
           <span className="font-mono text-[11px] font-bold tracking-[0.2em] text-[#c25e0e]">KI-STUDIO</span>
-          <span className="ml-1 rounded-md border border-[#e8e1d2] bg-white/70 px-2 py-0.5 font-mono text-[11px] text-[#8d8172]">{proj.name}</span>
+          <span className="ml-1 rounded-md border border-[#e8e1d2] bg-white/70 px-2 py-0.5 font-mono text-[11px] text-[#6f6557]">{proj.name}</span>
           <details className="group relative ml-1">
-            <summary className="flex cursor-pointer list-none items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-semibold text-[#8d8172] hover:bg-[#1c1917]/5 hover:text-[#1c1917]">
+            <summary className="flex cursor-pointer list-none items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-semibold text-[#6f6557] hover:bg-[#1c1917]/5 hover:text-[#1c1917]">
               ＋ Neu
               <svg viewBox="0 0 12 12" className="h-2.5 w-2.5 transition-transform group-open:rotate-180" aria-hidden="true">
                 <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
@@ -737,7 +737,7 @@ export default function StudioPage() {
                   className="block w-full px-3 py-2 text-left hover:bg-[#fff4e6]"
                 >
                   <span className="block text-[12.5px] font-semibold text-[#1c1917]">{v.label}</span>
-                  <span className="block text-[10.5px] text-[#a89c8a]">{v.hinweis}</span>
+                  <span className="block text-[10.5px] text-[#7c7161]">{v.hinweis}</span>
                 </button>
               ))}
             </div>
@@ -752,18 +752,18 @@ export default function StudioPage() {
           <div className="mb-2 flex items-center gap-1">
             <button
               onClick={() => setSeiten("dateien")}
-              className={`rounded px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider ${seiten === "dateien" ? "bg-[#fff4e6] text-[#c25e0e]" : "text-[#a89c8a] hover:text-[#1c1917]"}`}
+              className={`rounded px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider ${seiten === "dateien" ? "bg-[#fff4e6] text-[#c25e0e]" : "text-[#7c7161] hover:text-[#1c1917]"}`}
             >
               Dateien
             </button>
             <button
               onClick={() => setSeiten("suche")}
-              className={`rounded px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider ${seiten === "suche" ? "bg-[#fff4e6] text-[#c25e0e]" : "text-[#a89c8a] hover:text-[#1c1917]"}`}
+              className={`rounded px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider ${seiten === "suche" ? "bg-[#fff4e6] text-[#c25e0e]" : "text-[#7c7161] hover:text-[#1c1917]"}`}
             >
               Suche
             </button>
             {seiten === "dateien" && (
-              <div className="ml-auto flex items-center gap-1.5 text-[#8d8172]">
+              <div className="ml-auto flex items-center gap-1.5 text-[#6f6557]">
                 <button onClick={() => uploadRef.current?.click()} className="text-[12px] hover:text-[#c25e0e]" title="Dateien hochladen">↑</button>
                 <button onClick={downloadDatei} className="text-[12px] hover:text-[#c25e0e]" title="Aktuelle Datei herunterladen">↓</button>
                 <button onClick={downloadZip} className="text-[10px] font-semibold hover:text-[#c25e0e]" title="Projekt als ZIP">ZIP</button>
@@ -779,9 +779,9 @@ export default function StudioPage() {
                 value={suche}
                 onChange={(e) => setSuche(e.target.value)}
                 placeholder="Dateien suchen …"
-                className="mb-2 w-full rounded-md border border-[#e0d8c6] bg-white/70 px-2 py-1 text-[12px] text-[#1c1917] outline-none placeholder:text-[#a89c8a] focus:border-[#ffb066]"
+                className="mb-2 w-full rounded-md border border-[#e0d8c6] bg-white/70 px-2 py-1 text-[12px] text-[#1c1917] outline-none placeholder:text-[#7c7161] focus:border-[#ffb066]"
               />
-              {gefiltert.length === 0 && <p className="px-2 py-1 text-[12px] text-[#a89c8a]">Keine Treffer.</p>}
+              {gefiltert.length === 0 && <p className="px-2 py-1 text-[12px] text-[#7c7161]">Keine Treffer.</p>}
               {gefiltert.map((p) => {
                 const t = teile(p);
                 return (
@@ -791,17 +791,17 @@ export default function StudioPage() {
                     className={`group flex items-center justify-between rounded py-1 pr-2 text-[13px] ${p === proj.open ? "bg-[#fff4e6] text-[#c25e0e]" : "text-[#4a4335] hover:bg-[#1c1917]/5"}`}
                   >
                     <button onClick={() => openFile(p)} className="min-w-0 truncate text-left" title={p}>
-                      {t.ordner && <span className="text-[#a89c8a]">{t.ordner}</span>}
+                      {t.ordner && <span className="text-[#7c7161]">{t.ordner}</span>}
                       {t.datei}
                     </button>
                     <span className="hidden shrink-0 gap-1 group-hover:flex">
-                      <button onClick={() => umbenennen(p)} className="text-[#a89c8a] hover:text-[#1c1917]" title="Umbenennen">✎</button>
-                      <button onClick={() => loeschen(p)} className="text-[#a89c8a] hover:text-red-500" title="Löschen">✕</button>
+                      <button onClick={() => umbenennen(p)} className="text-[#7c7161] hover:text-[#1c1917]" title="Umbenennen">✎</button>
+                      <button onClick={() => loeschen(p)} className="text-[#7c7161] hover:text-red-500" title="Löschen">✕</button>
                     </span>
                   </div>
                 );
               })}
-              <p className="mt-2 px-2 text-[10px] text-[#a89c8a]">Tipp: Namen mit „/" erzeugen Ordner, z. B. src/app.ts</p>
+              <p className="mt-2 px-2 text-[10px] text-[#7c7161]">Tipp: Namen mit „/" erzeugen Ordner, z. B. src/app.ts</p>
             </>
           ) : (
             <>
@@ -810,27 +810,27 @@ export default function StudioPage() {
                 onChange={(e) => setProjSuche(e.target.value)}
                 placeholder="Im ganzen Projekt suchen …"
                 autoFocus
-                className="mb-2 w-full rounded-md border border-[#e0d8c6] bg-white/70 px-2 py-1 text-[12px] text-[#1c1917] outline-none placeholder:text-[#a89c8a] focus:border-[#ffb066]"
+                className="mb-2 w-full rounded-md border border-[#e0d8c6] bg-white/70 px-2 py-1 text-[12px] text-[#1c1917] outline-none placeholder:text-[#7c7161] focus:border-[#ffb066]"
               />
               {projSuche.trim().length < 2 ? (
-                <p className="px-2 py-1 text-[11px] text-[#a89c8a]">Mindestens 2 Zeichen eingeben.</p>
+                <p className="px-2 py-1 text-[11px] text-[#7c7161]">Mindestens 2 Zeichen eingeben.</p>
               ) : inhaltTreffer.gesamt === 0 ? (
-                <p className="px-2 py-1 text-[12px] text-[#a89c8a]">Keine Fundstellen.</p>
+                <p className="px-2 py-1 text-[12px] text-[#7c7161]">Keine Fundstellen.</p>
               ) : (
                 <>
-                  <p className="mb-1 px-1 text-[10.5px] text-[#8d8172]">
+                  <p className="mb-1 px-1 text-[10.5px] text-[#6f6557]">
                     {inhaltTreffer.gesamt}{inhaltTreffer.gedeckelt ? "+" : ""} Fundstellen in {inhaltTreffer.proDatei.length} Dateien
                   </p>
                   {inhaltTreffer.proDatei.map((d) => (
                     <div key={d.path} className="mb-1.5">
-                      <div className="truncate px-1 py-0.5 font-mono text-[11px] text-[#8d8172]" title={d.path}>{d.path}</div>
+                      <div className="truncate px-1 py-0.5 font-mono text-[11px] text-[#6f6557]" title={d.path}>{d.path}</div>
                       {d.zeilen.map((z) => (
                         <button
                           key={z.nr}
                           onClick={() => springeZu(d.path, z.nr)}
                           className="flex w-full items-baseline gap-2 rounded px-1 py-0.5 text-left hover:bg-[#1c1917]/5"
                         >
-                          <span className="shrink-0 font-mono text-[10px] text-[#a89c8a]">{z.nr + 1}</span>
+                          <span className="shrink-0 font-mono text-[10px] text-[#7c7161]">{z.nr + 1}</span>
                           <span className="min-w-0 truncate font-mono text-[11.5px] text-[#4a4335]">{markiere(z.text.trim(), projSuche.trim())}</span>
                         </button>
                       ))}
@@ -850,10 +850,10 @@ export default function StudioPage() {
               {tabs.filter((t) => proj.files[t] !== undefined).map((t) => (
                 <div
                   key={t}
-                  className={`flex shrink-0 items-center gap-1.5 border-r border-[#e8e1d2] px-3 py-1.5 ${t === proj.open ? "bg-[#faf9f6] text-[#c25e0e]" : "bg-white/40 text-[#8d8172] hover:text-[#1c1917]"}`}
+                  className={`flex shrink-0 items-center gap-1.5 border-r border-[#e8e1d2] px-3 py-1.5 ${t === proj.open ? "bg-[#faf9f6] text-[#c25e0e]" : "bg-white/40 text-[#6f6557] hover:text-[#1c1917]"}`}
                 >
                   <button onClick={() => openFile(t)} className="font-mono" title={t}>{t.split("/").pop()}</button>
-                  <button onClick={() => schliesseTab(t)} className="text-[#a89c8a] hover:text-red-500" title="Tab schliessen">✕</button>
+                  <button onClick={() => schliesseTab(t)} className="text-[#7c7161] hover:text-red-500" title="Tab schliessen">✕</button>
                 </div>
               ))}
             </div>
@@ -861,14 +861,14 @@ export default function StudioPage() {
               <div className="flex shrink-0 items-center border-l border-[#e8e1d2]">
                 <button
                   onClick={() => setAnsicht("code")}
-                  className={`px-2.5 py-1.5 ${ansicht === "code" ? "text-[#c25e0e]" : "text-[#8d8172] hover:text-[#1c1917]"}`}
+                  className={`px-2.5 py-1.5 ${ansicht === "code" ? "text-[#c25e0e]" : "text-[#6f6557] hover:text-[#1c1917]"}`}
                   title="Code bearbeiten"
                 >
                   Code
                 </button>
                 <button
                   onClick={() => setAnsicht("vorschau")}
-                  className={`px-2.5 py-1.5 ${ansicht === "vorschau" ? "text-[#c25e0e]" : "text-[#8d8172] hover:text-[#1c1917]"}`}
+                  className={`px-2.5 py-1.5 ${ansicht === "vorschau" ? "text-[#c25e0e]" : "text-[#6f6557] hover:text-[#1c1917]"}`}
                   title="Live-Vorschau im Browser"
                 >
                   ▶ Vorschau
@@ -877,7 +877,7 @@ export default function StudioPage() {
             )}
             <button
               onClick={() => setFr((f) => ({ ...f, show: !f.show }))}
-              className={`shrink-0 border-l border-[#e8e1d2] px-3 ${fr.show ? "text-[#c25e0e]" : "text-[#8d8172] hover:text-[#1c1917]"}`}
+              className={`shrink-0 border-l border-[#e8e1d2] px-3 ${fr.show ? "text-[#c25e0e]" : "text-[#6f6557] hover:text-[#1c1917]"}`}
               title="Suchen & Ersetzen"
             >
               ⌕
@@ -886,10 +886,10 @@ export default function StudioPage() {
           {fr.show && (
             <div className="flex flex-wrap items-center gap-2 border-b border-[#e8e1d2] bg-white/40 px-3 py-1.5 text-[12px]">
               <input value={fr.find} onChange={(e) => setFr((f) => ({ ...f, find: e.target.value }))} placeholder="Suchen"
-                className="w-40 rounded border border-[#e0d8c6] bg-white/70 px-2 py-1 text-[#1c1917] outline-none placeholder:text-[#a89c8a] focus:border-[#ffb066]" />
+                className="w-40 rounded border border-[#e0d8c6] bg-white/70 px-2 py-1 text-[#1c1917] outline-none placeholder:text-[#7c7161] focus:border-[#ffb066]" />
               <input value={fr.replace} onChange={(e) => setFr((f) => ({ ...f, replace: e.target.value }))} placeholder="Ersetzen durch"
-                className="w-40 rounded border border-[#e0d8c6] bg-white/70 px-2 py-1 text-[#1c1917] outline-none placeholder:text-[#a89c8a] focus:border-[#ffb066]" />
-              <span className="text-[#8d8172]">{treffer} Treffer</span>
+                className="w-40 rounded border border-[#e0d8c6] bg-white/70 px-2 py-1 text-[#1c1917] outline-none placeholder:text-[#7c7161] focus:border-[#ffb066]" />
+              <span className="text-[#6f6557]">{treffer} Treffer</span>
               <button onClick={ersetzeErstes} disabled={!treffer} className="rounded border border-[#e0d8c6] bg-white/70 px-2 py-1 text-[#4a4335] hover:border-[#ffb066] disabled:opacity-40">Ersetzen</button>
               <button onClick={ersetzeAlle} disabled={!treffer} className="rounded bg-[#fff4e6] px-2 py-1 font-semibold text-[#c25e0e] hover:bg-[#ffe9cf] disabled:opacity-40">Alle ersetzen</button>
             </div>
@@ -923,7 +923,7 @@ export default function StudioPage() {
           <div className="border-b border-[#e8e1d2] px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">KI-Assistent</div>
           <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-3">
             {chat.length === 0 && (
-              <p className="text-[12px] leading-relaxed text-[#8d8172]">
+              <p className="text-[12px] leading-relaxed text-[#6f6557]">
                 Bitten Sie die KI, am Projekt zu arbeiten – z. B. „Erkläre <b className="text-[#1c1917]">{proj.open}</b>",
                 „Baue eine Funktion X" oder „Splitte das in mehrere Dateien auf". Sie kennt alle Dateien und kann
                 mehrere davon in einem Schritt anlegen oder ändern.
@@ -941,7 +941,7 @@ export default function StudioPage() {
           {echteVorschlaege.length > 0 && !streaming && (
             <div className="border-t border-[#e8e1d2] p-2">
               <div className="mb-1.5 flex items-center justify-between gap-2 px-1 text-[11px]">
-                <span className="font-mono text-[#8d8172]">
+                <span className="font-mono text-[#6f6557]">
                   KI-Änderung an {echteVorschlaege.length} {echteVorschlaege.length === 1 ? "Datei" : "Dateien"}
                 </span>
                 {echteVorschlaege.length > 1 && (
@@ -983,10 +983,10 @@ export default function StudioPage() {
                 const d = diffZusammenfassung(code, vorschlag);
                 return (
                   <div className="mb-1.5 flex items-center gap-2 px-1 text-[11px]">
-                    <span className="font-mono text-[#8d8172]">Vorgeschlagene Änderung:</span>
+                    <span className="font-mono text-[#6f6557]">Vorgeschlagene Änderung:</span>
                     <span className="text-[#177245]">+{d.plus}</span>
                     <span className="text-red-500">−{d.minus}</span>
-                    <span className="text-[#a89c8a]">Zeilen</span>
+                    <span className="text-[#7c7161]">Zeilen</span>
                   </div>
                 );
               })()}
@@ -1007,13 +1007,13 @@ export default function StudioPage() {
                 rows={1}
                 placeholder="Aufgabe in natürlicher Sprache …"
                 disabled={streaming}
-                className="max-h-28 flex-1 resize-none bg-transparent px-1.5 py-1 text-[12.5px] text-[#1c1917] outline-none placeholder:text-[#a89c8a]"
+                className="max-h-28 flex-1 resize-none bg-transparent px-1.5 py-1 text-[12.5px] text-[#1c1917] outline-none placeholder:text-[#7c7161]"
               />
               <button onClick={() => frag(input)} disabled={streaming || !input.trim()} className="shop-btn h-7 shrink-0 rounded-lg bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-3 text-[12px] font-semibold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)] disabled:opacity-40">
                 {streaming ? "…" : "Senden"}
               </button>
             </div>
-            <p className="mt-1.5 px-1 text-[10.5px] leading-snug text-[#8d8172]">
+            <p className="mt-1.5 px-1 text-[10.5px] leading-snug text-[#6f6557]">
               🔧 Die KI liest &amp; ändert mehrere Dateien auf einmal (Diff prüfen, dann übernehmen). Terminal, echtes Git &amp; Debugger laufen server-/Enterprise-seitig (geplant).
             </p>
           </div>

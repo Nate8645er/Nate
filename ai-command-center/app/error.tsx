@@ -45,7 +45,7 @@ export default function Error({
       <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
         Da ist etwas schiefgelaufen.
       </h1>
-      <p className="mt-3 max-w-md text-sm leading-relaxed text-[#8d8172]">
+      <p className="mt-3 max-w-md text-sm leading-relaxed text-[#6f6557]">
         Ihre Arbeit ist nicht verloren – Verlauf und Ergebnisse bleiben in
         Ihrem Browser gespeichert. Versuchen Sie es erneut, oder melden Sie
         den Fehler mit einem Klick: Der Bericht enthält alle technischen

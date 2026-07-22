@@ -71,7 +71,7 @@ export default function StatusPage() {
             24/7 im Dienst. Automatisch{" "}
             <span className="acc-grad-text">überwacht</span>.
           </h1>
-          <p className="mt-3 flex flex-wrap items-center gap-2 text-sm text-[#8d8172]">
+          <p className="mt-3 flex flex-wrap items-center gap-2 text-sm text-[#6f6557]">
             <span className="inline-flex items-center gap-2 rounded-full border border-[#177245]/30 bg-[#e7f6ee] px-3 py-1 font-semibold text-[#177245]">
               <span className="inline-block h-2 w-2 rounded-full bg-[#177245]" />
               Alle Systeme betriebsbereit
@@ -95,7 +95,7 @@ export default function StatusPage() {
           ].map(([wert, label], i) => (
             <div key={label} className={`acc-card acc-card-hover rounded-2xl p-4 text-center ${KACHEL_FARBEN[i]}`}>
               <p className="text-xl font-bold sm:text-2xl">{wert}</p>
-              <p className="mt-1 text-xs font-semibold text-[#8d8172]">{label}</p>
+              <p className="mt-1 text-xs font-semibold text-[#6f6557]">{label}</p>
             </div>
           ))}
         </div>
@@ -124,7 +124,7 @@ export default function StatusPage() {
         {/* Anbieter-Kette */}
         <section className="mt-8">
           <h2 className="text-lg font-semibold">KI-Anbieter-Kette</h2>
-          <p className="mt-1 text-sm text-[#8d8172]">
+          <p className="mt-1 text-sm text-[#6f6557]">
             Fällt ein Anbieter aus, übernimmt automatisch der nächste – Ihre
             Befehle bleiben ausführbar.
           </p>

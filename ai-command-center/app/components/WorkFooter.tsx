@@ -9,7 +9,7 @@ import Link from "next/link";
 export default function WorkFooter({ variante }: { variante: "hell" | "dunkel" }) {
   const hell = variante === "hell";
   const rahmen = hell ? "border-[#e8e1d2]" : "border-[#ff8c2a]/15";
-  const text = hell ? "text-[#8d8172]" : "text-zinc-500";
+  const text = hell ? "text-[#6f6557]" : "text-zinc-500";
   const link = hell ? "hover:text-[#c25e0e]" : "hover:text-[#ffb35c]";
   return (
     <footer className={`mt-16 border-t ${rahmen} py-6 text-xs ${text}`}>

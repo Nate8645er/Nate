@@ -369,9 +369,9 @@ const TerminalFeed = memo(function TerminalFeed({ logs }: { logs: string[] }) {
         <span className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Mission Log // Live-Feed</span>
         <span className="hud-pulse h-1.5 w-1.5 rounded-full bg-[#c25e0e]" aria-hidden />
       </div>
-      <div ref={boxRef} className="max-h-56 overflow-y-auto px-4 py-3 font-mono text-[11px] leading-5 text-[#8d8172]">
+      <div ref={boxRef} className="max-h-56 overflow-y-auto px-4 py-3 font-mono text-[11px] leading-5 text-[#6f6557]">
         {logs.length === 0 ? (
-          <p className="text-[#a89c8a]">[SYSTEM] Bereit. Warte auf Mission …</p>
+          <p className="text-[#7c7161]">[SYSTEM] Bereit. Warte auf Mission …</p>
         ) : (
           logs.map((line, i) => <p key={i} className="whitespace-pre-wrap">{line}</p>)
         )}
@@ -468,7 +468,7 @@ const DepartmentCard = memo(function DepartmentCard({
             <li key={r.id} className="flex items-center gap-2 text-sm">
               <span aria-hidden className={`h-2 w-2 rounded-full ${dynDotClass(st)}`} />
               <span className="text-[#4a4335]">{r.label}</span>
-              <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172]">
+              <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6557]">
                 {STATUS_LABEL[st]}
               </span>
             </li>
@@ -490,13 +490,13 @@ const DepartmentCard = memo(function DepartmentCard({
             {shown.map((a) => (
               <span
                 key={a.id}
-                className="rounded-xl border border-[#e8e1d2] bg-[#faf6ee] px-2 py-0.5 font-mono text-[10px] text-[#8d8172]"
+                className="rounded-xl border border-[#e8e1d2] bg-[#faf6ee] px-2 py-0.5 font-mono text-[10px] text-[#6f6557]"
               >
                 {a.label}
               </span>
             ))}
             {!expanded && rest > 0 && (
-              <span className="rounded-xl px-2 py-0.5 font-mono text-[10px] text-[#a89c8a]">
+              <span className="rounded-xl px-2 py-0.5 font-mono text-[10px] text-[#7c7161]">
                 +{rest} weitere
               </span>
             )}
@@ -602,11 +602,11 @@ const ArtifactViewer = memo(function ArtifactViewer({ files }: { files: Artifact
                     className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-mono text-xs transition-colors ${FOCUS_RING} ${
                       selected
                         ? "bg-[#fff4e6] text-[#c25e0e]"
-                        : "text-[#8d8172] hover:bg-[#faf6ee]"
+                        : "text-[#6f6557] hover:bg-[#faf6ee]"
                     }`}
                   >
                     <span className="truncate">{f.path}</span>
-                    <span className="ml-auto shrink-0 text-[9px] uppercase tracking-[0.14em] text-[#a89c8a]">
+                    <span className="ml-auto shrink-0 text-[9px] uppercase tracking-[0.14em] text-[#7c7161]">
                       {f.language}
                     </span>
                   </button>
@@ -696,7 +696,7 @@ function HudModal({
         <button
           onClick={onClose}
           aria-label="Schliessen"
-          className={`absolute right-3 top-3 rounded-xl px-2 py-1 font-mono text-xs text-[#8d8172] transition hover:text-[#1c1917] ${FOCUS_RING}`}
+          className={`absolute right-3 top-3 rounded-xl px-2 py-1 font-mono text-xs text-[#6f6557] transition hover:text-[#1c1917] ${FOCUS_RING}`}
         >
           ✕
         </button>
@@ -750,7 +750,7 @@ function OnboardingModal({
     <HudModal labelId="onboarding-title" onClose={onClose}>
       <div className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e] mb-1">Onboarding // Kontext</div>
       <h2 id="onboarding-title" className="text-xl font-bold text-[#1c1917]">Ihr Unternehmen</h2>
-      <p className="mt-1 text-sm text-[#8d8172]">
+      <p className="mt-1 text-sm text-[#6f6557]">
         Ihre KI-Abteilung passt Pläne und Ergebnisse an Branche und Teamgrösse an.
       </p>
 
@@ -846,7 +846,7 @@ function LicenseModal({
     <HudModal labelId="license-title" onClose={onClose}>
       <div className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e] mb-1">Zugang // Freischaltung</div>
       <h2 id="license-title" className="text-xl font-bold text-[#1c1917]">Lizenz aktivieren</h2>
-      <p className="mt-1 text-sm text-[#8d8172]">
+      <p className="mt-1 text-sm text-[#6f6557]">
         {licensedPlan === "FREE"
           ? "Geben Sie Ihren Lizenzschlüssel ein, um STARTER, PROFESSIONAL oder BUSINESS freizuschalten."
           : `Aktive Lizenz: ${licensedPlan}. Ein neuer Schlüssel ersetzt die aktuelle Lizenz.`}
@@ -859,7 +859,7 @@ function LicenseModal({
           placeholder="ACC-STARTER-..."
           disabled={busy}
           aria-label="Lizenzschlüssel"
-          className={`flex-1 rounded-xl border border-[#e0d8c6] bg-white/70 px-4 py-3 font-mono text-sm text-[#1c1917] placeholder:text-[#a89c8a] outline-none transition focus:border-[#ffb066] focus:ring-2 focus:ring-[#ffb066]/30 ${FOCUS_RING}`}
+          className={`flex-1 rounded-xl border border-[#e0d8c6] bg-white/70 px-4 py-3 font-mono text-sm text-[#1c1917] placeholder:text-[#7c7161] outline-none transition focus:border-[#ffb066] focus:ring-2 focus:ring-[#ffb066]/30 ${FOCUS_RING}`}
         />
         <button
           onClick={activate}
@@ -1362,7 +1362,7 @@ export default function DashboardPage() {
               </span>
             )}
             {usage && (
-              <span className="hidden font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172] sm:inline" aria-live="polite">
+              <span className="hidden font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6557] sm:inline" aria-live="polite">
                 Missionen heute: {usage.used}/{usage.limit}
               </span>
             )}
@@ -1387,61 +1387,61 @@ export default function DashboardPage() {
             </button>
             <a
               href="/chat"
-              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6557] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
             >
               Kommando
             </a>
             <a
               href="/kunden"
-              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6557] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
             >
               Kunden
             </a>
             <a
               href="/email"
-              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6557] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
             >
               E-Mail
             </a>
             <a
               href="/faehigkeiten"
-              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6557] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
             >
               Skills
             </a>
             <a
               href="/analysen"
-              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6557] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
             >
               Analysen
             </a>
             <a
               href="/einstellungen"
-              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6557] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
             >
               Einstellungen
             </a>
             <a
               href="/berichte"
-              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6557] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
             >
               Berichte
             </a>
             <a
               href="/team"
-              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6557] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
             >
               Team
             </a>
             <a
               href="/workflows"
-              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6557] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
             >
               Autopilot
             </a>
             <a
               href="/integrationen"
-              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6557] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
             >
               Integrationen
             </a>
@@ -1460,8 +1460,8 @@ export default function DashboardPage() {
                           ? "bg-gradient-to-r from-[#ffb066] to-[#ff8c2a] text-white"
                           : "bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] text-white"
                         : locked
-                          ? "text-[#a89c8a] hover:bg-[#fff4e6]"
-                          : "text-[#8d8172] hover:bg-[#fff4e6]"
+                          ? "text-[#7c7161] hover:bg-[#fff4e6]"
+                          : "text-[#6f6557] hover:bg-[#fff4e6]"
                     }`}
                   >
                     {locked && <LockIcon />}
@@ -1480,7 +1480,7 @@ export default function DashboardPage() {
           <section aria-label="Neue Mission" className={fancy ? "acc-card acc-in rounded-2xl p-5" : ""}>
             {fancy && <div className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e] mb-2">Mission Input</div>}
             <h1 className="text-2xl font-semibold tracking-tight text-[#1c1917] sm:text-3xl">Was soll Ihre <span className="acc-grad-text">KI-Abteilung</span> erledigen?</h1>
-            <p className="mt-1 text-sm text-[#8d8172]">
+            <p className="mt-1 text-sm text-[#6f6557]">
               Commander plant, Builder und Analyst arbeiten parallel, Quality prüft. Sie erhalten ein fertiges Ergebnis.
             </p>
             <div className="mt-5 flex flex-col gap-3 sm:flex-row">
@@ -1494,7 +1494,7 @@ export default function DashboardPage() {
                     : 'z. B. "Erstelle eine Marketingstrategie für eine Zürcher Bäckerei"'
                 }
                 disabled={running}
-                className="flex-1 rounded-xl border border-[#e0d8c6] bg-white/70 px-4 py-3 text-[#1c1917] placeholder:text-[#a89c8a] outline-none transition focus:border-[#ffb066] focus:ring-2 focus:ring-[#ffb066]/30"
+                className="flex-1 rounded-xl border border-[#e0d8c6] bg-white/70 px-4 py-3 text-[#1c1917] placeholder:text-[#7c7161] outline-none transition focus:border-[#ffb066] focus:ring-2 focus:ring-[#ffb066]/30"
               />
               <input
                 ref={fileInputRef}
@@ -1530,11 +1530,11 @@ export default function DashboardPage() {
             {dokument && (
               <div className="mt-3 inline-flex max-w-full items-center gap-2 rounded-xl border border-[#ffb066]/50 bg-[#fff4e6] px-3 py-1.5 font-mono text-xs text-[#c25e0e]">
                 <span className="truncate" title={dokument.name}>{dokument.name}</span>
-                <span className="shrink-0 text-[#a89c8a]">{dokument.text.length} Zeichen</span>
+                <span className="shrink-0 text-[#7c7161]">{dokument.text.length} Zeichen</span>
                 <button
                   onClick={removeDocument}
                   aria-label={`Dokument ${dokument.name} entfernen`}
-                  className={`shrink-0 rounded-xl px-1 text-sm leading-none text-[#8d8172] transition-colors hover:bg-[#ffe6cc] hover:text-[#1c1917] ${FOCUS_RING}`}
+                  className={`shrink-0 rounded-xl px-1 text-sm leading-none text-[#6f6557] transition-colors hover:bg-[#ffe6cc] hover:text-[#1c1917] ${FOCUS_RING}`}
                 >
                   ×
                 </button>
@@ -1614,7 +1614,7 @@ export default function DashboardPage() {
                         {openOutput === role ? "verbergen" : "Ausgabe"}
                       </button>
                     )}
-                    {gesperrt && <span className="ml-auto shrink-0 text-[10px] text-[#a89c8a]">🔒 ab Pro</span>}
+                    {gesperrt && <span className="ml-auto shrink-0 text-[10px] text-[#7c7161]">🔒 ab Pro</span>}
                   </div>
                 );
               })}
@@ -1639,7 +1639,7 @@ export default function DashboardPage() {
             <section aria-label="Qualitätsbewertung" className="acc-card mt-8 rounded-2xl p-5">
               <div className="flex items-center gap-4">
                 <div className={`font-mono text-3xl font-extrabold ${score >= 80 ? "text-[#177245]" : score >= 60 ? "text-[#c25e0e]" : "text-red-600"}`}>{score}/100</div>
-                <div className="text-sm text-[#8d8172]">Bewertung durch Quality AI</div>
+                <div className="text-sm text-[#6f6557]">Bewertung durch Quality AI</div>
               </div>
             </section>
           )}
@@ -1665,7 +1665,7 @@ export default function DashboardPage() {
               <details className="acc-card overflow-hidden rounded-2xl bg-gradient-to-b from-[#fff4e6] to-transparent">
                 <summary className={`cursor-pointer select-none p-5 text-lg font-bold text-[#1c1917] transition-colors hover:text-[#c25e0e] ${FOCUS_RING}`}>
                   Vollständiger Bericht
-                  <span className="ml-3 font-mono text-[10px] font-normal uppercase tracking-[0.18em] text-[#8d8172]">Zum Aufklappen</span>
+                  <span className="ml-3 font-mono text-[10px] font-normal uppercase tracking-[0.18em] text-[#6f6557]">Zum Aufklappen</span>
                 </summary>
                 <div className="px-6 pb-6 text-sm leading-relaxed text-[#4a4335]">{renderMarkdown(finalResult)}</div>
               </details>
@@ -1691,7 +1691,7 @@ export default function DashboardPage() {
                       className="w-full rounded-xl border border-[#e8e1d2] bg-white/60 px-4 py-3 text-left text-sm transition hover:border-[#ffb066]"
                     >
                       <span className="font-medium text-[#1c1917]">{h.goal}</span>
-                      <span className="ml-2 font-mono text-xs text-[#a89c8a]">
+                      <span className="ml-2 font-mono text-xs text-[#7c7161]">
                         {new Date(h.at).toLocaleString("de-CH")} {h.score !== null ? `· ${h.score}/100` : ""}
                       </span>
                     </button>

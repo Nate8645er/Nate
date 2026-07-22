@@ -158,7 +158,7 @@ function HudModal({
         <button
           onClick={onClose}
           aria-label="Schliessen"
-          className={`absolute right-3 top-3 rounded-xl px-2 py-1 font-mono text-xs text-[#8d8172] transition hover:text-[#1c1917] ${FOCUS_RING}`}
+          className={`absolute right-3 top-3 rounded-xl px-2 py-1 font-mono text-xs text-[#6f6557] transition hover:text-[#1c1917] ${FOCUS_RING}`}
         >
           ✕
         </button>
@@ -196,7 +196,7 @@ function AnfrageModal({ connector, onClose }: { connector: Connector; onClose: (
           Anbindung {connector.name}
         </h2>
       </div>
-      <p className="mt-3 text-sm text-[#8d8172]">
+      <p className="mt-3 text-sm text-[#6f6557]">
         So läuft eine Live-Anbindung ehrlich ab — sie wird pro Unternehmen eingerichtet:
       </p>
 
@@ -211,7 +211,7 @@ function AnfrageModal({ connector, onClose }: { connector: Connector; onClose: (
             </span>
             <div>
               <div className="text-sm font-semibold text-[#1c1917]">{s.titel}</div>
-              <p className="mt-0.5 text-sm leading-relaxed text-[#8d8172]">{s.text}</p>
+              <p className="mt-0.5 text-sm leading-relaxed text-[#6f6557]">{s.text}</p>
             </div>
           </li>
         ))}
@@ -223,7 +223,7 @@ function AnfrageModal({ connector, onClose }: { connector: Connector; onClose: (
       >
         Anfrage per E-Mail senden
       </a>
-      <p className="mt-2 text-center font-mono text-[10px] uppercase tracking-[0.14em] text-[#a89c8a]">
+      <p className="mt-2 text-center font-mono text-[10px] uppercase tracking-[0.14em] text-[#7c7161]">
         Betreff: Anbindung {connector.name}
       </p>
     </HudModal>
@@ -251,7 +251,7 @@ const ConnectorCard = memo(function ConnectorCard({
           </div>
         </div>
       </div>
-      <p className="mt-3 flex-1 text-sm leading-relaxed text-[#8d8172]">{connector.beschreibung}</p>
+      <p className="mt-3 flex-1 text-sm leading-relaxed text-[#6f6557]">{connector.beschreibung}</p>
       <button
         onClick={() => onRequest(connector)}
         className={`mt-4 w-full rounded-xl border border-[#e0d8c6] bg-white/70 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#4a4335] transition-colors hover:border-[#ffb066] hover:text-[#c25e0e] ${FOCUS_RING}`}
@@ -277,7 +277,7 @@ const KategorieSektion = memo(function KategorieSektion({
     <section aria-label={kategorie} className="mt-8">
       <div className="mb-3 flex items-center gap-3">
         <span aria-hidden className="h-2 w-2 rounded-full" style={{ background: akzent }} />
-        <h2 className="text-[11px] font-bold uppercase tracking-wider text-[#8d8172]">
+        <h2 className="text-[11px] font-bold uppercase tracking-wider text-[#6f6557]">
           {kategorie}{" // "}{connectors.length} System{connectors.length === 1 ? "" : "e"}
         </h2>
       </div>
@@ -307,7 +307,7 @@ export default function IntegrationenPage() {
             <Link href="/" className="text-lg font-bold tracking-tight text-[#1c1917]">
               AI <span className="acc-grad-text">Command Center</span>
             </Link>
-            <div className="text-[11px] font-semibold uppercase tracking-wider text-[#8d8172]">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-[#6f6557]">
               Integration-Center // Katalog
             </div>
           </div>
@@ -328,14 +328,14 @@ export default function IntegrationenPage() {
             Integration-Center: Verbinden Sie Ihre KI-Abteilung mit Ihren{" "}
             <span className="acc-grad-text">Systemen</span>
           </h1>
-          <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[#8d8172]">
+          <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[#6f6557]">
             Jede Anbindung wird pro Unternehmen eingerichtet: Sie geben der KI in Ihrem
             System Zugriff frei, wir bauen den Connector — danach können Ihre Agenten
             dort lesen und schreiben.
           </p>
           <div className="mt-5 flex flex-wrap items-center gap-3">
             <OnboardingWizard />
-            <span className="text-xs text-[#8d8172]">
+            <span className="text-xs text-[#6f6557]">
               Schritt für Schritt: Systeme wählen, Firma hinterlegen, Anbindung anfragen.
             </span>
           </div>
@@ -358,7 +358,7 @@ export default function IntegrationenPage() {
             <h2 className="text-xl font-bold text-[#1c1917]">
               Ihre Firmensoftware ist nicht dabei?
             </h2>
-            <p className="mt-1 max-w-3xl text-sm text-[#8d8172]">
+            <p className="mt-1 max-w-3xl text-sm text-[#6f6557]">
               Über den generischen REST/Webhook-Connector binden wir jede eigene
               Firmen-API an — gleicher Ablauf: Zugriff freigeben, Connector einrichten,
               Agenten arbeiten.
@@ -373,7 +373,7 @@ export default function IntegrationenPage() {
 
         {/* Ehrlicher Footer-Hinweis */}
         <footer className="mt-10 border-t border-[#e8e1d2] pt-4 pb-8">
-          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#a89c8a]">
+          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#7c7161]">
             Live-Anbindungen werden pro Unternehmen eingerichtet (Enterprise).
             Prototypen und Datei-Ausgabe funktionieren sofort.
           </p>

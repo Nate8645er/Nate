@@ -38,14 +38,14 @@ export default function FaehigkeitenPage() {
           <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
             Was Ihre <span className="acc-grad-text">KI-Belegschaft</span> für Sie erledigt.
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#8d8172]">
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#6f6557]">
             Jeder Skill ist ein geprüfter Befehl mit strukturierter Vorlage –
             dadurch liefert Ihre Belegschaft zuverlässig vollständige,
             professionelle Ergebnisse. In der Kommandozentrale einfach{" "}
             <span className="font-mono font-semibold text-[#c25e0e]">/</span> tippen,
             Befehl wählen, Platzhalter ausfüllen, ausführen.
           </p>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#8d8172]">
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#6f6557]">
             Ein System, sechs Ausbaustufen – jede Stufe erweitert, wofür Ihre
             Belegschaft zuständig ist:{" "}
             {STUFEN_REIHENFOLGE.map((st, i) => (
@@ -73,7 +73,7 @@ export default function FaehigkeitenPage() {
                       {(SKILL_AB_STUFE[s.befehl] ?? "FREE") === "FREE" ? "In jedem Abo" : `ab ${SKILL_AB_STUFE[s.befehl]}`}
                     </span>
                   </p>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-[#8d8172]">
+                  <p className="mt-2 flex-1 text-sm leading-relaxed text-[#6f6557]">
                     {s.beschreibung}
                   </p>
                   <Link
@@ -88,7 +88,7 @@ export default function FaehigkeitenPage() {
           </section>
         ))}
 
-        <p className="mt-12 max-w-2xl text-xs leading-relaxed text-[#8d8172]">
+        <p className="mt-12 max-w-2xl text-xs leading-relaxed text-[#6f6557]">
           Dazu kommen die freien Bereiche: eigene Befehle in der{" "}
           <Link href="/chat" className="font-semibold text-[#c25e0e] hover:underline">Kommandozentrale</Link>, die{" "}
           <Link href="/email" className="font-semibold text-[#c25e0e] hover:underline">E-Mail-Zentrale</Link>, der{" "}

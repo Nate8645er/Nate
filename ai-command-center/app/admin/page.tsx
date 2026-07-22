@@ -61,7 +61,7 @@ function startDateiHtml(key: string, origin: string): string {
     "background:#faf8f3;font-family:system-ui,sans-serif;color:#241f17;text-align:center;padding:24px}",
     ".dot{width:18px;height:18px;border-radius:50%;margin:0 auto 18px;",
     "background:linear-gradient(135deg,#ffb066,#ff5f1f);box-shadow:0 0 24px rgba(255,140,42,.6)}",
-    "h1{font-size:22px;margin:0 0 8px}p{color:#8d8172;font-size:14px;margin:0 0 20px}",
+    "h1{font-size:22px;margin:0 0 8px}p{color:#6f6557;font-size:14px;margin:0 0 20px}",
     "a{display:inline-block;background:linear-gradient(90deg,#ff8c2a,#ff5f1f);color:#fff;",
     "font-weight:700;padding:14px 28px;border-radius:12px;text-decoration:none}</style></head>",
     '<body><div><div class="dot"></div><h1>Ihr AI Command Center startet …</h1>',
@@ -193,7 +193,7 @@ export default function AdminPage() {
         <section aria-label="Schlüssel erzeugen" className="acc-card acc-in rounded-2xl p-5 sm:p-6">
           <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Lizenz // Generator</div>
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl"><span className="acc-grad-text">Lizenzschlüssel</span> erzeugen</h1>
-          <p className="mt-2 text-sm text-[#8d8172]">
+          <p className="mt-2 text-sm text-[#6f6557]">
             Pro Kundenkauf einen Schlüssel erzeugen und per E-Mail senden. Die
             Schlüssel passen zum LICENSE_SECRET dieser Installation.
           </p>
@@ -210,7 +210,7 @@ export default function AdminPage() {
                 placeholder="••••••••"
                 disabled={busy}
                 aria-label="Admin-Passwort"
-                className={`mt-1.5 w-full rounded-xl border border-[#e0d8c6] bg-white/70 px-4 py-3 font-mono text-sm text-[#1c1917] placeholder:text-[#a89c8a] outline-none transition focus:border-[#ffb066] ${FOCUS_RING}`}
+                className={`mt-1.5 w-full rounded-xl border border-[#e0d8c6] bg-white/70 px-4 py-3 font-mono text-sm text-[#1c1917] placeholder:text-[#7c7161] outline-none transition focus:border-[#ffb066] ${FOCUS_RING}`}
               />
             </label>
 

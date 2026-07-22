@@ -97,7 +97,7 @@ export default function AnalysenPage() {
           <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
             So arbeitet Ihre KI-Belegschaft
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#8d8172]">
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#6f6557]">
             Ausgewertet aus Ihren echten Aufträgen in diesem Browser (Missionen
             und Kommandozentrale). Mandantenweite Auswertungen über alle
             Mitarbeitenden sind Teil der Enterprise-Einrichtung.
@@ -112,7 +112,7 @@ export default function AnalysenPage() {
               className="rounded-2xl acc-card p-5"
             >
               <p className="text-3xl font-bold text-[#c25e0e]">{k.wert}</p>
-              <p className="mt-1 text-xs font-medium text-[#8d8172]">{k.label}</p>
+              <p className="mt-1 text-xs font-medium text-[#6f6557]">{k.label}</p>
             </div>
           ))}
         </div>
@@ -157,7 +157,7 @@ export default function AnalysenPage() {
         <section className="mt-6 rounded-2xl acc-card p-6">
           <h2 className="text-lg font-semibold">Quality-Score-Verlauf</h2>
           {scores.length === 0 ? (
-            <p className="mt-3 text-sm text-[#8d8172]">
+            <p className="mt-3 text-sm text-[#6f6557]">
               Noch keine bewerteten Ergebnisse. Starten Sie einen Befehl in der{" "}
               <Link href="/chat" className="font-medium text-[#c25e0e] hover:underline">Kommandozentrale</Link>.
             </p>
@@ -165,7 +165,7 @@ export default function AnalysenPage() {
             <div className="mt-4 flex flex-wrap items-end gap-2">
               {scores.slice(-20).map((e, i) => (
                 <div key={i} className="flex flex-col items-center gap-1">
-                  <span className="text-[10px] font-bold text-[#8d8172]">{e.score}</span>
+                  <span className="text-[10px] font-bold text-[#6f6557]">{e.score}</span>
                   <div
                     className="w-6 rounded-t-md bg-gradient-to-t from-[#ff5f1f] to-[#ffb066]"
                     style={{ height: `${Math.max(6, e.score)}px` }}

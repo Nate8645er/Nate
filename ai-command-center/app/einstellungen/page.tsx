@@ -124,7 +124,7 @@ export default function EinstellungenPage() {
         {/* Unternehmensprofil */}
         <section className="mt-8 rounded-2xl acc-card p-6">
           <h2 className="text-lg font-semibold">Unternehmensprofil</h2>
-          <p className="mt-1 text-sm text-[#8d8172]">
+          <p className="mt-1 text-sm text-[#6f6557]">
             Branche und Grösse fliessen in jeden Auftrag ein – Ihre Belegschaft
             liefert dadurch passende statt allgemeine Ergebnisse.
           </p>
@@ -163,7 +163,7 @@ export default function EinstellungenPage() {
         {/* Signatur */}
         <section className="mt-6 rounded-2xl acc-card p-6">
           <h2 className="text-lg font-semibold">E-Mail-Signatur</h2>
-          <p className="mt-1 text-sm text-[#8d8172]">
+          <p className="mt-1 text-sm text-[#6f6557]">
             Wird in der{" "}
             <Link href="/email" className="font-medium text-[#c25e0e] hover:underline">E-Mail-Zentrale</Link>{" "}
             automatisch unter jede E-Mail gesetzt.
@@ -198,7 +198,7 @@ export default function EinstellungenPage() {
         {/* Daten */}
         <section className="mt-6 rounded-2xl acc-card p-6">
           <h2 className="text-lg font-semibold">Ihre Daten</h2>
-          <p className="mt-1 text-sm text-[#8d8172]">
+          <p className="mt-1 text-sm text-[#6f6557]">
             Alle Arbeitsdaten liegen in diesem Browser – nichts wird ohne Ihren
             Auftrag gespeichert oder weitergegeben. Datenschutzfreundlich ab Werk.
           </p>

@@ -130,7 +130,7 @@ export default function KundenPage() {
           <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
             Ihre Kunden. Verbunden mit Ihrer Belegschaft.
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#8d8172]">
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#6f6557]">
             Vom Lead bis zum Kunden: Kontakte verwalten und direkt handeln –
             ein Klick, und Ihre KI schreibt die E-Mail, die WhatsApp-Nachricht
             oder die Offerte für genau diesen Kunden. Mit Telefonnummer öffnet
@@ -153,7 +153,7 @@ export default function KundenPage() {
           {STATUS_REIHENFOLGE.map((s) => (
             <div key={s} className="rounded-2xl acc-card p-4 text-center">
               <p className="text-2xl font-bold text-[#c25e0e]">{zaehler(s)}</p>
-              <p className="mt-0.5 text-xs font-medium text-[#8d8172]">{s}</p>
+              <p className="mt-0.5 text-xs font-medium text-[#6f6557]">{s}</p>
             </div>
           ))}
         </div>
@@ -183,7 +183,7 @@ export default function KundenPage() {
         {/* Liste */}
         <div className="mt-6 space-y-3">
           {kunden.length === 0 && (
-            <p className="rounded-2xl acc-card px-5 py-10 text-center text-sm text-[#8d8172]">
+            <p className="rounded-2xl acc-card px-5 py-10 text-center text-sm text-[#6f6557]">
               Noch keine Kunden erfasst. Beginnen Sie mit Ihrem wichtigsten Lead.
             </p>
           )}
@@ -196,7 +196,7 @@ export default function KundenPage() {
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold">
                     {k.name}
-                    {k.firma && <span className="font-normal text-[#8d8172]"> · {k.firma}</span>}
+                    {k.firma && <span className="font-normal text-[#6f6557]"> · {k.firma}</span>}
                   </p>
                   {(k.email || k.telefon) && (
                     <p className="truncate text-xs text-[#a2988a]">
