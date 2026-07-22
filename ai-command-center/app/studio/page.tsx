@@ -291,6 +291,9 @@ export default function StudioPage() {
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const [suche, setSuche] = useState("");
+  const [seiten, setSeiten] = useState<"dateien" | "suche">("dateien");
+  const [projSuche, setProjSuche] = useState("");
+  const [sprung, setSprung] = useState<{ path: string; zeile: number } | null>(null);
   const [tabs, setTabs] = useState<string[]>([START.open]);
   const [fr, setFr] = useState({ show: false, find: "", replace: "" });
   const [ansicht, setAnsicht] = useState<"code" | "vorschau">("code");
@@ -344,6 +347,50 @@ export default function StudioPage() {
   }, [code]);
   const vorschauDoc = useMemo(() => baueVorschau(proj.files), [proj.files]);
   const hatVorschau = vorschauDoc !== "";
+
+  // Projektweite Inhaltssuche: Treffer je Datei mit Zeilennummer (Deckel 300).
+  const inhaltTreffer = useMemo(() => {
+    const q = projSuche.trim().toLowerCase();
+    if (q.length < 2) return { proDatei: [] as { path: string; zeilen: { nr: number; text: string }[] }[], gesamt: 0, gedeckelt: false };
+    const proDatei: { path: string; zeilen: { nr: number; text: string }[] }[] = [];
+    let gesamt = 0;
+    let gedeckelt = false;
+    for (const p of paths) {
+      const zeilen: { nr: number; text: string }[] = [];
+      const lines = proj.files[p].split("\n");
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].toLowerCase().includes(q)) {
+          zeilen.push({ nr: i, text: lines[i] });
+          gesamt++;
+          if (gesamt >= 300) { gedeckelt = true; break; }
+        }
+      }
+      if (zeilen.length) proDatei.push({ path: p, zeilen });
+      if (gedeckelt) break;
+    }
+    return { proDatei, gesamt, gedeckelt };
+  }, [paths, proj.files, projSuche]);
+
+  function springeZu(path: string, zeile: number) {
+    setAnsicht("code");
+    openFile(path);
+    setSprung({ path, zeile });
+  }
+  // Nach dem Öffnen der Zieldatei: Cursor auf die Zeile setzen und hinscrollen.
+  useEffect(() => {
+    if (!sprung || proj.open !== sprung.path) return;
+    const ta = taRef.current;
+    if (!ta) return;
+    const lines = code.split("\n");
+    let off = 0;
+    for (let i = 0; i < sprung.zeile && i < lines.length; i++) off += lines[i].length + 1;
+    ta.focus();
+    ta.setSelectionRange(off, off + (lines[sprung.zeile]?.length ?? 0));
+    ta.scrollTop = Math.max(0, sprung.zeile * 20 - 100);
+    if (preRef.current) preRef.current.scrollTop = ta.scrollTop;
+    if (lnRef.current) lnRef.current.scrollTop = ta.scrollTop;
+    setSprung(null);
+  }, [sprung, proj.open, code]);
 
   function setCode(next: string) {
     setProj((p) => ({ ...p, files: { ...p.files, [p.open]: next } }));
@@ -564,6 +611,24 @@ export default function StudioPage() {
     oeffneTab(path);
     setProj((p) => ({ ...p, files: { ...p.files, [path]: content }, open: path }));
   }
+  // Suchbegriff im Ergebnistext hervorheben (ohne HTML-Injektion).
+  function markiere(text: string, q: string): React.ReactNode[] {
+    const t = text.length > 160 ? text.slice(0, 160) : text;
+    const ql = q.toLowerCase();
+    if (!ql) return [t];
+    const low = t.toLowerCase();
+    const out: React.ReactNode[] = [];
+    let i = 0;
+    let k = 0;
+    for (;;) {
+      const j = low.indexOf(ql, i);
+      if (j === -1) { out.push(t.slice(i)); break; }
+      if (j > i) out.push(t.slice(i, j));
+      out.push(<mark key={k++} className="rounded bg-[#ff8c2a]/30 px-0.5 text-[#ffb35c]">{t.slice(j, j + ql.length)}</mark>);
+      i = j + ql.length;
+    }
+    return out;
+  }
   function neuesProjekt(p: Projekt) {
     if (!confirm(`Neues Projekt «${p.name}» starten? Das aktuelle Projekt wird ersetzt (vorher ggf. als ZIP sichern).`)) return;
     setProj(p);
@@ -612,45 +677,99 @@ export default function StudioPage() {
       </header>
 
       <div className="grid min-h-0 flex-1 grid-cols-[210px_1fr_360px] max-lg:grid-cols-[180px_1fr] max-md:grid-cols-1">
-        {/* Dateibaum */}
+        {/* Dateibaum / Projektsuche */}
         <aside className="min-h-0 overflow-y-auto border-r border-white/8 bg-white/[0.02] p-2 max-md:hidden">
-          <div className="mb-2 flex items-center justify-between px-1">
-            <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-500">Dateien</span>
-            <div className="flex items-center gap-1.5 text-zinc-400">
-              <button onClick={() => uploadRef.current?.click()} className="text-[12px] hover:text-[#ffb35c]" title="Dateien hochladen">↑</button>
-              <button onClick={downloadDatei} className="text-[12px] hover:text-[#ffb35c]" title="Aktuelle Datei herunterladen">↓</button>
-              <button onClick={downloadZip} className="text-[10px] font-semibold hover:text-[#ffb35c]" title="Projekt als ZIP">ZIP</button>
-              <button onClick={neueDatei} className="text-[16px] leading-none hover:text-[#ffb35c]" title="Neue Datei">+</button>
-            </div>
+          <div className="mb-2 flex items-center gap-1">
+            <button
+              onClick={() => setSeiten("dateien")}
+              className={`rounded px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${seiten === "dateien" ? "bg-white/[0.06] text-[#ffb35c]" : "text-zinc-500 hover:text-zinc-300"}`}
+            >
+              Dateien
+            </button>
+            <button
+              onClick={() => setSeiten("suche")}
+              className={`rounded px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${seiten === "suche" ? "bg-white/[0.06] text-[#ffb35c]" : "text-zinc-500 hover:text-zinc-300"}`}
+            >
+              Suche
+            </button>
+            {seiten === "dateien" && (
+              <div className="ml-auto flex items-center gap-1.5 text-zinc-400">
+                <button onClick={() => uploadRef.current?.click()} className="text-[12px] hover:text-[#ffb35c]" title="Dateien hochladen">↑</button>
+                <button onClick={downloadDatei} className="text-[12px] hover:text-[#ffb35c]" title="Aktuelle Datei herunterladen">↓</button>
+                <button onClick={downloadZip} className="text-[10px] font-semibold hover:text-[#ffb35c]" title="Projekt als ZIP">ZIP</button>
+                <button onClick={neueDatei} className="text-[16px] leading-none hover:text-[#ffb35c]" title="Neue Datei">+</button>
+              </div>
+            )}
           </div>
           <input ref={uploadRef} type="file" multiple onChange={hochladen} className="hidden" accept=".txt,.md,.js,.ts,.tsx,.jsx,.json,.css,.html,.py,.java,.go,.rs,.c,.cpp,.sh,.yml,.yaml,.csv" />
-          <input
-            value={suche}
-            onChange={(e) => setSuche(e.target.value)}
-            placeholder="Dateien suchen …"
-            className="mb-2 w-full rounded-md border border-white/8 bg-white/[0.03] px-2 py-1 text-[12px] text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-[#ff8c2a]/40"
-          />
-          {gefiltert.length === 0 && <p className="px-2 py-1 text-[12px] text-zinc-600">Keine Treffer.</p>}
-          {gefiltert.map((p) => {
-            const t = teile(p);
-            return (
-              <div
-                key={p}
-                style={{ paddingLeft: 8 + t.tiefe * 12 }}
-                className={`group flex items-center justify-between rounded py-1 pr-2 text-[13px] ${p === proj.open ? "bg-[#ff8c2a]/15 text-[#ffb35c]" : "text-zinc-300 hover:bg-white/5"}`}
-              >
-                <button onClick={() => openFile(p)} className="min-w-0 truncate text-left" title={p}>
-                  {t.ordner && <span className="text-zinc-600">{t.ordner}</span>}
-                  {t.datei}
-                </button>
-                <span className="hidden shrink-0 gap-1 group-hover:flex">
-                  <button onClick={() => umbenennen(p)} className="text-zinc-500 hover:text-zinc-200" title="Umbenennen">✎</button>
-                  <button onClick={() => loeschen(p)} className="text-zinc-500 hover:text-red-400" title="Löschen">✕</button>
-                </span>
-              </div>
-            );
-          })}
-          <p className="mt-2 px-2 text-[10px] text-zinc-600">Tipp: Namen mit „/" erzeugen Ordner, z. B. src/app.ts</p>
+
+          {seiten === "dateien" ? (
+            <>
+              <input
+                value={suche}
+                onChange={(e) => setSuche(e.target.value)}
+                placeholder="Dateien suchen …"
+                className="mb-2 w-full rounded-md border border-white/8 bg-white/[0.03] px-2 py-1 text-[12px] text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-[#ff8c2a]/40"
+              />
+              {gefiltert.length === 0 && <p className="px-2 py-1 text-[12px] text-zinc-600">Keine Treffer.</p>}
+              {gefiltert.map((p) => {
+                const t = teile(p);
+                return (
+                  <div
+                    key={p}
+                    style={{ paddingLeft: 8 + t.tiefe * 12 }}
+                    className={`group flex items-center justify-between rounded py-1 pr-2 text-[13px] ${p === proj.open ? "bg-[#ff8c2a]/15 text-[#ffb35c]" : "text-zinc-300 hover:bg-white/5"}`}
+                  >
+                    <button onClick={() => openFile(p)} className="min-w-0 truncate text-left" title={p}>
+                      {t.ordner && <span className="text-zinc-600">{t.ordner}</span>}
+                      {t.datei}
+                    </button>
+                    <span className="hidden shrink-0 gap-1 group-hover:flex">
+                      <button onClick={() => umbenennen(p)} className="text-zinc-500 hover:text-zinc-200" title="Umbenennen">✎</button>
+                      <button onClick={() => loeschen(p)} className="text-zinc-500 hover:text-red-400" title="Löschen">✕</button>
+                    </span>
+                  </div>
+                );
+              })}
+              <p className="mt-2 px-2 text-[10px] text-zinc-600">Tipp: Namen mit „/" erzeugen Ordner, z. B. src/app.ts</p>
+            </>
+          ) : (
+            <>
+              <input
+                value={projSuche}
+                onChange={(e) => setProjSuche(e.target.value)}
+                placeholder="Im ganzen Projekt suchen …"
+                autoFocus
+                className="mb-2 w-full rounded-md border border-white/8 bg-white/[0.03] px-2 py-1 text-[12px] text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-[#ff8c2a]/40"
+              />
+              {projSuche.trim().length < 2 ? (
+                <p className="px-2 py-1 text-[11px] text-zinc-600">Mindestens 2 Zeichen eingeben.</p>
+              ) : inhaltTreffer.gesamt === 0 ? (
+                <p className="px-2 py-1 text-[12px] text-zinc-600">Keine Fundstellen.</p>
+              ) : (
+                <>
+                  <p className="mb-1 px-1 text-[10.5px] text-zinc-500">
+                    {inhaltTreffer.gesamt}{inhaltTreffer.gedeckelt ? "+" : ""} Fundstellen in {inhaltTreffer.proDatei.length} Dateien
+                  </p>
+                  {inhaltTreffer.proDatei.map((d) => (
+                    <div key={d.path} className="mb-1.5">
+                      <div className="truncate px-1 py-0.5 font-mono text-[11px] text-zinc-400" title={d.path}>{d.path}</div>
+                      {d.zeilen.map((z) => (
+                        <button
+                          key={z.nr}
+                          onClick={() => springeZu(d.path, z.nr)}
+                          className="flex w-full items-baseline gap-2 rounded px-1 py-0.5 text-left hover:bg-white/5"
+                        >
+                          <span className="shrink-0 font-mono text-[10px] text-zinc-600">{z.nr + 1}</span>
+                          <span className="min-w-0 truncate font-mono text-[11.5px] text-zinc-300">{markiere(z.text.trim(), projSuche.trim())}</span>
+                        </button>
+                      ))}
+                    </div>
+                  ))}
+                </>
+              )}
+            </>
+          )}
         </aside>
 
         {/* Editor */}
