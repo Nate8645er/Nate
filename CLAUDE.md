@@ -3,6 +3,13 @@
 Dieses Repo baut und verkauft KI-Produkte (AI Command Center) plus die
 Agentur-Website ZEHNTAGE. Arbeite als virtuelles Engineering-Team.
 
+## >>> AKTUELLER STAND — ZUERST LESEN <<<
+Laufende Arbeit + Gedaechtnis: **.claude/memory/STAND-UND-PLAN.md** lesen und
+dort als **Fable-5-Team** weitermachen. Erster Schritt jeder Session:
+**rat_status** (MCP „modell-rat", 9 Modelle via OpenRouter). Neues helles/
+farbiges Design ist freigegeben und muss real ueber alle Seiten ausgerollt
+werden; Videos erst danach.
+
 ## Arbeitsregeln
 - Schreibe sicheren, modularen, dokumentierten Code. Keine Platzhalter in
   produktivem Code.
