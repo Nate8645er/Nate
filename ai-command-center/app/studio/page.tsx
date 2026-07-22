@@ -145,6 +145,32 @@ function diffZusammenfassung(alt: string, neu: string): { plus: number; minus: n
   return { plus, minus };
 }
 
+/* Live-Vorschau: index.html (oder erste .html) nehmen und lokale
+   <link>/<script src> durch den Datei-Inhalt ersetzen. Externe URLs
+   (http…) bleiben unangetastet. Leerer String = keine HTML-Datei. */
+function baueVorschau(files: Record<string, string>): string {
+  const keys = Object.keys(files);
+  const htmlKey =
+    keys.find((k) => /(^|\/)index\.html$/i.test(k)) ?? keys.find((k) => /\.html$/i.test(k));
+  if (!htmlKey) return "";
+  const dir = htmlKey.includes("/") ? htmlKey.slice(0, htmlKey.lastIndexOf("/") + 1) : "";
+  const hole = (src: string): string | null => {
+    if (/^(https?:)?\/\//i.test(src) || src.startsWith("data:")) return null; // extern lassen
+    const clean = src.replace(/^\.?\//, "");
+    return files[dir + clean] ?? files[clean] ?? null;
+  };
+  let html = files[htmlKey];
+  html = html.replace(/<link\b[^>]*\bhref=["']([^"']+)["'][^>]*>/gi, (m, href) => {
+    const css = hole(href);
+    return css != null ? `<style>\n${css}\n</style>` : m;
+  });
+  html = html.replace(/<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*>\s*<\/script>/gi, (m, src) => {
+    const js = hole(src);
+    return js != null ? `<script>\n${js}\n</script>` : m;
+  });
+  return html;
+}
+
 /* ---------- Download / Upload / ZIP (ohne Fremd-Bibliothek) ---------- */
 function downloadBlob(name: string, blob: Blob) {
   const url = URL.createObjectURL(blob);
@@ -217,6 +243,7 @@ export default function StudioPage() {
   const [suche, setSuche] = useState("");
   const [tabs, setTabs] = useState<string[]>([START.open]);
   const [fr, setFr] = useState({ show: false, find: "", replace: "" });
+  const [ansicht, setAnsicht] = useState<"code" | "vorschau">("code");
   const taRef = useRef<HTMLTextAreaElement>(null);
   const preRef = useRef<HTMLPreElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -265,6 +292,8 @@ export default function StudioPage() {
     const n = code.split("\n").length;
     return Array.from({ length: n }, (_, i) => i + 1).join("\n");
   }, [code]);
+  const vorschauDoc = useMemo(() => baueVorschau(proj.files), [proj.files]);
+  const hatVorschau = vorschauDoc !== "";
 
   function setCode(next: string) {
     setProj((p) => ({ ...p, files: { ...p.files, [p.open]: next } }));
@@ -562,6 +591,24 @@ export default function StudioPage() {
                 </div>
               ))}
             </div>
+            {hatVorschau && (
+              <div className="flex shrink-0 items-center border-l border-white/8">
+                <button
+                  onClick={() => setAnsicht("code")}
+                  className={`px-2.5 py-1.5 ${ansicht === "code" ? "text-[#ffb35c]" : "text-zinc-400 hover:text-zinc-200"}`}
+                  title="Code bearbeiten"
+                >
+                  Code
+                </button>
+                <button
+                  onClick={() => setAnsicht("vorschau")}
+                  className={`px-2.5 py-1.5 ${ansicht === "vorschau" ? "text-[#ffb35c]" : "text-zinc-400 hover:text-zinc-200"}`}
+                  title="Live-Vorschau im Browser"
+                >
+                  ▶ Vorschau
+                </button>
+              </div>
+            )}
             <button
               onClick={() => setFr((f) => ({ ...f, show: !f.show }))}
               className={`shrink-0 border-l border-white/8 px-3 ${fr.show ? "text-[#ffb35c]" : "text-zinc-400 hover:text-zinc-200"}`}
@@ -581,19 +628,28 @@ export default function StudioPage() {
               <button onClick={ersetzeAlle} disabled={!treffer} className="rounded bg-[#ff8c2a]/20 px-2 py-1 text-[#ffb35c] hover:bg-[#ff8c2a]/30 disabled:opacity-40">Alle ersetzen</button>
             </div>
           )}
-          <div className={`acc-ed relative overflow-hidden ${fr.show ? "h-[calc(100%-70px)]" : "h-[calc(100%-33px)]"}`}>
-            <div ref={lnRef} className="acc-ed__ln" aria-hidden="true">{zeilenNr}</div>
-            <pre ref={preRef} className="acc-ed__pre" aria-hidden="true" dangerouslySetInnerHTML={{ __html: highlight(code) + "\n" }} />
-            <textarea
-              ref={taRef}
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              onKeyDown={onKeyDown}
-              onScroll={syncScroll}
-              spellCheck={false}
-              className="acc-ed__ta"
+          {hatVorschau && ansicht === "vorschau" ? (
+            <iframe
+              title="Live-Vorschau"
+              srcDoc={vorschauDoc}
+              sandbox="allow-scripts allow-forms allow-modals"
+              className={`w-full bg-white ${fr.show ? "h-[calc(100%-70px)]" : "h-[calc(100%-33px)]"}`}
             />
-          </div>
+          ) : (
+            <div className={`acc-ed relative overflow-hidden ${fr.show ? "h-[calc(100%-70px)]" : "h-[calc(100%-33px)]"}`}>
+              <div ref={lnRef} className="acc-ed__ln" aria-hidden="true">{zeilenNr}</div>
+              <pre ref={preRef} className="acc-ed__pre" aria-hidden="true" dangerouslySetInnerHTML={{ __html: highlight(code) + "\n" }} />
+              <textarea
+                ref={taRef}
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                onKeyDown={onKeyDown}
+                onScroll={syncScroll}
+                spellCheck={false}
+                className="acc-ed__ta"
+              />
+            </div>
+          )}
         </main>
 
         {/* KI-Assistent */}
