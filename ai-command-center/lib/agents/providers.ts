@@ -32,8 +32,14 @@ function aktivesMaxTokens(): number {
 const MAX_ATTEMPTS = 2;
 
 interface ProviderEndpoint {
+  /** Statische Standard-URL (leer = muss per <urlEnv> gesetzt werden). */
   url: string;
+  /** Env-Variable mit dem API-Key (Bearer/x-api-key). */
   envKey: string;
+  /** Optionale Env-Variable, um die Endpoint-URL zu überschreiben. */
+  urlEnv?: string;
+  /** true = ohne API-Key nutzbar (selbst gehostet), Key nur optional. */
+  keyOptional?: boolean;
 }
 
 const ENDPOINTS: Record<Provider, ProviderEndpoint> = {
@@ -53,33 +59,84 @@ const ENDPOINTS: Record<Provider, ProviderEndpoint> = {
   // damit jede Firma ihr eigenes Modell (Ollama/vLLM/LM Studio) anbinden kann.
   local: {
     url: "",
-    envKey: "LOCAL_LLM_URL",
+    envKey: "LOCAL_LLM_API_KEY",
+    urlEnv: "LOCAL_LLM_URL",
+    keyOptional: true,
+  },
+  // Frontier-Anbieter des Modell-Rats – alle OpenAI-kompatibel. Standard-URL
+  // vorbelegt, per <PROVIDER>_LLM_URL überschreibbar (z. B. eigener Proxy/Host).
+  google: {
+    url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+    envKey: "GOOGLE_API_KEY",
+    urlEnv: "GOOGLE_LLM_URL",
+  },
+  xai: {
+    url: "https://api.x.ai/v1/chat/completions",
+    envKey: "XAI_API_KEY",
+    urlEnv: "XAI_LLM_URL",
+  },
+  qwen: {
+    url: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions",
+    envKey: "QWEN_API_KEY",
+    urlEnv: "QWEN_LLM_URL",
+  },
+  deepseek: {
+    url: "https://api.deepseek.com/v1/chat/completions",
+    envKey: "DEEPSEEK_API_KEY",
+    urlEnv: "DEEPSEEK_LLM_URL",
+  },
+  // Meta Llama hat keine erste-Partei-API: URL eines OpenAI-kompatiblen Hosts
+  // (Together/Fireworks/Groq/eigener vLLM) per META_LLM_URL setzen.
+  meta: {
+    url: "",
+    envKey: "META_API_KEY",
+    urlEnv: "META_LLM_URL",
+    keyOptional: true,
+  },
+  mistral: {
+    url: "https://api.mistral.ai/v1/chat/completions",
+    envKey: "MISTRAL_API_KEY",
+    urlEnv: "MISTRAL_LLM_URL",
   },
 };
 
-/** Effektive Endpoint-URL: für "local" aus der Umgebung, sonst statisch. */
+/** Effektive Endpoint-URL: Env-Override (falls definiert) vor der Standard-URL. */
 function endpointUrl(provider: Provider): string {
-  if (provider === "local") return process.env.LOCAL_LLM_URL?.trim() ?? "";
-  return ENDPOINTS[provider].url;
+  const ep = ENDPOINTS[provider];
+  if (ep.urlEnv) {
+    const override = process.env[ep.urlEnv]?.trim();
+    if (override) return override;
+  }
+  return ep.url;
 }
 
 /**
- * Auth-Schlüssel für den Bearer/x-api-key-Header. Beim lokalen Provider ist er
- * optional (viele lokale Server brauchen keinen Key) – dann wird kein
- * Authorization-Header gesendet.
+ * Auth-Schlüssel für den Bearer/x-api-key-Header. Bei selbst gehosteten
+ * Providern (local/meta) ist er optional – dann kein Authorization-Header.
  */
 function authKey(provider: Provider): string | undefined {
-  if (provider === "local") return process.env.LOCAL_LLM_API_KEY?.trim() || undefined;
   return process.env[ENDPOINTS[provider].envKey]?.trim() || undefined;
 }
 
 /**
- * Ist der Provider einsatzbereit? Cloud: API-Key gesetzt. Lokal: URL gesetzt.
- * Der Orchestrator nutzt das, um nicht konfigurierte Provider zu überspringen.
+ * Effektive Modell-ID: per <PROVIDER>_MODEL überschreibbar, sonst der Standard
+ * aus dem Modell-Rat/der Team-Konfiguration.
+ */
+export function modelId(provider: Provider, fallback: string): string {
+  const key = provider === "local" ? "LOCAL_LLM_MODEL" : `${provider.toUpperCase()}_MODEL`;
+  return process.env[key]?.trim() || fallback;
+}
+
+/**
+ * Ist der Provider einsatzbereit? Cloud: API-Key gesetzt. Selbst gehostet
+ * (local/meta): URL gesetzt (Key optional). Der Orchestrator und die
+ * Modell-Rat-Übersicht nutzen das, um nicht konfigurierte Modelle zu
+ * überspringen bzw. ehrlich als „nicht konfiguriert" zu markieren.
  */
 export function hasApiKey(provider: Provider): boolean {
-  if (provider === "local") return Boolean(endpointUrl("local"));
-  return Boolean(authKey(provider));
+  const ep = ENDPOINTS[provider];
+  if (ep.keyOptional) return Boolean(endpointUrl(provider));
+  return Boolean(authKey(provider)) && Boolean(endpointUrl(provider));
 }
 
 /**
@@ -101,18 +158,12 @@ export async function callLLM(
 ): Promise<LLMResult> {
   const url = endpointUrl(provider);
   if (!url) {
-    return {
-      ok: false,
-      error: `${ENDPOINTS[provider].envKey} ist nicht gesetzt (.env prüfen).`,
-    };
+    return { ok: false, error: nichtKonfiguriert(provider) };
   }
   const apiKey = authKey(provider);
-  // Cloud-Provider brauchen zwingend einen Key; lokal ist er optional.
-  if (provider !== "local" && !apiKey) {
-    return {
-      ok: false,
-      error: `${ENDPOINTS[provider].envKey} ist nicht gesetzt (.env prüfen).`,
-    };
+  // Cloud-Provider brauchen zwingend einen Key; local/meta ist er optional.
+  if (!ENDPOINTS[provider].keyOptional && !apiKey) {
+    return { ok: false, error: nichtKonfiguriert(provider) };
   }
   if (messages.length === 0) {
     return { ok: false, error: "Leere Nachrichtenliste übergeben." };
@@ -233,11 +284,11 @@ export async function streamLLM(
 ): Promise<LLMResult> {
   const url = endpointUrl(provider);
   if (!url) {
-    return { ok: false, error: `${ENDPOINTS[provider].envKey} ist nicht gesetzt (.env prüfen).` };
+    return { ok: false, error: nichtKonfiguriert(provider) };
   }
   const apiKey = authKey(provider);
-  if (provider !== "local" && !apiKey) {
-    return { ok: false, error: `${ENDPOINTS[provider].envKey} ist nicht gesetzt (.env prüfen).` };
+  if (!ENDPOINTS[provider].keyOptional && !apiKey) {
+    return { ok: false, error: nichtKonfiguriert(provider) };
   }
   if (messages.length === 0) {
     return { ok: false, error: "Leere Nachrichtenliste übergeben." };
@@ -387,6 +438,15 @@ function extractOpenAIStyleText(data: unknown): string | null {
   return typeof message?.content === "string" && message.content.length > 0
     ? message.content
     : null;
+}
+
+/** Klartext-Hinweis, welche Env-Variable(n) für den Provider fehlen. */
+function nichtKonfiguriert(provider: Provider): string {
+  const ep = ENDPOINTS[provider];
+  if (ep.keyOptional) {
+    return `${ep.urlEnv ?? ep.envKey} ist nicht gesetzt – ${provider}-Modell nicht konfiguriert (.env prüfen).`;
+  }
+  return `${ep.envKey} ist nicht gesetzt – ${provider}-Modell nicht konfiguriert (.env prüfen).`;
 }
 
 /** Liest den Fehlertext einer Nicht-2xx-Antwort, ohne selbst zu werfen. */

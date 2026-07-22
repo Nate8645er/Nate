@@ -10,8 +10,22 @@
  * Unterstützte LLM-Provider. "local" ist ein OpenAI-kompatibles, selbst
  * gehostetes Modell (z. B. Ollama/vLLM/LM Studio) – aktiv, sobald
  * LOCAL_LLM_URL gesetzt ist. Deckt "lokale und Cloud-Modelle" ab.
+ *
+ * google/xai/qwen/deepseek/meta/mistral sind die zusätzlichen Frontier-
+ * Anbieter des Modell-Rats (siehe lib/agents/council.ts). Alle sprechen das
+ * OpenAI-kompatible Chat-Completions-Format; nur anthropic weicht ab.
  */
-export type Provider = "anthropic" | "openai" | "moonshot" | "local";
+export type Provider =
+  | "anthropic"
+  | "openai"
+  | "moonshot"
+  | "local"
+  | "google"
+  | "xai"
+  | "qwen"
+  | "deepseek"
+  | "meta"
+  | "mistral";
 
 /** Abo-Pläne. FREE gilt ohne (gültiges) Lizenz-Token. */
 export type PlanId = "FREE" | "PERSONAL" | "STARTER" | "PROFESSIONAL" | "BUSINESS" | "ENTERPRISE";
