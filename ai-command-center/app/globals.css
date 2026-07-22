@@ -565,8 +565,8 @@ h1, h2, h3, h4 {
 /* Laufende Figuren */
 .aw-walk { position:absolute; width:15px; height:21px; z-index:5; }
 .aw-walk .aw-wh { position:absolute; top:0; left:50%; width:9px; height:9px; transform:translateX(-50%); border-radius:50%; background: radial-gradient(circle at 50% 35%, #e9cbb0, #c99b78); box-shadow:0 1px 3px rgba(0,0,0,.4); }
-.aw-walk .aw-wb { position:absolute; top:7px; left:50%; width:13px; height:13px; transform:translateX(-50%); border-radius:6px 6px 5px 5px; background: linear-gradient(180deg, var(--c), color-mix(in srgb, var(--c) 60%, #000)); box-shadow:0 2px 5px rgba(0,0,0,.5); animation: aw-bob .5s ease-in-out infinite; }
-@keyframes aw-bob { 0%,100%{ transform:translateX(-50%) translateY(0);} 50%{ transform:translateX(-50%) translateY(-1.5px);} }
+.aw-walk .aw-wb { position:absolute; top:7px; left:50%; width:13px; height:13px; transform:translateX(-50%); border-radius:6px 6px 5px 5px; background: linear-gradient(180deg, var(--c), color-mix(in srgb, var(--c) 60%, #000)); box-shadow:0 2px 5px rgba(0,0,0,.5); animation: aw-bob .9s ease-in-out infinite; }
+@keyframes aw-bob { 0%,100%{ transform:translateX(-50%) translateY(0);} 50%{ transform:translateX(-50%) translateY(-1.2px);} }
 .aw-walk::after { content:""; position:absolute; bottom:-3px; left:50%; width:13px; height:4px; transform:translateX(-50%); border-radius:50%; background:rgba(0,0,0,.5); filter:blur(1.5px); }
 /* Freie, verschiedene Laufwege – keine zwei Figuren auf derselben Linie. */
 .aw-walk.g1 { animation: aw-r1 15s linear infinite; }
@@ -574,11 +574,13 @@ h1, h2, h3, h4 {
 .aw-walk.g3 { animation: aw-r3 17s linear infinite; }
 .aw-walk.g4 { animation: aw-r4 21s linear infinite; }
 .aw-walk.g5 { animation: aw-r5 23s linear infinite; }
+.aw-walk.g6 { animation: aw-r6 25s linear infinite; }
 @keyframes aw-r1 { 0%{ left:4%; top:20%; } 50%{ left:66%; top:23%; } 100%{ left:4%; top:20%; } }
 @keyframes aw-r2 { 0%{ left:74%; top:58%; } 50%{ left:8%; top:60%; } 100%{ left:74%; top:58%; } }
 @keyframes aw-r3 { 0%{ left:14%; top:8%; } 35%{ left:16%; top:54%; } 70%{ left:40%; top:44%; } 100%{ left:14%; top:8%; } }
 @keyframes aw-r4 { 0%{ left:70%; top:12%; } 40%{ left:72%; top:50%; } 75%{ left:52%; top:30%; } 100%{ left:70%; top:12%; } }
 @keyframes aw-r5 { 0%{ left:6%; top:14%; } 50%{ left:64%; top:50%; } 100%{ left:6%; top:14%; } }
+@keyframes aw-r6 { 0%{ left:60%; top:8%; } 35%{ left:30%; top:26%; } 70%{ left:68%; top:44%; } 100%{ left:60%; top:8%; } }
 
 /* Verbundene-Firma-Bezirk: kleine Häuser + Firmenname (erscheint bei Verbindung) */
 .aw-district { position:absolute; left:23%; right:18%; top:65%; height:31%; z-index:4;
@@ -586,7 +588,7 @@ h1, h2, h3, h4 {
   background: linear-gradient(160deg, rgba(255,255,255,.055), rgba(255,255,255,.02)); }
 .aw-dlabel { position:absolute; top:5px; left:12px; font-family:var(--font-mono,monospace);
   font-size:8px; font-weight:700; letter-spacing:.12em; color:#8a7c9a; }
-.aw-houses { position:absolute; left:12px; bottom:12px; display:flex; gap:9px; align-items:flex-end; }
+.aw-houses { position:absolute; left:50%; bottom:12px; transform:translateX(-50%); display:flex; gap:11px; align-items:flex-end; }
 .aw-house { position:relative; width:26px; height:28px; border-radius:4px 4px 3px 3px;
   background: linear-gradient(180deg, var(--c,#2c2540), color-mix(in srgb, var(--c,#2c2540) 58%, #000));
   box-shadow: 0 6px 12px -6px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.14); }
@@ -597,11 +599,16 @@ h1, h2, h3, h4 {
   background: color-mix(in srgb, var(--c,#ffd257) 65%, #fff);
   box-shadow: 0 0 8px color-mix(in srgb, var(--c,#ffd257) 55%, transparent); animation: aw-win 2.4s ease-in-out infinite; }
 @keyframes aw-win { 0%,100%{ opacity:.7; } 50%{ opacity:1; } }
-.aw-firma { position:absolute; right:14px; top:50%; transform:translateY(-50%); left:44%; text-align:right; }
+/* Firmenname als Animation OBEN bei den Häusern (schwebt sanft, leichtes Aufleuchten) */
+.aw-firma { position:absolute; left:50%; top:20%; transform:translateX(-50%); text-align:center; width:86%;
+  animation: aw-firma-float 3.6s ease-in-out infinite; }
 .aw-firma .k { display:block; font-family:var(--font-mono,monospace); font-size:8px; letter-spacing:.14em; color:#8a7c9a; text-transform:uppercase; }
-.aw-firma .n { display:block; margin-top:3px; font-weight:800; font-size:17px; line-height:1.1; color:#fff;
-  text-shadow:0 0 16px rgba(255,180,90,.4); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.aw-firma.is-leer .n { color:#7c7188; text-shadow:none; }
+.aw-firma .n { display:block; margin-top:3px; font-weight:800; font-size:18px; line-height:1.1; color:#fff;
+  text-shadow:0 0 16px rgba(255,180,90,.45); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  animation: aw-firma-glow 3.6s ease-in-out infinite; }
+.aw-firma.is-leer .n { color:#8a7f95; text-shadow:none; animation:none; }
+@keyframes aw-firma-float { 0%,100%{ transform:translateX(-50%) translateY(0);} 50%{ transform:translateX(-50%) translateY(-4px);} }
+@keyframes aw-firma-glow { 0%,100%{ text-shadow:0 0 14px rgba(255,180,90,.3);} 50%{ text-shadow:0 0 22px rgba(255,180,90,.6);} }
 
 /* Meeting-Ecke unten links */
 .aw-meet { position:absolute; left:2%; top:64%; width:20%; height:33%; z-index:3; }
@@ -654,6 +661,6 @@ h1, h2, h3, h4 {
 
 @media (max-width: 640px) { .aw { height: 360px; } }
 @media (prefers-reduced-motion: reduce) {
-  .aw-scroll, .aw-worker, .aw-arm, .aw-walk .aw-wb, .aw-walk, .aw-sheet, .aw-sheet i, .aw-led, .aw-stack, .aw-mfig, .aw-lscroll, .aw-house::after { animation: none !important; }
+  .aw-scroll, .aw-worker, .aw-arm, .aw-walk .aw-wb, .aw-walk, .aw-sheet, .aw-sheet i, .aw-led, .aw-stack, .aw-mfig, .aw-lscroll, .aw-house::after, .aw-firma, .aw-firma .n { animation: none !important; }
   .aw-sheet { height: 20px; opacity: 1; } .aw-stack { opacity: 1; }
 }

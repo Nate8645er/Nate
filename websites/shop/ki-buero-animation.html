@@ -67,10 +67,11 @@
       </div>
 
       <div class="kib-walk g1" style="--c:#ff8c2a"><span class="kib-wh"></span><span class="kib-wb"></span></div>
-      <div class="kib-walk g2" style="--c:#3b82f6"><span class="kib-wh"></span><span class="kib-wb"></span></div>
-      <div class="kib-walk g3" style="--c:#22c55e"><span class="kib-wh"></span><span class="kib-wb"></span></div>
-      <div class="kib-walk g4" style="--c:#a78bfa"><span class="kib-wh"></span><span class="kib-wb"></span></div>
-      <div class="kib-walk g5" style="--c:#ec4899"><span class="kib-wh"></span><span class="kib-wb"></span></div>
+      <div class="kib-walk g2" style="--c:#22c55e"><span class="kib-wh"></span><span class="kib-wb"></span></div>
+      <div class="kib-walk g3" style="--c:#a78bfa"><span class="kib-wh"></span><span class="kib-wb"></span></div>
+      <div class="kib-walk g4" style="--c:#ec4899"><span class="kib-wh"></span><span class="kib-wb"></span></div>
+      <div class="kib-walk g5" style="--c:#14b8a6"><span class="kib-wh"></span><span class="kib-wb"></span></div>
+      <div class="kib-walk g6" style="--c:#eab308"><span class="kib-wh"></span><span class="kib-wb"></span></div>
 
       <div class="kib-district">
         <span class="kib-dlabel">VERBUNDENE FIRMA</span>
@@ -91,6 +92,7 @@
         <div class="kib-mfig" style="--c:#3b82f6;left:50%;top:-4px"></div>
         <div class="kib-mfig" style="--c:#ec4899;left:-4px;top:50%"></div>
         <div class="kib-mfig" style="--c:#14b8a6;right:-4px;top:50%"></div>
+        <div class="kib-mfig" style="--c:#eab308;left:50%;bottom:-4px"></div>
       </div>
 
       <div class="kib-printer">
@@ -163,26 +165,28 @@
   .kib-ws.is-working .kib-tag { box-shadow:0 0 16px var(--c); }
   .kib-walk { position:absolute; width:15px; height:21px; z-index:5; }
   .kib-walk .kib-wh { position:absolute; top:0; left:50%; width:9px; height:9px; transform:translateX(-50%); border-radius:50%; background: radial-gradient(circle at 50% 35%, #e9cbb0, #c99b78); box-shadow:0 1px 3px rgba(0,0,0,.4); }
-  .kib-walk .kib-wb { position:absolute; top:7px; left:50%; width:13px; height:13px; transform:translateX(-50%); border-radius:6px 6px 5px 5px; background: linear-gradient(180deg, var(--c), color-mix(in srgb, var(--c) 60%, #000)); box-shadow:0 2px 5px rgba(0,0,0,.5); animation: kib-bob .5s ease-in-out infinite; }
-  @keyframes kib-bob { 0%,100%{ transform:translateX(-50%) translateY(0);} 50%{ transform:translateX(-50%) translateY(-1.5px);} }
+  .kib-walk .kib-wb { position:absolute; top:7px; left:50%; width:13px; height:13px; transform:translateX(-50%); border-radius:6px 6px 5px 5px; background: linear-gradient(180deg, var(--c), color-mix(in srgb, var(--c) 60%, #000)); box-shadow:0 2px 5px rgba(0,0,0,.5); animation: kib-bob .9s ease-in-out infinite; }
+  @keyframes kib-bob { 0%,100%{ transform:translateX(-50%) translateY(0);} 50%{ transform:translateX(-50%) translateY(-1.2px);} }
   .kib-walk::after { content:""; position:absolute; bottom:-3px; left:50%; width:13px; height:4px; transform:translateX(-50%); border-radius:50%; background:rgba(0,0,0,.5); filter:blur(1.5px); }
   .kib-walk.g1 { animation: kib-r1 15s linear infinite; }
   .kib-walk.g2 { animation: kib-r2 19s linear infinite; }
   .kib-walk.g3 { animation: kib-r3 17s linear infinite; }
   .kib-walk.g4 { animation: kib-r4 21s linear infinite; }
   .kib-walk.g5 { animation: kib-r5 23s linear infinite; }
+  .kib-walk.g6 { animation: kib-r6 25s linear infinite; }
   @keyframes kib-r1 { 0%{ left:4%; top:20%; } 50%{ left:66%; top:23%; } 100%{ left:4%; top:20%; } }
   @keyframes kib-r2 { 0%{ left:74%; top:58%; } 50%{ left:8%; top:60%; } 100%{ left:74%; top:58%; } }
   @keyframes kib-r3 { 0%{ left:14%; top:8%; } 35%{ left:16%; top:54%; } 70%{ left:40%; top:44%; } 100%{ left:14%; top:8%; } }
   @keyframes kib-r4 { 0%{ left:70%; top:12%; } 40%{ left:72%; top:50%; } 75%{ left:52%; top:30%; } 100%{ left:70%; top:12%; } }
   @keyframes kib-r5 { 0%{ left:6%; top:14%; } 50%{ left:64%; top:50%; } 100%{ left:6%; top:14%; } }
+  @keyframes kib-r6 { 0%{ left:60%; top:8%; } 35%{ left:30%; top:26%; } 70%{ left:68%; top:44%; } 100%{ left:60%; top:8%; } }
 
   .kib-district { position:absolute; left:23%; right:18%; top:65%; height:31%; z-index:4;
     border-radius:12px; border:1px solid rgba(255,255,255,.10);
     background: linear-gradient(160deg, rgba(255,255,255,.055), rgba(255,255,255,.02)); }
   .kib-dlabel { position:absolute; top:5px; left:12px; font-family:ui-monospace,monospace;
     font-size:8px; font-weight:700; letter-spacing:.12em; color:#8a7c9a; }
-  .kib-houses { position:absolute; left:12px; bottom:12px; display:flex; gap:9px; align-items:flex-end; }
+  .kib-houses { position:absolute; left:50%; bottom:12px; transform:translateX(-50%); display:flex; gap:11px; align-items:flex-end; }
   .kib-house { position:relative; width:26px; height:28px; border-radius:4px 4px 3px 3px;
     background: linear-gradient(180deg, var(--c,#2c2540), color-mix(in srgb, var(--c,#2c2540) 58%, #000));
     box-shadow: 0 6px 12px -6px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.14); }
@@ -193,11 +197,16 @@
     background: color-mix(in srgb, var(--c,#ffd257) 65%, #fff);
     box-shadow: 0 0 8px color-mix(in srgb, var(--c,#ffd257) 55%, transparent); animation: kib-win 2.4s ease-in-out infinite; }
   @keyframes kib-win { 0%,100%{ opacity:.7; } 50%{ opacity:1; } }
-  .kib-firma { position:absolute; right:14px; top:50%; transform:translateY(-50%); left:44%; text-align:right; }
+  /* Firmenname als Animation OBEN bei den Häusern (schwebt sanft, leichtes Aufleuchten) */
+  .kib-firma { position:absolute; left:50%; top:20%; transform:translateX(-50%); text-align:center; width:86%;
+    animation: kib-firma-float 3.6s ease-in-out infinite; }
   .kib-firma .k { display:block; font-family:ui-monospace,monospace; font-size:8px; letter-spacing:.14em; color:#8a7c9a; text-transform:uppercase; }
-  .kib-firma .n { display:block; margin-top:3px; font-weight:800; font-size:17px; line-height:1.1; color:#fff;
-    text-shadow:0 0 16px rgba(255,180,90,.4); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .kib-firma.is-leer .n { color:#7c7188; text-shadow:none; }
+  .kib-firma .n { display:block; margin-top:3px; font-weight:800; font-size:18px; line-height:1.1; color:#fff;
+    text-shadow:0 0 16px rgba(255,180,90,.45); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    animation: kib-firma-glow 3.6s ease-in-out infinite; }
+  .kib-firma.is-leer .n { color:#8a7f95; text-shadow:none; animation:none; }
+  @keyframes kib-firma-float { 0%,100%{ transform:translateX(-50%) translateY(0);} 50%{ transform:translateX(-50%) translateY(-4px);} }
+  @keyframes kib-firma-glow { 0%,100%{ text-shadow:0 0 14px rgba(255,180,90,.3);} 50%{ text-shadow:0 0 22px rgba(255,180,90,.6);} }
   .kib-meet { position:absolute; left:2%; top:64%; width:20%; height:33%; z-index:3; }
   .kib-mlabel { position:absolute; top:-2px; left:50%; transform:translateX(-50%); font-family:ui-monospace,monospace; font-size:8px; font-weight:700; letter-spacing:.12em; color:#8a7c9a; }
   .kib-table { position:absolute; left:50%; top:52%; width:54%; padding-bottom:54%; transform:translate(-50%,-50%); border-radius:50%; background: radial-gradient(circle at 50% 40%, #2c2540, #1c1730); box-shadow:0 4px 10px -4px rgba(0,0,0,.6), inset 0 0 0 2px rgba(255,255,255,.05); }
@@ -243,7 +252,7 @@
   .kib-live.mail .kib-lscroll span { background: linear-gradient(90deg, color-mix(in srgb,#a78bfa 70%, transparent) 92%, transparent 92%); height:6px; }
   @media (max-width: 640px) { .kib { height: 360px; } }
   @media (prefers-reduced-motion: reduce) {
-    .kib-scroll, .kib-worker, .kib-arm, .kib-walk .kib-wb, .kib-walk, .kib-sheet, .kib-sheet i, .kib-led, .kib-stack, .kib-mfig, .kib-lscroll, .kib-house::after { animation: none !important; }
+    .kib-scroll, .kib-worker, .kib-arm, .kib-walk .kib-wb, .kib-walk, .kib-sheet, .kib-sheet i, .kib-led, .kib-stack, .kib-mfig, .kib-lscroll, .kib-house::after, .kib-firma, .kib-firma .n { animation: none !important; }
     .kib-sheet { height: 20px; opacity: 1; } .kib-stack { opacity: 1; }
   }
 </style>

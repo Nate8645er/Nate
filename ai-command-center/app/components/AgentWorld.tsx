@@ -39,7 +39,8 @@ const MONITOR_ART: Record<string, "code" | "mail" | "doc"> = {
   commander: "doc", builder: "code", analyst: "code", research: "doc",
   quality: "doc", coding: "code", marketing: "mail", business: "mail",
 };
-const WALK_FARBEN = ["#ff8c2a", "#3b82f6", "#22c55e", "#a78bfa", "#ec4899"];
+// Laufende Figuren (ohne Blau – der Blaue sitzt jetzt am Platz und arbeitet).
+const WALK_FARBEN = ["#ff8c2a", "#22c55e", "#a78bfa", "#ec4899", "#14b8a6", "#eab308"];
 
 export default memo(function AgentWorld({
   agents,
@@ -105,6 +106,7 @@ export default memo(function AgentWorld({
           <div className="aw-mfig" style={{ ["--c" as string]: "#3b82f6", left: "50%", top: "-4px" } as React.CSSProperties} />
           <div className="aw-mfig" style={{ ["--c" as string]: "#ec4899", left: "-4px", top: "50%" } as React.CSSProperties} />
           <div className="aw-mfig" style={{ ["--c" as string]: "#14b8a6", right: "-4px", top: "50%" } as React.CSSProperties} />
+          <div className="aw-mfig" style={{ ["--c" as string]: "#eab308", left: "50%", bottom: "-4px" } as React.CSSProperties} />
         </div>
 
         {/* Drucker unten rechts: gibt laufend Ergebnisse aus */}
