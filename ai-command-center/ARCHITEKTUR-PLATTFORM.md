@@ -32,6 +32,11 @@ da, und was ist **Roadmap**. Keine Behauptungen – der Code ist die Wahrheit.
 - **Sicherheit**: signierte Lizenzen, Prompt-Injection-Schutz (Web/Dokumente als
   Daten), SSRF-Schutz im Browser, verschlüsselte Übertragung, Provider-Fallback.
 - **Dokumenten-Analyse** (`/api/extract`): PDF/Text einlesen und verarbeiten.
+- **Verschiedene KI-Modelle, lokal UND Cloud**: Provider-Schicht unterstützt
+  Anthropic, OpenAI, Moonshot **und einen lokalen/eigenen, OpenAI-kompatiblen
+  Provider** (`local`, z. B. Ollama/vLLM/LM Studio) – aktiv, sobald
+  `LOCAL_LLM_URL` gesetzt ist. Fallback-Kette überspringt nicht konfigurierte
+  Provider automatisch.
 
 ## Teilweise vorhanden (🟡)
 
@@ -52,7 +57,6 @@ Backend-Plattform und werden **nicht** vorgetäuscht:
 - GraphQL-API zusätzlich zu den bestehenden REST-Routen
 - Mandantenfähigkeit auf Server-Ebene, rollenbasierte Rechte serverseitig
 - Docker/Kubernetes-Deployment, Hochverfügbarkeit, zentrales Logging/Monitoring
-- Lokale Modelle (Ollama/vLLM) über einen zusätzlichen Provider-Adapter
 
 **Empfohlene nächste Schritte (in dieser Reihenfolge):**
 1. Multimodal: Bild-Analyse (Vision) + Sprach-Eingabe im Chat.

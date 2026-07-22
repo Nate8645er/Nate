@@ -37,11 +37,17 @@ export const maxDuration = 120;
 const MAX_MESSAGES = 30;
 const MAX_MESSAGE_LENGTH = 8_000;
 
-/** Reihenfolge der Provider-Fallbacks samt Modell. */
+/**
+ * Reihenfolge der Provider-Fallbacks samt Modell. Der lokale/eigene Provider
+ * ("local", OpenAI-kompatibel) wird nur genutzt, wenn LOCAL_LLM_URL gesetzt
+ * ist – damit kann eine Firma ihr eigenes Modell einbinden. Modellname kommt
+ * aus LOCAL_LLM_MODEL (Default llama3.1).
+ */
 const CHAT_CHAIN: { provider: Provider; model: string }[] = [
   { provider: "anthropic", model: "claude-sonnet-5" },
   { provider: "openai", model: "gpt-4o-mini" },
   { provider: "moonshot", model: "kimi-k3" },
+  { provider: "local", model: process.env.LOCAL_LLM_MODEL?.trim() || "llama3.1" },
 ];
 
 function systemPrompt(branche?: string, groesse?: string, mitBrowser?: boolean): string {

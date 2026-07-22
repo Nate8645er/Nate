@@ -49,14 +49,37 @@ const ENDPOINTS: Record<Provider, ProviderEndpoint> = {
     url: "https://api.moonshot.ai/v1/chat/completions",
     envKey: "MOONSHOT_API_KEY",
   },
+  // Lokales/eigenes Modell (OpenAI-kompatibel). URL kommt aus der Umgebung,
+  // damit jede Firma ihr eigenes Modell (Ollama/vLLM/LM Studio) anbinden kann.
+  local: {
+    url: "",
+    envKey: "LOCAL_LLM_URL",
+  },
 };
 
+/** Effektive Endpoint-URL: für "local" aus der Umgebung, sonst statisch. */
+function endpointUrl(provider: Provider): string {
+  if (provider === "local") return process.env.LOCAL_LLM_URL?.trim() ?? "";
+  return ENDPOINTS[provider].url;
+}
+
 /**
- * Prüft, ob für den Provider ein API-Key in process.env hinterlegt ist.
- * Der Orchestrator nutzt das, um ohne Key direkt in den Demo-Modus zu gehen.
+ * Auth-Schlüssel für den Bearer/x-api-key-Header. Beim lokalen Provider ist er
+ * optional (viele lokale Server brauchen keinen Key) – dann wird kein
+ * Authorization-Header gesendet.
+ */
+function authKey(provider: Provider): string | undefined {
+  if (provider === "local") return process.env.LOCAL_LLM_API_KEY?.trim() || undefined;
+  return process.env[ENDPOINTS[provider].envKey]?.trim() || undefined;
+}
+
+/**
+ * Ist der Provider einsatzbereit? Cloud: API-Key gesetzt. Lokal: URL gesetzt.
+ * Der Orchestrator nutzt das, um nicht konfigurierte Provider zu überspringen.
  */
 export function hasApiKey(provider: Provider): boolean {
-  return Boolean(process.env[ENDPOINTS[provider].envKey]?.trim());
+  if (provider === "local") return Boolean(endpointUrl("local"));
+  return Boolean(authKey(provider));
 }
 
 /**
@@ -76,13 +99,19 @@ export async function callLLM(
   system: string,
   messages: ChatMessage[],
 ): Promise<LLMResult> {
-  const endpoint = ENDPOINTS[provider];
-  const apiKey = process.env[endpoint.envKey];
-
-  if (!apiKey) {
+  const url = endpointUrl(provider);
+  if (!url) {
     return {
       ok: false,
-      error: `${endpoint.envKey} ist nicht gesetzt (.env prüfen).`,
+      error: `${ENDPOINTS[provider].envKey} ist nicht gesetzt (.env prüfen).`,
+    };
+  }
+  const apiKey = authKey(provider);
+  // Cloud-Provider brauchen zwingend einen Key; lokal ist er optional.
+  if (provider !== "local" && !apiKey) {
+    return {
+      ok: false,
+      error: `${ENDPOINTS[provider].envKey} ist nicht gesetzt (.env prüfen).`,
     };
   }
   if (messages.length === 0) {
@@ -91,12 +120,12 @@ export async function callLLM(
 
   const { headers, body } =
     provider === "anthropic"
-      ? buildAnthropicRequest(apiKey, model, system, messages)
+      ? buildAnthropicRequest(apiKey ?? "", model, system, messages)
       : buildOpenAIStyleRequest(apiKey, model, system, messages);
 
   let lastError = `${provider}: unbekannter Fehler`;
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    const outcome = await attemptRequest(provider, endpoint.url, headers, body);
+    const outcome = await attemptRequest(provider, url, headers, body);
     if (outcome.ok) return { ok: true, text: outcome.text };
     lastError = outcome.error;
     if (!outcome.retryable) break;
@@ -202,10 +231,13 @@ export async function streamLLM(
   messages: ChatMessage[],
   onDelta: (text: string) => void,
 ): Promise<LLMResult> {
-  const endpoint = ENDPOINTS[provider];
-  const apiKey = process.env[endpoint.envKey];
-  if (!apiKey) {
-    return { ok: false, error: `${endpoint.envKey} ist nicht gesetzt (.env prüfen).` };
+  const url = endpointUrl(provider);
+  if (!url) {
+    return { ok: false, error: `${ENDPOINTS[provider].envKey} ist nicht gesetzt (.env prüfen).` };
+  }
+  const apiKey = authKey(provider);
+  if (provider !== "local" && !apiKey) {
+    return { ok: false, error: `${ENDPOINTS[provider].envKey} ist nicht gesetzt (.env prüfen).` };
   }
   if (messages.length === 0) {
     return { ok: false, error: "Leere Nachrichtenliste übergeben." };
@@ -213,14 +245,14 @@ export async function streamLLM(
 
   const { headers, body } =
     provider === "anthropic"
-      ? buildAnthropicRequest(apiKey, model, system, messages)
+      ? buildAnthropicRequest(apiKey ?? "", model, system, messages)
       : buildOpenAIStyleRequest(apiKey, model, system, messages);
   // stream:true aktiviert Server-Sent-Events beim Provider.
   const streamBody = { ...body, stream: true };
 
   let response: Response;
   try {
-    response = await fetch(endpoint.url, {
+    response = await fetch(url, {
       method: "POST",
       headers,
       body: JSON.stringify(streamBody),
@@ -309,16 +341,17 @@ function extractOpenAIStyleDelta(data: unknown): string | null {
 }
 
 function buildOpenAIStyleRequest(
-  apiKey: string,
+  apiKey: string | undefined,
   model: string,
   system: string,
   messages: ChatMessage[],
 ) {
+  // Authorization nur senden, wenn ein Key vorhanden ist – lokale Server
+  // (Ollama/vLLM) laufen oft ohne Auth.
+  const headers: Record<string, string> = { "content-type": "application/json" };
+  if (apiKey) headers.authorization = `Bearer ${apiKey}`;
   return {
-    headers: {
-      "content-type": "application/json",
-      authorization: `Bearer ${apiKey}`,
-    },
+    headers,
     body: {
       model,
       max_tokens: aktivesMaxTokens(),

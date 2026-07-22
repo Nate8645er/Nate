@@ -6,8 +6,12 @@
  * (Persistenz, Billing-Limits pro Plan) ohne Umbau andocken können.
  */
 
-/** Unterstützte LLM-Provider. */
-export type Provider = "anthropic" | "openai" | "moonshot";
+/**
+ * Unterstützte LLM-Provider. "local" ist ein OpenAI-kompatibles, selbst
+ * gehostetes Modell (z. B. Ollama/vLLM/LM Studio) – aktiv, sobald
+ * LOCAL_LLM_URL gesetzt ist. Deckt "lokale und Cloud-Modelle" ab.
+ */
+export type Provider = "anthropic" | "openai" | "moonshot" | "local";
 
 /** Abo-Pläne. FREE gilt ohne (gültiges) Lizenz-Token. */
 export type PlanId = "FREE" | "PERSONAL" | "STARTER" | "PROFESSIONAL" | "BUSINESS" | "ENTERPRISE";
