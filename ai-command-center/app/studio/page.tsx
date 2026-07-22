@@ -88,6 +88,50 @@ function ersterCodeblock(text: string): string | null {
   return m ? m[1].replace(/\n$/, "") : null;
 }
 
+/* Sieht ein Token wie ein Dateipfad aus (hat eine Endung, keine Leerzeichen)? */
+function istPfad(s: string): boolean {
+  const t = s.trim();
+  return t.length > 0 && t.length <= 120 && /^[\w./-]+\.[a-z0-9]+$/i.test(t);
+}
+/* Markdown-Dekoration von einer Pfad-Zeile entfernen (**x**, `x`, ### x, - x, x:). */
+function saeuberePfad(zeile: string): string {
+  return zeile
+    .replace(/^#{1,6}\s+/, "")
+    .replace(/^[-*]\s+/, "")
+    .replace(/[*`]/g, "")
+    .replace(/^(datei|file|pfad|path)\s*[:=]?\s*/i, "")
+    .replace(/[:：]\s*$/, "")
+    .trim();
+}
+/* Alle ```-Blöcke mit zugehörigem Dateipfad aus einer KI-Antwort ziehen.
+   Der Pfad stammt aus der Fence-Info (```ts src/util.ts) oder aus der
+   letzten nicht-leeren Zeile vor dem Block (**pfad**, `pfad`, ### pfad …).
+   Blöcke ohne erkennbaren Pfad bekommen path=null. */
+function dateiBloecke(text: string): { path: string | null; content: string }[] {
+  const out: { path: string | null; content: string }[] = [];
+  const re = /```([^\n`]*)\n([\s\S]*?)```/g;
+  let m: RegExpExecArray | null;
+  let letztesEnde = 0;
+  while ((m = re.exec(text))) {
+    const content = m[2].replace(/\n$/, "");
+    let path: string | null = null;
+    // 1) Pfad in der Fence-Info-Zeile?
+    for (const tok of m[1].trim().split(/\s+/).filter(Boolean)) {
+      const c = saeuberePfad(tok);
+      if (istPfad(c)) { path = c; break; }
+    }
+    // 2) sonst letzte nicht-leere Zeile vor dem Block.
+    if (!path) {
+      const davor = text.slice(letztesEnde, m.index).split("\n").filter((z) => z.trim());
+      const kand = davor.length ? saeuberePfad(davor[davor.length - 1]) : "";
+      if (istPfad(kand)) path = kand;
+    }
+    out.push({ path, content });
+    letztesEnde = re.lastIndex;
+  }
+  return out;
+}
+
 /* Grobe zeilenbasierte Diff-Zusammenfassung (Mengen-Vergleich). */
 function diffZusammenfassung(alt: string, neu: string): { plus: number; minus: number } {
   const a = new Map<string, number>();
@@ -335,11 +379,26 @@ export default function StudioPage() {
     const frage = text.trim();
     if (!frage || streaming) return;
     setInput("");
+    // Ganzes Projekt als Kontext (bis ~60k Zeichen), damit die KI mehrere
+    // Dateien lesen und ändern kann. Bei sehr grossen Projekten nur die
+    // offene Datei voll, der Rest als Pfadliste.
+    const alleDateien = Object.entries(proj.files);
+    const gesamt = alleDateien.reduce((n, [, c]) => n + c.length, 0);
+    let projektKontext: string;
+    if (gesamt <= 60000) {
+      projektKontext = alleDateien
+        .map(([p, c]) => `### ${p}\n\`\`\`${ext(p)}\n${c}\n\`\`\``)
+        .join("\n\n");
+    } else {
+      projektKontext =
+        `Offene Datei ### ${proj.open}\n\`\`\`${ext(proj.open)}\n${code}\n\`\`\`\n\n` +
+        `Weitere Dateien (Inhalt auf Nachfrage): ${paths.filter((p) => p !== proj.open).join(", ")}`;
+    }
     const kontextNachricht =
-      `Du hilfst im KI-Studio an der Datei «${proj.open}». Aktueller Inhalt:\n\n` +
-      "```" + ext(proj.open) + "\n" + code + "\n```\n\n" +
-      "Aufgabe des Nutzers: " + frage +
-      "\n\nWenn du Code lieferst, gib die VOLLSTÄNDIGE neue Datei in EINEM Codeblock zurück.";
+      `Du bist der Programmier-Agent im KI-Studio. Projekt «${proj.name}», offene Datei «${proj.open}».\n\n` +
+      `Projektdateien:\n\n${projektKontext}\n\n` +
+      `Aufgabe des Nutzers: ${frage}\n\n` +
+      `Wenn du Dateien änderst oder neu anlegst, gib pro Datei ZUERST den Pfad in einer eigenen Zeile als **pfad/zur/datei.ext** aus und danach EINEN Codeblock mit dem VOLLSTÄNDIGEN neuen Inhalt der Datei. Du darfst mehrere Dateien in einer Antwort liefern. Ändere nur, was nötig ist.`;
     const verlauf = [...chat, { role: "user" as const, content: frage }];
     setChat([...verlauf, { role: "assistant", content: "" }]);
     setStreaming(true);
@@ -411,7 +470,29 @@ export default function StudioPage() {
   }
 
   const letzteAntwort = chat.length && chat[chat.length - 1].role === "assistant" ? chat[chat.length - 1].content : "";
-  const vorschlag = ersterCodeblock(letzteAntwort);
+  // Mehr-Datei-Vorschläge: Blöcke mit erkanntem Pfad, gegen Dublikaten (letzter gewinnt).
+  const dateiVorschlaege = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const b of dateiBloecke(letzteAntwort)) if (b.path) map.set(b.path, b.content);
+    return Array.from(map, ([path, content]) => ({ path, content }));
+  }, [letzteAntwort]);
+  // Nur Vorschläge, die die Datei wirklich verändern (oder neu sind).
+  const echteVorschlaege = dateiVorschlaege.filter((v) => proj.files[v.path] !== v.content);
+  // Fallback: eine einzelne Datei ohne Pfad-Markierung → betrifft die offene Datei.
+  const vorschlag = echteVorschlaege.length === 0 ? ersterCodeblock(letzteAntwort) : null;
+
+  function uebernehmeDatei(path: string, content: string) {
+    oeffneTab(path);
+    setProj((p) => ({ ...p, files: { ...p.files, [path]: content }, open: path }));
+  }
+  function uebernehmeAlle() {
+    if (!echteVorschlaege.length) return;
+    const neu: Record<string, string> = {};
+    for (const v of echteVorschlaege) neu[v.path] = v.content;
+    const ziele = Object.keys(neu);
+    setTabs((t) => Array.from(new Set([...t, ...ziele])));
+    setProj((p) => ({ ...p, files: { ...p.files, ...neu }, open: ziele[0] }));
+  }
 
   return (
     <div className="flex h-screen flex-col bg-[#0b0a0f] text-zinc-100">
@@ -521,8 +602,9 @@ export default function StudioPage() {
           <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-3">
             {chat.length === 0 && (
               <p className="text-[12px] leading-relaxed text-zinc-500">
-                Bitten Sie die KI, an <b className="text-zinc-300">{proj.open}</b> zu arbeiten – z. B. „Erkläre diesen Code",
-                „Baue eine Funktion X" oder „Finde Fehler". Sie kennt den Datei-Inhalt.
+                Bitten Sie die KI, am Projekt zu arbeiten – z. B. „Erkläre <b className="text-zinc-300">{proj.open}</b>",
+                „Baue eine Funktion X" oder „Splitte das in mehrere Dateien auf". Sie kennt alle Dateien und kann
+                mehrere davon in einem Schritt anlegen oder ändern.
               </p>
             )}
             {chat.map((m, i) => (
@@ -534,6 +616,45 @@ export default function StudioPage() {
             ))}
             <div ref={chatEndRef} />
           </div>
+          {echteVorschlaege.length > 0 && !streaming && (
+            <div className="border-t border-white/8 p-2">
+              <div className="mb-1.5 flex items-center justify-between gap-2 px-1 text-[11px]">
+                <span className="font-mono text-zinc-500">
+                  KI-Änderung an {echteVorschlaege.length} {echteVorschlaege.length === 1 ? "Datei" : "Dateien"}
+                </span>
+                {echteVorschlaege.length > 1 && (
+                  <button onClick={uebernehmeAlle} className="rounded-md bg-[#22c55e]/15 px-2 py-0.5 font-semibold text-[#86efac] hover:bg-[#22c55e]/25">
+                    Alle übernehmen
+                  </button>
+                )}
+              </div>
+              <div className="max-h-44 space-y-1 overflow-y-auto">
+                {echteVorschlaege.map((v) => {
+                  const alt = proj.files[v.path];
+                  const neu = alt === undefined;
+                  const d = diffZusammenfassung(alt ?? "", v.content);
+                  return (
+                    <div key={v.path} className="flex items-center gap-2 rounded-lg border border-white/8 bg-white/[0.03] px-2 py-1.5">
+                      <span className="min-w-0 flex-1 truncate font-mono text-[11.5px] text-zinc-200" title={v.path}>{v.path}</span>
+                      {neu ? (
+                        <span className="shrink-0 rounded bg-[#ff8c2a]/15 px-1.5 text-[10px] font-semibold text-[#ffb35c]">neu</span>
+                      ) : (
+                        <span className="shrink-0 text-[10.5px]">
+                          <span className="text-[#86efac]">+{d.plus}</span> <span className="text-red-400">−{d.minus}</span>
+                        </span>
+                      )}
+                      <button
+                        onClick={() => uebernehmeDatei(v.path, v.content)}
+                        className="shrink-0 rounded-md bg-gradient-to-br from-[#22c55e] to-[#16a34a] px-2 py-1 text-[11px] font-semibold text-white"
+                      >
+                        Übernehmen
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
           {vorschlag && !streaming && vorschlag !== code && (
             <div className="border-t border-white/8 p-2">
               {(() => {
@@ -571,7 +692,7 @@ export default function StudioPage() {
               </button>
             </div>
             <p className="mt-1.5 px-1 text-[10.5px] leading-snug text-zinc-500">
-              🔧 Terminal, echtes Git &amp; Debugger laufen server-/Enterprise-seitig (geplant). Hier: Dateien, Editor &amp; KI-Bearbeitung im Browser.
+              🔧 Die KI liest &amp; ändert mehrere Dateien auf einmal (Diff prüfen, dann übernehmen). Terminal, echtes Git &amp; Debugger laufen server-/Enterprise-seitig (geplant).
             </p>
           </div>
         </aside>
