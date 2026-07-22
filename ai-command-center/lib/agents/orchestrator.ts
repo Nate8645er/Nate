@@ -334,7 +334,7 @@ async function runMissionPhases(
       synthesisCall.demo ? "Mission abgeschlossen (Demo-Modus)" : "Mission abgeschlossen",
     ),
   );
-  emit({ type: "final", content: synthesisCall.text + quellenAnhang(context) });
+  emit({ type: "final", content: (synthesisCall.demo ? DEMO_HINWEIS : "") + synthesisCall.text + quellenAnhang(context) });
 }
 
 /* -------------------------- Organisations-Phasen -------------------------- */
@@ -481,7 +481,7 @@ async function runOrgMissionPhases(
       synthesisCall.demo ? "Mission abgeschlossen (Demo-Modus)" : "Mission abgeschlossen",
     ),
   );
-  emit({ type: "final", content: synthesisCall.text + quellenAnhang(context) });
+  emit({ type: "final", content: (synthesisCall.demo ? DEMO_HINWEIS : "") + synthesisCall.text + quellenAnhang(context) });
 }
 
 /**
@@ -693,6 +693,15 @@ function dedupeArtifactFiles(files: ArtifactFile[]): ArtifactFile[] {
 }
 
 /* ----------------------------- interne Helfer ----------------------------- */
+
+/**
+ * Sichtbarer Hinweis, der einem im Demo-Fallback erzeugten Endergebnis
+ * vorangestellt wird – damit Demo-/Platzhaltertext nicht unbemerkt als echtes
+ * Kundenergebnis behalten oder heruntergeladen wird (ehrliche Kennzeichnung).
+ */
+const DEMO_HINWEIS =
+  "> ⚠️ DEMO-ERGEBNIS – ohne aktive KI-Verbindung erzeugt (Platzhalter, nicht für den produktiven Einsatz). " +
+  "Mit hinterlegten API-Keys liefert Ihre Belegschaft echte Ergebnisse.\n\n";
 
 interface AgentCall {
   text: string;
