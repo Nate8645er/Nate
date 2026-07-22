@@ -22,8 +22,12 @@ export interface VorleserStatus {
   spricht: boolean;
   /** Index des aktuell gesprochenen Eintrags (oder null, wenn still). */
   aktiverIndex: number | null;
-  /** Liest ab `start` alle Texte nacheinander vor. */
-  vorlesen: (texte: string[], start?: number) => void;
+  /**
+   * Liest die Texte nacheinander vor. Optionale `intro` wird ohne
+   * Schritt-Hervorhebung vorangestellt (z. B. Begrüssung + Tarif-Inhalt),
+   * danach werden die Schritte mit Hervorhebung gesprochen.
+   */
+  vorlesen: (texte: string[], opts?: { intro?: string }) => void;
   /** Liest genau einen Text (mit Index für die Hervorhebung). */
   einzeln: (text: string, index: number) => void;
   /** Bricht die Ausgabe sofort ab. */
@@ -86,7 +90,7 @@ export function useVorleser(): VorleserStatus {
   }, []);
 
   const vorlesen = useCallback(
-    (texte: string[], start = 0) => {
+    (texte: string[], opts?: { intro?: string }) => {
       if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
       const synth = window.speechSynthesis;
       synth.cancel();
@@ -108,7 +112,16 @@ export function useVorleser(): VorleserStatus {
         synth.speak(u);
       };
 
-      sprich(start);
+      // Optionale Einleitung zuerst, ohne einen Schritt hervorzuheben.
+      if (opts?.intro) {
+        setAktiverIndex(null);
+        const ein = aeussern(opts.intro);
+        ein.onend = () => sprich(0);
+        ein.onerror = () => sprich(0);
+        synth.speak(ein);
+      } else {
+        sprich(0);
+      }
     },
     [aeussern],
   );

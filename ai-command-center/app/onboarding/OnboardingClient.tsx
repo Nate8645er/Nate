@@ -82,6 +82,15 @@ export default function OnboardingClient() {
       ),
     [tut],
   );
+  // Gesprochene Einleitung der geführten Anleitung: begrüsst, nennt Tarif und
+  // Inhalt, leitet dann in die Schritte über.
+  const einleitung = useMemo(
+    () =>
+      `Willkommen zu Ihrem ${tut.name}-Tutorial. ${tut.kurz} ` +
+      `In diesem Tarif enthalten: ${tut.enthalten.join(". ")}. ` +
+      `Ich führe Sie jetzt Schritt für Schritt durch die Einrichtung.`,
+    [tut],
+  );
   // Tarifwechsel stoppt eine laufende Ansage (sie passt sonst nicht mehr).
   useEffect(() => {
     vorleser.stopp();
@@ -211,7 +220,9 @@ export default function OnboardingClient() {
                 <button
                   type="button"
                   onClick={() =>
-                    vorleser.spricht ? vorleser.stopp() : vorleser.vorlesen(narration)
+                    vorleser.spricht
+                      ? vorleser.stopp()
+                      : vorleser.vorlesen(narration, { intro: einleitung })
                   }
                   aria-pressed={vorleser.spricht}
                   className={
