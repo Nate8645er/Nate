@@ -157,10 +157,12 @@ export default function StudioPage() {
   const [chat, setChat] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
+  const [suche, setSuche] = useState("");
   const taRef = useRef<HTMLTextAreaElement>(null);
   const preRef = useRef<HTMLPreElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const uploadRef = useRef<HTMLInputElement>(null);
+  const lnRef = useRef<HTMLDivElement>(null);
 
   // Laden / Speichern.
   useEffect(() => {
@@ -187,6 +189,20 @@ export default function StudioPage() {
 
   const code = proj.files[proj.open] ?? "";
   const paths = useMemo(() => Object.keys(proj.files).sort(), [proj.files]);
+  // Suche filtert nach Dateiname/Pfad.
+  const gefiltert = useMemo(() => {
+    const q = suche.trim().toLowerCase();
+    return q ? paths.filter((p) => p.toLowerCase().includes(q)) : paths;
+  }, [paths, suche]);
+  // Ordner-Ansicht: Segmente vor der Datei dimmen, nach Tiefe einrücken.
+  function teile(p: string) {
+    const i = p.lastIndexOf("/");
+    return i === -1 ? { ordner: "", datei: p, tiefe: 0 } : { ordner: p.slice(0, i + 1), datei: p.slice(i + 1), tiefe: p.slice(0, i).split("/").length };
+  }
+  const zeilenNr = useMemo(() => {
+    const n = code.split("\n").length;
+    return Array.from({ length: n }, (_, i) => i + 1).join("\n");
+  }, [code]);
 
   function setCode(next: string) {
     setProj((p) => ({ ...p, files: { ...p.files, [p.open]: next } }));
@@ -265,6 +281,7 @@ export default function StudioPage() {
       preRef.current.scrollTop = taRef.current.scrollTop;
       preRef.current.scrollLeft = taRef.current.scrollLeft;
     }
+    if (lnRef.current && taRef.current) lnRef.current.scrollTop = taRef.current.scrollTop;
   }
 
   async function frag(text: string) {
@@ -373,18 +390,33 @@ export default function StudioPage() {
             </div>
           </div>
           <input ref={uploadRef} type="file" multiple onChange={hochladen} className="hidden" accept=".txt,.md,.js,.ts,.tsx,.jsx,.json,.css,.html,.py,.java,.go,.rs,.c,.cpp,.sh,.yml,.yaml,.csv" />
-          {paths.map((p) => (
-            <div
-              key={p}
-              className={`group flex items-center justify-between rounded px-2 py-1 text-[13px] ${p === proj.open ? "bg-[#ff8c2a]/15 text-[#ffb35c]" : "text-zinc-300 hover:bg-white/5"}`}
-            >
-              <button onClick={() => openFile(p)} className="truncate text-left" title={p}>{p}</button>
-              <span className="hidden shrink-0 gap-1 group-hover:flex">
-                <button onClick={() => umbenennen(p)} className="text-zinc-500 hover:text-zinc-200" title="Umbenennen">✎</button>
-                <button onClick={() => loeschen(p)} className="text-zinc-500 hover:text-red-400" title="Löschen">✕</button>
-              </span>
-            </div>
-          ))}
+          <input
+            value={suche}
+            onChange={(e) => setSuche(e.target.value)}
+            placeholder="Dateien suchen …"
+            className="mb-2 w-full rounded-md border border-white/8 bg-white/[0.03] px-2 py-1 text-[12px] text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-[#ff8c2a]/40"
+          />
+          {gefiltert.length === 0 && <p className="px-2 py-1 text-[12px] text-zinc-600">Keine Treffer.</p>}
+          {gefiltert.map((p) => {
+            const t = teile(p);
+            return (
+              <div
+                key={p}
+                style={{ paddingLeft: 8 + t.tiefe * 12 }}
+                className={`group flex items-center justify-between rounded py-1 pr-2 text-[13px] ${p === proj.open ? "bg-[#ff8c2a]/15 text-[#ffb35c]" : "text-zinc-300 hover:bg-white/5"}`}
+              >
+                <button onClick={() => openFile(p)} className="min-w-0 truncate text-left" title={p}>
+                  {t.ordner && <span className="text-zinc-600">{t.ordner}</span>}
+                  {t.datei}
+                </button>
+                <span className="hidden shrink-0 gap-1 group-hover:flex">
+                  <button onClick={() => umbenennen(p)} className="text-zinc-500 hover:text-zinc-200" title="Umbenennen">✎</button>
+                  <button onClick={() => loeschen(p)} className="text-zinc-500 hover:text-red-400" title="Löschen">✕</button>
+                </span>
+              </div>
+            );
+          })}
+          <p className="mt-2 px-2 text-[10px] text-zinc-600">Tipp: Namen mit „/" erzeugen Ordner, z. B. src/app.ts</p>
         </aside>
 
         {/* Editor */}
@@ -394,6 +426,7 @@ export default function StudioPage() {
             <span className="rounded bg-white/[0.05] px-1.5 py-0.5 text-[10px] uppercase">{ext(proj.open) || "txt"}</span>
           </div>
           <div className="acc-ed relative h-[calc(100%-33px)] overflow-hidden">
+            <div ref={lnRef} className="acc-ed__ln" aria-hidden="true">{zeilenNr}</div>
             <pre ref={preRef} className="acc-ed__pre" aria-hidden="true" dangerouslySetInnerHTML={{ __html: highlight(code) + "\n" }} />
             <textarea
               ref={taRef}
@@ -460,8 +493,14 @@ export default function StudioPage() {
 
       <style>{`
         .acc-ed { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; line-height: 20px; }
+        .acc-ed__ln {
+          position: absolute; top: 0; left: 0; bottom: 0; width: 48px;
+          margin: 0; padding: 12px 8px 12px 0; font: inherit; text-align: right;
+          white-space: pre; overflow: hidden; color: #4b5563; user-select: none;
+          background: rgba(255,255,255,0.02); border-right: 1px solid rgba(255,255,255,0.06); z-index: 0;
+        }
         .acc-ed__pre, .acc-ed__ta {
-          position: absolute; inset: 0; margin: 0; padding: 12px 14px;
+          position: absolute; top: 0; right: 0; bottom: 0; left: 48px; margin: 0; padding: 12px 14px;
           font: inherit; letter-spacing: normal; tab-size: 2;
           white-space: pre; overflow: auto; border: 0;
         }
