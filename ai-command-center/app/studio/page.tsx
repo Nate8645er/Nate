@@ -88,6 +88,19 @@ function ersterCodeblock(text: string): string | null {
   return m ? m[1].replace(/\n$/, "") : null;
 }
 
+/* Grobe zeilenbasierte Diff-Zusammenfassung (Mengen-Vergleich). */
+function diffZusammenfassung(alt: string, neu: string): { plus: number; minus: number } {
+  const a = new Map<string, number>();
+  for (const z of alt.split("\n")) a.set(z, (a.get(z) ?? 0) + 1);
+  const b = new Map<string, number>();
+  for (const z of neu.split("\n")) b.set(z, (b.get(z) ?? 0) + 1);
+  let plus = 0;
+  let minus = 0;
+  for (const [z, n] of b) plus += Math.max(0, n - (a.get(z) ?? 0));
+  for (const [z, n] of a) minus += Math.max(0, n - (b.get(z) ?? 0));
+  return { plus, minus };
+}
+
 /* ---------- Download / Upload / ZIP (ohne Fremd-Bibliothek) ---------- */
 function downloadBlob(name: string, blob: Blob) {
   const url = URL.createObjectURL(blob);
@@ -158,6 +171,8 @@ export default function StudioPage() {
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const [suche, setSuche] = useState("");
+  const [tabs, setTabs] = useState<string[]>([START.open]);
+  const [fr, setFr] = useState({ show: false, find: "", replace: "" });
   const taRef = useRef<HTMLTextAreaElement>(null);
   const preRef = useRef<HTMLPreElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -170,7 +185,10 @@ export default function StudioPage() {
       const raw = localStorage.getItem(STORE);
       if (raw) {
         const p = JSON.parse(raw) as Projekt;
-        if (p?.files && p.open) setProj(p);
+        if (p?.files && p.open) {
+          setProj(p);
+          setTabs([p.open]);
+        }
       }
     } catch {
       /* nichts */
@@ -207,14 +225,26 @@ export default function StudioPage() {
   function setCode(next: string) {
     setProj((p) => ({ ...p, files: { ...p.files, [p.open]: next } }));
   }
+  function oeffneTab(path: string) {
+    setTabs((t) => (t.includes(path) ? t : [...t, path]));
+  }
   function openFile(path: string) {
+    oeffneTab(path);
     setProj((p) => ({ ...p, open: path }));
   }
+  function schliesseTab(path: string) {
+    setTabs((t) => {
+      const rest = t.filter((x) => x !== path);
+      if (proj.open === path && rest.length) setProj((p) => ({ ...p, open: rest[rest.length - 1] }));
+      return rest.length ? rest : t; // mindestens ein Tab offen lassen
+    });
+  }
   function neueDatei() {
-    const name = prompt("Dateiname (z. B. app.ts, style.css, notizen.md):");
+    const name = prompt("Dateiname (z. B. app.ts, style.css, src/util.ts):");
     if (!name) return;
     const clean = name.trim().replace(/^\/+/, "");
     if (!clean || proj.files[clean] !== undefined) return;
+    oeffneTab(clean);
     setProj((p) => ({ ...p, files: { ...p.files, [clean]: "" }, open: clean }));
   }
   function umbenennen(path: string) {
@@ -222,6 +252,7 @@ export default function StudioPage() {
     if (!name || name === path) return;
     const clean = name.trim().replace(/^\/+/, "");
     if (!clean || proj.files[clean] !== undefined) return;
+    setTabs((t) => t.map((x) => (x === path ? clean : x)));
     setProj((p) => {
       const files = { ...p.files };
       files[clean] = files[path];
@@ -239,7 +270,23 @@ export default function StudioPage() {
       const open = p.open === path ? Object.keys(files)[0] : p.open;
       return { ...p, files, open };
     });
+    setTabs((t) => {
+      const rest = t.filter((x) => x !== path);
+      return rest.length ? rest : [Object.keys(proj.files).filter((f) => f !== path)[0] ?? "neu.txt"];
+    });
   }
+  // Suchen & Ersetzen in der aktuellen Datei.
+  function ersetzeAlle() {
+    if (!fr.find) return;
+    setCode(code.split(fr.find).join(fr.replace));
+  }
+  function ersetzeErstes() {
+    if (!fr.find) return;
+    const i = code.indexOf(fr.find);
+    if (i === -1) return;
+    setCode(code.slice(0, i) + fr.replace + code.slice(i + fr.find.length));
+  }
+  const treffer = fr.find ? code.split(fr.find).length - 1 : 0;
   function downloadDatei() {
     downloadBlob(proj.open.split("/").pop() || "datei.txt", new Blob([code], { type: "text/plain" }));
   }
@@ -421,11 +468,39 @@ export default function StudioPage() {
 
         {/* Editor */}
         <main className="relative min-h-0 min-w-0 bg-[#0b0a0f]">
-          <div className="flex items-center gap-2 border-b border-white/8 px-3 py-1.5 text-[12px] text-zinc-400">
-            <span className="font-mono">{proj.open}</span>
-            <span className="rounded bg-white/[0.05] px-1.5 py-0.5 text-[10px] uppercase">{ext(proj.open) || "txt"}</span>
+          {/* Tab-Leiste */}
+          <div className="flex items-stretch border-b border-white/8 text-[12px]">
+            <div className="flex min-w-0 flex-1 overflow-x-auto">
+              {tabs.filter((t) => proj.files[t] !== undefined).map((t) => (
+                <div
+                  key={t}
+                  className={`flex shrink-0 items-center gap-1.5 border-r border-white/8 px-3 py-1.5 ${t === proj.open ? "bg-[#0b0a0f] text-[#ffb35c]" : "bg-white/[0.02] text-zinc-400 hover:text-zinc-200"}`}
+                >
+                  <button onClick={() => openFile(t)} className="font-mono" title={t}>{t.split("/").pop()}</button>
+                  <button onClick={() => schliesseTab(t)} className="text-zinc-600 hover:text-red-400" title="Tab schliessen">✕</button>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => setFr((f) => ({ ...f, show: !f.show }))}
+              className={`shrink-0 border-l border-white/8 px-3 ${fr.show ? "text-[#ffb35c]" : "text-zinc-400 hover:text-zinc-200"}`}
+              title="Suchen & Ersetzen"
+            >
+              ⌕
+            </button>
           </div>
-          <div className="acc-ed relative h-[calc(100%-33px)] overflow-hidden">
+          {fr.show && (
+            <div className="flex flex-wrap items-center gap-2 border-b border-white/8 bg-white/[0.02] px-3 py-1.5 text-[12px]">
+              <input value={fr.find} onChange={(e) => setFr((f) => ({ ...f, find: e.target.value }))} placeholder="Suchen"
+                className="w-40 rounded border border-white/8 bg-white/[0.03] px-2 py-1 text-zinc-200 outline-none focus:border-[#ff8c2a]/40" />
+              <input value={fr.replace} onChange={(e) => setFr((f) => ({ ...f, replace: e.target.value }))} placeholder="Ersetzen durch"
+                className="w-40 rounded border border-white/8 bg-white/[0.03] px-2 py-1 text-zinc-200 outline-none focus:border-[#ff8c2a]/40" />
+              <span className="text-zinc-500">{treffer} Treffer</span>
+              <button onClick={ersetzeErstes} disabled={!treffer} className="rounded bg-white/[0.06] px-2 py-1 text-zinc-200 hover:bg-white/10 disabled:opacity-40">Ersetzen</button>
+              <button onClick={ersetzeAlle} disabled={!treffer} className="rounded bg-[#ff8c2a]/20 px-2 py-1 text-[#ffb35c] hover:bg-[#ff8c2a]/30 disabled:opacity-40">Alle ersetzen</button>
+            </div>
+          )}
+          <div className={`acc-ed relative overflow-hidden ${fr.show ? "h-[calc(100%-70px)]" : "h-[calc(100%-33px)]"}`}>
             <div ref={lnRef} className="acc-ed__ln" aria-hidden="true">{zeilenNr}</div>
             <pre ref={preRef} className="acc-ed__pre" aria-hidden="true" dangerouslySetInnerHTML={{ __html: highlight(code) + "\n" }} />
             <textarea
@@ -459,13 +534,24 @@ export default function StudioPage() {
             ))}
             <div ref={chatEndRef} />
           </div>
-          {vorschlag && !streaming && (
+          {vorschlag && !streaming && vorschlag !== code && (
             <div className="border-t border-white/8 p-2">
+              {(() => {
+                const d = diffZusammenfassung(code, vorschlag);
+                return (
+                  <div className="mb-1.5 flex items-center gap-2 px-1 text-[11px]">
+                    <span className="font-mono text-zinc-500">Vorgeschlagene Änderung:</span>
+                    <span className="text-[#86efac]">+{d.plus}</span>
+                    <span className="text-red-400">−{d.minus}</span>
+                    <span className="text-zinc-600">Zeilen</span>
+                  </div>
+                );
+              })()}
               <button
                 onClick={() => setCode(vorschlag)}
                 className="w-full rounded-lg bg-gradient-to-br from-[#22c55e] to-[#16a34a] px-3 py-2 text-[12.5px] font-semibold text-white"
               >
-                Vorgeschlagenen Code in {proj.open} übernehmen
+                Änderung in {proj.open.split("/").pop()} übernehmen
               </button>
             </div>
           )}
