@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { RECHERCHE_QUELLEN } from "@/lib/agents/browser";
 
 export const metadata: Metadata = {
@@ -492,6 +493,32 @@ export default function Home() {
           </div>
 
           <ProductShowcase />
+        </section>
+
+        {/* 1b) KI-Belegschaft bei der Arbeit (Higgsfield-Illustration) */}
+        <section className="border-t border-[#e8e1d2] px-6 py-20">
+          <div className="mx-auto max-w-6xl">
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Ihre digitale Belegschaft</p>
+              <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+                Ein ganzes <span className="acc-grad-text">Büro</span>, das für Sie arbeitet
+              </h2>
+              <p className="mt-4 text-lg text-[#6f6557]">
+                Sie geben den Auftrag – Ihre KI-Abteilungen arbeiten parallel: recherchieren,
+                schreiben, rechnen und prüfen, bis das fertige Ergebnis vorliegt.
+              </p>
+            </div>
+            <div className="mt-10 overflow-hidden rounded-3xl border border-[#e8e1d2] bg-white p-2 shadow-[0_30px_80px_-40px_rgba(28,25,23,0.28)] sm:p-3">
+              <Image
+                src="/ki-buero.webp"
+                alt="Illustration der digitalen KI-Belegschaft: Figuren arbeiten im Büro an Computern, recherchieren, schreiben und besprechen sich"
+                width={2688}
+                height={1536}
+                sizes="(max-width: 1152px) 100vw, 1152px"
+                className="h-auto w-full rounded-2xl"
+              />
+            </div>
+          </div>
         </section>
 
         {/* 2) Shop-Regal: Abos */}
