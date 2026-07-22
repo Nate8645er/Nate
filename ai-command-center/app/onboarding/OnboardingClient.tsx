@@ -176,7 +176,6 @@ export default function OnboardingClient() {
               className="mt-4 w-full rounded-xl border border-[#e8e1d2]"
             >
               <source src={tut.videoSrc} type="video/mp4" />
-              <source src={tut.videoSrc.replace(/\.mp4$/, ".webm")} type="video/webm" />
               Ihr Browser kann dieses Video nicht abspielen.
             </video>
           ) : (
