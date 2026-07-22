@@ -49,7 +49,9 @@ Lizenzschlüssel und Plan-Limits: siehe `VERKAUF.md`, `GO-LIVE.md`,
   Firma hinterlegen, Anfrage senden. Speichert lokal (`acc-firma`,
   `acc-connections`).
 - `app/onboarding/` + `lib/onboarding.ts` – Video-Onboarding und interaktive
-  Einrichtungs-Checkliste pro Tarif.
+  Einrichtungs-Checkliste pro Tarif. Deutsche Sprachführung (`useVorleser`,
+  Web-Speech-API des Browsers) liest die Schritte vor und hebt den aktiven
+  hervor – ohne Server/Kosten, mit sauberem Fallback ohne Sprachpaket.
 - `lib/agents/` – Agenten-System (Provider, Team/Roster, Orchestrator, Browser).
   Ohne API-Key wird jedes Ergebnis klar als Demo gekennzeichnet.
 - `lib/connectors.ts`, `lib/skills.ts` – Kataloge (Integrationen, Fähigkeiten).
