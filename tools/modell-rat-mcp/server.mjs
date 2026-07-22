@@ -26,9 +26,44 @@
  */
 
 import process from "node:process";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const REQUEST_TIMEOUT_MS = 90_000;
 const MAX_TOKENS = 2048;
+
+/**
+ * Lädt Zugänge aus lokalen .env-Dateien (Tool-Ordner + Repo-Wurzel), OHNE
+ * bereits gesetzte Umgebungsvariablen zu überschreiben. Diese Dateien sind per
+ * .gitignore ausgeschlossen – so trägt der Nutzer seine Keys lokal ein, ohne
+ * dass sie je ins Git oder in den Chat gelangen. Parser bewusst minimal
+ * (KEY=VALUE, # Kommentare, optionale Anführungszeichen, optionales export).
+ */
+function ladeEnvDatei(pfad) {
+  let inhalt;
+  try {
+    inhalt = readFileSync(pfad, "utf8");
+  } catch {
+    return; // Datei fehlt → egal, dann greifen echte Env-Variablen.
+  }
+  for (const roh of inhalt.split("\n")) {
+    const zeile = roh.trim();
+    if (!zeile || zeile.startsWith("#")) continue;
+    const ohneExport = zeile.replace(/^export\s+/, "");
+    const gleich = ohneExport.indexOf("=");
+    if (gleich < 1) continue;
+    const name = ohneExport.slice(0, gleich).trim();
+    let wert = ohneExport.slice(gleich + 1).trim();
+    if ((wert.startsWith('"') && wert.endsWith('"')) || (wert.startsWith("'") && wert.endsWith("'"))) {
+      wert = wert.slice(1, -1);
+    }
+    if (name && process.env[name] === undefined) process.env[name] = wert;
+  }
+}
+const HIER = dirname(fileURLToPath(import.meta.url));
+ladeEnvDatei(join(HIER, ".env")); // tools/modell-rat-mcp/.env
+ladeEnvDatei(join(HIER, "..", "..", ".env")); // Repo-Wurzel/.env
 
 /** Worker-Registry: id -> Konfiguration. Reihenfolge = Anzeigereihenfolge. */
 const MODELS = {

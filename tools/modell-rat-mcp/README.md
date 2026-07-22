@@ -34,12 +34,23 @@ Alle Anbieter sprechen das OpenAI-kompatible Chat-Format (nur Anthropic weicht
 ab, wird intern behandelt). Die exakte Modell-ID lässt sich pro Anbieter über
 `<PROVIDER>_MODEL` überschreiben, z. B. `GOOGLE_MODEL=gemini-3-ultra`.
 
-## Einrichtung
+## Einrichtung – Keys sicher hinterlegen
 
-Der Server ist bereits in `.mcp.json` (Repo-Wurzel) registriert. Setze die
-Zugänge, die du nutzen willst, als Umgebungsvariablen (z. B. in deiner Shell
-oder einer lokalen `.env`, die NICHT committet wird), dann starte Claude Code
-im Projekt neu. Beim Start lädt Claude Code den MCP-Server automatisch.
+Der Server ist bereits in `.mcp.json` (Repo-Wurzel) registriert. Du musst nur
+deine Zugänge eintragen. **Keys niemals ins Git und niemals in den Chat** – der
+saubere Weg ist eine lokale `.env`, die per `.gitignore` ausgeschlossen ist:
+
+1. Kopiere `tools/modell-rat-mcp/.env.example` nach `tools/modell-rat-mcp/.env`.
+2. Trage in die `.env` die Keys ein, die du nutzen willst (Links stehen drin).
+   Nur ausgefüllte Zugänge werden aktiv; der Rest bleibt ehrlich inaktiv.
+3. Starte Claude Code im Projekt neu. Der Server liest die `.env` automatisch
+   (Tool-Ordner zuerst, dann Repo-Wurzel) und überschreibt dabei keine echten
+   Umgebungsvariablen.
+
+Alternativ (z. B. in einer gehosteten Umgebung) kannst du die gleichen Namen
+auch als **Umgebungsvariablen/Secrets** setzen – die haben Vorrang vor der `.env`.
+
+Eine `.env` mit echten Keys wird von Git ignoriert; committe sie nie manuell.
 
 Schnelltest ohne Claude Code:
 

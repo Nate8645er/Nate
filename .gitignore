@@ -1,1 +1,9 @@
 shopify-theme/*.zip
+
+# Secrets: NIE committen. API-Keys/Zugänge nur lokal in .env-Dateien.
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
