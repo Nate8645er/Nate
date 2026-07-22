@@ -38,6 +38,13 @@ const BEREICHE = [
   ["Integrationen", "/integrationen"],
 ] as const;
 
+const KACHEL_FARBEN = [
+  "bg-[#fff4e6] text-[#c25e0e]",
+  "bg-[#eef0ff] text-[#5b52d6]",
+  "bg-[#e6faf6] text-[#0f766e]",
+  "bg-[#fdeef7] text-[#be185d]",
+] as const;
+
 export default function StatusPage() {
   const stand = new Date();
   const anbieter = [
@@ -48,25 +55,25 @@ export default function StatusPage() {
   const aktiveAnbieter = anbieter.filter(([, ok]) => ok).length;
 
   return (
-    <div className="min-h-dvh bg-[#0b0a08] text-zinc-200">
-      <div className="hud-texture" aria-hidden="true" />
-      <div className="relative z-10 mx-auto max-w-4xl px-4 pb-24">
-        <header className="flex items-center justify-between border-b border-[#ff8c2a]/15 py-4">
-          <div className="flex items-center gap-2">
-            <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" />
-            <span className="hud-label">AI Command Center</span>
+    <div className="acc-page min-h-dvh text-[#1c1917]">
+      <div className="mx-auto max-w-4xl px-4 pb-24">
+        <header className="flex items-center justify-between border-b border-[#e8e1d2] py-4">
+          <div className="flex items-center gap-2.5">
+            <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f]" />
+            <span className="text-sm font-bold">AI Command Center</span>
           </div>
-          <WorkNav aktiv="status" variante="dunkel" />
+          <WorkNav aktiv="status" variante="hell" />
         </header>
 
-        <div className="pt-10">
-          <p className="hud-label mb-3">System-Status</p>
-          <h1 className="text-3xl font-semibold text-white sm:text-4xl">
-            24/7 im Dienst. Automatisch überwacht.
+        <div className="acc-in pt-10">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">System-Status</p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+            24/7 im Dienst. Automatisch{" "}
+            <span className="acc-grad-text">überwacht</span>.
           </h1>
-          <p className="mt-3 flex flex-wrap items-center gap-2 text-sm text-zinc-400">
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#22c55e]/40 bg-[#22c55e]/10 px-3 py-1 font-semibold text-[#4ade80]">
-              <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#4ade80]" />
+          <p className="mt-3 flex flex-wrap items-center gap-2 text-sm text-[#8d8172]">
+            <span className="inline-flex items-center gap-2 rounded-full border border-[#177245]/30 bg-[#e7f6ee] px-3 py-1 font-semibold text-[#177245]">
+              <span className="inline-block h-2 w-2 rounded-full bg-[#177245]" />
               Alle Systeme betriebsbereit
             </span>
             <span>
@@ -85,28 +92,28 @@ export default function StatusPage() {
             [String(SKILLS.length), "Skills bereit"],
             [`${aktiveAnbieter}/3`, "KI-Anbieter aktiv"],
             [talentpoolFormatiert(), "Talent-Profile adressierbar"],
-          ].map(([wert, label]) => (
-            <div key={label} className="hud-panel rounded-xl p-4 text-center">
-              <p className="text-xl font-bold text-[#ffd257] sm:text-2xl">{wert}</p>
-              <p className="mt-1 text-xs text-zinc-500">{label}</p>
+          ].map(([wert, label], i) => (
+            <div key={label} className={`acc-card acc-card-hover rounded-2xl p-4 text-center ${KACHEL_FARBEN[i]}`}>
+              <p className="text-xl font-bold sm:text-2xl">{wert}</p>
+              <p className="mt-1 text-xs font-semibold text-[#8d8172]">{label}</p>
             </div>
           ))}
         </div>
 
         {/* Bereiche */}
         <section className="mt-8">
-          <h2 className="text-lg font-semibold text-white">Bereiche</h2>
-          <div className="mt-4 overflow-hidden rounded-xl border border-[#ff8c2a]/15">
+          <h2 className="text-lg font-semibold">Bereiche</h2>
+          <div className="mt-4 overflow-hidden rounded-2xl border border-[#e8e1d2] bg-white/60">
             {BEREICHE.map(([name, href], i) => (
               <div
                 key={name}
-                className={`flex items-center justify-between px-4 py-3 ${i > 0 ? "border-t border-[#ff8c2a]/10" : ""}`}
+                className={`flex items-center justify-between px-4 py-3 ${i > 0 ? "border-t border-[#eee7d8]" : ""}`}
               >
-                <Link href={href} className="text-sm text-zinc-300 hover:text-[#ffb35c]">
+                <Link href={href} className="text-sm text-[#4a4335] hover:text-[#c25e0e]">
                   {name}
                 </Link>
-                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#4ade80]">
-                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#4ade80]" />
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e7f6ee] px-2 py-0.5 text-xs font-semibold text-[#177245]">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#177245]" />
                   Online
                 </span>
               </div>
@@ -116,23 +123,28 @@ export default function StatusPage() {
 
         {/* Anbieter-Kette */}
         <section className="mt-8">
-          <h2 className="text-lg font-semibold text-white">KI-Anbieter-Kette</h2>
-          <p className="mt-1 text-sm text-zinc-500">
+          <h2 className="text-lg font-semibold">KI-Anbieter-Kette</h2>
+          <p className="mt-1 text-sm text-[#8d8172]">
             Fällt ein Anbieter aus, übernimmt automatisch der nächste – Ihre
             Befehle bleiben ausführbar.
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
             {anbieter.map(([name, ok]) => (
-              <div key={name} className="hud-panel rounded-xl p-4">
-                <p className="text-sm font-semibold text-zinc-200">{name}</p>
-                <p className={`mt-1 text-xs font-semibold ${ok ? "text-[#4ade80]" : "text-zinc-500"}`}>
-                  {ok ? "● Konfiguriert" : "○ Nicht konfiguriert"}
+              <div key={name} className="acc-card acc-card-hover rounded-2xl p-4">
+                <p className="text-sm font-semibold text-[#1c1917]">{name}</p>
+                <p
+                  className={`mt-1 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-semibold ${
+                    ok ? "bg-[#e7f6ee] text-[#177245]" : "bg-[#fff7ed] text-[#b45309]"
+                  }`}
+                >
+                  <span className={`inline-block h-1.5 w-1.5 rounded-full ${ok ? "bg-[#177245]" : "bg-[#b45309]"}`} />
+                  {ok ? "Konfiguriert" : "Nicht konfiguriert"}
                 </p>
               </div>
             ))}
           </div>
         </section>
-        <WorkFooter variante="dunkel" />
+        <WorkFooter variante="hell" />
       </div>
     </div>
   );

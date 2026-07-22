@@ -23,34 +23,34 @@ export const metadata = {
 
 export default function AgentenPage() {
   return (
-    <div className="min-h-screen bg-[#08070c] text-zinc-100">
-      <header className="sticky top-0 z-40 flex items-center justify-between gap-3 px-4 py-3 backdrop-blur-xl sm:px-6">
-        <div className="flex items-center gap-2">
-          <span className="inline-block h-2 w-2 rounded-full bg-[#ff8c2a] shadow-[0_0_10px_2px_rgba(255,140,42,0.7)]" />
-          <span className="font-mono text-[11px] tracking-[0.22em] text-zinc-400">AI COMMAND CENTER</span>
+    <div className="acc-page min-h-dvh text-[#1c1917]">
+      <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-[#e8e1d2] bg-[#faf6ee]/80 px-4 py-3 backdrop-blur-xl sm:px-6">
+        <div className="flex items-center gap-2.5">
+          <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f]" />
+          <span className="text-sm font-bold">AI Command Center</span>
         </div>
-        <WorkNav aktiv="agenten" variante="dunkel" />
+        <WorkNav aktiv="agenten" variante="hell" />
       </header>
 
       <main className="mx-auto w-full max-w-6xl px-4 pb-24 pt-6 sm:px-6">
-        <div className="max-w-3xl">
-          <p className="font-mono text-[11px] tracking-[0.22em] text-[#ff8c2a]">// IHRE KI-BELEGSCHAFT</p>
-          <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-            {AGENT_ANZAHL} Spezialisten-Agenten – ein Team für alles
+        <div className="acc-in max-w-3xl">
+          <p className="font-mono text-[11px] tracking-[0.22em] text-[#c25e0e]">// IHRE KI-BELEGSCHAFT</p>
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+            {AGENT_ANZAHL} Spezialisten-Agenten – ein <span className="acc-grad-text">Team</span> für alles
           </h1>
-          <p className="mt-3 text-[15px] leading-relaxed text-zinc-400">
+          <p className="mt-3 text-[15px] leading-relaxed text-[#8d8172]">
             Der Commander stellt für jede Mission das passende Team aus diesen benannten
             Spezialisten zusammen – und kann bei Bedarf jederzeit neue Agenten erschaffen.
             Kein Chatbot: eine ganze Organisation, die für Sie arbeitet.
           </p>
           <div className="mt-5 flex flex-wrap gap-2 text-[12px]">
-            <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-zinc-300">
+            <span className="rounded-full border border-[#e8e1d2] bg-white/70 px-3 py-1 font-semibold text-[#4a4335]">
               {ABTEILUNGEN.length} Abteilungen
             </span>
-            <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-zinc-300">
+            <span className="rounded-full border border-[#c7f0e6] bg-[#e6faf6] px-3 py-1 font-semibold text-[#0f766e]">
               {AGENT_ANZAHL} benannte Agenten
             </span>
-            <span className="rounded-full border border-[#ff8c2a]/30 bg-[#ff8c2a]/[0.08] px-3 py-1 text-[#ffb35c]">
+            <span className="rounded-full border border-[#ffb066]/40 bg-[#fff4e6] px-3 py-1 font-semibold text-[#c25e0e]">
               + dynamisch erweiterbar
             </span>
           </div>
@@ -65,30 +65,30 @@ export default function AgentenPage() {
                 <div className="mb-4 flex items-center gap-3">
                   <span className="h-3 w-3 rounded-full" style={{ background: akzent }} />
                   <h2 className="text-lg font-semibold tracking-tight">{abt}</h2>
-                  <span className="font-mono text-[11px] text-zinc-500">{agenten.length}</span>
-                  <span className="h-px flex-1 bg-white/8" />
+                  <span className="font-mono text-[11px] text-[#a89c8a]">{agenten.length}</span>
+                  <span className="h-px flex-1 bg-[#e8e1d2]" />
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {agenten.map((a) => (
                     <div
                       key={a.id}
-                      className="group rounded-2xl border border-white/8 bg-white/[0.03] p-4 transition-colors hover:border-white/15 hover:bg-white/[0.05]"
+                      className="acc-card acc-card-hover group rounded-2xl p-4"
                       style={{ borderTopColor: akzent, borderTopWidth: 2 }}
                     >
                       <div className="flex items-center gap-2">
-                        <h3 className="text-[14px] font-semibold text-white">{a.name}</h3>
+                        <h3 className="text-[14px] font-semibold">{a.name}</h3>
                         {a.geplant && (
-                          <span className="rounded-full border border-zinc-500/40 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wider text-zinc-400">
+                          <span className="rounded-full border border-[#e0d8c6] px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wider text-[#a89c8a]">
                             geplant
                           </span>
                         )}
                       </div>
-                      <p className="mt-1.5 text-[13px] leading-relaxed text-zinc-400">{a.aufgabe}</p>
+                      <p className="mt-1.5 text-[13px] leading-relaxed text-[#8d8172]">{a.aufgabe}</p>
                       <div className="mt-3 flex flex-wrap gap-1.5">
                         {a.kann.map((k) => (
                           <span
                             key={k}
-                            className="rounded-md bg-white/[0.05] px-2 py-0.5 text-[11px] text-zinc-300"
+                            className="rounded-md border border-[#efe8da] bg-[#faf6ee] px-2 py-0.5 text-[11px] text-[#6b6152]"
                           >
                             {k}
                           </span>
@@ -102,22 +102,22 @@ export default function AgentenPage() {
           })}
         </div>
 
-        <div className="mt-12 rounded-2xl border border-[#ff8c2a]/25 bg-gradient-to-br from-[#ff8c2a]/[0.08] to-transparent p-6 text-center">
+        <div className="mt-12 rounded-2xl border border-[#ffb066]/30 bg-gradient-to-br from-[#fff4e6] to-white p-6 text-center">
           <h2 className="text-xl font-bold">Bereit, Ihr Team arbeiten zu lassen?</h2>
-          <p className="mx-auto mt-2 max-w-xl text-[14px] text-zinc-400">
+          <p className="mx-auto mt-2 max-w-xl text-[14px] text-[#8d8172]">
             Starten Sie eine Mission im Dashboard – der Commander besetzt automatisch die
             passenden Spezialisten – oder fragen Sie den KI-Chat direkt.
           </p>
           <div className="mt-5 flex flex-wrap justify-center gap-3">
             <Link
               href="/dashboard"
-              className="rounded-xl bg-gradient-to-br from-[#ff8c2a] to-[#ff5f1f] px-5 py-2.5 text-[14px] font-semibold text-white shadow-[0_6px_20px_-8px_rgba(255,110,30,0.6)]"
+              className="shop-btn rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-5 py-2.5 text-[14px] font-bold text-white shadow-[0_6px_20px_-8px_rgba(255,110,30,0.6)]"
             >
               Mission starten
             </Link>
             <Link
               href="/assistent"
-              className="rounded-xl border border-white/12 bg-white/[0.04] px-5 py-2.5 text-[14px] font-medium text-zinc-200 hover:bg-white/[0.07]"
+              className="rounded-xl border border-[#e0d8c6] bg-white/70 px-5 py-2.5 text-[14px] font-semibold text-[#4a4335] hover:border-[#ffb066]"
             >
               KI-Chat öffnen
             </Link>
@@ -125,7 +125,7 @@ export default function AgentenPage() {
         </div>
       </main>
 
-      <WorkFooter variante="dunkel" />
+      <WorkFooter variante="hell" />
     </div>
   );
 }

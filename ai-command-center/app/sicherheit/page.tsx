@@ -87,23 +87,22 @@ const WAECHTER = [
 export default function SicherheitPage() {
   const stand = new Date();
   return (
-    <div className="min-h-dvh bg-[#0b0a08] text-zinc-200">
-      <div className="hud-texture" aria-hidden="true" />
-      <div className="relative z-10 mx-auto max-w-5xl px-4 pb-24">
-        <header className="flex items-center justify-between border-b border-[#ff8c2a]/15 py-4">
-          <div className="flex items-center gap-2">
-            <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" />
-            <span className="hud-label">AI Command Center</span>
+    <div className="acc-page min-h-dvh text-[#1c1917]">
+      <div className="mx-auto max-w-5xl px-4 pb-24">
+        <header className="flex items-center justify-between border-b border-[#e8e1d2] py-4">
+          <div className="flex items-center gap-2.5">
+            <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f]" />
+            <span className="text-sm font-bold">AI Command Center</span>
           </div>
-          <WorkNav aktiv="sicherheit" variante="dunkel" />
+          <WorkNav aktiv="sicherheit" variante="hell" />
         </header>
 
-        <div className="pt-10">
-          <p className="hud-label mb-3">Sicherheitssystem</p>
-          <h1 className="text-3xl font-semibold text-white sm:text-4xl">
-            10 Wächter. Bei jedem Aufruf im Dienst.
+        <div className="acc-in pt-10">
+          <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Sicherheitssystem</p>
+          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+            10 <span className="acc-grad-text">Wächter</span>. Bei jedem Aufruf im Dienst.
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-400">
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#8d8172]">
             Jeder Wächter ist eine im Code verankerte Schutzschicht, die bei
             jeder einzelnen Anfrage greift – rund um die Uhr, an jedem Tag.
             Zuletzt automatisch geprüft: {stand.toLocaleDateString("de-CH")} um{" "}
@@ -114,39 +113,39 @@ export default function SicherheitPage() {
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
           {WAECHTER.map((w, i) => (
-            <article key={w.name} className="hud-panel rounded-xl p-5">
+            <article key={w.name} className="acc-card acc-card-hover rounded-2xl p-5">
               <div className="flex items-center justify-between gap-2">
-                <h2 className="flex items-center gap-2.5 font-semibold text-[#ffb35c]">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#ff8c2a]/30 bg-[#ff8c2a]/10 font-mono text-xs font-bold text-[#ffd257]">
+                <h2 className="flex items-center gap-2.5 font-semibold text-[#1c1917]">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#ffb066]/40 bg-[#fff4e6] font-mono text-xs font-bold text-[#c25e0e]">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   {w.name}
                 </h2>
-                <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#22c55e]/40 bg-[#22c55e]/10 px-2.5 py-1 text-[11px] font-bold text-[#4ade80]">
-                  <span className="hud-pulse inline-block h-1.5 w-1.5 rounded-full bg-[#4ade80]" />
+                <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#177245]/25 bg-[#e7f6ee] px-2.5 py-1 text-[11px] font-bold text-[#177245]">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#22c55e]" />
                   24/7 aktiv
                 </span>
               </div>
-              <p className="mt-2.5 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+              <p className="mt-2.5 text-xs font-semibold uppercase tracking-wider text-[#0f766e]">
                 Schützt vor: {w.schutz}
               </p>
-              <p className="mt-2 text-sm leading-relaxed text-zinc-400">{w.detail}</p>
+              <p className="mt-2 text-sm leading-relaxed text-[#8d8172]">{w.detail}</p>
             </article>
           ))}
         </div>
 
-        <p className="mt-8 max-w-2xl rounded-xl border border-[#ff8c2a]/20 bg-[#ff8c2a]/[0.04] px-5 py-4 text-xs leading-relaxed text-[#ffb35c]/90">
+        <p className="mt-8 max-w-2xl rounded-2xl border border-[#ffb066]/40 bg-[#fff4e6] px-5 py-4 text-xs leading-relaxed text-[#8d8172]">
           Ehrlich eingeordnet: Diese Wächter schützen die Plattform und Ihre
           Arbeit darin. Sie ersetzen keinen Virenschutz auf Ihren eigenen
           Geräten. Für Grosskunden ergänzen wir als Enterprise-Projekt
           zusätzlich Firewall-Regeln (WAF), Audit-Protokolle, SSO/2FA und
           private Umgebungen –{" "}
-          <Link href="/integrationen" className="underline hover:text-white">
+          <Link href="/integrationen" className="font-semibold text-[#c25e0e] underline hover:text-[#ff5f1f]">
             siehe Enterprise-Ausbau
           </Link>
           .
         </p>
-        <WorkFooter variante="dunkel" />
+        <WorkFooter variante="hell" />
       </div>
     </div>
   );
