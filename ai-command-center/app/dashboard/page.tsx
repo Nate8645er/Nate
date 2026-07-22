@@ -222,9 +222,9 @@ function renderMarkdown(md: string): React.ReactNode[] {
       s.split(/\*\*(.+?)\*\*/g).map((part, j) =>
         j % 2 === 1 ? <strong key={j}>{part}</strong> : part,
       );
-    if (line.startsWith("### ")) return <h4 key={i} className="mt-4 mb-1 font-semibold text-[#fff3e2]">{bold(line.slice(4))}</h4>;
-    if (line.startsWith("## ")) return <h3 key={i} className="mt-5 mb-2 text-lg font-semibold text-[#fff3e2]">{bold(line.slice(3))}</h3>;
-    if (line.startsWith("# ")) return <h2 key={i} className="mt-5 mb-2 text-xl font-bold text-[#fff3e2]">{bold(line.slice(2))}</h2>;
+    if (line.startsWith("### ")) return <h4 key={i} className="mt-4 mb-1 font-semibold text-[#1c1917]">{bold(line.slice(4))}</h4>;
+    if (line.startsWith("## ")) return <h3 key={i} className="mt-5 mb-2 text-lg font-semibold text-[#1c1917]">{bold(line.slice(3))}</h3>;
+    if (line.startsWith("# ")) return <h2 key={i} className="mt-5 mb-2 text-xl font-bold text-[#1c1917]">{bold(line.slice(2))}</h2>;
     if (/^\s*[-*] /.test(line)) return <li key={i} className="ml-5 list-disc">{bold(line.replace(/^\s*[-*] /, ""))}</li>;
     if (/^\s*\d+\. /.test(line)) return <li key={i} className="ml-5 list-decimal">{bold(line.replace(/^\s*\d+\. /, ""))}</li>;
     if (!line.trim()) return <div key={i} className="h-2" />;
@@ -236,16 +236,16 @@ function renderMarkdown(md: string): React.ReactNode[] {
 
 /** Rotierender Drahtgitter-Globus — reines SVG/CSS, keine externen Libs. */
 const WireframeGlobe = memo(function WireframeGlobe() {
-  const stroke = "rgba(255,179,92,0.55)";
+  const stroke = "rgba(194,94,14,0.5)";
   const thin = 0.6;
   return (
     <div className="relative mx-auto h-48 w-48 sm:h-60 sm:w-60" aria-hidden>
       <svg viewBox="0 0 200 200" className="h-full w-full">
         {/* Aeussere Ringe */}
         <g className="hud-spin-rev">
-          <circle cx="100" cy="100" r="95" fill="none" stroke="rgba(255,140,42,0.4)" strokeWidth="0.8" strokeDasharray="2 7" />
+          <circle cx="100" cy="100" r="95" fill="none" stroke="rgba(255,140,42,0.55)" strokeWidth="0.8" strokeDasharray="2 7" />
         </g>
-        <circle cx="100" cy="100" r="88" fill="none" stroke="rgba(255,140,42,0.18)" strokeWidth="0.6" />
+        <circle cx="100" cy="100" r="88" fill="none" stroke="rgba(194,94,14,0.28)" strokeWidth="0.6" />
         {/* Globus */}
         <g className="hud-spin-slow">
           <circle cx="100" cy="100" r="76" fill="none" stroke={stroke} strokeWidth="0.9" />
@@ -261,13 +261,13 @@ const WireframeGlobe = memo(function WireframeGlobe() {
           <ellipse cx="100" cy="154" rx="36" ry="9" fill="none" stroke={stroke} strokeWidth={thin} />
         </g>
         {/* Fadenkreuz */}
-        <line x1="100" y1="2" x2="100" y2="14" stroke="rgba(255,140,42,0.7)" strokeWidth="1" />
-        <line x1="100" y1="186" x2="100" y2="198" stroke="rgba(255,140,42,0.7)" strokeWidth="1" />
-        <line x1="2" y1="100" x2="14" y2="100" stroke="rgba(255,140,42,0.7)" strokeWidth="1" />
-        <line x1="186" y1="100" x2="198" y2="100" stroke="rgba(255,140,42,0.7)" strokeWidth="1" />
-        <circle cx="100" cy="100" r="2" fill="#ff8c2a" />
+        <line x1="100" y1="2" x2="100" y2="14" stroke="rgba(194,94,14,0.7)" strokeWidth="1" />
+        <line x1="100" y1="186" x2="100" y2="198" stroke="rgba(194,94,14,0.7)" strokeWidth="1" />
+        <line x1="2" y1="100" x2="14" y2="100" stroke="rgba(194,94,14,0.7)" strokeWidth="1" />
+        <line x1="186" y1="100" x2="198" y2="100" stroke="rgba(194,94,14,0.7)" strokeWidth="1" />
+        <circle cx="100" cy="100" r="2" fill="#c25e0e" />
       </svg>
-      <div className="pointer-events-none absolute inset-0 rounded-full" style={{ boxShadow: "0 0 60px rgba(255,140,42,0.12) inset, 0 0 40px rgba(255,140,42,0.08)" }} />
+      <div className="pointer-events-none absolute inset-0 rounded-full" style={{ boxShadow: "0 0 60px rgba(255,140,42,0.1) inset" }} />
     </div>
   );
 });
@@ -281,21 +281,21 @@ const RadialGauge = memo(function RadialGauge({ score }: { score: number | null 
   return (
     <div className="flex flex-col items-center">
       <svg viewBox="0 0 140 140" className="h-36 w-36 sm:h-44 sm:w-44" role="img" aria-label={`Quality-Score ${score ?? "unbekannt"} von 100`}>
-        <circle cx="70" cy="70" r={r} fill="none" stroke="rgba(255,140,42,0.14)" strokeWidth="5" />
-        <circle cx="70" cy="70" r={r + 8} fill="none" stroke="rgba(255,140,42,0.2)" strokeWidth="0.6" strokeDasharray="1 5" />
+        <circle cx="70" cy="70" r={r} fill="none" stroke="rgba(28,25,23,0.10)" strokeWidth="5" />
+        <circle cx="70" cy="70" r={r + 8} fill="none" stroke="rgba(194,94,14,0.22)" strokeWidth="0.6" strokeDasharray="1 5" />
         <circle
           cx="70" cy="70" r={r} fill="none"
-          stroke={pct >= 80 ? "#ff8c2a" : pct >= 60 ? "#ffb35c" : "#ff5c3a"}
+          stroke={pct >= 80 ? "#177245" : pct >= 60 ? "#c25e0e" : "#dc2626"}
           strokeWidth="5" strokeLinecap="round"
           strokeDasharray={c} strokeDashoffset={offset}
           transform="rotate(-90 70 70)"
           className="hud-gauge-arc"
-          style={{ filter: "drop-shadow(0 0 6px rgba(255,140,42,0.55))" }}
+          style={{ filter: "drop-shadow(0 2px 4px rgba(28,25,23,0.18))" }}
         />
-        <text x="70" y="72" textAnchor="middle" fill="#fff3e2" fontSize="26" fontWeight="700" fontFamily="var(--font-geist-mono), monospace">
+        <text x="70" y="72" textAnchor="middle" fill="#1c1917" fontSize="26" fontWeight="700" fontFamily="var(--font-geist-mono), monospace">
           {score ?? "--"}
         </text>
-        <text x="70" y="90" textAnchor="middle" fill="rgba(255,179,92,0.7)" fontSize="8" letterSpacing="3" fontFamily="var(--font-geist-mono), monospace">
+        <text x="70" y="90" textAnchor="middle" fill="#c25e0e" fontSize="8" letterSpacing="3" fontFamily="var(--font-geist-mono), monospace">
           QUALITY %
         </text>
       </svg>
@@ -347,9 +347,9 @@ const TelemetryTiles = memo(function TelemetryTiles({
   return (
     <div className="grid grid-cols-2 gap-3">
       {tiles.map((t) => (
-        <div key={t.label} className="hud-panel hud-corners rounded-xl px-3 py-3 text-center">
-          <div className="hud-label">{t.label}</div>
-          <div className="mt-1 font-mono text-xl font-bold text-[#fff3e2] sm:text-2xl">{t.value}</div>
+        <div key={t.label} className="acc-card rounded-2xl px-3 py-3 text-center">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">{t.label}</div>
+          <div className="mt-1 font-mono text-xl font-bold text-[#1c1917] sm:text-2xl">{t.value}</div>
         </div>
       ))}
     </div>
@@ -364,14 +364,14 @@ const TerminalFeed = memo(function TerminalFeed({ logs }: { logs: string[] }) {
     if (el) el.scrollTop = el.scrollHeight;
   }, [logs]);
   return (
-    <section aria-label="Terminal-Feed" className="hud-panel hud-corners mt-8 rounded-xl">
-      <div className="flex items-center justify-between border-b border-[#ff8c2a]/15 px-4 py-2">
-        <span className="hud-label">Mission Log // Live-Feed</span>
-        <span className="hud-pulse h-1.5 w-1.5 rounded-full bg-[#ff8c2a]" aria-hidden />
+    <section aria-label="Terminal-Feed" className="acc-card mt-8 rounded-2xl">
+      <div className="flex items-center justify-between border-b border-[#e8e1d2] px-4 py-2">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Mission Log // Live-Feed</span>
+        <span className="hud-pulse h-1.5 w-1.5 rounded-full bg-[#c25e0e]" aria-hidden />
       </div>
-      <div ref={boxRef} className="max-h-56 overflow-y-auto px-4 py-3 font-mono text-[11px] leading-5 text-[#ffb35c]/85">
+      <div ref={boxRef} className="max-h-56 overflow-y-auto px-4 py-3 font-mono text-[11px] leading-5 text-[#8d8172]">
         {logs.length === 0 ? (
-          <p className="text-[#ffb35c]/40">[SYSTEM] Bereit. Warte auf Mission …</p>
+          <p className="text-[#a89c8a]">[SYSTEM] Bereit. Warte auf Mission …</p>
         ) : (
           logs.map((line, i) => <p key={i} className="whitespace-pre-wrap">{line}</p>)
         )}
@@ -416,9 +416,9 @@ const BusinessTicker = memo(function BusinessTicker({
     `PLAN ${plan}`,
   ];
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[#ffd257]/40 bg-[#0b0a08]/90 backdrop-blur" role="status" aria-label="Live-Telemetrie">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-1 px-5 py-1.5 font-mono text-[10px] tracking-[0.18em] text-[#ffd257]/80">
-        <span className="hud-pulse h-1.5 w-1.5 rounded-full bg-[#ffd257]" aria-hidden />
+    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[#e8e1d2] bg-[#fff9f0]/90 backdrop-blur" role="status" aria-label="Live-Telemetrie">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-1 px-5 py-1.5 font-mono text-[10px] tracking-[0.18em] text-[#c25e0e]">
+        <span className="hud-pulse h-1.5 w-1.5 rounded-full bg-[#c25e0e]" aria-hidden />
         {items.map((it) => <span key={it}>{it}</span>)}
       </div>
     </div>
@@ -429,12 +429,12 @@ const BusinessTicker = memo(function BusinessTicker({
 /** Status-Punkt-Klassen für die dynamischen Rollen im Organigramm. */
 function dynDotClass(status: AgentStatus): string {
   return status === "working"
-    ? "hud-pulse bg-[#ff8c2a]"
+    ? "hud-pulse bg-[#c25e0e]"
     : status === "done"
-      ? "bg-[#ffb35c]"
+      ? "bg-[#177245]"
       : status === "error"
-        ? "bg-red-400"
-        : "bg-[#5a4a35]";
+        ? "bg-red-500"
+        : "bg-[#cabfa9]";
 }
 
 /** Wie viele Belegschafts-Chips maximal eingeklappt sichtbar sind. */
@@ -454,10 +454,10 @@ const DepartmentCard = memo(function DepartmentCard({
   const rest = total - shown.length;
 
   return (
-    <div className="hud-panel hud-corners rounded-xl p-4">
+    <div className="acc-card rounded-2xl p-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-[#fff3e2]">{dept.name}</h3>
-        <span className="hud-label">{dept.roles.length} live · {total} Assist.</span>
+        <h3 className="font-semibold text-[#1c1917]">{dept.name}</h3>
+        <span className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">{dept.roles.length} live · {total} Assist.</span>
       </div>
 
       {/* Echte, live-arbeitende Spezialisten */}
@@ -467,8 +467,8 @@ const DepartmentCard = memo(function DepartmentCard({
           return (
             <li key={r.id} className="flex items-center gap-2 text-sm">
               <span aria-hidden className={`h-2 w-2 rounded-full ${dynDotClass(st)}`} />
-              <span className="text-[#e8dcc8]">{r.label}</span>
-              <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/60">
+              <span className="text-[#4a4335]">{r.label}</span>
+              <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172]">
                 {STATUS_LABEL[st]}
               </span>
             </li>
@@ -478,11 +478,11 @@ const DepartmentCard = memo(function DepartmentCard({
 
       {/* Belegschaft: statische Assistenten (keine LLM-Aufrufe) */}
       {total > 0 && (
-        <div className="mt-4 border-t border-[#ff8c2a]/10 pt-3">
+        <div className="mt-4 border-t border-[#e8e1d2] pt-3">
           <button
             onClick={() => setExpanded((v) => !v)}
             aria-expanded={expanded}
-            className={`hud-label transition-colors hover:text-[#ff8c2a] ${FOCUS_RING}`}
+            className={`text-[11px] font-bold uppercase tracking-wider text-[#c25e0e] transition-colors hover:text-[#c25e0e] ${FOCUS_RING}`}
           >
             Belegschaft: {total} {expanded ? "▲ einklappen" : "▼ anzeigen"}
           </button>
@@ -490,13 +490,13 @@ const DepartmentCard = memo(function DepartmentCard({
             {shown.map((a) => (
               <span
                 key={a.id}
-                className="rounded-xl border border-[#ff8c2a]/12 bg-[#ff8c2a]/[0.03] px-2 py-0.5 font-mono text-[10px] text-[#ffb35c]/55"
+                className="rounded-xl border border-[#e8e1d2] bg-[#faf6ee] px-2 py-0.5 font-mono text-[10px] text-[#8d8172]"
               >
                 {a.label}
               </span>
             ))}
             {!expanded && rest > 0 && (
-              <span className="rounded-xl px-2 py-0.5 font-mono text-[10px] text-[#8a7455]">
+              <span className="rounded-xl px-2 py-0.5 font-mono text-[10px] text-[#a89c8a]">
                 +{rest} weitere
               </span>
             )}
@@ -518,8 +518,8 @@ const OrgChart = memo(function OrgChart({
   return (
     <section aria-label="Virtuelle Firma" className="mt-8">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <div className="hud-label">Virtuelle Firma // Organigramm</div>
-        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#ffd257]/80">
+        <div className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Virtuelle Firma // Organigramm</div>
+        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#c25e0e]">
           Belegschaft {org.workforce.toLocaleString("de-CH")}
         </div>
       </div>
@@ -550,22 +550,22 @@ const ArtifactViewer = memo(function ArtifactViewer({ files }: { files: Artifact
     <section aria-label="Erzeugte Dateien" className="mt-8">
       <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <div className="hud-label">Erzeugte Dateien // Direkt verwendbar</div>
-          <h2 className="mt-1 text-lg font-bold text-[#fff3e2]">Ihr Ergebnis: fertig gebaut</h2>
+          <div className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Erzeugte Dateien // Direkt verwendbar</div>
+          <h2 className="mt-1 text-lg font-bold text-[#1c1917]">Ihr Ergebnis: fertig gebaut</h2>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {previewHtml && (
             <button
               onClick={() => setPreviewOpen((v) => !v)}
               aria-pressed={previewOpen}
-              className={`rounded-xl border border-[#ff8c2a]/40 bg-[#ff8c2a]/[0.06] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ff8c2a] transition-colors hover:bg-[#ff8c2a]/15 ${FOCUS_RING}`}
+              className={`rounded-xl border border-[#e0d8c6] bg-white/70 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#c25e0e] transition-colors hover:border-[#ffb066] ${FOCUS_RING}`}
             >
               {previewOpen ? "Vorschau schliessen" : "Live-Vorschau"}
             </button>
           )}
           <button
             onClick={() => downloadAllArtifacts(files)}
-            className={`rounded-xl bg-[#ff8c2a] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] font-semibold text-[#1a0f04] transition hover:bg-[#ffb35c] active:scale-[0.98] ${FOCUS_RING}`}
+            className={`rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] font-semibold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)] transition hover:brightness-105 active:scale-[0.98] ${FOCUS_RING}`}
           >
             Alle herunterladen ({files.length})
           </button>
@@ -574,10 +574,10 @@ const ArtifactViewer = memo(function ArtifactViewer({ files }: { files: Artifact
 
       {/* Live-Vorschau der ersten HTML-Datei im HUD-Panel (automatisch offen) */}
       {previewHtml && previewOpen && (
-        <div className="hud-panel hud-corners mb-4 rounded-xl">
-          <div className="flex items-center justify-between border-b border-[#ff8c2a]/15 px-4 py-2">
-            <span className="hud-label">Live-Vorschau // {baseName(previewHtml.path)}</span>
-            <span className="hud-pulse h-1.5 w-1.5 rounded-full bg-[#ff8c2a]" aria-hidden />
+        <div className="acc-card mb-4 rounded-2xl">
+          <div className="flex items-center justify-between border-b border-[#e8e1d2] px-4 py-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Live-Vorschau // {baseName(previewHtml.path)}</span>
+            <span className="hud-pulse h-1.5 w-1.5 rounded-full bg-[#c25e0e]" aria-hidden />
           </div>
           <iframe
             title="Live-Vorschau"
@@ -590,7 +590,7 @@ const ArtifactViewer = memo(function ArtifactViewer({ files }: { files: Artifact
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(200px,260px)_1fr]">
         {/* Datei-Liste / Tabs */}
-        <div className="hud-panel hud-corners rounded-xl p-2">
+        <div className="acc-card rounded-2xl p-2">
           <ul className="space-y-1">
             {files.map((f, i) => {
               const selected = f.path === active.path;
@@ -601,12 +601,12 @@ const ArtifactViewer = memo(function ArtifactViewer({ files }: { files: Artifact
                     aria-pressed={selected}
                     className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left font-mono text-xs transition-colors ${FOCUS_RING} ${
                       selected
-                        ? "bg-[#ff8c2a]/15 text-[#fff3e2]"
-                        : "text-[#ffb35c]/70 hover:bg-[#ff8c2a]/[0.06]"
+                        ? "bg-[#fff4e6] text-[#c25e0e]"
+                        : "text-[#8d8172] hover:bg-[#faf6ee]"
                     }`}
                   >
                     <span className="truncate">{f.path}</span>
-                    <span className="ml-auto shrink-0 text-[9px] uppercase tracking-[0.14em] text-[#8a7455]">
+                    <span className="ml-auto shrink-0 text-[9px] uppercase tracking-[0.14em] text-[#a89c8a]">
                       {f.language}
                     </span>
                   </button>
@@ -617,17 +617,17 @@ const ArtifactViewer = memo(function ArtifactViewer({ files }: { files: Artifact
         </div>
 
         {/* Code-Ansicht */}
-        <div className="hud-panel hud-corners flex min-w-0 flex-col rounded-xl">
-          <div className="flex items-center justify-between border-b border-[#ff8c2a]/15 px-4 py-2">
-            <span className="truncate font-mono text-xs text-[#e8dcc8]">{active.path}</span>
+        <div className="acc-card flex min-w-0 flex-col rounded-2xl">
+          <div className="flex items-center justify-between border-b border-[#e8e1d2] px-4 py-2">
+            <span className="truncate font-mono text-xs text-[#4a4335]">{active.path}</span>
             <button
               onClick={() => downloadArtifact(active)}
-              className={`shrink-0 rounded-xl bg-[#ff8c2a] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em] font-semibold text-[#1a0f04] transition hover:bg-[#ffb35c] active:scale-[0.98] ${FOCUS_RING}`}
+              className={`shrink-0 rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em] font-semibold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)] transition hover:brightness-105 active:scale-[0.98] ${FOCUS_RING}`}
             >
               Herunterladen
             </button>
           </div>
-          <pre className="max-h-[420px] overflow-auto px-4 py-3 font-mono text-[11px] leading-5 text-[#e8dcc8]">
+          <pre className="max-h-[420px] overflow-auto px-4 py-3 font-mono text-[11px] leading-5 text-[#4a4335]">
             <code>{active.content}</code>
           </pre>
         </div>
@@ -682,7 +682,7 @@ function HudModal({
 
   return (
     <div
-      className="fixed inset-0 z-40 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-40 flex items-center justify-center bg-[#1c1917]/45 p-4 backdrop-blur-sm"
       onMouseDown={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
@@ -691,12 +691,12 @@ function HudModal({
         aria-modal="true"
         aria-labelledby={labelId}
         tabIndex={-1}
-        className="hud-panel hud-corners hud-modal-in relative w-full max-w-lg rounded-xl border border-[#ff8c2a]/30 bg-[#0b0a08] p-6 outline-none"
+        className="acc-card hud-modal-in relative w-full max-w-lg rounded-2xl border border-[#e8e1d2] bg-white p-6 outline-none"
       >
         <button
           onClick={onClose}
           aria-label="Schliessen"
-          className={`absolute right-3 top-3 rounded-xl px-2 py-1 font-mono text-xs text-[#ffb35c]/70 transition hover:text-[#fff3e2] ${FOCUS_RING}`}
+          className={`absolute right-3 top-3 rounded-xl px-2 py-1 font-mono text-xs text-[#8d8172] transition hover:text-[#1c1917] ${FOCUS_RING}`}
         >
           ✕
         </button>
@@ -722,8 +722,8 @@ const ChoiceButton = memo(function ChoiceButton({
       aria-pressed={selected}
       className={`rounded-xl border px-3 py-2.5 text-sm transition-colors ${FOCUS_RING} ${
         selected
-          ? "border-[#ff8c2a] bg-[#ff8c2a]/15 text-[#fff3e2]"
-          : "border-[#ff8c2a]/25 bg-[#ff8c2a]/[0.03] text-[#e8dcc8] hover:border-[#ff8c2a]/60"
+          ? "border-[#ff8c2a] bg-[#fff4e6] text-[#c25e0e]"
+          : "border-[#e0d8c6] bg-white/70 text-[#4a4335] hover:border-[#ffb066]"
       }`}
     >
       {label}
@@ -748,20 +748,20 @@ function OnboardingModal({
 
   return (
     <HudModal labelId="onboarding-title" onClose={onClose}>
-      <div className="hud-label mb-1">Onboarding // Kontext</div>
-      <h2 id="onboarding-title" className="text-xl font-bold text-[#fff3e2]">Ihr Unternehmen</h2>
-      <p className="mt-1 text-sm text-[#c9b391]">
+      <div className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e] mb-1">Onboarding // Kontext</div>
+      <h2 id="onboarding-title" className="text-xl font-bold text-[#1c1917]">Ihr Unternehmen</h2>
+      <p className="mt-1 text-sm text-[#8d8172]">
         Ihre KI-Abteilung passt Pläne und Ergebnisse an Branche und Teamgrösse an.
       </p>
 
-      <div className="hud-label mt-5 mb-2">Branche</div>
+      <div className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e] mt-5 mb-2">Branche</div>
       <div className="grid grid-cols-2 gap-2">
         {BRANCHEN.map((b) => (
           <ChoiceButton key={b} label={b} selected={branche === b} onSelect={setBranche} />
         ))}
       </div>
 
-      <div className="hud-label mt-5 mb-2">Unternehmensgrösse</div>
+      <div className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e] mt-5 mb-2">Unternehmensgrösse</div>
       <div className="grid grid-cols-4 gap-2">
         {GROESSEN.map((g) => (
           <ChoiceButton key={g} label={g} selected={groesse === g} onSelect={setGroesse} />
@@ -771,7 +771,7 @@ function OnboardingModal({
       <button
         onClick={() => branche && groesse && onConfirm(branche, groesse)}
         disabled={!branche || !groesse}
-        className={`mt-6 w-full rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-6 py-3 font-semibold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)] transition hover:bg-[#ffb35c] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
+        className={`mt-6 w-full rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-6 py-3 font-semibold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)] transition hover:brightness-105 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
       >
         Start
       </button>
@@ -844,9 +844,9 @@ function LicenseModal({
 
   return (
     <HudModal labelId="license-title" onClose={onClose}>
-      <div className="hud-label mb-1">Zugang // Freischaltung</div>
-      <h2 id="license-title" className="text-xl font-bold text-[#fff3e2]">Lizenz aktivieren</h2>
-      <p className="mt-1 text-sm text-[#c9b391]">
+      <div className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e] mb-1">Zugang // Freischaltung</div>
+      <h2 id="license-title" className="text-xl font-bold text-[#1c1917]">Lizenz aktivieren</h2>
+      <p className="mt-1 text-sm text-[#8d8172]">
         {licensedPlan === "FREE"
           ? "Geben Sie Ihren Lizenzschlüssel ein, um STARTER, PROFESSIONAL oder BUSINESS freizuschalten."
           : `Aktive Lizenz: ${licensedPlan}. Ein neuer Schlüssel ersetzt die aktuelle Lizenz.`}
@@ -859,25 +859,25 @@ function LicenseModal({
           placeholder="ACC-STARTER-..."
           disabled={busy}
           aria-label="Lizenzschlüssel"
-          className={`flex-1 rounded-xl border border-[#ff8c2a]/25 bg-[#ff8c2a]/[0.04] px-4 py-3 font-mono text-sm text-[#fff3e2] placeholder:text-[#8a7455] outline-none transition focus:border-[#ff8c2a]/70 focus:ring-2 focus:ring-[#ff8c2a]/20 ${FOCUS_RING}`}
+          className={`flex-1 rounded-xl border border-[#e0d8c6] bg-white/70 px-4 py-3 font-mono text-sm text-[#1c1917] placeholder:text-[#a89c8a] outline-none transition focus:border-[#ffb066] focus:ring-2 focus:ring-[#ffb066]/30 ${FOCUS_RING}`}
         />
         <button
           onClick={activate}
           disabled={!key.trim() || busy}
-          className={`rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-6 py-3 font-semibold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)] transition hover:bg-[#ffb35c] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
+          className={`rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-6 py-3 font-semibold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)] transition hover:brightness-105 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
         >
           {busy ? "Prüfe ..." : "Aktivieren"}
         </button>
       </div>
       {ultraOk && (
-        <p className="mt-3 rounded-xl border border-[#ffd257]/40 bg-[#ffd257]/10 px-4 py-2 text-sm text-[#ffd257]">
+        <p className="mt-3 rounded-xl border border-[#ffb066]/50 bg-[#fff4e6] px-4 py-2 text-sm text-[#c25e0e]">
           ⚡ ULTRA-Levelup aktiviert für {ultraOk}: +50% Missionen pro Tag,
           +50% Token-Budget, +2 Browser-Quellen und die Skills der
           nächsthöheren Stufe. Gilt, solange Ihre {ultraOk}-Lizenz aktiv ist.
         </p>
       )}
       {error && (
-        <p role="alert" className="mt-3 rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-2 text-sm text-red-300">
+        <p role="alert" className="mt-3 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-600">
           {error}
         </p>
       )}
@@ -1342,108 +1342,107 @@ export default function DashboardPage() {
   const missionCount = history.length + (running ? 1 : 0);
 
   return (
-    <main className="relative min-h-screen bg-[#0b0a08] text-[#e8dcc8]">
-      {fancy && <div className="hud-texture" aria-hidden />}
+    <main className="acc-page relative min-h-screen text-[#1c1917]">
 
-      <header className="sticky top-0 z-20 border-b border-[#ff8c2a]/15 bg-[#0b0a08]/85 backdrop-blur">
+      <header className="sticky top-0 z-20 border-b border-[#e8e1d2] bg-[#fbfaf6]/85 backdrop-blur">
         <div className="mx-auto flex min-h-16 max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-2">
           <div>
-            <Link href="/" className="text-lg font-bold tracking-tight text-[#fff3e2]">
-              AI <span className="text-[#ff8c2a]">Command Center</span>
+            <Link href="/" className="text-lg font-bold tracking-tight text-[#1c1917]">
+              AI <span className="acc-grad-text">Command Center</span>
             </Link>
-            <div className="hud-label">Mission Control // Online</div>
+            <div className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Mission Control // Online</div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             {isBusiness && (
-              <span className="hidden rounded-xl border border-[#ffd257]/50 bg-[#ffd257]/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[#ffd257] sm:inline">
+              <span className="hidden rounded-xl border border-[#ffb066]/50 bg-[#fff4e6] px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[#c25e0e] sm:inline">
                 Team-Arbeitsbereich
               </span>
             )}
             {usage && (
-              <span className="hidden font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 sm:inline" aria-live="polite">
+              <span className="hidden font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172] sm:inline" aria-live="polite">
                 Missionen heute: {usage.used}/{usage.limit}
               </span>
             )}
             {branche && (
               <button
                 onClick={() => setOnboardingOpen(true)}
-                className={`rounded-xl border border-[#ff8c2a]/30 bg-[#ff8c2a]/[0.06] px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c] transition-colors hover:bg-[#ff8c2a]/15 ${FOCUS_RING}`}
+                className={`rounded-xl border border-[#e0d8c6] bg-white/70 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#c25e0e] transition-colors hover:border-[#ffb066] ${FOCUS_RING}`}
               >
                 {branche}{" "}
-                <span className="ml-1.5 text-[#ff8c2a] underline underline-offset-2">Ändern</span>
+                <span className="ml-1.5 text-[#c25e0e] underline underline-offset-2">Ändern</span>
               </button>
             )}
             <button
               onClick={() => setLicenseOpen(true)}
               className={`rounded-xl border px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors ${FOCUS_RING} ${
                 licensedPlan === "FREE"
-                  ? "border-[#ff8c2a]/40 text-[#ff8c2a] hover:bg-[#ff8c2a]/10"
-                  : "border-[#ffb35c]/40 bg-[#ff8c2a]/[0.06] text-[#ffb35c] hover:bg-[#ff8c2a]/15"
+                  ? "border-[#ffb066]/60 text-[#c25e0e] hover:bg-[#fff4e6]"
+                  : "border-[#ffb066]/60 bg-[#fff4e6] text-[#c25e0e] hover:brightness-105"
               }`}
             >
               {licensedPlan === "FREE" ? "Lizenz aktivieren" : `Lizenz: ${licensedPlan}`}
             </button>
             <a
               href="/chat"
-              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
             >
               Kommando
             </a>
             <a
               href="/kunden"
-              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
             >
               Kunden
             </a>
             <a
               href="/email"
-              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
             >
               E-Mail
             </a>
             <a
               href="/faehigkeiten"
-              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
             >
               Skills
             </a>
             <a
               href="/analysen"
-              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
             >
               Analysen
             </a>
             <a
               href="/einstellungen"
-              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
             >
               Einstellungen
             </a>
             <a
               href="/berichte"
-              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
             >
               Berichte
             </a>
             <a
               href="/team"
-              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
             >
               Team
             </a>
             <a
               href="/workflows"
-              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
             >
               Autopilot
             </a>
             <a
               href="/integrationen"
-              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/10 hover:text-[#ffb35c] ${FOCUS_RING}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8d8172] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
             >
               Integrationen
             </a>
-            <div className="flex overflow-hidden rounded-xl border border-[#ff8c2a]/30" role="group" aria-label="Abo-Stufe">
+            <div className="flex overflow-hidden rounded-xl border border-[#e0d8c6]" role="group" aria-label="Abo-Stufe">
               {PLANS.map((p) => {
                 const locked = PLAN_LEVEL[p] > PLAN_LEVEL[licensedPlan];
                 return (
@@ -1455,11 +1454,11 @@ export default function DashboardPage() {
                     className={`flex items-center gap-1 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors ${FOCUS_RING} ${
                       plan === p
                         ? p === "BUSINESS" || p === "ENTERPRISE"
-                          ? "bg-[#ffd257] text-[#1a0f04]"
-                          : "bg-[#ff8c2a] text-[#1a0f04]"
+                          ? "bg-gradient-to-r from-[#ffb066] to-[#ff8c2a] text-white"
+                          : "bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] text-white"
                         : locked
-                          ? "text-[#8a7455] hover:bg-[#ff8c2a]/10"
-                          : "text-[#ffb35c]/70 hover:bg-[#ff8c2a]/10"
+                          ? "text-[#a89c8a] hover:bg-[#fff4e6]"
+                          : "text-[#8d8172] hover:bg-[#fff4e6]"
                     }`}
                   >
                     {locked && <LockIcon />}
@@ -1473,12 +1472,12 @@ export default function DashboardPage() {
       </header>
 
       <div className={`relative z-10 mx-auto max-w-7xl px-5 py-8 ${isBusiness ? "pb-16" : ""}`}>
-        <div className={isBusiness ? "hud-gold-frame rounded-xl p-4 sm:p-6" : ""}>
+        <div className={isBusiness ? "rounded-2xl border border-[#ffe0b8] bg-[#fffaf2]/70 p-4 sm:p-6" : ""}>
           {/* Eingabe */}
-          <section aria-label="Neue Mission" className={fancy ? "hud-panel hud-corners rounded-xl p-5" : ""}>
-            {fancy && <div className="hud-label mb-2">Mission Input</div>}
-            <h1 className="text-2xl font-bold text-[#fff3e2]">Was soll Ihre KI-Abteilung erledigen?</h1>
-            <p className="mt-1 text-sm text-[#c9b391]">
+          <section aria-label="Neue Mission" className={fancy ? "acc-card acc-in rounded-2xl p-5" : ""}>
+            {fancy && <div className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e] mb-2">Mission Input</div>}
+            <h1 className="text-2xl font-semibold tracking-tight text-[#1c1917] sm:text-3xl">Was soll Ihre <span className="acc-grad-text">KI-Abteilung</span> erledigen?</h1>
+            <p className="mt-1 text-sm text-[#8d8172]">
               Commander plant, Builder und Analyst arbeiten parallel, Quality prüft. Sie erhalten ein fertiges Ergebnis.
             </p>
             <div className="mt-5 flex flex-col gap-3 sm:flex-row">
@@ -1492,7 +1491,7 @@ export default function DashboardPage() {
                     : 'z. B. "Erstelle eine Marketingstrategie für eine Zürcher Bäckerei"'
                 }
                 disabled={running}
-                className="flex-1 rounded-xl border border-[#ff8c2a]/25 bg-[#ff8c2a]/[0.04] px-4 py-3 text-[#fff3e2] placeholder:text-[#8a7455] outline-none transition focus:border-[#ff8c2a]/70 focus:ring-2 focus:ring-[#ff8c2a]/20"
+                className="flex-1 rounded-xl border border-[#e0d8c6] bg-white/70 px-4 py-3 text-[#1c1917] placeholder:text-[#a89c8a] outline-none transition focus:border-[#ffb066] focus:ring-2 focus:ring-[#ffb066]/30"
               />
               <input
                 ref={fileInputRef}
@@ -1511,40 +1510,40 @@ export default function DashboardPage() {
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={running || docBusy}
-                className={`rounded-xl border border-[#ff8c2a]/40 px-4 py-3 font-semibold text-[#ffb35c] transition hover:bg-[#ff8c2a]/10 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
+                className={`rounded-xl border border-[#e0d8c6] bg-white/70 px-4 py-3 font-semibold text-[#c25e0e] transition hover:border-[#ffb066] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
               >
                 {docBusy ? "Liest Dokument …" : "Dokument anhängen"}
               </button>
               {running ? (
-                <button onClick={stopMission} className="rounded-xl border border-red-400/40 px-6 py-3 font-semibold text-red-300 transition hover:bg-red-400/10 active:scale-[0.98]">
+                <button onClick={stopMission} className="rounded-xl border border-red-300 px-6 py-3 font-semibold text-red-600 transition hover:bg-red-50 active:scale-[0.98]">
                   Abbrechen
                 </button>
               ) : (
-                <button onClick={startMission} disabled={!goal.trim()} className="rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-6 py-3 font-semibold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)] transition hover:bg-[#ffb35c] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40">
+                <button onClick={startMission} disabled={!goal.trim()} className="rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-6 py-3 font-semibold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)] transition hover:brightness-105 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40">
                   Mission starten
                 </button>
               )}
             </div>
             {dokument && (
-              <div className="mt-3 inline-flex max-w-full items-center gap-2 rounded-xl border border-[#ff8c2a]/30 bg-[#ff8c2a]/[0.08] px-3 py-1.5 font-mono text-xs text-[#ffb35c]">
+              <div className="mt-3 inline-flex max-w-full items-center gap-2 rounded-xl border border-[#ffb066]/50 bg-[#fff4e6] px-3 py-1.5 font-mono text-xs text-[#c25e0e]">
                 <span className="truncate" title={dokument.name}>{dokument.name}</span>
-                <span className="shrink-0 text-[#8a7455]">{dokument.text.length} Zeichen</span>
+                <span className="shrink-0 text-[#a89c8a]">{dokument.text.length} Zeichen</span>
                 <button
                   onClick={removeDocument}
                   aria-label={`Dokument ${dokument.name} entfernen`}
-                  className={`shrink-0 rounded-xl px-1 text-sm leading-none text-[#ffb35c]/70 transition-colors hover:bg-[#ff8c2a]/15 hover:text-[#fff3e2] ${FOCUS_RING}`}
+                  className={`shrink-0 rounded-xl px-1 text-sm leading-none text-[#8d8172] transition-colors hover:bg-[#ffe6cc] hover:text-[#1c1917] ${FOCUS_RING}`}
                 >
                   ×
                 </button>
               </div>
             )}
             {docError && (
-              <p role="alert" className="mt-3 rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-2 text-sm text-red-300">
+              <p role="alert" className="mt-3 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-600">
                 {docError}
               </p>
             )}
             {error && (
-              <p role="alert" className="mt-3 rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-2 text-sm text-red-300">
+              <p role="alert" className="mt-3 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-600">
                 {error}
               </p>
             )}
@@ -1567,12 +1566,12 @@ export default function DashboardPage() {
               {showGlobe ? (
                 <div className="text-center">
                   <WireframeGlobe />
-                  <div className="hud-label mt-2">Orbital Uplink // {running ? "Mission aktiv" : "Standby"}</div>
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e] mt-2">Orbital Uplink // {running ? "Mission aktiv" : "Standby"}</div>
                 </div>
               ) : <div />}
               {showGauge ? (
-                <div className="hud-panel hud-corners rounded-xl p-4 text-center lg:justify-self-end">
-                  <div className="hud-label mb-1">Quality Score</div>
+                <div className="acc-card rounded-2xl p-4 text-center lg:justify-self-end">
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e] mb-1">Quality Score</div>
                   <RadialGauge score={score} />
                 </div>
               ) : <div />}
@@ -1581,32 +1580,38 @@ export default function DashboardPage() {
 
           {/* Agenten-Büro: animierte Belegschaft statt statischer Karten */}
           <section aria-label="Ihre KI-Welt" className="mt-8">
-            {fancy && <div className="hud-label mb-3">Ihre KI-Welt // Belegschaft live</div>}
-            <AgentWorld agents={officeAgents} />
+            <div className="acc-card rounded-2xl p-3 sm:p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <span aria-hidden className="hud-pulse inline-block h-2 w-2 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f]" />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Ihr KI-Büro // live bei der Arbeit</span>
+              </div>
+              {/* Dunkles Büro-Panel: bewusst wie ein Live-Monitor – nicht umfärben. */}
+              <AgentWorld agents={officeAgents} />
+            </div>
             {/* Kompakte Legende + Ausgabe-Zugriff je Agent */}
             <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-4">
               {ALL_ROLES.map((role) => {
                 const gesperrt = EXTRA_ROLES.includes(role) && !showExtraAgents;
                 const st = statuses[role].status;
                 const dot =
-                  gesperrt ? "bg-[#5a4a35]"
-                    : st === "working" ? "hud-pulse bg-[#ff8c2a]"
-                    : st === "done" ? "bg-[#2dd48f]"
-                    : st === "error" ? "bg-red-400"
-                    : "bg-[#7ba7e0]";
+                  gesperrt ? "bg-[#cabfa9]"
+                    : st === "working" ? "hud-pulse bg-[#c25e0e]"
+                    : st === "done" ? "bg-[#177245]"
+                    : st === "error" ? "bg-red-500"
+                    : "bg-[#6d5efc]";
                 return (
                   <div key={role} className="flex items-center gap-2 text-xs">
                     <span aria-hidden className={`h-2 w-2 shrink-0 rounded-full ${dot}`} />
-                    <span className="truncate text-[#e8dcc8]">{AGENT_META[role].name}</span>
+                    <span className="truncate text-[#4a4335]">{AGENT_META[role].name}</span>
                     {!gesperrt && Boolean(outputs[role]) && (
                       <button
                         onClick={() => toggleOutput(role)}
-                        className="ml-auto shrink-0 font-mono text-[10px] uppercase tracking-[0.12em] text-[#ff8c2a] hover:underline"
+                        className="ml-auto shrink-0 font-mono text-[10px] uppercase tracking-[0.12em] text-[#c25e0e] hover:underline"
                       >
                         {openOutput === role ? "verbergen" : "Ausgabe"}
                       </button>
                     )}
-                    {gesperrt && <span className="ml-auto shrink-0 text-[10px] text-[#8a7455]">🔒 ab Pro</span>}
+                    {gesperrt && <span className="ml-auto shrink-0 text-[10px] text-[#a89c8a]">🔒 ab Pro</span>}
                   </div>
                 );
               })}
@@ -1617,9 +1622,9 @@ export default function DashboardPage() {
           {isOrgPlan && org && <OrgChart org={org} dynStatuses={dynStatuses} />}
 
           {openOutput && outputs[openOutput] && (
-            <section aria-label="Agenten-Ausgabe" className={`mt-4 rounded-xl border border-[#ff8c2a]/20 bg-[#ff8c2a]/[0.02] p-5 text-sm leading-relaxed ${fancy ? "hud-corners relative" : ""}`}>
-              <h3 className="mb-2 font-semibold text-[#fff3e2]">{AGENT_META[openOutput].name}: Rohausgabe</h3>
-              <div className="max-h-72 overflow-y-auto whitespace-pre-wrap text-[#e8dcc8]">{outputs[openOutput]}</div>
+            <section aria-label="Agenten-Ausgabe" className="acc-card mt-4 rounded-2xl p-5 text-sm leading-relaxed">
+              <h3 className="mb-2 font-semibold text-[#1c1917]">{AGENT_META[openOutput].name}: Rohausgabe</h3>
+              <div className="max-h-72 overflow-y-auto whitespace-pre-wrap text-[#4a4335]">{outputs[openOutput]}</div>
             </section>
           )}
 
@@ -1628,17 +1633,17 @@ export default function DashboardPage() {
 
           {/* Quality-Score als Text (unterhalb PROFESSIONAL) */}
           {!showGauge && score !== null && (
-            <section aria-label="Qualitätsbewertung" className="mt-8 rounded-xl border border-[#ff8c2a]/20 bg-[#ff8c2a]/[0.02] p-5">
+            <section aria-label="Qualitätsbewertung" className="acc-card mt-8 rounded-2xl p-5">
               <div className="flex items-center gap-4">
-                <div className={`font-mono text-3xl font-extrabold ${score >= 80 ? "text-[#ffb35c]" : score >= 60 ? "text-amber-400" : "text-red-400"}`}>{score}/100</div>
-                <div className="text-sm text-[#c9b391]">Bewertung durch Quality AI</div>
+                <div className={`font-mono text-3xl font-extrabold ${score >= 80 ? "text-[#177245]" : score >= 60 ? "text-[#c25e0e]" : "text-red-600"}`}>{score}/100</div>
+                <div className="text-sm text-[#8d8172]">Bewertung durch Quality AI</div>
               </div>
             </section>
           )}
           {improvements.length > 0 && (
-            <section aria-label="Verbesserungen" className={`mt-4 rounded-xl border border-[#ff8c2a]/15 bg-[#ff8c2a]/[0.02] p-5 ${fancy ? "hud-corners relative" : ""}`}>
-              <div className={fancy ? "hud-label mb-2" : "mb-2 text-sm font-semibold text-[#fff3e2]"}>Verbesserungsvorschläge</div>
-              <ul className="space-y-1 text-sm text-[#e8dcc8]">
+            <section aria-label="Verbesserungen" className="acc-card mt-4 rounded-2xl p-5">
+              <div className={fancy ? "text-[11px] font-bold uppercase tracking-wider text-[#c25e0e] mb-2" : "mb-2 text-sm font-semibold text-[#1c1917]"}>Verbesserungsvorschläge</div>
+              <ul className="space-y-1 text-sm text-[#4a4335]">
                 {improvements.map((imp, i) => (
                   <li key={i} className="ml-5 list-disc">{imp}</li>
                 ))}
@@ -1654,36 +1659,36 @@ export default function DashboardPage() {
           {/* Finales Ergebnis: mit Dateien eingeklappt hinter den Artefakten */}
           {finalResult && artifacts.length > 0 && (
             <section aria-label="Ergebnis" className="mt-6">
-              <details className={`rounded-xl border border-[#ff8c2a]/30 bg-gradient-to-b from-[#ff8c2a]/[0.07] to-transparent ${fancy ? "hud-corners relative" : ""}`}>
-                <summary className={`cursor-pointer select-none p-5 text-lg font-bold text-[#fff3e2] transition-colors hover:text-[#ffb35c] ${FOCUS_RING}`}>
+              <details className="acc-card overflow-hidden rounded-2xl bg-gradient-to-b from-[#fff4e6] to-transparent">
+                <summary className={`cursor-pointer select-none p-5 text-lg font-bold text-[#1c1917] transition-colors hover:text-[#c25e0e] ${FOCUS_RING}`}>
                   Vollständiger Bericht
-                  <span className="ml-3 font-mono text-[10px] font-normal uppercase tracking-[0.18em] text-[#ffb35c]/70">Zum Aufklappen</span>
+                  <span className="ml-3 font-mono text-[10px] font-normal uppercase tracking-[0.18em] text-[#8d8172]">Zum Aufklappen</span>
                 </summary>
-                <div className="px-6 pb-6 text-sm leading-relaxed text-[#e8dcc8]">{renderMarkdown(finalResult)}</div>
+                <div className="px-6 pb-6 text-sm leading-relaxed text-[#4a4335]">{renderMarkdown(finalResult)}</div>
               </details>
             </section>
           )}
           {finalResult && artifacts.length === 0 && (
-            <section aria-label="Ergebnis" className={`mt-8 rounded-xl border border-[#ff8c2a]/30 bg-gradient-to-b from-[#ff8c2a]/[0.07] to-transparent p-6 ${fancy ? "hud-corners relative" : ""}`}>
-              {fancy && <div className="hud-label mb-1">Mission Complete</div>}
-              <h2 className="text-lg font-bold text-[#fff3e2]">Ergebnis Ihrer KI-Abteilung</h2>
-              <div className="mt-3 text-sm leading-relaxed text-[#e8dcc8]">{renderMarkdown(finalResult)}</div>
+            <section aria-label="Ergebnis" className="acc-card mt-8 rounded-2xl bg-gradient-to-b from-[#fff4e6] to-transparent p-6">
+              {fancy && <div className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e] mb-1">Mission Complete</div>}
+              <h2 className="text-lg font-bold text-[#1c1917]">Ergebnis Ihrer KI-Abteilung</h2>
+              <div className="mt-3 text-sm leading-relaxed text-[#4a4335]">{renderMarkdown(finalResult)}</div>
             </section>
           )}
 
           {/* Verlauf */}
           {history.length > 0 && (
             <section aria-label="Missionsverlauf" className="mt-12">
-              <h2 className="hud-label mb-3">Verlauf</h2>
+              <h2 className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e] mb-3">Verlauf</h2>
               <ul className="space-y-2">
                 {history.map((h, i) => (
                   <li key={i}>
                     <button
                       onClick={() => { setFinalResult(h.final); setScore(h.score); setImprovements([]); setArtifacts(h.artifacts ?? []); setError(""); }}
-                      className="w-full rounded-xl border border-[#ff8c2a]/15 bg-[#ff8c2a]/[0.02] px-4 py-3 text-left text-sm transition hover:border-[#ff8c2a]/50"
+                      className="w-full rounded-xl border border-[#e8e1d2] bg-white/60 px-4 py-3 text-left text-sm transition hover:border-[#ffb066]"
                     >
-                      <span className="font-medium text-[#fff3e2]">{h.goal}</span>
-                      <span className="ml-2 font-mono text-xs text-[#8a7455]">
+                      <span className="font-medium text-[#1c1917]">{h.goal}</span>
+                      <span className="ml-2 font-mono text-xs text-[#a89c8a]">
                         {new Date(h.at).toLocaleString("de-CH")} {h.score !== null ? `· ${h.score}/100` : ""}
                       </span>
                     </button>
