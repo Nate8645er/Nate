@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "modell-rat": {
+      "command": "node",
+      "args": ["tools/modell-rat-mcp/server.mjs"]
+    }
+  }
+}

@@ -1,0 +1,258 @@
+#!/usr/bin/env node
+/**
+ * Modell-Rat – MCP-Server für Claude Code.
+ *
+ * Bindet mehrere Frontier-Modelle als echte Werkzeuge (Worker) in Claude Code
+ * ein. Der Haupt-Agent (Fable 5) ist der Boss: er ruft die Worker über diese
+ * Tools auf und führt ihre Antworten zusammen.
+ *
+ * Ehrlich: Ein Modell antwortet nur, wenn sein API-Key (bzw. bei Llama die
+ * URL) als Umgebungsvariable gesetzt ist. Fehlt der Zugang, meldet das Tool
+ * klar „nicht konfiguriert" – es wird nichts vorgetäuscht.
+ *
+ * Protokoll: MCP über stdio (JSON-RPC 2.0, zeilenweise). Keine Abhängigkeiten.
+ *
+ * Zugänge (Umgebungsvariablen) – setze die, die du nutzen willst:
+ *   GOOGLE_API_KEY     Gemini 3 Ultra
+ *   XAI_API_KEY        Grok 5
+ *   MOONSHOT_API_KEY   Kimi (Moonshot)
+ *   QWEN_API_KEY       Qwen 3 Max
+ *   DEEPSEEK_API_KEY   DeepSeek R2
+ *   META_LLM_URL       Llama 4 Behemoth (Endpoint eines OpenAI-kompatiblen Hosts), META_API_KEY optional
+ *   OPENAI_API_KEY     ChatGPT (GPT)
+ *   ANTHROPIC_API_KEY  Claude Sonnet 5
+ *   MISTRAL_API_KEY    Mistral Magistral
+ * Modell-ID optional überschreibbar per <PROVIDER>_MODEL (z. B. GOOGLE_MODEL).
+ */
+
+import process from "node:process";
+
+const REQUEST_TIMEOUT_MS = 90_000;
+const MAX_TOKENS = 2048;
+
+/** Worker-Registry: id -> Konfiguration. Reihenfolge = Anzeigereihenfolge. */
+const MODELS = {
+  gemini: { label: "Gemini 3 Ultra", vendor: "Google", style: "openai", url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", keyEnv: "GOOGLE_API_KEY", model: "gemini-3-ultra", modelEnv: "GOOGLE_MODEL" },
+  grok: { label: "Grok 5", vendor: "xAI", style: "openai", url: "https://api.x.ai/v1/chat/completions", keyEnv: "XAI_API_KEY", model: "grok-5", modelEnv: "XAI_MODEL" },
+  kimi: { label: "Kimi (Moonshot)", vendor: "Moonshot AI", style: "openai", url: "https://api.moonshot.ai/v1/chat/completions", keyEnv: "MOONSHOT_API_KEY", model: "kimi-k2", modelEnv: "MOONSHOT_MODEL" },
+  qwen: { label: "Qwen 3 Max", vendor: "Alibaba", style: "openai", url: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions", keyEnv: "QWEN_API_KEY", model: "qwen3-max", modelEnv: "QWEN_MODEL" },
+  deepseek: { label: "DeepSeek R2", vendor: "DeepSeek", style: "openai", url: "https://api.deepseek.com/v1/chat/completions", keyEnv: "DEEPSEEK_API_KEY", model: "deepseek-reasoner", modelEnv: "DEEPSEEK_MODEL" },
+  llama: { label: "Llama 4 Behemoth", vendor: "Meta", style: "openai", urlEnv: "META_LLM_URL", url: "", keyEnv: "META_API_KEY", model: "llama-4-behemoth", modelEnv: "META_MODEL", keyOptional: true },
+  gpt: { label: "ChatGPT (GPT)", vendor: "OpenAI", style: "openai", url: "https://api.openai.com/v1/chat/completions", keyEnv: "OPENAI_API_KEY", model: "gpt-4o", modelEnv: "OPENAI_MODEL" },
+  sonnet: { label: "Claude Sonnet 5", vendor: "Anthropic", style: "anthropic", url: "https://api.anthropic.com/v1/messages", keyEnv: "ANTHROPIC_API_KEY", model: "claude-sonnet-5", modelEnv: "SONNET_MODEL" },
+  mistral: { label: "Mistral Magistral", vendor: "Mistral AI", style: "openai", url: "https://api.mistral.ai/v1/chat/completions", keyEnv: "MISTRAL_API_KEY", model: "magistral-medium-latest", modelEnv: "MISTRAL_MODEL" },
+};
+
+/**
+ * Liest eine Umgebungsvariable und behandelt Leerwerte UND nicht aufgelöste
+ * Platzhalter (z. B. der Literal-String "${GOOGLE_API_KEY}", wenn eine
+ * .mcp.json-env-Zuweisung nicht expandiert wurde) als NICHT gesetzt. So bleibt
+ * der Status ehrlich: nur ein echter Zugang zählt als „bereit".
+ */
+function envClean(name) {
+  const v = (process.env[name] || "").trim();
+  if (!v) return "";
+  if (/^\$\{[^}]*\}$/.test(v) || /^\$[A-Z_][A-Z0-9_]*$/.test(v)) return ""; // unaufgelöster Platzhalter
+  return v;
+}
+/** Effektive Endpoint-URL (Env-Override vor Standard). */
+function urlOf(m) {
+  if (m.urlEnv) {
+    const o = envClean(m.urlEnv);
+    if (o) return o;
+  }
+  return m.url;
+}
+/** API-Key (getrimmt) oder leer. */
+function keyOf(m) {
+  return envClean(m.keyEnv);
+}
+/** Effektive Modell-ID (Env-Override vor Standard). */
+function modelOf(m) {
+  return (m.modelEnv && envClean(m.modelEnv)) || m.model;
+}
+/** Ist das Modell einsatzbereit? Cloud: Key gesetzt. Selbst gehostet: URL gesetzt. */
+function ready(m) {
+  if (m.keyOptional) return Boolean(urlOf(m));
+  return Boolean(keyOf(m)) && Boolean(urlOf(m));
+}
+
+/** Ruft ein Modell einmal auf. Gibt { ok, text } oder { ok:false, error } zurück – wirft nie. */
+async function callModel(m, prompt) {
+  const url = urlOf(m);
+  if (!url) return { ok: false, error: `nicht konfiguriert – setze ${m.urlEnv || m.keyEnv}` };
+  const key = keyOf(m);
+  if (!m.keyOptional && !key) return { ok: false, error: `nicht konfiguriert – setze ${m.keyEnv}` };
+  const model = modelOf(m);
+
+  let headers, body;
+  if (m.style === "anthropic") {
+    headers = { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01" };
+    body = { model, max_tokens: MAX_TOKENS, messages: [{ role: "user", content: prompt }] };
+  } else {
+    headers = { "content-type": "application/json" };
+    if (key) headers.authorization = `Bearer ${key}`;
+    body = { model, max_tokens: MAX_TOKENS, messages: [{ role: "user", content: prompt }] };
+  }
+
+  try {
+    const res = await fetch(url, { method: "POST", headers, body: JSON.stringify(body), signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
+    if (!res.ok) {
+      let detail = "";
+      try { detail = (await res.text()).slice(0, 200); } catch { /* egal */ }
+      return { ok: false, error: `HTTP ${res.status}: ${detail}` };
+    }
+    const data = await res.json();
+    const text = m.style === "anthropic" ? extractAnthropic(data) : extractOpenAI(data);
+    return text ? { ok: true, text } : { ok: false, error: "leere/unerwartete Antwort" };
+  } catch (err) {
+    const reason = err && err.name === "TimeoutError" ? `Timeout nach ${REQUEST_TIMEOUT_MS / 1000}s` : String(err && err.message || err);
+    return { ok: false, error: `Netzwerkfehler (${reason})` };
+  }
+}
+
+function extractOpenAI(data) {
+  const c = data && data.choices;
+  if (!Array.isArray(c) || !c.length) return null;
+  const content = c[0] && c[0].message && c[0].message.content;
+  return typeof content === "string" && content.length ? content : null;
+}
+function extractAnthropic(data) {
+  const content = data && data.content;
+  if (!Array.isArray(content)) return null;
+  const text = content.filter((b) => b && b.type === "text" && typeof b.text === "string").map((b) => b.text).join("");
+  return text.length ? text : null;
+}
+
+/* ------------------------------- MCP-Tools ------------------------------- */
+
+/** Baut die Tool-Liste: pro Modell ein ask_<id> + rat_status + rat_council. */
+function toolList() {
+  const tools = [];
+  for (const [id, m] of Object.entries(MODELS)) {
+    tools.push({
+      name: `ask_${id}`,
+      description: `Worker ${m.label} (${m.vendor}) eine Frage stellen und die Antwort erhalten. ${ready(m) ? "Bereit." : `Nicht konfiguriert – setze ${m.keyOptional ? m.urlEnv : m.keyEnv}.`}`,
+      inputSchema: {
+        type: "object",
+        properties: { prompt: { type: "string", description: "Die Frage/Aufgabe an das Modell (Deutsch oder Englisch)." } },
+        required: ["prompt"],
+      },
+    });
+  }
+  tools.push({
+    name: "rat_status",
+    description: "Zeigt alle Modelle des Rats und welche einsatzbereit (Zugang gesetzt) sind.",
+    inputSchema: { type: "object", properties: {} },
+  });
+  tools.push({
+    name: "rat_council",
+    description: "Stellt allen einsatzbereiten Worker-Modellen (oder einer Auswahl) DIESELBE Frage parallel und liefert alle Antworten gesammelt zurück – damit der Boss (Fable 5) sie zusammenführen kann.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        prompt: { type: "string", description: "Die Frage/Aufgabe an den ganzen Rat." },
+        models: { type: "array", items: { type: "string" }, description: `Optional: Auswahl von Modell-Ids (${Object.keys(MODELS).join(", ")}). Leer = alle einsatzbereiten.` },
+      },
+      required: ["prompt"],
+    },
+  });
+  return tools;
+}
+
+/** Führt einen Tool-Aufruf aus und liefert den Antworttext. */
+async function runTool(name, args) {
+  if (name === "rat_status") {
+    const zeilen = Object.entries(MODELS).map(([id, m]) => `${ready(m) ? "✓ bereit " : "· Zugang nötig"}  ${id.padEnd(9)} ${m.label} (${m.vendor})${ready(m) ? ` → ${modelOf(m)}` : ` – setze ${m.keyOptional ? m.urlEnv : m.keyEnv}`}`);
+    const n = Object.values(MODELS).filter(ready).length;
+    return `Modell-Rat: ${n} von ${Object.keys(MODELS).length} einsatzbereit.\n\n${zeilen.join("\n")}`;
+  }
+
+  if (name === "rat_council") {
+    const prompt = String(args && args.prompt || "").trim();
+    if (!prompt) return "Fehler: prompt fehlt.";
+    const auswahl = Array.isArray(args && args.models) && args.models.length
+      ? args.models.map(String).filter((id) => MODELS[id])
+      : Object.keys(MODELS);
+    const aktive = auswahl.filter((id) => ready(MODELS[id]));
+    if (!aktive.length) return "Kein Worker einsatzbereit. Setze mindestens einen Zugang (siehe rat_status).";
+    const ergebnisse = await Promise.all(aktive.map(async (id) => {
+      const r = await callModel(MODELS[id], prompt);
+      return { id, label: MODELS[id].label, r };
+    }));
+    const teile = ergebnisse.map(({ label, r }) => `=== ${label} ===\n${r.ok ? r.text : `[Fehler: ${r.error}]`}`);
+    return `Antworten von ${aktive.length} Worker-Modell(en) auf dieselbe Frage:\n\n${teile.join("\n\n")}`;
+  }
+
+  if (name.startsWith("ask_")) {
+    const id = name.slice(4);
+    const m = MODELS[id];
+    if (!m) return `Unbekanntes Modell: ${id}`;
+    const prompt = String(args && args.prompt || "").trim();
+    if (!prompt) return "Fehler: prompt fehlt.";
+    const r = await callModel(m, prompt);
+    return r.ok ? r.text : `[${m.label} nicht verfügbar: ${r.error}]`;
+  }
+
+  return `Unbekanntes Tool: ${name}`;
+}
+
+/* ----------------------------- MCP über stdio ---------------------------- */
+
+const PROTOCOL_VERSION = "2024-11-05";
+
+function send(msg) {
+  process.stdout.write(JSON.stringify(msg) + "\n");
+}
+function result(id, res) {
+  send({ jsonrpc: "2.0", id, result: res });
+}
+function errorReply(id, code, message) {
+  send({ jsonrpc: "2.0", id, error: { code, message } });
+}
+
+async function handle(msg) {
+  const { id, method, params } = msg;
+  // Notifications (keine id) nie beantworten.
+  if (method === "initialize") {
+    result(id, {
+      protocolVersion: (params && params.protocolVersion) || PROTOCOL_VERSION,
+      capabilities: { tools: {} },
+      serverInfo: { name: "modell-rat", version: "1.0.0" },
+    });
+    return;
+  }
+  if (method === "notifications/initialized" || method === "initialized") return;
+  if (method === "ping") { if (id !== undefined) result(id, {}); return; }
+  if (method === "tools/list") { result(id, { tools: toolList() }); return; }
+  if (method === "tools/call") {
+    const name = params && params.name;
+    const args = (params && params.arguments) || {};
+    try {
+      const text = await runTool(name, args);
+      result(id, { content: [{ type: "text", text }] });
+    } catch (err) {
+      result(id, { content: [{ type: "text", text: `Interner Fehler: ${String(err && err.message || err)}` }], isError: true });
+    }
+    return;
+  }
+  if (id !== undefined) errorReply(id, -32601, `Unbekannte Methode: ${method}`);
+}
+
+let buffer = "";
+process.stdin.setEncoding("utf8");
+process.stdin.on("data", (chunk) => {
+  buffer += chunk;
+  let nl;
+  while ((nl = buffer.indexOf("\n")) !== -1) {
+    const line = buffer.slice(0, nl).trim();
+    buffer = buffer.slice(nl + 1);
+    if (!line) continue;
+    let msg;
+    try { msg = JSON.parse(line); } catch { continue; }
+    handle(msg).catch((err) => {
+      if (msg && msg.id !== undefined) errorReply(msg.id, -32603, String(err && err.message || err));
+    });
+  }
+});
+process.stdin.on("end", () => process.exit(0));
