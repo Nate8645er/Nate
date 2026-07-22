@@ -20,6 +20,7 @@ export type BereichId =
   | "autopilot"
   | "berichte"
   | "analysen"
+  | "agenten"
   | "team"
   | "benutzer"
   | "einstellungen"
@@ -41,6 +42,7 @@ const MEHR: { id: BereichId; label: string; href: string }[] = [
   { id: "werkzeuge", label: "Blitz-Werkzeuge", href: "/werkzeuge" },
   { id: "berichte", label: "Berichte", href: "/berichte" },
   { id: "analysen", label: "Analysen", href: "/analysen" },
+  { id: "agenten", label: "Agenten-Übersicht", href: "/agenten" },
   { id: "team", label: "Team", href: "/team" },
   { id: "benutzer", label: "Benutzer", href: "/benutzer" },
   { id: "einstellungen", label: "Einstellungen", href: "/einstellungen" },

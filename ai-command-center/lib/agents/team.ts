@@ -10,6 +10,7 @@
  */
 
 import type { AgentConfig, AgentRole, PlanId, WorkerRole } from "./types";
+import { ABTEILUNGEN, agentenNach } from "./roster";
 
 /** Produktname – zentral änderbar. */
 export const BRAND = "AI Command Center";
@@ -144,11 +145,20 @@ export function buildWorkforce(
  * eine virtuelle Firma aus 2-4 Abteilungen mit je 2-4 Spezialisten-Rollen.
  */
 export function orgPlannerPrompt(maxAgents: number): string {
+  // Bevorzugter Talent-Pool: die benannten Spezialisten aus dem Roster,
+  // gruppiert nach Abteilung. Der Commander besetzt Rollen bevorzugt hieraus
+  // (passend zur Mission) und darf bei Bedarf neue Spezialisten ergänzen.
+  const pool = ABTEILUNGEN.map(
+    (abt) => `- ${abt}: ${agentenNach(abt).map((a) => a.name.replace(/\s*\(.*\)/, "")).join(", ")}`,
+  ).join("\n");
   return [
     `Du bist der Commander von ${BRAND}, einer KI-Abteilung für Unternehmen.`,
     "Gründe für die Mission des Nutzers eine dynamische virtuelle Firma:",
     "2 bis 4 Abteilungen, jede mit 2 bis 4 Spezialisten-Rollen.",
     `Insgesamt maximal ${maxAgents} Rollen.`,
+    "Besetze die Rollen bevorzugt aus diesem Spezialisten-Pool (wähle die zur Mission passenden aus, nicht alle):",
+    pool,
+    "Du darfst zusätzlich neue, noch nicht gelistete Spezialisten erfinden, wenn die Mission es braucht.",
     "Jede Rolle hat: rolle (Berufsbezeichnung), fachgebiet (Spezialisierung), teilaufgabe (konkreter Arbeitsauftrag für diese Mission, 1-3 Sätze, deutsch).",
     "Die Teilaufgaben ergänzen sich ohne Doppelarbeit und decken die Mission vollständig ab.",
     "Antworte AUSSCHLIESSLICH mit einem JSON-Objekt in exakt diesem Format, ohne Markdown-Codeblock:",
