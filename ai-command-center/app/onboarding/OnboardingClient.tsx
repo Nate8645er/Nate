@@ -128,7 +128,8 @@ export default function OnboardingClient() {
             poster={UEBERSICHT_VIDEO.poster}
             className="w-full rounded-xl border border-[#e8e1d2] shadow-[0_18px_50px_-24px_rgba(255,120,40,0.28)]"
           >
-            <source src={UEBERSICHT_VIDEO.src} type={UEBERSICHT_VIDEO.src.endsWith(".webm") ? "video/webm" : "video/mp4"} />
+            <source src={UEBERSICHT_VIDEO.src} type="video/mp4" />
+            <source src={UEBERSICHT_VIDEO.src.replace(/\.mp4$/, ".webm")} type="video/webm" />
             Ihr Browser kann dieses Video nicht abspielen.
           </video>
         </div>
@@ -174,7 +175,8 @@ export default function OnboardingClient() {
               preload="metadata"
               className="mt-4 w-full rounded-xl border border-[#e8e1d2]"
             >
-              <source src={tut.videoSrc} type={tut.videoSrc.endsWith(".webm") ? "video/webm" : "video/mp4"} />
+              <source src={tut.videoSrc} type="video/mp4" />
+              <source src={tut.videoSrc.replace(/\.mp4$/, ".webm")} type="video/webm" />
               Ihr Browser kann dieses Video nicht abspielen.
             </video>
           ) : (

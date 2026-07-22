@@ -658,6 +658,7 @@ export default function Home() {
                 preload="metadata"
                 className="w-full"
               >
+                <source src="/werbespot-team.mp4" type="video/mp4" />
                 <source src="/werbespot-team.webm" type="video/webm" />
                 Ihr Browser kann dieses Video nicht abspielen.
               </video>
@@ -689,6 +690,7 @@ export default function Home() {
                 poster="/shop-hero.webp"
                 className="w-full rounded-2xl border border-[#e8e1d2] shadow-[0_24px_80px_-24px_rgba(255,120,40,0.28)]"
               >
+                <source src="/ki-system-tour.mp4" type="video/mp4" />
                 <source src="/ki-system-tour.webm" type="video/webm" />
                 Ihr Browser kann dieses Video nicht abspielen.
               </video>

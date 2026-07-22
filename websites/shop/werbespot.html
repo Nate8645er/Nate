@@ -7,7 +7,7 @@
 
   ── EINBAU IN SHOPIFY ──────────────────────────────────────────────────────
   1. VIDEO HOCHLADEN: Shopify-Admin > Inhalte > Dateien > die Datei
-     "werbespot-team.webm" hochladen. Danach Rechtsklick > "URL kopieren".
+     "werbespot-team.mp4" hochladen. Danach Rechtsklick > "URL kopieren".
   2. Unten bei <source src="…"> die kopierte URL einsetzen (ersetzt den
      Platzhalter DEINE-WERBESPOT-URL).
   3. Theme > Anpassen > Abschnitt hinzufügen > "Custom Liquid" (oder Custom
@@ -16,7 +16,7 @@
      anlegen und mit {% render 'werbespot' %} einbinden.
 
   Tipp: In Liquid kann die URL auch direkt gesetzt werden, z. B.
-  <source src="{{ 'werbespot-team.webm' | file_url }}" type="video/webm">
+  <source src="{{ 'werbespot-team.mp4' | file_url }}" type="video/mp4">
 -->
 <div class="wsp-embed">
   <div class="wsp-head">
@@ -35,7 +35,7 @@
       preload="metadata"
       aria-label="Werbespot des AI Command Center"
     >
-      <source src="DEINE-WERBESPOT-URL" type="video/webm" />
+      <source src="DEINE-WERBESPOT-URL" type="video/mp4" />
       Ihr Browser kann dieses Video nicht abspielen.
     </video>
   </div>
