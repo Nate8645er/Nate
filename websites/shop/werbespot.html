@@ -1,26 +1,22 @@
 <!--
   WERBESPOT – cinematischer Video-Abschnitt für den Shopify-Shop.
 
-  Eigenständig: HTML + CSS + minimales JavaScript, keine Framework-/Schrift-
-  Abhängigkeit. Alle Klassen sind mit "wsp" geprefixt, damit nichts mit dem
-  Theme kollidiert. Spielt drei cinematische Szenen als nahtlose Playlist und
-  loopt; respektiert "prefers-reduced-motion".
+  Eigenständig: HTML + CSS, minimales JavaScript nur für Autoplay-Fallback.
+  Alle Klassen sind mit "wsp" geprefixt, damit nichts mit dem Theme kollidiert.
+  Respektiert "prefers-reduced-motion" (dann kein Autoplay).
 
   ── EINBAU IN SHOPIFY ──────────────────────────────────────────────────────
-  1. Theme > Anpassen > Abschnitt hinzufügen > "Custom Liquid" (oder ein
-     Abschnitt mit "Custom HTML"). Den gesamten Inhalt ab <div class="wsp-embed">
-     bis zum Ende einfügen und speichern.
-     Alternativ als Snippet "snippets/werbespot.liquid" anlegen und mit
-     {% render 'werbespot' %} einbinden.
+  1. VIDEO HOCHLADEN: Shopify-Admin > Inhalte > Dateien > die Datei
+     "werbespot-team.webm" hochladen. Danach Rechtsklick > "URL kopieren".
+  2. Unten bei <source src="…"> die kopierte URL einsetzen (ersetzt den
+     Platzhalter DEINE-WERBESPOT-URL).
+  3. Theme > Anpassen > Abschnitt hinzufügen > "Custom Liquid" (oder Custom
+     HTML). Den gesamten Inhalt ab <div class="wsp-embed"> bis zum Ende
+     einfügen und speichern. Alternativ als Snippet "snippets/werbespot.liquid"
+     anlegen und mit {% render 'werbespot' %} einbinden.
 
-  2. VIDEOS SELBST HOSTEN (empfohlen für Dauerhaftigkeit):
-     Shopify-Admin > Inhalte > Dateien > werbespot.mp4, werbespot-2.mp4 und
-     werbespot-3.mp4 hochladen. Danach die drei data-src-URLs unten durch die
-     Shopify-Datei-URLs ersetzen (Rechtsklick auf die Datei > "URL kopieren").
-
-     Die unten voreingestellten URLs funktionieren sofort, zeigen aber auf das
-     Generierungs-CDN und sind nicht garantiert dauerhaft – daher für den
-     Live-Shop bitte durch eigene Datei-URLs ersetzen.
+  Tipp: In Liquid kann die URL auch direkt gesetzt werden, z. B.
+  <source src="{{ 'werbespot-team.webm' | file_url }}" type="video/webm">
 -->
 <div class="wsp-embed">
   <div class="wsp-head">
@@ -33,24 +29,20 @@
       class="wsp-video"
       playsinline
       muted
+      loop
       autoplay
+      controls
       preload="metadata"
-      aria-label="Cinematischer Werbespot des AI Command Center"
-    ></video>
-    <span class="wsp-caption" aria-live="polite"></span>
+      aria-label="Werbespot des AI Command Center"
+    >
+      <source src="DEINE-WERBESPOT-URL" type="video/webm" />
+      Ihr Browser kann dieses Video nicht abspielen.
+    </video>
   </div>
 
-  <div class="wsp-dots" role="tablist" aria-label="Werbespot-Szenen"></div>
-
-  <p class="wsp-note">Cinematische Werbe-Impression (KI-generiert), 3 Szenen.</p>
-
-  <script type="application/json" class="wsp-data">
-    [
-      { "src": "https://d8j0ntlcm91z4.cloudfront.net/user_399R3vZOGPTwqkc7yRG1y2HlS4O/hf_20260722_182257_0a8a68bc-6fe7-4b5a-a7a7-31f60e08b87a.mp4", "label": "KI-Abteilung ab Tag 1" },
-      { "src": "https://d8j0ntlcm91z4.cloudfront.net/user_399R3vZOGPTwqkc7yRG1y2HlS4O/hf_20260722_182746_71e5620c-4a11-41bd-a76b-6f051219bf95.mp4", "label": "Ihre Firma verbunden" },
-      { "src": "https://d8j0ntlcm91z4.cloudfront.net/user_399R3vZOGPTwqkc7yRG1y2HlS4O/hf_20260722_182747_85088ff7-0134-4675-9b07-c40e55dcbeb3.mp4", "label": "Echte Ergebnisse" }
-    ]
-  </script>
+  <p class="wsp-note">
+    Ihr Team ab Tag 1 · Ihre Firma verbunden · echte Ergebnisse statt Chatbot.
+  </p>
 
   <style>
     .wsp-embed{--wsp-a:#ff8c2a;--wsp-b:#ff5f1f;max-width:960px;margin:0 auto;padding:8px;
@@ -59,17 +51,10 @@
     .wsp-dot{width:9px;height:9px;border-radius:50%;background:var(--wsp-a);
       box-shadow:0 0 0 4px rgba(255,140,42,.18);animation:wsp-pulse 2s ease-in-out infinite}
     .wsp-label{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#c25e0e}
-    .wsp-stage{position:relative;overflow:hidden;border-radius:18px;background:#0b0b0f;
+    .wsp-stage{overflow:hidden;border-radius:18px;background:#07070d;
       border:1px solid rgba(28,25,23,.1);box-shadow:0 30px 90px -30px rgba(28,25,23,.6)}
-    .wsp-video{display:block;width:100%;height:auto;background:#0b0b0f}
-    .wsp-caption{position:absolute;left:14px;top:14px;padding:5px 12px;border-radius:999px;
-      background:rgba(0,0,0,.45);color:#fff;font-size:12px;font-weight:600;backdrop-filter:blur(4px)}
-    .wsp-dots{display:flex;justify-content:center;gap:8px;margin:16px 0 0}
-    .wsp-tab{border:0;padding:0;height:10px;width:10px;border-radius:999px;background:#d9cfbd;
-      cursor:pointer;transition:all .25s ease}
-    .wsp-tab:hover{background:#ffb066}
-    .wsp-tab[aria-selected="true"]{width:32px;background:linear-gradient(90deg,var(--wsp-a),var(--wsp-b))}
-    .wsp-note{margin:12px 0 0;text-align:center;font-size:12px;color:#7c7161}
+    .wsp-video{display:block;width:100%;height:auto;background:#07070d}
+    .wsp-note{margin:12px 0 0;text-align:center;font-size:13px;color:#7c7161}
     @keyframes wsp-pulse{0%,100%{opacity:1}50%{opacity:.45}}
     @media (prefers-reduced-motion:reduce){.wsp-dot{animation:none}}
   </style>
@@ -78,41 +63,11 @@
     (function () {
       var root = document.currentScript.closest(".wsp-embed");
       if (!root) return;
-      var video = root.querySelector(".wsp-video");
-      var caption = root.querySelector(".wsp-caption");
-      var dotsBox = root.querySelector(".wsp-dots");
-      var szenen = [];
-      try { szenen = JSON.parse(root.querySelector(".wsp-data").textContent); } catch (e) {}
-      if (!szenen.length) return;
-
-      var reduziert = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      var aktiv = -1;
-
-      // Szenen-Punkte aufbauen.
-      var dots = szenen.map(function (s, i) {
-        var b = document.createElement("button");
-        b.type = "button";
-        b.className = "wsp-tab";
-        b.setAttribute("role", "tab");
-        b.setAttribute("aria-label", "Szene " + (i + 1) + ": " + s.label);
-        b.addEventListener("click", function () { zeige(i); });
-        dotsBox.appendChild(b);
-        return b;
-      });
-
-      function zeige(i) {
-        if (i === aktiv) return;
-        aktiv = i;
-        var s = szenen[i];
-        video.src = s.src;
-        caption.textContent = (i + 1) + "/" + szenen.length + " · " + s.label;
-        dots.forEach(function (d, j) { d.setAttribute("aria-selected", j === i ? "true" : "false"); });
-        video.load();
-        if (!reduziert) { var p = video.play(); if (p && p.catch) p.catch(function () {}); }
+      var v = root.querySelector(".wsp-video");
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        v.removeAttribute("autoplay");
+        v.pause && v.pause();
       }
-
-      video.addEventListener("ended", function () { zeige((aktiv + 1) % szenen.length); });
-      zeige(0);
     })();
   </script>
 </div>
