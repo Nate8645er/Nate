@@ -65,18 +65,33 @@ const HIER = dirname(fileURLToPath(import.meta.url));
 ladeEnvDatei(join(HIER, ".env")); // tools/modell-rat-mcp/.env
 ladeEnvDatei(join(HIER, "..", "..", ".env")); // Repo-Wurzel/.env
 
-/** Worker-Registry: id -> Konfiguration. Reihenfolge = Anzeigereihenfolge. */
+/**
+ * Worker-Registry: id -> Konfiguration. Reihenfolge = Anzeigereihenfolge.
+ * `orSlug` = Modell-Slug bei OpenRouter (ein Key für alle); per <ID>_OR_SLUG
+ * überschreibbar. Aktuelle Slugs bei Bedarf auf https://openrouter.ai/models
+ * prüfen.
+ */
 const MODELS = {
-  gemini: { label: "Gemini 3 Ultra", vendor: "Google", style: "openai", url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", keyEnv: "GOOGLE_API_KEY", model: "gemini-3-ultra", modelEnv: "GOOGLE_MODEL" },
-  grok: { label: "Grok 5", vendor: "xAI", style: "openai", url: "https://api.x.ai/v1/chat/completions", keyEnv: "XAI_API_KEY", model: "grok-5", modelEnv: "XAI_MODEL" },
-  kimi: { label: "Kimi (Moonshot)", vendor: "Moonshot AI", style: "openai", url: "https://api.moonshot.ai/v1/chat/completions", keyEnv: "MOONSHOT_API_KEY", model: "kimi-k2", modelEnv: "MOONSHOT_MODEL" },
-  qwen: { label: "Qwen 3 Max", vendor: "Alibaba", style: "openai", url: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions", keyEnv: "QWEN_API_KEY", model: "qwen3-max", modelEnv: "QWEN_MODEL" },
-  deepseek: { label: "DeepSeek R2", vendor: "DeepSeek", style: "openai", url: "https://api.deepseek.com/v1/chat/completions", keyEnv: "DEEPSEEK_API_KEY", model: "deepseek-reasoner", modelEnv: "DEEPSEEK_MODEL" },
-  llama: { label: "Llama 4 Behemoth", vendor: "Meta", style: "openai", urlEnv: "META_LLM_URL", url: "", keyEnv: "META_API_KEY", model: "llama-4-behemoth", modelEnv: "META_MODEL", keyOptional: true },
-  gpt: { label: "ChatGPT (GPT)", vendor: "OpenAI", style: "openai", url: "https://api.openai.com/v1/chat/completions", keyEnv: "OPENAI_API_KEY", model: "gpt-4o", modelEnv: "OPENAI_MODEL" },
-  sonnet: { label: "Claude Sonnet 5", vendor: "Anthropic", style: "anthropic", url: "https://api.anthropic.com/v1/messages", keyEnv: "ANTHROPIC_API_KEY", model: "claude-sonnet-5", modelEnv: "SONNET_MODEL" },
-  mistral: { label: "Mistral Magistral", vendor: "Mistral AI", style: "openai", url: "https://api.mistral.ai/v1/chat/completions", keyEnv: "MISTRAL_API_KEY", model: "magistral-medium-latest", modelEnv: "MISTRAL_MODEL" },
+  gemini: { label: "Gemini 3 Ultra", vendor: "Google", style: "openai", url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", keyEnv: "GOOGLE_API_KEY", model: "gemini-3-ultra", modelEnv: "GOOGLE_MODEL", orSlug: "google/gemini-3-ultra" },
+  grok: { label: "Grok 5", vendor: "xAI", style: "openai", url: "https://api.x.ai/v1/chat/completions", keyEnv: "XAI_API_KEY", model: "grok-5", modelEnv: "XAI_MODEL", orSlug: "x-ai/grok-5" },
+  kimi: { label: "Kimi (Moonshot)", vendor: "Moonshot AI", style: "openai", url: "https://api.moonshot.ai/v1/chat/completions", keyEnv: "MOONSHOT_API_KEY", model: "kimi-k2", modelEnv: "MOONSHOT_MODEL", orSlug: "moonshotai/kimi-k2" },
+  qwen: { label: "Qwen 3 Max", vendor: "Alibaba", style: "openai", url: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions", keyEnv: "QWEN_API_KEY", model: "qwen3-max", modelEnv: "QWEN_MODEL", orSlug: "qwen/qwen3-max" },
+  deepseek: { label: "DeepSeek R2", vendor: "DeepSeek", style: "openai", url: "https://api.deepseek.com/v1/chat/completions", keyEnv: "DEEPSEEK_API_KEY", model: "deepseek-reasoner", modelEnv: "DEEPSEEK_MODEL", orSlug: "deepseek/deepseek-r1" },
+  llama: { label: "Llama 4 Behemoth", vendor: "Meta", style: "openai", urlEnv: "META_LLM_URL", url: "", keyEnv: "META_API_KEY", model: "llama-4-behemoth", modelEnv: "META_MODEL", keyOptional: true, orSlug: "meta-llama/llama-4-maverick" },
+  gpt: { label: "ChatGPT (GPT)", vendor: "OpenAI", style: "openai", url: "https://api.openai.com/v1/chat/completions", keyEnv: "OPENAI_API_KEY", model: "gpt-4o", modelEnv: "OPENAI_MODEL", orSlug: "openai/gpt-4o" },
+  sonnet: { label: "Claude Sonnet 5", vendor: "Anthropic", style: "anthropic", url: "https://api.anthropic.com/v1/messages", keyEnv: "ANTHROPIC_API_KEY", model: "claude-sonnet-5", modelEnv: "SONNET_MODEL", orSlug: "anthropic/claude-sonnet-4.5" },
+  mistral: { label: "Mistral Magistral", vendor: "Mistral AI", style: "openai", url: "https://api.mistral.ai/v1/chat/completions", keyEnv: "MISTRAL_API_KEY", model: "magistral-medium-latest", modelEnv: "MISTRAL_MODEL", orSlug: "mistralai/magistral-medium-2506" },
 };
+
+/** OpenRouter: EIN Key für alle Modelle (OpenAI-kompatibel). Aktiv, sobald
+ *  OPENROUTER_API_KEY gesetzt ist – dann laufen alle Worker ohne Direkt-Key darüber. */
+const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
+function openrouterKey() {
+  return envClean("OPENROUTER_API_KEY");
+}
+function orSlugOf(m, id) {
+  return envClean(`${id.toUpperCase()}_OR_SLUG`) || m.orSlug;
+}
 
 /**
  * Liest eine Umgebungsvariable und behandelt Leerwerte UND nicht aufgelöste
@@ -106,30 +121,24 @@ function keyOf(m) {
 function modelOf(m) {
   return (m.modelEnv && envClean(m.modelEnv)) || m.model;
 }
-/** Ist das Modell einsatzbereit? Cloud: Key gesetzt. Selbst gehostet: URL gesetzt. */
-function ready(m) {
+/** Direkt-Zugang vorhanden? Cloud: Key gesetzt. Selbst gehostet: URL gesetzt. */
+function directReady(m) {
   if (m.keyOptional) return Boolean(urlOf(m));
   return Boolean(keyOf(m)) && Boolean(urlOf(m));
 }
+/** Einsatzbereit = eigener Zugang ODER OpenRouter-Key (ein Key für alle). */
+function ready(m) {
+  return directReady(m) || Boolean(openrouterKey());
+}
+/** Wie wird das Modell erreicht? Für die ehrliche Statusanzeige. */
+function modus(m) {
+  if (directReady(m)) return "direkt";
+  if (openrouterKey()) return "OpenRouter";
+  return "";
+}
 
-/** Ruft ein Modell einmal auf. Gibt { ok, text } oder { ok:false, error } zurück – wirft nie. */
-async function callModel(m, prompt) {
-  const url = urlOf(m);
-  if (!url) return { ok: false, error: `nicht konfiguriert – setze ${m.urlEnv || m.keyEnv}` };
-  const key = keyOf(m);
-  if (!m.keyOptional && !key) return { ok: false, error: `nicht konfiguriert – setze ${m.keyEnv}` };
-  const model = modelOf(m);
-
-  let headers, body;
-  if (m.style === "anthropic") {
-    headers = { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01" };
-    body = { model, max_tokens: MAX_TOKENS, messages: [{ role: "user", content: prompt }] };
-  } else {
-    headers = { "content-type": "application/json" };
-    if (key) headers.authorization = `Bearer ${key}`;
-    body = { model, max_tokens: MAX_TOKENS, messages: [{ role: "user", content: prompt }] };
-  }
-
+/** Führt einen einzelnen OpenAI-/Anthropic-Request aus und parst die Antwort. */
+async function httpCall(url, headers, body, anthropic) {
   try {
     const res = await fetch(url, { method: "POST", headers, body: JSON.stringify(body), signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
     if (!res.ok) {
@@ -138,12 +147,43 @@ async function callModel(m, prompt) {
       return { ok: false, error: `HTTP ${res.status}: ${detail}` };
     }
     const data = await res.json();
-    const text = m.style === "anthropic" ? extractAnthropic(data) : extractOpenAI(data);
+    const text = anthropic ? extractAnthropic(data) : extractOpenAI(data);
     return text ? { ok: true, text } : { ok: false, error: "leere/unerwartete Antwort" };
   } catch (err) {
     const reason = err && err.name === "TimeoutError" ? `Timeout nach ${REQUEST_TIMEOUT_MS / 1000}s` : String(err && err.message || err);
     return { ok: false, error: `Netzwerkfehler (${reason})` };
   }
+}
+
+/**
+ * Ruft ein Modell einmal auf. Bevorzugt den Direkt-Zugang; ist keiner gesetzt,
+ * aber OPENROUTER_API_KEY vorhanden, läuft der Aufruf über OpenRouter (ein Key
+ * für alle). Gibt { ok, text } oder { ok:false, error } zurück – wirft nie.
+ */
+async function callModel(m, prompt, id) {
+  const msgs = [{ role: "user", content: prompt }];
+
+  if (!directReady(m)) {
+    const orKey = openrouterKey();
+    if (!orKey) return { ok: false, error: `nicht konfiguriert – setze ${m.keyOptional ? m.urlEnv : m.keyEnv} oder OPENROUTER_API_KEY` };
+    const headers = { "content-type": "application/json", authorization: `Bearer ${orKey}`, "X-Title": "Modell-Rat" };
+    const body = { model: orSlugOf(m, id), max_tokens: MAX_TOKENS, messages: msgs };
+    return httpCall(OPENROUTER_URL, headers, body, false); // OpenRouter ist immer OpenAI-Format
+  }
+
+  const url = urlOf(m);
+  const key = keyOf(m);
+  const model = modelOf(m);
+  let headers, body;
+  if (m.style === "anthropic") {
+    headers = { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01" };
+    body = { model, max_tokens: MAX_TOKENS, messages: msgs };
+  } else {
+    headers = { "content-type": "application/json" };
+    if (key) headers.authorization = `Bearer ${key}`;
+    body = { model, max_tokens: MAX_TOKENS, messages: msgs };
+  }
+  return httpCall(url, headers, body, m.style === "anthropic");
 }
 
 function extractOpenAI(data) {
@@ -167,7 +207,7 @@ function toolList() {
   for (const [id, m] of Object.entries(MODELS)) {
     tools.push({
       name: `ask_${id}`,
-      description: `Worker ${m.label} (${m.vendor}) eine Frage stellen und die Antwort erhalten. ${ready(m) ? "Bereit." : `Nicht konfiguriert – setze ${m.keyOptional ? m.urlEnv : m.keyEnv}.`}`,
+      description: `Worker ${m.label} (${m.vendor}) eine Frage stellen und die Antwort erhalten. ${ready(m) ? `Bereit (${modus(m)}).` : `Nicht konfiguriert – setze ${m.keyOptional ? m.urlEnv : m.keyEnv} oder OPENROUTER_API_KEY.`}`,
       inputSchema: {
         type: "object",
         properties: { prompt: { type: "string", description: "Die Frage/Aufgabe an das Modell (Deutsch oder Englisch)." } },
@@ -198,9 +238,18 @@ function toolList() {
 /** Führt einen Tool-Aufruf aus und liefert den Antworttext. */
 async function runTool(name, args) {
   if (name === "rat_status") {
-    const zeilen = Object.entries(MODELS).map(([id, m]) => `${ready(m) ? "✓ bereit " : "· Zugang nötig"}  ${id.padEnd(9)} ${m.label} (${m.vendor})${ready(m) ? ` → ${modelOf(m)}` : ` – setze ${m.keyOptional ? m.urlEnv : m.keyEnv}`}`);
+    const or = Boolean(openrouterKey());
+    const zeilen = Object.entries(MODELS).map(([id, m]) => {
+      if (!ready(m)) return `· Zugang nötig  ${id.padEnd(9)} ${m.label} (${m.vendor}) – setze ${m.keyOptional ? m.urlEnv : m.keyEnv} oder OPENROUTER_API_KEY`;
+      const md = modus(m);
+      const modell = md === "OpenRouter" ? orSlugOf(m, id) : modelOf(m);
+      return `✓ bereit   ${id.padEnd(9)} ${m.label} (${m.vendor}) → ${modell} [${md}]`;
+    });
     const n = Object.values(MODELS).filter(ready).length;
-    return `Modell-Rat: ${n} von ${Object.keys(MODELS).length} einsatzbereit.\n\n${zeilen.join("\n")}`;
+    const kopf = or
+      ? `Modell-Rat: ${n} von ${Object.keys(MODELS).length} einsatzbereit (OpenRouter aktiv – ein Key für alle).`
+      : `Modell-Rat: ${n} von ${Object.keys(MODELS).length} einsatzbereit.`;
+    return `${kopf}\n\n${zeilen.join("\n")}`;
   }
 
   if (name === "rat_council") {
@@ -212,7 +261,7 @@ async function runTool(name, args) {
     const aktive = auswahl.filter((id) => ready(MODELS[id]));
     if (!aktive.length) return "Kein Worker einsatzbereit. Setze mindestens einen Zugang (siehe rat_status).";
     const ergebnisse = await Promise.all(aktive.map(async (id) => {
-      const r = await callModel(MODELS[id], prompt);
+      const r = await callModel(MODELS[id], prompt, id);
       return { id, label: MODELS[id].label, r };
     }));
     const teile = ergebnisse.map(({ label, r }) => `=== ${label} ===\n${r.ok ? r.text : `[Fehler: ${r.error}]`}`);
@@ -225,7 +274,7 @@ async function runTool(name, args) {
     if (!m) return `Unbekanntes Modell: ${id}`;
     const prompt = String(args && args.prompt || "").trim();
     if (!prompt) return "Fehler: prompt fehlt.";
-    const r = await callModel(m, prompt);
+    const r = await callModel(m, prompt, id);
     return r.ok ? r.text : `[${m.label} nicht verfügbar: ${r.error}]`;
   }
 

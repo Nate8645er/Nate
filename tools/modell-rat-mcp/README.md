@@ -24,6 +24,15 @@ Zusätzlich:
 - `rat_council` – stellt allen bereiten Workern **dieselbe Frage parallel** und
   liefert alle Antworten gesammelt zurück (der Boss führt sie zusammen).
 
+## Ein Key für alle (empfohlen): OpenRouter
+
+Statt neun Einzel-Keys reicht **ein** OpenRouter-Key: er schaltet alle Worker
+frei. Setze `OPENROUTER_API_KEY` (holen unter https://openrouter.ai/keys) – der
+Server leitet dann jeden Worker über OpenRouter (`provider/model`-Slugs, siehe
+https://openrouter.ai/models). Ein zusätzlich gesetzter Einzel-Anbieter-Key hat
+Vorrang vor OpenRouter. Die genauen Slugs sind per `<ID>_OR_SLUG` überschreibbar
+(z. B. `GEMINI_OR_SLUG=google/gemini-3-ultra`).
+
 ## Ehrlichkeit
 
 Ein Modell antwortet **nur**, wenn sein Zugang gesetzt ist. Fehlt der Key (bzw.
