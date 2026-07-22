@@ -34,7 +34,7 @@ const PLAN_NOTIZ: Record<PlanId, string> = {
   FREE: "Kern-Team zum Kennenlernen",
   PERSONAL: "Kern-Team für Einzelpersonen – der günstige Einstieg",
   STARTER: "Kern-Team, jeden Tag einsatzbereit",
-  PROFESSIONAL: "Kern-Team + alle 4 Spezialisten parallel",
+  PROFESSIONAL: "Kern-Team + Marketing & Research parallel",
   BUSINESS: `Virtuelle Firma: dynamische Abteilungen, bis ${MAX_DYN_AGENTS.BUSINESS} Spezialisten live pro Auftrag`,
   ENTERPRISE: `Maximalausbau: bis ${MAX_DYN_AGENTS.ENTERPRISE} Spezialisten live pro Auftrag, Belegschaft 1000`,
 };
@@ -134,7 +134,7 @@ export default function TeamPage() {
         <section className="mt-10">
           <h2 className="text-xl font-semibold text-white">Spezialisten</h2>
           <p className="mt-1 text-sm text-zinc-500">
-            Ab PROFESSIONAL arbeiten alle vier parallel mit – jeder mit eigenem Fachgebiet und eigenem KI-Modell.
+            Ab PROFESSIONAL kommen Marketing &amp; Research parallel dazu; Coding &amp; Business schalten ab BUSINESS frei. Jeder mit eigenem Fachgebiet und eigenem KI-Modell.
           </p>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {SPEZIALISTEN.map((r) => (

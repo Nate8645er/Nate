@@ -34,12 +34,15 @@ Statt Kommandozeile können Schlüssel auch per Klick erzeugt werden:
    Kunden senden. Die Schlüssel passen automatisch zum LICENSE_SECRET.
 
 ## Plan-Limits (serverseitig erzwungen)
-FREE 3/Tag, STARTER 25, PROFESSIONAL 100, BUSINESS 400, ENTERPRISE 1000.
-Team-Grösse sichtbar: FREE 4 ... BUSINESS 150 ... ENTERPRISE 1000.
+FREE 3/Tag, PERSONAL 10, STARTER 25, PROFESSIONAL 100, BUSINESS 400, ENTERPRISE 1000.
+Team-Grösse sichtbar: FREE 4, PERSONAL 6, STARTER 12, PROFESSIONAL 50, BUSINESS 250, ENTERPRISE 1000.
+
+## Automatische Schlüssel-Zustellung (implementiert)
+Der Shopify-Webhook (app/api/shopify/webhook/route.ts) erzeugt bei bezahlter
+Bestellung automatisch den Schlüssel und liefert ihn aus (siehe
+LIZENZ-AUTOMATIK.md). Die manuelle Erzeugung (oben) bleibt als Fallback.
 
 ## Noch offen für Voll-Automatik (Phase 3, optional)
-- Automatische Schlüssel-Zustellung nach Kauf (Shopify-Webhook -> Generator
-  -> E-Mail). Aktuell manuell, für die ersten Kunden voellig ausreichend.
 - Einmal-Einloesung/Widerruf von Schlüsseln (braucht Vercel KV/Upstash).
 - IP-Rate-Limit gegen Missbrauch (Vercel KV).
 - AGB/Datenschutz vor Verkaufsstart anwaltlich prüfen.

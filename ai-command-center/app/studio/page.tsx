@@ -672,7 +672,10 @@ export default function StudioPage() {
   // Nur Vorschläge, die die Datei wirklich verändern (oder neu sind).
   const echteVorschlaege = dateiVorschlaege.filter((v) => proj.files[v.path] !== v.content);
   // Fallback: eine einzelne Datei ohne Pfad-Markierung → betrifft die offene Datei.
-  const vorschlag = echteVorschlaege.length === 0 ? ersterCodeblock(letzteAntwort) : null;
+  // Einzeldatei-Fallback NUR, wenn die Antwort gar keinen pfad-getaggten Block
+  // enthält – sonst könnte ein (unveränderter) Fremd-Block auf die offene Datei
+  // angewendet werden.
+  const vorschlag = dateiVorschlaege.length === 0 ? ersterCodeblock(letzteAntwort) : null;
 
   function uebernehmeDatei(path: string, content: string) {
     oeffneTab(path);

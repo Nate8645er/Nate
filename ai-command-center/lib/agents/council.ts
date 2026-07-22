@@ -68,7 +68,7 @@ export const MODELL_RAT: readonly RatModell[] = [
     label: "Kimi (Moonshot)",
     hersteller: "Moonshot AI",
     provider: "moonshot",
-    standardModell: modelIdStandard("moonshot", "kimi-k2"),
+    standardModell: "kimi-k3",
     rolle: "Sehr langer Kontext, gründliche Analyse und Recherche-Zusammenfassung.",
   },
   {
@@ -112,11 +112,6 @@ export const MODELL_RAT: readonly RatModell[] = [
     rolle: "Effizientes Reasoning aus Europa, schnell und datenschutzfreundlich hostbar.",
   },
 ];
-
-/** Standard-Modell-ID (mit Env-Override) – für Einträge, die den Team-Default teilen. */
-function modelIdStandard(provider: Provider, fallback: string): string {
-  return modelId(provider, fallback);
-}
 
 /** Der Boss des Rats (Fable 5). */
 export const RAT_BOSS: RatModell = MODELL_RAT.find((m) => m.boss) ?? MODELL_RAT[0];

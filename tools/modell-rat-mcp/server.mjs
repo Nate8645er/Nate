@@ -74,7 +74,7 @@ ladeEnvDatei(join(HIER, "..", "..", ".env")); // Repo-Wurzel/.env
 const MODELS = {
   gemini: { label: "Gemini 3 Ultra", vendor: "Google", style: "openai", url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", keyEnv: "GOOGLE_API_KEY", model: "gemini-3-ultra", modelEnv: "GOOGLE_MODEL", orSlug: "google/gemini-3-ultra" },
   grok: { label: "Grok 5", vendor: "xAI", style: "openai", url: "https://api.x.ai/v1/chat/completions", keyEnv: "XAI_API_KEY", model: "grok-5", modelEnv: "XAI_MODEL", orSlug: "x-ai/grok-5" },
-  kimi: { label: "Kimi (Moonshot)", vendor: "Moonshot AI", style: "openai", url: "https://api.moonshot.ai/v1/chat/completions", keyEnv: "MOONSHOT_API_KEY", model: "kimi-k2", modelEnv: "MOONSHOT_MODEL", orSlug: "moonshotai/kimi-k2" },
+  kimi: { label: "Kimi (Moonshot)", vendor: "Moonshot AI", style: "openai", url: "https://api.moonshot.ai/v1/chat/completions", keyEnv: "MOONSHOT_API_KEY", model: "kimi-k3", modelEnv: "MOONSHOT_MODEL", orSlug: "moonshotai/kimi-k2" },
   qwen: { label: "Qwen 3 Max", vendor: "Alibaba", style: "openai", url: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions", keyEnv: "QWEN_API_KEY", model: "qwen3-max", modelEnv: "QWEN_MODEL", orSlug: "qwen/qwen3-max" },
   deepseek: { label: "DeepSeek R2", vendor: "DeepSeek", style: "openai", url: "https://api.deepseek.com/v1/chat/completions", keyEnv: "DEEPSEEK_API_KEY", model: "deepseek-reasoner", modelEnv: "DEEPSEEK_MODEL", orSlug: "deepseek/deepseek-r1" },
   llama: { label: "Llama 4 Behemoth", vendor: "Meta", style: "openai", urlEnv: "META_LLM_URL", url: "", keyEnv: "META_API_KEY", model: "llama-4-behemoth", modelEnv: "META_MODEL", keyOptional: true, orSlug: "meta-llama/llama-4-maverick" },
@@ -256,7 +256,7 @@ async function runTool(name, args) {
     const prompt = String(args && args.prompt || "").trim();
     if (!prompt) return "Fehler: prompt fehlt.";
     const auswahl = Array.isArray(args && args.models) && args.models.length
-      ? args.models.map(String).filter((id) => MODELS[id])
+      ? args.models.map(String).filter((id) => Object.prototype.hasOwnProperty.call(MODELS, id))
       : Object.keys(MODELS);
     const aktive = auswahl.filter((id) => ready(MODELS[id]));
     if (!aktive.length) return "Kein Worker einsatzbereit. Setze mindestens einen Zugang (siehe rat_status).";
@@ -270,8 +270,8 @@ async function runTool(name, args) {
 
   if (name.startsWith("ask_")) {
     const id = name.slice(4);
+    if (!Object.prototype.hasOwnProperty.call(MODELS, id)) return `Unbekanntes Modell: ${id}`;
     const m = MODELS[id];
-    if (!m) return `Unbekanntes Modell: ${id}`;
     const prompt = String(args && args.prompt || "").trim();
     if (!prompt) return "Fehler: prompt fehlt.";
     const r = await callModel(m, prompt, id);

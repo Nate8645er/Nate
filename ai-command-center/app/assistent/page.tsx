@@ -417,7 +417,7 @@ function renderMarkdown(src: string): string {
   const bloecke: string[] = [];
   let text = src.replace(/```(\w+)?\n?([\s\S]*?)```/g, (_m, _lang, code) => {
     bloecke.push(`<pre class="acc-code"><code>${esc(code.replace(/\n$/, ""))}</code></pre>`);
-    return ` B${bloecke.length - 1} `;
+    return `\u0000B${bloecke.length - 1}\u0000`;
   });
 
   text = esc(text);
@@ -448,9 +448,9 @@ function renderMarkdown(src: string): string {
 
   for (const zeile of zeilen) {
     const z = zeile.trimEnd();
-    if (z.startsWith(" B")) {
+    if (z.startsWith("\u0000B")) {
       listeSchliessen();
-      const idx = Number(z.replace(/ B(\d+) /, "$1"));
+      const idx = Number(z.replace(/\u0000B(\d+)\u0000/, "$1"));
       out.push(bloecke[idx] ?? "");
       continue;
     }
