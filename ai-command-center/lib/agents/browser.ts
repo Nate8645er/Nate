@@ -211,42 +211,86 @@ async function sucheDuckDuckGo(query: string): Promise<{ titel: string; url: str
   return treffer;
 }
 
-/** Bing-HTML-Suche (Backend 2, falls DuckDuckGo blockt). */
-async function sucheBing(query: string): Promise<{ titel: string; url: string }[]> {
+/**
+ * DuckDuckGo-Lite-Suche (Backend 2). Das Lite-Frontend hat einfaches, stabiles
+ * Markup und wird seltener mit Anti-Bot (HTTP 202) blockiert als html.ddg.
+ */
+async function sucheDdgLite(query: string): Promise<{ titel: string; url: string }[]> {
   const html = await fetchMitTimeout(
-    `https://www.bing.com/search?q=${encodeURIComponent(query)}&count=20`,
+    `https://lite.duckduckgo.com/lite/?q=${encodeURIComponent(query)}`,
     SUCHE_TIMEOUT_MS,
   );
   if (!html) return [];
   const treffer: { titel: string; url: string }[] = [];
-  // Organische Treffer: <li class="b_algo">…<h2><a href="URL">Titel</a>
-  const re = /<li class="b_algo"[\s\S]*?<h2[^>]*>\s*<a[^>]*href="(https?:\/\/[^"]+)"[^>]*>([\s\S]*?)<\/a>/gi;
+  const push = (rawUrl: string, rawTitel: string) => {
+    let url = rawUrl;
+    const uddg = /[?&]uddg=([^&]+)/.exec(url);
+    if (uddg) {
+      try {
+        url = decodeURIComponent(uddg[1]);
+      } catch {
+        return;
+      }
+    }
+    if (!/^https?:\/\//i.test(url) || /duckduckgo\.com/i.test(url)) return;
+    const titel = htmlZuText(rawTitel).slice(0, 120);
+    if (titel.length > 2 && treffer.length < 24) treffer.push({ titel, url });
+  };
+  // Primär: Ergebnis-Links; Fallback: alle externen Links im Ergebnis-HTML.
   let m: RegExpExecArray | null;
-  while ((m = re.exec(html)) && treffer.length < 24) {
-    const url = m[1];
-    // Bing-eigene Redirect-/Werbelinks überspringen.
-    if (/bing\.com|microsoft\.com\/bing/i.test(url)) continue;
-    const titel = htmlZuText(m[2]).slice(0, 120);
-    if (titel) treffer.push({ titel, url });
+  const re = /<a[^>]*class="[^"]*result-link[^"]*"[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi;
+  while ((m = re.exec(html))) push(m[1], m[2]);
+  if (!treffer.length) {
+    const re2 = /<a[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi;
+    while ((m = re2.exec(html))) push(m[1], m[2]);
   }
   return treffer;
 }
 
-/** Wikipedia-Suche (Backend 3 – liefert immer belastbare Grundlagen). */
+/** Bing-HTML-Suche (Backend 3). Toleranter Parser pro Ergebnis-Block. */
+async function sucheBing(query: string): Promise<{ titel: string; url: string }[]> {
+  const html = await fetchMitTimeout(
+    `https://www.bing.com/search?q=${encodeURIComponent(query)}&count=20&setlang=de`,
+    SUCHE_TIMEOUT_MS,
+  );
+  if (!html) return [];
+  const treffer: { titel: string; url: string }[] = [];
+  // Jeden Ergebnis-Block einzeln nehmen und den ersten externen Link ziehen –
+  // robust gegen Bings wechselndes Markup (erst h2>a, sonst irgendein http-Link).
+  const bloecke = html.split(/<li class="b_algo"/i).slice(1);
+  for (const block of bloecke) {
+    const m =
+      /<h2[^>]*>[\s\S]*?<a[^>]*href="(https?:\/\/[^"]+)"[^>]*>([\s\S]*?)<\/a>/i.exec(block) ??
+      /<a[^>]*href="(https?:\/\/[^"]+)"[^>]*>([\s\S]*?)<\/a>/i.exec(block);
+    if (!m) continue;
+    const url = m[1];
+    if (/bing\.com|microsoft\.com|go\.microsoft|msn\.com/i.test(url)) continue;
+    const titel = htmlZuText(m[2]).slice(0, 120);
+    if (titel && treffer.length < 24) treffer.push({ titel, url });
+  }
+  return treffer;
+}
+
+/**
+ * Wikipedia-Volltextsuche (Backend 4 – letzte Absicherung). list=search
+ * verarbeitet auch natürlichsprachliche Fragen, anders als opensearch.
+ */
 async function sucheWikipedia(query: string): Promise<{ titel: string; url: string }[]> {
   const treffer: { titel: string; url: string }[] = [];
   for (const wiki of ["de", "en"]) {
     const json = await fetchMitTimeout(
-      `https://${wiki}.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(
-        query.slice(0, 100),
-      )}&limit=5&format=json`,
+      `https://${wiki}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(
+        query.slice(0, 200),
+      )}&srlimit=5&format=json`,
       SUCHE_TIMEOUT_MS,
     );
     if (!json) continue;
     try {
-      const [, titelListe, , urls] = JSON.parse(json) as [string, string[], string[], string[]];
-      for (let i = 0; i < titelListe.length && i < urls.length; i++) {
-        treffer.push({ titel: `${titelListe[i]} (Wikipedia)`, url: urls[i] });
+      const data = JSON.parse(json) as { query?: { search?: { title?: string }[] } };
+      for (const h of data.query?.search ?? []) {
+        if (!h?.title) continue;
+        const url = `https://${wiki}.wikipedia.org/wiki/${encodeURIComponent(h.title.replace(/ /g, "_"))}`;
+        treffer.push({ titel: `${h.title} (Wikipedia)`, url });
       }
     } catch {
       /* unerwartetes Format */
@@ -257,12 +301,12 @@ async function sucheWikipedia(query: string): Promise<{ titel: string; url: stri
 }
 
 /**
- * Suche mit Fallback-Kette: DuckDuckGo -> Bing -> Wikipedia.
- * Je nach Netz/Umgebung ist mal das eine, mal das andere erreichbar –
- * der Browser liefert dadurch praktisch immer Quellen.
+ * Suche mit Fallback-Kette: DuckDuckGo-HTML -> DuckDuckGo-Lite -> Bing ->
+ * Wikipedia. Blockt ein Backend (z. B. DDG mit HTTP 202), greift das nächste –
+ * so liefert der Browser praktisch immer Quellen.
  */
 async function webSuche(query: string): Promise<{ titel: string; url: string }[]> {
-  for (const backend of [sucheDuckDuckGo, sucheBing, sucheWikipedia]) {
+  for (const backend of [sucheDuckDuckGo, sucheDdgLite, sucheBing, sucheWikipedia]) {
     try {
       const treffer = await backend(query);
       if (treffer.length) return treffer;
