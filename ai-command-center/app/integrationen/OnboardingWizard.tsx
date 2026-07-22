@@ -202,7 +202,7 @@ export default function OnboardingWizard() {
                 <div className="grid gap-3">
                   <label className="block">
                     <span className="text-xs font-semibold text-[#8d8172]">Firmenname</span>
-                    <input className={`${INP} mt-1`} value={firma} onChange={(e) => setFirma(e.target.value)} placeholder="z. B. Muster AG" autoFocus />
+                    <input className={`${INP} mt-1`} value={firma} onChange={(e) => setFirma(e.target.value)} placeholder="Ihr Firmenname" autoFocus />
                   </label>
                   <label className="block">
                     <span className="text-xs font-semibold text-[#8d8172]">Ansprechperson (optional)</span>
