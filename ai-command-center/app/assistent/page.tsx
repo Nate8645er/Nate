@@ -213,19 +213,19 @@ export default function AssistentPage() {
   const leer = messages.length === 0;
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#08070c] text-zinc-100">
+    <div className="acc-page flex min-h-screen flex-col text-[#2a2521]">
       <header className="sticky top-0 z-40 flex items-center justify-between gap-3 px-4 py-3 backdrop-blur-xl sm:px-6">
         <div className="flex items-center gap-2 text-[13px] font-medium tracking-tight">
           <span className="inline-block h-2 w-2 rounded-full bg-[#ff8c2a] shadow-[0_0_10px_2px_rgba(255,140,42,0.7)]" />
-          <span className="font-mono text-[11px] tracking-[0.22em] text-zinc-400">AI COMMAND CENTER</span>
+          <span className="font-mono text-[11px] tracking-[0.22em] text-[#5c5346]">AI COMMAND CENTER</span>
         </div>
-        <WorkNav aktiv="assistent" variante="dunkel" />
+        <WorkNav aktiv="assistent" variante="hell" />
       </header>
 
       <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 pb-40 sm:px-6">
         <div className="pt-4 pb-2">
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">KI-Chat</h1>
-          <p className="mt-1 text-sm text-zinc-400">
+          <p className="mt-1 text-sm text-[#5c5346]">
             Ihr persönlicher KI-Assistent – wie ChatGPT oder Claude, mit eingebautem Browser für
             aktuelle Fakten und Quellen.
           </p>
@@ -233,8 +233,8 @@ export default function AssistentPage() {
 
         <div ref={scrollRef} className="flex-1 space-y-5 overflow-y-auto py-4">
           {leer && (
-            <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-6">
-              <p className="text-sm text-zinc-300">
+            <div className="rounded-2xl acc-card p-6">
+              <p className="text-sm text-[#4a4335]">
                 Stellen Sie eine Frage oder starten Sie mit einem Vorschlag:
               </p>
               <div className="mt-4 grid gap-2 sm:grid-cols-2">
@@ -242,7 +242,7 @@ export default function AssistentPage() {
                   <button
                     key={v}
                     onClick={() => senden(v)}
-                    className="rounded-xl border border-white/8 bg-white/[0.02] px-3 py-2.5 text-left text-[13px] text-zinc-300 transition-colors hover:border-[#ff8c2a]/40 hover:bg-[#ff8c2a]/[0.06] hover:text-white"
+                    className="rounded-xl border border-[#1c1917]/10 bg-white/70 px-3 py-2.5 text-left text-[13px] text-[#4a4335] transition-colors hover:border-[#ff8c2a]/40 hover:bg-[#ff8c2a]/[0.06] hover:text-[#1c1917]"
                   >
                     {v}
                   </button>
@@ -257,7 +257,7 @@ export default function AssistentPage() {
                 className={
                   m.role === "user"
                     ? "max-w-[85%] rounded-2xl rounded-br-md bg-gradient-to-br from-[#ff8c2a] to-[#ff5f1f] px-4 py-2.5 text-[14px] text-white shadow-[0_6px_20px_-8px_rgba(255,110,30,0.6)]"
-                    : "max-w-[92%] rounded-2xl rounded-bl-md border border-white/8 bg-white/[0.03] px-4 py-3 text-[14px] leading-relaxed text-zinc-100"
+                    : "max-w-[92%] rounded-2xl rounded-bl-md acc-card px-4 py-3 text-[14px] leading-relaxed text-[#2a2521]"
                 }
               >
                 {m.role === "assistant" ? (
@@ -271,8 +271,8 @@ export default function AssistentPage() {
                       !status && <span className="inline-flex gap-1 py-1 align-middle"><Dot /><Dot /><Dot /></span>
                     )}
                     {m.sources && m.sources.length > 0 && (
-                      <div className="mt-3 border-t border-white/8 pt-2.5">
-                        <p className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                      <div className="mt-3 border-t border-[#1c1917]/8 pt-2.5">
+                        <p className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-[#8d8172]">
                           Quellen ({m.sources.length})
                         </p>
                         <div className="flex flex-wrap gap-1.5">
@@ -282,7 +282,7 @@ export default function AssistentPage() {
                               href={q.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="max-w-[220px] truncate rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] text-zinc-300 transition-colors hover:border-[#ff8c2a]/40 hover:text-[#ffb35c]"
+                              className="max-w-[220px] truncate rounded-full border border-[#1c1917]/10 bg-white/70 px-2.5 py-1 text-[11px] text-[#4a4335] transition-colors hover:border-[#ff8c2a]/40 hover:text-[#c25e0e]"
                               title={q.titel}
                             >
                               {j + 1}. {q.titel}
@@ -303,12 +303,12 @@ export default function AssistentPage() {
           {status && (
             <div className="flex justify-start">
               <div className="max-w-[92%] rounded-2xl rounded-bl-md border border-[#ff8c2a]/25 bg-[#ff8c2a]/[0.06] px-4 py-3 text-[13px]">
-                <div className="flex items-center gap-2 font-medium text-[#ffb35c]">
+                <div className="flex items-center gap-2 font-medium text-[#c25e0e]">
                   <GlobeSpin />
                   {status}
                 </div>
                 {liveQuellen.length > 0 && (
-                  <ul className="mt-2 space-y-1 text-[12px] text-zinc-400">
+                  <ul className="mt-2 space-y-1 text-[12px] text-[#5c5346]">
                     {liveQuellen.map((q, j) => (
                       <li key={j} className="truncate">↳ liest: {q.titel}</li>
                     ))}
@@ -319,7 +319,7 @@ export default function AssistentPage() {
           )}
 
           {error && (
-            <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-[13px] text-red-300">
+            <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-[13px] text-red-600">
               {error}
             </div>
           )}
@@ -327,9 +327,9 @@ export default function AssistentPage() {
       </main>
 
       {/* Eingabeleiste (fixiert) */}
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/8 bg-[#08070c]/85 backdrop-blur-xl">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#1c1917]/8 bg-[#fbfaf6]/85 backdrop-blur-xl">
         <div className="mx-auto w-full max-w-3xl px-4 py-3 sm:px-6">
-          <div className="flex items-end gap-2 rounded-2xl border border-white/10 bg-white/[0.04] p-2 focus-within:border-[#ff8c2a]/40">
+          <div className="flex items-end gap-2 rounded-2xl border border-[#1c1917]/10 bg-white/70 p-2 focus-within:border-[#ff8c2a]/40">
             <button
               type="button"
               onClick={() => setBrowse((b) => !b)}
@@ -341,8 +341,8 @@ export default function AssistentPage() {
               }
               className={`flex shrink-0 items-center gap-1.5 rounded-xl px-2.5 py-2 text-[12px] font-medium transition-colors ${
                 browse
-                  ? "bg-[#ff8c2a]/15 text-[#ffb35c] ring-1 ring-[#ff8c2a]/40"
-                  : "text-zinc-400 hover:bg-white/5 hover:text-zinc-200"
+                  ? "bg-[#ff8c2a]/15 text-[#c25e0e] ring-1 ring-[#ff8c2a]/40"
+                  : "text-[#5c5346] hover:bg-[#1c1917]/5 hover:text-[#1c1917]"
               }`}
             >
               <GlobeIcon />
@@ -359,7 +359,7 @@ export default function AssistentPage() {
               }}
               rows={1}
               placeholder="Fragen Sie den KI-Assistenten … (Enter sendet, Shift+Enter = neue Zeile)"
-              className="max-h-40 flex-1 resize-none bg-transparent px-2 py-2 text-[14px] text-zinc-100 outline-none placeholder:text-zinc-500"
+              className="max-h-40 flex-1 resize-none bg-transparent px-2 py-2 text-[14px] text-[#2a2521] outline-none placeholder:text-[#a89e8d]"
               disabled={streaming}
             />
             <button
@@ -372,7 +372,7 @@ export default function AssistentPage() {
               {streaming ? <Spinner /> : <SendIcon />}
             </button>
           </div>
-          <div className="mt-1.5 flex items-center justify-between px-1 text-[11px] text-zinc-500">
+          <div className="mt-1.5 flex items-center justify-between px-1 text-[11px] text-[#8d8172]">
             <span>
               {browse ? "🌐 Browser aktiv – Antworten mit Web-Quellen" : "Tipp: Globus einschalten für aktuelle Fakten"}
             </span>
@@ -383,7 +383,7 @@ export default function AssistentPage() {
                 </span>
               )}
               {messages.length > 0 && (
-                <button onClick={neu} disabled={streaming} className="hover:text-zinc-300 disabled:opacity-40">
+                <button onClick={neu} disabled={streaming} className="hover:text-[#1c1917] disabled:opacity-40">
                   Neuer Chat
                 </button>
               )}
@@ -393,7 +393,7 @@ export default function AssistentPage() {
       </div>
 
       <div className="hidden">
-        <WorkFooter variante="dunkel" />
+        <WorkFooter variante="hell" />
       </div>
 
       <style>{acsStyles}</style>
@@ -537,10 +537,10 @@ const acsStyles = `
 .acc-md .acc-ul { list-style: disc; }
 .acc-md .acc-ol { list-style: decimal; }
 .acc-md li { margin-top: 0.2rem; }
-.acc-md a { color: #ffb35c; text-decoration: underline; text-underline-offset: 2px; }
-.acc-md strong { color: #fff; font-weight: 700; }
-.acc-md .acc-inline { background: rgba(255,255,255,0.08); border-radius: 5px; padding: 0.05rem 0.32rem; font-family: ui-monospace,monospace; font-size: 0.86em; }
-.acc-md .acc-code { background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 0.7rem 0.85rem; overflow-x: auto; font-family: ui-monospace,monospace; font-size: 0.82rem; line-height: 1.5; }
+.acc-md a { color: #c25e0e; text-decoration: underline; text-underline-offset: 2px; }
+.acc-md strong { color: #1c1917; font-weight: 700; }
+.acc-md .acc-inline { background: rgba(28,25,23,0.06); border-radius: 5px; padding: 0.05rem 0.32rem; font-family: ui-monospace,monospace; font-size: 0.86em; }
+.acc-md .acc-code { background: rgba(28,25,23,0.05); border: 1px solid rgba(28,25,23,0.1); color: #2a2521; border-radius: 10px; padding: 0.7rem 0.85rem; overflow-x: auto; font-family: ui-monospace,monospace; font-size: 0.82rem; line-height: 1.5; }
 .acc-dot { animation: accBlink 1.2s infinite ease-in-out; }
 .acc-dot:nth-child(2){ animation-delay: 0.2s; } .acc-dot:nth-child(3){ animation-delay: 0.4s; }
 @keyframes accBlink { 0%,80%,100%{ opacity: 0.25; } 40%{ opacity: 1; } }
