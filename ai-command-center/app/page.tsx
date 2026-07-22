@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SKILL_ANZAHL, skillAnzahlFuer } from "@/lib/skills";
 import { RECHERCHE_QUELLEN } from "@/lib/agents/browser";
 
 export const metadata: Metadata = {
@@ -37,7 +36,7 @@ const PLANS: Plan[] = [
     benefits: [
       "4 KI-Agenten zum Kennenlernen",
       "3 Missionen pro Tag",
-      `${skillAnzahlFuer("FREE")} Basis-Skills zum Kennenlernen`,
+      "Basis-Skills zum Kennenlernen",
       `KI-Browser: recherchiert im Web (${RECHERCHE_QUELLEN.FREE} Quellen)`,
       "Ergebnis-Vorschau direkt im Browser",
       "Knappes Token-Budget – zum Kennenlernen",
@@ -54,7 +53,7 @@ const PLANS: Plan[] = [
     benefits: [
       "10 Missionen pro Tag",
       "Fertige Dateien mit Download",
-      `${skillAnzahlFuer("PERSONAL")} Skills für den Alltag`,
+      "Skills für den Alltag",
       `KI-Browser: recherchiert im Web (${RECHERCHE_QUELLEN.PERSONAL} Quellen)`,
       "E-Mail-Zentrale, CRM & Autopilot",
       "Perfekt für Einzelpersonen",
@@ -73,7 +72,7 @@ const PLANS: Plan[] = [
     benefits: [
       "12 spezialisierte KI-Agenten",
       "25 Missionen pro Tag",
-      `${skillAnzahlFuer("STARTER")} Skills inkl. Verkauf & Marketing`,
+      "Skills inkl. Verkauf & Marketing",
       `KI-Browser: recherchiert im Web (${RECHERCHE_QUELLEN.STARTER} Quellen)`,
       "Echte Dateien und Code mit Download",
       "Quality-Score je Ergebnis",
@@ -90,7 +89,7 @@ const PLANS: Plan[] = [
     team: "Team: 50 Agenten",
     benefits: [
       "50 Agenten in Fachteams organisiert",
-      `${skillAnzahlFuer("PROFESSIONAL")} Skills inkl. Finanzen & Analyse`,
+      "Skills inkl. Finanzen & Analyse",
       `KI-Browser: recherchiert im Web (${RECHERCHE_QUELLEN.PROFESSIONAL} Quellen)`,
       "Dokumente analysieren: PDF, Word, Excel",
       "5 Firmen-Integrationen inklusive",
@@ -110,9 +109,9 @@ const PLANS: Plan[] = [
     highlight: true,
     benefits: [
       "250 Agenten als digitale Abteilung",
-      `${skillAnzahlFuer("BUSINESS")} Skills inkl. Personal & Recht`,
+      "Skills inkl. Personal & Recht",
       `KI-Browser: recherchiert im Web (${RECHERCHE_QUELLEN.BUSINESS} Quellen)`,
-      "Alle 15 Firmen-Integrationen",
+      "Alle Firmen-Integrationen",
       "Eigene Workflows und Freigaben",
       "Zugänge für Ihr ganzes Team",
       "Dedizierter Ansprechpartner",
@@ -128,7 +127,7 @@ const PLANS: Plan[] = [
     team: "Belegschaft: 1000 Mitarbeitende",
     benefits: [
       "Bis 1000 virtuelle Mitarbeitende",
-      `Alle ${SKILL_ANZAHL} Skills + KI-Strategie exklusiv`,
+      "Alle Skills + KI-Strategie exklusiv",
       `KI-Browser: recherchiert im Web (${RECHERCHE_QUELLEN.ENTERPRISE} Quellen)`,
       "Individuelle KI-Infrastruktur",
       "Private Cloud oder On-Premise möglich",
@@ -138,6 +137,14 @@ const PLANS: Plan[] = [
     ],
     handle: "enterprise-ai-individuelle-ki-infrastruktur-ab-10000-monat",
   },
+];
+
+/** Akzentfarbe je Funktions-Kachel – bewusst bunt (Indigo/Orange/Teal/Pink). */
+const FEATURE_ACCENTS = [
+  "bg-[#eef0ff] text-[#5b52d6]",
+  "bg-[#e6faf6] text-[#0f766e]",
+  "bg-[#fff4e6] text-[#c25e0e]",
+  "bg-[#fdeef7] text-[#be185d]",
 ];
 
 const FEATURES = [
@@ -176,7 +183,7 @@ const FEATURES = [
     ),
   },
   {
-    title: "15 Firmen-Integrationen",
+    title: "Firmen-Integrationen",
     text: "E-Mail, Kalender, Cloud-Speicher, Shop und mehr: Ihr KI-Team arbeitet direkt mit den Werkzeugen, die Sie schon nutzen.",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" className="h-7 w-7">
@@ -226,9 +233,9 @@ const FEATURES = [
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" className="h-7 w-7">
         <path d="M4 6.5h16M4 12h16M4 17.5h16" />
-        <circle cx="9" cy="6.5" r="2" fill="#0d0c09" />
-        <circle cx="15" cy="12" r="2" fill="#0d0c09" />
-        <circle cx="7" cy="17.5" r="2" fill="#0d0c09" />
+        <circle cx="9" cy="6.5" r="2" fill="currentColor" />
+        <circle cx="15" cy="12" r="2" fill="currentColor" />
+        <circle cx="7" cy="17.5" r="2" fill="currentColor" />
       </svg>
     ),
   },
@@ -311,7 +318,7 @@ const FAQ = [
 ];
 
 /* ------------------------------------------------------------------ */
-/* Produkt-Schaufenster: stilisiertes Dashboard als reines CSS/SVG-Bild */
+/* Produkt-Schaufenster: stilisiertes helles Dashboard (CSS/SVG-Bild)  */
 /* ------------------------------------------------------------------ */
 
 function ProductShowcase() {
@@ -319,44 +326,46 @@ function ProductShowcase() {
     <div className="shop-stage relative mx-auto mt-16 w-full max-w-4xl px-2 sm:mt-20">
       <div className="shop-glow absolute inset-x-0 -top-10 bottom-0 -z-10" aria-hidden="true" />
       <div
-        className="shop-mock hud-panel hud-corners relative rounded-2xl bg-[#0d0c09] p-4 sm:p-6"
+        className="shop-mock acc-card relative rounded-2xl p-4 sm:p-6"
         role="img"
         aria-label="Stilisierte Ansicht des AI Command Center Dashboards"
       >
         {/* Kopfzeile */}
-        <div className="flex items-center justify-between border-b border-[#ff8c2a]/15 pb-3">
-          <div className="flex items-center gap-2">
-            <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" />
-            <span className="hud-label">AI Command Center</span>
+        <div className="flex items-center justify-between border-b border-[#e8e1d2] pb-3">
+          <div className="flex items-center gap-2.5">
+            <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f]" />
+            <span className="text-sm font-bold">AI Command Center</span>
           </div>
-          <span className="hud-label hidden sm:inline">Alle Systeme bereit</span>
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-[#0f766e] hidden sm:inline">
+            Alle Systeme bereit
+          </span>
         </div>
 
         <div className="mt-5 grid gap-5 sm:grid-cols-[1fr_1.2fr_1fr] sm:gap-6">
           {/* Globus-Andeutung */}
-          <div className="hud-panel flex items-center justify-center rounded-xl p-4">
+          <div className="flex items-center justify-center rounded-xl bg-[#faf6ee] p-4">
             <svg viewBox="0 0 120 120" className="h-28 w-28 text-[#ff8c2a]" aria-hidden="true">
               <g className="hud-spin-slow" fill="none" stroke="currentColor">
-                <circle cx="60" cy="60" r="44" strokeOpacity="0.5" />
-                <ellipse cx="60" cy="60" rx="44" ry="18" strokeOpacity="0.35" />
-                <ellipse cx="60" cy="60" rx="18" ry="44" strokeOpacity="0.35" />
-                <circle cx="60" cy="60" r="30" strokeOpacity="0.2" strokeDasharray="4 6" />
+                <circle cx="60" cy="60" r="44" strokeOpacity="0.55" />
+                <ellipse cx="60" cy="60" rx="44" ry="18" strokeOpacity="0.4" />
+                <ellipse cx="60" cy="60" rx="18" ry="44" strokeOpacity="0.4" />
+                <circle cx="60" cy="60" r="30" strokeOpacity="0.25" strokeDasharray="4 6" />
               </g>
-              <circle cx="60" cy="60" r="52" fill="none" stroke="currentColor" strokeOpacity="0.25" strokeDasharray="2 8" className="hud-spin-rev" />
+              <circle cx="60" cy="60" r="52" fill="none" stroke="currentColor" strokeOpacity="0.3" strokeDasharray="2 8" className="hud-spin-rev" />
               <circle cx="88" cy="42" r="2.5" fill="currentColor" />
-              <circle cx="38" cy="78" r="2" fill="currentColor" fillOpacity="0.7" />
+              <circle cx="38" cy="78" r="2" fill="#5b52d6" />
             </svg>
           </div>
 
           {/* Agenten-Chips + Aktivität */}
           <div className="flex flex-col justify-between gap-4">
             <div>
-              <p className="hud-label mb-2">Aktive Agenten</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e] mb-2">Aktive Agenten</p>
               <div className="flex flex-wrap gap-2">
                 {["Research", "Code", "Finanzen", "Design", "Recht", "Daten"].map((a) => (
                   <span
                     key={a}
-                    className="rounded-full border border-[#ff8c2a]/30 bg-[#ff8c2a]/5 px-3 py-1 text-xs text-[#ffb35c]"
+                    className="rounded-full border border-[#ffb066]/40 bg-[#fff4e6] px-3 py-1 text-xs font-medium text-[#c25e0e]"
                   >
                     {a}
                   </span>
@@ -364,18 +373,22 @@ function ProductShowcase() {
               </div>
             </div>
             <div className="space-y-2" aria-hidden="true">
-              {[82, 64, 91].map((w, i) => (
-                <div key={i} className="h-1.5 overflow-hidden rounded-full bg-[#ff8c2a]/10">
-                  <div className="h-full rounded-full bg-[#ff8c2a]/60" style={{ width: `${w}%` }} />
+              {[
+                [82, "from-[#6d5efc] to-[#8b5cf6]"],
+                [64, "from-[#2dd4bf] to-[#0f766e]"],
+                [91, "from-[#ff8c2a] to-[#ff5f1f]"],
+              ].map(([w, grad], i) => (
+                <div key={i} className="h-1.5 overflow-hidden rounded-full bg-[#efe9dd]">
+                  <div className={`h-full rounded-full bg-gradient-to-r ${grad}`} style={{ width: `${w}%` }} />
                 </div>
               ))}
             </div>
           </div>
 
           {/* Score-Ring */}
-          <div className="hud-panel flex flex-col items-center justify-center gap-1 rounded-xl p-4">
+          <div className="flex flex-col items-center justify-center gap-1 rounded-xl bg-[#faf6ee] p-4">
             <svg viewBox="0 0 100 100" className="h-24 w-24" aria-hidden="true">
-              <circle cx="50" cy="50" r="40" fill="none" stroke="#ff8c2a" strokeOpacity="0.12" strokeWidth="7" />
+              <circle cx="50" cy="50" r="40" fill="none" stroke="#ff8c2a" strokeOpacity="0.16" strokeWidth="7" />
               <circle
                 cx="50"
                 cy="50"
@@ -388,24 +401,24 @@ function ProductShowcase() {
                 strokeDashoffset="0"
                 transform="rotate(-90 50 50)"
               />
-              <text x="50" y="55" textAnchor="middle" fill="#ffd257" fontSize="20" fontWeight="600">
+              <text x="50" y="55" textAnchor="middle" fill="#c25e0e" fontSize="20" fontWeight="700">
                 100
               </text>
             </svg>
-            <span className="hud-label">Quality-Score</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Quality-Score</span>
           </div>
         </div>
 
         {/* Missions-Zeile */}
         <div className="mt-5 grid gap-2 sm:grid-cols-3">
           {[
-            ["Marktanalyse Q3", "Fertig"],
-            ["Landingpage-Code", "In Arbeit"],
-            ["Vertragsprüfung", "Fertig"],
-          ].map(([m, s]) => (
-            <div key={m} className="flex items-center justify-between rounded-lg border border-[#ff8c2a]/15 bg-[#ff8c2a]/[0.03] px-3 py-2">
-              <span className="text-xs text-zinc-300">{m}</span>
-              <span className="hud-label">{s}</span>
+            ["Marktanalyse Q3", "Fertig", true],
+            ["Landingpage-Code", "In Arbeit", false],
+            ["Vertragsprüfung", "Fertig", true],
+          ].map(([m, s, done]) => (
+            <div key={m as string} className="flex items-center justify-between rounded-lg border border-[#efe9dd] bg-[#faf6ee] px-3 py-2">
+              <span className="text-xs font-medium text-[#4a4335]">{m}</span>
+              <span className={`text-[10px] font-bold uppercase tracking-wide ${done ? "text-[#177245]" : "text-[#c25e0e]"}`}>{s}</span>
             </div>
           ))}
         </div>
@@ -420,24 +433,24 @@ function ProductShowcase() {
 
 export default function Home() {
   return (
-    <div className="flex flex-1 flex-col bg-[#0b0a08] font-sans text-zinc-200">
+    <div className="acc-page flex flex-1 flex-col font-sans text-[#1c1917]">
       {/* Navigation */}
-      <header className="sticky top-0 z-20 border-b border-[#ff8c2a]/10 bg-[#0b0a08]/90 backdrop-blur">
+      <header className="sticky top-0 z-20 border-b border-[#e8e1d2] bg-white/75 backdrop-blur-xl">
         <nav className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-4">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" aria-hidden="true" />
-            <span className="hud-label !text-[11px]">AI Command Center</span>
+          <Link href="/" className="flex items-center gap-2.5">
+            <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f]" aria-hidden="true" />
+            <span className="text-sm font-bold">AI Command Center</span>
           </Link>
           <div className="flex items-center gap-3 sm:gap-6">
-            <a href="#abos" className="hidden text-sm text-zinc-300 hover:text-white sm:inline">
+            <a href="#abos" className="hidden text-sm font-medium text-[#6f6557] hover:text-[#1c1917] sm:inline">
               Abos
             </a>
-            <a href="#funktionen" className="hidden text-sm text-zinc-300 hover:text-white sm:inline">
+            <a href="#funktionen" className="hidden text-sm font-medium text-[#6f6557] hover:text-[#1c1917] sm:inline">
               Funktionen
             </a>
             <Link
               href="/dashboard"
-              className="shop-btn rounded-full border border-[#ff8c2a]/40 px-4 py-1.5 text-sm font-medium text-[#ffb35c] hover:border-[#ff8c2a] hover:text-white"
+              className="shop-btn rounded-full bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-5 py-2 text-sm font-bold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)]"
             >
               Kostenlos testen
             </Link>
@@ -448,16 +461,14 @@ export default function Home() {
       <main className="flex-1">
         {/* 1) Hero: Produktbühne */}
         <section className="relative overflow-hidden px-6 pb-24 pt-20 sm:pt-28">
-          <div className="mx-auto max-w-3xl text-center">
-            <p className="hud-label mb-6">Die erste digitale KI-Belegschaft der Schweiz</p>
-            <h1 className="text-balance text-4xl font-semibold tracking-tight text-white sm:text-6xl">
-              Eine ganze{" "}
-              <span className="bg-gradient-to-r from-[#ffb066] via-[#ff8c2a] to-[#ff5f1f] bg-clip-text text-transparent">
-                KI-Belegschaft
-              </span>{" "}
-              für Ihr Unternehmen
+          <div className="acc-in mx-auto max-w-3xl text-center">
+            <p className="mb-6 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">
+              Die erste digitale KI-Belegschaft der Schweiz
+            </p>
+            <h1 className="text-balance text-4xl font-semibold tracking-tight sm:text-6xl">
+              Eine ganze <span className="acc-grad-text">KI-Belegschaft</span> für Ihr Unternehmen
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg leading-8 text-zinc-400">
+            <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg leading-8 text-[#6f6557]">
               Sie geben einen Auftrag – Ihre digitale Abteilung plant, recherchiert, schreibt
               und programmiert, bis das Ergebnis steht: fertige Websites, Dokumente,
               Präsentationen und Analysen. Geprüft mit Quality-Score, geliefert in Minuten
@@ -466,32 +477,32 @@ export default function Home() {
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
                 href="/dashboard"
-                className="shop-btn inline-flex h-12 w-full items-center justify-center rounded-full bg-[#ff8c2a] px-8 text-base font-semibold text-[#0b0a08] hover:bg-[#ffb35c] sm:w-auto"
+                className="shop-btn inline-flex h-12 w-full items-center justify-center rounded-full bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-8 text-base font-bold text-white shadow-[0_10px_30px_-8px_rgba(255,110,30,0.55)] sm:w-auto"
               >
                 Kostenlos testen
               </Link>
               <a
                 href="#abos"
-                className="shop-btn inline-flex h-12 w-full items-center justify-center rounded-full border border-[#ff8c2a]/40 px-8 text-base font-medium text-[#ffb35c] hover:border-[#ff8c2a] hover:text-white sm:w-auto"
+                className="shop-btn inline-flex h-12 w-full items-center justify-center rounded-full border border-[#e0d8c6] bg-white/70 px-8 text-base font-semibold text-[#4a4335] hover:border-[#ffb066] sm:w-auto"
               >
                 Abos ansehen
               </a>
             </div>
-            <p className="mt-4 text-sm text-zinc-500">Ohne Kreditkarte. In 2 Minuten startklar.</p>
+            <p className="mt-4 text-sm text-[#8d8172]">Ohne Kreditkarte. In 2 Minuten startklar.</p>
           </div>
 
           <ProductShowcase />
         </section>
 
         {/* 2) Shop-Regal: Abos */}
-        <section id="abos" className="scroll-mt-24 border-t border-[#ff8c2a]/10 px-6 py-24">
+        <section id="abos" className="scroll-mt-24 border-t border-[#e8e1d2] px-6 py-24">
           <div className="mx-auto max-w-[88rem]">
             <div className="mx-auto max-w-2xl text-center">
-              <p className="hud-label mb-4">Abos</p>
-              <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-                Wählen Sie die Grösse Ihrer KI-Abteilung
+              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Abos</p>
+              <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+                Wählen Sie die Grösse Ihrer <span className="acc-grad-text">KI-Abteilung</span>
               </h2>
-              <p className="mt-4 text-lg text-zinc-400">
+              <p className="mt-4 text-lg text-[#6f6557]">
                 Vom kleinen Team bis zur ganzen Belegschaft. Jedes Abo ist monatlich kündbar.
               </p>
             </div>
@@ -500,29 +511,29 @@ export default function Home() {
               {PLANS.map((plan) => (
                 <article
                   key={plan.name}
-                  className={`shop-card relative flex flex-col rounded-2xl border bg-[#0d0c09] p-6 ${
-                    plan.highlight ? "border-[#ff8c2a]/45" : "border-[#ff8c2a]/15"
+                  className={`shop-card acc-card relative flex flex-col rounded-2xl p-6 ${
+                    plan.highlight ? "ring-2 ring-[#ff8c2a]/40" : ""
                   }`}
                 >
                   {plan.badge && (
-                    <span className="absolute -top-3 left-6 rounded-full bg-[#ff8c2a] px-3 py-0.5 text-xs font-semibold text-[#0b0a08]">
+                    <span className="absolute -top-3 left-6 rounded-full bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-3 py-0.5 text-xs font-semibold text-white shadow-[0_4px_14px_-4px_rgba(255,110,30,0.6)]">
                       {plan.badge}
                     </span>
                   )}
-                  <h3 className="text-lg font-semibold text-white">{plan.name}</h3>
+                  <h3 className="text-lg font-semibold">{plan.name}</h3>
                   <p className="mt-4 flex items-baseline gap-2">
-                    <span className="text-4xl font-semibold tracking-tight text-white">{plan.price}</span>
+                    <span className="text-4xl font-semibold tracking-tight">{plan.price}</span>
                   </p>
-                  <p className="mt-1 text-sm text-zinc-500">{plan.priceNote}</p>
+                  <p className="mt-1 text-sm text-[#8d8172]">{plan.priceNote}</p>
                   {plan.priceYear && (
-                    <p className="mt-1 text-xs font-medium text-[#2dd4bf]">
+                    <p className="mt-1 text-xs font-semibold text-[#0f766e]">
                       oder {plan.priceYear} – 2 Monate geschenkt
                     </p>
                   )}
-                  <p className="mt-3 inline-flex w-fit rounded-full border border-[#ff8c2a]/25 bg-[#ff8c2a]/5 px-3 py-1 text-xs text-[#ffb35c]">
+                  <p className="mt-3 inline-flex w-fit rounded-full border border-[#ffb066]/40 bg-[#fff4e6] px-3 py-1 text-xs font-medium text-[#c25e0e]">
                     {plan.team}
                   </p>
-                  <ul className="mt-5 flex-1 space-y-2.5 text-sm leading-6 text-zinc-300">
+                  <ul className="mt-5 flex-1 space-y-2.5 text-sm leading-6 text-[#4a4335]">
                     {plan.benefits.map((b) => (
                       <li key={b} className="flex gap-2">
                         <svg viewBox="0 0 20 20" className="mt-1 h-4 w-4 shrink-0 text-[#ff8c2a]" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -536,13 +547,13 @@ export default function Home() {
                     <a
                       href={SHOP_BASE.startsWith("#") ? SHOP_BASE : `${SHOP_BASE}/${plan.handle}`}
                       {...(SHOP_BASE.startsWith("#") ? {} : { target: "_blank", rel: "noopener noreferrer" })}
-                      className="shop-btn inline-flex h-11 items-center justify-center rounded-full bg-[#ff8c2a] px-5 text-sm font-semibold text-[#0b0a08] hover:bg-[#ffb35c]"
+                      className="shop-btn inline-flex h-11 items-center justify-center rounded-full bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-5 text-sm font-bold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)]"
                     >
                       Jetzt kaufen
                     </a>
                     <Link
                       href="/dashboard"
-                      className="shop-btn inline-flex h-11 items-center justify-center rounded-full border border-[#ff8c2a]/30 px-5 text-sm font-medium text-[#ffb35c] hover:border-[#ff8c2a] hover:text-white"
+                      className="shop-btn inline-flex h-11 items-center justify-center rounded-full border border-[#e0d8c6] bg-white/70 px-5 text-sm font-semibold text-[#4a4335] hover:border-[#ffb066]"
                     >
                       Testen
                     </Link>
@@ -554,29 +565,26 @@ export default function Home() {
         </section>
 
         {/* 3) Funktionen */}
-        <section id="funktionen" className="scroll-mt-24 border-t border-[#ff8c2a]/10 px-6 py-24">
+        <section id="funktionen" className="scroll-mt-24 border-t border-[#e8e1d2] px-6 py-24">
           <div className="mx-auto max-w-6xl">
             <div className="mx-auto max-w-2xl text-center">
-              <p className="hud-label mb-4">Funktionen</p>
-              <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-                Was Ihr Team kann
+              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Funktionen</p>
+              <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+                Was Ihr <span className="acc-grad-text">Team</span> kann
               </h2>
             </div>
             <div className="mt-14 grid gap-6 sm:grid-cols-2">
-              {FEATURES.map((f) => (
-                <div
-                  key={f.title}
-                  className="shop-card rounded-2xl border border-[#ff8c2a]/15 bg-[#0d0c09] p-8"
-                >
-                  <div className="mb-5 inline-flex rounded-xl border border-[#ff8c2a]/25 bg-[#ff8c2a]/5 p-3 text-[#ff8c2a]">
+              {FEATURES.map((f, i) => (
+                <div key={f.title} className="shop-card acc-card acc-card-hover rounded-2xl p-8">
+                  <div className={`mb-5 inline-flex rounded-xl p-3 ${FEATURE_ACCENTS[i % FEATURE_ACCENTS.length]}`}>
                     {f.icon}
                   </div>
-                  <h3 className="text-xl font-semibold text-white">{f.title}</h3>
-                  <p className="mt-3 leading-7 text-zinc-400">{f.text}</p>
+                  <h3 className="text-xl font-semibold">{f.title}</h3>
+                  <p className="mt-3 leading-7 text-[#6f6557]">{f.text}</p>
                   {f.href && (
                     <Link
                       href={f.href}
-                      className="mt-4 inline-block text-sm font-medium text-[#ffb35c] underline underline-offset-4 hover:text-white"
+                      className="mt-4 inline-block text-sm font-semibold text-[#c25e0e] underline underline-offset-4 hover:text-[#ff5f1f]"
                     >
                       {f.linkLabel}
                     </Link>
@@ -588,14 +596,14 @@ export default function Home() {
         </section>
 
         {/* 3a) Erklär-Video mit Sprecher */}
-        <section id="video" className="scroll-mt-24 border-t border-[#ff8c2a]/10 px-6 py-24">
+        <section id="video" className="scroll-mt-24 border-t border-[#e8e1d2] px-6 py-24">
           <div className="mx-auto max-w-4xl">
             <div className="mx-auto max-w-2xl text-center">
-              <p className="hud-label mb-4">In 70 Sekunden erklärt</p>
-              <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-                Sehen Sie Ihrer Belegschaft bei der Arbeit zu
+              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">In 70 Sekunden erklärt</p>
+              <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+                Sehen Sie Ihrer <span className="acc-grad-text">Belegschaft</span> bei der Arbeit zu
               </h2>
-              <p className="mt-4 text-zinc-400">
+              <p className="mt-4 text-[#6f6557]">
                 Vom Befehl bis zur fertigen Datei – alle Bereiche im Überblick,
                 professionell erklärt.
               </p>
@@ -605,7 +613,7 @@ export default function Home() {
                 controls
                 preload="metadata"
                 poster="/erklaervideo-poster.jpg"
-                className="w-full rounded-2xl border border-[#ff8c2a]/25 shadow-[0_24px_80px_rgba(255,120,40,0.18)]"
+                className="w-full rounded-2xl border border-[#e8e1d2] shadow-[0_24px_80px_-24px_rgba(255,120,40,0.28)]"
               >
                 <source src="/erklaervideo.mp4" type="video/mp4" />
                 Ihr Browser kann dieses Video nicht abspielen.
@@ -615,29 +623,29 @@ export default function Home() {
         </section>
 
         {/* 3b) Für Unternehmen: Sicherheit, Zahlen, Enterprise-Kontakt */}
-        <section id="unternehmen" className="scroll-mt-24 border-t border-[#ff8c2a]/10 px-6 py-24">
+        <section id="unternehmen" className="scroll-mt-24 border-t border-[#e8e1d2] px-6 py-24">
           <div className="mx-auto max-w-6xl">
             <div className="mx-auto max-w-2xl text-center">
-              <p className="hud-label mb-4">Für Unternehmen gebaut</p>
-              <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Für Unternehmen gebaut</p>
+              <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
                 Professionell. Sicher. Sofort einsatzbereit.
               </h2>
             </div>
 
-            {/* Zahlenleiste */}
+            {/* Zahlenleiste – ehrliche System-Fakten, keine Skill-Zählung */}
             <div className="mt-14 grid grid-cols-2 gap-6 text-center lg:grid-cols-4">
               {[
-                ["13", "Arbeitsbereiche", "Vom CRM bis zur Kommandozentrale"],
-                ["24", "Skills", "Geprüfte Befehle für jede Abteilung"],
-                ["3", "KI-Anbieter", "Ausfallsicher mit Fallback-Kette"],
-                ["1000", "Mitarbeitende", "Belegschaft im Enterprise-Ausbau"],
-              ].map(([wert, label, note]) => (
-                <div key={label} className="rounded-2xl border border-[#ff8c2a]/15 bg-[#0d0c09] p-6">
-                  <p className="bg-gradient-to-r from-[#ffb066] to-[#ff5f1f] bg-clip-text text-4xl font-bold text-transparent">
+                ["1000", "Mitarbeitende", "Belegschaft im Enterprise-Ausbau", "from-[#ff8c2a] to-[#ff5f1f]"],
+                ["9", "KI-Modelle", "Ein Rat führender Modelle unter einem Boss", "from-[#6d5efc] to-[#8b5cf6]"],
+                ["24/7", "im Einsatz", "Autopilot erledigt wiederkehrende Aufträge", "from-[#2dd4bf] to-[#0f766e]"],
+                ["100", "Quality-Score", "Jedes Ergebnis geprüft, bevor Sie es sehen", "from-[#f472b6] to-[#be185d]"],
+              ].map(([wert, label, note, grad]) => (
+                <div key={label} className="acc-card acc-card-hover rounded-2xl p-6">
+                  <p className={`bg-gradient-to-r ${grad} bg-clip-text text-4xl font-bold text-transparent`}>
                     {wert}
                   </p>
-                  <p className="mt-1 font-semibold text-white">{label}</p>
-                  <p className="mt-1 text-xs text-zinc-500">{note}</p>
+                  <p className="mt-1 font-semibold">{label}</p>
+                  <p className="mt-1 text-xs text-[#8d8172]">{note}</p>
                 </div>
               ))}
             </div>
@@ -658,27 +666,27 @@ export default function Home() {
                   "Was live ist, ist live. Was pro Kunde eingerichtet wird (ERP/CRM-Anbindung, SSO, On-Premise), sagen wir offen – und setzen es gemeinsam mit Ihnen um.",
                 ],
               ].map(([titel, text]) => (
-                <div key={titel} className="rounded-2xl border border-[#ff8c2a]/15 bg-[#0d0c09] p-6">
-                  <h3 className="font-semibold text-white">{titel}</h3>
-                  <p className="mt-2 text-sm leading-6 text-zinc-400">{text}</p>
+                <div key={titel} className="acc-card rounded-2xl p-6">
+                  <h3 className="font-semibold">{titel}</h3>
+                  <p className="mt-2 text-sm leading-6 text-[#6f6557]">{text}</p>
                 </div>
               ))}
             </div>
 
             {/* Enterprise-Kontakt */}
-            <div className="mt-10 flex flex-col items-center justify-between gap-4 rounded-2xl border border-[#ffd257]/30 bg-[#ffd257]/[0.04] p-8 sm:flex-row">
+            <div className="mt-10 flex flex-col items-center justify-between gap-4 rounded-2xl border border-[#ffb066]/40 bg-gradient-to-br from-[#fff4e6] to-white p-8 sm:flex-row">
               <div>
-                <h3 className="text-lg font-semibold text-white">
+                <h3 className="text-lg font-semibold">
                   Grösseres Vorhaben? Sprechen wir darüber.
                 </h3>
-                <p className="mt-1 text-sm text-zinc-400">
+                <p className="mt-1 text-sm text-[#6f6557]">
                   Enterprise ab 8&apos;900 CHF/Monat: eigene Integrationen, private Umgebung,
                   persönliche Einrichtung und Begleitung.
                 </p>
               </div>
               <a
                 href="mailto:beamswiss@gmail.com?subject=Enterprise-Anfrage%20AI%20Command%20Center"
-                className="shop-btn shrink-0 rounded-xl border border-[#ffd257]/50 bg-[#ffd257]/10 px-6 py-3 text-sm font-bold text-[#ffd257] hover:bg-[#ffd257]/20"
+                className="shop-btn shrink-0 rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-6 py-3 text-sm font-bold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)]"
               >
                 Gespräch vereinbaren
               </a>
@@ -687,23 +695,23 @@ export default function Home() {
         </section>
 
         {/* 4) Vertrauens-Leiste */}
-        <section className="border-t border-[#ff8c2a]/10 px-6 py-16">
+        <section className="border-t border-[#e8e1d2] px-6 py-16">
           <div className="mx-auto grid max-w-6xl gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {TRUST.map((t) => (
               <div key={t.label} className="text-center">
-                <p className="text-base font-semibold text-white">{t.label}</p>
-                <p className="mt-1 text-sm text-zinc-500">{t.note}</p>
+                <p className="text-base font-semibold">{t.label}</p>
+                <p className="mt-1 text-sm text-[#8d8172]">{t.note}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* FAQ */}
-        <section className="border-t border-[#ff8c2a]/10 px-6 py-24">
+        <section className="border-t border-[#e8e1d2] px-6 py-24">
           <div className="mx-auto max-w-3xl">
             <div className="text-center">
-              <p className="hud-label mb-4">FAQ</p>
-              <h2 className="text-3xl font-semibold tracking-tight text-white">
+              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">FAQ</p>
+              <h2 className="text-3xl font-semibold tracking-tight">
                 Häufige Fragen
               </h2>
             </div>
@@ -711,15 +719,15 @@ export default function Home() {
               {FAQ.map((item) => (
                 <details
                   key={item.q}
-                  className="group rounded-xl border border-[#ff8c2a]/15 bg-[#0d0c09] px-6 py-4 open:border-[#ff8c2a]/35"
+                  className="acc-card group rounded-2xl px-6 py-4"
                 >
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-medium text-white [&::-webkit-details-marker]:hidden">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-semibold [&::-webkit-details-marker]:hidden">
                     {item.q}
                     <svg viewBox="0 0 20 20" className="h-5 w-5 shrink-0 text-[#ff8c2a] transition-transform group-open:rotate-45" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
                       <path d="M10 4v12M4 10h12" strokeLinecap="round" />
                     </svg>
                   </summary>
-                  <p className="mt-3 leading-7 text-zinc-400">{item.a}</p>
+                  <p className="mt-3 leading-7 text-[#6f6557]">{item.a}</p>
                 </details>
               ))}
             </div>
@@ -728,24 +736,24 @@ export default function Home() {
 
         {/* Abschluss-CTA */}
         <section className="px-6 pb-28">
-          <div className="hud-panel hud-corners mx-auto max-w-4xl rounded-2xl px-8 py-14 text-center sm:px-14">
-            <h2 className="text-balance text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-              Starten Sie mit der kostenlosen Demo
+          <div className="acc-card mx-auto max-w-4xl rounded-2xl px-8 py-14 text-center sm:px-14">
+            <h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
+              Starten Sie mit der kostenlosen <span className="acc-grad-text">Demo</span>
             </h2>
-            <p className="mx-auto mt-4 max-w-xl text-lg text-zinc-400">
+            <p className="mx-auto mt-4 max-w-xl text-lg text-[#6f6557]">
               Lernen Sie Ihr KI-Team kennen, bevor Sie sich entscheiden. Ohne Kreditkarte,
               monatlich kündbar, jederzeit erweiterbar.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
                 href="/dashboard"
-                className="shop-btn inline-flex h-12 items-center justify-center rounded-full bg-[#ff8c2a] px-8 text-base font-semibold text-[#0b0a08] hover:bg-[#ffb35c]"
+                className="shop-btn inline-flex h-12 items-center justify-center rounded-full bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-8 text-base font-bold text-white shadow-[0_10px_30px_-8px_rgba(255,110,30,0.55)]"
               >
                 Kostenlos testen
               </Link>
               <a
                 href="#abos"
-                className="shop-btn inline-flex h-12 items-center justify-center rounded-full border border-[#ff8c2a]/40 px-8 text-base font-medium text-[#ffb35c] hover:border-[#ff8c2a] hover:text-white"
+                className="shop-btn inline-flex h-12 items-center justify-center rounded-full border border-[#e0d8c6] bg-white/70 px-8 text-base font-semibold text-[#4a4335] hover:border-[#ffb066]"
               >
                 Abos ansehen
               </a>
@@ -755,24 +763,24 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-[#ff8c2a]/10 px-6 py-10">
+      <footer className="border-t border-[#e8e1d2] px-6 py-10">
         <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-6 sm:flex-row">
-          <div className="flex items-center gap-2">
-            <span className="inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" aria-hidden="true" />
-            <span className="hud-label !text-[11px]">AI Command Center</span>
+          <div className="flex items-center gap-2.5">
+            <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f]" aria-hidden="true" />
+            <span className="text-sm font-bold">AI Command Center</span>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm">
-            <a href="#abos" className="text-zinc-400 hover:text-white">
+            <a href="#abos" className="font-medium text-[#6f6557] hover:text-[#1c1917]">
               Abos
             </a>
-            <Link href="/integrationen" className="text-zinc-400 hover:text-white">
+            <Link href="/integrationen" className="font-medium text-[#6f6557] hover:text-[#1c1917]">
               Integrationen ansehen
             </Link>
-            <Link href="/dashboard" className="text-zinc-400 hover:text-white">
+            <Link href="/dashboard" className="font-medium text-[#6f6557] hover:text-[#1c1917]">
               Dashboard
             </Link>
           </div>
-          <p className="text-sm text-zinc-600">Schweizer Anbieter</p>
+          <p className="text-sm text-[#a89c8a]">Schweizer Anbieter</p>
         </div>
       </footer>
     </div>
