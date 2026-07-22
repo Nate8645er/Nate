@@ -652,6 +652,15 @@
         "video": "acc-trailer.mp4",
         "poster": "acc-trailer-poster.jpg"
       }
+    },
+    "kann-grenzen": {
+      "type": "kann-grenzen",
+      "settings": {
+        "label": "EHRLICH STATT ÜBERTRIEBEN",
+        "titel": "Was Ihr KI-System kann – und was (noch) nicht",
+        "intro": "Wir versprechen nichts, was das System nicht hält. So wissen Sie vor dem Kauf genau, was Sie bekommen.",
+        "fuss": "Alles, was heute geht, ist im Vollbetrieb sofort nutzbar. Was in Vorbereitung ist, kommt als Update – ohne Aufpreis für bestehende Abos."
+      }
     }
   },
   "order": [
@@ -670,6 +679,7 @@
     "skills-katalog",
     "produkt-grid",
     "stufen-tabelle",
+    "kann-grenzen",
     "abo-wahl",
     "ablauf",
     "vergleich",
