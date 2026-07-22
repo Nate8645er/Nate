@@ -1,0 +1,210 @@
+<!--
+  KI-BÜRO – lebendige Büro-Animation für den Shopify-Shop.
+
+  Eigenständig: reines HTML + CSS, keine externen Dateien, kein JavaScript,
+  keine Schrift-/Framework-Abhängigkeit. Alle Klassen sind mit "kib" geprefixt,
+  damit nichts mit dem Theme kollidiert. Respektiert "prefers-reduced-motion".
+
+  EINBAU IN SHOPIFY:
+  1. Theme > Anpassen > Abschnitt hinzufügen > "Custom Liquid" (oder ein
+     beliebiger Abschnitt mit "Custom HTML").
+  2. Den gesamten Inhalt dieser Datei (ab <div class="kib-embed"> bis zum
+     Ende) dort einfügen und speichern.
+  Alternativ als Snippet: Datei "snippets/ki-buero.liquid" anlegen, Inhalt
+  einfügen und mit {% render 'ki-buero' %} einbinden.
+-->
+<div class="kib-embed">
+  <div class="kib-head">
+    <span class="kib-dot"></span>
+    <span class="kib-label">Ihr KI-Büro · live bei der Arbeit</span>
+  </div>
+
+  <div class="kib" role="img" aria-label="Animiertes KI-Büro aus der Vogelperspektive: Abteilungen mit Mitarbeitern am Rechner, laufende Figuren, Drucker und Live-Monitore.">
+    <div class="kib-floor">
+      <div class="kib-aisle" style="top:30.5%"></div>
+      <div class="kib-aisle" style="top:60%"></div>
+
+      <div class="kib-ws is-working" style="left:3%;top:5%;--c:#ff8c2a">
+        <span class="kib-tag">Führung</span>
+        <div class="kib-desk"><div class="kib-mon kib-mon--doc"><div class="kib-scroll"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div><div class="kib-kbd"></div></div>
+        <div class="kib-worker"><span class="kib-arm l"></span><span class="kib-arm r"></span><span class="kib-fhead"></span></div>
+      </div>
+      <div class="kib-ws is-working" style="left:23%;top:5%;--c:#8b5cf6">
+        <span class="kib-tag">Forschung</span>
+        <div class="kib-desk"><div class="kib-mon kib-mon--doc"><div class="kib-scroll"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div><div class="kib-kbd"></div></div>
+        <div class="kib-worker"><span class="kib-arm l"></span><span class="kib-arm r"></span><span class="kib-fhead"></span></div>
+      </div>
+      <div class="kib-ws is-working" style="left:43%;top:5%;--c:#22c55e">
+        <span class="kib-tag">Entwicklung</span>
+        <div class="kib-desk"><div class="kib-mon kib-mon--code"><div class="kib-scroll"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div><div class="kib-kbd"></div></div>
+        <div class="kib-worker"><span class="kib-arm l"></span><span class="kib-arm r"></span><span class="kib-fhead"></span></div>
+      </div>
+      <div class="kib-ws is-working" style="left:63%;top:5%;--c:#ec4899">
+        <span class="kib-tag">Marketing</span>
+        <div class="kib-desk"><div class="kib-mon kib-mon--mail"><div class="kib-scroll"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div><div class="kib-kbd"></div></div>
+        <div class="kib-worker"><span class="kib-arm l"></span><span class="kib-arm r"></span><span class="kib-fhead"></span></div>
+      </div>
+
+      <div class="kib-ws is-working" style="left:3%;top:33%;--c:#14b8a6">
+        <span class="kib-tag">Finanzen</span>
+        <div class="kib-desk"><div class="kib-mon kib-mon--mail"><div class="kib-scroll"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div><div class="kib-kbd"></div></div>
+        <div class="kib-worker"><span class="kib-arm l"></span><span class="kib-arm r"></span><span class="kib-fhead"></span></div>
+      </div>
+      <div class="kib-ws is-working" style="left:23%;top:33%;--c:#06b6d4">
+        <span class="kib-tag">Analyse</span>
+        <div class="kib-desk"><div class="kib-mon kib-mon--code"><div class="kib-scroll"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div><div class="kib-kbd"></div></div>
+        <div class="kib-worker"><span class="kib-arm l"></span><span class="kib-arm r"></span><span class="kib-fhead"></span></div>
+      </div>
+      <div class="kib-ws is-working" style="left:43%;top:33%;--c:#eab308">
+        <span class="kib-tag">Qualität</span>
+        <div class="kib-desk"><div class="kib-mon kib-mon--doc"><div class="kib-scroll"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div><div class="kib-kbd"></div></div>
+        <div class="kib-worker"><span class="kib-arm l"></span><span class="kib-arm r"></span><span class="kib-fhead"></span></div>
+      </div>
+      <div class="kib-ws is-working" style="left:63%;top:33%;--c:#3b82f6">
+        <span class="kib-tag">Umsetzung</span>
+        <div class="kib-desk"><div class="kib-mon kib-mon--code"><div class="kib-scroll"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div><div class="kib-kbd"></div></div>
+        <div class="kib-worker"><span class="kib-arm l"></span><span class="kib-arm r"></span><span class="kib-fhead"></span></div>
+      </div>
+
+      <div class="kib-walk g1" style="--c:#ff8c2a"><span class="kib-wh"></span><span class="kib-wb"></span></div>
+      <div class="kib-walk g2" style="--c:#3b82f6"><span class="kib-wh"></span><span class="kib-wb"></span></div>
+      <div class="kib-walk g3" style="--c:#22c55e"><span class="kib-wh"></span><span class="kib-wb"></span></div>
+      <div class="kib-walk g4" style="--c:#a78bfa"><span class="kib-wh"></span><span class="kib-wb"></span></div>
+
+      <div class="kib-meet">
+        <span class="kib-mlabel">MEETING</span>
+        <div class="kib-table"></div>
+        <div class="kib-mfig" style="--c:#3b82f6;left:50%;top:-4px"></div>
+        <div class="kib-mfig" style="--c:#ec4899;left:-4px;top:50%"></div>
+        <div class="kib-mfig" style="--c:#14b8a6;right:-4px;top:50%"></div>
+      </div>
+
+      <div class="kib-printer">
+        <span class="kib-plabel">DRUCKER</span>
+        <div class="kib-pbody"><span class="kib-led"></span><div class="kib-slot"></div><div class="kib-sheet"><i></i><i></i><i></i></div></div>
+        <div class="kib-tray"><span class="kib-stack s1"></span><span class="kib-stack s2"></span><span class="kib-stack s3"></span></div>
+      </div>
+    </div>
+
+    <div class="kib-live browser"><div class="kib-lbar"><b style="background:#f87171"></b><b style="background:#fbbf24"></b><b style="background:#34d399"></b><span>ihre-firma.ch</span></div><div class="kib-lview"><div class="kib-lscroll"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div></div>
+    <div class="kib-live code"><div class="kib-lbar"><b style="background:#22c55e"></b><span>mission.ts</span></div><div class="kib-lview"><div class="kib-lscroll"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div></div>
+    <div class="kib-live mail"><div class="kib-lbar"><b style="background:#a78bfa"></b><span>E-Mail</span></div><div class="kib-lview"><div class="kib-lscroll"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div></div>
+  </div>
+</div>
+
+<style>
+  .kib-embed { max-width: 1000px; margin: 0 auto; padding: 12px; border-radius: 24px;
+    border: 1px solid #e8e1d2; background: rgba(255,255,255,.7);
+    box-shadow: 0 30px 80px -40px rgba(28,25,23,.28); }
+  .kib-head { display:flex; align-items:center; gap:8px; padding: 2px 4px 10px; }
+  .kib-dot { width:10px; height:10px; border-radius:50%; background: linear-gradient(135deg,#ffb066,#ff5f1f); }
+  .kib-label { font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700;
+    letter-spacing: .18em; text-transform: uppercase; color: #c25e0e; }
+
+  .kib { position: relative; height: 440px; border-radius: 18px; overflow: hidden;
+    border: 1px solid rgba(255,140,42,0.14);
+    background: radial-gradient(50rem 26rem at 20% -10%, rgba(255,140,42,.10), transparent 60%),
+      radial-gradient(46rem 24rem at 88% 8%, rgba(59,130,246,.08), transparent 60%),
+      linear-gradient(180deg, #0d0b08 0%, #0b0a12 55%, #08070c 100%); }
+  .kib-floor { position: absolute; inset: 10px; border-radius: 14px; overflow: hidden;
+    background: linear-gradient(#0f0d18, #0b0a12); box-shadow: inset 0 0 50px rgba(0,0,0,.6); }
+  .kib-floor::before { content:""; position:absolute; inset:0; opacity:.5;
+    background-image: linear-gradient(rgba(255,180,90,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,180,90,.05) 1px, transparent 1px);
+    background-size: 42px 42px; }
+  .kib-aisle { position:absolute; left:0; right:0; height:26px; background: rgba(255,255,255,.02);
+    background-image: repeating-linear-gradient(90deg, transparent 0 16px, rgba(255,200,120,.18) 16px 28px); background-size: 44px 2px; background-position: center; background-repeat: repeat-x; }
+  .kib-ws { position:absolute; width:18%; height:25%; }
+  .kib-tag { position:absolute; top:-2px; left:50%; transform:translateX(-50%); z-index:3;
+    padding:2px 8px; border-radius:999px; white-space:nowrap; font-family:ui-monospace,monospace;
+    font-size:8.5px; font-weight:700; letter-spacing:.08em; color:#fff;
+    background: color-mix(in srgb, var(--c) 82%, #000); box-shadow:0 2px 10px color-mix(in srgb, var(--c) 55%, transparent); }
+  .kib-desk { position:absolute; left:8%; right:8%; top:24%; height:46%; border-radius:7px;
+    background: linear-gradient(180deg, #241f31, #1a1626); border:1px solid rgba(255,255,255,.06);
+    box-shadow: 0 8px 16px -8px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.05); }
+  .kib-mon { position:absolute; left:14%; right:14%; top:10%; height:34%; border-radius:4px; overflow:hidden;
+    background:#0a0f1e; border:1px solid #05070f;
+    box-shadow: 0 0 14px -3px color-mix(in srgb, var(--c) 55%, transparent), inset 0 1px 0 rgba(255,255,255,.08); }
+  .kib-scroll { position:absolute; left:4px; right:4px; top:4px; display:grid; gap:3px; animation: kib-scroll 3.4s linear infinite; }
+  @keyframes kib-scroll { from { transform: translateY(6px);} to { transform: translateY(-50%);} }
+  .kib-scroll span { height:3px; border-radius:1.5px; background: color-mix(in srgb, var(--c) 55%, #4b5563); opacity:.85; }
+  .kib-mon--code .kib-scroll span:nth-child(3n+1){ background:#22c55e; width:60%; }
+  .kib-mon--code .kib-scroll span:nth-child(3n+2){ background:#eab308; width:80%; margin-left:8px; }
+  .kib-mon--code .kib-scroll span:nth-child(3n){ background:#38bdf8; width:45%; }
+  .kib-mon--mail .kib-scroll span { background:#a78bfa; width:92%; }
+  .kib-mon--doc .kib-scroll span:nth-child(2n){ width:70%; }
+  .kib-kbd { position:absolute; left:26%; right:26%; bottom:12%; height:12%; border-radius:3px; background:#2a2438;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.05); }
+  .kib-worker { position:absolute; left:50%; bottom:3%; width:30%; height:26%; transform:translateX(-50%); animation: kib-type 3s ease-in-out infinite; }
+  @keyframes kib-type { 0%,100%{ transform:translateX(-50%) translateY(0);} 50%{ transform:translateX(-50%) translateY(1.5px);} }
+  .kib-fhead { position:absolute; left:50%; top:28%; width:46%; padding-bottom:46%; transform:translateX(-50%); border-radius:50%;
+    background: radial-gradient(circle at 50% 35%, #e9cbb0, #c99b78); box-shadow:0 2px 5px rgba(0,0,0,.4); }
+  .kib-worker::before { content:""; position:absolute; left:50%; top:46%; width:100%; height:60%; transform:translateX(-50%);
+    border-radius:40% 40% 30% 30%; background: linear-gradient(180deg, var(--c), color-mix(in srgb, var(--c) 65%, #000)); box-shadow: inset 0 1px 0 rgba(255,255,255,.2); }
+  .kib-arm { position:absolute; top:52%; width:26%; height:30%; border-radius:6px; background: color-mix(in srgb, var(--c) 80%, #000); z-index:2; }
+  .kib-arm.l { left:10%; animation: kib-tap .28s ease-in-out infinite; }
+  .kib-arm.r { right:10%; animation: kib-tap .28s ease-in-out infinite .14s; }
+  @keyframes kib-tap { 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-2px);} }
+  .kib-ws.is-working .kib-mon { box-shadow:0 0 20px -1px var(--c), inset 0 1px 0 rgba(255,255,255,.12); }
+  .kib-ws.is-working .kib-scroll { animation-duration: 1.6s; }
+  .kib-ws.is-working .kib-tag { box-shadow:0 0 16px var(--c); }
+  .kib-walk { position:absolute; width:15px; height:21px; z-index:5; }
+  .kib-walk .kib-wh { position:absolute; top:0; left:50%; width:9px; height:9px; transform:translateX(-50%); border-radius:50%; background: radial-gradient(circle at 50% 35%, #e9cbb0, #c99b78); box-shadow:0 1px 3px rgba(0,0,0,.4); }
+  .kib-walk .kib-wb { position:absolute; top:7px; left:50%; width:13px; height:13px; transform:translateX(-50%); border-radius:6px 6px 5px 5px; background: linear-gradient(180deg, var(--c), color-mix(in srgb, var(--c) 60%, #000)); box-shadow:0 2px 5px rgba(0,0,0,.5); animation: kib-bob .5s ease-in-out infinite; }
+  @keyframes kib-bob { 0%,100%{ transform:translateX(-50%) translateY(0);} 50%{ transform:translateX(-50%) translateY(-1.5px);} }
+  .kib-walk::after { content:""; position:absolute; bottom:-3px; left:50%; width:13px; height:4px; transform:translateX(-50%); border-radius:50%; background:rgba(0,0,0,.5); filter:blur(1.5px); }
+  .kib-walk.g1 { animation: kib-h1 15s linear infinite; }
+  .kib-walk.g2 { animation: kib-h2 19s linear infinite; }
+  .kib-walk.g3 { animation: kib-v1 17s linear infinite; }
+  .kib-walk.g4 { animation: kib-h1 22s linear infinite reverse; }
+  @keyframes kib-h1 { 0%{ left:3%; top:30%; } 50%{ left:70%; top:30%; } 100%{ left:3%; top:30%; } }
+  @keyframes kib-h2 { 0%{ left:70%; top:60%; } 50%{ left:5%; top:60%; } 100%{ left:70%; top:60%; } }
+  @keyframes kib-v1 { 0%{ left:48%; top:8%; } 50%{ left:48%; top:84%; } 100%{ left:48%; top:8%; } }
+  .kib-meet { position:absolute; left:2%; top:64%; width:20%; height:33%; z-index:3; }
+  .kib-mlabel { position:absolute; top:-2px; left:50%; transform:translateX(-50%); font-family:ui-monospace,monospace; font-size:8px; font-weight:700; letter-spacing:.12em; color:#8a7c9a; }
+  .kib-table { position:absolute; left:50%; top:52%; width:54%; padding-bottom:54%; transform:translate(-50%,-50%); border-radius:50%; background: radial-gradient(circle at 50% 40%, #2c2540, #1c1730); box-shadow:0 4px 10px -4px rgba(0,0,0,.6), inset 0 0 0 2px rgba(255,255,255,.05); }
+  .kib-mfig { position:absolute; width:12px; height:12px; border-radius:50%; background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--c) 60%, #fff), var(--c)); box-shadow:0 2px 4px rgba(0,0,0,.4); animation: kib-lean 3.6s ease-in-out infinite; }
+  .kib-mfig:nth-child(3){ animation-delay:1.2s; } .kib-mfig:nth-child(4){ animation-delay:2.4s; }
+  @keyframes kib-lean { 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-1.5px);} }
+  .kib-printer { position:absolute; right:2%; top:64%; width:15%; height:33%; z-index:4; }
+  .kib-plabel { position:absolute; top:-2px; left:50%; transform:translateX(-50%); font-family:ui-monospace,monospace; font-size:8px; font-weight:700; letter-spacing:.12em; color:#8a7c9a; }
+  .kib-pbody { position:absolute; top:14%; left:6%; right:6%; height:44%; border-radius:6px;
+    background: linear-gradient(180deg, #3a3550, #29253c); border:1px solid #4a4560; box-shadow:0 6px 12px -6px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.08); }
+  .kib-led { position:absolute; top:5px; right:7px; width:5px; height:5px; border-radius:50%; background:#22c55e; box-shadow:0 0 6px #22c55e; animation: kib-led 1.5s steps(1) infinite; }
+  @keyframes kib-led { 0%,60%{ opacity:1;} 61%,100%{ opacity:.25;} }
+  .kib-slot { position:absolute; left:12%; right:12%; bottom:4px; height:4px; border-radius:2px; background:#15121f; box-shadow: inset 0 1px 2px rgba(0,0,0,.7); }
+  .kib-sheet { position:absolute; left:16%; right:16%; top:100%; height:0; background: linear-gradient(180deg, #fff6df, #ffe9b8);
+    border-radius:0 0 2px 2px; box-shadow:0 0 12px -2px rgba(255,180,90,.6); display:flex; flex-direction:column; justify-content:center; gap:2px; padding:0 4px; overflow:hidden; animation: kib-print 3.2s ease-in-out infinite; }
+  .kib-sheet i { height:2px; border-radius:1px; background:#b99a6a; opacity:0; animation: kib-ink 3.2s ease-in-out infinite; }
+  .kib-sheet i:nth-child(2){ width:70%; } .kib-sheet i:nth-child(3){ width:85%; }
+  @keyframes kib-print { 0%{ height:0; opacity:0;} 10%{ opacity:1;} 55%{ height:28px; opacity:1;} 70%{ height:28px; opacity:1;} 85%{ height:28px; opacity:0;} 100%{ height:0; opacity:0;} }
+  @keyframes kib-ink { 0%,20%{ opacity:0;} 55%,80%{ opacity:.9;} 100%{ opacity:0;} }
+  .kib-tray { position:absolute; left:10%; right:10%; bottom:2%; height:16%; border-radius:3px; background:#2a2540; box-shadow: inset 0 1px 2px rgba(0,0,0,.4); }
+  .kib-stack { position:absolute; left:12%; right:12%; height:3px; background:#fff6df; border-radius:1px; }
+  .kib-stack.s1 { bottom:3px; animation: kib-stk 9.6s steps(1) infinite; }
+  .kib-stack.s2 { bottom:7px; animation: kib-stk 9.6s steps(1) infinite 3.2s; }
+  .kib-stack.s3 { bottom:11px; animation: kib-stk 9.6s steps(1) infinite 6.4s; }
+  @keyframes kib-stk { 0%,29%{ opacity:0;} 30%,100%{ opacity:1;} }
+  .kib-live { position:absolute; right:2%; width:13%; border-radius:7px; overflow:hidden; z-index:6;
+    border:1px solid rgba(255,255,255,.12); background:#0a0f1e; box-shadow:0 10px 22px -10px rgba(0,0,0,.8); }
+  .kib-live.browser { top:6%; } .kib-live.code { top:30%; } .kib-live.mail { top:54%; }
+  .kib-lbar { display:flex; align-items:center; gap:3px; padding:3px 5px; background:#141a30; border-bottom:1px solid rgba(255,255,255,.06); }
+  .kib-lbar b { width:5px; height:5px; border-radius:50%; }
+  .kib-lbar span { margin-left:4px; font-family:ui-monospace,monospace; font-size:6px; letter-spacing:.04em; color:#8fa0cc; }
+  .kib-lview { position:relative; height:44px; overflow:hidden; background:#060a16; }
+  .kib-lscroll { position:absolute; left:6px; right:6px; top:6px; display:grid; gap:4px; animation: kib-lscroll 3.2s linear infinite; }
+  @keyframes kib-lscroll { from { transform:translateY(0);} to { transform:translateY(-44px);} }
+  .kib-lscroll span { height:5px; border-radius:2px; }
+  .kib-live.browser .kib-lscroll span:nth-child(3n+1){ background: linear-gradient(90deg,#3b82f6 60%, transparent 60%); }
+  .kib-live.browser .kib-lscroll span:nth-child(3n+2){ background: linear-gradient(90deg,#64748b 80%, transparent 80%); }
+  .kib-live.browser .kib-lscroll span:nth-child(3n){ background: linear-gradient(90deg,#94a3b8 45%, transparent 45%); }
+  .kib-live.code .kib-lscroll span:nth-child(4n+1){ background: linear-gradient(90deg,#22c55e 40%, transparent 40%); }
+  .kib-live.code .kib-lscroll span:nth-child(4n+2){ background: linear-gradient(90deg,#eab308 65%, transparent 65%); margin-left:6px; }
+  .kib-live.code .kib-lscroll span:nth-child(4n+3){ background: linear-gradient(90deg,#ec4899 55%, transparent 55%); }
+  .kib-live.code .kib-lscroll span:nth-child(4n){ background: linear-gradient(90deg,#38bdf8 30%, transparent 30%); }
+  .kib-live.mail .kib-lscroll span { background: linear-gradient(90deg, color-mix(in srgb,#a78bfa 70%, transparent) 92%, transparent 92%); height:6px; }
+  @media (max-width: 640px) { .kib { height: 360px; } }
+  @media (prefers-reduced-motion: reduce) {
+    .kib-scroll, .kib-worker, .kib-arm, .kib-walk .kib-wb, .kib-walk, .kib-sheet, .kib-sheet i, .kib-led, .kib-stack, .kib-mfig, .kib-lscroll { animation: none !important; }
+    .kib-sheet { height: 20px; opacity: 1; } .kib-stack { opacity: 1; }
+  }
+</style>
