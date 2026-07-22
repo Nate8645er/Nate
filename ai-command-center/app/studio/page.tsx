@@ -694,7 +694,7 @@ export default function StudioPage() {
       const j = low.indexOf(ql, i);
       if (j === -1) { out.push(t.slice(i)); break; }
       if (j > i) out.push(t.slice(i, j));
-      out.push(<mark key={k++} className="rounded bg-[#ff8c2a]/30 px-0.5 text-[#ffb35c]">{t.slice(j, j + ql.length)}</mark>);
+      out.push(<mark key={k++} className="rounded bg-[#ffe0b8] px-0.5 text-[#7a3d0b]">{t.slice(j, j + ql.length)}</mark>);
       i = j + ql.length;
     }
     return out;
@@ -716,58 +716,58 @@ export default function StudioPage() {
   }
 
   return (
-    <div className="flex h-screen flex-col bg-[#0b0a0f] text-zinc-100">
-      <header className="flex items-center justify-between gap-3 border-b border-white/8 px-4 py-2.5">
-        <div className="flex items-center gap-2">
-          <span className="inline-block h-2 w-2 rounded-full bg-[#ff8c2a] shadow-[0_0_10px_2px_rgba(255,140,42,0.7)]" />
-          <span className="font-mono text-[11px] tracking-[0.2em] text-zinc-400">KI-STUDIO</span>
-          <span className="ml-2 rounded-md bg-white/[0.05] px-2 py-0.5 font-mono text-[11px] text-zinc-400">{proj.name}</span>
+    <div className="flex h-screen flex-col acc-page text-[#1c1917]">
+      <header className="flex items-center justify-between gap-3 border-b border-[#e8e1d2] px-4 py-2.5">
+        <div className="flex items-center gap-2.5">
+          <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f]" />
+          <span className="font-mono text-[11px] font-bold tracking-[0.2em] text-[#c25e0e]">KI-STUDIO</span>
+          <span className="ml-1 rounded-md border border-[#e8e1d2] bg-white/70 px-2 py-0.5 font-mono text-[11px] text-[#8d8172]">{proj.name}</span>
           <details className="group relative ml-1">
-            <summary className="flex cursor-pointer list-none items-center gap-1 rounded-md px-2 py-0.5 text-[11px] text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-200">
+            <summary className="flex cursor-pointer list-none items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-semibold text-[#8d8172] hover:bg-[#1c1917]/5 hover:text-[#1c1917]">
               ＋ Neu
               <svg viewBox="0 0 12 12" className="h-2.5 w-2.5 transition-transform group-open:rotate-180" aria-hidden="true">
                 <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </summary>
-            <div className="absolute left-0 z-50 mt-2 w-64 overflow-hidden rounded-xl border border-white/10 bg-[#14100c]/95 py-1 shadow-[0_16px_44px_-8px_rgba(0,0,0,0.7)] backdrop-blur-xl">
+            <div className="absolute left-0 z-50 mt-2 w-64 overflow-hidden rounded-xl border border-[#e8e1d2] bg-white/95 py-1 shadow-[0_16px_44px_-16px_rgba(28,25,23,0.28)] backdrop-blur-xl">
               {VORLAGEN.map((v) => (
                 <button
                   key={v.id}
                   onClick={() => neuesProjekt(v.projekt)}
-                  className="block w-full px-3 py-2 text-left hover:bg-[#ff8c2a]/12"
+                  className="block w-full px-3 py-2 text-left hover:bg-[#fff4e6]"
                 >
-                  <span className="block text-[12.5px] font-semibold text-zinc-100">{v.label}</span>
-                  <span className="block text-[10.5px] text-zinc-500">{v.hinweis}</span>
+                  <span className="block text-[12.5px] font-semibold text-[#1c1917]">{v.label}</span>
+                  <span className="block text-[10.5px] text-[#a89c8a]">{v.hinweis}</span>
                 </button>
               ))}
             </div>
           </details>
         </div>
-        <WorkNav aktiv="studio" variante="dunkel" />
+        <WorkNav aktiv="studio" variante="hell" />
       </header>
 
       <div className="grid min-h-0 flex-1 grid-cols-[210px_1fr_360px] max-lg:grid-cols-[180px_1fr] max-md:grid-cols-1">
         {/* Dateibaum / Projektsuche */}
-        <aside className="min-h-0 overflow-y-auto border-r border-white/8 bg-white/[0.02] p-2 max-md:hidden">
+        <aside className="min-h-0 overflow-y-auto border-r border-[#e8e1d2] bg-white/40 p-2 max-md:hidden">
           <div className="mb-2 flex items-center gap-1">
             <button
               onClick={() => setSeiten("dateien")}
-              className={`rounded px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${seiten === "dateien" ? "bg-white/[0.06] text-[#ffb35c]" : "text-zinc-500 hover:text-zinc-300"}`}
+              className={`rounded px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider ${seiten === "dateien" ? "bg-[#fff4e6] text-[#c25e0e]" : "text-[#a89c8a] hover:text-[#1c1917]"}`}
             >
               Dateien
             </button>
             <button
               onClick={() => setSeiten("suche")}
-              className={`rounded px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${seiten === "suche" ? "bg-white/[0.06] text-[#ffb35c]" : "text-zinc-500 hover:text-zinc-300"}`}
+              className={`rounded px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider ${seiten === "suche" ? "bg-[#fff4e6] text-[#c25e0e]" : "text-[#a89c8a] hover:text-[#1c1917]"}`}
             >
               Suche
             </button>
             {seiten === "dateien" && (
-              <div className="ml-auto flex items-center gap-1.5 text-zinc-400">
-                <button onClick={() => uploadRef.current?.click()} className="text-[12px] hover:text-[#ffb35c]" title="Dateien hochladen">↑</button>
-                <button onClick={downloadDatei} className="text-[12px] hover:text-[#ffb35c]" title="Aktuelle Datei herunterladen">↓</button>
-                <button onClick={downloadZip} className="text-[10px] font-semibold hover:text-[#ffb35c]" title="Projekt als ZIP">ZIP</button>
-                <button onClick={neueDatei} className="text-[16px] leading-none hover:text-[#ffb35c]" title="Neue Datei">+</button>
+              <div className="ml-auto flex items-center gap-1.5 text-[#8d8172]">
+                <button onClick={() => uploadRef.current?.click()} className="text-[12px] hover:text-[#c25e0e]" title="Dateien hochladen">↑</button>
+                <button onClick={downloadDatei} className="text-[12px] hover:text-[#c25e0e]" title="Aktuelle Datei herunterladen">↓</button>
+                <button onClick={downloadZip} className="text-[10px] font-semibold hover:text-[#c25e0e]" title="Projekt als ZIP">ZIP</button>
+                <button onClick={neueDatei} className="text-[16px] leading-none hover:text-[#c25e0e]" title="Neue Datei">+</button>
               </div>
             )}
           </div>
@@ -779,29 +779,29 @@ export default function StudioPage() {
                 value={suche}
                 onChange={(e) => setSuche(e.target.value)}
                 placeholder="Dateien suchen …"
-                className="mb-2 w-full rounded-md border border-white/8 bg-white/[0.03] px-2 py-1 text-[12px] text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-[#ff8c2a]/40"
+                className="mb-2 w-full rounded-md border border-[#e0d8c6] bg-white/70 px-2 py-1 text-[12px] text-[#1c1917] outline-none placeholder:text-[#a89c8a] focus:border-[#ffb066]"
               />
-              {gefiltert.length === 0 && <p className="px-2 py-1 text-[12px] text-zinc-600">Keine Treffer.</p>}
+              {gefiltert.length === 0 && <p className="px-2 py-1 text-[12px] text-[#a89c8a]">Keine Treffer.</p>}
               {gefiltert.map((p) => {
                 const t = teile(p);
                 return (
                   <div
                     key={p}
                     style={{ paddingLeft: 8 + t.tiefe * 12 }}
-                    className={`group flex items-center justify-between rounded py-1 pr-2 text-[13px] ${p === proj.open ? "bg-[#ff8c2a]/15 text-[#ffb35c]" : "text-zinc-300 hover:bg-white/5"}`}
+                    className={`group flex items-center justify-between rounded py-1 pr-2 text-[13px] ${p === proj.open ? "bg-[#fff4e6] text-[#c25e0e]" : "text-[#4a4335] hover:bg-[#1c1917]/5"}`}
                   >
                     <button onClick={() => openFile(p)} className="min-w-0 truncate text-left" title={p}>
-                      {t.ordner && <span className="text-zinc-600">{t.ordner}</span>}
+                      {t.ordner && <span className="text-[#a89c8a]">{t.ordner}</span>}
                       {t.datei}
                     </button>
                     <span className="hidden shrink-0 gap-1 group-hover:flex">
-                      <button onClick={() => umbenennen(p)} className="text-zinc-500 hover:text-zinc-200" title="Umbenennen">✎</button>
-                      <button onClick={() => loeschen(p)} className="text-zinc-500 hover:text-red-400" title="Löschen">✕</button>
+                      <button onClick={() => umbenennen(p)} className="text-[#a89c8a] hover:text-[#1c1917]" title="Umbenennen">✎</button>
+                      <button onClick={() => loeschen(p)} className="text-[#a89c8a] hover:text-red-500" title="Löschen">✕</button>
                     </span>
                   </div>
                 );
               })}
-              <p className="mt-2 px-2 text-[10px] text-zinc-600">Tipp: Namen mit „/" erzeugen Ordner, z. B. src/app.ts</p>
+              <p className="mt-2 px-2 text-[10px] text-[#a89c8a]">Tipp: Namen mit „/" erzeugen Ordner, z. B. src/app.ts</p>
             </>
           ) : (
             <>
@@ -810,28 +810,28 @@ export default function StudioPage() {
                 onChange={(e) => setProjSuche(e.target.value)}
                 placeholder="Im ganzen Projekt suchen …"
                 autoFocus
-                className="mb-2 w-full rounded-md border border-white/8 bg-white/[0.03] px-2 py-1 text-[12px] text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-[#ff8c2a]/40"
+                className="mb-2 w-full rounded-md border border-[#e0d8c6] bg-white/70 px-2 py-1 text-[12px] text-[#1c1917] outline-none placeholder:text-[#a89c8a] focus:border-[#ffb066]"
               />
               {projSuche.trim().length < 2 ? (
-                <p className="px-2 py-1 text-[11px] text-zinc-600">Mindestens 2 Zeichen eingeben.</p>
+                <p className="px-2 py-1 text-[11px] text-[#a89c8a]">Mindestens 2 Zeichen eingeben.</p>
               ) : inhaltTreffer.gesamt === 0 ? (
-                <p className="px-2 py-1 text-[12px] text-zinc-600">Keine Fundstellen.</p>
+                <p className="px-2 py-1 text-[12px] text-[#a89c8a]">Keine Fundstellen.</p>
               ) : (
                 <>
-                  <p className="mb-1 px-1 text-[10.5px] text-zinc-500">
+                  <p className="mb-1 px-1 text-[10.5px] text-[#8d8172]">
                     {inhaltTreffer.gesamt}{inhaltTreffer.gedeckelt ? "+" : ""} Fundstellen in {inhaltTreffer.proDatei.length} Dateien
                   </p>
                   {inhaltTreffer.proDatei.map((d) => (
                     <div key={d.path} className="mb-1.5">
-                      <div className="truncate px-1 py-0.5 font-mono text-[11px] text-zinc-400" title={d.path}>{d.path}</div>
+                      <div className="truncate px-1 py-0.5 font-mono text-[11px] text-[#8d8172]" title={d.path}>{d.path}</div>
                       {d.zeilen.map((z) => (
                         <button
                           key={z.nr}
                           onClick={() => springeZu(d.path, z.nr)}
-                          className="flex w-full items-baseline gap-2 rounded px-1 py-0.5 text-left hover:bg-white/5"
+                          className="flex w-full items-baseline gap-2 rounded px-1 py-0.5 text-left hover:bg-[#1c1917]/5"
                         >
-                          <span className="shrink-0 font-mono text-[10px] text-zinc-600">{z.nr + 1}</span>
-                          <span className="min-w-0 truncate font-mono text-[11.5px] text-zinc-300">{markiere(z.text.trim(), projSuche.trim())}</span>
+                          <span className="shrink-0 font-mono text-[10px] text-[#a89c8a]">{z.nr + 1}</span>
+                          <span className="min-w-0 truncate font-mono text-[11.5px] text-[#4a4335]">{markiere(z.text.trim(), projSuche.trim())}</span>
                         </button>
                       ))}
                     </div>
@@ -843,32 +843,32 @@ export default function StudioPage() {
         </aside>
 
         {/* Editor */}
-        <main className="relative min-h-0 min-w-0 bg-[#0b0a0f]">
+        <main className="relative min-h-0 min-w-0 bg-[#faf9f6]">
           {/* Tab-Leiste */}
-          <div className="flex items-stretch border-b border-white/8 text-[12px]">
+          <div className="flex items-stretch border-b border-[#e8e1d2] text-[12px]">
             <div className="flex min-w-0 flex-1 overflow-x-auto">
               {tabs.filter((t) => proj.files[t] !== undefined).map((t) => (
                 <div
                   key={t}
-                  className={`flex shrink-0 items-center gap-1.5 border-r border-white/8 px-3 py-1.5 ${t === proj.open ? "bg-[#0b0a0f] text-[#ffb35c]" : "bg-white/[0.02] text-zinc-400 hover:text-zinc-200"}`}
+                  className={`flex shrink-0 items-center gap-1.5 border-r border-[#e8e1d2] px-3 py-1.5 ${t === proj.open ? "bg-[#faf9f6] text-[#c25e0e]" : "bg-white/40 text-[#8d8172] hover:text-[#1c1917]"}`}
                 >
                   <button onClick={() => openFile(t)} className="font-mono" title={t}>{t.split("/").pop()}</button>
-                  <button onClick={() => schliesseTab(t)} className="text-zinc-600 hover:text-red-400" title="Tab schliessen">✕</button>
+                  <button onClick={() => schliesseTab(t)} className="text-[#a89c8a] hover:text-red-500" title="Tab schliessen">✕</button>
                 </div>
               ))}
             </div>
             {hatVorschau && (
-              <div className="flex shrink-0 items-center border-l border-white/8">
+              <div className="flex shrink-0 items-center border-l border-[#e8e1d2]">
                 <button
                   onClick={() => setAnsicht("code")}
-                  className={`px-2.5 py-1.5 ${ansicht === "code" ? "text-[#ffb35c]" : "text-zinc-400 hover:text-zinc-200"}`}
+                  className={`px-2.5 py-1.5 ${ansicht === "code" ? "text-[#c25e0e]" : "text-[#8d8172] hover:text-[#1c1917]"}`}
                   title="Code bearbeiten"
                 >
                   Code
                 </button>
                 <button
                   onClick={() => setAnsicht("vorschau")}
-                  className={`px-2.5 py-1.5 ${ansicht === "vorschau" ? "text-[#ffb35c]" : "text-zinc-400 hover:text-zinc-200"}`}
+                  className={`px-2.5 py-1.5 ${ansicht === "vorschau" ? "text-[#c25e0e]" : "text-[#8d8172] hover:text-[#1c1917]"}`}
                   title="Live-Vorschau im Browser"
                 >
                   ▶ Vorschau
@@ -877,21 +877,21 @@ export default function StudioPage() {
             )}
             <button
               onClick={() => setFr((f) => ({ ...f, show: !f.show }))}
-              className={`shrink-0 border-l border-white/8 px-3 ${fr.show ? "text-[#ffb35c]" : "text-zinc-400 hover:text-zinc-200"}`}
+              className={`shrink-0 border-l border-[#e8e1d2] px-3 ${fr.show ? "text-[#c25e0e]" : "text-[#8d8172] hover:text-[#1c1917]"}`}
               title="Suchen & Ersetzen"
             >
               ⌕
             </button>
           </div>
           {fr.show && (
-            <div className="flex flex-wrap items-center gap-2 border-b border-white/8 bg-white/[0.02] px-3 py-1.5 text-[12px]">
+            <div className="flex flex-wrap items-center gap-2 border-b border-[#e8e1d2] bg-white/40 px-3 py-1.5 text-[12px]">
               <input value={fr.find} onChange={(e) => setFr((f) => ({ ...f, find: e.target.value }))} placeholder="Suchen"
-                className="w-40 rounded border border-white/8 bg-white/[0.03] px-2 py-1 text-zinc-200 outline-none focus:border-[#ff8c2a]/40" />
+                className="w-40 rounded border border-[#e0d8c6] bg-white/70 px-2 py-1 text-[#1c1917] outline-none placeholder:text-[#a89c8a] focus:border-[#ffb066]" />
               <input value={fr.replace} onChange={(e) => setFr((f) => ({ ...f, replace: e.target.value }))} placeholder="Ersetzen durch"
-                className="w-40 rounded border border-white/8 bg-white/[0.03] px-2 py-1 text-zinc-200 outline-none focus:border-[#ff8c2a]/40" />
-              <span className="text-zinc-500">{treffer} Treffer</span>
-              <button onClick={ersetzeErstes} disabled={!treffer} className="rounded bg-white/[0.06] px-2 py-1 text-zinc-200 hover:bg-white/10 disabled:opacity-40">Ersetzen</button>
-              <button onClick={ersetzeAlle} disabled={!treffer} className="rounded bg-[#ff8c2a]/20 px-2 py-1 text-[#ffb35c] hover:bg-[#ff8c2a]/30 disabled:opacity-40">Alle ersetzen</button>
+                className="w-40 rounded border border-[#e0d8c6] bg-white/70 px-2 py-1 text-[#1c1917] outline-none placeholder:text-[#a89c8a] focus:border-[#ffb066]" />
+              <span className="text-[#8d8172]">{treffer} Treffer</span>
+              <button onClick={ersetzeErstes} disabled={!treffer} className="rounded border border-[#e0d8c6] bg-white/70 px-2 py-1 text-[#4a4335] hover:border-[#ffb066] disabled:opacity-40">Ersetzen</button>
+              <button onClick={ersetzeAlle} disabled={!treffer} className="rounded bg-[#fff4e6] px-2 py-1 font-semibold text-[#c25e0e] hover:bg-[#ffe9cf] disabled:opacity-40">Alle ersetzen</button>
             </div>
           )}
           {hatVorschau && ansicht === "vorschau" ? (
@@ -919,19 +919,19 @@ export default function StudioPage() {
         </main>
 
         {/* KI-Assistent */}
-        <aside className="flex min-h-0 flex-col border-l border-white/8 bg-white/[0.02] max-md:hidden">
-          <div className="border-b border-white/8 px-3 py-2 text-[12px] font-semibold text-zinc-300">KI-Assistent</div>
+        <aside className="flex min-h-0 flex-col border-l border-[#e8e1d2] bg-white/40 max-md:hidden">
+          <div className="border-b border-[#e8e1d2] px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">KI-Assistent</div>
           <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-3">
             {chat.length === 0 && (
-              <p className="text-[12px] leading-relaxed text-zinc-500">
-                Bitten Sie die KI, am Projekt zu arbeiten – z. B. „Erkläre <b className="text-zinc-300">{proj.open}</b>",
+              <p className="text-[12px] leading-relaxed text-[#8d8172]">
+                Bitten Sie die KI, am Projekt zu arbeiten – z. B. „Erkläre <b className="text-[#1c1917]">{proj.open}</b>",
                 „Baue eine Funktion X" oder „Splitte das in mehrere Dateien auf". Sie kennt alle Dateien und kann
                 mehrere davon in einem Schritt anlegen oder ändern.
               </p>
             )}
             {chat.map((m, i) => (
               <div key={i} className={m.role === "user" ? "text-right" : ""}>
-                <div className={`inline-block max-w-[95%] whitespace-pre-wrap rounded-xl px-3 py-2 text-left text-[12.5px] leading-relaxed ${m.role === "user" ? "bg-[#ff8c2a]/15 text-[#ffd9b0]" : "border border-white/8 bg-white/[0.03] text-zinc-200"}`}>
+                <div className={`inline-block max-w-[95%] whitespace-pre-wrap rounded-xl px-3 py-2 text-left text-[12.5px] leading-relaxed ${m.role === "user" ? "bg-[#fff4e6] text-[#7a3d0b]" : "border border-[#e8e1d2] bg-white/70 text-[#4a4335]"}`}>
                   {m.content || (streaming && i === chat.length - 1 ? "…" : "")}
                 </div>
               </div>
@@ -939,13 +939,13 @@ export default function StudioPage() {
             <div ref={chatEndRef} />
           </div>
           {echteVorschlaege.length > 0 && !streaming && (
-            <div className="border-t border-white/8 p-2">
+            <div className="border-t border-[#e8e1d2] p-2">
               <div className="mb-1.5 flex items-center justify-between gap-2 px-1 text-[11px]">
-                <span className="font-mono text-zinc-500">
+                <span className="font-mono text-[#8d8172]">
                   KI-Änderung an {echteVorschlaege.length} {echteVorschlaege.length === 1 ? "Datei" : "Dateien"}
                 </span>
                 {echteVorschlaege.length > 1 && (
-                  <button onClick={uebernehmeAlle} className="rounded-md bg-[#22c55e]/15 px-2 py-0.5 font-semibold text-[#86efac] hover:bg-[#22c55e]/25">
+                  <button onClick={uebernehmeAlle} className="rounded-md bg-[#e7f6ee] px-2 py-0.5 font-semibold text-[#177245] hover:bg-[#d6efe1]">
                     Alle übernehmen
                   </button>
                 )}
@@ -956,18 +956,18 @@ export default function StudioPage() {
                   const neu = alt === undefined;
                   const d = diffZusammenfassung(alt ?? "", v.content);
                   return (
-                    <div key={v.path} className="flex items-center gap-2 rounded-lg border border-white/8 bg-white/[0.03] px-2 py-1.5">
-                      <span className="min-w-0 flex-1 truncate font-mono text-[11.5px] text-zinc-200" title={v.path}>{v.path}</span>
+                    <div key={v.path} className="flex items-center gap-2 rounded-lg border border-[#e8e1d2] bg-white/70 px-2 py-1.5">
+                      <span className="min-w-0 flex-1 truncate font-mono text-[11.5px] text-[#4a4335]" title={v.path}>{v.path}</span>
                       {neu ? (
-                        <span className="shrink-0 rounded bg-[#ff8c2a]/15 px-1.5 text-[10px] font-semibold text-[#ffb35c]">neu</span>
+                        <span className="shrink-0 rounded bg-[#fff4e6] px-1.5 text-[10px] font-semibold text-[#c25e0e]">neu</span>
                       ) : (
                         <span className="shrink-0 text-[10.5px]">
-                          <span className="text-[#86efac]">+{d.plus}</span> <span className="text-red-400">−{d.minus}</span>
+                          <span className="text-[#177245]">+{d.plus}</span> <span className="text-red-500">−{d.minus}</span>
                         </span>
                       )}
                       <button
                         onClick={() => uebernehmeDatei(v.path, v.content)}
-                        className="shrink-0 rounded-md bg-gradient-to-br from-[#22c55e] to-[#16a34a] px-2 py-1 text-[11px] font-semibold text-white"
+                        className="shrink-0 rounded-md bg-gradient-to-br from-[#22c55e] to-[#16a34a] px-2 py-1 text-[11px] font-semibold text-white shadow-[0_4px_14px_-6px_rgba(22,163,74,0.6)]"
                       >
                         Übernehmen
                       </button>
@@ -978,28 +978,28 @@ export default function StudioPage() {
             </div>
           )}
           {vorschlag && !streaming && vorschlag !== code && (
-            <div className="border-t border-white/8 p-2">
+            <div className="border-t border-[#e8e1d2] p-2">
               {(() => {
                 const d = diffZusammenfassung(code, vorschlag);
                 return (
                   <div className="mb-1.5 flex items-center gap-2 px-1 text-[11px]">
-                    <span className="font-mono text-zinc-500">Vorgeschlagene Änderung:</span>
-                    <span className="text-[#86efac]">+{d.plus}</span>
-                    <span className="text-red-400">−{d.minus}</span>
-                    <span className="text-zinc-600">Zeilen</span>
+                    <span className="font-mono text-[#8d8172]">Vorgeschlagene Änderung:</span>
+                    <span className="text-[#177245]">+{d.plus}</span>
+                    <span className="text-red-500">−{d.minus}</span>
+                    <span className="text-[#a89c8a]">Zeilen</span>
                   </div>
                 );
               })()}
               <button
                 onClick={() => setCode(vorschlag)}
-                className="w-full rounded-lg bg-gradient-to-br from-[#22c55e] to-[#16a34a] px-3 py-2 text-[12.5px] font-semibold text-white"
+                className="w-full rounded-lg bg-gradient-to-br from-[#22c55e] to-[#16a34a] px-3 py-2 text-[12.5px] font-semibold text-white shadow-[0_6px_20px_-8px_rgba(22,163,74,0.6)]"
               >
                 Änderung in {proj.open.split("/").pop()} übernehmen
               </button>
             </div>
           )}
-          <div className="border-t border-white/8 p-2">
-            <div className="flex items-end gap-2 rounded-xl border border-white/10 bg-white/[0.04] p-1.5 focus-within:border-[#ff8c2a]/40">
+          <div className="border-t border-[#e8e1d2] p-2">
+            <div className="flex items-end gap-2 rounded-xl border border-[#e0d8c6] bg-white/70 p-1.5 focus-within:border-[#ffb066]">
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -1007,13 +1007,13 @@ export default function StudioPage() {
                 rows={1}
                 placeholder="Aufgabe in natürlicher Sprache …"
                 disabled={streaming}
-                className="max-h-28 flex-1 resize-none bg-transparent px-1.5 py-1 text-[12.5px] text-zinc-100 outline-none placeholder:text-zinc-500"
+                className="max-h-28 flex-1 resize-none bg-transparent px-1.5 py-1 text-[12.5px] text-[#1c1917] outline-none placeholder:text-[#a89c8a]"
               />
-              <button onClick={() => frag(input)} disabled={streaming || !input.trim()} className="h-7 shrink-0 rounded-lg bg-gradient-to-br from-[#ff8c2a] to-[#ff5f1f] px-3 text-[12px] font-semibold text-white disabled:opacity-40">
+              <button onClick={() => frag(input)} disabled={streaming || !input.trim()} className="shop-btn h-7 shrink-0 rounded-lg bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-3 text-[12px] font-semibold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)] disabled:opacity-40">
                 {streaming ? "…" : "Senden"}
               </button>
             </div>
-            <p className="mt-1.5 px-1 text-[10.5px] leading-snug text-zinc-500">
+            <p className="mt-1.5 px-1 text-[10.5px] leading-snug text-[#8d8172]">
               🔧 Die KI liest &amp; ändert mehrere Dateien auf einmal (Diff prüfen, dann übernehmen). Terminal, echtes Git &amp; Debugger laufen server-/Enterprise-seitig (geplant).
             </p>
           </div>
@@ -1021,26 +1021,26 @@ export default function StudioPage() {
       </div>
 
       <style>{`
-        .acc-ed { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; line-height: 20px; }
+        .acc-ed { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; line-height: 20px; background: #faf9f6; }
         .acc-ed__ln {
           position: absolute; top: 0; left: 0; bottom: 0; width: 48px;
           margin: 0; padding: 12px 8px 12px 0; font: inherit; text-align: right;
-          white-space: pre; overflow: hidden; color: #4b5563; user-select: none;
-          background: rgba(255,255,255,0.02); border-right: 1px solid rgba(255,255,255,0.06); z-index: 0;
+          white-space: pre; overflow: hidden; color: #b3a89a; user-select: none;
+          background: #f2efe8; border-right: 1px solid #e8e1d2; z-index: 0;
         }
         .acc-ed__pre, .acc-ed__ta {
           position: absolute; top: 0; right: 0; bottom: 0; left: 48px; margin: 0; padding: 12px 14px;
           font: inherit; letter-spacing: normal; tab-size: 2;
           white-space: pre; overflow: auto; border: 0;
         }
-        .acc-ed__pre { color: #cdd3de; pointer-events: none; z-index: 0; }
+        .acc-ed__pre { color: #1c1917; pointer-events: none; z-index: 0; }
         .acc-ed__ta {
-          color: transparent; background: transparent; caret-color: #ff8c2a;
+          color: transparent; background: transparent; caret-color: #c25e0e;
           resize: none; outline: none; z-index: 1;
         }
-        .acc-ed__ta::selection { background: rgba(255,140,42,0.28); }
-        .tk-kw { color: #ff8c2a; } .tk-str { color: #86efac; }
-        .tk-com { color: #6b7280; font-style: italic; } .tk-num { color: #7dd3fc; }
+        .acc-ed__ta::selection { background: rgba(255,140,42,0.22); }
+        .tk-kw { color: #c25e0e; } .tk-str { color: #177245; }
+        .tk-com { color: #a89c8a; font-style: italic; } .tk-num { color: #5b52d6; }
       `}</style>
     </div>
   );

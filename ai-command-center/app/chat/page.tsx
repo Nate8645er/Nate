@@ -346,13 +346,13 @@ export default function KommandoPage() {
   );
 
   return (
-    <div className="flex h-dvh bg-[#faf8f3] text-[#241f17]">
+    <div className="acc-page flex h-dvh text-[#1c1917]">
       {/* Seitenleiste: Befehls-Verlauf */}
       <aside
         className={`${sidebarOpen ? "flex" : "hidden"} fixed inset-y-0 left-0 z-40 w-72 flex-col border-r border-[#e8e1d2] bg-[#f3efe6] md:static md:flex`}
       >
         <div className="flex items-center gap-2.5 px-5 py-5">
-          <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f] shadow-[0_0_10px_rgba(255,140,42,0.5)]" />
+          <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f]" />
           <span className="text-sm font-bold tracking-tight">AI Command Center</span>
         </div>
         <div className="px-3">
@@ -366,7 +366,7 @@ export default function KommandoPage() {
             + Neuer Befehl
           </button>
         </div>
-        <p className="px-5 pb-1 pt-5 text-[11px] font-semibold uppercase tracking-wider text-[#a2988a]">
+        <p className="px-5 pb-1 pt-5 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">
           Verlauf
         </p>
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 pb-3" aria-label="Befehls-Verlauf">
@@ -405,7 +405,7 @@ export default function KommandoPage() {
 
       {/* Hauptbereich */}
       <div className="relative flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between border-b border-[#e8e1d2] bg-[#faf8f3]/90 px-5 py-3 backdrop-blur">
+        <header className="flex items-center justify-between border-b border-[#e8e1d2] bg-[#fbfaf6]/80 px-5 py-3 backdrop-blur">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen((v) => !v)}
@@ -465,9 +465,9 @@ export default function KommandoPage() {
 
                 {/* Live-Aktivität */}
                 {running && live?.entryId === active.id && (
-                  <div className="mb-6 rounded-2xl border border-[#f0e2cc] bg-white p-5">
+                  <div className="mb-6 acc-card rounded-2xl p-5">
                     <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">
-                      <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" />
+                      <span className="animate-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" />
                       Ihre Belegschaft arbeitet
                     </p>
                     <ul className="mt-3 space-y-1.5 text-sm text-[#6f6557]">
@@ -475,7 +475,7 @@ export default function KommandoPage() {
                         <li key={i} className="flex items-center gap-2.5">
                           <span
                             className={`inline-block h-1.5 w-1.5 rounded-full ${
-                              i === live.aktivitaet.length - 1 ? "hud-pulse bg-[#ff8c2a]" : "bg-[#e5d9c4]"
+                              i === live.aktivitaet.length - 1 ? "animate-pulse bg-[#ff8c2a]" : "bg-[#e5d9c4]"
                             }`}
                           />
                           {a}
@@ -564,7 +564,7 @@ export default function KommandoPage() {
           <div className="mx-auto max-w-3xl">
             {/* Slash-Befehlspalette */}
             {(skillTreffer.length > 0 || gesperrteTreffer.length > 0) && !running && (
-              <div className="mb-2 overflow-hidden rounded-2xl border border-[#e8e1d2] bg-white shadow-[0_8px_30px_rgba(40,30,10,0.10)]">
+              <div className="mb-2 overflow-hidden acc-card rounded-2xl shadow-[0_8px_30px_rgba(40,30,10,0.10)]">
                 <p className="border-b border-[#f0ebe0] px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-[#a2988a]">
                   Befehle · Ihr Abo: {stufe}
                 </p>
@@ -669,7 +669,7 @@ export default function KommandoPage() {
                 }}
                 rows={Math.min(6, Math.max(1, input.split("\n").length))}
                 placeholder="Befehl an Ihre Belegschaft … («Erstelle …», «Kontrolliere …», «Analysiere …»)"
-                className="min-h-[44px] flex-1 resize-none bg-transparent px-2 py-2.5 text-[15px] text-[#241f17] placeholder:text-[#b3a894] focus:outline-none"
+                className="min-h-[44px] flex-1 resize-none bg-transparent px-2 py-2.5 text-[15px] text-[#1c1917] placeholder:text-[#b3a894] focus:outline-none"
                 aria-label="Befehl eingeben"
                 disabled={running}
               />

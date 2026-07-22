@@ -91,6 +91,21 @@ export const AGENT_ROSTER: readonly RosterAgent[] = [
     kann: ["Schritte planen", "Ressourcen abschätzen", "Risiken erkennen"],
   },
 
+  {
+    id: "strategie",
+    name: "Strategie-Agent",
+    abteilung: "Führung & Steuerung",
+    aufgabe: "Entwickelt Positionierung, Ziele und den nächsten strategischen Schritt.",
+    kann: ["Ziele schärfen", "Optionen abwägen", "Fahrplan"],
+  },
+  {
+    id: "controlling",
+    name: "Controlling-Agent",
+    abteilung: "Führung & Steuerung",
+    aufgabe: "Behält Fortschritt, Budget und Qualität der laufenden Missionen im Blick.",
+    kann: ["Fortschritt messen", "Abweichung melden", "Nachsteuern"],
+  },
+
   // ---------- Forschung & Wissen ----------
   {
     id: "forschung",
@@ -126,6 +141,21 @@ export const AGENT_ROSTER: readonly RosterAgent[] = [
     abteilung: "Forschung & Wissen",
     aufgabe: "Verdichtet Daten zu Kennzahlen und Entscheidungsgrundlagen.",
     kann: ["KPIs bilden", "Dashboards entwerfen", "Reports"],
+  },
+
+  {
+    id: "markt",
+    name: "Markt-Analyst-Agent",
+    abteilung: "Forschung & Wissen",
+    aufgabe: "Analysiert Markt, Zielgruppen und Nachfrage für fundierte Entscheidungen.",
+    kann: ["Marktgrösse", "Zielgruppen", "Nachfrage"],
+  },
+  {
+    id: "wettbewerb",
+    name: "Wettbewerbs-Agent",
+    abteilung: "Forschung & Wissen",
+    aufgabe: "Beobachtet Mitbewerber und arbeitet Unterschiede und Chancen heraus.",
+    kann: ["Konkurrenz prüfen", "Vergleiche", "Chancen"],
   },
 
   // ---------- Entwicklung & Technik ----------
@@ -179,6 +209,28 @@ export const AGENT_ROSTER: readonly RosterAgent[] = [
     kann: ["Abläufe analysieren", "Auslöser definieren", "Automatisieren"],
   },
 
+  {
+    id: "frontend",
+    name: "Frontend-Agent",
+    abteilung: "Entwicklung & Technik",
+    aufgabe: "Baut Oberflächen und Web-Seiten mit sauberem, responsivem Code.",
+    kann: ["UI umsetzen", "Responsive", "Komponenten"],
+  },
+  {
+    id: "backend",
+    name: "Backend-Agent",
+    abteilung: "Entwicklung & Technik",
+    aufgabe: "Entwickelt Server-Logik, Datenmodelle und sichere Schnittstellen.",
+    kann: ["Logik bauen", "Datenmodell", "Sicher anbinden"],
+  },
+  {
+    id: "datenbank",
+    name: "Datenbank-Agent",
+    abteilung: "Entwicklung & Technik",
+    aufgabe: "Entwirft und optimiert Datenbanken und Abfragen.",
+    kann: ["Schema entwerfen", "Abfragen", "Optimieren"],
+  },
+
   // ---------- Marketing & Vertrieb ----------
   {
     id: "marketing",
@@ -214,6 +266,21 @@ export const AGENT_ROSTER: readonly RosterAgent[] = [
     abteilung: "Marketing & Vertrieb",
     aufgabe: "Erstellt Anzeigentexte und Konzepte für Google/Meta/TikTok.",
     kann: ["Ad-Texte", "Zielgruppen", "Varianten"],
+  },
+
+  {
+    id: "content",
+    name: "Content-Agent",
+    abteilung: "Marketing & Vertrieb",
+    aufgabe: "Plant und schreibt Blog-, Website- und Content-Serien mit rotem Faden.",
+    kann: ["Themenplan", "Artikel", "Redigieren"],
+  },
+  {
+    id: "newsletter",
+    name: "Newsletter-Agent",
+    abteilung: "Marketing & Vertrieb",
+    aufgabe: "Erstellt Newsletter und E-Mail-Strecken, die zum Handeln bewegen.",
+    kann: ["Betreffzeilen", "Aufbau", "Call-to-Action"],
   },
 
   // ---------- Kundenservice & Kommunikation ----------
@@ -261,6 +328,21 @@ export const AGENT_ROSTER: readonly RosterAgent[] = [
     geplant: true,
   },
 
+  {
+    id: "onboarding",
+    name: "Onboarding-Agent",
+    abteilung: "Kundenservice & Kommunikation",
+    aufgabe: "Führt neue Kunden Schritt für Schritt zum ersten Erfolg.",
+    kann: ["Willkommen", "Anleitung", "Nachfassen"],
+  },
+  {
+    id: "community",
+    name: "Community-Agent",
+    abteilung: "Kundenservice & Kommunikation",
+    aufgabe: "Betreut Community-Kanäle und beantwortet wiederkehrende Fragen.",
+    kann: ["Antworten", "Moderation", "Stimmung"],
+  },
+
   // ---------- Dokumente & Recht ----------
   {
     id: "dokumente",
@@ -282,6 +364,14 @@ export const AGENT_ROSTER: readonly RosterAgent[] = [
     abteilung: "Dokumente & Recht",
     aufgabe: "Achtet auf Datenschutz und regulatorische Vorgaben (z. B. DSGVO).",
     kann: ["Datenschutz-Check", "Richtlinien", "Hinweise"],
+  },
+
+  {
+    id: "angebot",
+    name: "Angebots-Agent",
+    abteilung: "Dokumente & Recht",
+    aufgabe: "Erstellt saubere Offerten und Angebotsdokumente aus Ihren Vorgaben.",
+    kann: ["Offerte", "Leistungen", "Konditionen"],
   },
 
   // ---------- Finanzen & Personal ----------
@@ -307,7 +397,29 @@ export const AGENT_ROSTER: readonly RosterAgent[] = [
     kann: ["Lieferanten vergleichen", "Anfragen", "Bestellungen"],
   },
 
+  {
+    id: "finanzcontrolling",
+    name: "Finanzcontrolling-Agent",
+    abteilung: "Finanzen & Personal",
+    aufgabe: "Plant Budgets, prüft Kosten und erstellt Liquiditäts-Übersichten.",
+    kann: ["Budget", "Kostencheck", "Liquidität"],
+  },
+  {
+    id: "recruiting",
+    name: "Recruiting-Agent",
+    abteilung: "Finanzen & Personal",
+    aufgabe: "Formuliert Stellenprofile und strukturiert den Auswahlprozess.",
+    kann: ["Stellenprofil", "Vorauswahl", "Interviewfragen"],
+  },
+
   // ---------- Medien & Kreation ----------
+  {
+    id: "praesentation",
+    name: "Präsentations-Agent",
+    abteilung: "Medien & Kreation",
+    aufgabe: "Erstellt strukturierte Foliengliederungen und überzeugende Texte für Decks.",
+    kann: ["Storyline", "Folientexte", "Struktur"],
+  },
   {
     id: "bild",
     name: "Bild-Agent",
@@ -322,6 +434,15 @@ export const AGENT_ROSTER: readonly RosterAgent[] = [
     abteilung: "Medien & Kreation",
     aufgabe: "Erstellt Drehbücher, Storyboards und Konzepte für Videos.",
     kann: ["Drehbuch", "Storyboard", "Konzept"],
+    geplant: true,
+  },
+
+  {
+    id: "grafik",
+    name: "Grafik-Agent",
+    abteilung: "Medien & Kreation",
+    aufgabe: "Entwirft Bild- und Layout-Konzepte für Werbung und Marke.",
+    kann: ["Bildkonzept", "Layout-Idee", "Moodboard"],
     geplant: true,
   },
 
@@ -346,6 +467,20 @@ export const AGENT_ROSTER: readonly RosterAgent[] = [
     abteilung: "Betrieb & Sicherheit",
     aufgabe: "Erstellt regelmässige Berichte aus den Ergebnissen des Teams.",
     kann: ["Berichte", "Auswertung", "Verteilung"],
+  },
+  {
+    id: "it-support",
+    name: "IT-Support-Agent",
+    abteilung: "Betrieb & Sicherheit",
+    aufgabe: "Hilft bei technischen Fragen zum System und richtet Zugänge ein.",
+    kann: ["Fehler eingrenzen", "Anleitung", "Zugänge"],
+  },
+  {
+    id: "backup",
+    name: "Backup-Agent",
+    abteilung: "Betrieb & Sicherheit",
+    aufgabe: "Plant Sicherungen und sorgt für Wiederherstellbarkeit der Daten.",
+    kann: ["Backup-Plan", "Prüfen", "Wiederherstellen"],
   },
 ];
 
