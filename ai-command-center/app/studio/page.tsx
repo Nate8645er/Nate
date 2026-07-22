@@ -46,7 +46,8 @@ const START: Projekt = {
  * Regel jemals das HTML, das eine andere eingefügt hat (kein Selbst-Zerfall).
  */
 const KW =
-  "const|let|var|function|return|if|else|for|while|import|export|from|class|extends|new|await|async|try|catch|finally|throw|typeof|interface|type|public|private|def|print|None|True|False|null|true|false|undefined|this";
+  // JS/TS + Python + gängige Web-Sprachen (CSS/HTML/JSON grob abgedeckt).
+  "const|let|var|function|return|if|else|for|while|import|export|from|class|extends|new|await|async|try|catch|finally|throw|typeof|interface|type|public|private|static|def|lambda|elif|print|None|True|False|null|true|false|undefined|this|self|struct|enum|switch|case|break|continue|package|func|use|fn|impl|pub|match";
 const TOKEN = new RegExp(
   `(\\/\\/[^\\n]*|#[^\\n]*)` + // 1 Kommentar
     `|("(?:[^"\\\\\\n]|\\\\.)*"|'(?:[^'\\\\\\n]|\\\\.)*'|\`(?:[^\`\\\\]|\\\\.)*\`)` + // 2 String
@@ -87,6 +88,70 @@ function ersterCodeblock(text: string): string | null {
   return m ? m[1].replace(/\n$/, "") : null;
 }
 
+/* ---------- Download / Upload / ZIP (ohne Fremd-Bibliothek) ---------- */
+function downloadBlob(name: string, blob: Blob) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+// CRC32 (für gültige ZIP-Einträge).
+const CRC_TABLE = (() => {
+  const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+    t[n] = c >>> 0;
+  }
+  return t;
+})();
+function crc32(bytes: Uint8Array): number {
+  let crc = 0xffffffff;
+  for (let i = 0; i < bytes.length; i++) crc = (crc >>> 8) ^ CRC_TABLE[(crc ^ bytes[i]) & 0xff];
+  return (crc ^ 0xffffffff) >>> 0;
+}
+// Minimaler „store"-ZIP (keine Kompression) – erzeugt eine gültige .zip-Datei.
+function makeZip(files: Record<string, string>): Blob {
+  const enc = new TextEncoder();
+  const chunks: Uint8Array[] = [];
+  const central: Uint8Array[] = [];
+  let offset = 0;
+  const u16 = (n: number) => new Uint8Array([n & 255, (n >>> 8) & 255]);
+  const u32 = (n: number) => new Uint8Array([n & 255, (n >>> 8) & 255, (n >>> 16) & 255, (n >>> 24) & 255]);
+  const cat = (arr: Uint8Array[]) => {
+    const len = arr.reduce((n, a) => n + a.length, 0);
+    const out = new Uint8Array(len);
+    let p = 0;
+    for (const a of arr) { out.set(a, p); p += a.length; }
+    return out;
+  };
+  for (const [name, content] of Object.entries(files)) {
+    const nameB = enc.encode(name);
+    const data = enc.encode(content);
+    const crc = crc32(data);
+    const local = cat([
+      u32(0x04034b50), u16(20), u16(0), u16(0), u16(0), u16(0),
+      u32(crc), u32(data.length), u32(data.length), u16(nameB.length), u16(0), nameB, data,
+    ]);
+    chunks.push(local);
+    central.push(cat([
+      u32(0x02014b50), u16(20), u16(20), u16(0), u16(0), u16(0), u16(0),
+      u32(crc), u32(data.length), u32(data.length), u16(nameB.length),
+      u16(0), u16(0), u16(0), u16(0), u32(0), u32(offset), nameB,
+    ]));
+    offset += local.length;
+  }
+  const cd = cat(central);
+  const end = cat([
+    u32(0x06054b50), u16(0), u16(0), u16(central.length), u16(central.length),
+    u32(cd.length), u32(offset), u16(0),
+  ]);
+  return new Blob([cat(chunks), cd, end], { type: "application/zip" });
+}
+
 export default function StudioPage() {
   const [proj, setProj] = useState<Projekt>(START);
   const [chat, setChat] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
@@ -95,6 +160,7 @@ export default function StudioPage() {
   const taRef = useRef<HTMLTextAreaElement>(null);
   const preRef = useRef<HTMLPreElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const uploadRef = useRef<HTMLInputElement>(null);
 
   // Laden / Speichern.
   useEffect(() => {
@@ -157,6 +223,28 @@ export default function StudioPage() {
       const open = p.open === path ? Object.keys(files)[0] : p.open;
       return { ...p, files, open };
     });
+  }
+  function downloadDatei() {
+    downloadBlob(proj.open.split("/").pop() || "datei.txt", new Blob([code], { type: "text/plain" }));
+  }
+  function downloadZip() {
+    downloadBlob(`${proj.name || "projekt"}.zip`, makeZip(proj.files));
+  }
+  async function hochladen(e: React.ChangeEvent<HTMLInputElement>) {
+    const list = e.target.files;
+    if (!list || list.length === 0) return;
+    const neu: Record<string, string> = {};
+    for (const f of Array.from(list)) {
+      try {
+        neu[f.name] = await f.text();
+      } catch {
+        /* Binärdatei übersprungen */
+      }
+    }
+    if (Object.keys(neu).length) {
+      setProj((p) => ({ ...p, files: { ...p.files, ...neu }, open: Object.keys(neu)[0] }));
+    }
+    e.target.value = "";
   }
 
   // Editor: Tab-Einrückung + Highlight-Overlay-Scroll synchron.
@@ -277,8 +365,14 @@ export default function StudioPage() {
         <aside className="min-h-0 overflow-y-auto border-r border-white/8 bg-white/[0.02] p-2 max-md:hidden">
           <div className="mb-2 flex items-center justify-between px-1">
             <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-500">Dateien</span>
-            <button onClick={neueDatei} className="rounded px-1.5 text-[16px] leading-none text-zinc-400 hover:text-[#ffb35c]" title="Neue Datei">+</button>
+            <div className="flex items-center gap-1.5 text-zinc-400">
+              <button onClick={() => uploadRef.current?.click()} className="text-[12px] hover:text-[#ffb35c]" title="Dateien hochladen">↑</button>
+              <button onClick={downloadDatei} className="text-[12px] hover:text-[#ffb35c]" title="Aktuelle Datei herunterladen">↓</button>
+              <button onClick={downloadZip} className="text-[10px] font-semibold hover:text-[#ffb35c]" title="Projekt als ZIP">ZIP</button>
+              <button onClick={neueDatei} className="text-[16px] leading-none hover:text-[#ffb35c]" title="Neue Datei">+</button>
+            </div>
           </div>
+          <input ref={uploadRef} type="file" multiple onChange={hochladen} className="hidden" accept=".txt,.md,.js,.ts,.tsx,.jsx,.json,.css,.html,.py,.java,.go,.rs,.c,.cpp,.sh,.yml,.yaml,.csv" />
           {paths.map((p) => (
             <div
               key={p}
