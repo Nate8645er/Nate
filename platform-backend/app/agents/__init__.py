@@ -1,6 +1,10 @@
-"""agents/ — Agent-Runtime, Werkzeugregister, Orchestrator (Phase 4).
+"""agents/ — Agent-Runtime, Werkzeuge, Genehmigung, Orchestrator (Phase 4, implementiert).
 
-Geplante Interfaces: AgentSpec (deklarativ), AgentRuntime, ToolRegistry
-(Risikoklassen), Orchestrator (Zerlegung/Delegation/Prüfung), ApprovalQueue.
-Zustand in DB, nicht im Prozess. Noch nicht implementiert.
+- tools.py        : ToolRegistry + Risikoklassen (Freigabe ab „wirkt nach außen")
+- approval.py     : Genehmigungs-Queue (mandanten-scoped, serialisierbar)
+- spec.py         : deklaratives AgentSpec + harte Limits
+- runtime.py      : schrittweise Ausführung, Zustand DB-fähig, Budget/Approval erzwungen
+- orchestrator.py : Zerlegung → Delegation → Prüfung → Wiederholung → Eskalation
+
+LLM/Planer/Prüfer sind injizierbar → ohne echtes Modell testbar.
 """
