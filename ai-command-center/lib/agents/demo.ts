@@ -586,11 +586,53 @@ const DEMO_ORG_BLUEPRINT: readonly {
       },
     ],
   },
+  {
+    name: "Finanzen & Recht",
+    roles: [
+      { rolle: "Controller", fachgebiet: "Controlling", teilaufgabe: (g) => `Erstelle für "${g}" ein Kennzahlen-Dashboard mit Budget, Ist-Werten und Abweichungen.` },
+      { rolle: "Jurist", fachgebiet: "Vertragsrecht", teilaufgabe: (g) => `Prüfe für "${g}" die vertraglichen Eckpunkte und nenne drei rechtliche Risiken mit Empfehlung.` },
+      { rolle: "Steuerexperte", fachgebiet: "Steuern", teilaufgabe: (g) => `Skizziere für "${g}" die steuerlich relevanten Punkte und mögliche Optimierungen.` },
+    ],
+  },
+  {
+    name: "Kundenservice & Erfolg",
+    roles: [
+      { rolle: "Support-Lead", fachgebiet: "Kundensupport", teilaufgabe: (g) => `Entwirf für "${g}" die häufigsten Kundenfragen samt geprüften Antwortvorlagen.` },
+      { rolle: "Erfolgsmanager", fachgebiet: "Customer Success", teilaufgabe: (g) => `Definiere für "${g}" einen Onboarding-Ablauf, der Kunden schnell zum ersten Erfolg führt.` },
+      { rolle: "Feedback-Analyst", fachgebiet: "Kundenfeedback", teilaufgabe: (g) => `Werte für "${g}" typisches Kundenfeedback aus und leite drei Verbesserungen ab.` },
+    ],
+  },
+  {
+    name: "Technik & IT",
+    roles: [
+      { rolle: "Systemarchitekt", fachgebiet: "Architektur", teilaufgabe: (g) => `Entwirf für "${g}" eine tragfähige technische Architektur mit Komponenten und Schnittstellen.` },
+      { rolle: "Entwickler", fachgebiet: "Softwareentwicklung", teilaufgabe: (g) => `Setze für "${g}" den wichtigsten Baustein als lauffähiges Codebeispiel um.` },
+      { rolle: "Sicherheitsanalyst", fachgebiet: "IT-Sicherheit", teilaufgabe: (g) => `Prüfe für "${g}" die grössten Sicherheitsrisiken und nenne konkrete Gegenmassnahmen.` },
+    ],
+  },
+  {
+    name: "Daten & Automation",
+    roles: [
+      { rolle: "Datenanalyst", fachgebiet: "Datenanalyse", teilaufgabe: (g) => `Analysiere für "${g}" die relevanten Daten und leite belastbare Erkenntnisse ab.` },
+      { rolle: "BI-Spezialist", fachgebiet: "Business Intelligence", teilaufgabe: (g) => `Baue für "${g}" die wichtigsten KPIs in einen klaren Report-Entwurf.` },
+      { rolle: "Automations-Ingenieur", fachgebiet: "Automatisierung", teilaufgabe: (g) => `Identifiziere für "${g}" zwei manuelle Abläufe und entwirf je eine Automatisierung.` },
+    ],
+  },
+  {
+    name: "Betrieb & Personal",
+    roles: [
+      { rolle: "Betriebsleiter", fachgebiet: "Operations", teilaufgabe: (g) => `Plane für "${g}" den laufenden Betrieb mit Verantwortlichkeiten und Kennzahlen.` },
+      { rolle: "Personalplaner", fachgebiet: "HR", teilaufgabe: (g) => `Bestimme für "${g}" den Personalbedarf und einen Plan zur Besetzung/Schulung.` },
+      { rolle: "Qualitätsmanager", fachgebiet: "Qualitätssicherung", teilaufgabe: (g) => `Definiere für "${g}" Qualitätskriterien und einen einfachen Prüfprozess.` },
+    ],
+  },
 ];
 
 /**
- * ORG-PLAN im Demo-Modus: deterministische virtuelle Firma (3 Abteilungen,
- * 9 Rollen) im selben JSON-Format, das der Commander liefern würde.
+ * ORG-PLAN im Demo-Modus: deterministische virtuelle Firma (8 Abteilungen,
+ * 24 Rollen) im selben JSON-Format, das der Commander liefern würde. Der
+ * Orchestrator kappt sie über buildDepartments auf MAX_DYN_AGENTS des Plans –
+ * so unterscheiden sich BUSINESS (12) und ENTERPRISE (24) auch im Demo-Modus.
  * Die ids vergibt der Orchestrator beim Parsen (Slug aus der Rolle).
  */
 export function demoOrgPlan(goal: string): {
