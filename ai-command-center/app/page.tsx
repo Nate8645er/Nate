@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { RECHERCHE_QUELLEN } from "@/lib/agents/browser";
 import AgentWorld, { type WorldAgent } from "@/app/components/AgentWorld";
+import RoiRechner from "@/app/components/RoiRechner";
 
 /** Demo-Belegschaft für die lebendige Büro-Animation auf der Startseite. */
 const BUERO_AGENTS: WorldAgent[] = [
@@ -725,6 +726,11 @@ export default function Home() {
                   <p className="mt-1 text-xs text-[#6f6557]">{note}</p>
                 </div>
               ))}
+            </div>
+
+            {/* Live-ROI-Rechner (einstimmige Team-Empfehlung) */}
+            <div className="mt-10">
+              <RoiRechner />
             </div>
 
             {/* Sicherheits-Argumente */}

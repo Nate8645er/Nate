@@ -157,6 +157,71 @@
   </div>
 </section>
 
+<section id="roi" class="roi">
+  <div class="wrap">
+    <h2>Was spart Ihnen Ihre <span class="grad">KI-Abteilung</span>?</h2>
+    <p class="office-sub">Ehrliche, konservative Schätzung – in 5 Sekunden.</p>
+    <div class="roi-card">
+      <div class="roi-inputs">
+        <label>Branche
+          <select id="roi-branche">
+            <option value="handel">Handel / E-Commerce</option>
+            <option value="handwerk">Handwerk / Bau</option>
+            <option value="gastro">Gastronomie</option>
+            <option value="dienstleistung">Dienstleistung / Beratung</option>
+            <option value="gesundheit">Gesundheit / Praxis</option>
+            <option value="marketing" selected>Marketing / Agentur</option>
+            <option value="andere">Andere</option>
+          </select>
+        </label>
+        <label>Teamgröße
+          <select id="roi-team">
+            <option value="solo">Solo (1)</option>
+            <option value="klein" selected>2–10</option>
+            <option value="mittel">11–50</option>
+            <option value="gross">50+</option>
+          </select>
+        </label>
+        <label>Abo
+          <select id="roi-plan">
+            <option value="PERSONAL">Personal</option>
+            <option value="STARTER">Starter</option>
+            <option value="PROFESSIONAL" selected>Professional</option>
+            <option value="BUSINESS">Business</option>
+            <option value="ENTERPRISE">Enterprise</option>
+          </select>
+        </label>
+      </div>
+      <div class="roi-out">
+        <div class="roi-kpi roi-chf"><strong id="roi-chf">CHF 0</strong><span>Ersparnis / Monat</span></div>
+        <div class="roi-kpi roi-h"><strong id="roi-std">0 h</strong><span>Zeit / Monat</span></div>
+        <div class="roi-kpi roi-a"><strong id="roi-auf">0</strong><span>Aufgaben / Monat</span></div>
+      </div>
+      <p class="roi-note" id="roi-note"></p>
+      <p style="text-align:center;margin-top:16px"><a class="btn" href="#pakete">Passendes Paket wählen →</a></p>
+    </div>
+  </div>
+  <script>
+  (function(){
+    var BR={handel:[55,18,18,'Handel / E-Commerce'],handwerk:[70,12,20,'Handwerk / Bau'],gastro:[45,14,15,'Gastronomie'],dienstleistung:[90,16,22,'Dienstleistung / Beratung'],gesundheit:[75,12,18,'Gesundheit / Praxis'],marketing:[85,22,20,'Marketing / Agentur'],andere:[65,15,18,'Andere']};
+    var TF={solo:1,klein:3.2,mittel:9,gross:20},TN={solo:'Solo',klein:'2–10',mittel:'11–50',gross:'50+'};
+    var AB={PERSONAL:0.2,STARTER:0.32,PROFESSIONAL:0.5,BUSINESS:0.68,ENTERPRISE:0.8};
+    var fmt=new Intl.NumberFormat('de-CH');
+    function g(id){return document.getElementById(id);}
+    function rechne(){
+      var b=BR[g('roi-branche').value]||BR.andere, tf=TF[g('roi-team').value]||1, plan=g('roi-plan').value, ab=AB[plan]||0.5;
+      var aufW=b[1]*tf*ab, aufM=aufW*4.345, std=aufM*b[2]/60, chf=Math.round(std*b[0]/10)*10;
+      g('roi-chf').textContent='CHF '+fmt.format(chf);
+      g('roi-std').textContent=fmt.format(Math.round(std))+' h';
+      g('roi-auf').textContent=fmt.format(Math.round(aufM));
+      g('roi-note').textContent='Schätzung: '+b[3]+', '+TN[g('roi-team').value]+', Plan '+plan+'. Grundlage: ~'+b[1]+' automatisierbare Aufgaben/Woche pro Person, '+b[2]+' Min/Aufgabe, '+Math.round(ab*100)+'% Abdeckung, Stundensatz CHF '+b[0]+'. Konservativ – echte Werte hängen von Ihrer Nutzung ab.';
+    }
+    ['roi-branche','roi-team','roi-plan'].forEach(function(id){var el=g(id); if(el) el.addEventListener('change',rechne);});
+    if(g('roi-chf')) rechne();
+  })();
+  </script>
+</section>
+
 <section id="pakete" class="pricing">
   <div class="wrap">
     <h2>Pakete &amp; <span class="grad">Preise</span></h2>

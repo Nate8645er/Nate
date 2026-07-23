@@ -341,3 +341,19 @@ html{background:#07070d}
   .office .kib-embed{min-width:660px}
   .office{overflow-x:auto}
 }
+
+/* Live-ROI-Rechner (Team-Empfehlung) */
+.roi{padding:56px 0;background:#faf6ee;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.roi-card{max-width:820px;margin:22px auto 0;background:#fff;border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 10px 30px -18px rgba(28,25,23,.25)}
+.roi-inputs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.roi-inputs label{display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c25e0e}
+.roi-inputs select{font:inherit;font-weight:400;text-transform:none;letter-spacing:0;color:#1c1917;padding:10px 12px;border:1px solid #e0d8c6;border-radius:12px;background:#fff}
+.roi-out{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px;text-align:center}
+.roi-kpi{border-radius:16px;padding:16px 8px}
+.roi-kpi strong{display:block;font-size:26px;line-height:1.1}
+.roi-kpi span{display:block;margin-top:4px;font-size:11px;font-weight:600;color:#6f6557}
+.roi-chf{background:#f0faf4;border:1px solid #bfe6cf}.roi-chf strong{color:#177245}
+.roi-h{background:#fff7ed;border:1px solid #ffe0b8}.roi-h strong{color:#c25e0e}
+.roi-a{background:#eef0ff;border:1px solid #d7d4f5}.roi-a strong{color:#5b52d6}
+.roi-note{margin-top:14px;font-size:11px;line-height:1.5;color:#8a8172}
+@media(max-width:640px){.roi-inputs{grid-template-columns:1fr}.roi-kpi strong{font-size:20px}}
