@@ -138,3 +138,34 @@ tsconfig), damit Module getestet werden können, die intern `@/…` importieren
 **Tests:** `test/dokumente.test.ts` (6) – leer ohne Anhang, Einzel-Dokument
 (rückwärtskompatibel), mehrere Dokumente, Kombination, Verwerfen unvollständiger
 Einträge, Namens-Härtung gegen Marker-Injection. Suite 168 grün; tsc + build ok.
+
+## Integrationen ausbauen + sichtbar machen (`/erweiterungen`)
+
+**Warum:** Die Integrations-Schicht (`lib/integrations/`) war getestet, aber im
+UI **nirgends sichtbar** und deckte nur wenige Dienste ab. Gewünscht war ein
+**Ausbau** – inkl. der ehrlichen Antwort auf „Agenten sollen eine ganze Maschine
+oder Abteilung bedienen".
+
+**Was neu ist – additiv:**
+- **8 neue Module** im Register (`lib/integrations/registry.ts`), jedes Open
+  Source, selbst gehostet, per ENV angebunden, mit Health-Pfad und Stufen-Gating:
+  Apache Tika (Datei-Extraktion, ergänzt den Datei-Anhang), SearxNG (private
+  Suche fürs Browsen), Qdrant (Vektor), Whisper (Sprache-zu-Text für Aufnahmen),
+  Flowise (LLM-Flows), MinIO (Objektspeicher), **Node-RED** und **Home Assistant**
+  (Geräte-/Anlagensteuerung). Neue Kategorien in `IntegrationKind`: `automation`,
+  `search`, `stt`, `storage`, `extract`.
+- **Neue Seite `/erweiterungen`** (Server-Component, ISR 30 min) unter *Mehr →
+  Erweiterungen* und in der Dashboard-Navigation: gruppierter Katalog mit
+  **ehrlichem Verbindungsstatus** – serverseitig aus den ENV abgeleitet
+  (`grundStatus`, kein Wert verlässt den Server). Ohne Konfiguration „nicht
+  verbunden" statt Schein.
+
+**Sicherheit/Ehrlichkeit:** Geräte-/Computersteuerung (Home Assistant, Node-RED,
+Open Interpreter) tragen einen **Freigabe-Hinweis** (Human-in-the-Loop, Token,
+isolierte Umgebung). Die App lädt/startet keine fremde Software und löst nichts
+automatisch aus – sie ruft nur vom Kunden gehostete Dienste per HTTP an.
+
+**Tests:** `test/integrations.test.ts` erweitert (9) – Katalog-Konsistenz gilt
+automatisch auch für die neuen Einträge; zusätzlich: neue Module vorhanden/richtig
+kategorisiert, Automations-Module self-hosted + nur ab BUSINESS/ENTERPRISE, Home
+Assistant mit Freigabe-Hinweis. Suite 170 grün; tsc + build ok.

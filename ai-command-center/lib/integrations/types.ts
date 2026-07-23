@@ -22,7 +22,12 @@ export type IntegrationKind =
   | "rag"
   | "vector"
   | "voice"
-  | "token-opt";
+  | "token-opt"
+  | "automation" // Steuerung echter Geräte/Abläufe (z. B. Home Assistant, Node-RED)
+  | "search" // eigene Suchmaschine als Quelle für den KI-Browser
+  | "stt" // Sprache-zu-Text (Transkription)
+  | "storage" // Objektspeicher für Dateien/Artefakte
+  | "extract"; // Textextraktion aus vielen Dateiformaten
 
 /** Wie die Integration betrieben wird. */
 export type Laufzeit =

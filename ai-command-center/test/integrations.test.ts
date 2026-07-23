@@ -46,6 +46,28 @@ describe("Integrations-Register", () => {
     expect(integrationById("ollama")?.kind).toBe("local-llm");
     expect(integrationById("gibt-es-nicht")).toBeUndefined();
   });
+
+  it("erweiterter Katalog: neue Module vorhanden und richtig kategorisiert", () => {
+    // Datei-Extraktion (ergänzt den Datei-Anhang) und STT (für Aufnahmen).
+    expect(integrationById("tika")?.kind).toBe("extract");
+    expect(integrationById("whisper")?.kind).toBe("stt");
+    // Geräte-/Anlagensteuerung – die ehrliche Antwort auf „ganze Maschine/Abteilung".
+    const ha = integrationById("home-assistant");
+    expect(ha?.kind).toBe("automation");
+    expect(ha?.abStufe).toBe("ENTERPRISE");
+    // Sicherheitskritisch → braucht einen Freigabe-Hinweis.
+    expect(ha?.hinweis).toMatch(/Freigabe/i);
+    expect(integrationById("node-red")?.kind).toBe("automation");
+  });
+
+  it("Automations-Module sind self-hosted und nur ab höheren Stufen", () => {
+    const automation = INTEGRATIONS.filter((i) => i.kind === "automation");
+    expect(automation.length).toBeGreaterThanOrEqual(2);
+    for (const i of automation) {
+      expect(i.selbstGehostet).toBe(true);
+      expect(["BUSINESS", "ENTERPRISE"]).toContain(i.abStufe);
+    }
+  });
 });
 
 describe("Integrations-Status", () => {

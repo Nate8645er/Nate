@@ -27,6 +27,7 @@ export type BereichId =
   | "benutzer"
   | "einstellungen"
   | "integrationen"
+  | "erweiterungen"
   | "status"
   | "sicherheit";
 
@@ -51,6 +52,7 @@ const MEHR: { id: BereichId; label: string; href: string }[] = [
   { id: "benutzer", label: "Benutzer", href: "/benutzer" },
   { id: "einstellungen", label: "Einstellungen", href: "/einstellungen" },
   { id: "integrationen", label: "Integrationen", href: "/integrationen" },
+  { id: "erweiterungen", label: "Erweiterungen", href: "/erweiterungen" },
   { id: "status", label: "System-Status", href: "/status" },
   { id: "sicherheit", label: "Sicherheit", href: "/sicherheit" },
 ];
