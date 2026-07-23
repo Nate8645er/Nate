@@ -60,3 +60,26 @@ Antworten (Plan, Quality-Report) werden zusätzlich gerettet → robustere Missi
 
 **Tests:** `test/zuverlaessigkeit.test.ts` (14) – Reparaturfälle, Backoff, Retry
 (Erfolg/Erschöpfung/Abbruch/Validator), sichere Zahl.
+
+## Kamera & Bildverständnis (`lib/vision.ts`, `/kamera`, `/api/bild`)
+
+**Warum:** Bisher konnte man nur Textdokumente anhängen. Es fehlte Kamera/Bild.
+
+**Was neu ist – additiv, keine neue Abhängigkeit:**
+- Neue Seite **`/kamera`** (in der Dashboard-Navigation): Foto per Gerätekamera
+  aufnehmen (getUserMedia) ODER Bild hochladen, optionale Frage stellen, von der
+  KI beschreiben/auswerten lassen (z. B. Beleg, Notiz, Whiteboard, Produktfoto).
+  Reine Browser-APIs (getUserMedia, canvas, FileReader); ohne Kamera sauberer
+  Upload-Fallback.
+- `lib/vision.ts`: `bildBeschreiben` (Anthropic-Vision-REST, dependency-frei,
+  injizierbarer fetch), `dataUrlZerlegen`, `visionKonfiguriert`. Ohne
+  ANTHROPIC_API_KEY ehrlich „nicht-konfiguriert".
+- `app/api/bild/route.ts`: nimmt data-URL + Frage, Grössen-/Typprüfung, 501 ohne
+  Key.
+
+**Sicherheit/Ehrlichkeit:** Bild-Analyse liefert nur mit verbundenem bild-fähigem
+Modell echte Ergebnisse; ohne Key klarer Hinweis statt Schein-Ergebnis. Bildgrösse
+serverseitig begrenzt (~6 MB). Nutzt den bestehenden ANTHROPIC_API_KEY.
+
+**Tests:** `test/vision.test.ts` (7) – Konfig, data-URL-Parsing, Request-Aufbau
+(Bild+Frage an Anthropic), ehrliche Fehlerpfade. Suite 156 grün; tsc + build ok.

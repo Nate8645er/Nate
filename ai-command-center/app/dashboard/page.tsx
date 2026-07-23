@@ -1411,6 +1411,12 @@ export default function DashboardPage() {
               E-Mail
             </a>
             <a
+              href="/kamera"
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6557] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
+            >
+              Kamera
+            </a>
+            <a
               href="/faehigkeiten"
               className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6557] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
             >
