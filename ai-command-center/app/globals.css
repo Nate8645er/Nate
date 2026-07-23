@@ -691,3 +691,71 @@ h1, h2, h3, h4 {
 @media (prefers-reduced-motion: reduce) {
   .acc-hero-glow { animation: none; }
 }
+
+/* ================================================================== */
+/* DARK-PREMIUM SKIN (auf Wunsch) – färbt die hellen Arbeitsseiten zu  */
+/* einem durchgehend dunklen, edlen Look. Akzente (Orange/Verlauf) und */
+/* die bereits dunkle Büro-Animation bleiben. Endwerte via !important, */
+/* damit die Umfärbung unabhängig von der Tailwind-Reihenfolge greift. */
+/* ================================================================== */
+:root{--d-bg:#0a0b14;--d-sect:#0d0f1c;--d-card:rgba(255,255,255,.05);--d-cardln:rgba(255,255,255,.10);--d-ink:#eef0f8;--d-mut:#9aa0bd;--background:#0a0b14;--foreground:#eef0f8}
+
+/* Dunkler Grund für ALLE Seiten (auch die ohne .acc-page-Wrapper):
+   sonst wirken die durchscheinenden Glas-Karten hell über weissem Body. */
+html,body{background:#0a0b14!important;color:var(--d-ink)}
+/* Vollflächige Seiten-Wrapper transparent → zeigen den dunklen Body */
+main.bg-\[\#fdfbf7\],main.bg-\[\#fbfaf6\],main.bg-\[\#faf8f3\]{background-color:transparent!important}
+
+/* Seite + Aurora + Raster dunkel */
+.acc-page{background-color:var(--d-bg)!important}
+.acc-page::after{opacity:.4;background-image:
+  linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px)!important}
+
+/* Glas-Karte dunkel */
+.acc-card{
+  border:1px solid var(--d-cardln)!important;
+  background:linear-gradient(rgba(255,255,255,.055),rgba(255,255,255,.03))!important;
+  box-shadow:0 1px 2px rgba(0,0,0,.4),0 20px 48px -26px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.06)!important}
+@media (hover:hover){.acc-card-hover:hover{box-shadow:0 24px 54px -24px rgba(53,217,255,.28),0 0 0 1px rgba(53,217,255,.4),inset 0 1px 0 rgba(255,255,255,.08)!important}}
+
+/* Fläche/Karten-Weiss → dunkles Glas */
+.bg-white,.bg-white\/70,.bg-white\/60,.bg-white\/80,.bg-white\/85,.bg-white\/90,.bg-white\/50,.bg-white\/40,
+.bg-\[\#faf8f3\],.bg-\[\#faf6ee\],.bg-\[\#fdfbf7\],.bg-\[\#fdf6e3\],.bg-\[\#fffaf2\]\/70,.bg-\[\#fbfaf6\]{
+  background-color:var(--d-card)!important}
+.bg-white\/5,.bg-white\/8{background-color:rgba(255,255,255,.05)!important}
+
+/* Helle Tint-Flächen → dunkle Tints (Semantik bleibt) */
+.bg-\[\#fff4e6\],.bg-\[\#fff7ed\],.bg-\[\#fdf8ee\],.bg-\[\#fdf6e3\]{background-color:rgba(255,140,42,.13)!important}
+.bg-\[\#e7f6ee\],.bg-\[\#f0faf4\]{background-color:rgba(34,197,94,.14)!important}
+.bg-\[\#e6faf6\]{background-color:rgba(45,212,191,.14)!important}
+.bg-\[\#eef0ff\]{background-color:rgba(124,92,255,.16)!important}
+.bg-\[\#fdeef7\],.bg-\[\#fdf3f3\]{background-color:rgba(244,114,182,.14)!important}
+
+/* Textfarben dunkel→hell */
+.text-\[\#1c1917\],.text-black,.text-\[\#171717\]{color:var(--d-ink)!important}
+.text-\[\#4a4335\]{color:#cdd1e2!important}
+.text-\[\#6f6557\],.text-\[\#7c7161\]{color:var(--d-mut)!important}
+.text-\[\#a2988a\],.text-\[\#8a8172\],.text-\[\#8a8072\]{color:#868ba6!important}
+
+/* Akzent-Textfarben für Dunkel aufhellen */
+.text-\[\#c25e0e\]{color:#ff9d3f!important}
+.text-\[\#8a4a12\]{color:#ffb066!important}
+.text-\[\#177245\]{color:#4ade80!important}
+.text-\[\#0f766e\]{color:#2dd4bf!important}
+.text-\[\#5b52d6\]{color:#a5b4fc!important}
+.text-\[\#be185d\]{color:#f472b6!important}
+
+/* Rahmen dunkel */
+.border-\[\#e0d8c6\],.border-\[\#e8e1d2\],.border-\[\#efe9dd\],.border-\[\#efe8d2\],.border-\[\#eee7d8\],.border-\[\#f0cea0\],.border-\[\#f0d9a8\],.border-\[\#e6e0d0\]{border-color:var(--d-cardln)!important}
+.border-\[\#bfe6cf\]{border-color:rgba(34,197,94,.35)!important}
+.border-\[\#d7d4f5\]{border-color:rgba(124,92,255,.35)!important}
+.border-\[\#ffe0b8\],.border-\[\#f0e2c9\]{border-color:rgba(255,140,42,.3)!important}
+
+/* Eingabefelder dunkel */
+input,textarea,select{background-color:rgba(255,255,255,.05)!important;color:var(--d-ink)!important;border-color:var(--d-cardln)!important}
+input::placeholder,textarea::placeholder{color:#7b809b!important}
+select option{color:#111!important}
+
+/* Kopf-/Navileisten mit hellem Grund → dunkles Glas */
+.bg-\[\#fffaf2\]\/70{background-color:var(--d-sect)!important}
