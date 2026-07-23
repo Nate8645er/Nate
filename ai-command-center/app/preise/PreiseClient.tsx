@@ -17,7 +17,9 @@ export default function PreiseClient() {
   const [jahr, setJahr] = useState(false);
   const [offen, setOffen] = useState<number | null>(0);
 
-  function waehlen(p: Paket) {
+  const [ladend, setLadend] = useState<string | null>(null);
+
+  async function waehlen(p: Paket) {
     try {
       localStorage.setItem("acc-plan-wunsch", p.planId);
     } catch {
@@ -29,6 +31,26 @@ export default function PreiseClient() {
           encodeURIComponent("Enterprise-Anfrage AI Command Center"),
       );
       return;
+    }
+    // Stripe-Checkout versuchen; ohne Konfiguration ehrlich ins Onboarding.
+    setLadend(p.id);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paket: p.id, jahr }),
+      });
+      if (res.ok) {
+        const data = (await res.json()) as { url?: string };
+        if (data.url) {
+          window.location.assign(data.url);
+          return;
+        }
+      }
+    } catch {
+      /* Netzwerk-/Serverfehler → Fallback unten */
+    } finally {
+      setLadend(null);
     }
     router.push("/onboarding");
   }
@@ -123,14 +145,21 @@ export default function PreiseClient() {
               <button
                 type="button"
                 onClick={() => waehlen(p)}
-                className={`mt-7 w-full rounded-full px-5 py-3 text-sm font-bold transition-colors ${
+                disabled={ladend === p.id}
+                className={`mt-7 w-full rounded-full px-5 py-3 text-sm font-bold transition-colors disabled:opacity-70 ${
                   p.hervorgehoben
                     ? "bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] text-white shadow-[0_10px_28px_-8px_rgba(255,110,30,0.6)] hover:brightness-105"
                     : "border border-[#e0d8c6] bg-white text-[#1c1917] hover:border-[#ffb066] hover:text-[#c25e0e]"
                 }`}
               >
-                {p.cta}
+                {ladend === p.id ? "Einen Moment …" : p.cta}
               </button>
+              <Link
+                href={`/produkt/${p.id}`}
+                className="mt-3 block text-center text-xs font-semibold text-[#c25e0e] hover:underline"
+              >
+                Details ansehen →
+              </Link>
             </div>
           ))}
         </div>
