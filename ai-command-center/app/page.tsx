@@ -461,6 +461,9 @@ export default function Home() {
             <a href="#funktionen" className="hidden text-sm font-medium text-[#6f6557] hover:text-[#1c1917] sm:inline">
               Funktionen
             </a>
+            <Link href="/preise" className="hidden text-sm font-medium text-[#6f6557] hover:text-[#1c1917] sm:inline">
+              Preise
+            </Link>
             <Link
               href="/dashboard"
               className="shop-btn rounded-full bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-5 py-2 text-sm font-bold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)]"

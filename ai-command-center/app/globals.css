@@ -664,3 +664,30 @@ h1, h2, h3, h4 {
   .aw-scroll, .aw-worker, .aw-arm, .aw-walk .aw-wb, .aw-walk, .aw-sheet, .aw-sheet i, .aw-led, .aw-stack, .aw-mfig, .aw-lscroll, .aw-house::after, .aw-firma, .aw-firma .n { animation: none !important; }
   .aw-sheet { height: 20px; opacity: 1; } .aw-stack { opacity: 1; }
 }
+
+/* ------------------------------------------------------------------ */
+/* Kino-Hero für die Verkaufsseite (/preise) – schnell, ohne 3D.       */
+/* ------------------------------------------------------------------ */
+.acc-hero-dark {
+  background:
+    radial-gradient(120% 90% at 50% -10%, #1a1a34 0%, #0d0d18 55%, #07070d 100%);
+}
+.acc-hero-glow {
+  position: absolute;
+  inset: -20% -10% auto -10%;
+  height: 480px;
+  pointer-events: none;
+  background:
+    radial-gradient(40% 60% at 20% 20%, rgba(255, 140, 42, 0.22), transparent 70%),
+    radial-gradient(40% 60% at 80% 10%, rgba(99, 102, 241, 0.22), transparent 70%),
+    radial-gradient(50% 70% at 50% 40%, rgba(236, 72, 153, 0.14), transparent 70%);
+  filter: blur(8px);
+  animation: acc-hero-float 12s ease-in-out infinite alternate;
+}
+@keyframes acc-hero-float {
+  0%   { transform: translate3d(0, 0, 0) scale(1); opacity: 0.9; }
+  100% { transform: translate3d(0, -18px, 0) scale(1.06); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .acc-hero-glow { animation: none; }
+}
