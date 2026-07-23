@@ -26,8 +26,15 @@ describe("Pakete & Vergleich", () => {
   it("Jahrespreis ist günstiger als 12 Monatspreise (Rabatt)", () => {
     for (const p of PAKETE) expect(p.preisJahr).toBeLessThan(p.preisMonat * 12);
   });
-  it("Vergleichstabelle hat pro Zeile genau 3 Werte (je Paket)", () => {
-    for (const g of VERGLEICH) for (const z of g.zeilen) expect(z.werte.length).toBe(3);
+  it("Vergleichstabelle hat pro Zeile einen Wert je Paket", () => {
+    for (const g of VERGLEICH) for (const z of g.zeilen) expect(z.werte.length).toBe(PAKETE.length);
+  });
+  it("bietet günstige Einstiegs- und teure Top-Pakete", () => {
+    const preise = PAKETE.map((p) => p.preisMonat);
+    expect(Math.min(...preise)).toBeLessThanOrEqual(19);
+    expect(Math.max(...preise)).toBeGreaterThanOrEqual(700);
+    // aufsteigend sortiert (klar gestaffelte Leiter)
+    for (let i = 1; i < preise.length; i++) expect(preise[i]).toBeGreaterThan(preise[i - 1]);
   });
   it("chf formatiert mit Währung und Tausender-Trennung", () => {
     expect(chf(1490)).toMatch(/^CHF 1.490$/); // Trenner je nach ICU (’, ' oder .)
@@ -43,7 +50,7 @@ describe("Stripe-Checkout", () => {
   });
 
   it("ohne Key ehrlich nicht-konfiguriert", async () => {
-    const r = await checkoutSessionErstellen("basic", false, "https://x.ch", {});
+    const r = await checkoutSessionErstellen("start", false, "https://x.ch", {});
     expect(r).toEqual({ error: "nicht-konfiguriert" });
   });
 

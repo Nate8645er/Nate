@@ -5,6 +5,9 @@
  * die Seite und der Vergleich lesen ausschliesslich aus dieser Datei.
  * Währung: CHF (Schweiz). `planId` verknüpft das Paket mit der internen
  * Abo-Stufe (Lizenz/Onboarding), damit Kauf → Zugang konsistent bleibt.
+ *
+ * Fünf Stufen von günstig bis Konzern: Solo, Start, Pro (beliebt),
+ * Business, Enterprise.
  */
 
 import type { PlanId } from "./agents/types";
@@ -34,50 +37,74 @@ export interface Paket {
 
 export const PAKETE: readonly Paket[] = [
   {
-    id: "basic",
-    name: "Basic",
+    id: "solo",
+    name: "Solo",
+    planId: "PERSONAL",
+    untertitel: "Ihr KI-Einstieg für Einzelpersonen.",
+    zielgruppe: "Einzelpersonen & Einstieg",
+    preisMonat: 19,
+    preisJahr: 190,
+    leistungen: [
+      "4 KI-Agenten (Kern-Team)",
+      "10 Missionen pro Tag",
+      "Basis-Fähigkeiten: Texte, Offerten, E-Mails",
+      "Ergebnis-Vorschau & Download",
+      "Support per E-Mail",
+    ],
+    cta: "Solo wählen",
+  },
+  {
+    id: "start",
+    name: "Start",
     planId: "STARTER",
     untertitel: "Ihre kompakte KI-Abteilung für den Start.",
-    zielgruppe: "Einzelunternehmer & kleine Teams",
+    zielgruppe: "Selbstständige & kleine Teams",
     preisMonat: 49,
     preisJahr: 490,
     leistungen: [
-      "12 spezialisierte KI-Agenten in Fachteams",
+      "12 spezialisierte KI-Agenten",
       "25 Missionen pro Tag",
-      "Fähigkeiten für Erstellen, Marketing, Verkauf & Analyse",
-      "Fertige Dokumente: Offerten, Websites, Präsentationen, Verträge",
-      "E-Mail-Zentrale: Antworten & Angebote in Sekunden",
-      "Autopilot für wiederkehrende Aufgaben",
-      "Qualitäts-Score für jedes Ergebnis",
-      "Echte Dateien & Code mit Download",
-      "Ergebnis-Vorschau direkt im Browser",
-      "Vertonte Einrichtungs-Videos & Support per E-Mail",
+      "Fähigkeiten inkl. Verkauf & Marketing",
+      "E-Mail-Zentrale & Autopilot",
+      "Qualitäts-Score je Ergebnis",
     ],
-    cta: "Basic wählen",
+    cta: "Start wählen",
   },
   {
     id: "pro",
     name: "Pro",
-    planId: "BUSINESS",
-    untertitel: "Ihre digitale Abteilung mit allen Integrationen.",
-    zielgruppe: "Wachsende Firmen & Teams",
-    preisMonat: 149,
-    preisJahr: 1490,
+    planId: "PROFESSIONAL",
+    untertitel: "Fachteams inkl. Finanzen, Analyse & erste Integrationen.",
+    zielgruppe: "Wachsende Firmen",
+    preisMonat: 179,
+    preisJahr: 1790,
     badge: "Beliebt",
     hervorgehoben: true,
     leistungen: [
-      "Alles aus Basic – plus:",
-      "250 KI-Agenten als digitale Abteilung",
-      "Unbegrenzte Missionen mit Prioritäts-Verarbeitung",
-      "Alle Fähigkeiten inkl. Finanzen, Personal & Recht, Code",
-      "Alle Firmen-Integrationen (M365, Google, Slack, Shopify, Stripe, eigene APIs)",
-      "Firmen-Wissensdatenbank (RAG) für eigene Dokumente",
-      "Eigene Workflows, Automationen & Freigaben",
+      "Alles aus Start – plus:",
+      "50 Agenten in Fachteams",
       "Dokumentenanalyse (PDF, Word, Excel)",
-      "Zugänge für Ihr ganzes Team mit Rollen",
-      "Prioritäts-Support & dedizierter Ansprechpartner",
+      "Erste Firmen-Integrationen & Prioritäts-Verarbeitung",
+      "Wissensdatenbank (RAG) für eigene Dokumente",
     ],
     cta: "Pro wählen",
+  },
+  {
+    id: "business",
+    name: "Business",
+    planId: "BUSINESS",
+    untertitel: "Ihre digitale Abteilung mit allen Integrationen.",
+    zielgruppe: "Grössere Teams & Firmen",
+    preisMonat: 390,
+    preisJahr: 3900,
+    leistungen: [
+      "Alles aus Pro – plus:",
+      "250 KI-Agenten als digitale Abteilung",
+      "Unbegrenzte Missionen",
+      "Alle Firmen-Integrationen & eigene Workflows",
+      "Team-Zugänge mit Rollen, dedizierter Ansprechpartner",
+    ],
+    cta: "Business wählen",
   },
   {
     id: "enterprise",
@@ -85,27 +112,23 @@ export const PAKETE: readonly Paket[] = [
     planId: "ENTERPRISE",
     untertitel: "Individuelle KI-Infrastruktur nach Mass.",
     zielgruppe: "Grosse Unternehmen",
-    preisMonat: 490,
-    preisJahr: 4900,
+    preisMonat: 790,
+    preisJahr: 7900,
     leistungen: [
-      "Alles aus Pro – plus:",
+      "Alles aus Business – plus:",
       "Bis 1000 virtuelle Mitarbeitende",
-      "Alle Fähigkeiten + individuelle KI-Strategie",
       "Individuelle Integrationen (ERP/CRM, SSO, Maschinen)",
-      "Private Cloud oder On-Premise-Betrieb",
-      "Eigene, trainierte KI-Modelle möglich",
-      "SLA & Sicherheit nach Mass, Audit-Log",
-      "Unbegrenzte Team-Zugänge",
-      "Persönliche Begleitung, Schulung & Onboarding",
+      "Private Cloud oder On-Premise, eigene Modelle",
+      "SLA & Sicherheit nach Mass, persönliche Begleitung",
     ],
     cta: "Kontakt aufnehmen",
   },
 ];
 
-/** Vergleichstabelle – Zeilen mit Werten je Paket (in PAKETE-Reihenfolge). */
+/** Vergleichstabelle – Zeilen mit einem Wert je Paket (in PAKETE-Reihenfolge). */
 export interface VergleichZeile {
   label: string;
-  werte: [string, string, string];
+  werte: string[];
 }
 export interface VergleichGruppe {
   gruppe: string;
@@ -116,28 +139,28 @@ export const VERGLEICH: readonly VergleichGruppe[] = [
   {
     gruppe: "Team & Leistung",
     zeilen: [
-      { label: "KI-Agenten", werte: ["12", "250", "bis 1000"] },
-      { label: "Missionen pro Tag", werte: ["25", "Unbegrenzt", "Unbegrenzt"] },
-      { label: "Qualitäts-Score je Ergebnis", werte: ["✓", "✓", "✓"] },
-      { label: "Prioritäts-Verarbeitung", werte: ["–", "✓", "✓"] },
+      { label: "KI-Agenten", werte: ["4", "12", "50", "250", "bis 1000"] },
+      { label: "Missionen pro Tag", werte: ["10", "25", "100", "Unbegrenzt", "Unbegrenzt"] },
+      { label: "Qualitäts-Score je Ergebnis", werte: ["✓", "✓", "✓", "✓", "✓"] },
+      { label: "Prioritäts-Verarbeitung", werte: ["–", "–", "✓", "✓", "✓"] },
     ],
   },
   {
     gruppe: "Integrationen & Automation",
     zeilen: [
-      { label: "Firmen-Integrationen", werte: ["Basis", "Alle", "Alle + individuell"] },
-      { label: "Autopilot / Workflows", werte: ["✓", "✓", "✓"] },
-      { label: "Eigene APIs & Maschinen", werte: ["–", "✓", "✓"] },
-      { label: "Wissensdatenbank (RAG)", werte: ["–", "✓", "✓"] },
+      { label: "Firmen-Integrationen", werte: ["–", "Basis", "Erweitert", "Alle", "Alle + individuell"] },
+      { label: "Autopilot / Workflows", werte: ["–", "✓", "✓", "✓", "✓"] },
+      { label: "Eigene APIs & Maschinen", werte: ["–", "–", "✓", "✓", "✓"] },
+      { label: "Wissensdatenbank (RAG)", werte: ["–", "–", "✓", "✓", "✓"] },
     ],
   },
   {
     gruppe: "Team & Support",
     zeilen: [
-      { label: "Team-Zugänge", werte: ["1", "Ganzes Team", "Unbegrenzt"] },
-      { label: "Support", werte: ["E-Mail", "Priorität", "Persönlich + SLA"] },
-      { label: "Private Cloud / On-Premise", werte: ["–", "–", "✓"] },
-      { label: "Schulung & Onboarding", werte: ["Videos", "Videos + Setup", "Persönlich"] },
+      { label: "Team-Zugänge", werte: ["1", "1", "5", "Ganzes Team", "Unbegrenzt"] },
+      { label: "Support", werte: ["E-Mail", "E-Mail", "Priorität", "Priorität", "Persönlich + SLA"] },
+      { label: "Private Cloud / On-Premise", werte: ["–", "–", "–", "–", "✓"] },
+      { label: "Schulung & Onboarding", werte: ["Videos", "Videos", "Videos + Setup", "Setup", "Persönlich"] },
     ],
   },
 ];

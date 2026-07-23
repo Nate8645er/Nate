@@ -102,7 +102,7 @@ export default function PreiseClient() {
 
       {/* Pakete */}
       <section className="px-6 py-20">
-        <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-3">
+        <div className="mx-auto grid max-w-7xl gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {PAKETE.map((p) => (
             <div
               key={p.id}
@@ -281,11 +281,11 @@ export default function PreiseClient() {
 }
 
 /** Eine Vergleichsgruppe (Kopfzeile + Zeilen). */
-function FragmentGruppe({ gruppe, zeilen }: { gruppe: string; zeilen: { label: string; werte: [string, string, string] }[] }) {
+function FragmentGruppe({ gruppe, zeilen }: { gruppe: string; zeilen: { label: string; werte: string[] }[] }) {
   return (
     <>
       <tr>
-        <td colSpan={4} className="pt-6 pb-2 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">
+        <td colSpan={6} className="pt-6 pb-2 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">
           {gruppe}
         </td>
       </tr>
