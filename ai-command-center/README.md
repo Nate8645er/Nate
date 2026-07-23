@@ -57,9 +57,25 @@ Lizenzschlüssel und Plan-Limits: siehe `VERKAUF.md`, `GO-LIVE.md`,
 - `lib/connectors.ts`, `lib/skills.ts` – Kataloge (Integrationen, Fähigkeiten).
 - `lib/license.ts` – Lizenz-/Usage-Token und Plan-Limits.
 
+## Verkauf / Shop
+- `app/preise` + `lib/preise.ts` – Premium-Verkaufsseite (Basic/Pro/Enterprise)
+  mit Monats-/Jahres-Umschalter, Feature-Vergleich, FAQ, Kino-Hero.
+- `app/produkt/[id]` – Produktseiten je Abo inkl. echtem Fähigkeiten-Katalog
+  (aus `lib/skills.ts`, je Stufe gefiltert).
+- `app/kontakt`, `app/konto` – Kontaktseite und leichtes Kundenportal.
+- `app/api/checkout` + `lib/stripe.ts` – Stripe-Abo-Checkout (REST, ohne
+  SDK-Abhängigkeit). Ohne `STRIPE_SECRET_KEY` ehrlich „nicht konfiguriert".
+- `../websites/shop-theme/` – eigenständiges, hochladbares **Shopify-Theme**
+  (Premium-KI-SaaS-Startseite) für den Verkauf über einen Shopify-Store.
+- `lib/integrations/` + `INTEGRATIONEN.md` – optionale Erweiterungen (Ollama,
+  CrewAI, n8n, Chroma, Haystack …), per ENV aktiviert, mit Health-Status.
+
+Optionale Verkaufs-Env: `STRIPE_SECRET_KEY` (Checkout). Weitere Anbindungen
+siehe `INTEGRATIONEN.md`.
+
 ## Tests & Qualität
 ```bash
-pnpm test         # Vitest (Lizenz, Blitz, Shopify-Lizenz, Daten-Integrität)
+pnpm test         # Vitest (Lizenz, Blitz, Daten, Preise/Stripe, Integrationen …)
 pnpm lint         # ESLint (in CI blockierend)
 pnpm typecheck    # tsc --noEmit
 ```
