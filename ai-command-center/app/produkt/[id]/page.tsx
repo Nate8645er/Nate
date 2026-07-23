@@ -57,7 +57,8 @@ export default async function ProduktSeite({
           <p className="mt-4 max-w-xl text-lg text-[#b9b7d4]">{paket.untertitel}</p>
           <div className="mt-8 flex flex-wrap items-end gap-4">
             <div className="text-3xl font-extrabold text-white">
-              {chf(paket.preisMonat)} <span className="text-base font-medium text-[#b9b7d4]">/ Monat</span>
+              {paket.preisMonat <= 0 ? "Gratis" : chf(paket.preisMonat)}
+              {paket.preisMonat > 0 && <span className="text-base font-medium text-[#b9b7d4]"> / Monat</span>}
             </div>
             <Link
               href="/preise"

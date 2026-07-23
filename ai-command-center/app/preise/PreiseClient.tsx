@@ -33,6 +33,11 @@ export default function PreiseClient() {
       );
       return;
     }
+    // Gratis-Version: keine Zahlung – direkt ins Onboarding.
+    if (p.preisMonat <= 0) {
+      router.push("/onboarding");
+      return;
+    }
     // Stripe-Checkout versuchen; ohne Konfiguration ehrlich ins Onboarding.
     setLadend(p.id);
     try {
@@ -102,7 +107,7 @@ export default function PreiseClient() {
 
       {/* Pakete */}
       <section className="px-6 py-20">
-        <div className="mx-auto grid max-w-7xl gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <div className="mx-auto grid max-w-6xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {PAKETE.map((p) => (
             <div
               key={p.id}
@@ -120,13 +125,21 @@ export default function PreiseClient() {
               <h2 className="text-xl font-bold text-[#1c1917]">{p.name}</h2>
               <p className="mt-1 text-sm text-[#6f6557]">{p.untertitel}</p>
               <div className="mt-5 flex items-end gap-1">
-                <span className="text-4xl font-extrabold text-[#1c1917]">
-                  {chf(jahr ? Math.round(p.preisJahr / 12) : p.preisMonat)}
-                </span>
-                <span className="mb-1 text-sm text-[#6f6557]">/ Monat</span>
+                {p.preisMonat <= 0 ? (
+                  <span className="text-4xl font-extrabold text-[#1c1917]">Gratis</span>
+                ) : (
+                  <>
+                    <span className="text-4xl font-extrabold text-[#1c1917]">
+                      {chf(jahr ? Math.round(p.preisJahr / 12) : p.preisMonat)}
+                    </span>
+                    <span className="mb-1 text-sm text-[#6f6557]">/ Monat</span>
+                  </>
+                )}
               </div>
               <p className="mt-1 text-xs text-[#7c7161]">
-                {jahr ? `${chf(p.preisJahr)} jährlich` : "monatlich kündbar"} · exkl. MwSt.
+                {p.preisMonat <= 0
+                  ? "dauerhaft kostenlos · kein Zahlungsmittel nötig"
+                  : `${jahr ? `${chf(p.preisJahr)} jährlich` : "monatlich kündbar"} · exkl. MwSt.`}
               </p>
               <p className="mt-3 text-xs font-semibold uppercase tracking-wider text-[#c25e0e]">
                 {p.zielgruppe}
@@ -285,7 +298,7 @@ function FragmentGruppe({ gruppe, zeilen }: { gruppe: string; zeilen: { label: s
   return (
     <>
       <tr>
-        <td colSpan={6} className="pt-6 pb-2 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">
+        <td colSpan={7} className="pt-6 pb-2 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">
           {gruppe}
         </td>
       </tr>

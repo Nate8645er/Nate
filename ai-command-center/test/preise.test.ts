@@ -12,8 +12,8 @@ describe("Pakete & Vergleich", () => {
       expect(p.id).toBeTruthy();
       expect(p.name).toBeTruthy();
       expect(["FREE", "PERSONAL", "STARTER", "PROFESSIONAL", "BUSINESS", "ENTERPRISE"]).toContain(p.planId);
-      expect(p.preisMonat).toBeGreaterThan(0);
-      expect(p.preisJahr).toBeGreaterThan(0);
+      expect(p.preisMonat).toBeGreaterThanOrEqual(0);
+      expect(p.preisJahr).toBeGreaterThanOrEqual(0);
       expect(p.leistungen.length).toBeGreaterThan(0);
       expect(p.cta).toBeTruthy();
     }
@@ -23,8 +23,13 @@ describe("Pakete & Vergleich", () => {
     expect(new Set(ids).size).toBe(ids.length);
     expect(PAKETE.filter((p) => p.hervorgehoben).length).toBe(1);
   });
-  it("Jahrespreis ist günstiger als 12 Monatspreise (Rabatt)", () => {
-    for (const p of PAKETE) expect(p.preisJahr).toBeLessThan(p.preisMonat * 12);
+  it("Jahrespreis ist günstiger als 12 Monatspreise (nur bezahlte Pakete)", () => {
+    for (const p of PAKETE) {
+      if (p.preisMonat > 0) expect(p.preisJahr).toBeLessThan(p.preisMonat * 12);
+    }
+  });
+  it("enthält eine Gratis-Version", () => {
+    expect(PAKETE.some((p) => p.preisMonat === 0 && p.planId === "FREE")).toBe(true);
   });
   it("Vergleichstabelle hat pro Zeile einen Wert je Paket", () => {
     for (const g of VERGLEICH) for (const z of g.zeilen) expect(z.werte.length).toBe(PAKETE.length);

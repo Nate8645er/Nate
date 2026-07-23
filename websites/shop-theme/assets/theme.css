@@ -106,3 +106,9 @@ input,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-
 .price-grid-5 .pcard li{font-size:14px;padding:6px 0 6px 22px}
 @media(max-width:1100px){.price-grid-5{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:640px){.price-grid-5{grid-template-columns:1fr}}
+
+/* 6-Pakete-Raster (2×3) */
+.price-grid-6{grid-template-columns:repeat(3,1fr);gap:16px}
+.badge-free{background:#177245 !important}
+@media(max-width:900px){.price-grid-6{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.price-grid-6{grid-template-columns:1fr}}

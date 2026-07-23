@@ -36,7 +36,10 @@ export async function checkoutSessionErstellen(
 ): Promise<{ url: string } | { error: "nicht-konfiguriert" | "unbekanntes-paket" | "stripe-fehler" }> {
   if (!stripeKonfiguriert(env)) return { error: "nicht-konfiguriert" };
   const paket = PAKETE.find((p: Paket) => p.id === paketId);
-  if (!paket || paket.id === "enterprise") return { error: "unbekanntes-paket" };
+  // Enterprise läuft über Kontakt, die Gratis-Version über keinen Zahlungsweg.
+  if (!paket || paket.id === "enterprise" || paket.preisMonat <= 0) {
+    return { error: "unbekanntes-paket" };
+  }
 
   const betrag = jahr ? paket.preisJahr : paket.preisMonat;
   const params: Record<string, string | number> = {

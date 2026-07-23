@@ -37,6 +37,23 @@ export interface Paket {
 
 export const PAKETE: readonly Paket[] = [
   {
+    id: "gratis",
+    name: "Gratis",
+    planId: "FREE",
+    untertitel: "Ihr KI-Team kostenlos kennenlernen.",
+    zielgruppe: "Zum Ausprobieren",
+    preisMonat: 0,
+    preisJahr: 0,
+    badge: "Kostenlos",
+    leistungen: [
+      "4 KI-Agenten zum Kennenlernen",
+      "3 Missionen pro Tag",
+      "Basis-Fähigkeiten & Vorschau im Browser",
+      "Kein Zahlungsmittel nötig",
+    ],
+    cta: "Kostenlos starten",
+  },
+  {
     id: "solo",
     name: "Solo",
     planId: "PERSONAL",
@@ -139,28 +156,28 @@ export const VERGLEICH: readonly VergleichGruppe[] = [
   {
     gruppe: "Team & Leistung",
     zeilen: [
-      { label: "KI-Agenten", werte: ["4", "12", "50", "250", "bis 1000"] },
-      { label: "Missionen pro Tag", werte: ["10", "25", "100", "Unbegrenzt", "Unbegrenzt"] },
-      { label: "Qualitäts-Score je Ergebnis", werte: ["✓", "✓", "✓", "✓", "✓"] },
-      { label: "Prioritäts-Verarbeitung", werte: ["–", "–", "✓", "✓", "✓"] },
+      { label: "KI-Agenten", werte: ["4", "4", "12", "50", "250", "bis 1000"] },
+      { label: "Missionen pro Tag", werte: ["3", "10", "25", "100", "Unbegrenzt", "Unbegrenzt"] },
+      { label: "Qualitäts-Score je Ergebnis", werte: ["✓", "✓", "✓", "✓", "✓", "✓"] },
+      { label: "Prioritäts-Verarbeitung", werte: ["–", "–", "–", "✓", "✓", "✓"] },
     ],
   },
   {
     gruppe: "Integrationen & Automation",
     zeilen: [
-      { label: "Firmen-Integrationen", werte: ["–", "Basis", "Erweitert", "Alle", "Alle + individuell"] },
-      { label: "Autopilot / Workflows", werte: ["–", "✓", "✓", "✓", "✓"] },
-      { label: "Eigene APIs & Maschinen", werte: ["–", "–", "✓", "✓", "✓"] },
-      { label: "Wissensdatenbank (RAG)", werte: ["–", "–", "✓", "✓", "✓"] },
+      { label: "Firmen-Integrationen", werte: ["–", "–", "Basis", "Erweitert", "Alle", "Alle + individuell"] },
+      { label: "Autopilot / Workflows", werte: ["–", "–", "✓", "✓", "✓", "✓"] },
+      { label: "Eigene APIs & Maschinen", werte: ["–", "–", "–", "✓", "✓", "✓"] },
+      { label: "Wissensdatenbank (RAG)", werte: ["–", "–", "–", "✓", "✓", "✓"] },
     ],
   },
   {
     gruppe: "Team & Support",
     zeilen: [
-      { label: "Team-Zugänge", werte: ["1", "1", "5", "Ganzes Team", "Unbegrenzt"] },
-      { label: "Support", werte: ["E-Mail", "E-Mail", "Priorität", "Priorität", "Persönlich + SLA"] },
-      { label: "Private Cloud / On-Premise", werte: ["–", "–", "–", "–", "✓"] },
-      { label: "Schulung & Onboarding", werte: ["Videos", "Videos", "Videos + Setup", "Setup", "Persönlich"] },
+      { label: "Team-Zugänge", werte: ["1", "1", "1", "5", "Ganzes Team", "Unbegrenzt"] },
+      { label: "Support", werte: ["Community", "E-Mail", "E-Mail", "Priorität", "Priorität", "Persönlich + SLA"] },
+      { label: "Private Cloud / On-Premise", werte: ["–", "–", "–", "–", "–", "✓"] },
+      { label: "Schulung & Onboarding", werte: ["Videos", "Videos", "Videos", "Videos + Setup", "Setup", "Persönlich"] },
     ],
   },
 ];
