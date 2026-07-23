@@ -29,14 +29,35 @@
     <main id="main">{{ content_for_layout }}</main>
 
     <footer class="ft">
-      <div class="wrap ft-in">
-        <p class="ft-logo">AI <span>Command Center</span></p>
-        <p class="ft-copy">&copy; {{ 'now' | date: '%Y' }} {{ shop.name }} · Ihre KI-Abteilung ab Tag 1.</p>
-        <nav class="ft-nav">
+      <div class="wrap ft-grid">
+        <div class="ft-brand">
+          <p class="ft-logo">AI <span>Command Center</span></p>
+          <p class="ft-tag">Ihre komplette KI-Abteilung als SaaS – für Einzelunternehmer bis Grosskonzern.</p>
+        </div>
+        <div class="ft-col">
+          <h4>Produkt</h4>
           <a href="{{ routes.root_url }}#pakete">Preise</a>
-          <a href="{{ routes.search_url }}">Suche</a>
-          {% if shop.customer_accounts_enabled %}<a href="{{ routes.account_login_url }}">Login</a>{% endif %}
-        </nav>
+          <a href="{{ routes.root_url }}#funktionen">Funktionen</a>
+          <a href="{{ routes.all_products_collection_url }}">Alle Pakete</a>
+          <a href="{{ routes.root_url }}#faq">FAQ</a>
+        </div>
+        <div class="ft-col">
+          <h4>Unternehmen</h4>
+          <a href="{{ routes.root_url }}pages/ueber-uns">Über uns</a>
+          <a href="{{ routes.root_url }}pages/kontakt">Kontakt</a>
+          <a href="{{ routes.root_url }}pages/faq">Hilfe &amp; FAQ</a>
+          {% if shop.customer_accounts_enabled %}<a href="{{ routes.account_url }}">Mein Konto</a>{% endif %}
+        </div>
+        <div class="ft-col">
+          <h4>Rechtliches</h4>
+          <a href="{{ routes.root_url }}policies/privacy-policy">Datenschutz</a>
+          <a href="{{ routes.root_url }}policies/terms-of-service">AGB</a>
+          <a href="{{ routes.root_url }}policies/refund-policy">Rückerstattung</a>
+        </div>
+      </div>
+      <div class="wrap ft-bar">
+        <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }} · Ihre KI-Abteilung ab Tag 1.</p>
+        <p class="ft-pay">Sichere Zahlung · Schweizer Anbieter</p>
       </div>
     </footer>
   </body>
