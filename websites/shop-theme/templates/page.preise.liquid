@@ -1,36 +1,44 @@
 <section class="page-hero"><h1>Preise &amp; <span class="grad">Pakete</span></h1><p>Klar gestaffelt vom Gratis-Einstieg bis Enterprise – jederzeit wechselbar.</p></section>
 <div class="pricing" style="border-top:0">
   <div class="wrap">
+    <input type="checkbox" id="pay-toggle" class="pay-toggle" hidden>
+    <div class="pay-switch">
+      <label for="pay-toggle" class="pay-label">
+        <span class="pay-opt pay-m">Monatlich</span>
+        <span class="pay-track"><span class="pay-knob"></span></span>
+        <span class="pay-opt pay-y">Jährlich <span class="pay-save">2 Monate gratis</span></span>
+      </label>
+    </div>
     <div class="price-grid price-grid-6">
       <div class="pcard">
         <span class="badge badge-free">Kostenlos</span>
-        <h3>Gratis</h3><p class="ptarget">Zum Ausprobieren</p><div class="price">Gratis</div>
+        <h3>Gratis</h3><p class="ptarget">Zum Ausprobieren</p><div class="price"><span class="pm">Gratis</span><span class="py">Gratis</span></div>
         <ul><li>4 KI-Agenten zum Kennenlernen</li><li>3 Missionen pro Tag</li><li>Basis-Fähigkeiten</li><li>Kein Zahlungsmittel nötig</li></ul>
         <a href="{{ routes.all_products_collection_url }}" class="btn btn-ghost">Kostenlos starten</a>
       </div>
       <div class="pcard">
-        <h3>Solo</h3><p class="ptarget">Einstieg</p><div class="price">CHF 19<span>/ Monat</span></div>
+        <h3>Solo</h3><p class="ptarget">Einstieg</p><div class="price"><span class="pm">CHF 19<span>/ Monat</span></span><span class="py">CHF 190<span>/ Jahr</span></span></div>
         <ul><li>4 KI-Agenten</li><li>10 Missionen pro Tag</li><li>Texte, Offerten, E-Mails</li><li>Ergebnis-Download</li></ul>
         <a href="{{ routes.all_products_collection_url }}" class="btn btn-ghost">Solo wählen</a>
       </div>
       <div class="pcard">
-        <h3>Start</h3><p class="ptarget">Kleine Teams</p><div class="price">CHF 49<span>/ Monat</span></div>
+        <h3>Start</h3><p class="ptarget">Kleine Teams</p><div class="price"><span class="pm">CHF 49<span>/ Monat</span></span><span class="py">CHF 490<span>/ Jahr</span></span></div>
         <ul><li>12 KI-Agenten</li><li>25 Missionen pro Tag</li><li>Verkauf &amp; Marketing</li><li>E-Mail-Zentrale</li></ul>
         <a href="{{ routes.all_products_collection_url }}" class="btn btn-ghost">Start wählen</a>
       </div>
       <div class="pcard pcard-hi">
         <span class="badge">Beliebt</span>
-        <h3>Pro</h3><p class="ptarget">Wachsende Firmen</p><div class="price">CHF 179<span>/ Monat</span></div>
+        <h3>Pro</h3><p class="ptarget">Wachsende Firmen</p><div class="price"><span class="pm">CHF 179<span>/ Monat</span></span><span class="py">CHF 1.790<span>/ Jahr</span></span></div>
         <ul><li>50 Agenten in Fachteams</li><li>Dokumentenanalyse</li><li>Erste Integrationen</li><li>Wissensdatenbank (RAG)</li></ul>
         <a href="{{ routes.all_products_collection_url }}" class="btn">Pro wählen</a>
       </div>
       <div class="pcard">
-        <h3>Business</h3><p class="ptarget">Grössere Teams</p><div class="price">CHF 390<span>/ Monat</span></div>
+        <h3>Business</h3><p class="ptarget">Grössere Teams</p><div class="price"><span class="pm">CHF 390<span>/ Monat</span></span><span class="py">CHF 3.900<span>/ Jahr</span></span></div>
         <ul><li>250 Agenten</li><li>Unbegrenzte Missionen</li><li>Alle Integrationen</li><li>Team-Zugänge</li></ul>
         <a href="{{ routes.all_products_collection_url }}" class="btn btn-ghost">Business wählen</a>
       </div>
       <div class="pcard">
-        <h3>Enterprise</h3><p class="ptarget">Grosse Unternehmen</p><div class="price">CHF 790<span>/ Monat</span></div>
+        <h3>Enterprise</h3><p class="ptarget">Grosse Unternehmen</p><div class="price"><span class="pm">CHF 790<span>/ Monat</span></span><span class="py">CHF 7.900<span>/ Jahr</span></span></div>
         <ul><li>Bis 1000 Mitarbeitende</li><li>Individuelle Integrationen</li><li>Private Cloud / On-Premise</li><li>SLA &amp; Begleitung</li></ul>
         <a href="{{ routes.root_url }}pages/kontakt" class="btn btn-ghost">Kontakt aufnehmen</a>
       </div>

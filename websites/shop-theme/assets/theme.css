@@ -316,3 +316,19 @@ html{background:#07070d}
   .hd-cta{order:3;padding:6px 13px;font-size:13px}
   .hd-nav{order:4}
 }
+/* Monats-/Jahres-Umschalter */
+.pay-switch{display:flex;justify-content:center;margin:26px 0 8px}
+.pay-label{display:inline-flex;align-items:center;gap:12px;cursor:pointer;user-select:none;font-weight:700;font-size:15px}
+.pay-opt{color:var(--muted);transition:color .15s}
+.pay-m{color:var(--ink)} /* Monatlich standardmässig aktiv */
+.pay-track{position:relative;width:52px;height:28px;border-radius:999px;background:#e3dccb;border:1px solid var(--line);transition:background .2s;flex-shrink:0}
+.pay-knob{position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.25);transition:transform .2s}
+.pay-save{display:inline-block;margin-left:6px;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:800;color:#fff;background:linear-gradient(90deg,var(--ora),var(--or2));vertical-align:middle}
+.price .py{display:none}
+/* umgeschaltet auf Jährlich */
+.pay-toggle:checked ~ .pay-switch .pay-track{background:linear-gradient(90deg,var(--ora),var(--or2))}
+.pay-toggle:checked ~ .pay-switch .pay-knob{transform:translateX(24px)}
+.pay-toggle:checked ~ .pay-switch .pay-m{color:var(--muted)}
+.pay-toggle:checked ~ .pay-switch .pay-y{color:var(--ink)}
+.pay-toggle:checked ~ .price-grid .price .pm{display:none}
+.pay-toggle:checked ~ .price-grid .price .py{display:inline}

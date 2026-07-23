@@ -160,12 +160,20 @@
 <section id="pakete" class="pricing">
   <div class="wrap">
     <h2>Pakete &amp; <span class="grad">Preise</span></h2>
+    <input type="checkbox" id="pay-toggle" class="pay-toggle" hidden>
+    <div class="pay-switch">
+      <label for="pay-toggle" class="pay-label">
+        <span class="pay-opt pay-m">Monatlich</span>
+        <span class="pay-track"><span class="pay-knob"></span></span>
+        <span class="pay-opt pay-y">Jährlich <span class="pay-save">2 Monate gratis</span></span>
+      </label>
+    </div>
     <div class="price-grid price-grid-6">
       <div class="pcard">
         <span class="badge badge-free">Kostenlos</span>
         <h3>Gratis</h3>
         <p class="ptarget">Zum Ausprobieren</p>
-        <div class="price">Gratis</div>
+        <div class="price"><span class="pm">Gratis</span><span class="py">Gratis</span></div>
         <ul>
           <li>4 KI-Agenten zum Kennenlernen</li>
           <li>3 Missionen pro Tag</li>
@@ -177,7 +185,7 @@
       <div class="pcard">
         <h3>Solo</h3>
         <p class="ptarget">Einzelpersonen &amp; Einstieg</p>
-        <div class="price">CHF 19<span>/ Monat</span></div>
+        <div class="price"><span class="pm">CHF 19<span>/ Monat</span></span><span class="py">CHF 190<span>/ Jahr</span></span></div>
         <ul>
           <li>4 KI-Agenten (Kern-Team)</li>
           <li>10 Missionen pro Tag</li>
@@ -189,7 +197,7 @@
       <div class="pcard">
         <h3>Start</h3>
         <p class="ptarget">Selbstständige &amp; kleine Teams</p>
-        <div class="price">CHF 49<span>/ Monat</span></div>
+        <div class="price"><span class="pm">CHF 49<span>/ Monat</span></span><span class="py">CHF 490<span>/ Jahr</span></span></div>
         <ul>
           <li>12 spezialisierte KI-Agenten</li>
           <li>25 Missionen pro Tag</li>
@@ -202,7 +210,7 @@
         <span class="badge">Beliebt</span>
         <h3>Pro</h3>
         <p class="ptarget">Wachsende Firmen</p>
-        <div class="price">CHF 179<span>/ Monat</span></div>
+        <div class="price"><span class="pm">CHF 179<span>/ Monat</span></span><span class="py">CHF 1.790<span>/ Jahr</span></span></div>
         <ul>
           <li>50 Agenten in Fachteams</li>
           <li>Dokumentenanalyse (PDF, Word, Excel)</li>
@@ -214,7 +222,7 @@
       <div class="pcard">
         <h3>Business</h3>
         <p class="ptarget">Grössere Teams &amp; Firmen</p>
-        <div class="price">CHF 390<span>/ Monat</span></div>
+        <div class="price"><span class="pm">CHF 390<span>/ Monat</span></span><span class="py">CHF 3.900<span>/ Jahr</span></span></div>
         <ul>
           <li>250 Agenten als digitale Abteilung</li>
           <li>Unbegrenzte Missionen</li>
@@ -226,7 +234,7 @@
       <div class="pcard">
         <h3>Enterprise</h3>
         <p class="ptarget">Grosse Unternehmen</p>
-        <div class="price">CHF 790<span>/ Monat</span></div>
+        <div class="price"><span class="pm">CHF 790<span>/ Monat</span></span><span class="py">CHF 7.900<span>/ Jahr</span></span></div>
         <ul>
           <li>Bis 1000 virtuelle Mitarbeitende</li>
           <li>Individuelle Integrationen &amp; KI-Strategie</li>
