@@ -1,0 +1,2 @@
+<div class="page"><h1>Bestellung {{ order.name }}</h1><p>{{ order.total_price | money }}</p>
+{% for line in order.line_items %}<p>{{ line.title }} × {{ line.quantity }}</p>{% endfor %}</div>

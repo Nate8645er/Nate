@@ -1,0 +1,15 @@
+<div class="page">
+  <a href="{{ routes.all_products_collection_url }}">← Zurück</a>
+  <h1>{{ product.title }}</h1>
+  {% if product.featured_image %}<img src="{{ product.featured_image | image_url: width: 900 }}" alt="{{ product.title | escape }}">{% endif %}
+  <p class="price">{{ product.price | money }}</p>
+  <div>{{ product.description }}</div>
+  {% form 'product', product %}
+    <select name="id">
+      {% for v in product.variants %}<option value="{{ v.id }}">{{ v.title }} – {{ v.price | money }}</option>{% endfor %}
+    </select>
+    <button class="btn" type="submit" {% unless product.available %}disabled{% endunless %}>
+      {% if product.available %}In den Warenkorb{% else %}Ausverkauft{% endif %}
+    </button>
+  {% endform %}
+</div>

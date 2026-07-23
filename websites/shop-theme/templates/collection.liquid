@@ -1,0 +1,12 @@
+<div class="page">
+  <h1>{{ collection.title }}</h1>
+  <div class="grid-prod">
+    {% for product in collection.products %}
+      <a class="prod" href="{{ product.url }}">
+        {% if product.featured_image %}<img src="{{ product.featured_image | image_url: width: 500 }}" alt="{{ product.title | escape }}">{% endif %}
+        <strong>{{ product.title }}</strong>
+        <div class="price">{{ product.price | money }}</div>
+      </a>
+    {% else %}<p>Noch keine Produkte.</p>{% endfor %}
+  </div>
+</div>

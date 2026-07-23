@@ -1,0 +1,11 @@
+<div class="page">
+  <h1>{{ page.title | default: 'Kontakt' }}</h1>
+  {{ page.content }}
+  {% form 'contact' %}
+    {% if form.posted_successfully? %}<p>Danke! Wir melden uns.</p>{% endif %}
+    <input type="text" name="contact[name]" placeholder="Name" required>
+    <input type="email" name="contact[email]" placeholder="E-Mail" required>
+    <textarea name="contact[body]" placeholder="Ihre Nachricht" rows="5" required></textarea>
+    <button class="btn" type="submit">Senden</button>
+  {% endform %}
+</div>

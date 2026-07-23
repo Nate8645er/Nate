@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#07070d">
+    <link rel="canonical" href="{{ canonical_url }}">
+    <title>
+      {{ page_title }}{% if current_tags %} &ndash; {{ current_tags | join: ', ' }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}
+    </title>
+    {% if page_description %}<meta name="description" content="{{ page_description | escape }}">{% endif %}
+    {{ content_for_header }}
+    {{ 'theme.css' | asset_url | stylesheet_tag }}
+  </head>
+  <body class="tpl-{{ template | replace: '.', '-' | handle }}">
+    <header class="hd">
+      <div class="wrap hd-in">
+        <a href="{{ routes.root_url }}" class="hd-logo">AI <span>Command Center</span></a>
+        <nav class="hd-nav">
+          <a href="{{ routes.root_url }}#pakete">Preise</a>
+          <a href="{{ routes.root_url }}#funktionen">Funktionen</a>
+          <a href="{{ routes.root_url }}#faq">FAQ</a>
+          {% if shop.customer_accounts_enabled %}<a href="{{ routes.account_url }}">Konto</a>{% endif %}
+        </nav>
+        <a href="{{ routes.all_products_collection_url }}" class="btn btn-sm">Jetzt starten</a>
+      </div>
+    </header>
+
+    <main id="main">{{ content_for_layout }}</main>
+
+    <footer class="ft">
+      <div class="wrap ft-in">
+        <p class="ft-logo">AI <span>Command Center</span></p>
+        <p class="ft-copy">&copy; {{ 'now' | date: '%Y' }} {{ shop.name }} · Ihre KI-Abteilung ab Tag 1.</p>
+        <nav class="ft-nav">
+          <a href="{{ routes.root_url }}#pakete">Preise</a>
+          <a href="{{ routes.search_url }}">Suche</a>
+          {% if shop.customer_accounts_enabled %}<a href="{{ routes.account_login_url }}">Login</a>{% endif %}
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>
