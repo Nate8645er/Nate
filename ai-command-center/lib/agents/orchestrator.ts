@@ -31,6 +31,7 @@ import {
 } from "./demo";
 import { callLLM, hasApiKey, tokenBudgetStore } from "./providers";
 import { erinnerungenBlock } from "./memory";
+import { jsonReparieren } from "./zuverlaessigkeit";
 import { effektivesTokenBudget } from "@/lib/license";
 import {
   AGENTS,
@@ -790,15 +791,21 @@ function parseQuality(text: string): QualityReport | null {
 function parseJsonObject(text: string): Record<string, unknown> | null {
   const start = text.indexOf("{");
   const end = text.lastIndexOf("}");
-  if (start === -1 || end <= start) return null;
-  try {
-    const parsed: unknown = JSON.parse(text.slice(start, end + 1));
-    return typeof parsed === "object" && parsed !== null
-      ? (parsed as Record<string, unknown>)
-      : null;
-  } catch {
-    return null;
+  if (start !== -1 && end > start) {
+    try {
+      const parsed: unknown = JSON.parse(text.slice(start, end + 1));
+      if (typeof parsed === "object" && parsed !== null) {
+        return parsed as Record<string, unknown>;
+      }
+    } catch {
+      /* naiver Weg gescheitert → robuster Fallback unten */
+    }
   }
+  // Fallback: Zäune/Prosa/typografische Quotes/abschliessende Kommas reparieren.
+  const rep = jsonReparieren<unknown>(text);
+  return typeof rep === "object" && rep !== null && !Array.isArray(rep)
+    ? (rep as Record<string, unknown>)
+    : null;
 }
 
 function clamp(n: number, min: number, max: number): number {

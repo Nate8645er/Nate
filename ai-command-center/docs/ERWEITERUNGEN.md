@@ -36,5 +36,27 @@ System-Prompt). Tabelle `gedaechtnis` mit RLS an, Zugriff nur über Service-Role
 Supabase-Variablen setzen. Danach kann der Mission-Endpoint Erinnerungen laden,
 die relevantesten auswählen und nach der Mission neue Fakten speichern.
 
-**Tests:** `test/memory.test.ts` (14) – Ranking, Budget, Merken/Evict,
-Datenblock-Escaping, Persistenz mit injiziertem `fetch`.
+**Tests:** `test/memory.test.ts` (15) – Ranking, Budget, Merken/Evict,
+Datenblock-Escaping (inkl. Delimiter-Härtung), Persistenz mit injiziertem `fetch`.
+
+## Zuverlässigkeit: JSON-Reparatur & Retry (`lib/agents/zuverlaessigkeit.ts`)
+
+**Warum:** LLM-Ausgaben sind oft leicht defekt (```json-Zäune, Fliesstext,
+typografische Quotes, abschliessende Kommas) oder scheitern flüchtig
+(Netzwerk/Rate-Limit). Das kostet Genauigkeit und Zuverlässigkeit.
+
+**Was neu ist – additiv:**
+- `jsonReparieren(text)` – schneidet die erste balancierte JSON-Struktur heraus
+  (String-/Escape-bewusst), entfernt Zäune, repariert Quotes/Kommas; gibt das
+  Objekt oder `null` zurück (wirft nie).
+- `mitWiederholung(fn, opts)` – Retry mit exponentiellem Backoff, injizierbarem
+  Sleep und optionalem Ergebnis-Validator.
+- `backoffPlan`, `sichereZahl` – deterministische Helfer.
+
+**Integration (minimal-invasiv):** `parseJsonObject()` im Orchestrator nutzt
+`jsonReparieren` jetzt als **Fallback**, wenn der bisherige naive Weg scheitert.
+Der Erfolgspfad für sauberes JSON bleibt exakt gleich; nur bisher unlesbare
+Antworten (Plan, Quality-Report) werden zusätzlich gerettet → robustere Missionen.
+
+**Tests:** `test/zuverlaessigkeit.test.ts` (14) – Reparaturfälle, Backoff, Retry
+(Erfolg/Erschöpfung/Abbruch/Validator), sichere Zahl.
