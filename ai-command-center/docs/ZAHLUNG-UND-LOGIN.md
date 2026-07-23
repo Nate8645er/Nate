@@ -108,8 +108,11 @@ falls E-Mail konfiguriert – schickt ihn als Willkommens-Mail.
 - Der Schlüssel wird über den bestehenden Weg eingelöst (`/onboarding` →
   `POST /api/license` → Lizenz-Token), womit die **serverseitige Plan-/Limit-
   Durchsetzung** (Missionen/Tag, Token-Budget) automatisch greift.
-- Idempotent: Stripe-Retries erzeugen keinen zweiten Schlüssel (nur wenn noch
-  keiner gespeichert ist).
+- Idempotent & race-sicher: Der Schlüssel wird **atomar** gesetzt (nur wenn
+  `license_key` noch NULL ist). Parallele Stripe-Zustellungen erzeugen daher
+  nie zwei gültige Schlüssel oder Doppel-Mails – genau ein Aufruf gewinnt.
+- Empfehlung: `APP_URL` setzen, damit die Mail einen korrekten Einlöse-Link
+  enthält; ohne `APP_URL` verweist sie sicher aufs Konto (kein Host-Header-Link).
 
 ## Konto zeigt den echten Plan
 Nach Login ruft `/konto` den Endpunkt `GET /api/mein-abo` auf: Er leitet die

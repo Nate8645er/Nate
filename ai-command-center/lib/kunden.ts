@@ -81,14 +81,52 @@ export async function aboFreischalten(
         plan_id: abo.plan_id,
         status: abo.status,
         event_zeit: abo.event_zeit ?? 0,
-        // license_key nur mitsenden, wenn gesetzt – sonst würde ein späteres
-        // Update (merge-duplicates) den bestehenden Schlüssel mit null überschreiben.
-        ...(abo.license_key ? { license_key: abo.license_key } : {}),
+        // license_key wird hier NICHT geschrieben – das Setzen läuft atomar über
+        // lizenzSchluesselSetzen (nur wenn noch NULL), um Doppelschlüssel bei
+        // parallelen Webhook-Zustellungen zu verhindern.
       }),
     });
     return res.ok ? { ok: true } : { ok: false, error: "db-fehler" };
   } catch {
     return { ok: false, error: "db-fehler" };
+  }
+}
+
+/**
+ * Setzt den Lizenzschlüssel ATOMAR – nur wenn noch keiner gesetzt ist
+ * (`license_key IS NULL`). Gibt `{ gesetzt: true }` nur zurück, wenn genau dieser
+ * Aufruf den Schlüssel eingetragen hat. So erzeugen parallele Webhook-
+ * Zustellungen (Stripe: at-least-once) niemals zwei gültige Schlüssel/Mails:
+ * der zweite Aufruf trifft 0 Zeilen (license_key nicht mehr NULL) → gesetzt=false.
+ */
+export async function lizenzSchluesselSetzen(
+  customerId: string,
+  key: string,
+  env: KundenEnv = process.env,
+  fetchImpl: typeof fetch = fetch,
+): Promise<{ gesetzt: boolean }> {
+  if (!kundenStoreKonfiguriert(env) || !customerId || !key) return { gesetzt: false };
+  const { basis, key: srv } = rest(env);
+  try {
+    const res = await fetchImpl(
+      `${basis}/abos?customer_id=eq.${encodeURIComponent(customerId)}&license_key=is.null`,
+      {
+        method: "PATCH",
+        headers: {
+          apikey: srv,
+          Authorization: `Bearer ${srv}`,
+          "Content-Type": "application/json",
+          // Repräsentation zurückgeben, um zu erkennen, ob eine Zeile getroffen wurde.
+          Prefer: "return=representation",
+        },
+        body: JSON.stringify({ license_key: key }),
+      },
+    );
+    if (!res.ok) return { gesetzt: false };
+    const rows = (await res.json()) as unknown[];
+    return { gesetzt: Array.isArray(rows) && rows.length > 0 };
+  } catch {
+    return { gesetzt: false };
   }
 }
 

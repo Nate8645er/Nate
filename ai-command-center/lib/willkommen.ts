@@ -9,12 +9,22 @@ export interface WillkommenDaten {
   an: string;
   planName: string;
   lizenzSchluessel: string;
-  /** Basis-URL des Shops/Apps, z. B. https://ihr-shop.ch */
-  appUrl: string;
+  /**
+   * Basis-URL des Shops/Apps, z. B. https://ihr-shop.ch. Nur eine konfigurierte,
+   * vertrauenswürdige URL (APP_URL) übergeben – NICHT den Host-Header, um einen
+   * gefälschten Onboarding-Link zu vermeiden. Leer = kein direkter Link, dann
+   * Hinweis auf das Konto.
+   */
+  appUrl?: string;
 }
 
 export function willkommensMail(d: WillkommenDaten): MailEingabe {
-  const einloesenUrl = `${d.appUrl.replace(/\/$/, "")}/onboarding`;
+  const sauberUrl = (d.appUrl ?? "").trim().replace(/\/$/, "");
+  const einloesenUrl = sauberUrl && /^https:\/\//.test(sauberUrl) ? `${sauberUrl}/onboarding` : "";
+
+  const startSchritt = einloesenUrl
+    ? `1. Öffnen Sie ${einloesenUrl}`
+    : "1. Melden Sie sich in Ihrem Konto an und öffnen Sie die Einrichtung";
   const text = [
     `Willkommen beim AI Command Center – Ihr Paket ${d.planName} ist aktiv.`,
     "",
@@ -22,7 +32,7 @@ export function willkommensMail(d: WillkommenDaten): MailEingabe {
     d.lizenzSchluessel,
     "",
     "So starten Sie:",
-    `1. Öffnen Sie ${einloesenUrl}`,
+    startSchritt,
     "2. Lizenzschlüssel eingeben und einlösen",
     "3. Ihre KI-Abteilung ist freigeschaltet – legen Sie los.",
     "",
@@ -33,13 +43,16 @@ export function willkommensMail(d: WillkommenDaten): MailEingabe {
     "Ihr AI Command Center",
   ].join("\n");
 
+  const startSchrittHtml = einloesenUrl
+    ? `<li>Öffnen Sie <a href="${escapeAttr(einloesenUrl)}">${escapeHtml(einloesenUrl)}</a></li>`
+    : `<li>Melden Sie sich in Ihrem Konto an und öffnen Sie die Einrichtung</li>`;
   const html = [
     `<h2>Willkommen beim AI Command Center</h2>`,
     `<p>Ihr Paket <strong>${escapeHtml(d.planName)}</strong> ist aktiv.</p>`,
     `<p><strong>Ihr Lizenzschlüssel:</strong></p>`,
     `<p style="font-family:monospace;font-size:16px;background:#f5f2ea;padding:12px 16px;border-radius:8px;letter-spacing:.5px">${escapeHtml(d.lizenzSchluessel)}</p>`,
     `<p>So starten Sie:</p>`,
-    `<ol><li>Öffnen Sie <a href="${escapeAttr(einloesenUrl)}">${escapeHtml(einloesenUrl)}</a></li>`,
+    `<ol>${startSchrittHtml}`,
     `<li>Lizenzschlüssel eingeben und einlösen</li>`,
     `<li>Ihre KI-Abteilung ist freigeschaltet – legen Sie los.</li></ol>`,
     `<p>Bewahren Sie den Schlüssel gut auf; Sie finden ihn auch in Ihrem Konto.</p>`,

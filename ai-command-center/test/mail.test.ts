@@ -64,4 +64,14 @@ describe("willkommensMail", () => {
     expect(m.html).not.toContain("<script>");
     expect(m.html).toContain("&lt;script&gt;");
   });
+  it("ohne appUrl: kein Link, sondern Konto-Hinweis (kein Host-Header-Phishing)", () => {
+    const m = willkommensMail({ an: "a@b.ch", planName: "Pro", lizenzSchluessel: "K" });
+    expect(m.text).not.toContain("/onboarding");
+    expect(m.text).toContain("Konto");
+    expect(m.html).not.toContain("href=");
+  });
+  it("ignoriert nicht-https appUrl (kein unsicherer Link)", () => {
+    const m = willkommensMail({ an: "a@b.ch", planName: "Pro", lizenzSchluessel: "K", appUrl: "http://evil.ch" });
+    expect(m.html).not.toContain("href=");
+  });
 });

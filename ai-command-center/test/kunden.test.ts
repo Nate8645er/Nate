@@ -9,6 +9,7 @@ import {
   aboLesen,
   aboFuerEmail,
   customerIdFuerEmail,
+  lizenzSchluesselSetzen,
 } from "../lib/kunden";
 import { webhookEreignisDeuten } from "../lib/stripe";
 import { sitzungBenutzer } from "../lib/supabase";
@@ -86,6 +87,29 @@ describe("aboLesen & customerIdFuerEmail", () => {
     const fakeFetch = (async () => ({ ok: true, json: async () => [] })) as unknown as typeof fetch;
     expect(await aboLesen("cus_x", CFG, fakeFetch)).toBeNull();
     expect(await customerIdFuerEmail("nix@x.ch", CFG, fakeFetch)).toBeNull();
+  });
+});
+
+describe("lizenzSchluesselSetzen (atomar, nur wenn NULL)", () => {
+  it("PATCH mit license_key=is.null-Filter; gesetzt wenn eine Zeile getroffen", async () => {
+    let url = "", init: RequestInit = {};
+    const fakeFetch = (async (u: string, i: RequestInit) => {
+      url = u; init = i;
+      return { ok: true, json: async () => [{ customer_id: "cus_k", license_key: "ACC-X" }] };
+    }) as unknown as typeof fetch;
+    const r = await lizenzSchluesselSetzen("cus_k", "ACC-X", CFG, fakeFetch);
+    expect(r).toEqual({ gesetzt: true });
+    expect(url).toContain("customer_id=eq.cus_k");
+    expect(url).toContain("license_key=is.null");
+    expect(init.method).toBe("PATCH");
+  });
+  it("gesetzt=false, wenn keine Zeile getroffen (Schlüssel existierte schon)", async () => {
+    const fakeFetch = (async () => ({ ok: true, json: async () => [] })) as unknown as typeof fetch;
+    expect(await lizenzSchluesselSetzen("cus_k", "ACC-X", CFG, fakeFetch)).toEqual({ gesetzt: false });
+  });
+  it("ohne Konfiguration/Parameter: gesetzt=false", async () => {
+    expect(await lizenzSchluesselSetzen("cus_k", "ACC-X", {})).toEqual({ gesetzt: false });
+    expect(await lizenzSchluesselSetzen("", "ACC-X", CFG)).toEqual({ gesetzt: false });
   });
 });
 
