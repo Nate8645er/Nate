@@ -1,15 +1,122 @@
-<div class="page">
-  <a href="{{ routes.all_products_collection_url }}">← Zurück</a>
-  <h1>{{ product.title }}</h1>
-  {% if product.featured_image %}<img src="{{ product.featured_image | image_url: width: 900 }}" alt="{{ product.title | escape }}">{% endif %}
-  <p class="price">{{ product.price | money }}</p>
-  <div>{{ product.description }}</div>
-  {% form 'product', product %}
-    <select name="id">
-      {% for v in product.variants %}<option value="{{ v.id }}">{{ v.title }} – {{ v.price | money }}</option>{% endfor %}
-    </select>
-    <button class="btn" type="submit" {% unless product.available %}disabled{% endunless %}>
-      {% if product.available %}In den Warenkorb{% else %}Ausverkauft{% endif %}
-    </button>
-  {% endform %}
-</div>
+<section class="pdp">
+  <div class="wrap pdp-grid">
+    {%- comment -%} Galerie {%- endcomment -%}
+    <div class="pdp-media">
+      {% if product.featured_image %}
+        <img class="pdp-hero-img" src="{{ product.featured_image | image_url: width: 1000 }}" alt="{{ product.title | escape }}">
+      {% else %}
+        <div class="pdp-hero-ph"><span class="grad">AI Command Center</span></div>
+      {% endif %}
+      {% if product.images.size > 1 %}
+        <div class="pdp-thumbs">
+          {% for image in product.images limit: 6 %}
+            <img src="{{ image | image_url: width: 200 }}" alt="{{ product.title | escape }}">
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {%- comment -%} Kaufbox {%- endcomment -%}
+    <div class="pdp-buy">
+      <a class="pdp-back" href="{{ routes.all_products_collection_url }}">← Alle Pakete</a>
+      <h1>{{ product.title }}</h1>
+      {% if product.description != blank %}
+        <div class="pdp-lead">{{ product.description | strip_html | truncatewords: 34 }}</div>
+      {% endif %}
+      <div class="pdp-price">
+        {{ product.price | money }}
+        {% if product.compare_at_price > product.price %}<s>{{ product.compare_at_price | money }}</s>{% endif %}
+        <span class="pdp-per">/ Monat</span>
+      </div>
+
+      {% form 'product', product, class: 'pdp-form' %}
+        {% unless product.has_only_default_variant %}
+          <label class="pdp-label" for="pdp-variant">Paket-Option</label>
+          <select id="pdp-variant" name="id" class="pdp-select">
+            {% for v in product.variants %}
+              <option value="{{ v.id }}" {% unless v.available %}disabled{% endunless %}>{{ v.title }} – {{ v.price | money }}</option>
+            {% endfor %}
+          </select>
+        {% else %}
+          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+        {% endunless %}
+        <button class="btn pdp-add" type="submit" {% unless product.available %}disabled{% endunless %}>
+          {% if product.available %}Jetzt starten{% else %}Zurzeit nicht verfügbar{% endif %}
+        </button>
+      {% endform %}
+
+      <ul class="pdp-assur">
+        <li>Sofort startklar nach dem Kauf</li>
+        <li>Jederzeit wechseln oder kündigen</li>
+        <li>Sichere Zahlung · Schweizer Anbieter</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} Volle Beschreibung {%- endcomment -%}
+{% if product.description != blank %}
+<section class="pdp-desc">
+  <div class="wrap page" style="padding-top:24px;padding-bottom:24px">
+    <h2 style="text-align:left">Details zu {{ product.title }}</h2>
+    <div class="rte">{{ product.description }}</div>
+  </div>
+</section>
+{% endif %}
+
+{%- comment -%} Was Ihre KI-Abteilung liefert {%- endcomment -%}
+<section class="feat" style="padding:60px 0">
+  <div class="wrap">
+    <h2>Was Ihre KI-Abteilung <span class="grad">für Sie erledigt</span></h2>
+    <div class="feat-grid">
+      <div class="card"><h3>Erstellen</h3><p>Offerten, Websites, Präsentationen, Verträge – versandfertig.</p></div>
+      <div class="card"><h3>Marketing &amp; Verkauf</h3><p>Kampagnen, Social, Newsletter, Angebote und Nachfassen.</p></div>
+      <div class="card"><h3>Kundenservice</h3><p>Support-Antworten, FAQ, Rückgewinnung – in Sekunden.</p></div>
+      <div class="card"><h3>Finanzen &amp; Recht</h3><p>Budget, Liquidität, Rechnungen, Verträge, Datenschutz-Check.</p></div>
+      <div class="card"><h3>Code &amp; IT</h3><p>Lauffähiger Code, Reviews, Integrationen und Automationen.</p></div>
+      <div class="card"><h3>Analyse &amp; Strategie</h3><p>Marktanalyse, KPIs, A/B-Tests, SWOT – fundiert.</p></div>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} Vertrauen {%- endcomment -%}
+<section class="trust"><div class="wrap trust-in">
+  <span>Kein Chatbot – echte Ergebnisse</span>
+  <span>Ihre Firma verbunden</span>
+  <span>DSGVO-konform</span>
+  <span>Mit Ihrer Freigabe</span>
+  <span>Ab Tag 1 startklar</span>
+</div></section>
+
+{%- comment -%} Weitere Pakete (Cross-Sell) {%- endcomment -%}
+{% assign quelle = product.collections.first %}
+{% if quelle and quelle.products.size > 1 %}
+<section class="pdp-more">
+  <div class="wrap">
+    <h2>Weitere <span class="grad">Pakete</span></h2>
+    <div class="grid-prod">
+      {% for p in quelle.products limit: 6 %}
+        {% unless p.id == product.id %}
+          <a class="prod" href="{{ p.url }}">
+            {% if p.featured_image %}<img src="{{ p.featured_image | image_url: width: 500 }}" alt="{{ p.title | escape }}">{% endif %}
+            <strong>{{ p.title }}</strong>
+            <div class="price">{{ p.price | money }}<span> / Monat</span></div>
+          </a>
+        {% endunless %}
+      {% endfor %}
+    </div>
+    <p style="text-align:center;margin-top:26px"><a class="btn btn-ghost" href="{{ routes.root_url }}#pakete">Alle Pakete vergleichen</a></p>
+  </div>
+</section>
+{% endif %}
+
+{%- comment -%} FAQ {%- endcomment -%}
+<section class="faq" style="padding:60px 0">
+  <div class="wrap">
+    <h2>Häufige <span class="grad">Fragen</span></h2>
+    <details open><summary>Bekomme ich nach dem Kauf sofort Zugang?</summary><p>Ja. Nach der Zahlung erhalten Sie Ihren Zugang per E-Mail und starten sofort.</p></details>
+    <details><summary>Kann ich jederzeit wechseln oder kündigen?</summary><p>Ja, jederzeit – die Abrechnung passt sich automatisch an.</p></details>
+    <details><summary>Ist das ein Chatbot?</summary><p>Nein. Sie geben einen Auftrag, Ihre KI-Belegschaft liefert ein geprüftes Ergebnis.</p></details>
+    <details><summary>Sind meine Firmendaten sicher?</summary><p>Ja. Wichtige Schritte laufen nur mit Ihrer Freigabe; Enterprise auch On-Premise.</p></details>
+  </div>
+</section>
