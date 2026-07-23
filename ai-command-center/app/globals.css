@@ -759,6 +759,15 @@ select option{color:#111!important}
 
 /* Kopf-/Navileisten mit hellem Grund → dunkles Glas */
 .bg-\[\#fffaf2\]\/70{background-color:var(--d-sect)!important}
+/* Sticky-Header/Navi nutzen Opacity-Varianten (z. B. bg-[#fbfaf6]/85) –
+   die Basis-Regel greift dort NICHT (eigener escaped Selector mit \/85).
+   Sonst steht heller Text auf fast-weisser Leiste = unlesbar. */
+.bg-\[\#fbfaf6\]\/85,.bg-\[\#fbfaf6\]\/80,.bg-\[\#fbfaf6\]\/90,.bg-\[\#fbfaf6\]\/95,.bg-\[\#fbfaf6\]\/75,.bg-\[\#fbfaf6\]\/70,
+.bg-\[\#fdfbf7\]\/85,.bg-\[\#fdfbf7\]\/80,.bg-\[\#fdfbf7\]\/90,.bg-\[\#fdfbf7\]\/70,
+.bg-\[\#faf8f3\]\/85,.bg-\[\#faf8f3\]\/80,.bg-\[\#faf8f3\]\/90,.bg-\[\#faf8f3\]\/70,
+.bg-white\/85,.bg-white\/80,.bg-white\/90,.bg-white\/95{
+  background-color:rgba(13,15,28,.9)!important;
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
 
 /* === Auto-generiert: lueckenlose Dunkel-/Lesbarkeits-Karte (Farbton erhalten) === */
 .text-\[\#0f766e\]{color:#24ffff!important}
