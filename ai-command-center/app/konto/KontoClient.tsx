@@ -28,6 +28,46 @@ export default function KontoClient() {
   const [authFehler, setAuthFehler] = useState<string | null>(null);
   const [laeuft, setLaeuft] = useState(false);
 
+  const [aboStatus, setAboStatus] = useState<string | null>(null);
+  const [portalLaeuft, setPortalLaeuft] = useState(false);
+
+  // Echten Plan aus dem Kunden-Store laden (nur wenn angemeldet; sonst 401 → ignorieren).
+  async function aboLaden() {
+    try {
+      const res = await fetch("/api/mein-abo");
+      if (!res.ok) return;
+      const data = (await res.json()) as { planId?: string; status?: string };
+      if (data.planId) {
+        setPlan(data.planId);
+        setAboStatus(data.status ?? null);
+        try {
+          localStorage.setItem("acc-plan", data.planId);
+        } catch {
+          /* localStorage nicht verfügbar */
+        }
+      }
+    } catch {
+      /* nicht angemeldet / Netzwerk – stiller Fallback auf lokalen Zustand */
+    }
+  }
+
+  // Öffnet das Stripe-Kundenportal (customerId kommt serverseitig aus der Sitzung).
+  async function portalOeffnen() {
+    setPortalLaeuft(true);
+    try {
+      const res = await fetch("/api/portal", { method: "POST" });
+      const data = (await res.json()) as { url?: string };
+      if (res.ok && data.url) {
+        window.location.assign(data.url);
+        return;
+      }
+    } catch {
+      /* Netzwerkfehler */
+    } finally {
+      setPortalLaeuft(false);
+    }
+  }
+
   async function authSenden(e: React.FormEvent) {
     e.preventDefault();
     setAuthFehler(null);
@@ -42,6 +82,7 @@ export default function KontoClient() {
       const data = (await res.json()) as { user?: { email: string | null }; error?: string; meldung?: string };
       if (res.ok && data.user) {
         setAngemeldet(data.user.email ?? email);
+        void aboLaden();
       } else if (res.status === 501) {
         setAuthFehler("Login ist für diesen Shop noch nicht aktiviert.");
       } else {
@@ -64,6 +105,9 @@ export default function KontoClient() {
       /* localStorage/URL nicht verfügbar */
     }
     setGeladen(true);
+    // Falls bereits eine Sitzung besteht: echten Plan laden (401 wird ignoriert).
+    void aboLaden();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const aktiv = plan ?? wunsch;
@@ -87,7 +131,14 @@ export default function KontoClient() {
         <p className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Ihr Abo</p>
         {geladen && paket ? (
           <>
-            <h2 className="mt-1 text-2xl font-bold">{paket.name}</h2>
+            <h2 className="mt-1 text-2xl font-bold">
+              {paket.name}
+              {aboStatus && aboStatus !== "active" && (
+                <span className="ml-2 rounded-full bg-[#fff0e6] px-2 py-0.5 align-middle text-xs font-bold text-[#c25e0e]">
+                  {aboStatus === "canceled" ? "gekündigt" : aboStatus}
+                </span>
+              )}
+            </h2>
             <p className="mt-1 text-sm text-[#6f6557]">{paket.untertitel}</p>
           </>
         ) : (
@@ -184,8 +235,18 @@ export default function KontoClient() {
         <p className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Zahlung & Rechnungen</p>
         <p className="mt-2 text-sm text-[#4a4335]">
           Die Verwaltung von Zahlung, Rechnungen und Kündigung läuft über das sichere
-          Stripe-Kundenportal. Es wird aktiv, sobald die Zahlung für Ihren Shop
-          konfiguriert ist.
+          Stripe-Kundenportal.
+        </p>
+        <button
+          type="button"
+          onClick={portalOeffnen}
+          disabled={portalLaeuft}
+          className="mt-4 rounded-full border border-[#e0d8c6] bg-white px-5 py-2.5 text-sm font-semibold text-[#1c1917] hover:border-[#ffb066] hover:text-[#c25e0e] disabled:opacity-60"
+        >
+          {portalLaeuft ? "Öffne Portal…" : "Rechnungen & Kündigung verwalten"}
+        </button>
+        <p className="mt-2 text-xs text-[#8a8072]">
+          Öffnet sich, sobald Sie angemeldet sind und ein Abo hinterlegt ist.
         </p>
       </section>
     </div>

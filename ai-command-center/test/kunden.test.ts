@@ -7,6 +7,7 @@ import {
   kundenStoreKonfiguriert,
   aboFreischalten,
   aboLesen,
+  aboFuerEmail,
   customerIdFuerEmail,
 } from "../lib/kunden";
 import { webhookEreignisDeuten } from "../lib/stripe";
@@ -73,6 +74,13 @@ describe("aboLesen & customerIdFuerEmail", () => {
       return { ok: true, json: async () => [{ customer_id: "cus_neu", email: "a@b.ch", plan_id: "pro", status: "active" }] };
     }) as unknown as typeof fetch;
     expect(await customerIdFuerEmail("a@b.ch", CFG, fakeFetch)).toBe("cus_neu");
+  });
+  it("aboFuerEmail liefert vollständiges Abo", async () => {
+    const fakeFetch = (async () => ({
+      ok: true, json: async () => [{ customer_id: "cus_e", email: "a@b.ch", plan_id: "PROFESSIONAL", status: "active" }],
+    })) as unknown as typeof fetch;
+    const abo = await aboFuerEmail("a@b.ch", CFG, fakeFetch);
+    expect(abo).toMatchObject({ plan_id: "PROFESSIONAL", status: "active" });
   });
   it("keine Treffer => null", async () => {
     const fakeFetch = (async () => ({ ok: true, json: async () => [] })) as unknown as typeof fetch;

@@ -8,6 +8,7 @@
  */
 
 import { registrieren } from "@/lib/supabase";
+import { authLimitPruefen } from "@/lib/ratelimit";
 
 export const runtime = "nodejs";
 
@@ -20,6 +21,15 @@ export async function POST(request: Request): Promise<Response> {
   }
   const email = typeof body.email === "string" ? body.email.trim() : "";
   const passwort = typeof body.passwort === "string" ? body.passwort : "";
+
+  // Brute-Force-/Enumeration-Bremse (pro IP+E-Mail).
+  const limit = await authLimitPruefen(request, "register", email);
+  if (!limit.erlaubt) {
+    return Response.json(
+      { error: "zu-viele-versuche", meldung: "Zu viele Versuche. Bitte später erneut versuchen." },
+      { status: 429, headers: { "Retry-After": String(limit.resetSek) } },
+    );
+  }
 
   const r = await registrieren(email, passwort);
   if (!r.ok) {

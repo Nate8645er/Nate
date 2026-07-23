@@ -81,11 +81,19 @@ ohne IDOR (customerId aus verifizierter Sitzung), **Portal nur mit bestätigter
 E-Mail** (Schutz gegen Konto-Übernahme unabhängig von der Supabase-Einstellung),
 Return-URL aus `APP_URL`-Allowlist, RLS auf `abos` an, **Event-Reihenfolge-Schutz**
 beim Upsert (verspätetes „updated" reaktiviert kein gekündigtes Abo), **planId
-gegen die echten Pakete validiert**. **Noch offen:**
-- Rate-Limit auf `/api/auth/*` (IP/Konto) gegen Brute-Force/Enumeration
-  (braucht einen gemeinsamen Zähler-Store, z. B. Upstash/Redis).
-- Empfehlung: In Supabase die E-Mail-Bestätigung aktiv lassen (Authentication →
-  Providers → „Confirm email").
+gegen die echten Pakete validiert**, **Rate-Limit auf `/api/auth/*`** (10 Versuche
+/ 10 Min pro IP+E-Mail; verteilt über Upstash oder Best-Effort-In-Memory).
+**Empfehlungen:**
+- In Supabase die E-Mail-Bestätigung aktiv lassen (Authentication → Providers →
+  „Confirm email").
+- Für echtes verteiltes Rate-Limit `UPSTASH_REDIS_REST_URL` + `_TOKEN` setzen
+  (ohne Upstash zählt der Limiter nur pro Serverless-Instanz).
+
+## Konto zeigt den echten Plan
+Nach Login ruft `/konto` den Endpunkt `GET /api/mein-abo` auf: Er leitet die
+Identität aus der Sitzung ab und liefert `planId/planName/status/aktiv` aus dem
+Kunden-Store. So sieht die Kundin nach dem Kauf automatisch ihr echtes Paket und
+kann über „Rechnungen & Kündigung verwalten" das Stripe-Portal öffnen.
 
 ## Schnelltest ohne Live-Keys
 `npm test` prüft beide Wege inkl. „nicht-konfiguriert", Webhook-Signatur

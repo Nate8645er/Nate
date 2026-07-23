@@ -116,17 +116,27 @@ export async function aboLesen(
   return rows && rows.length > 0 ? rows[0] : null;
 }
 
-/** Schlägt die Stripe-customerId zu einer E-Mail nach (für das Kundenportal). */
-export async function customerIdFuerEmail(
+/** Liest das (neueste) Abo zu einer E-Mail – für Konto/Dashboard. */
+export async function aboFuerEmail(
   email: string,
   env: KundenEnv = process.env,
   fetchImpl: typeof fetch = fetch,
-): Promise<string | null> {
+): Promise<Abo | null> {
   if (!email) return null;
   const rows = await abosLesen(
     `email=eq.${encodeURIComponent(email)}&order=aktualisiert_am.desc&limit=1`,
     env,
     fetchImpl,
   );
-  return rows && rows.length > 0 ? rows[0].customer_id : null;
+  return rows && rows.length > 0 ? rows[0] : null;
+}
+
+/** Schlägt die Stripe-customerId zu einer E-Mail nach (für das Kundenportal). */
+export async function customerIdFuerEmail(
+  email: string,
+  env: KundenEnv = process.env,
+  fetchImpl: typeof fetch = fetch,
+): Promise<string | null> {
+  const abo = await aboFuerEmail(email, env, fetchImpl);
+  return abo ? abo.customer_id : null;
 }
