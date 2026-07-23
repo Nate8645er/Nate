@@ -257,6 +257,9 @@ input,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-
   100%{left:108%;opacity:0}
 }
 @media(max-width:720px){.tk{font-size:11px;padding:5px 10px}}
+/* Handy: fliegende Tickets ausblenden – sie überlagerten die Szene und
+   wirkten verschoben. Die Animation bleibt für sich sauber. */
+@media(max-width:560px){.hero-tickets{display:none}}
 @media(prefers-reduced-motion:reduce){.tk{animation:none;opacity:0}}
 a.uc{transition:border-color .15s,box-shadow .15s}
 a.uc:hover{border-color:var(--ora);box-shadow:0 24px 54px -32px rgba(255,120,40,.5)}

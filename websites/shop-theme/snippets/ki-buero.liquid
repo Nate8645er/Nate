@@ -251,7 +251,9 @@
     .kib-tag { font-size: 8px; padding: 2px 6px; letter-spacing: .04em; }
     .kib-embed { min-width: 0; width: 100%; padding: 8px; }
     .kib-firma .n { font-size: 9px; }
-    .kib-live { width: 15%; }
+    /* Seiten-Monitore raus – am Handy zu klein, ragten sonst über den Rand
+       und wirkten verschoben. Das Abteilungs-Raster bleibt sauber. */
+    .kib-live { display: none; }
   }
   @media (max-width: 420px) {
     .kib { height: 340px; }
