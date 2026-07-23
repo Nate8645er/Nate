@@ -1,0 +1,49 @@
+<section class="page-hero"><h1>{{ page.title | default: 'Kontakt' }}</h1><p>Fragen zu Paketen, Integrationen oder einer Live-Demo? Wir melden uns schnell.</p></section>
+<div class="contact-wrap wrap">
+  <div class="contact-form">
+    {{ page.content }}
+    {% form 'contact' %}
+      {% if form.posted_successfully? %}
+        <div class="form-ok">Danke für Ihre Nachricht! Wir melden uns so schnell wie möglich bei Ihnen.</div>
+      {% endif %}
+      {% if form.errors %}
+        <div class="form-err">Bitte prüfen Sie Ihre Angaben: {{ form.errors | default_errors }}</div>
+      {% endif %}
+      <label class="f-label" for="c-name">Name</label>
+      <input id="c-name" type="text" name="contact[name]" value="{{ form.name }}" placeholder="Ihr Name" required>
+      <label class="f-label" for="c-email">E-Mail</label>
+      <input id="c-email" type="email" name="contact[email]" value="{{ form.email }}" placeholder="name@firma.ch" required>
+      <label class="f-label" for="c-firma">Firma (optional)</label>
+      <input id="c-firma" type="text" name="contact[Firma]" placeholder="Ihre Firma">
+      <label class="f-label" for="c-thema">Thema</label>
+      <select id="c-thema" name="contact[Thema]" class="pdp-select">
+        <option>Allgemeine Anfrage</option>
+        <option>Live-Demo anfragen</option>
+        <option>Paket &amp; Preise</option>
+        <option>Integrationen</option>
+        <option>Business / Enterprise</option>
+        <option>Support</option>
+      </select>
+      <label class="f-label" for="c-body">Ihre Nachricht</label>
+      <textarea id="c-body" name="contact[body]" rows="6" placeholder="Wie können wir helfen?" required>{{ form.body }}</textarea>
+      <button class="btn" type="submit">Nachricht senden</button>
+      <p class="f-hint">Mit dem Absenden stimmen Sie der Verarbeitung Ihrer Angaben zur Bearbeitung Ihrer Anfrage zu.</p>
+    {% endform %}
+  </div>
+  <aside class="contact-side">
+    <div class="acc-card contact-card">
+      <h3>Schnellste Wege</h3>
+      <p><a href="{{ routes.all_products_collection_url }}">Gratis-Version testen →</a><br><span>Ohne Zahlungsmittel sofort ausprobieren.</span></p>
+      <p><a href="{{ routes.root_url }}pages/demo">Live-Demo anfragen →</a><br><span>An Ihrem echten Anwendungsfall.</span></p>
+      <p><a href="{{ routes.root_url }}pages/faq">Häufige Fragen →</a><br><span>Viele Antworten sofort.</span></p>
+    </div>
+    <div class="acc-card contact-card">
+      <h3>Gut zu wissen</h3>
+      <ul>
+        <li>Schweizer Anbieter, DSGVO-bewusst</li>
+        <li>Antwort in der Regel innert 1 Werktag</li>
+        <li>Für Business/Enterprise: persönlicher Ansprechpartner</li>
+      </ul>
+    </div>
+  </aside>
+</div>
