@@ -93,6 +93,24 @@ gegen die echten Pakete validiert**, **Rate-Limit auf `/api/auth/*`** (10 Versuc
 - Restrisiko (bewusst): Fällt Upstash aus, lässt der Limiter fail-open durch
   (Verfügbarkeit vor Sperre) – das Signatur-/Passwort-Gate bleibt aber aktiv.
 
+## 4) Lizenzschlüssel automatisch nach dem Kauf (E-Mail optional)
+Nach einem verifizierten Kauf (`checkout.session.completed`) erzeugt der Webhook
+**einmalig** einen Lizenzschlüssel für den gekauften Plan, speichert ihn und –
+falls E-Mail konfiguriert – schickt ihn als Willkommens-Mail.
+
+| Variable | Woher | Hinweis |
+|---|---|---|
+| `RESEND_API_KEY` | resend.com → API Keys | ohne Key wird keine Mail versendet |
+| `MAIL_FROM` | in Resend verifizierte Absenderadresse | z. B. `shop@ihre-domain.ch` |
+
+- **Ohne Resend** bleibt alles funktionsfähig: Der Schlüssel wird gespeichert und
+  ist für die angemeldete Kundin unter `/konto` abrufbar (Selbstbedienung).
+- Der Schlüssel wird über den bestehenden Weg eingelöst (`/onboarding` →
+  `POST /api/license` → Lizenz-Token), womit die **serverseitige Plan-/Limit-
+  Durchsetzung** (Missionen/Tag, Token-Budget) automatisch greift.
+- Idempotent: Stripe-Retries erzeugen keinen zweiten Schlüssel (nur wenn noch
+  keiner gespeichert ist).
+
 ## Konto zeigt den echten Plan
 Nach Login ruft `/konto` den Endpunkt `GET /api/mein-abo` auf: Er leitet die
 Identität aus der Sitzung ab und liefert `planId/planName/status/aktiv` aus dem
