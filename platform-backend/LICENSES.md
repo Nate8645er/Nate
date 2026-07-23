@@ -21,6 +21,9 @@ Entwicklung. Spalte „geprüft": `pip`-Metadaten bzw. Projekt-Repo zum Analysez
 | qdrant-client | " | Apache-2.0 | lib | ✅ (Vektor-DB-Client) |
 | sqlalchemy | " | MIT | lib | ✅ |
 | opentelemetry-api / -sdk | " | Apache-2.0 | lib | ✅ (Observability ab Tag 1) |
+| PyJWT | " | MIT | lib | ✅ (Keycloak/OIDC-Token-Verify) |
+| cryptography | " | Apache-2.0 / BSD-3 (dual) | lib | ✅ (RS256-Signaturprüfung) |
+| prometheus-client | " | Apache-2.0 | lib | ✅ (Compute-Metriken-Exporter) |
 | pytest | " | MIT | dev | ✅ |
 
 ## Dienste (als Container geplant, NICHT als Prozess-Bibliothek eingebaut)

@@ -22,3 +22,8 @@ SQLAlchemy==2.0.51
 # Observability
 opentelemetry-api==1.44.0
 opentelemetry-sdk==1.44.0
+
+# Auth (Keycloak/OIDC) + Metriken (Phase 2)
+PyJWT[crypto]==2.13.0
+cryptography==49.0.0
+prometheus-client==0.25.0
