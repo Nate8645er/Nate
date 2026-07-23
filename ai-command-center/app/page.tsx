@@ -713,7 +713,7 @@ export default function Home() {
             <div className="mt-14 grid grid-cols-2 gap-6 text-center lg:grid-cols-4">
               {[
                 ["1000", "Mitarbeitende", "Belegschaft im Enterprise-Ausbau", "from-[#ff8c2a] to-[#ff5f1f]"],
-                ["9", "KI-Modelle", "Ein Rat führender Modelle unter einem Boss", "from-[#6d5efc] to-[#8b5cf6]"],
+                ["24", "Spezialisten", "Dynamische Abteilungen – live pro Auftrag (Enterprise)", "from-[#6d5efc] to-[#8b5cf6]"],
                 ["24/7", "im Einsatz", "Autopilot erledigt wiederkehrende Aufträge", "from-[#2dd4bf] to-[#0f766e]"],
                 ["100", "Quality-Score", "Jedes Ergebnis geprüft, bevor Sie es sehen", "from-[#f472b6] to-[#be185d]"],
               ].map(([wert, label, note, grad]) => (

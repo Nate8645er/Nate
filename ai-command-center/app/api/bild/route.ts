@@ -7,13 +7,26 @@
  */
 
 import { bildBeschreiben, dataUrlZerlegen } from "@/lib/vision";
+import { clientIp, pruefeRateLimit } from "@/lib/ratelimit";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
 const MAX_BYTES = 6 * 1024 * 1024; // ~6 MB Bild (Anthropic-Limit-nah)
+// Missbrauchs-/Kostenschutz: begrenzt teure Vision-Aufrufe pro IP.
+const RL_LIMIT = 20;
+const RL_FENSTER_SEK = 60;
 
 export async function POST(request: Request): Promise<Response> {
+  // Kosten-/Missbrauchsschutz VOR jeder teuren Verarbeitung (kein Auth nötig).
+  const rl = await pruefeRateLimit(`bild:${clientIp(request.headers)}`, RL_LIMIT, RL_FENSTER_SEK);
+  if (!rl.erlaubt) {
+    return Response.json(
+      { error: "zu-viele-anfragen" },
+      { status: 429, headers: { "Retry-After": String(rl.resetSek) } },
+    );
+  }
+
   let body: { bild?: unknown; frage?: unknown };
   try {
     body = (await request.json()) as typeof body;

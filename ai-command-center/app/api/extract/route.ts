@@ -8,14 +8,26 @@
  */
 
 import { PDFParse } from "pdf-parse";
+import { clientIp, pruefeRateLimit } from "@/lib/ratelimit";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
 /** Harte Obergrenze für den PDF-Upload (Vercel-tauglich). */
 const MAX_FILE_BYTES = 4 * 1024 * 1024;
+// Missbrauchs-/Kostenschutz: begrenzt teure PDF-Extraktionen pro IP.
+const RL_LIMIT = 20;
+const RL_FENSTER_SEK = 60;
 
 export async function POST(request: Request): Promise<Response> {
+  const rl = await pruefeRateLimit(`extract:${clientIp(request.headers)}`, RL_LIMIT, RL_FENSTER_SEK);
+  if (!rl.erlaubt) {
+    return Response.json(
+      { error: "zu-viele-anfragen" },
+      { status: 429, headers: { "Retry-After": String(rl.resetSek) } },
+    );
+  }
+
   let file: File;
   try {
     const form = await request.formData();

@@ -11,9 +11,10 @@
  * gehostetes Modell (z. B. Ollama/vLLM/LM Studio) – aktiv, sobald
  * LOCAL_LLM_URL gesetzt ist. Deckt "lokale und Cloud-Modelle" ab.
  *
- * google/xai/qwen/deepseek/meta/mistral sind die zusätzlichen Frontier-
- * Anbieter des Modell-Rats (siehe lib/agents/council.ts). Alle sprechen das
- * OpenAI-kompatible Chat-Completions-Format; nur anthropic weicht ab.
+ * google/xai/qwen/deepseek/meta/mistral sind optionale zusätzliche Anbieter
+ * (OpenAI-kompatibel), die als Fallback in der Provider-Kette dienen können,
+ * sobald ihr Zugang hinterlegt ist. Alle sprechen das OpenAI-kompatible
+ * Chat-Completions-Format; nur anthropic weicht ab.
  */
 export type Provider =
   | "anthropic"

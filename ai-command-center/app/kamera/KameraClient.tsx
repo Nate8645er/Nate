@@ -40,7 +40,7 @@ export default function KameraClient() {
 
   const aufnahmeStarten = useCallback(async (modus: "video" | "audio") => {
     setFehler(null);
-    setMedienUrl(null);
+    setMedienUrl((alt) => { if (alt) URL.revokeObjectURL(alt); return null; });
     setMedienTyp(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia(
@@ -62,7 +62,8 @@ export default function KameraClient() {
       rec.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
       rec.onstop = () => {
         const blob = new Blob(chunksRef.current, { type: rec.mimeType || (modus === "video" ? "video/webm" : "audio/webm") });
-        setMedienUrl(URL.createObjectURL(blob));
+        // Alte Blob-URL freigeben, bevor eine neue gesetzt wird (Speicher-Hygiene).
+        setMedienUrl((alt) => { if (alt) URL.revokeObjectURL(alt); return URL.createObjectURL(blob); });
         setMedienTyp(modus);
         aufnahmeStreamRef.current?.getTracks().forEach((t) => t.stop());
         aufnahmeStreamRef.current = null;

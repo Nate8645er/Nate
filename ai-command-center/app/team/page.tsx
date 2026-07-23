@@ -10,7 +10,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AGENTS, WORKERS_BY_PLAN, WORKFORCE_BY_PLAN, MAX_DYN_AGENTS } from "@/lib/agents/team";
-import { ratStatus } from "@/lib/agents/council";
 import { talentBeispiele, talentpoolFormatiert } from "@/lib/talentpool";
 import type { AgentRole, PlanId } from "@/lib/agents/types";
 
@@ -40,10 +39,6 @@ const PLAN_NOTIZ: Record<PlanId, string> = {
 };
 
 export default function TeamPage() {
-  const rat = ratStatus();
-  const ratBoss = rat.find((m) => m.boss);
-  const ratWorker = rat.filter((m) => !m.boss);
-  const ratAktiv = rat.filter((m) => m.aktiv).length;
   return (
     <div className="acc-page min-h-dvh text-[#1c1917]">
       <div className="relative z-10 mx-auto max-w-5xl px-4 pb-24">
@@ -67,53 +62,6 @@ export default function TeamPage() {
             Firma, die für Sie arbeitet.
           </p>
         </div>
-
-        {/* Modell-Rat: mehrere Frontier-Modelle als Worker unter dem Boss */}
-        <section className="mt-10">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h2 className="text-xl font-semibold">Modell-Rat</h2>
-            <span className="text-xs text-[#6f6557]">{ratAktiv} von {rat.length} Modellen einsatzbereit</span>
-          </div>
-          <p className="mt-1 max-w-2xl text-sm text-[#6f6557]">
-            Nicht ein Modell, sondern ein Team führender KI-Modelle. Der Boss
-            verteilt jeden Auftrag an die Worker und führt ihre Antworten
-            zusammen. Jedes Modell wird aktiv, sobald sein Zugang hinterlegt ist.
-          </p>
-
-          {ratBoss && (
-            <article className="acc-card acc-card-hover mt-4 rounded-2xl border-l-2 border-[#ff8c2a] p-5">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <span className="text-[10px] uppercase tracking-wider text-[#c25e0e]">Boss · Orchestrator</span>
-                  <h3 className="mt-0.5 font-semibold text-[#c25e0e]">
-                    {ratBoss.label} <span className="text-xs font-normal text-[#6f6557]">· {ratBoss.hersteller}</span>
-                  </h3>
-                </div>
-                <StatusBadge aktiv={ratBoss.aktiv} />
-              </div>
-              <p className="mt-2 text-sm leading-relaxed text-[#6f6557]">{ratBoss.rolle}</p>
-            </article>
-          )}
-
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            {ratWorker.map((m) => (
-              <article key={m.id} className="acc-card acc-card-hover rounded-2xl p-5">
-                <div className="flex items-center justify-between gap-3">
-                  <h3 className="font-semibold text-[#c25e0e]">
-                    {m.label} <span className="text-xs font-normal text-[#6f6557]">· {m.hersteller}</span>
-                  </h3>
-                  <StatusBadge aktiv={m.aktiv} />
-                </div>
-                <p className="mt-2 text-sm leading-relaxed text-[#6f6557]">{m.rolle}</p>
-              </article>
-            ))}
-          </div>
-          <p className="mt-3 text-xs text-[#7c7161]">
-            Zugänge werden serverseitig als Umgebungsvariablen hinterlegt
-            (siehe .env.example). Ohne Zugang bleibt ein Modell sichtbar, aber
-            inaktiv – wir versprechen nichts, was nicht real läuft.
-          </p>
-        </section>
 
         {/* Kern-Team – Akzent Indigo */}
         <section className="mt-10">
@@ -193,19 +141,6 @@ export default function TeamPage() {
         <WorkFooter variante="hell" />
       </div>
     </div>
-  );
-}
-
-/** Kleiner Statuspunkt: einsatzbereit (grün) oder Zugang nötig (grau). */
-function StatusBadge({ aktiv }: { aktiv: boolean }) {
-  return aktiv ? (
-    <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#e7f6ee] px-2 py-0.5 text-[10px] font-semibold text-[#177245]">
-      <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#22c55e]" /> aktiv
-    </span>
-  ) : (
-    <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#f3efe6] px-2 py-0.5 text-[10px] font-medium text-[#6f6557]">
-      <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#c9bfae]" /> Zugang nötig
-    </span>
   );
 }
 
