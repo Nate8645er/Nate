@@ -16,6 +16,7 @@ export type BereichId =
   | "kommando"
   | "kunden"
   | "email"
+  | "freigabe"
   | "skills"
   | "werkzeuge"
   | "autopilot"
@@ -42,6 +43,7 @@ const PRIMAER: { id: BereichId; label: string; href: string }[] = [
 ];
 
 const MEHR: { id: BereichId; label: string; href: string }[] = [
+  { id: "freigabe", label: "Freigabe & Ausgang", href: "/freigabe" },
   { id: "onboarding", label: "Einrichtung & Tutorials", href: "/onboarding" },
   { id: "studio", label: "KI-Studio", href: "/studio" },
   { id: "werkzeuge", label: "Blitz-Werkzeuge", href: "/werkzeuge" },

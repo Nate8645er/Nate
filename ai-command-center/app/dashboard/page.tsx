@@ -1528,6 +1528,12 @@ export default function DashboardPage() {
             >
               Erweiterungen
             </a>
+            <a
+              href="/freigabe"
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6557] transition-colors hover:bg-[#fff4e6] hover:text-[#c25e0e] ${FOCUS_RING}`}
+            >
+              Freigabe
+            </a>
             <div className="flex overflow-hidden rounded-xl border border-[#e0d8c6]" role="group" aria-label="Abo-Stufe">
               {PLANS.map((p) => {
                 const locked = PLAN_LEVEL[p] > PLAN_LEVEL[licensedPlan];
