@@ -23,6 +23,7 @@ import pytest
 from app.knowledge.embedding import HashingEmbedder
 from app.knowledge.vectorstore import Document, QdrantVectorStore
 from app.models.router import DataClass, ModelRequest, ModelRouter, RoutingContext
+from app.platform.backup import list_qdrant_snapshots, snapshot_qdrant
 
 PG_DSN = os.environ.get("PF_PG_DSN", "postgresql://postgres:devpass@127.0.0.1:5433/platform")
 QDRANT_URL = os.environ.get("PF_QDRANT_URL", "http://127.0.0.1:6333")
@@ -75,6 +76,31 @@ def test_qdrant_real_server_tenant_isolation() -> None:
     assert "a1" in ids
     assert store.count("acme") == 2
     assert store.count("globex") == 1
+
+    client.delete_collection(coll)
+
+
+def test_qdrant_real_snapshot_backup_roundtrip() -> None:
+    _skip_unless("127.0.0.1", 6333, "Qdrant")
+    from qdrant_client import QdrantClient
+
+    client = QdrantClient(url=QDRANT_URL)
+    emb = HashingEmbedder(dim=32)
+    coll = "pf_backup_test"
+    if client.collection_exists(coll):
+        client.delete_collection(coll)
+    store = QdrantVectorStore(client, collection=coll, dim=32)
+    store.upsert([Document(id="d1", tenant="acme", text="Backup-Beweis", vector=emb.embed(["Backup-Beweis"])[0])])
+
+    # Snapshot erstellen (Server-seitig) und in der Liste wiederfinden.
+    result = snapshot_qdrant(client, coll)
+    assert result.ok, f"Snapshot fehlgeschlagen: {result.detail}"
+    names = list_qdrant_snapshots(client, coll)
+    assert result.target in names, "erstellter Snapshot nicht in der Liste"
+
+    # Nicht existierende Collection → ehrlicher Fehler (kein Crash).
+    missing = snapshot_qdrant(client, "gibt_es_nicht")
+    assert not missing.ok
 
     client.delete_collection(coll)
 

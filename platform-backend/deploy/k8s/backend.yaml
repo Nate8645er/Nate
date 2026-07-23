@@ -1,0 +1,143 @@
+---
+# ConfigMap: NUR nicht-geheime Konfiguration. Secrets kommen aus einem separaten
+# Secret (extern verwaltet, z. B. Sealed Secrets / External Secrets) — NIE hier.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: platform-backend-config
+  namespace: ki-plattform
+data:
+  PLATFORM_ENV: "production"
+  # Dienst-URLs (nicht geheim). Passwörter/Keys stehen im Secret unten.
+  QDRANT_URL: "http://qdrant:6333"
+  TEMPORAL_ADDRESS: "temporal:7233"
+  # OTEL optional — gesetzt aktiviert Tracing (sonst no-op).
+  OTEL_EXPORTER_OTLP_ENDPOINT: ""
+---
+# Platzhalter-Secret: In der Praxis NICHT im Git, sondern extern injiziert.
+# Hier nur als Schnittstellen-Dokumentation (stringData leer lassen / überschreiben).
+apiVersion: v1
+kind: Secret
+metadata:
+  name: platform-backend-secrets
+  namespace: ki-plattform
+type: Opaque
+stringData:
+  DATABASE_URL: ""       # postgresql://app_user:***@postgres:5432/platform  (App-Rolle: NOBYPASSRLS!)
+  REDIS_URL: ""          # redis://redis:6379/0
+  KEYCLOAK_JWKS_URL: ""  # https://keycloak/realms/ki/protocol/openid-connect/certs
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: platform-backend
+  namespace: ki-plattform
+  labels:
+    app.kubernetes.io/name: platform-backend
+    app.kubernetes.io/part-of: ki-system
+spec:
+  replicas: 2                       # HA: mind. 2, damit Rollouts ohne Downtime laufen
+  revisionHistoryLimit: 5           # Rollback-Historie (kubectl rollout undo)
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0             # nie unter Soll — Readiness-Gate schützt den Traffic
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: platform-backend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: platform-backend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: platform-backend
+          image: ghcr.io/OWNER/platform-backend:latest   # in CI durch echten Digest ersetzen
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: platform-backend-config
+            - secretRef:
+                name: platform-backend-secrets
+          # Liveness: billig, ohne externe Aufrufe. Fehlschlag => Neustart.
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          # Readiness: prüft konfigurierte Abhängigkeiten. Fehlschlag => aus dem LB.
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+          # Startup: gibt langsamen Starts Zeit, ohne Liveness früh zu triggern.
+          startupProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            periodSeconds: 3
+            failureThreshold: 20
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: platform-backend
+  namespace: ki-plattform
+  labels:
+    app.kubernetes.io/name: platform-backend
+spec:
+  selector:
+    app.kubernetes.io/name: platform-backend
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+# PodDisruptionBudget: bei Node-Drains bleibt mindestens eine Instanz erreichbar.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: platform-backend-pdb
+  namespace: ki-plattform
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: platform-backend

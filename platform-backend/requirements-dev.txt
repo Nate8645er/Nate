@@ -7,3 +7,6 @@ pytest==9.1.1
 psycopg[binary]==3.2.3   # PostgreSQL-Treiber (RLS-Beweis) — LGPL-3.0-only, nur
                          # Dev/Test, NICHT im Kundenpfad ausgeliefert.
 redis==5.2.1             # Redis-Client — MIT.
+# Phase-8-Härtung: Manifest-Tests + SAST.
+PyYAML==6.0.3            # k8s-Manifest-Tests — MIT.
+bandit==1.8.6            # Python-SAST (Security-Review) — Apache-2.0.
