@@ -33,6 +33,19 @@ in einem ephemeren Container kein Dauerbetrieb.
 | **kubernetes / k3s / istio / kafka / spark** | Erst Phase 8 (Auftrag §9). |
 | **51 E-Tier-Repos** (§B) | Bewusst nicht eingebaut (Redundanz/Lizenz/kein Bezug) — u. a. n8n (Sustainable Use), Milvus/Weaviate/Chroma (Redundanz zu Qdrant), AutoGPT/SuperAGI, Selenium. |
 
+## Lokale Inferenz — was hier ging und was nicht (ehrlich)
+- **Geht NICHT hier:** echtes Ollama/vLLM-Modell laden. Die Proxy-Allowlist erlaubt nur
+  Paket-Registries (pypi/npm/…); `ollama.com` und GitHub-Release-Downloads liefern **403**.
+  Ein echtes lokales Modell braucht eine Umgebung mit Netzzugang zu diesen Hosts + (für Tempo)
+  eine GPU.
+- **Bewiesen (real, ohne Fake):** der **Integrationspfad** Router → LiteLLM → lokaler
+  OpenAI-kompatibler Endpoint läuft end-to-end. Test `tests/test_local_integration.py` startet
+  einen stdlib-HTTP-Server, der die `/v1/chat/completions`-Schnittstelle spielt (genau die, die
+  Ollama/vLLM bedienen), und schickt eine `local_only`-Anfrage durch. Der Router entscheidet
+  korrekt `local`, LiteLLM macht den echten HTTP-Call, die Antwort wird geparst. Es fehlen nur
+  die Modellgewichte.
+
 ## Nächster echter Schritt
-Phase 2: `models/`-Ausführung gegen ein **lokales** Modell testen (Ollama-Container, OpenAI-
-kompatibel) + Prometheus-Exporter für Compute-Metriken. Erfordert einen laufenden Dienst.
+Phase 2 fortsetzen: `/metrics`-Endpunkt in FastAPI (Prometheus-Registry) + Router-Cache/Budget in
+den Ausführungspfad einhängen. Danach Phase 3 (RAG mit Qdrant). Für echte lokale Modelle:
+Ollama/vLLM in einer netz-/GPU-fähigen Umgebung — der Code-Pfad ist verifiziert.
