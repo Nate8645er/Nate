@@ -1,0 +1,149 @@
+{%- comment -%}
+  Abo-Detailseite – ein Tarif, vollständig erklärt.
+  Aufruf: {% render 'abo-detail', tier: 'gratis' %}
+  Tarife: gratis | solo | start | pro | business | enterprise
+{%- endcomment -%}
+{%- assign t = tier -%}
+{%- assign badge = '' -%}
+{%- assign hi = false -%}
+{%- case t -%}
+  {%- when 'gratis' -%}
+    {%- assign name = 'Gratis' -%}
+    {%- assign badge = 'Kostenlos' -%}
+    {%- assign target = 'Zum Ausprobieren – ganz ohne Risiko' -%}
+    {%- assign pm = 'Gratis' -%}{%- assign py = 'Gratis' -%}
+    {%- assign pitch = 'Lernen Sie Ihre eigene KI-Abteilung kennen. Ihr Kern-Team erledigt echte Aufträge – ohne Zahlungsmittel, ohne Verpflichtung.' -%}
+    {%- assign features = 'Ihr Kern-Team: Commander, Builder, Analyst und Quality|Bis zu 3 Aufträge pro Tag|Texte, Ideen und Entwürfe auf Knopfdruck|Ergebnisse ansehen und kopieren|Kein Zahlungsmittel nötig|Jederzeit auf ein bezahltes Paket erweiterbar' -%}
+    {%- assign fuer = 'Alle, die risikofrei sehen wollen, wie eine KI-Abteilung im Alltag arbeitet.' -%}
+    {%- assign outputs = 'Kurze Werbetexte & Ideen|Ein einfacher Entwurf für eine E-Mail|Eine erste Angebots-Skizze' -%}
+    {%- assign next = 'Mehr Aufträge pro Tag und Downloads? Dann ist Solo Ihr nächster Schritt.' -%}
+  {%- when 'solo' -%}
+    {%- assign name = 'Solo' -%}
+    {%- assign target = 'Einzelpersonen & Einstieg' -%}
+    {%- assign pm = 'CHF 19' -%}{%- assign py = 'CHF 190' -%}
+    {%- assign pitch = 'Der günstige Einstieg für Einzelpersonen. Ihr Kern-Team ist jeden Tag einsatzbereit und nimmt Ihnen Schreibkram, Offerten und E-Mails ab.' -%}
+    {%- assign features = 'Ihr Kern-Team (4 KI-Agenten)|Bis zu 10 Aufträge pro Tag|Texte, Offerten und E-Mails in Ihrem Ton|Ergebnisse als Datei herunterladen|Ein-Klick-Vorlagen für den schnellen Start|Freigabe-Ausgang: prüfen, freigeben, verwenden' -%}
+    {%- assign fuer = 'Selbstständige und Einzelpersonen, die Verkauf, Marketing und Verwaltung allein stemmen.' -%}
+    {%- assign outputs = 'Versandfertige Offerten|Antworten auf Kundenmails|Social-Media-Posts für die Woche' -%}
+    {%- assign next = 'Mehr Spezialisten und E-Mail-Zentrale? Weiter geht es mit Start.' -%}
+  {%- when 'start' -%}
+    {%- assign name = 'Start' -%}
+    {%- assign target = 'Selbstständige & kleine Teams' -%}
+    {%- assign pm = 'CHF 49' -%}{%- assign py = 'CHF 490' -%}
+    {%- assign pitch = 'Für Selbstständige und kleine Teams, die spürbar mehr erledigen wollen – ganz ohne zusätzliches Personal.' -%}
+    {%- assign features = '12 spezialisierte KI-Agenten|Bis zu 25 Aufträge pro Tag|Verkauf & Marketing im Team|E-Mail-Zentrale schreibt und beantwortet|Autopilot für wiederkehrende Abläufe|Ein-Klick-Vorlagen & Freigabe-Ausgang' -%}
+    {%- assign fuer = 'Kleine Teams und Selbstständige mit wachsendem Tagesgeschäft.' -%}
+    {%- assign outputs = 'Komplette Marketing-Kampagnen|Automatische E-Mail-Antworten|Wiederkehrende Berichte per Autopilot' -%}
+    {%- assign next = 'Dokumentenanalyse und erste Integrationen? Das bietet Pro.' -%}
+  {%- when 'pro' -%}
+    {%- assign name = 'Pro' -%}
+    {%- assign badge = 'Beliebt' -%}
+    {%- assign hi = true -%}
+    {%- assign target = 'Wachsende Firmen' -%}
+    {%- assign pm = 'CHF 179' -%}{%- assign py = 'CHF 1.790' -%}
+    {%- assign pitch = 'Für wachsende Firmen: mehr Spezialisten arbeiten parallel, in höherer Qualität – inklusive Dokumentenanalyse und erster Integrationen.' -%}
+    {%- assign features = '50 Agenten in Fachteams|Deutlich höheres Tagesvolumen|Dokumentenanalyse (PDF, Word, Excel)|Erste Integrationen & Priorität|Wissensdatenbank (RAG) für Ihr Firmenwissen|Marketing- und Research-Spezialisten parallel' -%}
+    {%- assign fuer = 'Wachsende Firmen, die mehrere Aufgaben gleichzeitig und in hoher Qualität abwickeln.' -%}
+    {%- assign outputs = 'Analysen aus Ihren Dokumenten|Kampagnen mit Recherche-Tiefe|Antworten aus Ihrer Wissensdatenbank' -%}
+    {%- assign next = 'Unbegrenzte Aufträge und alle Integrationen? Dann Business.' -%}
+  {%- when 'business' -%}
+    {%- assign name = 'Business' -%}
+    {%- assign target = 'Grössere Teams & Firmen' -%}
+    {%- assign pm = 'CHF 390' -%}{%- assign py = 'CHF 3.900' -%}
+    {%- assign pitch = 'Ihre virtuelle Abteilung: pro Auftrag stellt das System bis zu einem Dutzend Spezialisten live zusammen – für Unternehmen, die im grossen Stil automatisieren.' -%}
+    {%- assign features = '250 Agenten als digitale Abteilung|Unbegrenzte Aufträge|Alle Integrationen & Workflows|Dynamische Abteilungen pro Auftrag|Team-Zugänge für mehrere Personen|Persönlicher Ansprechpartner' -%}
+    {%- assign fuer = 'Grössere Teams und Firmen mit hohem, wiederkehrendem Arbeitsaufkommen.' -%}
+    {%- assign outputs = 'Ganze Kampagnen-Serien|Automatisierte Abläufe über Abteilungen|Berichte und Analysen im Dauerbetrieb' -%}
+    {%- assign next = 'Maximaler Ausbau mit SLA und On-Premise? Das ist Enterprise.' -%}
+  {%- when 'enterprise' -%}
+    {%- assign name = 'Enterprise' -%}
+    {%- assign target = 'Grosse Unternehmen' -%}
+    {%- assign pm = 'CHF 790' -%}{%- assign py = 'CHF 7.900' -%}
+    {%- assign pitch = 'Der Maximalausbau: bis zu 1000 virtuelle Mitarbeitende, individuelle KI-Strategie und höchste Ansprüche an Sicherheit und Betrieb.' -%}
+    {%- assign features = 'Bis zu 1000 virtuelle Mitarbeitende|Individuelle Integrationen & KI-Strategie|Private Cloud oder On-Premise|Feste Service-Zusagen (SLA)|Persönliche Begleitung & Onboarding|Höchste Sicherheits- und Datenschutz-Optionen' -%}
+    {%- assign fuer = 'Grosse Unternehmen mit besonderen Anforderungen an Umfang, Sicherheit und Betrieb.' -%}
+    {%- assign outputs = 'Automatisierung über das ganze Unternehmen|Individuelle KI-Workflows|Betrieb in Ihrer eigenen Umgebung' -%}
+    {%- assign next = '' -%}
+  {%- else -%}
+    {%- assign name = 'Paket' -%}
+    {%- assign target = '' -%}{%- assign pm = '' -%}{%- assign py = '' -%}
+    {%- assign pitch = '' -%}{%- assign features = '' -%}{%- assign fuer = '' -%}{%- assign outputs = '' -%}{%- assign next = '' -%}
+{%- endcase -%}
+
+<section class="abo-hero{% if hi %} abo-hero-hi{% endif %}">
+  <div class="wrap abo-wrap">
+    <p class="abo-back"><a href="{{ routes.root_url }}#pakete">← Alle Pakete &amp; Preise</a></p>
+    <p class="kicker">AI Command Center · Abo</p>
+    <h1>{% if badge != '' %}<span class="abo-badge">{{ badge }}</span> {% endif %}<span class="grad">{{ name }}</span></h1>
+    <p class="abo-target">{{ target }}</p>
+    <div class="abo-price">
+      {%- if pm == 'Gratis' -%}
+        <span class="abo-pm">Dauerhaft gratis</span>
+      {%- else -%}
+        <span class="abo-pm">{{ pm }}<span> / Monat</span></span>
+        <span class="abo-py">oder {{ py }} / Jahr <em>· 2 Monate gratis</em></span>
+      {%- endif -%}
+    </div>
+    <p class="abo-pitch">{{ pitch }}</p>
+    <div class="abo-cta">
+      {%- if t == 'enterprise' -%}
+        <a href="{{ routes.root_url }}pages/contact" class="btn">Kontakt aufnehmen</a>
+        <a href="{{ routes.all_products_collection_url }}" class="btn btn-ghost">Gratis testen</a>
+      {%- elsif t == 'gratis' -%}
+        <a href="{{ routes.all_products_collection_url }}" class="btn">Kostenlos starten</a>
+        <a href="{{ routes.root_url }}#pakete" class="btn btn-ghost">Pakete vergleichen</a>
+      {%- else -%}
+        <a href="{{ routes.all_products_collection_url }}" class="btn">{{ name }} wählen</a>
+        <a href="{{ routes.all_products_collection_url }}" class="btn btn-ghost">Erst gratis testen</a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+<section class="abo-sec">
+  <div class="wrap abo-wrap abo-cols">
+    <div class="abo-col">
+      <h2>Das ist enthalten</h2>
+      <ul class="abo-list">
+        {%- assign fx = features | split: '|' -%}
+        {%- for f in fx -%}<li>{{ f }}</li>{%- endfor -%}
+      </ul>
+    </div>
+    <div class="abo-col">
+      <h2>Für wen</h2>
+      <p class="abo-fuer">{{ fuer }}</p>
+      <h2 style="margin-top:26px">Was Sie damit erledigen</h2>
+      <ul class="abo-list abo-list-out">
+        {%- assign ox = outputs | split: '|' -%}
+        {%- for o in ox -%}<li>{{ o }}</li>{%- endfor -%}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="abo-sec abo-sec-alt">
+  <div class="wrap abo-wrap">
+    <h2 style="text-align:center">So funktioniert's</h2>
+    <div class="abo-steps">
+      <div class="abo-step"><span class="abo-n">1</span><h3>Paket starten</h3><p>Zugang aktivieren – der Lizenzschlüssel kommt automatisch per E-Mail.</p></div>
+      <div class="abo-step"><span class="abo-n">2</span><h3>Firma verbinden</h3><p>Branche, Grösse und Firmenname eintragen – die KI arbeitet auf Sie zugeschnitten.</p></div>
+      <div class="abo-step"><span class="abo-n">3</span><h3>Aufträge erledigen lassen</h3><p>Auftrag eingeben – Ihre KI-Abteilung liefert das fertige, geprüfte Ergebnis.</p></div>
+    </div>
+    {%- if next != '' -%}<p class="abo-next">{{ next }}</p>{%- endif -%}
+  </div>
+</section>
+
+<section class="abo-sec">
+  <div class="wrap abo-wrap abo-final">
+    <h2>Bereit für {{ name }}?</h2>
+    <p>Kostenlos testen, ohne Kreditkarte. Jederzeit kündbar. Schweizer Anbieter.</p>
+    <div class="abo-cta">
+      {%- if t == 'enterprise' -%}
+        <a href="{{ routes.root_url }}pages/contact" class="btn">Kontakt aufnehmen</a>
+      {%- else -%}
+        <a href="{{ routes.all_products_collection_url }}" class="btn">{% if t == 'gratis' %}Kostenlos starten{% else %}{{ name }} wählen{% endif %}</a>
+      {%- endif -%}
+      <a href="{{ routes.root_url }}#pakete" class="btn btn-ghost">Alle Pakete</a>
+    </div>
+  </div>
+</section>
