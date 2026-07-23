@@ -3,6 +3,7 @@ import Link from "next/link";
 import { RECHERCHE_QUELLEN } from "@/lib/agents/browser";
 import AgentWorld, { type WorldAgent } from "@/app/components/AgentWorld";
 import RoiRechner from "@/app/components/RoiRechner";
+import StatZahl from "@/app/components/StatZahl";
 
 /** Demo-Belegschaft für die lebendige Büro-Animation auf der Startseite. */
 const BUERO_AGENTS: WorldAgent[] = [
@@ -720,7 +721,7 @@ export default function Home() {
               ].map(([wert, label, note, grad]) => (
                 <div key={label} className="acc-card acc-card-hover rounded-2xl p-6">
                   <p className={`bg-gradient-to-r ${grad} bg-clip-text text-4xl font-bold text-transparent`}>
-                    {wert}
+                    <StatZahl text={wert} />
                   </p>
                   <p className="mt-1 font-semibold">{label}</p>
                   <p className="mt-1 text-xs text-[#6f6557]">{note}</p>
