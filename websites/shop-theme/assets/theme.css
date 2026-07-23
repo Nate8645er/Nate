@@ -303,3 +303,16 @@ a.uc:hover{border-color:var(--ora);box-shadow:0 24px 54px -32px rgba(255,120,40,
 .price-grid-6 .pcard-hi{transform:translateY(-6px);border-width:2px}
 .price-grid-6 .pcard-hi .price{color:var(--or2)}
 @media(max-width:900px){.price-grid-6 .pcard-hi{transform:none}}
+/* Fix: weisser Overscroll-Balken unten (Canvas-Hintergrund) dunkel wie Footer/Hero */
+html{background:#07070d}
+/* Erklär-Video kleiner */
+.spot{padding:56px 0}
+.spot-stage{max-width:560px}
+/* Kompakter Mobile-Header (weniger hoch) */
+@media(max-width:720px){
+  .hd-in{flex-wrap:wrap;padding-top:8px;padding-bottom:8px;gap:10px}
+  .nav-burger{order:1;width:34px;height:34px}
+  .hd-logo{order:2;font-size:15px;margin-right:auto}
+  .hd-cta{order:3;padding:6px 13px;font-size:13px}
+  .hd-nav{order:4}
+}
