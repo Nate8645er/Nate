@@ -25,11 +25,27 @@ jeweilige Teil automatisch aktiv. Vorlage: `.env.example`.
    Der Endpoint verifiziert jede Signatur (HMAC-SHA256, konstante Zeit,
    5-Minuten-Replay-Schutz) und weist gefälschte Aufrufe mit 400 ab.
 3. **Kundenportal** (`POST /api/portal`): öffnet das Stripe-Billing-Portal für
-   Rechnungen/Kündigung. **Sicherheit:** Die Route ist bewusst deaktiviert (501),
-   bis Login + Konto→Stripe-Zuordnung stehen. Die `customerId` wird dann
-   serverseitig aus der Sitzung abgeleitet – **nie** aus dem Request-Body
-   (sonst IDOR-Zugriff auf fremde Rechnungen). Die Portal-Funktion selbst
-   (`billingPortalSessionErstellen` in `lib/stripe.ts`) ist fertig und getestet.
+   Rechnungen/Kündigung. **Sicherheit:** Die `customerId` wird serverseitig aus
+   der Sitzung abgeleitet (acc_rt-Cookie → Supabase-User → E-Mail → gespeicherte
+   customerId) – **nie** aus dem Request-Body (kein IDOR). Aktiv, sobald Login
+   (Supabase) **und** Kunden-Store (Schritt 4) konfiguriert sind; sonst 501.
+
+## 3) Plan-Freischaltung & Kunden-Store (Supabase Postgres)
+Damit nach dem Kauf automatisch das richtige Paket freigeschaltet und das Portal
+den Kunden findet, braucht es eine Tabelle plus einen serverseitigen Schlüssel.
+
+| Variable | Woher | Hinweis |
+|---|---|---|
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Project Settings → API (service_role) | **serverseitiges Geheimnis**, umgeht RLS, nie `NEXT_PUBLIC_` |
+| `APP_URL` | Ihre öffentliche Shop-URL | sichere Return-URL fürs Portal |
+
+**Schritte**
+1. `supabase/schema.sql` im Supabase-SQL-Editor ausführen (Tabelle `abos` mit
+   RLS **an**, ohne Client-Policy – Zugriff nur über den Service-Role-Key).
+2. `SUPABASE_SERVICE_ROLE_KEY` und `APP_URL` setzen.
+3. Danach schaltet `/api/stripe/webhook` verifizierte Käufe automatisch frei
+   (Upsert auf `customer_id`, idempotent) und `/api/portal` wird für angemeldete
+   Kund:innen mit hinterlegtem Abo aktiv.
 
 > **Anschlusspunkt:** Die eigentliche Plan-Freischaltung nach einem verifizierten
 > Webhook (aus `metadata.planId`) hängt von der Kundendatenbank ab und ist in
@@ -58,13 +74,13 @@ jeweilige Teil automatisch aktiv. Vorlage: `.env.example`.
   Client-State. Der geheime `service_role`-Key gehört **nicht** in dieses Projekt.
 
 ## Sicherheits-To-dos vor dem Live-Gang
-Aus dem Security-Review bereits umgesetzt: Webhook-Signatur konstante Zeit +
-Replay-Schutz, Refresh-Token nur als HttpOnly/Secure-Cookie, Stripe-Key nie im
-Client, generische Auth-/Webhook-Fehlermeldungen (keine User-Enumeration), Portal
-gegen IDOR gesperrt. **Noch offen (mit der Kundendatenbank):**
-- Konto→`customerId`-Zuordnung serverseitig, dann Portal aus der Sitzung freigeben.
-- `origin`/Redirect-Basis gegen eine Allowlist (App-URL) prüfen statt Header trauen.
-- Rate-Limit auf `/api/auth/*` (IP/Konto) gegen Brute-Force/Enumeration.
+Umgesetzt: Webhook-Signatur konstante Zeit + Replay-Schutz, Refresh-Token nur als
+HttpOnly/Secure-Cookie, Stripe-/Service-Role-Key nie im Client, generische Auth-/
+Webhook-Fehlermeldungen (keine User-Enumeration), Portal ohne IDOR (customerId aus
+verifizierter Sitzung), Return-URL aus `APP_URL`-Allowlist, RLS auf `abos` an.
+**Noch offen:**
+- Rate-Limit auf `/api/auth/*` (IP/Konto) gegen Brute-Force/Enumeration
+  (braucht einen gemeinsamen Zähler-Store, z. B. Upstash/Redis).
 
 ## Schnelltest ohne Live-Keys
 `npm test` prüft beide Wege inkl. „nicht-konfiguriert", Webhook-Signatur

@@ -1,17 +1,18 @@
 /**
  * POST /api/stripe/webhook
  *
- * Empfängt Stripe-Ereignisse (z. B. checkout.session.completed) und verifiziert
- * die Signatur gegen STRIPE_WEBHOOK_SECRET, bevor irgendetwas freigeschaltet wird.
- * Ohne Secret antwortet die Route ehrlich 501 „nicht-konfiguriert"; bei ungültiger
- * Signatur 400. So kann niemand per gefälschtem Webhook ein Abo aktivieren.
+ * Empfängt Stripe-Ereignisse und verifiziert die Signatur gegen
+ * STRIPE_WEBHOOK_SECRET, bevor irgendetwas freigeschaltet wird. Ohne Secret
+ * ehrlich 501; bei ungültiger Signatur 400. So kann niemand per gefälschtem
+ * Webhook ein Abo aktivieren.
  *
- * Die eigentliche Freischaltung (Plan aus metadata.planId → Lizenz/Datensatz)
- * hängt von der gewählten Kundendatenbank ab und wird hier bewusst als klar
- * markierter Anschlusspunkt gehalten – kein stiller Platzhalter in der Logik.
+ * Nach erfolgreicher Verifikation wird der Plan aus dem Ereignis gelesen und –
+ * sofern der Kunden-Store konfiguriert ist – das Abo freigeschaltet/aktualisiert.
+ * Der Empfang wird immer mit 200 quittiert, damit Stripe nicht erneut zustellt.
  */
 
-import { stripeWebhookVerifizieren } from "@/lib/stripe";
+import { stripeWebhookVerifizieren, webhookEreignisDeuten } from "@/lib/stripe";
+import { aboFreischalten, kundenStoreKonfiguriert } from "@/lib/kunden";
 
 export const runtime = "nodejs";
 
@@ -38,17 +39,24 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ error: "ungueltiger-body" }, { status: 400 });
   }
 
-  // Verifizierte Ereignisse: hier wird nach Anbindung der Kundendatenbank der
-  // Plan freigeschaltet. Bis dahin bestätigen wir den Empfang (200), damit
-  // Stripe nicht erneut zustellt.
-  switch (event.type) {
-    case "checkout.session.completed":
-    case "customer.subscription.updated":
-    case "customer.subscription.deleted":
-      // planId liegt in event.data.object.metadata.planId bzw. subscription.metadata.
-      break;
-    default:
-      break;
+  const abo = webhookEreignisDeuten(event);
+  if (abo) {
+    if (kundenStoreKonfiguriert()) {
+      const r = await aboFreischalten({
+        customer_id: abo.customerId,
+        email: abo.email,
+        plan_id: abo.planId,
+        status: abo.status,
+      });
+      if (!r.ok) {
+        // 500 → Stripe stellt später erneut zu (Idempotenz via Upsert).
+        console.error("[stripe/webhook] Freischaltung fehlgeschlagen:", r.error, abo.customerId);
+        return Response.json({ error: "freischaltung-fehlgeschlagen" }, { status: 500 });
+      }
+    } else {
+      // Verifiziert empfangen, aber Kunden-Store noch nicht angebunden.
+      console.warn("[stripe/webhook] Abo-Event ohne Kunden-Store (kein Store konfiguriert):", abo.planId);
+    }
   }
 
   return Response.json({ received: true });

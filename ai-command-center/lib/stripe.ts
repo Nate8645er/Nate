@@ -151,3 +151,52 @@ export function stripeWebhookVerifizieren(
   });
   return treffer ? { ok: true } : { ok: false, grund: "ungueltig" };
 }
+
+export interface WebhookAbo {
+  customerId: string;
+  email: string | null;
+  planId: string;
+  status: string;
+}
+
+/**
+ * Liest aus einem (bereits signatur-verifizierten) Stripe-Ereignis die für die
+ * Freischaltung nötigen Felder – robust über die relevanten Event-Typen.
+ * Gibt null zurück, wenn das Ereignis nicht abo-relevant ist oder Pflichtfelder
+ * (customerId/planId) fehlen. Reine Funktion → gut testbar.
+ */
+export function webhookEreignisDeuten(event: {
+  type?: string;
+  data?: { object?: Record<string, unknown> };
+}): WebhookAbo | null {
+  const typ = event.type ?? "";
+  const obj = event.data?.object;
+  if (!obj) return null;
+
+  const relevant =
+    typ === "checkout.session.completed" ||
+    typ === "customer.subscription.created" ||
+    typ === "customer.subscription.updated" ||
+    typ === "customer.subscription.deleted";
+  if (!relevant) return null;
+
+  const customerId = typeof obj.customer === "string" ? obj.customer : "";
+  const metadata = (obj.metadata as Record<string, unknown> | undefined) ?? {};
+  const planId = typeof metadata.planId === "string" ? metadata.planId : "";
+
+  // E-Mail liegt je nach Event an unterschiedlicher Stelle.
+  const details = obj.customer_details as { email?: unknown } | undefined;
+  const email =
+    typeof obj.customer_email === "string" ? obj.customer_email
+      : typeof details?.email === "string" ? details.email
+        : null;
+
+  // Status: bei Kündigung "canceled", bei Checkout "active", sonst vom Objekt.
+  const status =
+    typ === "customer.subscription.deleted" ? "canceled"
+      : typeof obj.status === "string" ? obj.status
+        : "active";
+
+  if (!customerId || !planId) return null;
+  return { customerId, email, planId, status };
+}

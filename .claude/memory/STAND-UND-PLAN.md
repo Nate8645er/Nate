@@ -85,6 +85,18 @@ Aktuell sind die ~14 echten Seiten noch im ALTEN dunklen HUD-Look
   - Tests: `test/zahlung-login.test.ts` (14) grün; Suite 77 grün; tsc + build ok.
   - Offener Anschlusspunkt: Plan-Freischaltung aus verifiziertem Webhook braucht
     Kundendatenbank (Punkt 1 unten) — in webhook/route.ts klar markiert.
+- **Kundendatenbank + Plan-Freischaltung (2026-07):**
+  - `lib/kunden.ts`: Supabase-PostgREST-Store (Service-Role), `aboFreischalten`
+    (idempotenter Upsert), `aboLesen`, `customerIdFuerEmail`. Ehrlich
+    „nicht-konfiguriert" ohne SUPABASE_SERVICE_ROLE_KEY.
+  - `lib/stripe.ts`: + `webhookEreignisDeuten` (reine Funktion, Event → Abo).
+  - `lib/supabase.ts`: + `sitzungBenutzer` (Refresh-Token → verifizierter User).
+  - Webhook schaltet verifizierte Käufe automatisch frei; Portal leitet
+    customerId sicher aus der Sitzung ab (kein IDOR), Return-URL aus APP_URL.
+  - `supabase/schema.sql` (Tabelle `abos`, RLS an, nur Service-Role-Zugriff).
+  - `.env.example` + `docs/ZAHLUNG-UND-LOGIN.md` erweitert.
+  - Tests: `test/kunden.test.ts` (15) grün; Suite 92 grün; tsc + build ok.
+  - Rest-Härtung offen: Rate-Limit auf /api/auth/* (braucht Redis/Upstash).
 
 ## NÄCHSTE OFFENE AUFGABEN (Reihenfolge)
 1. **Fundament (Enterprise-Blocker, braucht Provider-Entscheidung + Zustimmung

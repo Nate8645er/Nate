@@ -88,3 +88,19 @@ export async function registrieren(
   if (!email || !passwort) return { ok: false, error: "ungueltige-daten" };
   return authAnfrage("/auth/v1/signup", { email, password: passwort }, env, fetchImpl);
 }
+
+/**
+ * Verifiziert eine Sitzung anhand des Refresh-Tokens (aus dem HttpOnly-Cookie)
+ * und gibt den zugehörigen Benutzer zurück – oder null, wenn ungültig/abgelaufen.
+ * So kann der Server serverseitig feststellen, WER anfragt, ohne dem Client zu
+ * vertrauen (Grundlage für den sicheren Portal-Zugriff).
+ */
+export async function sitzungBenutzer(
+  refreshToken: string | undefined,
+  env: SupabaseEnv = process.env,
+  fetchImpl: typeof fetch = fetch,
+): Promise<{ id: string; email: string | null } | null> {
+  if (!refreshToken || !supabaseKonfiguriert(env)) return null;
+  const r = await authAnfrage("/auth/v1/token?grant_type=refresh_token", { refresh_token: refreshToken }, env, fetchImpl);
+  return r.ok ? r.sitzung.user : null;
+}

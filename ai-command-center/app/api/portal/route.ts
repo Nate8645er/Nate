@@ -3,28 +3,52 @@
  *
  * Öffnet das Stripe-Billing-Portal (Rechnungen, Zahlungsmittel, Kündigung).
  *
- * WICHTIG (Sicherheit): Die Stripe-`customerId` DARF NICHT aus dem Request-Body
- * kommen – sonst könnte jemand mit einer fremden `cus_…`-ID das Portal eines
- * anderen Kontos öffnen (IDOR, Zugriff auf fremde Rechnungen/PII). Die ID muss
- * serverseitig aus der authentifizierten Sitzung (acc_rt-Cookie → Supabase-User
- * → gespeicherte customerId) nachgeschlagen werden. Diese Konto-Zuordnung
- * benötigt die Kundendatenbank (siehe docs/ZAHLUNG-UND-LOGIN.md).
+ * Sicherheit: Die Stripe-`customerId` kommt NIE aus dem Request-Body, sondern
+ * wird serverseitig aus der authentifizierten Sitzung abgeleitet:
+ *   acc_rt-Cookie → Supabase-User (verifiziert) → E-Mail → gespeicherte customerId.
+ * So kann niemand über eine fremde `cus_…`-ID ein fremdes Portal öffnen (IDOR).
  *
- * Solange diese sichere Zuordnung nicht existiert, bleibt die Route bewusst
- * deaktiviert (501) – ehrlich „nicht-konfiguriert" statt unsicher offen.
+ * Ehrlich „nicht-konfiguriert" (501), solange Login (Supabase) oder Kunden-Store
+ * fehlen. Kein Abo hinterlegt → 404.
  */
+
+import { billingPortalSessionErstellen } from "@/lib/stripe";
+import { sitzungBenutzer, supabaseKonfiguriert } from "@/lib/supabase";
+import { customerIdFuerEmail, kundenStoreKonfiguriert } from "@/lib/kunden";
 
 export const runtime = "nodejs";
 
-export async function POST(): Promise<Response> {
-  return Response.json(
-    {
-      error: "nicht-konfiguriert",
-      hinweis:
-        "Das Kundenportal wird aktiv, sobald Login (Supabase) und die Konto→Stripe-" +
-        "Zuordnung eingerichtet sind. Die customerId wird dann sicher aus der Sitzung " +
-        "abgeleitet, nie aus der Anfrage übernommen.",
-    },
-    { status: 501 },
-  );
+function refreshTokenAusCookie(cookieHeader: string | null): string | undefined {
+  if (!cookieHeader) return undefined;
+  for (const teil of cookieHeader.split(";")) {
+    const [k, ...rest] = teil.trim().split("=");
+    if (k === "acc_rt") return rest.join("=");
+  }
+  return undefined;
+}
+
+export async function POST(request: Request): Promise<Response> {
+  if (!supabaseKonfiguriert() || !kundenStoreKonfiguriert()) {
+    return Response.json({ error: "nicht-konfiguriert" }, { status: 501 });
+  }
+
+  const rt = refreshTokenAusCookie(request.headers.get("cookie"));
+  const user = await sitzungBenutzer(rt);
+  if (!user?.email) return Response.json({ error: "nicht-angemeldet" }, { status: 401 });
+
+  const customerId = await customerIdFuerEmail(user.email);
+  if (!customerId) return Response.json({ error: "kein-abo" }, { status: 404 });
+
+  // Return-URL aus konfigurierter App-URL (Allowlist) statt aus dem Origin-Header.
+  const origin =
+    process.env.APP_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    new URL(request.url).origin ||
+    "";
+
+  const result = await billingPortalSessionErstellen(customerId, origin);
+  if ("url" in result) return Response.json({ url: result.url });
+
+  const status = result.error === "nicht-konfiguriert" ? 501 : 400;
+  return Response.json({ error: result.error }, { status });
 }
