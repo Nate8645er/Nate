@@ -135,7 +135,7 @@ const S = {
 export const TUTORIALS: readonly TierTutorial[] = [
   {
     plan: "FREE",
-    name: "Free",
+    name: "Gratis",
     kurz: "Lernen Sie Ihr KI-Team in wenigen Minuten kennen.",
     videoVersion: "1.0",
     videoSrc: "/anleitung-free.mp4",
@@ -148,7 +148,7 @@ export const TUTORIALS: readonly TierTutorial[] = [
   },
   {
     plan: "PERSONAL",
-    name: "Personal",
+    name: "Solo",
     kurz: "Ihr persönliches Kern-Team für den Alltag – inkl. E-Mail und Autopilot.",
     videoVersion: "1.0",
     videoSrc: "/anleitung-personal.mp4",
@@ -161,7 +161,7 @@ export const TUTORIALS: readonly TierTutorial[] = [
   },
   {
     plan: "STARTER",
-    name: "Starter",
+    name: "Start",
     kurz: "Ihre kompakte KI-Abteilung inkl. Verkauf & Marketing.",
     videoVersion: "1.0",
     videoSrc: "/anleitung-starter.mp4",
@@ -174,7 +174,7 @@ export const TUTORIALS: readonly TierTutorial[] = [
   },
   {
     plan: "PROFESSIONAL",
-    name: "Professional",
+    name: "Pro",
     kurz: "50 Agenten in Fachteams inkl. Finanzen, Analyse und ersten Integrationen.",
     videoVersion: "1.0",
     videoSrc: "/anleitung-professional.mp4",
