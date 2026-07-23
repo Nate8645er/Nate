@@ -47,8 +47,11 @@ export async function POST(request: Request): Promise<Response> {
         email: abo.email,
         plan_id: abo.planId,
         status: abo.status,
+        event_zeit: abo.eventZeit,
       });
-      if (!r.ok) {
+      // "veraltet" ist kein Fehler: ein neueres Ereignis wurde bereits verarbeitet
+      // → einfach quittieren, nicht erneut zustellen lassen.
+      if (!r.ok && r.error !== "veraltet") {
         // 500 → Stripe stellt später erneut zu (Idempotenz via Upsert).
         console.error("[stripe/webhook] Freischaltung fehlgeschlagen:", r.error, abo.customerId);
         return Response.json({ error: "freischaltung-fehlgeschlagen" }, { status: 500 });

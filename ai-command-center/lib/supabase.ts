@@ -19,7 +19,7 @@ export function supabaseKonfiguriert(env: SupabaseEnv = process.env): boolean {
 export interface AuthErgebnis {
   access_token: string;
   refresh_token: string;
-  user: { id: string; email: string | null };
+  user: { id: string; email: string | null; emailBestaetigt: boolean };
 }
 
 type AuthAntwort =
@@ -50,7 +50,9 @@ async function authAnfrage(
         : typeof data.error_description === "string" ? data.error_description : undefined;
       return { ok: false, error: "auth-fehler", meldung };
     }
-    const user = data.user as { id?: string; email?: string } | undefined;
+    const user = data.user as
+      | { id?: string; email?: string; email_confirmed_at?: string | null; confirmed_at?: string | null }
+      | undefined;
     if (typeof data.access_token !== "string" || !user?.id) {
       return { ok: false, error: "auth-fehler" };
     }
@@ -59,7 +61,11 @@ async function authAnfrage(
       sitzung: {
         access_token: data.access_token,
         refresh_token: typeof data.refresh_token === "string" ? data.refresh_token : "",
-        user: { id: user.id, email: user.email ?? null },
+        user: {
+          id: user.id,
+          email: user.email ?? null,
+          emailBestaetigt: Boolean(user.email_confirmed_at || user.confirmed_at),
+        },
       },
     };
   } catch {
@@ -99,8 +105,12 @@ export async function sitzungBenutzer(
   refreshToken: string | undefined,
   env: SupabaseEnv = process.env,
   fetchImpl: typeof fetch = fetch,
-): Promise<{ id: string; email: string | null } | null> {
+): Promise<{ id: string; email: string | null; emailBestaetigt: boolean } | null> {
   if (!refreshToken || !supabaseKonfiguriert(env)) return null;
   const r = await authAnfrage("/auth/v1/token?grant_type=refresh_token", { refresh_token: refreshToken }, env, fetchImpl);
-  return r.ok ? r.sitzung.user : null;
+  // Nur bestätigte E-Mails gelten als Identität – sonst könnte jemand ein Konto
+  // mit fremder E-Mail anlegen und (bei deaktivierter Supabase-Bestätigung) auf
+  // das fremde Kundenportal zugreifen. Schutz unabhängig von der Dashboard-Einstellung.
+  if (!r.ok || !r.sitzung.user.emailBestaetigt) return null;
+  return r.sitzung.user;
 }

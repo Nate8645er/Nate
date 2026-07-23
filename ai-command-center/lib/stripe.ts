@@ -157,16 +157,22 @@ export interface WebhookAbo {
   email: string | null;
   planId: string;
   status: string;
+  /** Event-Zeit (Unix-Sekunden) für Reihenfolge-Schutz beim Upsert. */
+  eventZeit: number;
 }
+
+/** Erlaubte planId-Werte (aus den echten Paketen) – Defense-in-Depth. */
+const ERLAUBTE_PLANS = new Set<string>(PAKETE.map((p) => p.planId));
 
 /**
  * Liest aus einem (bereits signatur-verifizierten) Stripe-Ereignis die für die
  * Freischaltung nötigen Felder – robust über die relevanten Event-Typen.
- * Gibt null zurück, wenn das Ereignis nicht abo-relevant ist oder Pflichtfelder
- * (customerId/planId) fehlen. Reine Funktion → gut testbar.
+ * Gibt null zurück, wenn das Ereignis nicht abo-relevant ist, Pflichtfelder
+ * (customerId/planId) fehlen oder die planId unbekannt ist. Reine Funktion.
  */
 export function webhookEreignisDeuten(event: {
   type?: string;
+  created?: number;
   data?: { object?: Record<string, unknown> };
 }): WebhookAbo | null {
   const typ = event.type ?? "";
@@ -197,6 +203,13 @@ export function webhookEreignisDeuten(event: {
       : typeof obj.status === "string" ? obj.status
         : "active";
 
-  if (!customerId || !planId) return null;
-  return { customerId, email, planId, status };
+  // Event-Zeit für Reihenfolge-Schutz: bevorzugt event.created, sonst obj.created.
+  const eventZeit =
+    typeof event.created === "number" ? event.created
+      : typeof obj.created === "number" ? obj.created
+        : 0;
+
+  // Unbekannte planId (fehlerhafte/zukünftige Metadaten) verwerfen.
+  if (!customerId || !planId || !ERLAUBTE_PLANS.has(planId)) return null;
+  return { customerId, email, planId, status, eventZeit };
 }

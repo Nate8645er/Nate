@@ -21,6 +21,8 @@ export interface Abo {
   email: string | null;
   plan_id: string;
   status: string;
+  /** Event-Zeit (Unix-Sekunden) des zugrunde liegenden Stripe-Ereignisses. */
+  event_zeit?: number;
 }
 
 export function kundenStoreKonfiguriert(env: KundenEnv = process.env): boolean {
@@ -45,9 +47,21 @@ export async function aboFreischalten(
   abo: Abo,
   env: KundenEnv = process.env,
   fetchImpl: typeof fetch = fetch,
-): Promise<{ ok: true } | { ok: false; error: "nicht-konfiguriert" | "ungueltige-daten" | "db-fehler" }> {
+): Promise<{ ok: true } | { ok: false; error: "nicht-konfiguriert" | "ungueltige-daten" | "db-fehler" | "veraltet" }> {
   if (!kundenStoreKonfiguriert(env)) return { ok: false, error: "nicht-konfiguriert" };
   if (!abo.customer_id || !abo.plan_id) return { ok: false, error: "ungueltige-daten" };
+
+  // Reihenfolge-Schutz: Stripe garantiert keine Zustellreihenfolge und stellt bei
+  // Fehlern erneut zu. Ein verspätetes "updated" (active) darf ein späteres
+  // "deleted" (canceled) nicht überschreiben. Nur anwenden, wenn das Ereignis
+  // neuer ist als der gespeicherte Stand.
+  if (abo.event_zeit && abo.event_zeit > 0) {
+    const vorhanden = await aboLesen(abo.customer_id, env, fetchImpl);
+    if (vorhanden && (vorhanden.event_zeit ?? 0) > abo.event_zeit) {
+      return { ok: false, error: "veraltet" };
+    }
+  }
+
   const { basis, key } = rest(env);
   try {
     const res = await fetchImpl(`${basis}/abos?on_conflict=customer_id`, {
@@ -64,6 +78,7 @@ export async function aboFreischalten(
         email: abo.email,
         plan_id: abo.plan_id,
         status: abo.status,
+        event_zeit: abo.event_zeit ?? 0,
       }),
     });
     return res.ok ? { ok: true } : { ok: false, error: "db-fehler" };

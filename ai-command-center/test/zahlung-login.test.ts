@@ -88,7 +88,7 @@ describe("Supabase-Login", () => {
     const r = await anmelden("a@b.ch", "pw", cfg, fakeFetch);
     expect(r.ok).toBe(true);
     if (r.ok) {
-      expect(r.sitzung.user).toEqual({ id: "u1", email: "a@b.ch" });
+      expect(r.sitzung.user).toEqual({ id: "u1", email: "a@b.ch", emailBestaetigt: false });
       expect(r.sitzung.access_token).toBe("at");
     }
     expect(ziel).toBe("https://abcdefgh.supabase.co/auth/v1/token?grant_type=password");

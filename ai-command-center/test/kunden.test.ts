@@ -82,12 +82,13 @@ describe("aboLesen & customerIdFuerEmail", () => {
 });
 
 describe("webhookEreignisDeuten", () => {
-  it("checkout.session.completed → customerId/planId/email/status", () => {
+  it("checkout.session.completed → customerId/planId/email/status/eventZeit", () => {
     const abo = webhookEreignisDeuten({
       type: "checkout.session.completed",
+      created: 1700,
       data: { object: { customer: "cus_1", customer_details: { email: "k@f.ch" }, metadata: { planId: "PROFESSIONAL" } } },
     });
-    expect(abo).toEqual({ customerId: "cus_1", email: "k@f.ch", planId: "PROFESSIONAL", status: "active" });
+    expect(abo).toEqual({ customerId: "cus_1", email: "k@f.ch", planId: "PROFESSIONAL", status: "active", eventZeit: 1700 });
   });
   it("subscription.deleted → status canceled", () => {
     const abo = webhookEreignisDeuten({
@@ -102,6 +103,40 @@ describe("webhookEreignisDeuten", () => {
   it("ohne customerId/planId => null", () => {
     expect(webhookEreignisDeuten({ type: "checkout.session.completed", data: { object: { metadata: {} } } })).toBeNull();
   });
+  it("unbekannte planId => null (Defense-in-Depth)", () => {
+    expect(webhookEreignisDeuten({
+      type: "checkout.session.completed",
+      data: { object: { customer: "cus_4", metadata: { planId: "HACKER_PLAN" } } },
+    })).toBeNull();
+  });
+});
+
+describe("aboFreischalten Reihenfolge-Schutz", () => {
+  it("verwirft veraltetes Ereignis (älter als gespeicherter Stand)", async () => {
+    const fakeFetch = (async (u: string) => {
+      // Nur der Lese-Aufruf wird erwartet; ein Schreibaufruf wäre ein Fehler.
+      expect(u).toContain("customer_id=eq.cus_r");
+      return { ok: true, json: async () => [{ customer_id: "cus_r", email: null, plan_id: "pro", status: "canceled", event_zeit: 2000 }] };
+    }) as unknown as typeof fetch;
+    const r = await aboFreischalten(
+      { customer_id: "cus_r", email: null, plan_id: "pro", status: "active", event_zeit: 1000 },
+      CFG, fakeFetch,
+    );
+    expect(r).toEqual({ ok: false, error: "veraltet" });
+  });
+  it("wendet neueres Ereignis an", async () => {
+    let geschrieben = false;
+    const fakeFetch = (async (u: string, i?: RequestInit) => {
+      if (i?.method === "POST") { geschrieben = true; return { ok: true, json: async () => ({}) }; }
+      return { ok: true, json: async () => [{ customer_id: "cus_r", email: null, plan_id: "pro", status: "active", event_zeit: 1000 }] };
+    }) as unknown as typeof fetch;
+    const r = await aboFreischalten(
+      { customer_id: "cus_r", email: null, plan_id: "pro", status: "canceled", event_zeit: 3000 },
+      CFG, fakeFetch,
+    );
+    expect(r).toEqual({ ok: true });
+    expect(geschrieben).toBe(true);
+  });
 });
 
 describe("sitzungBenutzer", () => {
@@ -112,13 +147,19 @@ describe("sitzungBenutzer", () => {
   it("ohne Token null", async () => {
     expect(await sitzungBenutzer(undefined, SB)).toBeNull();
   });
-  it("gültiges Refresh-Token → Benutzer", async () => {
+  it("gültiges Refresh-Token mit bestätigter E-Mail → Benutzer", async () => {
     const fakeFetch = (async (u: string) => {
       expect(u).toContain("grant_type=refresh_token");
-      return { ok: true, json: async () => ({ access_token: "at", refresh_token: "rt2", user: { id: "u9", email: "a@b.ch" } }) };
+      return { ok: true, json: async () => ({ access_token: "at", refresh_token: "rt2", user: { id: "u9", email: "a@b.ch", email_confirmed_at: "2026-01-01T00:00:00Z" } }) };
     }) as unknown as typeof fetch;
     const u = await sitzungBenutzer("rt", SB, fakeFetch);
-    expect(u).toEqual({ id: "u9", email: "a@b.ch" });
+    expect(u).toEqual({ id: "u9", email: "a@b.ch", emailBestaetigt: true });
+  });
+  it("unbestätigte E-Mail → null (Schutz gegen Konto-Übernahme)", async () => {
+    const fakeFetch = (async () => ({
+      ok: true, json: async () => ({ access_token: "at", refresh_token: "rt2", user: { id: "u9", email: "opfer@b.ch" } }),
+    })) as unknown as typeof fetch;
+    expect(await sitzungBenutzer("rt", SB, fakeFetch)).toBeNull();
   });
   it("abgelaufenes Token → null", async () => {
     const fakeFetch = (async () => ({ ok: false, json: async () => ({ msg: "expired" }) })) as unknown as typeof fetch;

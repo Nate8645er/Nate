@@ -74,13 +74,18 @@ den Kunden findet, braucht es eine Tabelle plus einen serverseitigen Schlüssel.
   Client-State. Der geheime `service_role`-Key gehört **nicht** in dieses Projekt.
 
 ## Sicherheits-To-dos vor dem Live-Gang
-Umgesetzt: Webhook-Signatur konstante Zeit + Replay-Schutz, Refresh-Token nur als
-HttpOnly/Secure-Cookie, Stripe-/Service-Role-Key nie im Client, generische Auth-/
-Webhook-Fehlermeldungen (keine User-Enumeration), Portal ohne IDOR (customerId aus
-verifizierter Sitzung), Return-URL aus `APP_URL`-Allowlist, RLS auf `abos` an.
-**Noch offen:**
+Umgesetzt (zwei Security-Reviews): Webhook-Signatur konstante Zeit + Replay-Schutz,
+Refresh-Token nur als HttpOnly/Secure-Cookie, Stripe-/Service-Role-Key nie im
+Client, generische Auth-/Webhook-Fehlermeldungen (keine User-Enumeration), Portal
+ohne IDOR (customerId aus verifizierter Sitzung), **Portal nur mit bestätigter
+E-Mail** (Schutz gegen Konto-Übernahme unabhängig von der Supabase-Einstellung),
+Return-URL aus `APP_URL`-Allowlist, RLS auf `abos` an, **Event-Reihenfolge-Schutz**
+beim Upsert (verspätetes „updated" reaktiviert kein gekündigtes Abo), **planId
+gegen die echten Pakete validiert**. **Noch offen:**
 - Rate-Limit auf `/api/auth/*` (IP/Konto) gegen Brute-Force/Enumeration
   (braucht einen gemeinsamen Zähler-Store, z. B. Upstash/Redis).
+- Empfehlung: In Supabase die E-Mail-Bestätigung aktiv lassen (Authentication →
+  Providers → „Confirm email").
 
 ## Schnelltest ohne Live-Keys
 `npm test` prüft beide Wege inkl. „nicht-konfiguriert", Webhook-Signatur
