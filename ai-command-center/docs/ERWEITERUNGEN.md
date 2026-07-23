@@ -83,3 +83,26 @@ serverseitig begrenzt (~6 MB). Nutzt den bestehenden ANTHROPIC_API_KEY.
 
 **Tests:** `test/vision.test.ts` (7) – Konfig, data-URL-Parsing, Request-Aufbau
 (Bild+Frage an Anthropic), ehrliche Fehlerpfade. Suite 156 grün; tsc + build ok.
+
+## Video-/Audio-Aufnahme auf der Kamera-Seite (`lib/aufnahme.ts`, `/kamera`)
+
+**Warum:** Die Kamera-Seite konnte nur Fotos aufnehmen/hochladen. Der Wunsch war,
+auch **Video und Ton** direkt im Browser aufzunehmen und anzuhängen.
+
+**Was neu ist – additiv, keine neue Abhängigkeit:**
+- `lib/aufnahme.ts` (reine, testbare Helfer): `waehleMimeTyp` (erster vom Browser
+  unterstützter Codec aus einer Prioritätsliste), `VIDEO_MIME_KANDIDATEN` /
+  `AUDIO_MIME_KANDIDATEN`, `dauerFormatieren` (mm:ss), `endungFuer` (Dateiendung
+  je MIME).
+- Erweiterung von `app/kamera/KameraClient.tsx` um `MediaRecorder`-Aufnahme:
+  Buttons „Video aufnehmen" / „Audio aufnehmen", Live-Dauer-Anzeige mit
+  Aufnahme-Indikator, „Aufnahme stoppen", anschliessend Wiedergabe
+  (`<video>`/`<audio controls>`) und Download. Die bestehende Foto-/Upload-/
+  Analyse-Funktion bleibt unverändert.
+
+**Ehrlichkeit/Robustheit:** Ohne Kamera-/Mikrofon-Zugriff klarer Hinweis statt
+Fehler; wählt automatisch einen unterstützten Codec (VP9→VP8→WebM→MP4 bzw. Opus),
+ohne Fixierung auf ein Format.
+
+**Tests:** `test/aufnahme.test.ts` (6) – MIME-Auswahl inkl. Priorität/leer/werfende
+Prüf-Funktion, Dauer-Format, Endungs-Ableitung. Suite 162 grün; tsc + build ok.

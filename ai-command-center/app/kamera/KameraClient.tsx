@@ -9,6 +9,13 @@
  */
 
 import { useCallback, useRef, useState } from "react";
+import {
+  waehleMimeTyp,
+  dauerFormatieren,
+  endungFuer,
+  VIDEO_MIME_KANDIDATEN,
+  AUDIO_MIME_KANDIDATEN,
+} from "@/lib/aufnahme";
 
 export default function KameraClient() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -19,6 +26,73 @@ export default function KameraClient() {
   const [ergebnis, setErgebnis] = useState<string | null>(null);
   const [fehler, setFehler] = useState<string | null>(null);
   const [laeuft, setLaeuft] = useState(false);
+
+  // Video-/Audio-Aufnahme
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<BlobPart[]>([]);
+  const aufnahmeStreamRef = useRef<MediaStream | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [aufnahmeModus, setAufnahmeModus] = useState<"aus" | "video" | "audio">("aus");
+  const [aufnahmeLaeuft, setAufnahmeLaeuft] = useState(false);
+  const [dauer, setDauer] = useState(0);
+  const [medienUrl, setMedienUrl] = useState<string | null>(null);
+  const [medienTyp, setMedienTyp] = useState<"video" | "audio" | null>(null);
+
+  const aufnahmeStarten = useCallback(async (modus: "video" | "audio") => {
+    setFehler(null);
+    setMedienUrl(null);
+    setMedienTyp(null);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia(
+        modus === "video" ? { video: { facingMode: "environment" }, audio: true } : { audio: true },
+      );
+      aufnahmeStreamRef.current = stream;
+      if (modus === "video" && videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.muted = true;
+        await videoRef.current.play();
+        setKameraAn(true);
+      }
+      const kandidaten = modus === "video" ? VIDEO_MIME_KANDIDATEN : AUDIO_MIME_KANDIDATEN;
+      const mime = waehleMimeTyp(kandidaten, (t) =>
+        typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported(t),
+      );
+      const rec = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
+      chunksRef.current = [];
+      rec.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
+      rec.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: rec.mimeType || (modus === "video" ? "video/webm" : "audio/webm") });
+        setMedienUrl(URL.createObjectURL(blob));
+        setMedienTyp(modus);
+        aufnahmeStreamRef.current?.getTracks().forEach((t) => t.stop());
+        aufnahmeStreamRef.current = null;
+        setKameraAn(false);
+      };
+      recorderRef.current = rec;
+      rec.start();
+      setAufnahmeModus(modus);
+      setAufnahmeLaeuft(true);
+      setDauer(0);
+      timerRef.current = setInterval(() => setDauer((d) => d + 1), 1000);
+    } catch {
+      setFehler("Aufnahme nicht möglich (kein Zugriff auf Kamera/Mikrofon). Sie können ein Bild hochladen.");
+    }
+  }, []);
+
+  const aufnahmeStoppen = useCallback(() => {
+    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+    recorderRef.current?.state !== "inactive" && recorderRef.current?.stop();
+    setAufnahmeLaeuft(false);
+    setAufnahmeModus("aus");
+  }, []);
+
+  const medienHerunterladen = useCallback(() => {
+    if (!medienUrl || !medienTyp) return;
+    const a = document.createElement("a");
+    a.href = medienUrl;
+    a.download = `aufnahme-${medienTyp}.${endungFuer(medienTyp === "video" ? "video/webm" : "audio/webm")}`;
+    a.click();
+  }, [medienUrl, medienTyp]);
 
   const kameraStarten = useCallback(async () => {
     setFehler(null);
@@ -125,10 +199,34 @@ export default function KameraClient() {
             Bild hochladen
             <input type="file" accept="image/*" capture="environment" onChange={bildHochladen} className="hidden" />
           </label>
-          {kameraAn && (
+          {kameraAn && !aufnahmeLaeuft && (
             <button type="button" onClick={kameraStoppen} className="rounded-full border border-[#e0d8c6] bg-white px-5 py-2.5 text-sm font-semibold text-[#4a4335]">
               Kamera aus
             </button>
+          )}
+        </div>
+
+        {/* Video-/Audio-Aufnahme */}
+        <div className="mt-3 flex flex-wrap items-center gap-3 border-t border-[#efe8da] pt-3">
+          {!aufnahmeLaeuft ? (
+            <>
+              <button type="button" onClick={() => aufnahmeStarten("video")} className="rounded-full border border-[#e0d8c6] bg-white px-5 py-2.5 text-sm font-semibold text-[#1c1917] hover:border-[#ffb066] hover:text-[#c25e0e]">
+                ● Video aufnehmen
+              </button>
+              <button type="button" onClick={() => aufnahmeStarten("audio")} className="rounded-full border border-[#e0d8c6] bg-white px-5 py-2.5 text-sm font-semibold text-[#1c1917] hover:border-[#ffb066] hover:text-[#c25e0e]">
+                ● Audio aufnehmen
+              </button>
+            </>
+          ) : (
+            <>
+              <button type="button" onClick={aufnahmeStoppen} className="rounded-full bg-[#d92d20] px-5 py-2.5 text-sm font-bold text-white hover:brightness-105">
+                ■ Aufnahme stoppen
+              </button>
+              <span className="inline-flex items-center gap-2 text-sm font-semibold text-[#d92d20]">
+                <span className="inline-block h-2.5 w-2.5 animate-pulse rounded-full bg-[#d92d20]" />
+                {aufnahmeModus === "audio" ? "Audio" : "Video"} · {dauerFormatieren(dauer)}
+              </span>
+            </>
           )}
         </div>
 
@@ -139,6 +237,24 @@ export default function KameraClient() {
         {bild && !kameraAn && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={bild} alt="Aufgenommenes Bild" className="mt-4 w-full rounded-xl border border-[#e8e1d2]" />
+        )}
+
+        {/* Aufgenommenes Video/Audio */}
+        {medienUrl && medienTyp === "video" && (
+          <div className="mt-4">
+            <video src={medienUrl} controls playsInline className="w-full rounded-xl border border-[#e8e1d2]" />
+            <button type="button" onClick={medienHerunterladen} className="mt-3 rounded-full border border-[#e0d8c6] bg-white px-5 py-2.5 text-sm font-semibold text-[#1c1917] hover:border-[#ffb066] hover:text-[#c25e0e]">
+              Video herunterladen
+            </button>
+          </div>
+        )}
+        {medienUrl && medienTyp === "audio" && (
+          <div className="mt-4">
+            <audio src={medienUrl} controls className="w-full" />
+            <button type="button" onClick={medienHerunterladen} className="mt-3 block rounded-full border border-[#e0d8c6] bg-white px-5 py-2.5 text-sm font-semibold text-[#1c1917] hover:border-[#ffb066] hover:text-[#c25e0e]">
+              Audio herunterladen
+            </button>
+          </div>
         )}
 
         {fehler && <p className="mt-4 rounded-xl border border-[#f0d9a8] bg-[#fdf8ee] px-4 py-3 text-sm text-[#8a6a2f]">{fehler}</p>}
