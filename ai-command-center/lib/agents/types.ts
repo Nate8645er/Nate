@@ -59,6 +59,12 @@ export interface MissionContext {
   }[];
   /** Ultra-Levelup aktiv (gültiger Ultra-Code zur Stufe): hebt Token-Budget an. */
   ultra?: boolean;
+  /**
+   * Langzeitgedächtnis: relevante, früher gemerkte Fakten (bereits gerankt und
+   * budgetiert). Wird – wie Dokument/Recherche – als Datenblock an die Worker
+   * gehängt. Optional; ohne Einträge bleibt das Verhalten unverändert.
+   */
+  erinnerungen?: { text: string; zeit: number; tags?: string[] }[];
 }
 
 /** Rollen der Agenten im Team (Kern + plan-abhängige Zusatz-Worker). */

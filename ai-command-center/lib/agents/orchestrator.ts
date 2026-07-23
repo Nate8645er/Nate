@@ -30,6 +30,7 @@ import {
   demoSynthesis,
 } from "./demo";
 import { callLLM, hasApiKey, tokenBudgetStore } from "./providers";
+import { erinnerungenBlock } from "./memory";
 import { effektivesTokenBudget } from "@/lib/license";
 import {
   AGENTS,
@@ -745,7 +746,8 @@ export function workerMessages(
       content:
         `Gesamtmission: ${goal}\n\nDeine Teilaufgabe: ${task}` +
         documentBlock(context) +
-        rechercheBlock(context),
+        rechercheBlock(context) +
+        erinnerungenBlock(context?.erinnerungen),
     },
   ];
 }

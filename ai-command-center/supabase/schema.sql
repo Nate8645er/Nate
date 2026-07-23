@@ -32,3 +32,16 @@ create trigger abos_touch_trg before update on public.abos
 -- RLS an, bewusst OHNE Policy für anon/authenticated:
 -- Zugriff nur über den serverseitigen Service-Role-Key.
 alter table public.abos enable row level security;
+
+-- Langzeitgedächtnis: gemerkte Fakten je Nutzer (Erweiterung).
+-- Zugriff nur serverseitig über den SERVICE_ROLE_KEY (RLS an, keine Client-Policy).
+create table if not exists public.gedaechtnis (
+  id         bigint generated always as identity primary key,
+  user_id    text not null,
+  text       text not null,
+  zeit       bigint not null default 0,   -- Unix-Sekunden, fürs Recency-Ranking
+  tags       text[],
+  erstellt   timestamptz not null default now()
+);
+create index if not exists gedaechtnis_user_idx on public.gedaechtnis (user_id, zeit desc);
+alter table public.gedaechtnis enable row level security;
