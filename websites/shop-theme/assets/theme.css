@@ -1,4 +1,4 @@
-:root{--ind:#6366f1;--ora:#ff8c2a;--or2:#ff5f1f;--pin:#ec4899;--ink:#1c1917;--muted:#6f6557;--line:#e8e1d2;--bg:#fdfbf7}
+:root{--ind:#7c5cff;--ora:#ff8c2a;--or2:#ff5f1f;--pin:#ec4899;--cy:#35d9ff;--vi:#7c5cff;--ink:#eef0f8;--muted:#a2a6c0;--line:rgba(255,255,255,.10);--bg:#0a0b14;--sect:#0d0f1c;--card:rgba(255,255,255,.045);--cardln:rgba(255,255,255,.09)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.5}
 img{max-width:100%;height:auto}
@@ -357,3 +357,84 @@ html{background:#07070d}
 .roi-a{background:#eef0ff;border:1px solid #d7d4f5}.roi-a strong{color:#5b52d6}
 .roi-note{margin-top:14px;font-size:11px;line-height:1.5;color:#8a8172}
 @media(max-width:640px){.roi-inputs{grid-template-columns:1fr}.roi-kpi strong{font-size:20px}}
+
+/* ============================================================
+   DARK-PREMIUM SKIN (Team-Empfehlung) – überschreibt die hellen
+   Flächen zu einem durchgehend edlen, dunklen Look mit Glas-Karten,
+   Electric-Akzenten (Cyan/Violett) und dezentem Glow.
+   ============================================================ */
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--ink)}
+/* Premium-Display-Schrift für Überschriften (in theme.liquid geladen) */
+h1,h2,h3,.hero h1,.pdp-buy h1,.price,.zn-n,.hd-logo,.ft-logo{font-family:"Space Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.02em}
+
+/* Header: dunkles Glas */
+.hd{background:rgba(10,11,20,.72);border-bottom:1px solid var(--line)}
+.hd-nav a{color:var(--muted)}.hd-nav a:hover{color:#fff}
+
+/* Dunkle Sektionsflächen (heben sich dezent voneinander ab) */
+.feat,.faq,.steps,.warum,.branchen,.fuerwen{background:var(--bg)}
+.pricing,.quotes,.vergleich,.office,.usecases,.sicher,.roi,.pdp-desc,.pdp-more{background:var(--sect);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+
+/* Glas-Karten überall */
+.card,.pcard,.uc,.fw,.sc,.wcard,.step,.vg,.prod,.contact-card,.roi-card,.quote-grid blockquote,.faq details,.brc{
+  background:var(--card);border:1px solid var(--cardln);backdrop-filter:blur(10px);
+  box-shadow:0 24px 60px -34px rgba(0,0,0,.7)}
+.card:hover,.uc:hover,.fw:hover,.sc:hover,.wcard:hover,.prod:hover{border-color:rgba(53,217,255,.45);box-shadow:0 26px 60px -30px rgba(53,217,255,.28)}
+.card h3,.uc h3,.fw h3,.sc h3,.wcard h3,.pcard h3,.step h3,.vg h3,.contact-card h3,.roi-card h3{color:var(--ink)}
+.card p,.uc p,.fw p,.sc p,.wcard p,.step p,.prod-sub,.quote-grid p,.office-sub,.note,.f-hint,.pdp-lead,.pdp-per,.legal-note{color:var(--muted)}
+
+/* Textfarben, die vorher dunkel auf hell waren → hell */
+.pcard li,.pdp-assur li,.faq p,.vg li,.vg-new li,.rte,.rte h2,.rte h3,.contact-card,.contact-card ul,.page,.page li{color:var(--ink)}
+.pcard li,.pdp-assur li,.vg li{border-top:1px solid var(--line);color:var(--muted)}
+.vg-new li{color:#8ef0c0;font-weight:600}.vg-old li{color:#8a88a6}
+.rte{color:var(--muted)}
+
+/* Buttons */
+.btn{box-shadow:0 12px 34px -8px rgba(255,110,30,.55),0 0 0 1px rgba(255,140,42,.15)}
+.btn-ghost{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.22);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--cy);color:var(--cy);background:rgba(53,217,255,.08)}
+
+/* Formularfelder dunkel */
+input,textarea,select,.pdp-select,.roi-inputs select,
+.contact-form input,.contact-form textarea,.contact-form select,.page input,.page textarea,.page select{
+  background:rgba(255,255,255,.05);color:var(--ink);border:1px solid var(--cardln)}
+select option{color:#111}
+.f-label,.pdp-label{color:var(--muted)}
+
+/* Preis-Highlight: Electric-Glow */
+.pcard-hi,.price-grid-6 .pcard-hi{border-color:rgba(124,92,255,.6);box-shadow:0 40px 90px -34px rgba(124,92,255,.5),0 0 0 1px rgba(53,217,255,.15)}
+.price-grid-6 .pcard-hi .price{color:#c9b8ff}
+.vg-new{border-color:rgba(53,217,255,.5);box-shadow:0 30px 80px -34px rgba(53,217,255,.35)}
+.pdp-hero-img,.pdp-thumbs img{background:var(--card);border-color:var(--cardln)}
+
+/* Step-Nummer + Icons mit Glow */
+.step-n{box-shadow:0 0 34px -6px rgba(255,120,40,.7)}
+.uc-ico,.fw-ico,.sc-ico{filter:drop-shadow(0 0 10px rgba(53,217,255,.35))}
+
+/* ROI-Rechner dunkel */
+.roi-card{background:var(--card);border-color:var(--cardln)}
+.roi-inputs label{color:var(--cy)}
+.roi-kpi{background:rgba(255,255,255,.04);border:1px solid var(--cardln)}
+.roi-chf{background:rgba(23,114,69,.14);border-color:rgba(53,217,255,.25)}.roi-chf strong{color:#5fe3a2}
+.roi-h{background:rgba(255,140,42,.12);border-color:rgba(255,140,42,.3)}.roi-h strong{color:#ffb066}
+.roi-a{background:rgba(124,92,255,.14);border-color:rgba(124,92,255,.35)}.roi-a strong{color:#c9b8ff}
+.roi-note,.roi-kpi span{color:var(--muted)}
+
+/* Nav-Burger dunkel */
+.nav-burger{background:var(--card);border:1px solid var(--cardln)}
+.nav-burger span{background:var(--ink)}
+@media(max-width:720px){.hd-nav{border-top:1px solid var(--line)}.hd-nav a{color:var(--ink);border-bottom:1px solid var(--line)}}
+
+/* Umschalter dunkel */
+.pay-track{background:rgba(255,255,255,.12);border-color:var(--cardln)}
+.pay-opt{color:var(--muted)}.pay-m,.pay-y{color:var(--ink)}
+.pay-knob{background:#fff}
+
+/* Formular-Status behalten Semantik, nur dunkler Rahmen */
+.legal-note{background:rgba(255,255,255,.04);border-color:var(--cardln);color:var(--muted)}
+/* dezenter Radial-Glow-Teppich über dem Body */
+body{background:
+  radial-gradient(60% 40% at 15% 0%,rgba(124,92,255,.10),transparent 60%),
+  radial-gradient(50% 40% at 85% 5%,rgba(53,217,255,.08),transparent 60%),
+  var(--bg)}
