@@ -11,7 +11,17 @@
     <div class="hero-badges">
       <span>✓ In Minuten startklar</span><span>✓ 81+ Fähigkeiten</span><span>✓ 365 Tage im Einsatz</span><span>✓ Schweizer Anbieter</span>
     </div>
-    <div class="hero-stage">{% render 'ki-buero' %}</div>
+    <div class="hero-stage">
+      <div class="hero-tickets" aria-hidden="true">
+        <span class="tk t1">📝 Offerte erstellt&nbsp;✓</span>
+        <span class="tk t2">📨 12 Mails beantwortet&nbsp;✓</span>
+        <span class="tk t3">📊 Report fertig&nbsp;✓</span>
+        <span class="tk t4">🌐 Landingpage gebaut&nbsp;✓</span>
+        <span class="tk t5">🧾 Rechnung versandt&nbsp;✓</span>
+        <span class="tk t6">📣 7 Social-Posts geplant&nbsp;✓</span>
+      </div>
+      {% render 'ki-buero' %}
+    </div>
   </div>
 </section>
 
@@ -293,10 +303,24 @@
   </div>
 </section>
 
+<section class="usecases" style="background:#fff">
+  <div class="wrap">
+    <h2><span class="grad">Ratgeber</span> &amp; Wissen</h2>
+    <p class="office-sub">Verständlich erklärt – damit Sie das Beste aus Ihrer KI-Abteilung holen.</p>
+    <div class="uc-grid">
+      <a class="uc" href="{{ routes.root_url }}pages/wissen"><span class="uc-ico">📚</span><h3>Was ist eine KI-Abteilung?</h3><p>Missionen, Fähigkeiten und Limits einfach erklärt.</p></a>
+      <a class="uc" href="{{ routes.root_url }}pages/so-funktionierts"><span class="uc-ico">🚦</span><h3>So funktioniert's</h3><p>In 5 Schritten von der Anmeldung zum Ergebnis.</p></a>
+      <a class="uc" href="{{ routes.root_url }}pages/sicherheit"><span class="uc-ico">🔐</span><h3>Datenschutz &amp; Kontrolle</h3><p>Freigabe-Prinzip, Datenhoheit und Enterprise-Optionen.</p></a>
+    </div>
+    <p style="text-align:center;margin-top:28px"><a class="btn btn-ghost" href="{{ routes.root_url }}pages/ratgeber">Zum Ratgeber →</a></p>
+  </div>
+</section>
+
 <section class="cta">
   <div class="hero-glow" aria-hidden="true"></div>
   <div class="wrap cta-in">
     <h2>Bereit für Ihre <span class="grad">KI-Abteilung</span>?</h2>
-    <a href="{{ routes.all_products_collection_url }}" class="btn">Jetzt starten</a>
+    <p style="color:#b9b7d4;margin:12px 0 0">Gratis testen – ohne Zahlungsmittel, in Minuten startklar.</p>
+    <a href="{{ routes.all_products_collection_url }}" class="btn">Jetzt gratis starten</a>
   </div>
 </section>

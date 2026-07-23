@@ -1,1 +1,9 @@
-<div class="page"><h1>{{ article.title }}</h1><div>{{ article.content }}</div></div>
+<section class="page-hero">
+  <h1>{{ article.title }}</h1>
+  {% if article.published_at %}<p>{{ article.published_at | date: '%d.%m.%Y' }}{% if article.author != blank %} · {{ article.author }}{% endif %}</p>{% endif %}
+</section>
+<div class="page">
+  {% if article.image %}<img src="{{ article.image | image_url: width: 1200 }}" alt="{{ article.title | escape }}" style="border-radius:18px;margin-bottom:24px">{% endif %}
+  <div class="rte">{{ article.content }}</div>
+  <p style="margin-top:32px"><a class="btn" href="{{ routes.all_products_collection_url }}">Gratis ausprobieren</a> <a class="btn btn-ghost" href="{{ blog.url }}">Weitere Beiträge</a></p>
+</div>

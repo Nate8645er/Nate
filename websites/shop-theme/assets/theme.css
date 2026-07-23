@@ -228,3 +228,29 @@ input,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-
 .sc h3{margin:0 0 6px;font-size:17px}
 .sc p{margin:0;color:var(--muted);font-size:14px}
 @media(max-width:860px){.sc-grid{grid-template-columns:1fr}}
+/* Fliegende Auftrags-Ticker über der Büro-Szene */
+.hero-stage{position:relative}
+.hero-tickets{position:absolute;inset:0;z-index:8;pointer-events:none;overflow:hidden;border-radius:24px}
+.tk{position:absolute;left:-32%;white-space:nowrap;padding:7px 14px;border-radius:999px;
+  font-size:13px;font-weight:700;color:#fff;background:linear-gradient(90deg,rgba(20,18,30,.94),rgba(34,28,50,.94));
+  border:1px solid rgba(255,255,255,.18);box-shadow:0 8px 24px -8px rgba(0,0,0,.7),0 0 0 1px rgba(255,140,42,.12);
+  opacity:0;animation:tk-fly 16s linear infinite}
+.tk:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:8px;vertical-align:middle;
+  background:#22c55e;box-shadow:0 0 8px #22c55e}
+.tk.t1{top:10%;animation-delay:0s}
+.tk.t2{top:28%;animation-delay:2.6s}
+.tk.t3{top:46%;animation-delay:5.3s}
+.tk.t4{top:64%;animation-delay:8s}
+.tk.t5{top:20%;animation-delay:10.6s}
+.tk.t6{top:54%;animation-delay:13.3s}
+@keyframes tk-fly{
+  0%{left:-32%;opacity:0}
+  5%{opacity:1}
+  45%{opacity:1}
+  52%{left:108%;opacity:0}
+  100%{left:108%;opacity:0}
+}
+@media(max-width:720px){.tk{font-size:11px;padding:5px 10px}}
+@media(prefers-reduced-motion:reduce){.tk{animation:none;opacity:0}}
+a.uc{transition:border-color .15s,box-shadow .15s}
+a.uc:hover{border-color:var(--ora);box-shadow:0 24px 54px -32px rgba(255,120,40,.5)}
