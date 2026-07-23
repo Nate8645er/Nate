@@ -235,7 +235,13 @@
   .kib-live.code .kib-lscroll span:nth-child(4n+3){ background: linear-gradient(90deg,#ec4899 55%, transparent 55%); }
   .kib-live.code .kib-lscroll span:nth-child(4n){ background: linear-gradient(90deg,#38bdf8 30%, transparent 30%); }
   .kib-live.mail .kib-lscroll span { background: linear-gradient(90deg, color-mix(in srgb,#a78bfa 70%, transparent) 92%, transparent 92%); height:6px; }
-  @media (max-width: 640px) { .kib { height: 360px; } }
+  @media (max-width: 720px) {
+    /* Handy: Szene bekommt echte Breite (wischbar) statt gequetscht – grösser,
+       Beschriftungen wieder lesbar, nichts mehr aufeinander. */
+    .kib { height: 460px; }
+    .kib-tag { font-size: 10px; padding: 3px 9px; }
+    .kib-embed { min-width: 660px; }
+  }
   @media (prefers-reduced-motion: reduce) {
     .kib-scroll, .kib-worker, .kib-arm, .kib-walk .kib-wb, .kib-walk, .kib-sheet, .kib-sheet i, .kib-led, .kib-stack, .kib-mfig, .kib-lscroll, .kib-house::after, .kib-firma, .kib-firma .n { animation: none !important; }
     .kib-sheet { height: 20px; opacity: 1; } .kib-stack { opacity: 1; }

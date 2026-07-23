@@ -332,3 +332,12 @@ html{background:#07070d}
 .pay-toggle:checked ~ .pay-switch .pay-y{color:var(--ink)}
 .pay-toggle:checked ~ .price-grid .price .pm{display:none}
 .pay-toggle:checked ~ .price-grid .price .py{display:inline}
+/* Handy: Büro-Szene im Hero bekommt echte Breite und ist horizontal wischbar
+   (statt gequetscht). Vertikales Seiten-Scrollen bleibt normal. */
+@media(max-width:720px){
+  .hero-stage{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;border-radius:24px;padding-bottom:6px}
+  .hero-stage::-webkit-scrollbar{height:6px}
+  .hero-stage::-webkit-scrollbar-thumb{background:rgba(255,140,42,.5);border-radius:3px}
+  .office .kib-embed{min-width:660px}
+  .office{overflow-x:auto}
+}
