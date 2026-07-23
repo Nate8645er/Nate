@@ -19,6 +19,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import type { AgentEvent, AgentRole, AgentStatus, ArtifactFile } from "@/lib/agents/types";
 import AgentWorld, { type WorldAgent } from "@/app/components/AgentWorld";
+import AboBanner from "@/app/components/AboBanner";
 
 /* ------------------------------- Konstanten ------------------------------- */
 
@@ -1481,6 +1482,7 @@ export default function DashboardPage() {
       </header>
 
       <div className={`relative z-10 mx-auto max-w-7xl px-5 py-8 ${isBusiness ? "pb-16" : ""}`}>
+        <AboBanner />
         <div className={isBusiness ? "rounded-2xl border border-[#ffe0b8] bg-[#fffaf2]/70 p-4 sm:p-6" : ""}>
           {/* Eingabe */}
           <section aria-label="Neue Mission" className={fancy ? "acc-card acc-in rounded-2xl p-5" : ""}>
