@@ -17,6 +17,7 @@ import type { AgentRole, PlanId } from "@/lib/agents/types";
  *  damit rotieren auch die Talent-Pool-Beispiele halbstündlich. */
 export const revalidate = 1800;
 import WorkNav from "@/app/components/WorkNav";
+import PlanGate from "@/app/components/PlanGuard";
 import WorkFooter from "@/app/components/WorkFooter";
 
 export const metadata: Metadata = {
@@ -40,6 +41,7 @@ const PLAN_NOTIZ: Record<PlanId, string> = {
 
 export default function TeamPage() {
   return (
+    <PlanGate bereich="team" titel="Team">
     <div className="acc-page min-h-dvh text-[#1c1917]">
       <div className="relative z-10 mx-auto max-w-5xl px-4 pb-24">
         <header className="flex items-center justify-between border-b border-[#e8e1d2] py-4">
@@ -141,6 +143,7 @@ export default function TeamPage() {
         <WorkFooter variante="hell" />
       </div>
     </div>
+    </PlanGate>
   );
 }
 

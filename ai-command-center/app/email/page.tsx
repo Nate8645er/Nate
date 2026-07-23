@@ -18,6 +18,7 @@
 
 import { useEffect, useState } from "react";
 import WorkNav from "@/app/components/WorkNav";
+import { usePlanGate } from "@/app/components/PlanGuard";
 import WorkFooter from "@/app/components/WorkFooter";
 
 const LICENSE_TOKEN_KEY = "acc-license-token";
@@ -33,6 +34,7 @@ interface Ergebnis {
 }
 
 export default function EmailPage() {
+  const gate = usePlanGate("email", "E-Mail-Zentrale");
   const [modus, setModus] = useState<Modus>("antwort");
   const [eingehend, setEingehend] = useState("");
   const [auftrag, setAuftrag] = useState("");
@@ -146,6 +148,7 @@ export default function EmailPage() {
     }
   };
 
+  if (gate) return gate;
   return (
     <div className="acc-page min-h-dvh text-[#1c1917]">
       <div className="mx-auto max-w-5xl px-4 pb-24">

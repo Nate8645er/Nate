@@ -8,6 +8,7 @@
 
 import Link from "next/link";
 import WorkNav from "@/app/components/WorkNav";
+import PlanGate from "@/app/components/PlanGuard";
 import WorkFooter from "@/app/components/WorkFooter";
 import {
   ABTEILUNGEN,
@@ -23,6 +24,7 @@ export const metadata = {
 
 export default function AgentenPage() {
   return (
+    <PlanGate bereich="agenten" titel="Agenten-Übersicht">
     <div className="acc-page min-h-dvh text-[#1c1917]">
       <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-[#e8e1d2] bg-[#faf6ee]/80 px-4 py-3 backdrop-blur-xl sm:px-6">
         <div className="flex items-center gap-2.5">
@@ -127,5 +129,6 @@ export default function AgentenPage() {
 
       <WorkFooter variante="hell" />
     </div>
+    </PlanGate>
   );
 }

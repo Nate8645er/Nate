@@ -12,6 +12,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import WorkNav from "@/app/components/WorkNav";
+import { usePlanGate } from "@/app/components/PlanGuard";
 import WorkFooter from "@/app/components/WorkFooter";
 
 const HISTORY_KEY = "acc-mission-history";
@@ -24,6 +25,7 @@ interface Eintrag {
 }
 
 export default function AnalysenPage() {
+  const gate = usePlanGate("analysen", "Analysen");
   const [eintraege, setEintraege] = useState<Eintrag[]>([]);
 
   useEffect(() => {
@@ -81,6 +83,7 @@ export default function AnalysenPage() {
     },
   ];
 
+  if (gate) return gate;
   return (
     <div className="acc-page min-h-dvh text-[#1c1917]">
       <div className="mx-auto max-w-5xl px-4 pb-24">

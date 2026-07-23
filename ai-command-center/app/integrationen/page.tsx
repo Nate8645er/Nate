@@ -14,6 +14,7 @@
 import Link from "next/link";
 import { memo, useEffect, useRef, useState } from "react";
 import OnboardingWizard from "./OnboardingWizard";
+import { usePlanGate } from "@/app/components/PlanGuard";
 import {
   CONNECTORS,
   KATEGORIEN,
@@ -293,11 +294,13 @@ const KategorieSektion = memo(function KategorieSektion({
 /* --------------------------------- Seite ---------------------------------- */
 
 export default function IntegrationenPage() {
+  const gate = usePlanGate("integrationen", "Integrationen");
   const [anfrage, setAnfrage] = useState<Connector | null>(null);
 
   const standardKategorien = KATEGORIEN.filter((k) => k !== "Eigene Systeme");
   const eigeneSysteme = CONNECTORS.filter((c) => c.kategorie === "Eigene Systeme");
 
+  if (gate) return gate;
   return (
     <main className="acc-page relative min-h-screen text-[#1c1917]">
       {/* Header im hellen Stil mit Link zurück */}

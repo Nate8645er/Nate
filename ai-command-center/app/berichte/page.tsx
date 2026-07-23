@@ -12,6 +12,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ArtifactFile } from "@/lib/agents/types";
 import WorkNav from "@/app/components/WorkNav";
+import { usePlanGate } from "@/app/components/PlanGuard";
 import WorkFooter from "@/app/components/WorkFooter";
 
 const HISTORY_KEY = "acc-mission-history";
@@ -35,6 +36,7 @@ const MIME_BY_LANGUAGE: Record<string, string> = {
 };
 
 export default function BerichtePage() {
+  const gate = usePlanGate("berichte", "Berichte");
   const [berichte, setBerichte] = useState<Bericht[]>([]);
   const [suche, setSuche] = useState("");
 
@@ -110,6 +112,7 @@ export default function BerichtePage() {
 
   const dateienGesamt = berichte.reduce((n, b) => n + b.artifacts.length, 0);
 
+  if (gate) return gate;
   return (
     <div className="acc-page min-h-dvh text-[#1c1917]">
       <div className="mx-auto max-w-5xl px-4 pb-24">

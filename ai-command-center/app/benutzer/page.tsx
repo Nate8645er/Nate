@@ -11,6 +11,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import WorkNav from "@/app/components/WorkNav";
+import { usePlanGate } from "@/app/components/PlanGuard";
 import WorkFooter from "@/app/components/WorkFooter";
 
 const BENUTZER_KEY = "acc-benutzer";
@@ -31,6 +32,7 @@ const ROLLEN: { rolle: Rolle; rechte: string }[] = [
 ];
 
 export default function BenutzerPage() {
+  const gate = usePlanGate("benutzer", "Benutzer");
   const [benutzer, setBenutzer] = useState<Benutzer[]>([]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -67,6 +69,7 @@ export default function BenutzerPage() {
     setRolle("Mitarbeiter");
   };
 
+  if (gate) return gate;
   return (
     <div className="acc-page min-h-dvh text-[#1c1917]">
       <div className="mx-auto max-w-5xl px-4 pb-24">

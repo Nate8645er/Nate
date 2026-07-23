@@ -17,6 +17,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import WorkNav from "@/app/components/WorkNav";
+import { usePlanGate } from "@/app/components/PlanGuard";
 import WorkFooter from "@/app/components/WorkFooter";
 
 const KUNDEN_KEY = "acc-kunden";
@@ -42,6 +43,7 @@ const STATUS_FARBE: Record<Status, string> = {
 };
 
 export default function KundenPage() {
+  const gate = usePlanGate("kunden", "Kunden (CRM)");
   const [kunden, setKunden] = useState<Kunde[]>([]);
   const [name, setName] = useState("");
   const [firma, setFirma] = useState("");
@@ -114,6 +116,7 @@ export default function KundenPage() {
 
   const zaehler = (s: Status) => kunden.filter((k) => k.status === s).length;
 
+  if (gate) return gate;
   return (
     <div className="acc-page min-h-dvh text-[#1c1917]">
       <div className="mx-auto max-w-5xl px-4 pb-24">

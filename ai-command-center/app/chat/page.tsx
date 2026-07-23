@@ -21,6 +21,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { ArtifactFile } from "@/lib/agents/types";
 import { SKILLS, skillSuche, skillVerfuegbar, SKILL_AB_STUFE, type SkillStufe } from "@/lib/skills";
 import WorkNav from "@/app/components/WorkNav";
+import { usePlanGate } from "@/app/components/PlanGuard";
 
 const KOMMANDOS_KEY = "acc-kommandos";
 const LICENSE_TOKEN_KEY = "acc-license-token";
@@ -69,6 +70,7 @@ const MIME_BY_LANGUAGE: Record<string, string> = {
 };
 
 export default function KommandoPage() {
+  const gate = usePlanGate("kommando", "Kommandozentrale");
   const [entries, setEntries] = useState<Kommando[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [input, setInput] = useState("");
@@ -345,6 +347,7 @@ export default function KommandoPage() {
     [entries, running, persist, dokument],
   );
 
+  if (gate) return gate;
   return (
     <div className="acc-page flex h-dvh text-[#1c1917]">
       {/* Seitenleiste: Befehls-Verlauf */}

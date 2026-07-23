@@ -19,6 +19,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import WorkNav from "@/app/components/WorkNav";
+import { usePlanGate } from "@/app/components/PlanGuard";
 
 const STORE = "acc-studio";
 const LICENSE_TOKEN_KEY = "acc-license-token";
@@ -286,6 +287,7 @@ function makeZip(files: Record<string, string>): Blob {
 }
 
 export default function StudioPage() {
+  const gate = usePlanGate("studio", "KI-Studio");
   const [proj, setProj] = useState<Projekt>(START);
   const [chat, setChat] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
   const [input, setInput] = useState("");
@@ -715,6 +717,7 @@ export default function StudioPage() {
     setProj((p) => ({ ...p, files: { ...p.files, ...neu }, open: ziele[0] }));
   }
 
+  if (gate) return gate;
   return (
     <div className="flex h-screen flex-col acc-page text-[#1c1917]">
       <header className="flex items-center justify-between gap-3 border-b border-[#e8e1d2] px-4 py-2.5">

@@ -17,6 +17,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import WorkNav from "@/app/components/WorkNav";
+import { usePlanGate } from "@/app/components/PlanGuard";
 import WorkFooter from "@/app/components/WorkFooter";
 
 const WORKFLOWS_KEY = "acc-workflows";
@@ -64,6 +65,7 @@ const VORLAGEN: { name: string; goal: string; frequenz: Frequenz }[] = [
 ];
 
 export default function WorkflowsPage() {
+  const gate = usePlanGate("autopilot", "Autopilot");
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [running, setRunning] = useState<Record<string, RunState>>({});
   const [name, setName] = useState("");
@@ -233,6 +235,7 @@ export default function WorkflowsPage() {
 
   const dueList = workflows.filter(isDue);
 
+  if (gate) return gate;
   return (
     <div className="acc-page min-h-dvh text-[#1c1917]">
       <div className="mx-auto max-w-5xl px-4 pb-24">

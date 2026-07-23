@@ -12,6 +12,7 @@
 
 import type { Metadata } from "next";
 import WorkNav from "@/app/components/WorkNav";
+import PlanGate from "@/app/components/PlanGuard";
 import WorkFooter from "@/app/components/WorkFooter";
 import { INTEGRATIONS } from "@/lib/integrations/registry";
 import { grundStatus } from "@/lib/integrations/status";
@@ -93,6 +94,7 @@ export default function ErweiterungenPage() {
   })).filter((g) => g.items.length > 0);
 
   return (
+    <PlanGate bereich="erweiterungen" titel="Erweiterungen">
     <div className="acc-page min-h-dvh text-[#1c1917]">
       <div className="mx-auto max-w-5xl px-4 pb-24">
         <header className="flex items-center justify-between border-b border-[#e8e1d2] py-4">
@@ -178,5 +180,6 @@ export default function ErweiterungenPage() {
         <WorkFooter variante="hell" />
       </div>
     </div>
+    </PlanGate>
   );
 }
