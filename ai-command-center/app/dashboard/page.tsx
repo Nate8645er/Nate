@@ -20,6 +20,20 @@ import Link from "next/link";
 import type { AgentEvent, AgentRole, AgentStatus, ArtifactFile } from "@/lib/agents/types";
 import AgentWorld, { type WorldAgent } from "@/app/components/AgentWorld";
 import AboBanner from "@/app/components/AboBanner";
+import { vorlagenFuer } from "@/lib/vorlagen";
+import type { BranchenId } from "@/lib/roi";
+
+/** Dashboard-Branchenlabel → ROI/Vorlagen-BranchenId (für passende Vorlagen). */
+const BRANCHE_ZU_ID: Record<string, BranchenId> = {
+  "Marketing/Agentur": "marketing",
+  "Handel/E-Commerce": "handel",
+  "Handwerk/Bau": "handwerk",
+  "Treuhand/Finanzen": "dienstleistung",
+  "Gesundheit": "gesundheit",
+  "Software/IT": "andere",
+  "Gastronomie": "gastro",
+  "Andere": "andere",
+};
 
 /* ------------------------------- Konstanten ------------------------------- */
 
@@ -944,6 +958,7 @@ export default function DashboardPage() {
   const [docBusy, setDocBusy] = useState(false);
   const [docError, setDocError] = useState("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const goalRef = useRef<HTMLInputElement | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const eventTimesRef = useRef<number[]>([]);
   const totalEventsRef = useRef(0);
@@ -1554,6 +1569,7 @@ export default function DashboardPage() {
             </p>
             <div className="mt-5 flex flex-col gap-3 sm:flex-row">
               <input
+                ref={goalRef}
                 value={goal}
                 onChange={(e) => setGoal(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && startMission()}
@@ -1597,6 +1613,27 @@ export default function DashboardPage() {
                 </button>
               )}
             </div>
+
+            {/* Ein-Klick-Vorlagen (Branchen-Playbooks) – füllen das Missions-Feld */}
+            {!running && (
+              <div className="mt-4">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Ein-Klick-Vorlagen</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {vorlagenFuer(branche ? BRANCHE_ZU_ID[branche] : null, 8).map((v) => (
+                    <button
+                      key={v.id}
+                      type="button"
+                      onClick={() => { setGoal(v.prompt); goalRef.current?.focus(); }}
+                      title={v.kurz}
+                      className={`inline-flex items-center gap-1.5 rounded-full border border-[#e0d8c6] bg-white/70 px-3 py-1.5 text-xs font-semibold text-[#4a4335] transition hover:border-[#ffb066] hover:text-[#c25e0e] active:scale-[0.98] ${FOCUS_RING}`}
+                    >
+                      <span aria-hidden>{v.icon}</span>{v.titel}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {dokumente.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-2">
                 {dokumente.map((d, i) => (
