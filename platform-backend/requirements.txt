@@ -27,3 +27,6 @@ opentelemetry-sdk==1.44.0
 PyJWT[crypto]==2.13.0
 cryptography==49.0.0
 prometheus-client==0.25.0
+
+# Workflow-Engine (Phase 5) — voller Betrieb braucht Temporal-Server
+temporalio==1.30.0
