@@ -955,17 +955,23 @@ export default function DashboardPage() {
       ? 8
       : 4;
 
-  // Agenten fürs animierte Büro: Kern-Team + (ab PROFESSIONAL) Spezialisten.
-  // Darunter erscheinen die Spezialisten als gesperrte, gedimmte Plätze.
+  // Agenten fürs animierte Büro. Das Büro zeigt die ganze Belegschaft immer
+  // lebendig bei der Arbeit: Leerlauf wird als „arbeitend" dargestellt und kein
+  // Platz wird grau gesperrt. Echte Missionszustände (done/error) bleiben
+  // erhalten und leuchten weiterhin auf; die Tarif-Grenzen stehen bei den
+  // Abteilungen/Tarifen, nicht im Deko-Büro.
   const officeAgents = useMemo<WorldAgent[]>(
     () =>
-      ALL_ROLES.map((role) => ({
-        id: role,
-        name: AGENT_META[role].name,
-        status: statuses[role].status,
-        locked: EXTRA_ROLES.includes(role) && !showExtraAgents,
-      })),
-    [statuses, showExtraAgents],
+      ALL_ROLES.map((role) => {
+        const s = statuses[role].status;
+        return {
+          id: role,
+          name: AGENT_META[role].name,
+          status: s === "idle" ? "working" : s,
+          locked: false,
+        };
+      }),
+    [statuses],
   );
 
   useEffect(() => {
