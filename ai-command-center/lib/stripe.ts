@@ -9,6 +9,7 @@
  * feste Price-IDs via STRIPE_PRICE_<PAKET> hinterlegt werden.
  */
 
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { PAKETE, type Paket } from "./preise";
 
 export function stripeKonfiguriert(env: Record<string, string | undefined> = process.env): boolean {
@@ -74,4 +75,79 @@ export async function checkoutSessionErstellen(
   } catch {
     return { error: "stripe-fehler" };
   }
+}
+
+/**
+ * Erstellt eine Stripe-Billing-Portal-Session, damit Kund:innen Rechnungen,
+ * Zahlungsmittel und Kündigung selbst verwalten. Benötigt die Stripe-Customer-ID
+ * (aus dem Checkout/Webhook). Ohne Key ehrlich „nicht-konfiguriert".
+ */
+export async function billingPortalSessionErstellen(
+  customerId: string,
+  origin: string,
+  env: Record<string, string | undefined> = process.env,
+  fetchImpl: typeof fetch = fetch,
+): Promise<{ url: string } | { error: "nicht-konfiguriert" | "customer-fehlt" | "stripe-fehler" }> {
+  if (!stripeKonfiguriert(env)) return { error: "nicht-konfiguriert" };
+  if (!customerId) return { error: "customer-fehlt" };
+  try {
+    const res = await fetchImpl("https://api.stripe.com/v1/billing_portal/sessions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${env.STRIPE_SECRET_KEY}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: formEncode({ customer: customerId, return_url: `${origin}/konto` }),
+    });
+    if (!res.ok) return { error: "stripe-fehler" };
+    const data = (await res.json()) as { url?: string };
+    if (!data.url) return { error: "stripe-fehler" };
+    return { url: data.url };
+  } catch {
+    return { error: "stripe-fehler" };
+  }
+}
+
+/**
+ * Prüft die Signatur eines Stripe-Webhooks (Header `Stripe-Signature`) gegen das
+ * Signing-Secret (`whsec_…`) – dependency-frei via HMAC-SHA256, wie in Stripes
+ * offizieller Bibliothek. Verhindert gefälschte Freischaltungen.
+ *
+ * @param payload roher Request-Body (String, unverändert!)
+ * @param sigHeader Wert des `Stripe-Signature`-Headers
+ * @param secret   STRIPE_WEBHOOK_SECRET
+ * @param toleranzSek erlaubte Zeitabweichung (Standard 5 Min gegen Replay)
+ * @param jetztSek  aktuelle Zeit in Sekunden (injizierbar für Tests)
+ */
+export function stripeWebhookVerifizieren(
+  payload: string,
+  sigHeader: string | null,
+  secret: string | undefined,
+  toleranzSek = 300,
+  jetztSek: number = Math.floor(Date.now() / 1000),
+): { ok: true } | { ok: false; grund: "kein-secret" | "kein-header" | "format" | "veraltet" | "ungueltig" } {
+  if (!secret) return { ok: false, grund: "kein-secret" };
+  if (!sigHeader) return { ok: false, grund: "kein-header" };
+
+  let t = "";
+  const v1: string[] = [];
+  for (const teil of sigHeader.split(",")) {
+    const [k, val] = teil.split("=");
+    if (k === "t") t = val ?? "";
+    else if (k === "v1" && val) v1.push(val);
+  }
+  if (!t || v1.length === 0) return { ok: false, grund: "format" };
+
+  const zeit = Number(t);
+  if (!Number.isFinite(zeit)) return { ok: false, grund: "format" };
+  if (Math.abs(jetztSek - zeit) > toleranzSek) return { ok: false, grund: "veraltet" };
+
+  const erwartet = createHmac("sha256", secret).update(`${t}.${payload}`).digest("hex");
+  const erwartetBuf = Buffer.from(erwartet, "utf8");
+  // Konstante Zeit; mind. eine v1-Signatur muss passen.
+  const treffer = v1.some((sig) => {
+    const sigBuf = Buffer.from(sig, "utf8");
+    return sigBuf.length === erwartetBuf.length && timingSafeEqual(sigBuf, erwartetBuf);
+  });
+  return treffer ? { ok: true } : { ok: false, grund: "ungueltig" };
 }

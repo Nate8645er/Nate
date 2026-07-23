@@ -64,6 +64,28 @@ Aktuell sind die ~14 echten Seiten noch im ALTEN dunklen HUD-Look
   GitHub-CI (.github/workflows/ci.yml: install+typecheck+test+build; Lint
   nicht-blockierend), Security-Fix (vorname in Webhook-Mail escaped).
 
+## ERLEDIGT 2026-07 (Shop + Verkauf/Login-Fundament)
+- **Shopify-Theme** `websites/shop-theme/` (echtes, hochladbares Theme, ~7.7 MB
+  Zip via zipfile, `layout/theme.liquid` im Root): Video-Hero, Werbespot-Sektion,
+  6 Funktionen, Wieso/Weshalb, 3 Schritte, 12 Branchen, Agentur-Vergleich, Zahlen,
+  6-Stufen-Preise inkl. Gratis, helle Büro-Animation (snippets/ki-buero.liquid),
+  „keine Fake-Bewertungen"-Transparenzseite, FAQ, CTA. Seiten-Templates:
+  branchen/vergleich/integrationen/warum/sicherheit/ueber-uns/keine-bewertungen/
+  contact/faq. Premium PDP (product.liquid: Sticky-Kaufbox, Cross-Sell) +
+  reichere collection.liquid. Zip ist Build-Artefakt (websites/.gitignore *.zip).
+- **Zahlung/Login startklar (ehrlich „nicht-konfiguriert" ohne Keys):**
+  - `lib/stripe.ts`: + `billingPortalSessionErstellen`, + `stripeWebhookVerifizieren`
+    (HMAC-SHA256, konstante Zeit, 5-Min-Replay-Schutz).
+  - Routen: `app/api/portal`, `app/api/stripe/webhook`, `app/api/auth/login`,
+    `app/api/auth/register`.
+  - `lib/supabase.ts`: GoTrue-REST Login/Registrierung, dependency-frei.
+  - `app/konto/KontoClient.tsx`: echtes Login-/Registrierungsformular (nur wenn
+    NEXT_PUBLIC_SUPABASE_* gesetzt), Refresh-Token als HttpOnly/Secure-Cookie.
+  - `.env.example` erweitert; Anleitung `docs/ZAHLUNG-UND-LOGIN.md`.
+  - Tests: `test/zahlung-login.test.ts` (14) grün; Suite 77 grün; tsc + build ok.
+  - Offener Anschlusspunkt: Plan-Freischaltung aus verifiziertem Webhook braucht
+    Kundendatenbank (Punkt 1 unten) — in webhook/route.ts klar markiert.
+
 ## NÄCHSTE OFFENE AUFGABEN (Reihenfolge)
 1. **Fundament (Enterprise-Blocker, braucht Provider-Entscheidung + Zustimmung
    für externen Dienst):** Postgres + echte Anmeldung + Mandantentrennung/RBAC,

@@ -17,6 +17,43 @@ export default function KontoClient() {
   const [kaufErfolg, setKaufErfolg] = useState<string | null>(null);
   const [geladen, setGeladen] = useState(false);
 
+  // Login-Status (Supabase). Client kennt die öffentlichen NEXT_PUBLIC_*-Werte.
+  const loginAktiv =
+    Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) &&
+    Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+  const [modus, setModus] = useState<"anmelden" | "registrieren">("anmelden");
+  const [email, setEmail] = useState("");
+  const [passwort, setPasswort] = useState("");
+  const [angemeldet, setAngemeldet] = useState<string | null>(null);
+  const [authFehler, setAuthFehler] = useState<string | null>(null);
+  const [laeuft, setLaeuft] = useState(false);
+
+  async function authSenden(e: React.FormEvent) {
+    e.preventDefault();
+    setAuthFehler(null);
+    setLaeuft(true);
+    try {
+      const pfad = modus === "anmelden" ? "/api/auth/login" : "/api/auth/register";
+      const res = await fetch(pfad, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, passwort }),
+      });
+      const data = (await res.json()) as { user?: { email: string | null }; error?: string; meldung?: string };
+      if (res.ok && data.user) {
+        setAngemeldet(data.user.email ?? email);
+      } else if (res.status === 501) {
+        setAuthFehler("Login ist für diesen Shop noch nicht aktiviert.");
+      } else {
+        setAuthFehler(data.meldung ?? "Anmeldung fehlgeschlagen. Bitte Daten prüfen.");
+      }
+    } catch {
+      setAuthFehler("Netzwerkfehler. Bitte erneut versuchen.");
+    } finally {
+      setLaeuft(false);
+    }
+  }
+
   useEffect(() => {
     try {
       setPlan(localStorage.getItem("acc-plan"));
@@ -81,6 +118,66 @@ export default function KontoClient() {
             Abo wechseln
           </Link>
         </div>
+      </section>
+
+      <section className="acc-card mt-6 rounded-2xl p-6">
+        <p className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Kundenkonto</p>
+        {angemeldet ? (
+          <p className="mt-2 text-sm text-[#4a4335]">
+            Angemeldet als <strong>{angemeldet}</strong>. Ihr Zugang ist mit Ihrem Konto verknüpft.
+          </p>
+        ) : loginAktiv ? (
+          <>
+            <div className="mt-3 flex gap-2 text-sm font-semibold">
+              <button
+                type="button"
+                onClick={() => setModus("anmelden")}
+                className={`rounded-full px-4 py-1.5 ${modus === "anmelden" ? "bg-[#1c1917] text-white" : "border border-[#e0d8c6] text-[#4a4335]"}`}
+              >
+                Anmelden
+              </button>
+              <button
+                type="button"
+                onClick={() => setModus("registrieren")}
+                className={`rounded-full px-4 py-1.5 ${modus === "registrieren" ? "bg-[#1c1917] text-white" : "border border-[#e0d8c6] text-[#4a4335]"}`}
+              >
+                Konto erstellen
+              </button>
+            </div>
+            <form onSubmit={authSenden} className="mt-4 grid gap-3 sm:max-w-sm">
+              <input
+                type="email"
+                required
+                placeholder="E-Mail"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="rounded-xl border border-[#e0d8c6] bg-white px-4 py-2.5 text-sm"
+              />
+              <input
+                type="password"
+                required
+                minLength={6}
+                placeholder="Passwort"
+                value={passwort}
+                onChange={(e) => setPasswort(e.target.value)}
+                className="rounded-xl border border-[#e0d8c6] bg-white px-4 py-2.5 text-sm"
+              />
+              {authFehler && <p className="text-sm font-medium text-[#b91c1c]">{authFehler}</p>}
+              <button
+                type="submit"
+                disabled={laeuft}
+                className="rounded-full bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-5 py-2.5 text-sm font-bold text-white hover:brightness-105 disabled:opacity-60"
+              >
+                {laeuft ? "Bitte warten…" : modus === "anmelden" ? "Anmelden" : "Konto erstellen"}
+              </button>
+            </form>
+          </>
+        ) : (
+          <p className="mt-2 text-sm text-[#4a4335]">
+            Der Login wird aktiv, sobald das Kundenkonto (Supabase) für Ihren Shop
+            konfiguriert ist. Bis dahin läuft der Zugang über den Lizenzschlüssel per E-Mail.
+          </p>
+        )}
       </section>
 
       <section className="acc-card mt-6 rounded-2xl p-6">
