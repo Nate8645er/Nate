@@ -106,7 +106,15 @@ export function erinnerungMerken(
 export function erinnerungenBlock(erinnerungen: Erinnerung[] | undefined): string {
   if (!erinnerungen?.length) return "";
   const zeilen = erinnerungen.map((e, i) => {
-    const t = e.text.replace(/[=\r\n\t]/g, " ").replace(/\s+/g, " ").trim().slice(0, 400);
+    // Marker/Umbrüche entschärfen; Bindestrich-Läufe (2+) neutralisieren, damit
+    // kein "---"-Delimiter gefälscht werden kann – einzelne Bindestriche
+    // (z. B. "E-Mail") bleiben erhalten.
+    const t = e.text
+      .replace(/[=\r\n\t]/g, " ")
+      .replace(/-{2,}/g, "-")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 400);
     return `[${i + 1}] ${t}`;
   });
   return (
@@ -142,10 +150,12 @@ export async function erinnerungenLaden(
   limit = 200,
 ): Promise<Erinnerung[]> {
   if (!gedaechtnisKonfiguriert(env) || !userId) return [];
+  // Defense-in-Depth: nur ganzzahliges, begrenztes Limit in die URL.
+  const lim = Number.isInteger(limit) && limit > 0 && limit <= 500 ? limit : 200;
   const { basis, key } = rest(env);
   try {
     const res = await fetchImpl(
-      `${basis}/gedaechtnis?user_id=eq.${encodeURIComponent(userId)}&order=zeit.desc&limit=${limit}`,
+      `${basis}/gedaechtnis?user_id=eq.${encodeURIComponent(userId)}&order=zeit.desc&limit=${lim}`,
       { headers: { apikey: key, Authorization: `Bearer ${key}` } },
     );
     if (!res.ok) return [];
