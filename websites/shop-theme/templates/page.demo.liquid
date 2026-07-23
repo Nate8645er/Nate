@@ -10,9 +10,25 @@
     <li><strong>Beratung für Teams:</strong> Für Business/Enterprise inkl. Integrationen.</li>
   </ul>
 
-  {% if shop.customer_accounts_enabled %}
-  <p style="margin-top:24px"><a class="btn" href="{{ routes.all_products_collection_url }}">Gratis-Version testen</a> <a class="btn btn-ghost" href="{{ routes.root_url }}pages/kontakt">Demo anfragen</a></p>
-  {% else %}
-  <p style="margin-top:24px"><a class="btn" href="{{ routes.all_products_collection_url }}">Gratis-Version testen</a> <a class="btn btn-ghost" href="{{ routes.root_url }}pages/kontakt">Demo anfragen</a></p>
-  {% endif %}
+  <p style="margin-top:16px"><a class="btn" href="{{ routes.all_products_collection_url }}">Gratis-Version testen</a></p>
+
+  <h2 style="margin-top:36px">Demo direkt anfragen</h2>
+  {% form 'contact' %}
+    {% if form.posted_successfully? %}
+      <div class="form-ok">Danke! Wir melden uns zur Terminvereinbarung bei Ihnen.</div>
+    {% endif %}
+    {% if form.errors %}
+      <div class="form-err">Bitte prüfen Sie Ihre Angaben: {{ form.errors | default_errors }}</div>
+    {% endif %}
+    <label class="f-label" for="d-name">Name</label>
+    <input id="d-name" type="text" name="contact[name]" value="{{ form.name }}" placeholder="Ihr Name" required>
+    <label class="f-label" for="d-email">E-Mail</label>
+    <input id="d-email" type="email" name="contact[email]" value="{{ form.email }}" placeholder="name@firma.ch" required>
+    <label class="f-label" for="d-firma">Firma (optional)</label>
+    <input id="d-firma" type="text" name="contact[Firma]" placeholder="Ihre Firma">
+    <input type="hidden" name="contact[Thema]" value="Live-Demo anfragen">
+    <label class="f-label" for="d-body">Ihr Anwendungsfall</label>
+    <textarea id="d-body" name="contact[body]" rows="5" placeholder="Was soll die KI-Abteilung für Sie erledigen?" required>{{ form.body }}</textarea>
+    <button class="btn" type="submit">Demo anfragen</button>
+  {% endform %}
 </div>

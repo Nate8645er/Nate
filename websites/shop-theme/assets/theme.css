@@ -254,3 +254,21 @@ input,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-
 @media(prefers-reduced-motion:reduce){.tk{animation:none;opacity:0}}
 a.uc{transition:border-color .15s,box-shadow .15s}
 a.uc:hover{border-color:var(--ora);box-shadow:0 24px 54px -32px rgba(255,120,40,.5)}
+/* Kontakt-Seite */
+.contact-wrap{display:grid;grid-template-columns:1.4fr .9fr;gap:36px;max-width:1120px;margin:0 auto;padding:56px 20px}
+.contact-form{max-width:620px}
+.f-label{display:block;font-size:13px;font-weight:700;color:#4a4335;margin:14px 0 4px}
+.contact-form input,.contact-form textarea,.contact-form select,.page textarea,.page input,.page select{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;font:inherit;background:#fff}
+.contact-form .btn,.page form .btn{margin-top:18px}
+.f-hint{color:#8a8072;font-size:12px;margin-top:10px}
+.form-ok{border:1px solid #bfe6cf;background:#f0faf4;color:#177245;border-radius:14px;padding:14px 16px;font-weight:600;margin-bottom:14px}
+.form-err{border:1px solid #f0c9c9;background:#fdf3f3;color:#b91c1c;border-radius:14px;padding:14px 16px;margin-bottom:14px}
+.contact-side{display:flex;flex-direction:column;gap:18px}
+.contact-card{border:1px solid var(--line);background:#fff;border-radius:20px;padding:22px}
+.contact-card h3{margin:0 0 12px;font-size:17px}
+.contact-card p{margin:0 0 14px}
+.contact-card p span{color:var(--muted);font-size:13px}
+.contact-card a{font-weight:700;color:#c25e0e}
+.contact-card ul{margin:0;padding-left:18px;color:var(--muted);font-size:14px}
+.contact-card li{margin:6px 0}
+@media(max-width:860px){.contact-wrap{grid-template-columns:1fr;gap:24px}}
