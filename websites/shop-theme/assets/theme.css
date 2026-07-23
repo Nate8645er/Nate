@@ -26,7 +26,13 @@ a{color:inherit;text-decoration:none}
 .hero-cta{margin-top:30px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 .hero-cta .btn-ghost{color:#fff;border-color:rgba(255,255,255,.25)}
 .hero-badges{margin-top:26px;display:flex;gap:18px;justify-content:center;flex-wrap:wrap;color:#b9b7d4;font-size:14px;font-weight:600}
+/* Hero-Titel: lange Variante am Desktop, kurze am Handy */
+.hero-h-mob{display:none}
 @media(max-width:720px){.hero h1{font-size:38px}}
+@media(max-width:560px){
+  .hero-h-full{display:none}
+  .hero-h-mob{display:block;font-size:34px;line-height:1.08}
+}
 /* Sections */
 section h2{text-align:center;font-size:34px;font-weight:800;letter-spacing:-.01em;margin:0 0 8px}
 .feat,.pricing,.faq{padding:80px 0}
