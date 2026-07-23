@@ -229,3 +229,23 @@ def detect_summary(runner: CommandRunner | None = None) -> dict:
         "device_count": len(devices),
         "devices": [d.to_dict() for d in devices],
     }
+
+
+def sample_device_metrics(runner: CommandRunner | None = None) -> list[DeviceMetrics]:
+    """Momentaufnahme der Live-Metriken aller Geräte (für den /metrics-Endpunkt).
+
+    CPU immer (nur `memory_total_mb`); NVIDIA-GPUs via `nvidia-smi`, falls
+    vorhanden/erfolgreich. `runner` ist injizierbar (Test ohne echte GPU).
+    Wirft nie — ehrlicher Fallback auf reine CPU-Metrik.
+    """
+    metrics: list[DeviceMetrics] = []
+    smi_available = runner is not None or shutil.which("nvidia-smi") is not None
+    if smi_available:
+        run = runner or (lambda argv: default_runner(argv))
+        try:
+            out = run(["nvidia-smi", _SMI_QUERY, "--format=csv,noheader,nounits"])
+            metrics.extend(m for _, m in parse_nvidia_smi(out))
+        except (OSError, subprocess.SubprocessError, ValueError):
+            pass  # keine GPU-Metriken — CPU folgt
+    metrics.append(CpuBackend().metrics())
+    return metrics
