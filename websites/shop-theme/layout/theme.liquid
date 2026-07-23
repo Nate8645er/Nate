@@ -19,6 +19,7 @@
         <nav class="hd-nav">
           <a href="{{ routes.root_url }}#pakete">Preise</a>
           <a href="{{ routes.root_url }}#funktionen">Funktionen</a>
+          <a href="{{ routes.root_url }}pages/warum">Warum</a>
           <a href="{{ routes.root_url }}#faq">FAQ</a>
           {% if shop.customer_accounts_enabled %}<a href="{{ routes.account_url }}">Konto</a>{% endif %}
         </nav>
@@ -44,8 +45,10 @@
         <div class="ft-col">
           <h4>Unternehmen</h4>
           <a href="{{ routes.root_url }}pages/ueber-uns">Über uns</a>
+          <a href="{{ routes.root_url }}pages/warum">Wieso &amp; Warum</a>
+          <a href="{{ routes.root_url }}pages/sicherheit">Sicherheit</a>
+          <a href="{{ routes.root_url }}pages/keine-bewertungen">Keine Bewertungen</a>
           <a href="{{ routes.root_url }}pages/kontakt">Kontakt</a>
-          <a href="{{ routes.root_url }}pages/faq">Hilfe &amp; FAQ</a>
           {% if shop.customer_accounts_enabled %}<a href="{{ routes.account_url }}">Mein Konto</a>{% endif %}
         </div>
         <div class="ft-col">
