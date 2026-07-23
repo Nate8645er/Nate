@@ -11,14 +11,14 @@ gesamte Kontroll-Logik ohne echtes Modell testbar.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Callable
 
+from ..models.cache import TenantBudget
 from .approval import ApprovalQueue
 from .spec import AgentSpec
 from .tools import ToolRegistry
-from ..models.cache import TenantBudget
 
 
 class RunStatus(str, Enum):
@@ -51,7 +51,7 @@ class RunState:
         return d
 
     @staticmethod
-    def from_dict(d: dict) -> "RunState":
+    def from_dict(d: dict) -> RunState:
         d = dict(d)
         d["status"] = RunStatus(d["status"])
         return RunState(**d)

@@ -7,9 +7,9 @@ ausgeführt wird. Das ist die Grundlage der Genehmigungs-Workflows.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import Callable
 
 
 class RiskClass(IntEnum):

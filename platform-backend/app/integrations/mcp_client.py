@@ -87,7 +87,7 @@ class StdioTransport:
     """
 
     def __init__(self, argv: list[str]) -> None:
-        self._proc = subprocess.Popen(  # noqa: S603
+        self._proc = subprocess.Popen(
             argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, bufsize=1
         )
 

@@ -29,7 +29,7 @@ class AgentSpec:
     system_prompt: str = ""
 
     @staticmethod
-    def from_dict(d: dict) -> "AgentSpec":
+    def from_dict(d: dict) -> AgentSpec:
         lim = d.get("limits", {})
         return AgentSpec(
             name=d["name"],

@@ -1,13 +1,11 @@
 """Tests: Workflow-Engine, Trigger, Temporal-Adapter — ohne Server/Netz."""
 
-import pytest
 
 from app.automation.engine import (
     InMemoryJournal,
     LocalWorkflowEngine,
     RetryPolicy,
     WorkflowDef,
-    WorkflowRun,
     WorkflowStatus,
     WorkflowStep,
 )

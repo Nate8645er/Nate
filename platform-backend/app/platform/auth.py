@@ -14,8 +14,8 @@ testbar (Test speist einen selbst signierten Schlüssel als JWKS ein).
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable
 
 import jwt
 from jwt import PyJWK, PyJWKSet

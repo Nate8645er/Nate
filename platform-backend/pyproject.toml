@@ -8,5 +8,22 @@ requires-python = ">=3.11"
 testpaths = ["tests"]
 addopts = "-q"
 
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+
+[tool.ruff.lint]
+# Bewusst gewählter, sinnvoller Satz: Fehler (E,F), Import-Ordnung (I),
+# Bug-Muster (B), Modernisierung (UP), Comprehensions (C4).
+select = ["E", "F", "I", "B", "UP", "C4"]
+ignore = [
+  "E501",   # Zeilenlänge regelt der Formatter, kein Fehler
+  "UP042",  # `class X(str, Enum)` ist bewusst gewählt (breite Kompatibilität, stabile .value)
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests dürfen kompakt sein (Semikolons, kleine Lambdas, Import nach importorskip).
+"tests/*" = ["E402", "E702", "E731", "B007", "C420", "B011"]
+
 [tool.setuptools.packages.find]
 include = ["app*"]

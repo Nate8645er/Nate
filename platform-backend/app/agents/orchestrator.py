@@ -10,9 +10,9 @@ Planer/Prüfer/Synthese sind injizierbar → ohne echtes Modell testbar.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Callable
 
 from .runtime import AgentContext, AgentRuntime, RunState, RunStatus
 

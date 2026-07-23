@@ -27,7 +27,7 @@ class ResultCache:
 
     ttl_seconds: float = 3600.0
     max_entries: int = 1000
-    _now: "callable" = field(default=time.monotonic, repr=False)
+    _now: callable = field(default=time.monotonic, repr=False)
     _store: dict = field(default_factory=dict, repr=False)
 
     def get(self, key: str):
@@ -58,7 +58,7 @@ class TenantBudget:
     daily_limit_tokens: int
     _used: dict = field(default_factory=dict, repr=False)
     _day: dict = field(default_factory=dict, repr=False)
-    _today: "callable" = field(default=lambda: time.strftime("%Y-%m-%d", time.gmtime()), repr=False)
+    _today: callable = field(default=lambda: time.strftime("%Y-%m-%d", time.gmtime()), repr=False)
 
     def _roll(self, tenant: str) -> None:
         today = self._today()

@@ -17,8 +17,9 @@ from __future__ import annotations
 import platform
 import shutil
 import subprocess
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Callable, Literal, Protocol, runtime_checkable
+from typing import Literal, Protocol, runtime_checkable
 
 MemoryModel = Literal["dedicated", "unified"]
 Vendor = Literal["nvidia", "amd", "apple", "cpu"]
@@ -70,7 +71,7 @@ class ComputeBackend(Protocol):
 # --------------------------------------------------------------------------- #
 def default_runner(argv: list[str], timeout: float = 3.0) -> str:
     """Führt ein Kommando aus, gibt stdout zurück; wirft bei Fehler/Timeout."""
-    proc = subprocess.run(  # noqa: S603 — festes argv, kein Shell
+    proc = subprocess.run(
         argv, capture_output=True, text=True, timeout=timeout, check=True
     )
     return proc.stdout
@@ -145,7 +146,9 @@ def parse_nvidia_smi(csv_out: str) -> list[tuple[ComputeDevice, DeviceMetrics]]:
         idx, name, mem_total = cols[0], cols[1], cols[2]
         compute_cap = cols[3] if len(cols) > 3 else ""
 
-        def _num(i: int) -> float | None:
+        def _num(i: int, cols: list = cols) -> float | None:
+            # cols explizit gebunden (Default-Argument), damit die Closure die
+            # Spalten DIESER Zeile nutzt — kein Late-Binding auf die Loop-Variable.
             if i < len(cols):
                 try:
                     return float(cols[i])

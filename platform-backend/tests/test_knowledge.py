@@ -3,7 +3,7 @@
 import pytest
 
 from app.knowledge.chunking import chunk_text, normalize
-from app.knowledge.embedding import HashingEmbedder, tokenize
+from app.knowledge.embedding import HashingEmbedder
 from app.knowledge.eval import EvalCase, evaluate
 from app.knowledge.ingest import IngestPipeline
 from app.knowledge.retrieval import LexicalReranker, Retriever

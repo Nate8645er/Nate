@@ -18,9 +18,10 @@ Temporal-SDK ab, wenn ein Temporal-Server läuft.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Callable, Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable
 
 
 class WorkflowStatus(str, Enum):

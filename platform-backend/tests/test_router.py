@@ -9,7 +9,7 @@ from app.models.router import (
 
 
 def _ctx(**kw):
-    base = dict(local_available=True, local_capabilities=frozenset({"text", "vision"}), cloud_available=True)
+    base = {"local_available": True, "local_capabilities": frozenset({"text", "vision"}), "cloud_available": True}
     base.update(kw)
     return RoutingContext(**base)
 

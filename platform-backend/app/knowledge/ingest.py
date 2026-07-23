@@ -41,7 +41,7 @@ class IngestPipeline:
                 id=f"{doc_id}#{i}", tenant=tenant, text=chunk, vector=vec,
                 metadata={**(metadata or {}), "doc_id": doc_id, "chunk": i},
             )
-            for i, (chunk, vec) in enumerate(zip(chunks, vectors))
+            for i, (chunk, vec) in enumerate(zip(chunks, vectors, strict=True))
         ]
         self._store.upsert(docs)
         return IngestResult(doc_id, tenant, len(docs))
