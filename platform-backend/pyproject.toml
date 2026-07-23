@@ -1,0 +1,12 @@
+[project]
+name = "platform-backend"
+version = "0.1.0"
+description = "Additive Enterprise-Schicht des KI-Systems (Compute-HAL, Modell-Router, Agenten, Automation)."
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
