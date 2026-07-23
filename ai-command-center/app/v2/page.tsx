@@ -1,9 +1,11 @@
 import { Badge, Button, StatTile, Surface } from "./ui/primitives";
+import { fetchCompute, formatMemoryGb, primaryDevice } from "@/lib/platform-backend";
 
 /**
  * Premium-Dashboard (Phase 7, Vorschau). Token-basiert, responsiv, klare
- * Hierarchie. Live-Kennzahlen (CPU/RAM/GPU/Token/Agenten) zeigen ehrlich „—",
- * solange das platform-backend nicht verbunden ist — kein erfundener Status.
+ * Hierarchie. Live-Kennzahlen (CPU/RAM/GPU) kommen ECHT vom platform-backend,
+ * sobald `PLATFORM_BACKEND_URL` gesetzt und der Dienst erreichbar ist; sonst
+ * ehrlich „—" („Backend nicht verbunden") — kein erfundener Status.
  */
 
 const AGENTEN = [
@@ -12,7 +14,41 @@ const AGENTEN = [
   { name: "Dokumente", rolle: "Ingest", status: "wartet auf Freigabe", tone: "warning" as const },
 ];
 
-export default function V2Dashboard() {
+export default async function V2Dashboard() {
+  // Echte Hardware-Daten vom Backend (oder null, wenn nicht verbunden).
+  const compute = await fetchCompute();
+  const dev = primaryDevice(compute);
+  const cpuDev = compute?.devices.find((d) => d.vendor === "cpu") ?? null;
+
+  const ramValue = cpuDev ? formatMemoryGb(cpuDev.memory_total_mb) : "—";
+  const ramHint = cpuDev ? `${cpuDev.arch ?? cpuDev.name}` : "Backend nicht verbunden";
+  const cpuValue = cpuDev ? cpuDev.name : "—";
+  const cpuHint = cpuDev ? cpuDev.backends.join(" · ") : "Backend nicht verbunden";
+  const gpuValue = compute ? (compute.gpu_available && dev && dev.vendor !== "cpu" ? dev.name : "keine") : "—";
+  const gpuHint = compute
+    ? compute.gpu_available && dev && dev.vendor !== "cpu"
+      ? `${formatMemoryGb(dev.memory_total_mb)} · ${dev.memory_model}`
+      : "nur CPU erkannt"
+    : "Backend nicht verbunden";
+
+  return <V2DashboardView cpuValue={cpuValue} cpuHint={cpuHint} ramValue={ramValue} ramHint={ramHint} gpuValue={gpuValue} gpuHint={gpuHint} />;
+}
+
+function V2DashboardView({
+  cpuValue,
+  cpuHint,
+  ramValue,
+  ramHint,
+  gpuValue,
+  gpuHint,
+}: {
+  cpuValue: string;
+  cpuHint: string;
+  ramValue: string;
+  ramHint: string;
+  gpuValue: string;
+  gpuHint: string;
+}) {
   return (
     <main style={{ maxWidth: 1160, margin: "0 auto", padding: "var(--space-6) var(--space-5)" }}>
       {/* Kopf */}
@@ -41,9 +77,9 @@ export default function V2Dashboard() {
         }}
       >
         <StatTile label="Agenten aktiv" value="2 / 3" hint="1 wartet auf Freigabe" />
-        <StatTile label="CPU" value="—" hint="Backend nicht verbunden" />
-        <StatTile label="RAM" value="—" hint="Backend nicht verbunden" />
-        <StatTile label="GPU" value="—" hint="keine erkannt" />
+        <StatTile label="CPU" value={cpuValue} hint={cpuHint} />
+        <StatTile label="RAM" value={ramValue} hint={ramHint} />
+        <StatTile label="GPU" value={gpuValue} hint={gpuHint} />
         <StatTile label="Token heute" value="—" hint="Kontingent aktiv" />
       </section>
 

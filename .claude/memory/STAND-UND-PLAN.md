@@ -117,3 +117,18 @@ Aktuell sind die ~14 echten Seiten noch im ALTEN dunklen HUD-Look
 - Kleine grüne Schritte auf den Feature-Branch committen. Auf Deutsch antworten.
 - Stille Wartung (ACC-Wache): keine Shopify-Produkte/Preise/Beschreibungen
   ändern, nichts löschen, keine E-Mails senden (nur Entwürfe), keine Secrets.
+
+## Plattform-Ausbau (platform-backend) — Stand
+Phasen 0–7 fertig & grün. Phase 8 (Hardening) offen. Details:
+`docs/plattform-ausbau/`.
+- **Live-Dienste jetzt real bewiesen** (nicht mehr nur Attrappen):
+  `docs/plattform-ausbau/VERIFIKATION-LIVE-DIENSTE.md` — Postgres-RLS (Cross-
+  Tenant auf DB-Ebene geblockt, App-Rolle muss `NOBYPASSRLS` sein), Qdrant-
+  Mandantentrennung, Redis-Zähler, **echte lokale Inferenz** über ModelRouter→
+  LiteLLM→Ollama (`qwen2.5:0.5b`, CPU). Tests: `platform-backend/tests/
+  test_live_services.py` (opt-in, skippt ohne Dienst → CI bleibt offline-grün).
+- **v2-Dashboard liest echte Compute-Daten** vom Backend, wenn
+  `PLATFORM_BACKEND_URL` gesetzt ist; sonst ehrlich „—". Helfer:
+  `ai-command-center/lib/platform-backend.ts`.
+- Teststand: backend 84 grün (80 offline + 4 live), ruff sauber; App 210 grün,
+  tsc/Build grün.

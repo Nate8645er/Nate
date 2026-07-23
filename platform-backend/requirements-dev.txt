@@ -1,3 +1,9 @@
 # Nur Entwicklung/Test.
 -r requirements.txt
 pytest==9.1.1
+# Live-Integrationstests gegen echte Dienste (tests/test_live_services.py).
+# Nur nötig, um die Live-Tests laufen zu lassen; ohne die Dienste werden sie
+# übersprungen. Nicht im Produktions-/Kundenpfad.
+psycopg[binary]==3.2.3   # PostgreSQL-Treiber (RLS-Beweis) — LGPL-3.0-only, nur
+                         # Dev/Test, NICHT im Kundenpfad ausgeliefert.
+redis==5.2.1             # Redis-Client — MIT.
