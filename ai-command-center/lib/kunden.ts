@@ -23,6 +23,8 @@ export interface Abo {
   status: string;
   /** Event-Zeit (Unix-Sekunden) des zugrunde liegenden Stripe-Ereignisses. */
   event_zeit?: number;
+  /** Einmalig erzeugter Lizenzschlüssel (nach dem Kauf). */
+  license_key?: string | null;
 }
 
 export function kundenStoreKonfiguriert(env: KundenEnv = process.env): boolean {
@@ -79,6 +81,9 @@ export async function aboFreischalten(
         plan_id: abo.plan_id,
         status: abo.status,
         event_zeit: abo.event_zeit ?? 0,
+        // license_key nur mitsenden, wenn gesetzt – sonst würde ein späteres
+        // Update (merge-duplicates) den bestehenden Schlüssel mit null überschreiben.
+        ...(abo.license_key ? { license_key: abo.license_key } : {}),
       }),
     });
     return res.ok ? { ok: true } : { ok: false, error: "db-fehler" };

@@ -12,7 +12,11 @@
  */
 
 import { stripeWebhookVerifizieren, webhookEreignisDeuten } from "@/lib/stripe";
-import { aboFreischalten, kundenStoreKonfiguriert } from "@/lib/kunden";
+import { aboFreischalten, aboLesen, kundenStoreKonfiguriert } from "@/lib/kunden";
+import { generateLicenseKey, PAID_PLANS, type PaidPlan } from "@/lib/license";
+import { mailKonfiguriert, sendeMail } from "@/lib/mail";
+import { willkommensMail } from "@/lib/willkommen";
+import { PAKETE } from "@/lib/preise";
 
 export const runtime = "nodejs";
 
@@ -42,12 +46,25 @@ export async function POST(request: Request): Promise<Response> {
   const abo = webhookEreignisDeuten(event);
   if (abo) {
     if (kundenStoreKonfiguriert()) {
+      // Beim Erstkauf (checkout.session.completed) einmalig einen Lizenzschlüssel
+      // erzeugen – aber nur, wenn noch keiner gespeichert ist (Idempotenz gegen
+      // Stripe-Retries) und der Plan ein Bezahl-Plan ist.
+      const istBezahlplan = (PAID_PLANS as readonly string[]).includes(abo.planId);
+      let neuerSchluessel: string | undefined;
+      if (event.type === "checkout.session.completed" && istBezahlplan) {
+        const vorhanden = await aboLesen(abo.customerId);
+        if (!vorhanden?.license_key) {
+          neuerSchluessel = generateLicenseKey(abo.planId as PaidPlan);
+        }
+      }
+
       const r = await aboFreischalten({
         customer_id: abo.customerId,
         email: abo.email,
         plan_id: abo.planId,
         status: abo.status,
         event_zeit: abo.eventZeit,
+        license_key: neuerSchluessel,
       });
       // "veraltet" ist kein Fehler: ein neueres Ereignis wurde bereits verarbeitet
       // → einfach quittieren, nicht erneut zustellen lassen.
@@ -55,6 +72,21 @@ export async function POST(request: Request): Promise<Response> {
         // 500 → Stripe stellt später erneut zu (Idempotenz via Upsert).
         console.error("[stripe/webhook] Freischaltung fehlgeschlagen:", r.error, abo.customerId);
         return Response.json({ error: "freischaltung-fehlgeschlagen" }, { status: 500 });
+      }
+
+      // Willkommens-/Lizenz-E-Mail nur beim frisch erzeugten Schlüssel (einmalig),
+      // best-effort: ein Mail-Fehler darf den Webhook nicht scheitern lassen (der
+      // Schlüssel ist gespeichert und im Konto abrufbar).
+      if (r.ok && neuerSchluessel && abo.email && mailKonfiguriert()) {
+        const paket = PAKETE.find((p) => p.planId === abo.planId);
+        const mail = willkommensMail({
+          an: abo.email,
+          planName: paket?.name ?? abo.planId,
+          lizenzSchluessel: neuerSchluessel,
+          appUrl: process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || new URL(request.url).origin,
+        });
+        const m = await sendeMail(mail);
+        if (!m.ok) console.error("[stripe/webhook] Willkommens-Mail fehlgeschlagen:", m.error, abo.customerId);
       }
     } else {
       // Verifiziert empfangen, aber Kunden-Store noch nicht angebunden.

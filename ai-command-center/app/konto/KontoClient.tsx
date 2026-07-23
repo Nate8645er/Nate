@@ -29,6 +29,7 @@ export default function KontoClient() {
   const [laeuft, setLaeuft] = useState(false);
 
   const [aboStatus, setAboStatus] = useState<string | null>(null);
+  const [lizenz, setLizenz] = useState<string | null>(null);
   const [portalLaeuft, setPortalLaeuft] = useState(false);
 
   // Echten Plan aus dem Kunden-Store laden (nur wenn angemeldet; sonst 401 → ignorieren).
@@ -36,10 +37,11 @@ export default function KontoClient() {
     try {
       const res = await fetch("/api/mein-abo");
       if (!res.ok) return;
-      const data = (await res.json()) as { planId?: string; status?: string };
+      const data = (await res.json()) as { planId?: string; status?: string; lizenzSchluessel?: string | null };
       if (data.planId) {
         setPlan(data.planId);
         setAboStatus(data.status ?? null);
+        setLizenz(data.lizenzSchluessel ?? null);
         try {
           localStorage.setItem("acc-plan", data.planId);
         } catch {
@@ -140,6 +142,17 @@ export default function KontoClient() {
               )}
             </h2>
             <p className="mt-1 text-sm text-[#6f6557]">{paket.untertitel}</p>
+            {lizenz && (
+              <div className="mt-4">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Ihr Lizenzschlüssel</p>
+                <code className="mt-1 block break-all rounded-lg bg-[#f5f2ea] px-3 py-2 font-mono text-sm text-[#1c1917]">
+                  {lizenz}
+                </code>
+                <Link href="/onboarding" className="mt-2 inline-block text-sm font-semibold text-[#c25e0e] hover:underline">
+                  Jetzt einlösen &amp; freischalten →
+                </Link>
+              </div>
+            )}
           </>
         ) : (
           <>

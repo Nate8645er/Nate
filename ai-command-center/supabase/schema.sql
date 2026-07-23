@@ -11,6 +11,7 @@ create table if not exists public.abos (
   plan_id         text not null,              -- Plan aus metadata.planId
   status          text not null default 'active',
   event_zeit      bigint not null default 0,  -- Stripe-Event-Zeit (Unix-Sek.), Reihenfolge-Schutz
+  license_key     text,                        -- einmalig erzeugter Lizenzschlüssel (nach Kauf)
   aktualisiert_am timestamptz not null default now()
 );
 

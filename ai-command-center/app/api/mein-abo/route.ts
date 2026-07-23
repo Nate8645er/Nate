@@ -43,5 +43,8 @@ export async function GET(request: Request): Promise<Response> {
     planName: paket?.name ?? abo.plan_id,
     status: abo.status,
     aktiv: AKTIVE_STATUS.has(abo.status),
+    // Nur an die eigene, verifizierte Sitzung – für die Selbstbedienung, falls
+    // die E-Mail nicht ankam. customer_id/email werden bewusst NICHT geliefert.
+    lizenzSchluessel: abo.license_key ?? null,
   });
 }
