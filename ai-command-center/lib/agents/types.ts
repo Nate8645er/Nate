@@ -48,6 +48,15 @@ export interface MissionContext {
     text: string;
   };
   /**
+   * Mehrere angehängte Dokumente (Datei-Anhang für alles). Additiv zu
+   * `dokument`: Der Orchestrator hängt jedes als eigenen DATENBLOCK an die
+   * USER-Messages der Worker. Serverseitig in Anzahl und Länge budgetiert.
+   */
+  dokumente?: {
+    name: string;
+    text: string;
+  }[];
+  /**
    * Ergebnis des eingebauten KI-Browsers (Web-Recherche). Wird vom
    * Mission-Endpoint VOR dem Missionsstart gefüllt und vom Orchestrator
    * wie das Dokument als Datenblock an die Worker-USER-Messages gehängt.

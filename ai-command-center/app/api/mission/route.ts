@@ -28,6 +28,9 @@ const MAX_CONTEXT_FIELD_LENGTH = 80;
 /** Serverseitige Kappung des angehängten Dokuments (Dokumenten-Analyse). */
 const MAX_DOKUMENT_NAME_LENGTH = 80;
 const MAX_DOKUMENT_TEXT_LENGTH = 20_000;
+/** Datei-Anhang für alles: max. Anzahl Dokumente und Gesamt-Zeichenbudget. */
+const MAX_DOKUMENTE = 6;
+const MAX_DOKUMENTE_GESAMT_ZEICHEN = 40_000;
 
 export async function POST(request: Request): Promise<Response> {
   let goal: unknown;
@@ -161,9 +164,38 @@ function sanitizeContext(raw: unknown): MissionContext | undefined {
   const branche = cleanContextField((raw as { branche?: unknown }).branche);
   const groesse = cleanContextField((raw as { groesse?: unknown }).groesse);
   const dokument = sanitizeDokument((raw as { dokument?: unknown }).dokument);
+  const dokumente = sanitizeDokumente((raw as { dokumente?: unknown }).dokumente);
   const onboarding = branche && groesse ? { branche, groesse } : {};
-  if ((!branche || !groesse) && !dokument) return undefined;
-  return { ...onboarding, ...(dokument ? { dokument } : {}) };
+  if ((!branche || !groesse) && !dokument && !dokumente) return undefined;
+  return {
+    ...onboarding,
+    ...(dokument ? { dokument } : {}),
+    ...(dokumente ? { dokumente } : {}),
+  };
+}
+
+/**
+ * Validiert die optionale Liste angehängter Dokumente (Datei-Anhang für
+ * alles): pro Eintrag wie sanitizeDokument, zusätzlich Anzahl (MAX_DOKUMENTE)
+ * und Gesamt-Zeichenbudget begrenzt. Leere Liste => undefined.
+ */
+function sanitizeDokumente(raw: unknown): MissionContext["dokumente"] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const sauber: NonNullable<MissionContext["dokumente"]> = [];
+  let gesamt = 0;
+  for (const eintrag of raw) {
+    if (sauber.length >= MAX_DOKUMENTE) break;
+    const dok = sanitizeDokument(eintrag);
+    if (!dok) continue;
+    if (gesamt + dok.text.length > MAX_DOKUMENTE_GESAMT_ZEICHEN) {
+      const rest = MAX_DOKUMENTE_GESAMT_ZEICHEN - gesamt;
+      if (rest <= 0) break;
+      dok.text = dok.text.slice(0, rest);
+    }
+    gesamt += dok.text.length;
+    sauber.push(dok);
+  }
+  return sauber.length ? sauber : undefined;
 }
 
 /**

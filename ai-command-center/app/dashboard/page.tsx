@@ -101,6 +101,10 @@ const MAX_DOC_BYTES = 2 * 1024 * 1024;
 const MAX_DOC_CHARS = 20_000;
 /** Endungen, die der Client selbst per FileReader als Text liest. */
 const TEXT_DOC_EXTENSIONS = new Set(["txt", "md", "csv", "html", "htm"]);
+/** Bild-Endungen: werden per KI-Vision (/api/bild) in Text umgewandelt. */
+const IMAGE_DOC_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp", "gif"]);
+/** Datei-Anhang für alles: max. Anzahl gleichzeitig angehängter Dateien. */
+const MAX_DOKUMENTE_CLIENT = 6;
 
 const HISTORY_KEY = "acc-mission-history";
 const PLAN_KEY = "acc-plan";
@@ -896,6 +900,16 @@ function readFileAsText(file: File): Promise<string> {
   });
 }
 
+/** Liest eine Datei als data-URL (für Bilder → KI-Vision). */
+function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : "");
+    reader.onerror = () => reject(reader.error ?? new Error("Datei konnte nicht gelesen werden."));
+    reader.readAsDataURL(file);
+  });
+}
+
 /* --------------------------------- Seite ---------------------------------- */
 
 export default function DashboardPage() {
@@ -925,8 +939,8 @@ export default function DashboardPage() {
   const [dynStatuses, setDynStatuses] = useState<Record<string, DynStatus>>({});
   const [logs, setLogs] = useState<string[]>([]);
   const [startedAt, setStartedAt] = useState<number | null>(null);
-  /** Angehängtes Dokument (Dokumenten-Analyse) für die nächste Mission. */
-  const [dokument, setDokument] = useState<{ name: string; text: string } | null>(null);
+  /** Angehängte Dateien (Datei-Anhang für alles) für die nächste Mission. */
+  const [dokumente, setDokumente] = useState<{ name: string; text: string; art: "text" | "bild" }[]>([]);
   const [docBusy, setDocBusy] = useState(false);
   const [docError, setDocError] = useState("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -1188,48 +1202,81 @@ export default function DashboardPage() {
   }, [pushLog]);
 
   /**
-   * Dokumenten-Analyse: liest .txt/.md/.csv/.html direkt per FileReader,
-   * schickt PDFs an POST /api/extract und hängt den Text (gekappt auf
-   * MAX_DOC_CHARS) als Dokument an die nächste Mission.
+   * Liest EINE Datei in Text um: .txt/.md/.csv/.html per FileReader, PDFs über
+   * POST /api/extract, Bilder über die KI-Vision (POST /api/bild → Beschreibung).
+   * Gibt {name, text, art} zurück oder wirft mit einer klaren Meldung.
    */
-  const attachDocument = useCallback(async (file: File) => {
-    setDocError("");
-    if (file.size > MAX_DOC_BYTES) {
-      setDocError("Datei zu gross – maximal 2 MB.");
-      return;
-    }
-    const ext = file.name.toLowerCase().split(".").pop() ?? "";
-    setDocBusy(true);
-    try {
-      let text: string;
+  const dateiEinlesen = useCallback(
+    async (file: File): Promise<{ name: string; text: string; art: "text" | "bild" }> => {
+      if (file.size > MAX_DOC_BYTES) throw new Error(`${file.name}: zu gross (max. 2 MB).`);
+      const ext = file.name.toLowerCase().split(".").pop() ?? "";
       if (ext === "pdf") {
         const form = new FormData();
         form.append("file", file);
         const res = await fetch("/api/extract", { method: "POST", body: form });
         const data = (await res.json().catch(() => null)) as { text?: string; error?: string } | null;
-        if (!res.ok) throw new Error(data?.error ?? `Server antwortete mit ${res.status}`);
-        text = data?.text ?? "";
-      } else if (TEXT_DOC_EXTENSIONS.has(ext)) {
-        text = await readFileAsText(file);
-      } else {
-        setDocError("Nur .txt, .md, .csv, .html oder .pdf werden unterstützt.");
-        return;
+        if (!res.ok) throw new Error(data?.error ?? `${file.name}: Server antwortete mit ${res.status}`);
+        const clean = (data?.text ?? "").trim().slice(0, MAX_DOC_CHARS);
+        if (!clean) throw new Error(`${file.name}: kein Text gefunden.`);
+        return { name: file.name.slice(0, 80), text: clean, art: "text" };
       }
-      const clean = text.trim().slice(0, MAX_DOC_CHARS);
-      if (!clean) {
-        setDocError("Im Dokument wurde kein Text gefunden.");
-        return;
+      if (TEXT_DOC_EXTENSIONS.has(ext)) {
+        const clean = (await readFileAsText(file)).trim().slice(0, MAX_DOC_CHARS);
+        if (!clean) throw new Error(`${file.name}: kein Text gefunden.`);
+        return { name: file.name.slice(0, 80), text: clean, art: "text" };
       }
-      setDokument({ name: file.name.slice(0, 80), text: clean });
-    } catch (err) {
-      setDocError(err instanceof Error ? err.message : "Dokument konnte nicht gelesen werden.");
-    } finally {
-      setDocBusy(false);
-    }
-  }, []);
+      if (IMAGE_DOC_EXTENSIONS.has(ext) || file.type.startsWith("image/")) {
+        const bild = await readFileAsDataUrl(file);
+        const res = await fetch("/api/bild", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ bild, frage: "Beschreibe dieses Bild sachlich und lies sichtbaren Text vollständig vor, damit es als Kontext für eine Aufgabe dienen kann." }),
+        });
+        const data = (await res.json().catch(() => null)) as { text?: string; error?: string } | null;
+        if (res.status === 501) {
+          throw new Error(`${file.name}: Bild-Analyse aktiv, sobald ein bild-fähiges Modell verbunden ist (ANTHROPIC_API_KEY).`);
+        }
+        if (!res.ok || !data?.text) throw new Error(`${file.name}: Bild konnte nicht ausgewertet werden.`);
+        return { name: file.name.slice(0, 80), text: data.text.trim().slice(0, MAX_DOC_CHARS), art: "bild" };
+      }
+      throw new Error(`${file.name}: nicht unterstützt (TXT, MD, CSV, HTML, PDF oder Bild).`);
+    },
+    [],
+  );
 
-  const removeDocument = useCallback(() => {
-    setDokument(null);
+  /**
+   * Datei-Anhang für alles: mehrere Dateien nacheinander einlesen und an die
+   * nächste Mission anhängen (max. MAX_DOKUMENTE_CLIENT). Fehler pro Datei
+   * werden gesammelt und ehrlich gemeldet; erfolgreiche Dateien werden angehängt.
+   */
+  const attachFiles = useCallback(
+    async (files: File[]) => {
+      setDocError("");
+      if (!files.length) return;
+      setDocBusy(true);
+      const fehler: string[] = [];
+      const neu: { name: string; text: string; art: "text" | "bild" }[] = [];
+      try {
+        for (const file of files) {
+          try {
+            neu.push(await dateiEinlesen(file));
+          } catch (err) {
+            fehler.push(err instanceof Error ? err.message : `${file.name}: Fehler.`);
+          }
+        }
+        if (neu.length) {
+          setDokumente((prev) => [...prev, ...neu].slice(0, MAX_DOKUMENTE_CLIENT));
+        }
+        if (fehler.length) setDocError(fehler.join(" "));
+      } finally {
+        setDocBusy(false);
+      }
+    },
+    [dateiEinlesen],
+  );
+
+  const removeDocument = useCallback((index: number) => {
+    setDokumente((prev) => prev.filter((_, i) => i !== index));
     setDocError("");
   }, []);
 
@@ -1286,11 +1333,13 @@ export default function DashboardPage() {
         headers,
         body: JSON.stringify({
           goal: missionGoal,
-          ...((branche && groesse) || dokument
+          ...((branche && groesse) || dokumente.length
             ? {
                 context: {
                   ...(branche && groesse ? { branche, groesse } : {}),
-                  ...(dokument ? { dokument } : {}),
+                  ...(dokumente.length
+                    ? { dokumente: dokumente.map(({ name, text }) => ({ name, text })) }
+                    : {}),
                 },
               }
             : {}),
@@ -1335,7 +1384,7 @@ export default function DashboardPage() {
       setRunning(false);
       abortRef.current = null;
     }
-  }, [goal, running, handleEvent, saveHistory, licenseToken, licensedPlan, usageToken, branche, groesse, dokument]);
+  }, [goal, running, handleEvent, saveHistory, licenseToken, licensedPlan, usageToken, branche, groesse, dokumente]);
 
   const stopMission = useCallback(() => abortRef.current?.abort(), []);
   const toggleOutput = useCallback(
@@ -1503,8 +1552,8 @@ export default function DashboardPage() {
                 onChange={(e) => setGoal(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && startMission()}
                 placeholder={
-                  dokument
-                    ? "z. B. Fasse dieses Dokument zusammen"
+                  dokumente.length
+                    ? "z. B. Fasse diese Dateien zusammen"
                     : 'z. B. "Erstelle eine Marketingstrategie für eine Zürcher Bäckerei"'
                 }
                 disabled={running}
@@ -1513,23 +1562,24 @@ export default function DashboardPage() {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".txt,.md,.csv,.html,.pdf"
+                multiple
+                accept=".txt,.md,.csv,.html,.pdf,image/*"
                 className="hidden"
                 aria-hidden
                 tabIndex={-1}
                 onChange={(e) => {
-                  const file = e.target.files?.[0];
+                  const files = Array.from(e.target.files ?? []);
                   // Zurücksetzen, damit dieselbe Datei erneut wählbar ist.
                   e.target.value = "";
-                  if (file) void attachDocument(file);
+                  if (files.length) void attachFiles(files);
                 }}
               />
               <button
                 onClick={() => fileInputRef.current?.click()}
-                disabled={running || docBusy}
+                disabled={running || docBusy || dokumente.length >= MAX_DOKUMENTE_CLIENT}
                 className={`rounded-xl border border-[#e0d8c6] bg-white/70 px-4 py-3 font-semibold text-[#c25e0e] transition hover:border-[#ffb066] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING}`}
               >
-                {docBusy ? "Liest Dokument …" : "Dokument anhängen"}
+                {docBusy ? "Liest Dateien …" : "Datei anhängen"}
               </button>
               {running ? (
                 <button onClick={stopMission} className="rounded-xl border border-red-300 px-6 py-3 font-semibold text-red-600 transition hover:bg-red-50 active:scale-[0.98]">
@@ -1541,17 +1591,22 @@ export default function DashboardPage() {
                 </button>
               )}
             </div>
-            {dokument && (
-              <div className="mt-3 inline-flex max-w-full items-center gap-2 rounded-xl border border-[#ffb066]/50 bg-[#fff4e6] px-3 py-1.5 font-mono text-xs text-[#c25e0e]">
-                <span className="truncate" title={dokument.name}>{dokument.name}</span>
-                <span className="shrink-0 text-[#7c7161]">{dokument.text.length} Zeichen</span>
-                <button
-                  onClick={removeDocument}
-                  aria-label={`Dokument ${dokument.name} entfernen`}
-                  className={`shrink-0 rounded-xl px-1 text-sm leading-none text-[#6f6557] transition-colors hover:bg-[#ffe6cc] hover:text-[#1c1917] ${FOCUS_RING}`}
-                >
-                  ×
-                </button>
+            {dokumente.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {dokumente.map((d, i) => (
+                  <div key={`${d.name}-${i}`} className="inline-flex max-w-full items-center gap-2 rounded-xl border border-[#ffb066]/50 bg-[#fff4e6] px-3 py-1.5 font-mono text-xs text-[#c25e0e]">
+                    <span className="shrink-0" aria-hidden>{d.art === "bild" ? "🖼" : "📄"}</span>
+                    <span className="truncate" title={d.name}>{d.name}</span>
+                    <span className="shrink-0 text-[#7c7161]">{d.text.length} Zeichen</span>
+                    <button
+                      onClick={() => removeDocument(i)}
+                      aria-label={`${d.name} entfernen`}
+                      className={`shrink-0 rounded-xl px-1 text-sm leading-none text-[#6f6557] transition-colors hover:bg-[#ffe6cc] hover:text-[#1c1917] ${FOCUS_RING}`}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
             {docError && (

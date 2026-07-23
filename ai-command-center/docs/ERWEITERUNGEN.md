@@ -106,3 +106,35 @@ ohne Fixierung auf ein Format.
 
 **Tests:** `test/aufnahme.test.ts` (6) – MIME-Auswahl inkl. Priorität/leer/werfende
 Prüf-Funktion, Dauer-Format, Endungs-Ableitung. Suite 162 grün; tsc + build ok.
+
+## Datei-Anhang für alles (mehrere Dateien + Bilder an eine Mission)
+
+**Warum:** Bisher liess sich genau **ein** Text-/PDF-Dokument an eine Mission
+hängen. Gewünscht war, **mehrere** Dateien gleichzeitig anzuhängen – inklusive
+**Bilder**.
+
+**Was neu ist – additiv, rückwärtskompatibel:**
+- `MissionContext.dokumente?: {name,text}[]` neben dem bestehenden `dokument`
+  (`lib/agents/types.ts`). Ältere Clients mit nur `dokument` funktionieren
+  unverändert.
+- `documentBlock()`/`documentPlannerHint()` (`lib/agents/orchestrator.ts`) fassen
+  `dokument` (zuerst) und `dokumente[]` zusammen und hängen **je Datei einen
+  abgegrenzten DATENBLOCK** an die Worker-USER-Message. Dateinamen werden gegen
+  Marker/Zeilenumbrüche **und Bindestrich-Ketten** gehärtet (kein falscher
+  Block-Marker).
+- Server (`app/api/mission/route.ts`): `sanitizeDokumente` validiert die Liste,
+  begrenzt **Anzahl (6)** und **Gesamt-Zeichen (40 000)** und kappt jeden Eintrag
+  wie bisher (Name 80, Text 20 000).
+- Dashboard (`app/dashboard/page.tsx`): Datei-Auswahl jetzt **`multiple`** und
+  `accept` inkl. `image/*`. Mehrere Chips mit Symbol (📄/🖼), Zeichenzahl und
+  Einzel-Entfernen. **Bilder** werden clientseitig über die bestehende KI-Vision
+  (`POST /api/bild`) in eine **Text-Beschreibung** umgewandelt und als Kontext
+  angehängt – ohne bild-fähiges Modell klarer, ehrlicher Hinweis statt Schein.
+
+**Test-Infrastruktur:** `vitest.config.ts` löst jetzt den `@/`-Alias auf (wie
+tsconfig), damit Module getestet werden können, die intern `@/…` importieren
+(z. B. der Orchestrator).
+
+**Tests:** `test/dokumente.test.ts` (6) – leer ohne Anhang, Einzel-Dokument
+(rückwärtskompatibel), mehrere Dokumente, Kombination, Verwerfen unvollständiger
+Einträge, Namens-Härtung gegen Marker-Injection. Suite 168 grün; tsc + build ok.
