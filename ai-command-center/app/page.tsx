@@ -42,7 +42,7 @@ type Plan = {
 
 const PLANS: Plan[] = [
   {
-    name: "Free",
+    name: "Gratis",
     price: "0",
     priceNote: "CHF, für immer",
     team: "Team: 4 Agenten",
@@ -58,10 +58,10 @@ const PLANS: Plan[] = [
     handle: "free-demo-ki-team-kostenlos-testen",
   },
   {
-    name: "Personal",
-    price: "19.90",
+    name: "Solo",
+    price: "19",
     priceNote: "CHF pro Monat",
-    priceYear: "199 CHF/Jahr",
+    priceYear: "190 CHF/Jahr",
     team: "Ihr Kern-Team",
     benefits: [
       "10 Missionen pro Tag",
@@ -75,13 +75,11 @@ const PLANS: Plan[] = [
     handle: "personal-ai-ihr-personlicher-ki-assistent-monatsabo",
   },
   {
-    name: "Starter",
-    price: "199",
+    name: "Start",
+    price: "49",
     priceNote: "CHF pro Monat",
-    priceYear: "1'990 CHF/Jahr",
+    priceYear: "490 CHF/Jahr",
     team: "Team: 12 Agenten",
-    badge: "Bestseller",
-    highlight: true,
     benefits: [
       "12 spezialisierte KI-Agenten",
       "25 Missionen pro Tag",
@@ -95,11 +93,13 @@ const PLANS: Plan[] = [
     handle: "starter-ai-ihre-personliche-ki-abteilung-monatsabo",
   },
   {
-    name: "Professional",
-    price: "799",
+    name: "Pro",
+    price: "179",
     priceNote: "CHF pro Monat",
-    priceYear: "7'990 CHF/Jahr",
+    priceYear: "1'790 CHF/Jahr",
     team: "Team: 50 Agenten",
+    badge: "Beliebt",
+    highlight: true,
     benefits: [
       "50 Agenten in Fachteams organisiert",
       "Skills inkl. Finanzen & Analyse",
@@ -114,12 +114,10 @@ const PLANS: Plan[] = [
   },
   {
     name: "Business",
-    price: "2'499",
+    price: "390",
     priceNote: "CHF pro Monat",
-    priceYear: "24'990 CHF/Jahr",
+    priceYear: "3'900 CHF/Jahr",
     team: "Abteilung: 250 Agenten",
-    badge: "Beliebt bei Firmen",
-    highlight: true,
     benefits: [
       "250 Agenten als digitale Abteilung",
       "Skills inkl. Personal & Recht",
@@ -134,9 +132,9 @@ const PLANS: Plan[] = [
   },
   {
     name: "Enterprise",
-    price: "ab 8'900",
+    price: "790",
     priceNote: "CHF pro Monat",
-    priceYear: "ab 89'000 CHF/Jahr",
+    priceYear: "7'900 CHF/Jahr",
     team: "Belegschaft: 1000 Mitarbeitende",
     benefits: [
       "Bis 1000 virtuelle Mitarbeitende",
@@ -759,7 +757,7 @@ export default function Home() {
                   Grösseres Vorhaben? Sprechen wir darüber.
                 </h3>
                 <p className="mt-1 text-sm text-[#6f6557]">
-                  Enterprise ab 8&apos;900 CHF/Monat: eigene Integrationen, private Umgebung,
+                  Enterprise ab 790 CHF/Monat: eigene Integrationen, private Umgebung,
                   persönliche Einrichtung und Begleitung.
                 </p>
               </div>
