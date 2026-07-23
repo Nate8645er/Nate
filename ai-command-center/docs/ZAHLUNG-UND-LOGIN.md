@@ -87,7 +87,11 @@ gegen die echten Pakete validiert**, **Rate-Limit auf `/api/auth/*`** (10 Versuc
 - In Supabase die E-Mail-Bestätigung aktiv lassen (Authentication → Providers →
   „Confirm email").
 - Für echtes verteiltes Rate-Limit `UPSTASH_REDIS_REST_URL` + `_TOKEN` setzen
-  (ohne Upstash zählt der Limiter nur pro Serverless-Instanz).
+  (ohne Upstash zählt der Limiter nur pro Serverless-Instanz; die App warnt in
+  Produktion einmalig im Log). Die Client-IP kommt aus `x-real-ip` (von Vercel
+  gesetzt, nicht fälschbar); `x-forwarded-for` dient nur als Fallback.
+- Restrisiko (bewusst): Fällt Upstash aus, lässt der Limiter fail-open durch
+  (Verfügbarkeit vor Sperre) – das Signatur-/Passwort-Gate bleibt aber aktiv.
 
 ## Konto zeigt den echten Plan
 Nach Login ruft `/konto` den Endpunkt `GET /api/mein-abo` auf: Er leitet die

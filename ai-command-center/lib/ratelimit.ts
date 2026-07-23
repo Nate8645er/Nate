@@ -88,17 +88,27 @@ export async function pruefeRateLimit(
   }
 }
 
-/** Client-IP aus den üblichen Proxy-Headern (Vercel/Standard). */
+/**
+ * Client-IP für das Rate-Limit. WICHTIG: `x-real-ip` wird von der Plattform
+ * (Vercel) auf die echte Verbindungs-IP gesetzt und ist NICHT client-fälschbar –
+ * daher zuerst. Der linkeste Wert von `x-forwarded-for` ist client-kontrolliert
+ * (fälschbar) und dient nur als Fallback, wenn keine vertrauenswürdige Quelle da
+ * ist. Ohne x-real-ip in Produktion ist der Limiter nur best-effort.
+ */
 export function clientIp(headers: Headers): string {
+  const real = headers.get("x-real-ip");
+  if (real) return real.trim();
   const xff = headers.get("x-forwarded-for");
   if (xff) return xff.split(",")[0].trim();
-  return headers.get("x-real-ip") || "unbekannt";
+  return "unbekannt";
 }
 
 /**
  * Limit für Auth-Endpunkte: pro IP+E-Mail. Standard 10 Versuche / 10 Minuten –
  * bremst Brute-Force/Enumeration, ohne echte Nutzer zu behindern.
  */
+let produktionswarnungGezeigt = false;
+
 export async function authLimitPruefen(
   request: Request,
   aktion: string,
@@ -106,6 +116,15 @@ export async function authLimitPruefen(
   env: RateLimitEnv = process.env,
   fetchImpl: typeof fetch = fetch,
 ): Promise<RateLimitErgebnis> {
+  // Ehrliche einmalige Warnung: In Produktion ohne Upstash ist der Limiter nur
+  // pro Instanz wirksam (auf Serverless praktisch schwach).
+  if (!produktionswarnungGezeigt && env.NODE_ENV === "production" && !rateLimitVerteilt(env)) {
+    produktionswarnungGezeigt = true;
+    console.warn(
+      "[ratelimit] Kein Upstash konfiguriert – Auth-Rate-Limit greift nur pro Instanz. " +
+        "Für echten Schutz UPSTASH_REDIS_REST_URL/_TOKEN setzen.",
+    );
+  }
   const ip = clientIp(request.headers);
   const key = `rl:${aktion}:${ip}:${email.toLowerCase()}`;
   return pruefeRateLimit(key, 10, 600, env, fetchImpl);

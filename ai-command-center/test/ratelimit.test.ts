@@ -56,11 +56,14 @@ describe("Upstash-Limiter", () => {
 });
 
 describe("clientIp", () => {
-  it("erste IP aus x-forwarded-for", () => {
+  it("bevorzugt vertrauenswürdiges x-real-ip vor spoofbarem x-forwarded-for", () => {
+    // Angreifer setzt x-forwarded-for; x-real-ip (Plattform) muss gewinnen.
+    expect(clientIp(new Headers({ "x-real-ip": "9.9.9.9", "x-forwarded-for": "1.1.1.1" }))).toBe("9.9.9.9");
+  });
+  it("nutzt x-forwarded-for nur als Fallback ohne x-real-ip", () => {
     expect(clientIp(new Headers({ "x-forwarded-for": "1.2.3.4, 5.6.7.8" }))).toBe("1.2.3.4");
   });
-  it("Fallback x-real-ip / unbekannt", () => {
-    expect(clientIp(new Headers({ "x-real-ip": "9.9.9.9" }))).toBe("9.9.9.9");
+  it("ohne Header: unbekannt", () => {
     expect(clientIp(new Headers())).toBe("unbekannt");
   });
 });
