@@ -11,6 +11,7 @@
     {% if page_description %}<meta name="description" content="{{ page_description | escape }}">{% endif %}
     {{ content_for_header }}
     {{ 'theme.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'theme.js' | asset_url }}" defer></script>
   </head>
   <body class="tpl-{{ template | replace: '.', '-' | handle }}">
     <header class="hd">
@@ -63,8 +64,9 @@
         </div>
         <div class="ft-col">
           <h4>Rechtliches</h4>
-          <a href="{{ routes.root_url }}policies/privacy-policy">Datenschutz</a>
-          <a href="{{ routes.root_url }}policies/terms-of-service">AGB</a>
+          <a href="{{ routes.root_url }}pages/impressum">Impressum</a>
+          <a href="{{ routes.root_url }}pages/datenschutz">Datenschutz</a>
+          <a href="{{ routes.root_url }}pages/agb">AGB</a>
           <a href="{{ routes.root_url }}policies/refund-policy">Rückerstattung</a>
         </div>
       </div>

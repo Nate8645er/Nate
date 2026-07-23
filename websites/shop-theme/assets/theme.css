@@ -272,3 +272,6 @@ a.uc:hover{border-color:var(--ora);box-shadow:0 24px 54px -32px rgba(255,120,40,
 .contact-card ul{margin:0;padding-left:18px;color:var(--muted);font-size:14px}
 .contact-card li{margin:6px 0}
 @media(max-width:860px){.contact-wrap{grid-template-columns:1fr;gap:24px}}
+/* Rechtliche Seiten */
+.legal-note{border:1px solid #f0e2c9;background:#fdf8ee;color:#7a6a45;border-radius:14px;padding:12px 16px;font-size:13px;margin:0 0 22px}
+.legal-note em{font-style:normal;font-weight:700}
