@@ -173,6 +173,7 @@ export default function OnboardingClient() {
             <video
               controls
               preload="metadata"
+              poster={tut.videoSrc.replace(/\.mp4$/, "-poster.jpg")}
               className="mt-4 w-full rounded-xl border border-[#e8e1d2]"
             >
               <source src={tut.videoSrc} type="video/mp4" />
