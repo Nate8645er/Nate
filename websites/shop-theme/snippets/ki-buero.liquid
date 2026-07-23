@@ -57,6 +57,8 @@
       <div class="kib-walk g4" style="--c:#ec4899"><span class="kib-wh"></span><span class="kib-wb"></span></div>
       <div class="kib-walk g5" style="--c:#14b8a6"><span class="kib-wh"></span><span class="kib-wb"></span></div>
       <div class="kib-walk g6" style="--c:#eab308"><span class="kib-wh"></span><span class="kib-wb"></span></div>
+      <div class="kib-walk g7" style="--c:#3b82f6"><span class="kib-wh"></span><span class="kib-wb"></span></div>
+      <div class="kib-walk g8" style="--c:#f472b6"><span class="kib-wh"></span><span class="kib-wb"></span></div>
 
       <div class="kib-district">
         <span class="kib-dlabel">VERBUNDENE FIRMA</span>
@@ -153,18 +155,24 @@
   .kib-walk .kib-wb { position:absolute; top:7px; left:50%; width:13px; height:13px; transform:translateX(-50%); border-radius:6px 6px 5px 5px; background: linear-gradient(180deg, var(--c), color-mix(in srgb, var(--c) 60%, #000)); box-shadow:0 2px 5px rgba(0,0,0,.5); animation: kib-bob .9s ease-in-out infinite; }
   @keyframes kib-bob { 0%,100%{ transform:translateX(-50%) translateY(0);} 50%{ transform:translateX(-50%) translateY(-1.2px);} }
   .kib-walk::after { content:""; position:absolute; bottom:-3px; left:50%; width:13px; height:4px; transform:translateX(-50%); border-radius:50%; background:rgba(0,0,0,.5); filter:blur(1.5px); }
-  .kib-walk.g1 { animation: kib-r1 15s linear infinite; }
-  .kib-walk.g2 { animation: kib-r2 19s linear infinite; }
-  .kib-walk.g3 { animation: kib-r3 17s linear infinite; }
-  .kib-walk.g4 { animation: kib-r4 21s linear infinite; }
-  .kib-walk.g5 { animation: kib-r5 23s linear infinite; }
+  /* Figuren laufen durch die GANZE Szene (oben bis unten, links bis rechts). */
+  .kib-walk.g1 { animation: kib-r1 22s linear infinite; }
+  .kib-walk.g2 { animation: kib-r2 26s linear infinite; }
+  .kib-walk.g3 { animation: kib-r3 24s linear infinite; }
+  .kib-walk.g4 { animation: kib-r4 28s linear infinite; }
+  .kib-walk.g5 { animation: kib-r5 30s linear infinite; }
   .kib-walk.g6 { animation: kib-r6 25s linear infinite; }
-  @keyframes kib-r1 { 0%{ left:4%; top:20%; } 50%{ left:66%; top:23%; } 100%{ left:4%; top:20%; } }
-  @keyframes kib-r2 { 0%{ left:74%; top:58%; } 50%{ left:8%; top:60%; } 100%{ left:74%; top:58%; } }
-  @keyframes kib-r3 { 0%{ left:14%; top:8%; } 35%{ left:16%; top:54%; } 70%{ left:40%; top:44%; } 100%{ left:14%; top:8%; } }
-  @keyframes kib-r4 { 0%{ left:70%; top:12%; } 40%{ left:72%; top:50%; } 75%{ left:52%; top:30%; } 100%{ left:70%; top:12%; } }
-  @keyframes kib-r5 { 0%{ left:6%; top:14%; } 50%{ left:64%; top:50%; } 100%{ left:6%; top:14%; } }
-  @keyframes kib-r6 { 0%{ left:60%; top:8%; } 35%{ left:30%; top:26%; } 70%{ left:68%; top:44%; } 100%{ left:60%; top:8%; } }
+  .kib-walk.g7 { animation: kib-r7 32s linear infinite; }
+  .kib-walk.g8 { animation: kib-r8 27s linear infinite; }
+  /* grosse Rundläufe über die volle Fläche (left 4–88%, top 8–88%) */
+  @keyframes kib-r1 { 0%{left:4%;top:12%} 25%{left:82%;top:14%} 50%{left:84%;top:82%} 75%{left:8%;top:84%} 100%{left:4%;top:12%} }
+  @keyframes kib-r2 { 0%{left:86%;top:50%} 25%{left:46%;top:18%} 50%{left:8%;top:56%} 75%{left:50%;top:86%} 100%{left:86%;top:50%} }
+  @keyframes kib-r3 { 0%{left:12%;top:8%} 30%{left:14%;top:84%} 60%{left:56%;top:52%} 100%{left:12%;top:8%} }
+  @keyframes kib-r4 { 0%{left:72%;top:10%} 25%{left:74%;top:82%} 55%{left:30%;top:60%} 80%{left:40%;top:20%} 100%{left:72%;top:10%} }
+  @keyframes kib-r5 { 0%{left:6%;top:18%} 30%{left:86%;top:30%} 60%{left:60%;top:86%} 100%{left:6%;top:18%} }
+  @keyframes kib-r6 { 0%{left:52%;top:86%} 25%{left:22%;top:30%} 55%{left:82%;top:18%} 80%{left:70%;top:72%} 100%{left:52%;top:86%} }
+  @keyframes kib-r7 { 0%{left:40%;top:6%} 30%{left:88%;top:60%} 60%{left:20%;top:80%} 100%{left:40%;top:6%} }
+  @keyframes kib-r8 { 0%{left:8%;top:70%} 25%{left:80%;top:84%} 50%{left:86%;top:12%} 75%{left:24%;top:24%} 100%{left:8%;top:70%} }
 
   .kib-district { position:absolute; left:23%; right:18%; top:65%; height:31%; z-index:4;
     border-radius:12px; border:1px solid rgba(255,255,255,.10);
