@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PAKETE, VERGLEICH, chf } from "@/lib/preise";
+import { SKILLS, SKILL_KATEGORIEN, skillVerfuegbar, skillAnzahlFuer } from "@/lib/skills";
 
 export function generateStaticParams() {
   return PAKETE.map((p) => ({ id: p.id }));
@@ -29,6 +30,14 @@ export default async function ProduktSeite({
   const { id } = await params;
   const paket = PAKETE.find((p) => p.id === id);
   if (!paket) notFound();
+
+  // Echter Fähigkeiten-Katalog, gefiltert auf die Abo-Stufe dieses Pakets.
+  const verfuegbar = SKILLS.filter((s) => skillVerfuegbar(s.befehl, paket.planId));
+  const anzahlSkills = skillAnzahlFuer(paket.planId);
+  const nachKategorie = SKILL_KATEGORIEN.map((k) => ({
+    kat: k,
+    skills: verfuegbar.filter((s) => s.kategorie === k),
+  })).filter((g) => g.skills.length > 0);
 
   return (
     <main className="bg-[#fdfbf7] text-[#1c1917]">
@@ -74,6 +83,42 @@ export default async function ProduktSeite({
               </li>
             ))}
           </ul>
+        </div>
+      </section>
+
+      {/* Was die KI-Abteilung alles kann (echter Skill-Katalog je Stufe) */}
+      <section className="border-t border-[#e8e1d2] bg-[#faf6ee] px-6 py-16">
+        <div className="mx-auto max-w-5xl">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <h2 className="text-2xl font-bold">
+              Was Ihre KI-Abteilung im <span className="acc-grad-text">{paket.name}</span> alles kann
+            </h2>
+            <span className="rounded-full border border-[#ffb066]/50 bg-[#fff4e6] px-3 py-1 text-sm font-bold text-[#c25e0e]">
+              {anzahlSkills}+ Fähigkeiten freigeschaltet
+            </span>
+          </div>
+          <p className="mt-2 max-w-2xl text-sm text-[#6f6557]">
+            Jede Fähigkeit ist ein fertiger Auftrag – ein Klick oder Befehl, und Ihre
+            Belegschaft liefert ein geprüftes Ergebnis. Auswahl nach Bereich:
+          </p>
+
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {nachKategorie.map((g) => (
+              <div key={g.kat} className="acc-card rounded-2xl p-5">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">
+                  {g.kat} · {g.skills.length}
+                </p>
+                <ul className="mt-3 space-y-2.5">
+                  {g.skills.map((s) => (
+                    <li key={s.befehl}>
+                      <p className="text-sm font-semibold text-[#1c1917]">{s.name}</p>
+                      <p className="text-xs leading-relaxed text-[#6f6557]">{s.beschreibung}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

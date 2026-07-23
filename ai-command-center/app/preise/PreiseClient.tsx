@@ -11,6 +11,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PAKETE, VERGLEICH, FAQ, chf, type Paket } from "@/lib/preise";
+import { skillAnzahlFuer } from "@/lib/skills";
 
 export default function PreiseClient() {
   const router = useRouter();
@@ -130,8 +131,11 @@ export default function PreiseClient() {
               <p className="mt-3 text-xs font-semibold uppercase tracking-wider text-[#c25e0e]">
                 {p.zielgruppe}
               </p>
+              <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#faf6ee] px-3 py-1 text-xs font-bold text-[#c25e0e]">
+                {skillAnzahlFuer(p.planId)}+ Fähigkeiten inklusive
+              </p>
 
-              <ul className="mt-5 space-y-2.5 text-sm text-[#4a4335]">
+              <ul className="mt-4 space-y-2.5 text-sm text-[#4a4335]">
                 {p.leistungen.map((l) => (
                   <li key={l} className="flex gap-2">
                     <svg viewBox="0 0 20 20" className="mt-0.5 h-4 w-4 shrink-0 text-[#177245]" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
