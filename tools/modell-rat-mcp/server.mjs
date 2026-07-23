@@ -13,16 +13,23 @@
  * Protokoll: MCP über stdio (JSON-RPC 2.0, zeilenweise). Keine Abhängigkeiten.
  *
  * Zugänge (Umgebungsvariablen) – setze die, die du nutzen willst:
- *   GOOGLE_API_KEY     Gemini 3 Ultra
- *   XAI_API_KEY        Grok 5
- *   MOONSHOT_API_KEY   Kimi (Moonshot)
- *   QWEN_API_KEY       Qwen 3 Max
- *   DEEPSEEK_API_KEY   DeepSeek R2
- *   META_LLM_URL       Llama 4 Behemoth (Endpoint eines OpenAI-kompatiblen Hosts), META_API_KEY optional
- *   OPENAI_API_KEY     ChatGPT (GPT)
- *   ANTHROPIC_API_KEY  Claude Sonnet 5
- *   MISTRAL_API_KEY    Mistral Magistral
+ *   OPENAI_API_KEY     GPT-5.6 Sol Ultra (OpenAI)
+ *   ANTHROPIC_API_KEY  Claude Opus 4.8 / Fable 5 (Anthropic)
+ *   GOOGLE_API_KEY     Gemini 3.1 Pro Ultra (Google DeepMind)
+ *   XAI_API_KEY        Grok 4.5 Heavy (xAI)
+ *   MOONSHOT_API_KEY   Kimi K3 (Moonshot AI)
+ *   DEEPSEEK_API_KEY   DeepSeek V4 Pro
+ *   QWEN_API_KEY       Qwen 3.8 Max (Alibaba)
+ *   META_LLM_URL       Llama 4 Maverick (Endpoint eines OpenAI-kompatiblen Hosts), META_API_KEY optional
+ *   MISTRAL_API_KEY    Mistral Large 3
+ *   ZHIPU_API_KEY      GLM-5 (Zhipu AI)
+ *   PHI_API_KEY/PHI_URL Phi-4 (Microsoft; Host-URL oder Azure/GitHub-Models)
+ *   COHERE_API_KEY     Command A+ (Cohere)
+ *   NVIDIA_API_KEY     Nemotron Ultra (NVIDIA NIM)
+ *   OPENROUTER_API_KEY EIN Key für alle (Fallback über OpenRouter)
  * Modell-ID optional überschreibbar per <PROVIDER>_MODEL (z. B. GOOGLE_MODEL).
+ * Exakte, noch nicht veröffentlichte Versionen per <PROVIDER>_MODEL setzen,
+ * sobald der Anbieter sie ausliefert – bis dahin ehrlich „Zugang nötig".
  */
 
 import process from "node:process";
@@ -72,15 +79,19 @@ ladeEnvDatei(join(HIER, "..", "..", ".env")); // Repo-Wurzel/.env
  * prüfen.
  */
 const MODELS = {
-  gemini: { label: "Gemini 3 Ultra", vendor: "Google", style: "openai", url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", keyEnv: "GOOGLE_API_KEY", model: "gemini-3-ultra", modelEnv: "GOOGLE_MODEL", orSlug: "google/gemini-3-ultra" },
-  grok: { label: "Grok 5", vendor: "xAI", style: "openai", url: "https://api.x.ai/v1/chat/completions", keyEnv: "XAI_API_KEY", model: "grok-5", modelEnv: "XAI_MODEL", orSlug: "x-ai/grok-5" },
-  kimi: { label: "Kimi (Moonshot)", vendor: "Moonshot AI", style: "openai", url: "https://api.moonshot.ai/v1/chat/completions", keyEnv: "MOONSHOT_API_KEY", model: "kimi-k3", modelEnv: "MOONSHOT_MODEL", orSlug: "moonshotai/kimi-k2" },
-  qwen: { label: "Qwen 3 Max", vendor: "Alibaba", style: "openai", url: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions", keyEnv: "QWEN_API_KEY", model: "qwen3-max", modelEnv: "QWEN_MODEL", orSlug: "qwen/qwen3-max" },
-  deepseek: { label: "DeepSeek R2", vendor: "DeepSeek", style: "openai", url: "https://api.deepseek.com/v1/chat/completions", keyEnv: "DEEPSEEK_API_KEY", model: "deepseek-reasoner", modelEnv: "DEEPSEEK_MODEL", orSlug: "deepseek/deepseek-r1" },
-  llama: { label: "Llama 4 Behemoth", vendor: "Meta", style: "openai", urlEnv: "META_LLM_URL", url: "", keyEnv: "META_API_KEY", model: "llama-4-behemoth", modelEnv: "META_MODEL", keyOptional: true, orSlug: "meta-llama/llama-4-maverick" },
-  gpt: { label: "ChatGPT (GPT)", vendor: "OpenAI", style: "openai", url: "https://api.openai.com/v1/chat/completions", keyEnv: "OPENAI_API_KEY", model: "gpt-4o", modelEnv: "OPENAI_MODEL", orSlug: "openai/gpt-4o" },
-  sonnet: { label: "Claude Sonnet 5", vendor: "Anthropic", style: "anthropic", url: "https://api.anthropic.com/v1/messages", keyEnv: "ANTHROPIC_API_KEY", model: "claude-sonnet-5", modelEnv: "SONNET_MODEL", orSlug: "anthropic/claude-sonnet-4.5" },
-  mistral: { label: "Mistral Magistral", vendor: "Mistral AI", style: "openai", url: "https://api.mistral.ai/v1/chat/completions", keyEnv: "MISTRAL_API_KEY", model: "magistral-medium-latest", modelEnv: "MISTRAL_MODEL", orSlug: "mistralai/magistral-medium-2506" },
+  gpt: { label: "GPT-5.6 Sol Ultra", vendor: "OpenAI", style: "openai", url: "https://api.openai.com/v1/chat/completions", keyEnv: "OPENAI_API_KEY", model: "gpt-5.6-sol-ultra", modelEnv: "OPENAI_MODEL", orSlug: "openai/gpt-4o" },
+  sonnet: { label: "Claude Opus 4.8 / Fable 5", vendor: "Anthropic", style: "anthropic", url: "https://api.anthropic.com/v1/messages", keyEnv: "ANTHROPIC_API_KEY", model: "claude-opus-4-8", modelEnv: "SONNET_MODEL", orSlug: "anthropic/claude-sonnet-4.5" },
+  gemini: { label: "Gemini 3.1 Pro Ultra", vendor: "Google DeepMind", style: "openai", url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", keyEnv: "GOOGLE_API_KEY", model: "gemini-3.1-pro-ultra", modelEnv: "GOOGLE_MODEL", orSlug: "google/gemini-3-ultra" },
+  grok: { label: "Grok 4.5 Heavy", vendor: "xAI", style: "openai", url: "https://api.x.ai/v1/chat/completions", keyEnv: "XAI_API_KEY", model: "grok-4.5-heavy", modelEnv: "XAI_MODEL", orSlug: "x-ai/grok-5" },
+  kimi: { label: "Kimi K3", vendor: "Moonshot AI", style: "openai", url: "https://api.moonshot.ai/v1/chat/completions", keyEnv: "MOONSHOT_API_KEY", model: "kimi-k3", modelEnv: "MOONSHOT_MODEL", orSlug: "moonshotai/kimi-k2" },
+  deepseek: { label: "DeepSeek V4 Pro", vendor: "DeepSeek", style: "openai", url: "https://api.deepseek.com/v1/chat/completions", keyEnv: "DEEPSEEK_API_KEY", model: "deepseek-v4-pro", modelEnv: "DEEPSEEK_MODEL", orSlug: "deepseek/deepseek-r1" },
+  qwen: { label: "Qwen 3.8 Max", vendor: "Alibaba Qwen", style: "openai", url: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions", keyEnv: "QWEN_API_KEY", model: "qwen3.8-max", modelEnv: "QWEN_MODEL", orSlug: "qwen/qwen3-max" },
+  llama: { label: "Llama 4 Maverick", vendor: "Meta", style: "openai", urlEnv: "META_LLM_URL", url: "", keyEnv: "META_API_KEY", model: "llama-4-maverick", modelEnv: "META_MODEL", keyOptional: true, orSlug: "meta-llama/llama-4-maverick" },
+  mistral: { label: "Mistral Large 3", vendor: "Mistral AI", style: "openai", url: "https://api.mistral.ai/v1/chat/completions", keyEnv: "MISTRAL_API_KEY", model: "mistral-large-3", modelEnv: "MISTRAL_MODEL", orSlug: "mistralai/mistral-large-2411" },
+  glm: { label: "GLM-5", vendor: "Zhipu AI", style: "openai", url: "https://open.bigmodel.cn/api/paas/v4/chat/completions", keyEnv: "ZHIPU_API_KEY", model: "glm-5", modelEnv: "ZHIPU_MODEL", orSlug: "z-ai/glm-4.6" },
+  phi: { label: "Phi-4", vendor: "Microsoft", style: "openai", urlEnv: "PHI_URL", url: "https://models.inference.ai.azure.com/chat/completions", keyEnv: "PHI_API_KEY", model: "phi-4", modelEnv: "PHI_MODEL", orSlug: "microsoft/phi-4" },
+  cohere: { label: "Command A+", vendor: "Cohere", style: "openai", url: "https://api.cohere.ai/compatibility/v1/chat/completions", keyEnv: "COHERE_API_KEY", model: "command-a-plus", modelEnv: "COHERE_MODEL", orSlug: "cohere/command-a" },
+  nemotron: { label: "Nemotron Ultra", vendor: "NVIDIA", style: "openai", url: "https://integrate.api.nvidia.com/v1/chat/completions", keyEnv: "NVIDIA_API_KEY", model: "nvidia/llama-3.1-nemotron-ultra-253b-v1", modelEnv: "NVIDIA_MODEL", orSlug: "nvidia/llama-3.1-nemotron-ultra-253b-v1" },
 };
 
 /** OpenRouter: EIN Key für alle Modelle (OpenAI-kompatibel). Aktiv, sobald
