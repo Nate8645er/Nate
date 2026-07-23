@@ -1,12 +1,9 @@
-<section class="hero">
-  <video class="hero-vid" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
-    <source src="{{ 'werbespot-team.mp4' | asset_url }}" type="video/mp4">
-  </video>
+<section class="hero hero-anim">
   <div class="hero-glow" aria-hidden="true"></div>
   <div class="wrap hero-in">
     <p class="kicker">AI Command Center</p>
-    <h1>Ihre <span class="grad">KI-Abteilung</span><br>ab Tag 1 &ndash; als SaaS</h1>
-    <p class="sub">Kein Chatbot. Ein ganzes Team, das Ihre Aufträge bis zum fertigen Ergebnis erledigt &ndash; für Einzelunternehmer bis Grosskonzern.</p>
+    <h1>Ihre <span class="grad">KI-Abteilung</span><br>ab Tag 1 &ndash; live bei der Arbeit</h1>
+    <p class="sub">Kein Chatbot. Ein ganzes Team aus KI-Mitarbeitern, das Ihre Aufträge bis zum fertigen Ergebnis erledigt &ndash; sehen Sie ihm bei der Arbeit zu.</p>
     <div class="hero-cta">
       <a href="#pakete" class="btn">Pakete ansehen</a>
       <a href="{{ routes.all_products_collection_url }}" class="btn btn-ghost">Zum Shop</a>
@@ -14,6 +11,7 @@
     <div class="hero-badges">
       <span>✓ Sofort startklar</span><span>✓ Ihre Firma verbunden</span><span>✓ Echte Ergebnisse</span>
     </div>
+    <div class="hero-stage">{% render 'ki-buero' %}</div>
   </div>
 </section>
 
@@ -219,11 +217,19 @@
   </div>
 </section>
 
-<section class="office">
+<section class="usecases">
   <div class="wrap">
-    <h2>Ihr KI-Büro <span class="grad">live bei der Arbeit</span></h2>
-    <p class="office-sub">Eine ganze Abteilung, die für Sie arbeitet – so sieht Ihr Team aus.</p>
-    {% render 'ki-buero' %}
+    <h2>Was Ihre KI-Abteilung <span class="grad">heute für Sie erledigt</span></h2>
+    <p class="office-sub">Konkrete Aufträge – ein Klick, fertiges Ergebnis.</p>
+    <div class="uc-grid">
+      <div class="uc"><span class="uc-ico">📝</span><h3>„Schreib eine Offerte für Kunde X"</h3><p>Fertige, versandfertige Offerte mit Preisen und Bedingungen – in Minuten statt Stunden.</p></div>
+      <div class="uc"><span class="uc-ico">📣</span><h3>„Plane meine Woche auf Social Media"</h3><p>7 Posts inkl. Texten, Hashtags und Bildideen – abgestimmt auf Ihre Branche.</p></div>
+      <div class="uc"><span class="uc-ico">📨</span><h3>„Beantworte diese Kundenmail"</h3><p>Freundliche, korrekte Antwort in Ihrem Ton – Sie prüfen nur noch und senden.</p></div>
+      <div class="uc"><span class="uc-ico">📊</span><h3>„Analysiere meine Verkaufszahlen"</h3><p>Klarer Bericht mit Trends, Auffälligkeiten und konkreten Empfehlungen.</p></div>
+      <div class="uc"><span class="uc-ico">🧾</span><h3>„Erstelle eine Rechnung &amp; Mahnung"</h3><p>Korrekte Dokumente nach Schweizer Standard – bereit zum Versand.</p></div>
+      <div class="uc"><span class="uc-ico">🌐</span><h3>„Baue eine Landingpage"</h3><p>Fertige, moderne Seite mit Text und Struktur – zum Übernehmen.</p></div>
+    </div>
+    <p style="text-align:center;margin-top:28px"><a class="btn btn-ghost" href="{{ routes.root_url }}pages/anwendungsfaelle">Mehr Anwendungsfälle →</a></p>
   </div>
 </section>
 

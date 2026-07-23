@@ -1,0 +1,18 @@
+<section class="page-hero"><h1>Live-<span class="grad">Demo</span> anfragen</h1><p>Sehen Sie Ihre KI-Abteilung an Ihrem echten Anwendungsfall – unverbindlich.</p></section>
+<div class="page">
+  {{ page.content }}
+  <p>Sie möchten vor dem Kauf sehen, wie die KI-Abteilung konkret bei Ihnen arbeitet? Fordern Sie eine kurze, persönliche Demo an. Wir zeigen Ihnen an einem echten Beispiel aus Ihrer Branche, wie ein Auftrag zum fertigen Ergebnis wird.</p>
+
+  <h2>Ihr schnellster Weg</h2>
+  <ul>
+    <li><strong>Gratis-Version testen:</strong> Ohne Zahlungsmittel sofort selbst ausprobieren.</li>
+    <li><strong>Persönliche Demo:</strong> Kurzer Termin, an Ihrem Anwendungsfall.</li>
+    <li><strong>Beratung für Teams:</strong> Für Business/Enterprise inkl. Integrationen.</li>
+  </ul>
+
+  {% if shop.customer_accounts_enabled %}
+  <p style="margin-top:24px"><a class="btn" href="{{ routes.all_products_collection_url }}">Gratis-Version testen</a> <a class="btn btn-ghost" href="{{ routes.root_url }}pages/kontakt">Demo anfragen</a></p>
+  {% else %}
+  <p style="margin-top:24px"><a class="btn" href="{{ routes.all_products_collection_url }}">Gratis-Version testen</a> <a class="btn btn-ghost" href="{{ routes.root_url }}pages/kontakt">Demo anfragen</a></p>
+  {% endif %}
+</div>
