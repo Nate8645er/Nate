@@ -275,3 +275,31 @@ a.uc:hover{border-color:var(--ora);box-shadow:0 24px 54px -32px rgba(255,120,40,
 /* Rechtliche Seiten */
 .legal-note{border:1px solid #f0e2c9;background:#fdf8ee;color:#7a6a45;border-radius:14px;padding:12px 16px;font-size:13px;margin:0 0 22px}
 .legal-note em{font-style:normal;font-weight:700}
+/* Cookie-/Consent-Hinweis */
+.consent{position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(13,13,24,.97);color:#e7e5f0;border-top:1px solid rgba(255,255,255,.12);box-shadow:0 -12px 40px -20px rgba(0,0,0,.7)}
+.consent-in{display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:space-between;padding:14px 20px}
+.consent p{margin:0;font-size:13px;line-height:1.5;max-width:760px}
+.consent a{color:#ffb066;font-weight:700}
+.consent-btns{display:flex;gap:10px;flex-shrink:0}
+/* Mobile-Navigation (CSS-only Burger) */
+.nav-burger{display:none;position:relative;width:40px;height:40px;border:1px solid var(--line);border-radius:12px;cursor:pointer;background:#fff}
+.nav-burger span{position:absolute;left:9px;right:9px;height:2px;background:var(--ink);border-radius:2px;transition:.2s}
+.nav-burger span:nth-child(1){top:13px}.nav-burger span:nth-child(2){top:19px}.nav-burger span:nth-child(3){top:25px}
+.nav-toggle:checked ~ .wrap .nav-burger span:nth-child(1){top:19px;transform:rotate(45deg)}
+.nav-toggle:checked ~ .wrap .nav-burger span:nth-child(2){opacity:0}
+.nav-toggle:checked ~ .wrap .nav-burger span:nth-child(3){top:19px;transform:rotate(-45deg)}
+@media(max-width:720px){
+  .nav-burger{display:block;order:3}
+  .hd-in{flex-wrap:wrap}
+  .hd-cta{order:2}
+  .hd-nav{order:4;display:none;flex-direction:column;gap:0;width:100%;margin-top:10px;border-top:1px solid var(--line)}
+  .nav-toggle:checked ~ .wrap .hd-nav{display:flex}
+  .hd-nav a{padding:12px 4px;border-bottom:1px solid var(--line);font-size:15px;color:var(--ink)}
+}
+/* Ghost-Buttons kräftiger auf hellem Grund */
+.btn-ghost{border-width:1.5px;border-color:#d9cfbb;color:var(--ink);font-weight:800}
+.btn-ghost:hover{border-color:var(--ora);color:var(--or2);background:#fff}
+/* Highlight-Paket stärker hervorheben */
+.price-grid-6 .pcard-hi{transform:translateY(-6px);border-width:2px}
+.price-grid-6 .pcard-hi .price{color:var(--or2)}
+@media(max-width:900px){.price-grid-6 .pcard-hi{transform:none}}

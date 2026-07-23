@@ -10,7 +10,7 @@
       {% if product.images.size > 1 %}
         <div class="pdp-thumbs">
           {% for image in product.images limit: 6 %}
-            <img src="{{ image | image_url: width: 200 }}" alt="{{ product.title | escape }}">
+            <img src="{{ image | image_url: width: 200 }}" alt="{{ image.alt | default: product.title | escape }}">
           {% endfor %}
         </div>
       {% endif %}
@@ -120,3 +120,22 @@
     <details><summary>Sind meine Firmendaten sicher?</summary><p>Ja. Wichtige Schritte laufen nur mit Ihrer Freigabe; Enterprise auch On-Premise.</p></details>
   </div>
 </section>
+
+{%- comment -%} Strukturierte Daten für Rich Results (Product + Offer) {%- endcomment -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": {{ product.title | json }},
+  "description": {{ product.description | strip_html | truncatewords: 40 | json }},
+  {% if product.featured_image %}"image": "https:{{ product.featured_image | image_url: width: 1200 }}",{% endif %}
+  "brand": { "@type": "Brand", "name": {{ shop.name | json }} },
+  "offers": {
+    "@type": "Offer",
+    "price": "{{ product.price | money_without_currency | strip_html }}",
+    "priceCurrency": "{{ cart.currency.iso_code | default: 'CHF' }}",
+    "availability": "https://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}",
+    "url": "{{ shop.url }}{{ product.url }}"
+  }
+}
+</script>

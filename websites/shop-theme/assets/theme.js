@@ -39,3 +39,29 @@
     document.addEventListener("DOMContentLoaded", init);
   } else { init(); }
 })();
+
+// Cookie-/Consent-Hinweis: schlicht, ohne Tracking. Speichert die Bestätigung
+// lokal, damit der Hinweis nur einmal erscheint.
+(function () {
+  "use strict";
+  var KEY = "acc-consent-v1";
+  function ready(fn) {
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fn);
+    else fn();
+  }
+  ready(function () {
+    var bar = document.getElementById("consent-bar");
+    if (!bar) return;
+    var gesetzt;
+    try { gesetzt = localStorage.getItem(KEY); } catch (e) { gesetzt = "1"; }
+    if (gesetzt) { bar.parentNode && bar.parentNode.removeChild(bar); return; }
+    bar.hidden = false;
+    bar.addEventListener("click", function (e) {
+      var t = e.target;
+      if (t && t.hasAttribute && t.hasAttribute("data-consent")) {
+        try { localStorage.setItem(KEY, t.getAttribute("data-consent")); } catch (err) {}
+        bar.parentNode && bar.parentNode.removeChild(bar);
+      }
+    });
+  });
+})();

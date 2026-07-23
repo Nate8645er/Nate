@@ -9,14 +9,47 @@
       {{ page_title }}{% if current_tags %} &ndash; {{ current_tags | join: ', ' }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}
     </title>
     {% if page_description %}<meta name="description" content="{{ page_description | escape }}">{% endif %}
+
+    {%- comment -%} Social-/Open-Graph-Meta für Vorschau in Chat, Social, Suche {%- endcomment -%}
+    {%- assign og_title = page_title | default: shop.name -%}
+    {%- assign og_desc = page_description | default: shop.description | default: 'Ihre komplette KI-Abteilung als SaaS – erledigt Aufträge bis zum fertigen Ergebnis. Ab Tag 1 startklar, ab CHF 0 zum Testen.' -%}
+    <meta property="og:type" content="{% if template contains 'product' %}product{% else %}website{% endif %}">
+    <meta property="og:site_name" content="{{ shop.name | escape }}">
+    <meta property="og:title" content="{{ og_title | escape }}">
+    <meta property="og:description" content="{{ og_desc | escape }}">
+    <meta property="og:url" content="{{ canonical_url }}">
+    {%- if template contains 'product' and product.featured_image -%}
+      <meta property="og:image" content="https:{{ product.featured_image | image_url: width: 1200 }}">
+    {%- elsif template contains 'article' and article.image -%}
+      <meta property="og:image" content="https:{{ article.image | image_url: width: 1200 }}">
+    {%- endif -%}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ og_title | escape }}">
+    <meta name="twitter:description" content="{{ og_desc | escape }}">
+
+    {%- comment -%} Strukturierte Daten: Organisation (einmal, für Startseite) {%- endcomment -%}
+    {%- if template == 'index' -%}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": {{ shop.name | json }},
+      "url": {{ shop.url | default: canonical_url | json }},
+      "description": {{ og_desc | json }}
+    }
+    </script>
+    {%- endif -%}
+
     {{ content_for_header }}
     {{ 'theme.css' | asset_url | stylesheet_tag }}
     <script src="{{ 'theme.js' | asset_url }}" defer></script>
   </head>
   <body class="tpl-{{ template | replace: '.', '-' | handle }}">
     <header class="hd">
+      <input type="checkbox" id="nav-toggle" class="nav-toggle" hidden>
       <div class="wrap hd-in">
         <a href="{{ routes.root_url }}" class="hd-logo">AI <span>Command Center</span></a>
+        <label for="nav-toggle" class="nav-burger" aria-label="Menü öffnen und schliessen"><span></span><span></span><span></span></label>
         <nav class="hd-nav">
           <a href="{{ routes.root_url }}pages/preise">Preise</a>
           <a href="{{ routes.root_url }}pages/so-funktionierts">So funktioniert's</a>
@@ -26,7 +59,7 @@
           <a href="{{ routes.root_url }}#faq">FAQ</a>
           {% if shop.customer_accounts_enabled %}<a href="{{ routes.account_url }}">Konto</a>{% endif %}
         </nav>
-        <a href="{{ routes.all_products_collection_url }}" class="btn btn-sm">Jetzt starten</a>
+        <a href="{{ routes.all_products_collection_url }}" class="btn btn-sm hd-cta">Gratis starten</a>
       </div>
     </header>
 
@@ -56,7 +89,6 @@
           <a href="{{ routes.root_url }}pages/warum">Wieso &amp; Warum</a>
           <a href="{{ routes.root_url }}pages/sicherheit">Sicherheit</a>
           <a href="{{ routes.root_url }}pages/keine-bewertungen">Keine Bewertungen</a>
-          <a href="{{ routes.root_url }}pages/wissen">Wissen</a>
           <a href="{{ routes.root_url }}pages/support">Hilfe &amp; Support</a>
           <a href="{{ routes.root_url }}pages/demo">Live-Demo</a>
           <a href="{{ routes.root_url }}pages/kontakt">Kontakt</a>
@@ -75,5 +107,15 @@
         <p class="ft-pay">Sichere Zahlung · Schweizer Anbieter</p>
       </div>
     </footer>
+
+    <div id="consent-bar" class="consent" role="dialog" aria-label="Cookie-Hinweis" hidden>
+      <div class="wrap consent-in">
+        <p>Wir verwenden nur technisch notwendige Cookies für den Betrieb des Shops. Mehr in unserer
+          <a href="{{ routes.root_url }}pages/datenschutz">Datenschutzerklärung</a>.</p>
+        <div class="consent-btns">
+          <button type="button" class="btn btn-sm" data-consent="ok">Verstanden</button>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
