@@ -9,48 +9,24 @@ sind die ausführenden Assistenten.
 
 | Tool | Modell | Anbieter | Zugang (Umgebungsvariable) |
 |------|--------|----------|-----------------------------|
-| `ask_gpt`      | GPT-5.6 Sol Ultra         | OpenAI          | `OPENAI_API_KEY` |
-| `ask_sonnet`   | Claude Opus 4.8 / Fable 5 | Anthropic       | `ANTHROPIC_API_KEY` |
-| `ask_gemini`   | Gemini 3.1 Pro Ultra      | Google DeepMind | `GOOGLE_API_KEY` |
-| `ask_grok`     | Grok 4.5 Heavy            | xAI             | `XAI_API_KEY` |
-| `ask_kimi`     | Kimi K3                   | Moonshot AI     | `MOONSHOT_API_KEY` |
-| `ask_deepseek` | DeepSeek V4 Pro           | DeepSeek        | `DEEPSEEK_API_KEY` |
-| `ask_qwen`     | Qwen 3.8 Max              | Alibaba Qwen    | `QWEN_API_KEY` |
-| `ask_llama`    | Llama 4 Maverick          | Meta            | `META_LLM_URL` (+ optional `META_API_KEY`) |
-| `ask_mistral`  | Mistral Large 3           | Mistral AI      | `MISTRAL_API_KEY` |
-| `ask_glm`      | GLM-5                     | Zhipu AI        | `ZHIPU_API_KEY` |
-| `ask_phi`      | Phi-4                     | Microsoft       | `PHI_API_KEY` / `PHI_URL` |
-| `ask_cohere`   | Command A+                | Cohere          | `COHERE_API_KEY` |
-| `ask_nemotron` | Nemotron Ultra            | NVIDIA          | `NVIDIA_API_KEY` |
+| `ask_gemini`   | Gemini 3 Ultra    | Google      | `GOOGLE_API_KEY` |
+| `ask_grok`     | Grok 5            | xAI         | `XAI_API_KEY` |
+| `ask_kimi`     | Kimi (Moonshot)   | Moonshot AI | `MOONSHOT_API_KEY` |
+| `ask_qwen`     | Qwen 3 Max        | Alibaba     | `QWEN_API_KEY` |
+| `ask_deepseek` | DeepSeek R2       | DeepSeek    | `DEEPSEEK_API_KEY` |
+| `ask_llama`    | Llama 4 Behemoth  | Meta        | `META_LLM_URL` (+ optional `META_API_KEY`) |
+| `ask_gpt`      | ChatGPT (GPT)     | OpenAI      | `OPENAI_API_KEY` |
+| `ask_sonnet`   | Claude Sonnet 5   | Anthropic   | `ANTHROPIC_API_KEY` |
+| `ask_mistral`  | Mistral Magistral | Mistral AI  | `MISTRAL_API_KEY` |
 
 Zusätzlich:
 - `rat_status` – zeigt, welche Modelle einsatzbereit sind.
 - `rat_council` – stellt allen bereiten Workern **dieselbe Frage parallel** und
   liefert alle Antworten gesammelt zurück (der Boss führt sie zusammen).
 
-Noch nicht veröffentlichte Zielversionen (z. B. GPT-5.6, Gemini 3.1, GLM-5)
-sind als Team-Platz angelegt; die exakte, real verfügbare Modell-ID setzt du per
-`<PROVIDER>_MODEL`. Ohne gültigen Zugang bleibt der Platz ehrlich „Zugang nötig".
-
-## Orchestrierungs-Frameworks (optional, im Team-Toolkit)
-
-Zusätzlich zu den Modellen gehören diese Open-Source-Frameworks zum Fable-5-
-Toolkit. Sie sind **aktiv, sobald sie installiert/konfiguriert** sind – Setup und
-Referenz in `tools/agent-frameworks/README.md`:
-
-| Framework | Zweck | Repo |
-|-----------|-------|------|
-| LangGraph | Graph-basierte KI-Orchestrierung | langchain-ai/langgraph |
-| CrewAI | Multi-Agent-Team | crewAIInc/crewAI |
-| Open Interpreter | Computer- & Code-Agent (nur mit Freigabe) | OpenInterpreter/open-interpreter |
-| OpenAI Agents SDK | Agenten-Abläufe | openai/openai-agents-python |
-| Qwen-Agent | Tool-/Agenten-Framework | QwenLM/Qwen-Agent |
-| Llama Stack | Meta-Agenten-Stack | meta-llama/llama-stack |
-| MCP Servers | Werkzeug-Brücke (Dateien, Git, u. v. m.) | modelcontextprotocol/servers |
-
 ## Ein Key für alle (empfohlen): OpenRouter
 
-Statt dreizehn Einzel-Keys reicht **ein** OpenRouter-Key: er schaltet alle Worker
+Statt neun Einzel-Keys reicht **ein** OpenRouter-Key: er schaltet alle Worker
 frei. Setze `OPENROUTER_API_KEY` (holen unter https://openrouter.ai/keys) – der
 Server leitet dann jeden Worker über OpenRouter (`provider/model`-Slugs, siehe
 https://openrouter.ai/models). Ein zusätzlich gesetzter Einzel-Anbieter-Key hat
