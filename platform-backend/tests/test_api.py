@@ -48,6 +48,7 @@ def _install_auth(roles):
 def teardown_function():
     deps.set_verifier_override(None)
     v1.set_vector_store(None)
+    v1.set_mission_runner(None)
 
 
 # ---- /models/route (öffentliche Policy, kein Auth) ----
@@ -125,3 +126,66 @@ def test_search_ist_mandantengetrennt():
     ids = {h["id"] for h in r.json()}
     assert "a1" in ids
     assert "b1" not in ids, "Mandantentrennung verletzt: fremdes Dokument sichtbar"
+
+
+# ---- /knowledge/ingest (RBAC knowledge:write) ----
+def test_ingest_ohne_recht_ist_403():
+    token = _install_auth(["viewer"])  # viewer hat nur knowledge:read, nicht :write
+    r = client.post("/api/v1/knowledge/ingest", json={"doc_id": "d1", "text": "abc"},
+                    headers={"authorization": f"Bearer {token}"})
+    assert r.status_code == 403
+
+
+def test_ingest_dann_suche_findet_dokument_mandantengetrennt():
+    store = InMemoryVectorStore()
+    v1.set_vector_store(store)
+    token = _install_auth(["member"])  # member: read + write + agent:run, tenant=kunden
+    ing = client.post(
+        "/api/v1/knowledge/ingest",
+        json={"doc_id": "handbuch", "text": "Rueckgabe innerhalb 30 Tagen moeglich. " * 20},
+        headers={"authorization": f"Bearer {token}"},
+    )
+    assert ing.status_code == 200
+    assert ing.json()["chunks"] >= 1 and ing.json()["tenant"] == "kunden"
+    # Suche im selben Mandanten findet es.
+    r = client.post("/api/v1/knowledge/search", json={"query": "Rueckgabe", "k": 3},
+                    headers={"authorization": f"Bearer {token}"})
+    assert r.status_code == 200 and len(r.json()) >= 1
+    # Fremder Mandant sieht nichts.
+    other = _install_auth(["member"])  # neuer Verifier, tenant weiterhin kunden im Token
+    # Token mit anderem Mandanten:
+    key, jwks = _keypair_and_jwks()
+    deps.set_verifier_override(KeycloakVerifier(OidcConfig(issuer=ISSUER), lambda: jwks))
+    other = _token(key, ["member"], tenant="fremd")
+    r2 = client.post("/api/v1/knowledge/search", json={"query": "Rueckgabe"},
+                     headers={"authorization": f"Bearer {other}"})
+    assert r2.status_code == 200 and r2.json() == []
+
+
+# ---- /missions (RBAC agent:run) ----
+def test_mission_ohne_recht_ist_403():
+    token = _install_auth(["viewer"])  # viewer hat kein agent:run
+    r = client.post("/api/v1/missions", json={"goal": "Hallo"},
+                    headers={"authorization": f"Bearer {token}"})
+    assert r.status_code == 403
+
+
+def test_mission_mit_runner_liefert_ergebnis():
+    v1.set_mission_runner(lambda goal, tenant: {
+        "ok": True, "placement": "local", "reason": "test", "text": f"[{tenant}] {goal}", "error": None,
+    })
+    token = _install_auth(["member"])  # member hat agent:run
+    r = client.post("/api/v1/missions", json={"goal": "Fasse zusammen"},
+                    headers={"authorization": f"Bearer {token}"})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["ok"] is True and body["text"] == "[kunden] Fasse zusammen"
+
+
+def test_mission_ohne_llm_ist_503():
+    v1.set_mission_runner(lambda g, t: {"ok": False, "placement": "local", "reason": "x",
+                                        "text": None, "error": "lokal gewählt, aber LOCAL_LLM_URL nicht gesetzt"})
+    token = _install_auth(["member"])
+    r = client.post("/api/v1/missions", json={"goal": "x"},
+                    headers={"authorization": f"Bearer {token}"})
+    assert r.status_code == 503

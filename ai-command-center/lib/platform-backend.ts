@@ -124,3 +124,52 @@ export async function routeModel(
     clearTimeout(timer);
   }
 }
+
+// --------------------------------------------------------------------------- //
+// Mission-Delegation (Cutover) — Auftrag ans Backend geben (RBAC agent:run).
+// --------------------------------------------------------------------------- //
+export interface MissionResult {
+  ok: boolean;
+  placement: string | null;
+  reason: string | null;
+  text: string | null;
+  error: string | null;
+}
+
+/**
+ * Delegiert eine Mission an POST /api/v1/missions des Backends. Erfordert ein
+ * Bearer-Token (Keycloak). Gibt `null` zurück, wenn nicht konfiguriert, kein
+ * Token, nicht erreichbar oder Backend meldet „nicht ausführbar" — der Aufrufer
+ * fällt dann ehrlich auf den bestehenden lokalen Orchestrator zurück.
+ */
+export async function runMissionViaBackend(
+  goal: string,
+  token: string | null | undefined,
+  opts: { baseUrl?: string | null; timeoutMs?: number; fetchImpl?: typeof fetch } = {},
+): Promise<MissionResult | null> {
+  const base = opts.baseUrl !== undefined ? opts.baseUrl : backendBaseUrl();
+  if (!base || !token) return null; // ohne Backend-URL oder Token: kein Delegieren
+  const f = opts.fetchImpl ?? fetch;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), opts.timeoutMs ?? 30000);
+  try {
+    const res = await f(base + "/api/v1/missions", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        accept: "application/json",
+        authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ goal }),
+      signal: ctrl.signal,
+      cache: "no-store",
+    });
+    if (!res.ok) return null; // 401/403/503 → Fallback auf lokalen Orchestrator
+    const data = (await res.json()) as MissionResult;
+    return data?.ok ? data : null;
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}

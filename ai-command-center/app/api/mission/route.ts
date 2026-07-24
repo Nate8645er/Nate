@@ -17,7 +17,9 @@
 import { webRecherche, RECHERCHE_QUELLEN } from "@/lib/agents/browser";
 import { runMission } from "@/lib/agents/orchestrator";
 import type { AgentEvent, MissionContext } from "@/lib/agents/types";
+import { flagFromEnv } from "@/lib/flags";
 import { consumeUsage, planFromLicenseToken, ultraAktiv, ULTRA_EXTRA_QUELLEN } from "@/lib/license";
+import { runMissionViaBackend } from "@/lib/platform-backend";
 
 export const runtime = "nodejs";
 // Eine Mission umfasst 4 sequenzielle LLM-Phasen – grosszügig dimensionieren.
@@ -95,6 +97,24 @@ export async function POST(request: Request): Promise<Response> {
             message: usage.message ?? "Tageslimit erreicht.",
           });
           return;
+        }
+        // Cutover (additiv, Flag AUS = unverändert): Wenn das Flag gesetzt ist
+        // UND ein Backend-Token mitkommt, den Auftrag ans platform-backend
+        // delegieren. Schlägt das fehl (kein Token/nicht erreichbar/503), läuft
+        // ganz normal der bestehende lokale Orchestrator weiter.
+        if (flagFromEnv("platform_backend")) {
+          const backendToken = request.headers.get("x-acc-backend-token");
+          const delegated = await runMissionViaBackend(missionGoal, backendToken);
+          if (delegated) {
+            emit({
+              type: "status",
+              agent: "commander",
+              status: "done",
+              message: `Auftrag vom Plattform-Backend bearbeitet (${delegated.placement ?? "?"}).`,
+            });
+            emit({ type: "final", content: delegated.text ?? "" });
+            return;
+          }
         }
         // Eingebauter KI-Browser: vor der Mission im Web recherchieren.
         // Jede Stufe hat den Browser; hoehere Stufen lesen mehr Quellen.

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { backendBaseUrl, fetchCompute, formatMemoryGb, primaryDevice, routeModel, type ComputeResponse } from "@/lib/platform-backend";
+import { backendBaseUrl, fetchCompute, formatMemoryGb, primaryDevice, routeModel, runMissionViaBackend, type ComputeResponse } from "@/lib/platform-backend";
 
 const SAMPLE: ComputeResponse = {
   gpu_available: false,
@@ -94,6 +94,42 @@ describe("platform-backend Anbindung (ehrlich, additiv)", () => {
     expect(await routeModel({}, { baseUrl: "http://x:8000", fetchImpl: err })).toBeNull();
     const bad = (async () => new Response("x", { status: 500 })) as unknown as typeof fetch;
     expect(await routeModel({}, { baseUrl: "http://x:8000", fetchImpl: bad })).toBeNull();
+  });
+
+  it("runMissionViaBackend: ohne Token → null (kein Delegieren)", async () => {
+    let called = false;
+    const fake = (async () => {
+      called = true;
+      return new Response("{}");
+    }) as unknown as typeof fetch;
+    const res = await runMissionViaBackend("Ziel", null, { baseUrl: "http://x:8000", fetchImpl: fake });
+    expect(res).toBeNull();
+    expect(called).toBe(false);
+  });
+
+  it("runMissionViaBackend: mit Token → Ergebnis, Bearer-Header gesetzt", async () => {
+    let auth = "";
+    let seenUrl = "";
+    const fake = (async (url: string, init: RequestInit) => {
+      seenUrl = url;
+      auth = (init.headers as Record<string, string>).authorization ?? "";
+      return new Response(
+        JSON.stringify({ ok: true, placement: "local", reason: "ok", text: "fertig", error: null }),
+        { status: 200 },
+      );
+    }) as unknown as typeof fetch;
+    const res = await runMissionViaBackend("Ziel", "tok123", { baseUrl: "http://x:8000", fetchImpl: fake });
+    expect(res?.text).toBe("fertig");
+    expect(seenUrl).toBe("http://x:8000/api/v1/missions");
+    expect(auth).toBe("Bearer tok123");
+  });
+
+  it("runMissionViaBackend: 503/ok=false → null (Fallback auf lokal)", async () => {
+    const notReady = (async () => new Response("x", { status: 503 })) as unknown as typeof fetch;
+    expect(await runMissionViaBackend("z", "t", { baseUrl: "http://x:8000", fetchImpl: notReady })).toBeNull();
+    const notOk = (async () =>
+      new Response(JSON.stringify({ ok: false, text: null }), { status: 200 })) as unknown as typeof fetch;
+    expect(await runMissionViaBackend("z", "t", { baseUrl: "http://x:8000", fetchImpl: notOk })).toBeNull();
   });
 
   it("primaryDevice: bevorzugt GPU, sonst CPU, null-sicher", () => {

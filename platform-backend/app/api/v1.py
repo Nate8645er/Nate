@@ -15,10 +15,13 @@ Endpunkte:
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
 from ..knowledge.embedding import HashingEmbedder
+from ..knowledge.ingest import IngestPipeline
 from ..knowledge.retrieval import Retriever
 from ..knowledge.vectorstore import VectorStore
 from ..models.router import DataClass, ModelRequest, RoutingContext, decide
@@ -32,10 +35,47 @@ router = APIRouter(prefix="/api/v1", tags=["v1"])
 _vector_store: VectorStore | None = None
 _embedder = HashingEmbedder(dim=256)
 
+#: Mission-Runner: (goal, tenant) -> {"ok", "placement", "reason", "text", "error"}.
+#: Injizierbar (Tests/Betrieb); None → Standard-Runner über den ModelRouter.
+MissionRunner = Callable[[str, str], dict]
+_mission_runner: MissionRunner | None = None
+
 
 def set_vector_store(store: VectorStore | None) -> None:
     global _vector_store
     _vector_store = store
+
+
+def set_mission_runner(runner: MissionRunner | None) -> None:
+    global _mission_runner
+    _mission_runner = runner
+
+
+def _default_mission_runner(goal: str, tenant: str) -> dict:
+    """Führt eine Mission als echte Completion über den ModelRouter aus.
+
+    Ehrlich: Ist kein LLM konfiguriert/erreichbar, liefert der Router
+    `ok=False` mit Begründung — kein erfundenes Ergebnis.
+    """
+    from ..config import get_settings
+    from ..models.router import ModelRouter
+
+    s = get_settings()
+    ctx = RoutingContext(local_available=s.local_llm.configured, cloud_available=False)
+    router_ = ModelRouter(ctx, local_base_url=s.local_llm.url)
+    req = ModelRequest(prompt_tokens_est=max(1, len(goal) // 4), data_class=DataClass.INTERNAL)
+    result = router_.complete(req, messages=[{"role": "user", "content": goal}])
+    decision = result.get("decision", {})
+    if not result.get("ok"):
+        return {"ok": False, "placement": decision.get("placement"), "reason": decision.get("reason"),
+                "text": None, "error": result.get("error", "unbekannt")}
+    text = ""
+    try:
+        text = result["response"].choices[0].message.content
+    except Exception:  # noqa: BLE001
+        text = str(result.get("response", ""))
+    return {"ok": True, "placement": decision.get("placement"), "reason": decision.get("reason"),
+            "text": text, "error": None}
 
 
 # --------------------------------------------------------------------------- #
@@ -124,3 +164,69 @@ def knowledge_search(
     # Isolation: die Suche ist fest auf den Mandanten des Tokens gebunden.
     hits = retriever.retrieve(principal.tenant, body.query, k=body.k)
     return [SearchHit(id=h.document.id, score=h.score, text=h.document.text) for h in hits]
+
+
+# --------------------------------------------------------------------------- #
+# /knowledge/ingest — Rohtext → Chunks → Embeddings → Store (RBAC knowledge:write)
+# --------------------------------------------------------------------------- #
+class IngestRequest(BaseModel):
+    doc_id: str = Field(min_length=1)
+    text: str = Field(min_length=1)
+    metadata: dict = Field(default_factory=dict)
+
+
+class IngestResponse(BaseModel):
+    doc_id: str
+    tenant: str
+    chunks: int
+
+
+@router.post("/knowledge/ingest", response_model=IngestResponse)
+def knowledge_ingest(
+    body: IngestRequest,
+    principal: Principal = Depends(require_permission(Permission.KNOWLEDGE_WRITE)),
+) -> IngestResponse:
+    if _vector_store is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Wissens-Backend nicht verbunden (kein VectorStore konfiguriert)",
+        )
+    if not principal.tenant:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Kein Mandant im Token")
+    pipeline = IngestPipeline(_vector_store, _embedder)
+    # Isolation: Dokument wird fest dem Mandanten des Tokens zugeschrieben.
+    res = pipeline.ingest(principal.tenant, body.doc_id, body.text, body.metadata)
+    return IngestResponse(doc_id=res.doc_id, tenant=res.tenant, chunks=res.chunks)
+
+
+# --------------------------------------------------------------------------- #
+# /missions — Auftrag ausführen (RBAC agent:run). Ehrlich 503 ohne LLM.
+# --------------------------------------------------------------------------- #
+class MissionRequest(BaseModel):
+    goal: str = Field(min_length=1)
+
+
+class MissionResponse(BaseModel):
+    ok: bool
+    placement: str | None
+    reason: str | None
+    text: str | None
+    error: str | None
+
+
+@router.post("/missions", response_model=MissionResponse)
+def run_mission(
+    body: MissionRequest,
+    principal: Principal = Depends(require_permission(Permission.AGENT_RUN)),
+) -> MissionResponse:
+    if not principal.tenant:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Kein Mandant im Token")
+    runner = _mission_runner or _default_mission_runner
+    result = runner(body.goal, principal.tenant)
+    if not result.get("ok"):
+        # Nicht konfiguriert/erreichbar → 503 (ehrlich), kein erfundenes Ergebnis.
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Mission nicht ausführbar: {result.get('error', 'kein LLM verbunden')}",
+        )
+    return MissionResponse(**{k: result.get(k) for k in ("ok", "placement", "reason", "text", "error")})
