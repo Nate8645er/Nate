@@ -80,3 +80,37 @@ damit der Link in der Datei auf die richtige Adresse zeigt.
 - Werbevideo fuer TikTok/Reels/Shorts: acc-werbevideo-tiktok.mp4
   (1080x1920, 58s, ohne Musik -- Sound in der App hinzufuegen).
   Hochladen: TikTok -> Upload -> Video waehlen -> Trend-Sound drueber.
+
+## Automatischer Kauf->Zugang-Fluss (optional -- kein manuelles Mailen)
+Der obige Ablauf ist der MANUELLE Weg (Schluessel selbst im /admin erzeugen,
+Start-Datei anhaengen, Mail schicken). Es gibt zusaetzlich einen VOLLAUTOMATISCHEN
+Weg: Bei jedem bezahlten Shopify-Kauf erzeugt die App den Schluessel selbst und
+mailt ihn dem Kunden -- ganz ohne Handarbeit.
+
+So schaltest du ihn scharf:
+1. In VERCEL diese Env-Variablen setzen (zusaetzlich zu LICENSE_SECRET + LLM-Key):
+   - `RESEND_API_KEY`  (E-Mail-Versand, resend.com)
+   - `MAIL_FROM`       (verifizierte Absenderadresse; `ACC_FROM_EMAIL` geht gleichwertig)
+   - `SHOPIFY_WEBHOOK_SECRET`  (aus Schritt 2)
+   - optional: `SHOPIFY_ADMIN_TOKEN` + `SHOPIFY_STORE_DOMAIN`
+     (haengt den Schluessel zusaetzlich an die Bestellung)
+2. In SHOPIFY einen Webhook anlegen: Einstellungen -> Benachrichtigungen ->
+   Webhooks -> Ereignis `orders/paid`, Format JSON, URL:
+   `https://<deine-vercel-app>/api/shopify/webhook`
+   Das dort angezeigte Signing-Secret als `SHOPIFY_WEBHOOK_SECRET` in Vercel
+   eintragen -> Redeploy.
+3. Testkauf machen -> die Mail mit dem Lizenzschluessel muss automatisch kommen.
+   Kommt sie nicht: in Vercel unter Logs die Funktion `/api/shopify/webhook`
+   ansehen (haeufig: Webhook-Secret falsch, oder Absender in Resend nicht
+   verifiziert).
+
+Hinweis: Absender wird aus `MAIL_FROM` ODER `ACC_FROM_EMAIL` gelesen (beide
+gleichwertig) -- fruher las nur der Webhook `ACC_FROM_EMAIL`, das ist behoben.
+
+Der manuelle Weg (oben) bleibt als Fallback nutzbar -- z. B. fuer Kulanz-
+Schluessel oder wenn ein Webhook mal nicht ankommt.
+
+## Env-Variablen -- Vollreferenz
+Siehe `.env.example` im Repo (jede Variable erklaert). Minimal zum Verkaufen:
+`LICENSE_SECRET`, ein LLM-Key (z. B. `ANTHROPIC_API_KEY`), und -- fuer den
+automatischen Fluss -- `RESEND_API_KEY` + `MAIL_FROM` + `SHOPIFY_WEBHOOK_SECRET`.
