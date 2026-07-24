@@ -1,0 +1,29 @@
+name: platform-backend CI
+
+# Leichte CI fuer Produkt A: Kompilieren + Unit-Tests. Laeuft nur, wenn sich
+# etwas unter platform-backend/ aendert. Additiv; beruehrt die Release-CI nicht.
+on:
+  push:
+    paths: ["platform-backend/**", ".github/workflows/platform-backend-ci.yml"]
+  pull_request:
+    paths: ["platform-backend/**", ".github/workflows/platform-backend-ci.yml"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: platform-backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Abhaengigkeiten
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pytest
+      - name: Kompilieren
+        run: python -m py_compile app/*.py app/routes/*.py
+      - name: Tests
+        run: pytest -q

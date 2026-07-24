@@ -1,0 +1,56 @@
+# Lokale Entwicklungsumgebung fuer Produkt A:
+#   postgres  — Multi-Tenant-DB mit RLS
+#   litellm   — Gateway fuer alle Modelle
+#   backend   — FastAPI (dieses Repo)
+#
+# Start:  docker compose up --build
+# Danach: http://localhost:8080/health  und  POST /admin/provision
+#
+# Secrets kommen aus einer .env-Datei (siehe .env.example) — nicht committen.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: platform
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-platform}
+      POSTGRES_DB: platform
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U platform"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  litellm:
+    image: ghcr.io/berriai/litellm:main-latest
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:-sk-local-dev}
+    volumes:
+      - ./litellm/config.yaml:/app/config.yaml:ro
+    ports:
+      - "4000:4000"
+
+  backend:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://platform:${POSTGRES_PASSWORD:-platform}@postgres:5432/platform
+      LITELLM_BASE_URL: http://litellm:4000
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:-sk-local-dev}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-change-me-admin}
+      AUTO_MIGRATE: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:

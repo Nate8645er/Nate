@@ -1,0 +1,43 @@
+# LiteLLM-Gateway — ein Zugang fuer alle Anbieter (Master-Prompt 3.2, "Kern").
+# Keys kommen aus der Umgebung (os.environ/...), niemals hartkodiert.
+# Start: litellm --config litellm/config.yaml
+#
+# Die Modell-Aliase hier entsprechen den in den Tarifen (002_seed_plans.sql)
+# freigeschalteten Namen (anbieter/modell), damit die Whitelist im Backend und
+# das Gateway dieselbe Sprache sprechen.
+
+model_list:
+  - model_name: anthropic/claude-opus-4-8
+    litellm_params:
+      model: anthropic/claude-opus-4-8
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  - model_name: anthropic/claude-sonnet-5
+    litellm_params:
+      model: anthropic/claude-sonnet-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  - model_name: anthropic/claude-haiku-4-5
+    litellm_params:
+      model: anthropic/claude-haiku-4-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  - model_name: openai/gpt-4o
+    litellm_params:
+      model: openai/gpt-4o
+      api_key: os.environ/OPENAI_API_KEY
+
+  # Lokales Modell ueber Ollama (Master-Prompt: mind. 1 lokales Modell).
+  - model_name: ollama/llama3.2
+    litellm_params:
+      model: ollama/llama3.2
+      api_base: os.environ/OLLAMA_BASE_URL
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  # Verbrauchs-/Budget-Tracking pro Mandant kann hier spaeter (Phase 4)
+  # ueber virtuelle Keys je tenant_id ergaenzt werden.
+
+litellm_settings:
+  drop_params: true          # unbekannte Params still verwerfen statt Fehler
+  request_timeout: 120
