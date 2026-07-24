@@ -1,0 +1,49 @@
+# === Secrets — niemals committen (Master-Prompt Kap. 1, Regel 4) ===
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+certs/
+secrets/
+*.secret
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# === Node / JS ===
+node_modules/
+.next/
+dist/
+build/
+*.tsbuildinfo
+.turbo/
+.pnpm-store/
+
+# === Laufzeit-/Datenordner ===
+data/
+javier-mobile/data/
+*.log
+tmp/
+.cache/
+
+# === OS / Editor ===
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# === Creative-Pipeline (Produkt C) — grosse Rohassets nicht ins Git ===
+*.mp4
+*.mov
+*.wav
+!**/samples/**
+renders/
