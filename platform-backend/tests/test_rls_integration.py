@@ -29,9 +29,12 @@ pytestmark = pytest.mark.skipif(
 def seeded():
     import psycopg
 
-    # Migrationen ueber die privilegierte Verbindung anwenden.
-    os.environ["MIGRATE_DATABASE_URL"] = DSN
-    os.environ.setdefault("DATABASE_URL", DSN)  # nur damit config importierbar ist
+    # settings direkt setzen (robust gegen Import-Reihenfolge: config liest die
+    # Umgebung nur einmal beim Import, andere Testmodule koennen sie vorher mit
+    # Dummy-Werten geladen haben).
+    from app.config import settings
+
+    settings.migrate_database_url = DSN
     from app.db import migrate
 
     migrate()

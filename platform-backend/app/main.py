@@ -7,13 +7,15 @@ from __future__ import annotations
 
 import contextlib
 import os
+import pathlib
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from .config import settings
 from .db import close_pool, get_pool, migrate
-from .routes import admin, chat, usage
+from .routes import admin, chat, conversations, models, usage
 
 
 @contextlib.asynccontextmanager
@@ -41,6 +43,8 @@ if settings.cors_origins:
 app.include_router(chat.router)
 app.include_router(usage.router)
 app.include_router(admin.router)
+app.include_router(models.router)
+app.include_router(conversations.router)
 
 
 @app.get("/health")
@@ -53,3 +57,9 @@ async def health():
     except Exception:  # noqa: BLE001 — Health darf nie werfen
         db_ok = False
     return {"status": "ok", "db": db_ok}
+
+
+# Statisches Chat-UI zuletzt mounten (die API-Routen oben haben Vorrang).
+_static = pathlib.Path(__file__).resolve().parent.parent / "static"
+if _static.is_dir():
+    app.mount("/", StaticFiles(directory=str(_static), html=True), name="ui")

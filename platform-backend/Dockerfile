@@ -14,9 +14,10 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Anwendungscode + Migrationen.
+# Anwendungscode + Migrationen + statisches UI.
 COPY app ./app
 COPY migrations ./migrations
+COPY static ./static
 
 # Nicht-root-Nutzer.
 RUN useradd --create-home --uid 10001 appuser

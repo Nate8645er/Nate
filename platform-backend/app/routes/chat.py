@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field
 from ..auth import Principal, require_principal
 from ..config import settings
 from ..db import tenant_tx
+from ..models_catalog import is_registered
 from ..plans import model_allowed
 
 router = APIRouter()
@@ -50,7 +51,12 @@ def _month_usage(conn, tenant_id: str) -> int:
 
 @router.post("/v1/chat")
 async def chat(req: ChatRequest, principal: Principal = Depends(require_principal)):
-    # 1) Tarif: Modell freigeschaltet?
+    # 1a) Modell am Gateway registriert? (verhindert 502 bei Enterprise-"*"
+    #     oder Tippfehlern — klare 403 statt Gateway-Fehler.)
+    if not is_registered(req.model):
+        raise HTTPException(status_code=403, detail=f"Modell '{req.model}' ist nicht verfuegbar")
+
+    # 1b) Tarif: Modell freigeschaltet?
     if not model_allowed(req.model, principal.allowed_models):
         raise HTTPException(
             status_code=403,

@@ -71,10 +71,14 @@ curl -s localhost:8080/v1/usage -H "Authorization: Bearer pk_..."
 
 | Methode | Pfad | Zweck | Schutz |
 |---------|------|-------|--------|
+| GET  | `/` | Statisches Chat-UI (Modellwechsel + Verbrauch) | — |
 | GET  | `/health` | Liveness + DB-Check | — |
 | POST | `/admin/provision` | Mandant + API-Key anlegen | `X-Admin-Token` |
 | POST | `/v1/chat` | Chat via Gateway, mit Tarif-/Limit-Prüfung | Bearer API-Key |
+| GET  | `/v1/models` | Im Tarif freigeschaltete Modelle (fürs UI-Dropdown) | Bearer API-Key |
 | GET  | `/v1/usage` | Monatsverbrauch des Mandanten | Bearer API-Key |
+| GET  | `/v1/conversations` | Liste der Unterhaltungen | Bearer API-Key |
+| GET  | `/v1/conversations/{id}` | Eine Unterhaltung mit Nachrichten | Bearer API-Key |
 
 ## Tests
 
