@@ -1,7 +1,7 @@
 name: platform-backend CI
 
-# Leichte CI fuer Produkt A: Kompilieren + Unit-Tests. Laeuft nur, wenn sich
-# etwas unter platform-backend/ aendert. Additiv; beruehrt die Release-CI nicht.
+# CI fuer Produkt A: Kompilieren + Unit-Tests + echter RLS-Integrationstest
+# gegen Postgres. Laeuft nur bei Aenderungen unter platform-backend/.
 on:
   push:
     paths: ["platform-backend/**", ".github/workflows/platform-backend-ci.yml"]
@@ -14,6 +14,19 @@ jobs:
     defaults:
       run:
         working-directory: platform-backend
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: platform
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      # Privilegierte Verbindung fuer den Integrationstest (migriert + seedet).
+      PLATFORM_TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/platform
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -25,5 +38,5 @@ jobs:
           pip install -r requirements.txt pytest
       - name: Kompilieren
         run: python -m py_compile app/*.py app/routes/*.py
-      - name: Tests
+      - name: Tests (Unit + RLS-Integration)
         run: pytest -q

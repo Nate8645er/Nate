@@ -109,13 +109,26 @@ LANGUAGE sql STABLE AS $$
     SELECT nullif(current_setting('app.current_tenant', true), '')::uuid
 $$;
 
+-- Wichtig zur Rollen-Architektur (siehe 003_grants.sql + docker-compose.yml):
+-- Die Laufzeit verbindet sich mit der Rolle app_rw (NOSUPERUSER, NOBYPASSRLS,
+-- NICHT Tabellen-Owner). Fuer eine solche Rolle greift die normale RLS immer.
+-- FORCE zusaetzlich, damit die Isolation auch dann haelt, falls der Owner in
+-- Produktion einmal keine Superuser-Rolle ist.
+--
+-- api_keys ist bewusst NICHT in dieser Schleife: der Auth-Lookup erfolgt ueber
+-- den global-eindeutigen, geheimen key_hash (SHA-256 von 256-Bit-Zufall). Man
+-- findet eine Zeile nur, wenn man das Geheimnis bereits kennt — es gibt keine
+-- mandantenuebergreifende Aufzaehlung. Wuerde api_keys unter RLS stehen, koennte
+-- der kontextlose Login-Lookup keine Zeile sehen (Henne-Ei: der Mandant wird
+-- ERST durch diesen Lookup bestimmt).
 DO $$
 DECLARE t text;
 BEGIN
-    FOREACH t IN ARRAY ARRAY['users','api_keys','conversations','messages','usage_events']
+    FOREACH t IN ARRAY ARRAY['users','conversations','messages','usage_events']
     LOOP
         EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', t);
-        EXECUTE format('ALTER TABLE %I FORCE ROW LEVEL SECURITY', t);  -- gilt auch fuer Tabellen-Owner
+        EXECUTE format('ALTER TABLE %I FORCE ROW LEVEL SECURITY', t);
+        EXECUTE format('DROP POLICY IF EXISTS tenant_isolation ON %I', t);  -- idempotent
         EXECUTE format($p$
             CREATE POLICY tenant_isolation ON %I
             USING (tenant_id = current_tenant())

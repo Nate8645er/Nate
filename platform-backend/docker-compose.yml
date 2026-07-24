@@ -3,24 +3,29 @@
 #   litellm   — Gateway fuer alle Modelle
 #   backend   — FastAPI (dieses Repo)
 #
-# Start:  docker compose up --build
+# Start:  cp .env.example .env  &&  <Werte setzen>  &&  docker compose up --build
 # Danach: http://localhost:8080/health  und  POST /admin/provision
 #
-# Secrets kommen aus einer .env-Datei (siehe .env.example) — nicht committen.
+# Secrets kommen aus .env (siehe .env.example) — nicht committen. Die
+# ${VAR:?...}-Form laesst den Start FEHLSCHLAGEN, wenn eine Variable fehlt
+# (fail-closed, keine bekannten Default-Passwoerter im Auslieferungsartefakt).
 
 services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: platform
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-platform}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD fehlt}
       POSTGRES_DB: platform
+      # Wird vom initdb-Skript genutzt, um die Laufzeit-Rolle app_rw anzulegen.
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?APP_DB_PASSWORD fehlt}
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./db-init:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U platform"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -32,7 +37,7 @@ services:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
-      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:-sk-local-dev}
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:?LITELLM_MASTER_KEY fehlt}
     volumes:
       - ./litellm/config.yaml:/app/config.yaml:ro
     ports:
@@ -41,10 +46,13 @@ services:
   backend:
     build: .
     environment:
-      DATABASE_URL: postgresql://platform:${POSTGRES_PASSWORD:-platform}@postgres:5432/platform
+      # Laufzeit: eingeschraenkte, RLS-gebundene Rolle app_rw.
+      DATABASE_URL: postgresql://app_rw:${APP_DB_PASSWORD:?APP_DB_PASSWORD fehlt}@postgres:5432/platform
+      # Migrationen: privilegierte Rolle (DDL + Rollen/Grants).
+      MIGRATE_DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD fehlt}@postgres:5432/platform
       LITELLM_BASE_URL: http://litellm:4000
-      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:-sk-local-dev}
-      ADMIN_TOKEN: ${ADMIN_TOKEN:-change-me-admin}
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:?LITELLM_MASTER_KEY fehlt}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:?ADMIN_TOKEN fehlt}
       AUTO_MIGRATE: "true"
     depends_on:
       postgres:

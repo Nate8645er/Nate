@@ -13,10 +13,18 @@ def _req(name: str, default: str | None = None) -> str:
 
 
 class Settings:
-    # Postgres (Supabase-kompatibel: einfach die Supabase-Connection-URL setzen)
-    database_url: str = os.environ.get(
-        "DATABASE_URL", "postgresql://platform:platform@localhost:5432/platform"
-    )
+    # Laufzeit-Verbindung: MUSS eine RLS-gebundene Rolle sein
+    # (NOSUPERUSER, NOBYPASSRLS, nicht Tabellen-Owner). Sonst wird RLS
+    # umgangen und die Mandantentrennung ist wirkungslos. Kein Default —
+    # fehlt die Variable, soll der Start fehlschlagen (fail-closed).
+    database_url: str = _req("DATABASE_URL")
+
+    # Migrations-Verbindung: privilegierte Rolle (Owner/Superuser), die DDL
+    # ausfuehren darf. Faellt auf database_url zurueck (Single-Role-Betrieb),
+    # sollte in Produktion aber getrennt sein.
+    migrate_database_url: str = os.environ.get(
+        "MIGRATE_DATABASE_URL"
+    ) or _req("DATABASE_URL")
 
     # LiteLLM-Gateway (OpenAI-kompatibel). Ein Gateway fuer alle Anbieter.
     litellm_base_url: str = os.environ.get("LITELLM_BASE_URL", "http://localhost:4000")

@@ -3,6 +3,9 @@ die Tarif-Regeln: erlaubte Modelle + Monats-Token-Limit. Misst den Verbrauch
 pro Mandant (Grundlage der Abrechnung)."""
 from __future__ import annotations
 
+import logging
+import uuid
+
 import httpx
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
@@ -13,18 +16,24 @@ from ..db import tenant_tx
 from ..plans import model_allowed
 
 router = APIRouter()
+log = logging.getLogger("platform.chat")
+
+# Payload-Grenzen (DoS-Schutz). Ein authentifizierter Mandant kann sonst sehr
+# grosse Bodies senden, die vor jeder Tarif-Pruefung im Speicher landen.
+MAX_CONTENT_CHARS = 100_000
+MAX_MESSAGES = 200
 
 
 class ChatMessage(BaseModel):
     role: str = Field(pattern="^(system|user|assistant)$")
-    content: str
+    content: str = Field(max_length=MAX_CONTENT_CHARS)
 
 
 class ChatRequest(BaseModel):
-    model: str
-    messages: list[ChatMessage]
-    conversation_id: str | None = None
-    temperature: float | None = None
+    model: str = Field(max_length=200)
+    messages: list[ChatMessage] = Field(min_length=1, max_length=MAX_MESSAGES)
+    conversation_id: uuid.UUID | None = None
+    temperature: float | None = Field(default=None, ge=0.0, le=2.0)
 
 
 def _month_usage(conn, tenant_id: str) -> int:
@@ -79,10 +88,14 @@ async def chat(req: ChatRequest, principal: Principal = Depends(require_principa
                 headers=headers,
             )
     except httpx.HTTPError as exc:
-        raise HTTPException(status_code=502, detail=f"Gateway nicht erreichbar: {exc}")
+        # Detail nur ins Server-Log, generische Meldung an den Client (kein
+        # Leak interner Hostnamen/Provider-Rohfehler).
+        log.warning("Gateway nicht erreichbar: %s", exc)
+        raise HTTPException(status_code=502, detail="Upstream-Gateway nicht erreichbar")
 
     if resp.status_code >= 400:
-        raise HTTPException(status_code=502, detail=f"Gateway-Fehler: {resp.text[:500]}")
+        log.warning("Gateway-Fehler %s: %s", resp.status_code, resp.text[:500])
+        raise HTTPException(status_code=502, detail="Upstream-Gateway-Fehler")
 
     data = resp.json()
     answer = data.get("choices", [{}])[0].get("message", {}).get("content", "")
@@ -94,12 +107,19 @@ async def chat(req: ChatRequest, principal: Principal = Depends(require_principa
     with tenant_tx(principal.tenant_id) as conn:
         conv_id = req.conversation_id
         if conv_id is None:
-            conv_id = str(
-                conn.execute(
-                    "INSERT INTO conversations (tenant_id) VALUES (%s) RETURNING id",
-                    (principal.tenant_id,),
-                ).fetchone()["id"]
-            )
+            conv_id = conn.execute(
+                "INSERT INTO conversations (tenant_id) VALUES (%s) RETURNING id",
+                (principal.tenant_id,),
+            ).fetchone()["id"]
+        else:
+            # Eigentum pruefen: die Konversation muss dem Mandanten gehoeren.
+            # (RLS filtert bereits auf den Mandanten; das SELECT sieht die Zeile
+            # also nur, wenn sie wirklich diesem Mandanten gehoert.)
+            owns = conn.execute(
+                "SELECT 1 FROM conversations WHERE id = %s", (conv_id,)
+            ).fetchone()
+            if owns is None:
+                raise HTTPException(status_code=404, detail="Konversation nicht gefunden")
         last_user = next(
             (m.content for m in reversed(req.messages) if m.role == "user"), ""
         )
@@ -120,7 +140,7 @@ async def chat(req: ChatRequest, principal: Principal = Depends(require_principa
         )
 
     return {
-        "conversation_id": conv_id,
+        "conversation_id": str(conv_id),
         "model": req.model,
         "answer": answer,
         "usage": {"tokens_in": tokens_in, "tokens_out": tokens_out},

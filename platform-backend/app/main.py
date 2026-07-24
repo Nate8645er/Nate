@@ -5,16 +5,30 @@ Ein Modell, ein Mandant, ein Chat — lauffaehig (Phase-2-Ziel).
 """
 from __future__ import annotations
 
+import contextlib
 import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
-from .db import get_pool, migrate
+from .db import close_pool, get_pool, migrate
 from .routes import admin, chat, usage
 
-app = FastAPI(title="Platform Backend (Produkt A)", version="0.1.0")
+
+@contextlib.asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Auto-Migration nur, wenn ausdruecklich gewuenscht (z.B. lokal/Compose).
+    # In Produktion migriert man kontrolliert per `python -m app.migrate`.
+    if os.environ.get("AUTO_MIGRATE", "").lower() in {"1", "true", "yes"}:
+        migrate()
+    try:
+        yield
+    finally:
+        close_pool()
+
+
+app = FastAPI(title="Platform Backend (Produkt A)", version="0.1.0", lifespan=lifespan)
 
 if settings.cors_origins:
     app.add_middleware(
@@ -39,11 +53,3 @@ async def health():
     except Exception:  # noqa: BLE001 — Health darf nie werfen
         db_ok = False
     return {"status": "ok", "db": db_ok}
-
-
-@app.on_event("startup")
-def _startup() -> None:
-    # Auto-Migration nur, wenn ausdruecklich gewuenscht (z.B. lokal/Compose).
-    # In Produktion migriert man kontrolliert per `python -m app.migrate`.
-    if os.environ.get("AUTO_MIGRATE", "").lower() in {"1", "true", "yes"}:
-        migrate()
