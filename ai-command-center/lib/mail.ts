@@ -1,16 +1,25 @@
 /**
  * Transaktions-E-Mail – dependency-frei über die Resend-REST-API.
  *
- * Aktivierung: RESEND_API_KEY + MAIL_FROM setzen. Ohne diese Werte meldet der
- * Versand ehrlich „nicht-konfiguriert" (kein stiller Fehlschlag). MAIL_FROM muss
- * eine in Resend verifizierte Absenderadresse/Domain sein.
+ * Aktivierung: RESEND_API_KEY + Absenderadresse setzen. Als Absender wird
+ * `MAIL_FROM` ODER (gleichwertig) `ACC_FROM_EMAIL` akzeptiert – so funktioniert
+ * die Zustellung unabhängig davon, welchen der beiden Namen man gesetzt hat
+ * (der Shopify-Kauf-Webhook nutzt historisch `ACC_FROM_EMAIL`). Ohne diese
+ * Werte meldet der Versand ehrlich „nicht-konfiguriert" (kein stiller
+ * Fehlschlag). Die Adresse muss in Resend verifiziert sein.
  */
 
 export type MailEnv = Record<string, string | undefined>;
 
+/** Absenderadresse aus `MAIL_FROM` oder `ACC_FROM_EMAIL` (Alias). */
+export function absenderAdresse(env: MailEnv = process.env): string | undefined {
+  const from = env.MAIL_FROM || env.ACC_FROM_EMAIL;
+  return typeof from === "string" && from.includes("@") ? from : undefined;
+}
+
 export function mailKonfiguriert(env: MailEnv = process.env): boolean {
   return typeof env.RESEND_API_KEY === "string" && env.RESEND_API_KEY.length > 10 &&
-    typeof env.MAIL_FROM === "string" && env.MAIL_FROM.includes("@");
+    absenderAdresse(env) !== undefined;
 }
 
 export interface MailEingabe {
@@ -41,7 +50,7 @@ export async function sendeMail(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: env.MAIL_FROM,
+        from: absenderAdresse(env),
         to: [mail.an],
         subject: mail.betreff,
         text: mail.text,

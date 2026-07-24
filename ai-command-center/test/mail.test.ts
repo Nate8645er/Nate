@@ -2,7 +2,7 @@
  * Tests für den E-Mail-Versand (Resend) und die reine Willkommens-Mail-Vorlage.
  */
 import { describe, expect, it } from "vitest";
-import { mailKonfiguriert, sendeMail } from "../lib/mail";
+import { absenderAdresse, mailKonfiguriert, sendeMail } from "../lib/mail";
 import { willkommensMail } from "../lib/willkommen";
 
 const CFG = { RESEND_API_KEY: "re_test_1234567890", MAIL_FROM: "shop@firma.ch" };
@@ -13,6 +13,25 @@ describe("mailKonfiguriert", () => {
     expect(mailKonfiguriert({ RESEND_API_KEY: "re_x1234567890" })).toBe(false);
     expect(mailKonfiguriert({ RESEND_API_KEY: "re_x1234567890", MAIL_FROM: "kein-at" })).toBe(false);
     expect(mailKonfiguriert(CFG)).toBe(true);
+  });
+
+  it("akzeptiert ACC_FROM_EMAIL gleichwertig zu MAIL_FROM", () => {
+    // Der Shopify-Kauf-Webhook nutzt historisch ACC_FROM_EMAIL — beide müssen gehen.
+    expect(absenderAdresse({ MAIL_FROM: "a@firma.ch" })).toBe("a@firma.ch");
+    expect(absenderAdresse({ ACC_FROM_EMAIL: "b@firma.ch" })).toBe("b@firma.ch");
+    expect(absenderAdresse({ ACC_FROM_EMAIL: "kein-at" })).toBeUndefined();
+    expect(mailKonfiguriert({ RESEND_API_KEY: "re_x1234567890", ACC_FROM_EMAIL: "b@firma.ch" })).toBe(true);
+  });
+
+  it("sendet mit ACC_FROM_EMAIL als Absender", async () => {
+    let init: RequestInit = {};
+    const fake = (async (_u: string, i: RequestInit) => {
+      init = i;
+      return { ok: true, json: async () => ({ id: "e2" }) };
+    }) as unknown as typeof fetch;
+    await sendeMail({ an: "k@x.ch", betreff: "H", text: "W" },
+      { RESEND_API_KEY: "re_test_1234567890", ACC_FROM_EMAIL: "b@firma.ch" }, fake);
+    expect(JSON.parse(String(init.body)).from).toBe("b@firma.ch");
   });
 });
 
