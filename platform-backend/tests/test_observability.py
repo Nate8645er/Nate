@@ -104,3 +104,14 @@ def test_compute_endpunkt_unveraendert():
     r = client.get("/health/compute")
     assert r.status_code == 200
     assert "devices" in r.json()
+
+
+def test_wire_vector_store_ohne_qdrant_ist_noop():
+    # Ohne konfiguriertes Qdrant bleibt der Store None (ehrlich → /knowledge/* 503),
+    # der Start darf dabei nie fehlschlagen.
+    from app.api import v1
+    from app.main import _wire_vector_store
+
+    v1.set_vector_store(None)
+    _wire_vector_store()  # QDRANT_URL im Test nicht gesetzt → no-op
+    assert v1._vector_store is None

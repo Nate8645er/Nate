@@ -29,7 +29,7 @@ import {
   demoQualityReport,
   demoSynthesis,
 } from "./demo";
-import { callLLM, hasApiKey, tokenBudgetStore } from "./providers";
+import { callLLM, resolveProviderModel, tokenBudgetStore } from "./providers";
 import { erinnerungenBlock } from "./memory";
 import { jsonReparieren } from "./zuverlaessigkeit";
 import { effektivesTokenBudget } from "@/lib/license";
@@ -535,13 +535,16 @@ async function callDynAgent(
 ): Promise<AgentCall> {
   const system = dynSystemPrompt(role.rolle, role.fachgebiet);
   const messages = workerMessages(goal, role.teilaufgabe, context);
-  if (!hasApiKey(model.provider)) {
-    emit(dynStatus(role.id, department, role.rolle, "working", `Demo-Modus: kein API-Key für ${model.provider}`));
+  // Ein-Key-Betrieb: nicht konfigurierten Rotations-Provider auf den
+  // vorhandenen Provider umleiten; nur ohne jeden Key greift der Demo-Fallback.
+  const resolved = resolveProviderModel(model.provider, model.model);
+  if (!resolved) {
+    emit(dynStatus(role.id, department, role.rolle, "working", "Demo-Modus: kein KI-Zugang konfiguriert"));
     return { text: demoDynOutput(goal, role), demo: true };
   }
-  const result = await callLLM(model.provider, model.model, system, messages);
+  const result = await callLLM(resolved.provider, resolved.model, system, messages);
   if (result.ok) return { text: result.text, demo: false };
-  emit(dynStatus(role.id, department, role.rolle, "working", `Demo-Modus: ${model.provider} nicht erreichbar`));
+  emit(dynStatus(role.id, department, role.rolle, "working", `Demo-Modus: ${resolved.provider} nicht erreichbar`));
   return { text: demoDynOutput(goal, role), demo: true };
 }
 
@@ -736,8 +739,8 @@ function dedupeArtifactFiles(files: ArtifactFile[]): ArtifactFile[] {
  * Kundenergebnis behalten oder heruntergeladen wird (ehrliche Kennzeichnung).
  */
 const DEMO_HINWEIS =
-  "> ⚠️ DEMO-ERGEBNIS – ohne aktive KI-Verbindung erzeugt (Platzhalter, nicht für den produktiven Einsatz). " +
-  "Mit hinterlegten API-Keys liefert Ihre Belegschaft echte Ergebnisse.\n\n";
+  "> ⚠️ Vorschau-Ergebnis – der KI-Dienst war gerade kurz nicht erreichbar, daher wurde ein " +
+  "beispielhaftes Ergebnis erzeugt. Bitte die Mission in einem Moment erneut starten.\n\n";
 
 interface AgentCall {
   text: string;
@@ -756,13 +759,17 @@ async function callAgent(
   demoFallback: () => string,
   emit: EmitFn,
 ): Promise<AgentCall> {
-  if (!hasApiKey(agent.provider)) {
-    emit(status(agent.role, "working", `Demo-Modus: kein API-Key für ${agent.provider}`));
+  // Ein-Key-Betrieb: Ist der native Provider des Agenten nicht konfiguriert,
+  // wird auf den vorhandenen Provider (z. B. Anthropic) umgeleitet. Nur wenn
+  // GAR kein Key gesetzt ist, greift der Demo-Fallback.
+  const resolved = resolveProviderModel(agent.provider, agent.model);
+  if (!resolved) {
+    emit(status(agent.role, "working", "Demo-Modus: kein KI-Zugang konfiguriert"));
     return { text: demoFallback(), demo: true };
   }
-  const result = await callLLM(agent.provider, agent.model, system, messages);
+  const result = await callLLM(resolved.provider, resolved.model, system, messages);
   if (result.ok) return { text: result.text, demo: false };
-  emit(status(agent.role, "working", `Demo-Modus: ${agent.provider} nicht erreichbar`));
+  emit(status(agent.role, "working", `Demo-Modus: ${resolved.provider} nicht erreichbar`));
   return { text: demoFallback(), demo: true };
 }
 

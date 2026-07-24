@@ -82,7 +82,9 @@ function escapeHtml(s: string): string {
 /** Schickt dem Kunden die Schlüssel per E-Mail (nur wenn Resend konfiguriert). */
 async function perMailSchicken(email: string, vorname: string, keysHtml: string): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.ACC_FROM_EMAIL;
+  // Absender aus ACC_FROM_EMAIL ODER MAIL_FROM (gleichwertig) — so wird die
+  // Lizenz-Mail zugestellt, egal welchen Namen der Betreiber gesetzt hat.
+  const from = process.env.ACC_FROM_EMAIL || process.env.MAIL_FROM;
   if (!apiKey || !from || !email) return;
   const html = `<p>Hallo ${escapeHtml(vorname || "")},</p>
 <p>vielen Dank für Ihren Kauf des AI Command Center. Hier ist Ihr Zugang:</p>
