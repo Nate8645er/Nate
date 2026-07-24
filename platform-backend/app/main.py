@@ -15,7 +15,7 @@ from fastapi.staticfiles import StaticFiles
 
 from .config import settings
 from .db import close_pool, get_pool, migrate
-from .routes import admin, chat, conversations, models, usage
+from .routes import admin, agents, chat, conversations, models, usage
 
 
 @contextlib.asynccontextmanager
@@ -45,6 +45,7 @@ app.include_router(usage.router)
 app.include_router(admin.router)
 app.include_router(models.router)
 app.include_router(conversations.router)
+app.include_router(agents.router)
 
 
 @app.get("/health")
