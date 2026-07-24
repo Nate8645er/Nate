@@ -12,6 +12,12 @@ export const metadata: Metadata = {
  * eigenes Stylesheet – das bestehende UI unter anderen Routen bleibt unberührt.
  * Ohne Feature-Flag erscheint ein ehrlicher Vorschau-Hinweis.
  */
+const NAV = [
+  { href: "/v2", label: "Dashboard" },
+  { href: "/v2/mission", label: "Neue Mission" },
+  { href: "/v2/enterprise", label: "Enterprise" },
+];
+
 export default function V2Layout({ children }: { children: ReactNode }) {
   const aktiv = flagFromEnv("ui_v2");
   return (
@@ -29,6 +35,29 @@ export default function V2Layout({ children }: { children: ReactNode }) {
           Vorschau des neuen Designs · produktiv per <code>NEXT_PUBLIC_UI_V2=1</code> schalten
         </div>
       ) : null}
+      <nav
+        style={{
+          display: "flex",
+          gap: "var(--space-4)",
+          alignItems: "center",
+          padding: "var(--space-3) var(--space-5)",
+          borderBottom: "1px solid var(--border)",
+          maxWidth: 1160,
+          margin: "0 auto",
+          flexWrap: "wrap",
+        }}
+      >
+        <span style={{ fontWeight: 800, fontSize: "var(--text-sm)", letterSpacing: "0.02em" }}>ACC</span>
+        {NAV.map((n) => (
+          <a
+            key={n.href}
+            href={n.href}
+            style={{ color: "var(--text-muted)", textDecoration: "none", fontSize: "var(--text-sm)", fontWeight: 600 }}
+          >
+            {n.label}
+          </a>
+        ))}
+      </nav>
       {children}
     </div>
   );

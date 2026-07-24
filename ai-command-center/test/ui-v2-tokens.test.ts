@@ -39,4 +39,17 @@ describe("v2 Design-System: keine Hex-Werte in Komponenten", () => {
     expect(css).toContain('[data-theme="dark"]');
     expect(css).toContain("prefers-reduced-motion: reduce");
   });
+
+  it("v2-Layout verlinkt die neuen Seiten (erreichbar)", () => {
+    const src = read("app/v2/layout.tsx");
+    for (const href of ["/v2", "/v2/mission", "/v2/enterprise"]) {
+      expect(src).toContain(href);
+    }
+  });
+
+  it("enterprise/page.tsx nutzt nur Tokens, kein Hex", () => {
+    const src = read("app/v2/enterprise/page.tsx");
+    expect(HEX.test(src)).toBe(false);
+    expect(src).toContain("var(--");
+  });
 });
