@@ -23,10 +23,34 @@ from .observability.http_metrics import HttpMetrics, make_metrics_middleware
 from .observability.readiness import evaluate_readiness
 
 
+def _wire_vector_store() -> None:
+    """Verbindet die Wissens-API mit dem echten Qdrant, wenn konfiguriert.
+
+    Ehrlich: Ist QDRANT_URL nicht gesetzt oder Qdrant nicht erreichbar, bleibt
+    der Store None → /knowledge/* meldet 503 (kein Schein-Betrieb).
+    """
+    settings = get_settings()
+    if not settings.qdrant.configured:
+        return
+    try:
+        from qdrant_client import QdrantClient
+
+        from .api import v1
+        from .knowledge.vectorstore import QdrantVectorStore
+
+        client = QdrantClient(url=settings.qdrant.url)
+        store = QdrantVectorStore(client, collection="knowledge", dim=v1._embedder.dim)
+        v1.set_vector_store(store)
+    except Exception:  # noqa: BLE001 — Wiring darf den Start nie verhindern
+        pass
+
+
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     # OTEL-Tracing nur, wenn ein OTLP-Endpoint gesetzt ist (sonst no-op).
     setup_tracing(env=dict(os.environ))
+    # Wissens-API mit echtem Qdrant verbinden, falls konfiguriert.
+    _wire_vector_store()
     yield
 
 
