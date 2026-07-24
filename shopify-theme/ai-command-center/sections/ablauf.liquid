@@ -1,0 +1,55 @@
+{%- comment -%}
+  Ablauf: 3 Schritte mit grossen Nummern, gestaffelter Scroll-Reveal.
+{%- endcomment -%}
+<section class="acc-section acc-ablauf">
+  <div class="acc-wrap">
+    <div class="acc-shead acc-reveal">
+      <p class="acc-micro">{{ section.settings.eyebrow | escape }}</p>
+      <h2>{{ section.settings.heading | escape }}</h2>
+    </div>
+    <div class="acc-steps">
+      {%- for block in section.blocks -%}
+        {%- assign d = forloop.index0 | times: 120 -%}
+        <div class="acc-panel acc-corner acc-step acc-reveal" style="transition-delay: {{ d }}ms;" {{ block.shopify_attributes }}>
+          <span class="acc-c1" aria-hidden="true"></span>
+          <span class="acc-c2" aria-hidden="true"></span>
+          <div class="acc-step__num" aria-hidden="true">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</div>
+          <h3>{{ block.settings.title | escape }}</h3>
+          <p>{{ block.settings.text | escape }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Ablauf",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Micro-Label", "default": "// SO FUNKTIONIERT ES" },
+    { "type": "text", "id": "heading", "label": "Überschrift", "default": "In drei Schritten einsatzbereit" }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Schritt",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Titel", "default": "Abo wählen" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "Wählen Sie die Abostufe, die zu Ihrem Bedarf passt. Monatlich kündbar." }
+      ]
+    }
+  ],
+  "max_blocks": 5,
+  "presets": [
+    {
+      "name": "Ablauf",
+      "blocks": [
+        { "type": "step", "settings": { "title": "Abo wählen", "text": "Wählen Sie die Abostufe, die zu Ihrem Bedarf passt. Monatlich kündbar, ohne Risiko." } },
+        { "type": "step", "settings": { "title": "Zugang erhalten", "text": "Nach dem Kauf erhalten Sie Ihren Lizenzschlüssel per E-Mail. Einloggen, fertig." } },
+        { "type": "step", "settings": { "title": "Missionen starten", "text": "Beschreiben Sie die Aufgabe, Ihre KI-Abteilung liefert das Ergebnis mit Quality-Score." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

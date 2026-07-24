@@ -1,0 +1,54 @@
+name: CI (ai-command-center)
+
+# Lint, Typecheck, Unit-Tests und Build bei jedem Push/PR, der die App berührt.
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "ai-command-center/**"
+      - ".github/workflows/ci.yml"
+  pull_request:
+    paths:
+      - "ai-command-center/**"
+      - ".github/workflows/ci.yml"
+
+defaults:
+  run:
+    working-directory: ai-command-center
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: ai-command-center/pnpm-lock.yaml
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # Lint ist blockierend (0 Fehler). Die strengeren React-19-/Next-16-Regeln
+      # zum SSR-localStorage-Muster und zur Dashboard-HUD sind in eslint.config.mjs
+      # bewusst als Warnung eingestuft (dort dokumentiert) – Warnungen blockieren nicht.
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Unit-Tests
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+        env:
+          # Build läuft ohne echte Secrets; Platzhalter nur für den Kompilierlauf.
+          LICENSE_SECRET: ci-build-only-not-a-real-secret

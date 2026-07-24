@@ -1,0 +1,13 @@
+{
+  "//": "Beispiel: ComfyUI-MCP in einen MCP-Client (z.B. Claude Code) einbinden.",
+  "//pfad": "Ersetze <USERPROFILE> durch deinen tatsaechlichen Benutzerpfad.",
+  "mcpServers": {
+    "comfyui": {
+      "command": "<USERPROFILE>\\KI-Agentur\\repos\\comfyui-mcp-server\\.venv\\Scripts\\python.exe",
+      "args": ["<USERPROFILE>\\KI-Agentur\\repos\\comfyui-mcp-server\\server.py"],
+      "env": {
+        "COMFYUI_URL": "http://127.0.0.1:8188"
+      }
+    }
+  }
+}

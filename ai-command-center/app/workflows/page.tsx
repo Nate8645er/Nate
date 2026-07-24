@@ -1,0 +1,448 @@
+"use client";
+
+/**
+ * Autopilot / Workflow-Manager: wiederkehrende Aufträge, die die
+ * KI-Belegschaft als Missionen abarbeitet.
+ *
+ * Ehrliche Funktionsweise (steht auch im UI): Workflows laufen, während
+ * diese Seite geöffnet ist – jede Ausführung ist eine echte Mission über
+ * /api/mission und zählt auf das Tageslimit. Vollautomatischer
+ * Server-Betrieb (auch bei geschlossenem Browser) ist Teil des
+ * Enterprise-Ausbaus.
+ *
+ * Datenhaltung: localStorage (acc-workflows), Lizenz-/Usage-Token werden
+ * mit Dashboard und Chat geteilt.
+ */
+
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
+import WorkNav from "@/app/components/WorkNav";
+import { usePlanGate } from "@/app/components/PlanGuard";
+import WorkFooter from "@/app/components/WorkFooter";
+
+const WORKFLOWS_KEY = "acc-workflows";
+const LICENSE_TOKEN_KEY = "acc-license-token";
+const USAGE_TOKEN_KEY = "acc-usage-token";
+const BRANCHE_KEY = "acc-branche";
+const GROESSE_KEY = "acc-groesse";
+
+type Frequenz = "manuell" | "taeglich" | "woechentlich";
+
+interface Workflow {
+  id: string;
+  name: string;
+  goal: string;
+  frequenz: Frequenz;
+  lastRun: number | null;
+  lastScore: number | null;
+  lastSummary: string | null;
+}
+
+type RunState = { status: "laeuft"; note: string } | { status: "fehler"; note: string } | null;
+
+const FREQUENZ_LABEL: Record<Frequenz, string> = {
+  manuell: "Manuell",
+  taeglich: "Täglich",
+  woechentlich: "Wöchentlich",
+};
+
+const VORLAGEN: { name: string; goal: string; frequenz: Frequenz }[] = [
+  {
+    name: "Social-Media-Woche",
+    goal: "Erstelle einen Social-Media-Wochenplan mit 5 konkreten Post-Ideen inklusive Text-Entwürfen für unser Unternehmen.",
+    frequenz: "woechentlich",
+  },
+  {
+    name: "Tages-Angebotsidee",
+    goal: "Entwickle eine konkrete Aktions- oder Angebotsidee für heute, inklusive Kurztext für Aushang und Social Media.",
+    frequenz: "taeglich",
+  },
+  {
+    name: "Wochenbericht Geschäftsleitung",
+    goal: "Erstelle eine Vorlage für einen Wochenbericht an die Geschäftsleitung: Kennzahlen-Struktur, offene Punkte, Empfehlungen.",
+    frequenz: "woechentlich",
+  },
+];
+
+export default function WorkflowsPage() {
+  const gate = usePlanGate("autopilot", "Autopilot");
+  const [workflows, setWorkflows] = useState<Workflow[]>([]);
+  const [running, setRunning] = useState<Record<string, RunState>>({});
+  const [name, setName] = useState("");
+  const [goal, setGoal] = useState("");
+  const [frequenz, setFrequenz] = useState<Frequenz>("woechentlich");
+  const [formOpen, setFormOpen] = useState(false);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(WORKFLOWS_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Workflow[];
+        if (Array.isArray(parsed)) setWorkflows(parsed);
+      }
+    } catch {
+      /* defekter Storage => leer */
+    }
+  }, []);
+
+  const persist = useCallback((next: Workflow[]) => {
+    setWorkflows(next);
+    try {
+      localStorage.setItem(WORKFLOWS_KEY, JSON.stringify(next));
+    } catch {
+      /* Storage voll */
+    }
+  }, []);
+
+  const addWorkflow = useCallback(
+    (n: string, g: string, f: Frequenz) => {
+      const wf: Workflow = {
+        id: `w${Date.now().toString(36)}`,
+        name: n.trim().slice(0, 60),
+        goal: g.trim().slice(0, 2000),
+        frequenz: f,
+        lastRun: null,
+        lastScore: null,
+        lastSummary: null,
+      };
+      if (!wf.name || !wf.goal) return;
+      persist([wf, ...workflows]);
+      setName("");
+      setGoal("");
+      setFormOpen(false);
+    },
+    [workflows, persist],
+  );
+
+  const removeWorkflow = useCallback(
+    (id: string) => persist(workflows.filter((w) => w.id !== id)),
+    [workflows, persist],
+  );
+
+  /** Fällig = laut Frequenz seit letzter Ausführung überschritten. */
+  const isDue = (w: Workflow): boolean => {
+    if (w.frequenz === "manuell") return false;
+    if (!w.lastRun) return true;
+    const alter = Date.now() - w.lastRun;
+    return w.frequenz === "taeglich" ? alter > 20 * 3600e3 : alter > 6.5 * 86400e3;
+  };
+
+  /** Führt einen Workflow als echte Mission aus (SSE lesen bis final). */
+  const run = useCallback(
+    async (wf: Workflow) => {
+      setRunning((r) => ({ ...r, [wf.id]: { status: "laeuft", note: "Team arbeitet …" } }));
+      try {
+        const headers: Record<string, string> = { "content-type": "application/json" };
+        try {
+          const lic = localStorage.getItem(LICENSE_TOKEN_KEY);
+          const use = localStorage.getItem(USAGE_TOKEN_KEY);
+          if (lic) headers["x-acc-license"] = lic;
+          if (use) headers["x-acc-usage"] = use;
+        } catch {
+          /* Storage nicht lesbar */
+        }
+        const context = {
+          branche: safeGet(BRANCHE_KEY),
+          groesse: safeGet(GROESSE_KEY),
+        };
+        const res = await fetch("/api/mission", {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ goal: wf.goal, context }),
+        });
+        if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        let score: number | null = null;
+        let finalText: string | null = null;
+        let errorText: string | null = null;
+        let artifactCount = 0;
+
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const parts = buffer.split("\n\n");
+          buffer = parts.pop() ?? "";
+          for (const part of parts) {
+            const line = part.split("\n").find((l) => l.startsWith("data: "));
+            if (!line) continue;
+            try {
+              const ev = JSON.parse(line.slice(6)) as {
+                type: string;
+                score?: number;
+                content?: string;
+                message?: string;
+                token?: string;
+                files?: unknown[];
+                status?: string;
+                label?: string;
+                agent?: string;
+              };
+              if (ev.type === "usage" && ev.token) {
+                try {
+                  localStorage.setItem(USAGE_TOKEN_KEY, ev.token);
+                } catch {
+                  /* voll */
+                }
+              } else if (ev.type === "score" && typeof ev.score === "number") {
+                score = ev.score;
+              } else if (ev.type === "artifact" && Array.isArray(ev.files)) {
+                artifactCount = ev.files.length;
+              } else if (ev.type === "final" && typeof ev.content === "string") {
+                finalText = ev.content;
+              } else if (ev.type === "error" && typeof ev.message === "string") {
+                errorText = ev.message;
+              } else if (ev.type === "status" && ev.status === "working") {
+                const wer = ev.label ?? ev.agent ?? "Team";
+                setRunning((r) => ({
+                  ...r,
+                  [wf.id]: { status: "laeuft", note: `${wer} arbeitet …` },
+                }));
+              }
+            } catch {
+              /* kaputtes Event überspringen */
+            }
+          }
+        }
+
+        if (errorText && !finalText) {
+          setRunning((r) => ({ ...r, [wf.id]: { status: "fehler", note: errorText } }));
+          return;
+        }
+        const summary = finalText
+          ? `${artifactCount > 0 ? `${artifactCount} Datei(en) erzeugt. ` : ""}${firstSentence(finalText)}`
+          : "Mission abgeschlossen.";
+        persist(
+          workflows.map((w) =>
+            w.id === wf.id
+              ? { ...w, lastRun: Date.now(), lastScore: score, lastSummary: summary.slice(0, 220) }
+              : w,
+          ),
+        );
+        setRunning((r) => ({ ...r, [wf.id]: null }));
+      } catch {
+        setRunning((r) => ({
+          ...r,
+          [wf.id]: { status: "fehler", note: "Netzwerkfehler – bitte erneut versuchen." },
+        }));
+      }
+    },
+    [workflows, persist],
+  );
+
+  const dueList = workflows.filter(isDue);
+
+  if (gate) return gate;
+  return (
+    <div className="acc-page min-h-dvh text-[#1c1917]">
+      <div className="mx-auto max-w-5xl px-4 pb-24">
+        {/* Kopfzeile */}
+        <header className="flex items-center justify-between border-b border-[#e8e1d2] py-4">
+          <div className="flex items-center gap-2.5">
+            <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f]" />
+            <span className="text-sm font-bold">AI Command Center</span>
+          </div>
+          <WorkNav aktiv="autopilot" variante="hell" />
+        </header>
+
+        <div className="pt-10 acc-in">
+          <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Workflow-Manager</p>
+          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+            <span className="acc-grad-text">Autopilot</span>: wiederkehrende Aufträge
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#6f6557]">
+            Legen Sie Aufträge an, die Ihre KI-Belegschaft regelmässig erledigt –
+            vom Social-Media-Wochenplan bis zum Bericht für die Geschäftsleitung.
+            Fällige Workflows starten Sie mit einem Klick; jede Ausführung ist
+            eine echte Mission und zählt auf Ihr Tageslimit.
+          </p>
+          <p className="mt-3 max-w-2xl rounded-xl border border-[#ffb066]/40 bg-[#fff4e6] px-4 py-3 text-xs leading-relaxed text-[#c25e0e]">
+            Ehrlich gesagt: Der Autopilot arbeitet, solange diese Seite geöffnet
+            ist. Vollautomatischer Betrieb rund um die Uhr (Server-seitig, ohne
+            Browser) gehört zum Enterprise-Ausbau und wird pro Kunde eingerichtet.
+          </p>
+        </div>
+
+        {/* Fällige Workflows */}
+        {dueList.length > 0 && (
+          <div className="mt-8 flex items-center justify-between rounded-2xl border border-[#f0c95c]/60 bg-[#fdf6e3] px-4 py-3">
+            <p className="text-sm font-semibold text-[#8a6d1f]">
+              {dueList.length} Workflow{dueList.length > 1 ? "s" : ""} fällig
+            </p>
+            <button
+              onClick={() => dueList.forEach((w) => run(w))}
+              className="shop-btn rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-4 py-2 text-sm font-bold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)]"
+            >
+              Alle fälligen ausführen
+            </button>
+          </div>
+        )}
+
+        {/* Neuer Workflow */}
+        <div className="mt-8">
+          {!formOpen ? (
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                onClick={() => setFormOpen(true)}
+                className="shop-btn rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-5 py-2.5 text-sm font-bold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)]"
+              >
+                + Eigener Workflow
+              </button>
+              <span className="text-xs text-[#6f6557]">oder Vorlage übernehmen:</span>
+              {VORLAGEN.map((v) => (
+                <button
+                  key={v.name}
+                  onClick={() => addWorkflow(v.name, v.goal, v.frequenz)}
+                  className="rounded-xl border border-[#e0d8c6] bg-white/70 px-3 py-2 text-xs font-semibold text-[#4a4335] hover:border-[#ffb066]"
+                >
+                  {v.name}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <form
+              className="acc-card rounded-2xl p-5"
+              onSubmit={(e) => {
+                e.preventDefault();
+                addWorkflow(name, goal, frequenz);
+              }}
+            >
+              <h2 className="text-lg font-semibold">Neuer Workflow</h2>
+              <div className="mt-4 grid gap-4 sm:grid-cols-[1fr_180px]">
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Name, z. B. Social-Media-Woche"
+                  className="w-full rounded-xl border border-[#e0d8c6] bg-white/70 px-4 py-2.5 text-sm focus:border-[#ffb066] focus:outline-none"
+                  aria-label="Workflow-Name"
+                />
+                <select
+                  value={frequenz}
+                  onChange={(e) => setFrequenz(e.target.value as Frequenz)}
+                  className="w-full rounded-xl border border-[#e0d8c6] bg-white/70 px-3 py-2.5 text-sm focus:border-[#ffb066] focus:outline-none"
+                  aria-label="Frequenz"
+                >
+                  <option value="taeglich">Täglich</option>
+                  <option value="woechentlich">Wöchentlich</option>
+                  <option value="manuell">Manuell</option>
+                </select>
+              </div>
+              <textarea
+                value={goal}
+                onChange={(e) => setGoal(e.target.value)}
+                rows={3}
+                placeholder="Auftrag an Ihre KI-Belegschaft …"
+                className="mt-4 w-full resize-none rounded-xl border border-[#e0d8c6] bg-white/70 px-4 py-3 text-sm focus:border-[#ffb066] focus:outline-none"
+                aria-label="Workflow-Auftrag"
+              />
+              <div className="mt-4 flex gap-3">
+                <button
+                  type="submit"
+                  disabled={!name.trim() || !goal.trim()}
+                  className="shop-btn rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-5 py-2.5 text-sm font-bold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)] disabled:opacity-40"
+                >
+                  Anlegen
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormOpen(false)}
+                  className="rounded-xl border border-[#e0d8c6] bg-white/70 px-5 py-2.5 text-sm font-semibold text-[#4a4335] hover:border-[#ffb066]"
+                >
+                  Abbrechen
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+
+        {/* Liste */}
+        <div className="mt-8 space-y-4">
+          {workflows.length === 0 && (
+            <p className="rounded-2xl border border-[#e8e1d2] px-5 py-8 text-center text-sm text-[#6f6557]">
+              Noch keine Workflows. Übernehmen Sie eine Vorlage oder legen Sie
+              einen eigenen an.
+            </p>
+          )}
+          {workflows.map((w) => {
+            const state = running[w.id] ?? null;
+            return (
+              <article key={w.id} className="acc-card acc-card-hover rounded-2xl p-5">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="font-semibold">{w.name}</h3>
+                      <span className="rounded-full border border-[#ffb066]/40 bg-[#fff4e6] px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#c25e0e]">
+                        {FREQUENZ_LABEL[w.frequenz]}
+                      </span>
+                      {isDue(w) && (
+                        <span className="rounded-full border border-[#f0c95c]/60 bg-[#fdf6e3] px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#8a6d1f]">
+                          Fällig
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-1.5 max-w-2xl text-sm text-[#6f6557]">{w.goal}</p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <button
+                      onClick={() => run(w)}
+                      disabled={state?.status === "laeuft"}
+                      className="shop-btn rounded-xl border border-[#e0d8c6] bg-white/70 px-4 py-2 text-sm font-semibold text-[#4a4335] hover:border-[#ffb066] disabled:opacity-40"
+                    >
+                      {state?.status === "laeuft" ? "Läuft …" : "Jetzt ausführen"}
+                    </button>
+                    <button
+                      onClick={() => removeWorkflow(w.id)}
+                      className="rounded-xl border border-[#e0d8c6] bg-white/70 px-3 py-2 text-sm text-[#7c7161] hover:border-red-300 hover:text-red-600"
+                      aria-label={`Workflow "${w.name}" löschen`}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+
+                {state?.status === "laeuft" && (
+                  <p className="mt-3 flex items-center gap-2 text-sm text-[#c25e0e]">
+                    <span className="hud-pulse inline-block h-2 w-2 rounded-full bg-[#ff8c2a]" />
+                    {state.note}
+                  </p>
+                )}
+                {state?.status === "fehler" && (
+                  <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-sm font-semibold text-red-600">{state.note}</p>
+                )}
+                {!state && w.lastRun && (
+                  <p className="mt-3 text-xs text-[#6f6557]">
+                    Zuletzt: {new Date(w.lastRun).toLocaleString("de-CH")}
+                    {typeof w.lastScore === "number" && ` · Quality-Score ${w.lastScore}`}
+                    {w.lastSummary && ` · ${w.lastSummary}`}
+                    {" · "}
+                    <Link href="/dashboard" className="font-semibold text-[#c25e0e] hover:underline">
+                      Ergebnis im Dashboard
+                    </Link>
+                  </p>
+                )}
+              </article>
+            );
+          })}
+        </div>
+        <WorkFooter variante="hell" />
+      </div>
+    </div>
+  );
+}
+
+function firstSentence(text: string): string {
+  const clean = text.replace(/[#*`]/g, "").trim();
+  const punkt = clean.indexOf(". ");
+  return punkt > 20 ? clean.slice(0, punkt + 1) : clean.slice(0, 160);
+}
+
+function safeGet(key: string): string | undefined {
+  try {
+    return localStorage.getItem(key) ?? undefined;
+  } catch {
+    return undefined;
+  }
+}

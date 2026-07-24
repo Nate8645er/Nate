@@ -1,0 +1,6 @@
+<div class="page"><h1>Konto aktivieren</h1>
+{% form 'activate_customer_password' %}
+  <input type="password" name="customer[password]" placeholder="Passwort" required>
+  <input type="password" name="customer[password_confirmation]" placeholder="Bestätigen" required>
+  <button class="btn" type="submit">Aktivieren</button>
+{% endform %}</div>

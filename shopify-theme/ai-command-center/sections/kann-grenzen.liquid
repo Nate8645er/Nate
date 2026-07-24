@@ -1,0 +1,101 @@
+{% comment %}
+  Ehrliche Fähigkeiten-Übersicht: was das KI-System heute kann, was auf
+  Anfrage/pro Firma kommt und was (noch) nicht geht. Transparenz schafft
+  Vertrauen – und verhindert falsche Erwartungen nach dem Kauf.
+{% endcomment %}
+
+<section class="acc-section acc-kg">
+  <div class="acc-wrap">
+    <div class="acc-shead acc-reveal" style="text-align:center">
+      <span class="acc-micro">{{ section.settings.label | escape }}</span>
+      <h2>{{ section.settings.titel | escape }}</h2>
+      <p class="acc-kg__intro">{{ section.settings.intro | escape }}</p>
+    </div>
+
+    <div class="acc-kg__grid">
+      <div class="acc-kg__col acc-kg__col--ja acc-reveal">
+        <h3><span class="acc-kg__ico">✓</span> Das kann es heute</h3>
+        <ul>
+          <li>Aufträge in normaler Sprache – Team plant, arbeitet, prüft (Quality-Score)</li>
+          <li>KI-Chat wie ChatGPT/Claude, mit eingebautem Browser &amp; echten Quellen</li>
+          <li>37 benannte Spezialisten-Agenten in 9 Abteilungen, dynamisch erweiterbar</li>
+          <li>79 Skills für praktisch jede Branche – Ergebnis als fertige Datei</li>
+          <li>Dokumente lesen (PDF/Text), Websites analysieren, Code &amp; Präsentationen</li>
+          <li>E-Mail-Zentrale, Kunden-CRM, WhatsApp-Antworten, Autopilot, Berichte</li>
+          <li>Verschiedene KI-Modelle – Cloud UND eigenes/lokales Modell (Ollama &amp; Co.)</li>
+        </ul>
+      </div>
+
+      <div class="acc-kg__col acc-kg__col--anfrage acc-reveal">
+        <h3><span class="acc-kg__ico">⚙</span> Auf Anfrage / pro Firma</h3>
+        <ul>
+          <li>Tiefe Firmen-Anbindungen: ERP, CRM, SAP, Slack, Cloud-Speicher, eigene API</li>
+          <li>Gmail/Kalender vollautomatisch aus Ihrem Postfach (mit Ihrer Freigabe)</li>
+          <li>Team-Zugänge &amp; Rollen ab Business/Enterprise</li>
+          <li>Private Cloud / On-Premise, SLA &amp; persönliche Begleitung (Enterprise)</li>
+        </ul>
+      </div>
+
+      <div class="acc-kg__col acc-kg__col--nein acc-reveal">
+        <h3><span class="acc-kg__ico">–</span> Ehrlich: (noch) nicht</h3>
+        <ul>
+          <li>Bild-, Video- &amp; Sprach-Verarbeitung sind in Vorbereitung (geplant)</li>
+          <li>Kein vollautomatischer Versand ohne Ihre Freigabe – Sie behalten die Kontrolle</li>
+          <li>Kein Ersatz für Rechts-, Steuer- oder medizinische Beratung</li>
+          <li>Dauerhaftes Langzeit-Gedächtnis (RAG/Wissensdatenbank) ist im Ausbau</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="acc-kg__fuss acc-reveal">{{ section.settings.fuss | escape }}</p>
+  </div>
+</section>
+
+<style>
+  .acc-kg__intro { max-width: 700px; margin: var(--sp-3) auto 0; color: var(--acc-text-dim); }
+  .acc-kg__grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4);
+    margin-top: var(--sp-7);
+  }
+  .acc-kg__col {
+    background: var(--acc-panel); border: 1px solid var(--acc-line);
+    border-radius: var(--acc-radius-lg); padding: var(--sp-5);
+    border-top-width: 3px;
+  }
+  .acc-kg__col--ja { border-top-color: #22c55e; }
+  .acc-kg__col--anfrage { border-top-color: var(--acc-amber); }
+  .acc-kg__col--nein { border-top-color: #9aa0aa; }
+  .acc-kg__col h3 { display: flex; align-items: center; gap: 10px; font-size: var(--fs-h4, 1.05rem); }
+  .acc-kg__ico {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 8px; font-weight: 800; font-size: 15px;
+  }
+  .acc-kg__col--ja .acc-kg__ico { background: #22c55e1a; color: #16a34a; }
+  .acc-kg__col--anfrage .acc-kg__ico { background: var(--acc-panel-hi); color: var(--acc-amber); }
+  .acc-kg__col--nein .acc-kg__ico { background: #9aa0aa1a; color: #6b7280; }
+  .acc-kg__col ul { list-style: none; margin: var(--sp-4) 0 0; padding: 0; display: grid; gap: 10px; }
+  .acc-kg__col li {
+    position: relative; padding-left: 18px; font-size: var(--fs-sm); line-height: 1.55;
+    color: var(--acc-text-dim);
+  }
+  .acc-kg__col li::before {
+    content: ""; position: absolute; left: 0; top: 9px;
+    width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .5;
+  }
+  .acc-kg__fuss { margin-top: var(--sp-5); text-align: center; color: var(--acc-text-faint); font-size: var(--fs-sm); }
+  @media (max-width: 860px) { .acc-kg__grid { grid-template-columns: 1fr; } }
+</style>
+
+{% schema %}
+{
+  "name": "Was kann / was nicht",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Micro-Label", "default": "EHRLICH STATT ÜBERTRIEBEN" },
+    { "type": "text", "id": "titel", "label": "Überschrift", "default": "Was Ihr KI-System kann – und was (noch) nicht" },
+    { "type": "textarea", "id": "intro", "label": "Intro", "default": "Wir versprechen nichts, was das System nicht hält. So wissen Sie vor dem Kauf genau, was Sie bekommen." },
+    { "type": "textarea", "id": "fuss", "label": "Fuss-Zeile", "default": "Alles, was heute geht, ist im Vollbetrieb sofort nutzbar. Was in Vorbereitung ist, kommt als Update – ohne Aufpreis für bestehende Abos." }
+  ],
+  "presets": [{ "name": "Was kann / was nicht" }]
+}
+{% endschema %}

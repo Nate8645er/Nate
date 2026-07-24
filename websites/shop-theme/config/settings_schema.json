@@ -1,0 +1,16 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "KI Command Center",
+    "theme_version": "1.0.0",
+    "theme_author": "AI Command Center",
+    "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
+    "theme_support_url": "https://help.shopify.com/manual/online-store/themes"
+  },
+  {
+    "name": "Farben",
+    "settings": [
+      { "type": "color", "id": "accent", "label": "Akzentfarbe", "default": "#ff8c2a" }
+    ]
+  }
+]

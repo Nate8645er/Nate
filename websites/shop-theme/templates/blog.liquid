@@ -1,0 +1,17 @@
+<section class="page-hero"><h1>{{ blog.title }}</h1><p>Ratgeber, Tipps und Hintergründe rund um Ihre KI-Abteilung.</p></section>
+<section class="pdp-more" style="padding-top:20px">
+  <div class="wrap">
+    <div class="grid-prod">
+      {% for a in blog.articles %}
+        <a class="prod" href="{{ a.url }}">
+          {% if a.image %}<img src="{{ a.image | image_url: width: 600 }}" alt="{{ a.title | escape }}">{% else %}<div class="prod-ph"><span class="grad">Ratgeber</span></div>{% endif %}
+          <strong>{{ a.title }}</strong>
+          {% if a.excerpt != blank %}<p class="prod-sub">{{ a.excerpt | strip_html | truncatewords: 20 }}</p>{% else %}<p class="prod-sub">{{ a.content | strip_html | truncatewords: 20 }}</p>{% endif %}
+          <span class="prod-cta btn btn-ghost btn-sm">Lesen →</span>
+        </a>
+      {% else %}
+        <p>Noch keine Beiträge – schauen Sie bald wieder vorbei.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>

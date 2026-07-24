@@ -1,0 +1,15 @@
+# Kein Ballast ins Image — kleiner, schneller, weniger Angriffsfläche.
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+tests/
+deploy/
+docs/
+*.md
+docker-compose*.yml
+Dockerfile
+.dockerignore
+requirements-dev.txt

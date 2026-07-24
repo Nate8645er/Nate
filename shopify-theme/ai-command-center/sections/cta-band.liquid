@@ -1,0 +1,40 @@
+{%- comment -%}
+  CTA-Band: grosses Abschlussband mit animiertem Glow.
+{%- endcomment -%}
+<section class="acc-section acc-ctaband">
+  <div class="acc-wrap">
+    <div class="acc-panel acc-corner acc-ctaband__panel acc-reveal">
+      <span class="acc-c1" aria-hidden="true"></span>
+      <span class="acc-c2" aria-hidden="true"></span>
+      <div class="acc-ctaband__glow" aria-hidden="true"></div>
+      <p class="acc-micro">{{ section.settings.eyebrow | escape }}</p>
+      <h2>{{ section.settings.heading | escape }}</h2>
+      <p>{{ section.settings.text | escape }}</p>
+      <div class="acc-hero__cta">
+        {%- if section.settings.cta_label != blank -%}
+          <a class="acc-btn acc-btn--lg" href="{{ section.settings.cta_link | default: routes.all_products_collection_url }}">{{ section.settings.cta_label | escape }}</a>
+        {%- endif -%}
+        {%- if section.settings.cta2_label != blank -%}
+          <a class="acc-btn acc-btn--ghost acc-btn--lg" href="{{ section.settings.cta2_link | default: '/pages/kontakt' }}">{{ section.settings.cta2_label | escape }}</a>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "CTA-Band",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Micro-Label", "default": "// BEREIT ZUM START" },
+    { "type": "text", "id": "heading", "label": "Überschrift", "default": "Übernehmen Sie das Kommando" },
+    { "type": "text", "id": "text", "label": "Text", "default": "Starten Sie heute mit Ihrer eigenen KI-Abteilung. Monatlich kündbar, in Minuten eingerichtet." },
+    { "type": "text", "id": "cta_label", "label": "CTA Text", "default": "Jetzt Abo wählen" },
+    { "type": "url", "id": "cta_link", "label": "CTA Link" },
+    { "type": "text", "id": "cta2_label", "label": "Sekundärer CTA Text", "default": "Fragen? Kontakt" },
+    { "type": "url", "id": "cta2_link", "label": "Sekundärer CTA Link" }
+  ],
+  "presets": [{ "name": "CTA-Band" }]
+}
+{% endschema %}
