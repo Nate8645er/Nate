@@ -1,10 +1,19 @@
 name: platform-backend release
 
-# Baut das gehaertete Image und pusht es bei einem Tag `pb-v*` nach GHCR.
-# Additiv; laeuft nur auf Tags, beruehrt die bestehende CI nicht.
+# Baut das gehaertete Image und pusht es nach GHCR. Zwei Ausloeser:
+#  - Tag `pb-v*`  (z. B. pb-v0.1.0) -> Version = Tag.
+#  - manuell (workflow_dispatch) mit Eingabe `version` -> ohne Tag ausloesbar,
+#    falls die Umgebung keine Tag-Pushes erlaubt (ein Klick im Actions-Tab).
+# Additiv; beruehrt die bestehende CI nicht.
 on:
   push:
     tags: ["pb-v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Image-Version (ohne fuehrendes v), z. B. 0.1.0"
+        required: true
+        default: "0.1.0"
 
 permissions:
   contents: read
@@ -29,6 +38,7 @@ jobs:
           images: ghcr.io/${{ github.repository_owner }}/platform-backend
           tags: |
             type=match,pattern=pb-v(.*),group=1
+            type=raw,value=${{ github.event.inputs.version }},enable=${{ github.event_name == 'workflow_dispatch' }}
             type=sha,format=long
       - name: Build & Push (per Digest gepinnt)
         uses: docker/build-push-action@v6
