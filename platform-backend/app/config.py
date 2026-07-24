@@ -73,6 +73,15 @@ class Settings:
             "local_llm", _clean(e.get("LOCAL_LLM_URL")),
             secrets=(),  # keyOptional (selbst gehostet)
         )
+        # Auth (Keycloak/OIDC, §3). Issuer = Realm-URL; Audience (client_id)
+        # optional, aber in Produktion empfohlen (siehe SECURITY-REVIEW.md).
+        self.keycloak_issuer = _clean(e.get("KEYCLOAK_ISSUER"))
+        self.keycloak_audience = _clean(e.get("KEYCLOAK_AUDIENCE"))
+
+    @property
+    def auth_configured(self) -> bool:
+        """True nur, wenn ein OIDC-Issuer gesetzt ist (honest not-configured)."""
+        return bool(self.keycloak_issuer)
 
     def get(self, key: str) -> str | None:
         return _clean(self._env.get(key))
@@ -86,6 +95,7 @@ class Settings:
             "temporal": self.temporal.configured,
             "minio": self.minio.configured,
             "local_llm": self.local_llm.configured,
+            "auth": self.auth_configured,
         }
 
 

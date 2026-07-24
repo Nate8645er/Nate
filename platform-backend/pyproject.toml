@@ -24,6 +24,9 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 # Tests dürfen kompakt sein (Semikolons, kleine Lambdas, Import nach importorskip).
 "tests/*" = ["E402", "E702", "E731", "B007", "C420", "B011"]
+# FastAPI: `Depends(...)` im Argument-Default ist das idiomatische DI-Muster,
+# kein Bug — B008 ist hier ein bekannter False-Positive.
+"app/api/*" = ["B008"]
 
 [tool.setuptools.packages.find]
 include = ["app*"]

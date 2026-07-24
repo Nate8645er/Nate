@@ -71,3 +71,56 @@ export function primaryDevice(c: ComputeResponse | null): ComputeDevice | null {
   if (!c || c.devices.length === 0) return null;
   return c.devices.find((d) => d.vendor !== "cpu") ?? c.devices[0];
 }
+
+// --------------------------------------------------------------------------- //
+// Modell-Routing (HTTP-API v1) — reine Policy, kein Secret, kein Token nötig.
+// --------------------------------------------------------------------------- //
+export type DataClass = "local_only" | "internal" | "public";
+
+export interface RouteRequest {
+  prompt_tokens_est?: number;
+  data_class?: DataClass;
+  needs?: string[];
+  local_available?: boolean;
+  local_capabilities?: string[];
+  cloud_available?: boolean;
+  local_load_pct?: number;
+}
+
+export interface RouteResponse {
+  placement: "local" | "cloud";
+  reason: string;
+  fallback: "local" | "cloud" | null;
+}
+
+/**
+ * Fragt die Routing-Entscheidung des Backends ab (local ↔ cloud + Begründung).
+ * Gibt `null` zurück, wenn nicht konfiguriert/nicht erreichbar/Timeout — nie werfen.
+ */
+export async function routeModel(
+  body: RouteRequest,
+  opts: { baseUrl?: string | null; timeoutMs?: number; fetchImpl?: typeof fetch } = {},
+): Promise<RouteResponse | null> {
+  const base = opts.baseUrl !== undefined ? opts.baseUrl : backendBaseUrl();
+  if (!base) return null;
+  const f = opts.fetchImpl ?? fetch;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), opts.timeoutMs ?? 1200);
+  try {
+    const res = await f(base + "/api/v1/models/route", {
+      method: "POST",
+      headers: { "content-type": "application/json", accept: "application/json" },
+      body: JSON.stringify(body),
+      signal: ctrl.signal,
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as RouteResponse;
+    if (!data || (data.placement !== "local" && data.placement !== "cloud")) return null;
+    return data;
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}

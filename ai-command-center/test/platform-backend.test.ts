@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { backendBaseUrl, fetchCompute, formatMemoryGb, primaryDevice, type ComputeResponse } from "@/lib/platform-backend";
+import { backendBaseUrl, fetchCompute, formatMemoryGb, primaryDevice, routeModel, type ComputeResponse } from "@/lib/platform-backend";
 
 const SAMPLE: ComputeResponse = {
   gpu_available: false,
@@ -60,6 +60,40 @@ describe("platform-backend Anbindung (ehrlich, additiv)", () => {
     expect(formatMemoryGb(16075)).toBe("15.7 GB");
     expect(formatMemoryGb(0)).toBe("—");
     expect(formatMemoryGb(-1)).toBe("—");
+  });
+
+  it("routeModel: nicht konfiguriert → null (kein Fetch)", async () => {
+    let called = false;
+    const fake = (async () => {
+      called = true;
+      return new Response("{}");
+    }) as unknown as typeof fetch;
+    const res = await routeModel({ data_class: "local_only" }, { baseUrl: null, fetchImpl: fake });
+    expect(res).toBeNull();
+    expect(called).toBe(false);
+  });
+
+  it("routeModel: liefert Entscheidung; POST an /api/v1/models/route", async () => {
+    let seenUrl = "";
+    let seenMethod = "";
+    const fake = (async (url: string, init: RequestInit) => {
+      seenUrl = url;
+      seenMethod = init.method ?? "";
+      return new Response(JSON.stringify({ placement: "local", reason: "local_only", fallback: null }), { status: 200 });
+    }) as unknown as typeof fetch;
+    const res = await routeModel({ data_class: "local_only" }, { baseUrl: "http://x:8000", fetchImpl: fake });
+    expect(res?.placement).toBe("local");
+    expect(seenUrl).toBe("http://x:8000/api/v1/models/route");
+    expect(seenMethod).toBe("POST");
+  });
+
+  it("routeModel: HTTP-Fehler/Netzwerkfehler → null", async () => {
+    const err = (async () => {
+      throw new Error("ECONNREFUSED");
+    }) as unknown as typeof fetch;
+    expect(await routeModel({}, { baseUrl: "http://x:8000", fetchImpl: err })).toBeNull();
+    const bad = (async () => new Response("x", { status: 500 })) as unknown as typeof fetch;
+    expect(await routeModel({}, { baseUrl: "http://x:8000", fetchImpl: bad })).toBeNull();
   });
 
   it("primaryDevice: bevorzugt GPU, sonst CPU, null-sicher", () => {

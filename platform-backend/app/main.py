@@ -14,6 +14,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Response
 
 from . import __version__
+from .api.v1 import router as api_v1_router
 from .compute.hal import sample_device_metrics
 from .compute.metrics import render_metrics
 from .config import get_settings
@@ -43,6 +44,9 @@ _KNOWN_PATHS = frozenset(
     {"/health", "/health/compute", "/health/live", "/health/ready", "/metrics", "/"}
 )
 app.middleware("http")(make_metrics_middleware(_http_metrics, known_paths=_KNOWN_PATHS))
+
+# HTTP-API v1 (Cutover-Fundament) — additiv zu den Health-/Metrics-Endpunkten.
+app.include_router(api_v1_router)
 
 
 @app.get("/health")
