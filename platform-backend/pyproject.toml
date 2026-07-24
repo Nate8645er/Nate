@@ -1,0 +1,6 @@
+[tool.pytest.ini_options]
+# platform-backend/ auf den Importpfad legen, damit `import app...` in den
+# Tests funktioniert — unabhaengig davon, ob mit `pytest` oder
+# `python -m pytest` gestartet wird.
+pythonpath = ["."]
+testpaths = ["tests"]
