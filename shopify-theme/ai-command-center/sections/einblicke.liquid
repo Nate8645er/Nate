@@ -1,0 +1,154 @@
+{% comment %}
+  Produkt-Einblicke: drei Bild/Text-Reihen, die das System seriös und
+  genau erklären. Die "Bilder" sind gezeichnete Produkt-Ansichten
+  (reines HTML/CSS im Markenstil) – laden sofort, ohne externe Dateien,
+  und zeigen ehrlich die echten Bereiche der Plattform.
+{% endcomment %}
+
+<section class="acc-section acc-einblicke">
+  <div class="acc-wrap">
+    <div class="acc-shead acc-reveal">
+      <span class="acc-micro">{{ section.settings.label }}</span>
+      <h2>{{ section.settings.titel }}</h2>
+    </div>
+
+    {% for block in section.blocks %}
+      <div class="acc-einblick acc-reveal {% cycle 'gerade', 'ungerade' %}" {{ block.shopify_attributes }}>
+        <div class="acc-einblick__bild">
+          {% case block.settings.motiv %}
+            {% when 'kommando' %}
+              <div class="acc-mock">
+                <div class="acc-mock__bar"><span class="acc-mock__dot"></span>Kommandozentrale</div>
+                <div class="acc-mock__bubble">Erstelle eine Landingpage für unser Frühlingsangebot</div>
+                <div class="acc-mock__card">
+                  <div class="acc-mock__label">● Ihre Belegschaft arbeitet</div>
+                  <div class="acc-mock__zeile">Commander plant die Mission …</div>
+                  <div class="acc-mock__zeile">Builder baut die Seite …</div>
+                  <div class="acc-mock__zeile">Quality prüft das Ergebnis …</div>
+                </div>
+                <div class="acc-mock__datei">📄 landingpage.html <b>Download</b></div>
+              </div>
+            {% when 'email' %}
+              <div class="acc-mock">
+                <div class="acc-mock__bar"><span class="acc-mock__dot"></span>E-Mail-Zentrale</div>
+                <div class="acc-mock__card">
+                  <div class="acc-mock__label">Eingehende Kundenmail</div>
+                  <div class="acc-mock__zeile">«4'500 CHF ist uns zu teuer …»</div>
+                </div>
+                <div class="acc-mock__card acc-mock__card--hell">
+                  <div class="acc-mock__label">Versandfertige Antwort</div>
+                  <div class="acc-mock__zeile">Freundlich abgelehnt, Ratenzahlung angeboten.</div>
+                </div>
+                <div class="acc-mock__datei">✉ In Gmail öffnen – <b>nur noch senden</b></div>
+              </div>
+            {% else %}
+              <div class="acc-mock">
+                <div class="acc-mock__bar"><span class="acc-mock__dot"></span>Autopilot &amp; Berichte</div>
+                <div class="acc-mock__card">
+                  <div class="acc-mock__zeile">🔁 Social-Media-Woche <i>Wöchentlich</i></div>
+                  <div class="acc-mock__zeile">🔁 Wochenbericht Geschäftsleitung <i>Fällig</i></div>
+                </div>
+                <div class="acc-mock__card acc-mock__card--hell">
+                  <div class="acc-mock__label">Ergebnis-Archiv</div>
+                  <div class="acc-mock__zeile">Alle Dateien &amp; Berichte, durchsuchbar, mit Quality-Score.</div>
+                </div>
+              </div>
+          {% endcase %}
+        </div>
+        <div class="acc-einblick__text">
+          <h3>{{ block.settings.titel }}</h3>
+          <p>{{ block.settings.text }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<style>
+  .acc-einblick {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-7);
+    align-items: center;
+    margin-top: var(--sp-8);
+  }
+  .acc-einblick.ungerade .acc-einblick__bild { order: 2; }
+  .acc-einblick__text h3 { font-size: var(--fs-h3); }
+  .acc-einblick__text p { margin: var(--sp-3) 0 0; color: var(--acc-text-dim); line-height: 1.75; }
+  .acc-mock {
+    background: var(--acc-panel);
+    border: 1px solid var(--acc-line);
+    border-radius: var(--acc-radius-lg);
+    box-shadow: var(--acc-glow);
+    padding: var(--sp-4);
+    display: grid;
+    gap: var(--sp-3);
+  }
+  .acc-mock__bar {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--acc-mono); font-size: 12px; letter-spacing: .08em;
+    color: var(--acc-text-dim);
+    border-bottom: 1px solid var(--acc-line-faint);
+    padding-bottom: var(--sp-3);
+  }
+  .acc-mock__dot { width: 9px; height: 9px; border-radius: 50%; background: var(--acc-grad); }
+  .acc-mock__bubble {
+    justify-self: end;
+    background: var(--acc-panel-hi);
+    border: 1px solid var(--acc-line);
+    border-radius: 14px 14px 4px 14px;
+    padding: 10px 14px;
+    font-size: var(--fs-sm);
+    max-width: 85%;
+  }
+  .acc-mock__card {
+    border: 1px solid var(--acc-line);
+    border-radius: 10px;
+    padding: var(--sp-3) var(--sp-4);
+    display: grid; gap: 6px;
+  }
+  .acc-mock__card--hell { background: var(--acc-panel-hi); }
+  .acc-mock__label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--acc-amber); }
+  .acc-mock__zeile { font-size: var(--fs-sm); color: var(--acc-text-dim); display: flex; justify-content: space-between; gap: 10px; }
+  .acc-mock__zeile i { font-style: normal; color: var(--acc-amber); font-size: 12px; }
+  .acc-mock__datei {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    background: var(--acc-panel-hi);
+    border: 1px solid var(--acc-line);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-family: var(--acc-mono); font-size: 13px;
+  }
+  .acc-mock__datei b { color: #fff; background: var(--acc-grad); border-radius: 8px; padding: 5px 12px; font-size: 12px; }
+  @media (max-width: 860px) {
+    .acc-einblick { grid-template-columns: 1fr; gap: var(--sp-5); }
+    .acc-einblick.ungerade .acc-einblick__bild { order: 0; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Produkt-Einblicke",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Micro-Label", "default": "So arbeitet Ihre KI-Abteilung" },
+    { "type": "text", "id": "titel", "label": "Überschrift", "default": "Genau erklärt – Schritt für Schritt" }
+  ],
+  "blocks": [
+    {
+      "type": "einblick",
+      "name": "Einblick",
+      "settings": [
+        { "type": "select", "id": "motiv", "label": "Bild-Motiv", "options": [
+          { "value": "kommando", "label": "Kommandozentrale" },
+          { "value": "email", "label": "E-Mail-Zentrale" },
+          { "value": "autopilot", "label": "Autopilot & Berichte" }
+        ], "default": "kommando" },
+        { "type": "text", "id": "titel", "label": "Titel", "default": "Die Kommandozentrale" },
+        { "type": "textarea", "id": "text", "label": "Beschreibung" }
+      ]
+    }
+  ],
+  "max_blocks": 3,
+  "presets": [{ "name": "Produkt-Einblicke" }]
+}
+{% endschema %}

@@ -49,17 +49,66 @@ dunkel/braun. Merkmale:
 Aktuell sind die ~14 echten Seiten noch im ALTEN dunklen HUD-Look
 (globals.css `--hud-*`/`.hud-*` + inline bg-[#0b0a08]).
 
-## Offene Aufgaben (Reihenfolge)
-1. **Neues Design REAL ausrollen** über alle ~14 Seiten (dashboard, assistent,
-   studio, team, faehigkeiten, agenten, email, kunden, workflows, berichte,
-   analysen, benutzer, einstellungen, integrationen, status, sicherheit) +
-   größere Belegschaft im echten Roster (lib/agents/roster.ts). Schritt für
-   Schritt, jede Seite getestet, kleine grüne Commits.
-2. **DANACH** pro Abo EIN langes, detailliertes Tutorial-Video vom FERTIGEN
-   System (mit Higgsfield): jede Seite geöffnet & erklärt, KI-Stimme drüber,
-   inkl. „so verbindet man seine Firma/E-Mail/Shop/Systeme". Jedes Video ans
-   passende Shopify-Produkt hängen (Kunde bekommt es beim Kauf) und dem Kunden
-   einzeln schicken. KEINE Videos vorher – erst wenn das System fertig ist.
+## ERLEDIGT (Branch claude/ki-system-redesign-rollout-5nhzzg, PR #41)
+- **Design-Rollout KOMPLETT:** alle ~14 Seiten + Startseite + Dashboard auf
+  hellen acc-Look (Build grün, je Seite per Screenshot verifiziert). Fähigkeiten
+  beschrieben statt gezählt. Dashboard: KI-Büro-Animation als helles
+  „Live-Büro"-Panel eingebettet (AgentWorld/.aw-* dunkel belassen = Live-Monitor).
+- **Belegschaft ausgebaut:** lib/agents/roster.ts 37 → 55 benannte Spezialisten.
+- **Phase 0 Bestandsaufnahme:** ai-command-center/BESTANDSAUFNAHME.md (Ist-Zustand,
+  Schwachstellen kritisch/hoch/mittel, Phasenplan).
+- **Video-Onboarding-System:** app/onboarding (pro-Abo Tutorial + Übersichtsvideo
+  + interaktive Checkliste mit localStorage-Fortschritt + Tooltips). Inhalte
+  zentral/versioniert in lib/onboarding.ts (Tarif-Videos leicht einhängbar).
+- **Absichern (Phase 4 Anfang):** Vitest + 14 Unit-Tests (lib/license.ts),
+  GitHub-CI (.github/workflows/ci.yml: install+typecheck+test+build; Lint
+  nicht-blockierend), Security-Fix (vorname in Webhook-Mail escaped).
+
+## ERLEDIGT 2026-07 (Shop + Verkauf/Login-Fundament)
+- **Shopify-Theme** `websites/shop-theme/` (echtes, hochladbares Theme, ~7.7 MB
+  Zip via zipfile, `layout/theme.liquid` im Root): Video-Hero, Werbespot-Sektion,
+  6 Funktionen, Wieso/Weshalb, 3 Schritte, 12 Branchen, Agentur-Vergleich, Zahlen,
+  6-Stufen-Preise inkl. Gratis, helle Büro-Animation (snippets/ki-buero.liquid),
+  „keine Fake-Bewertungen"-Transparenzseite, FAQ, CTA. Seiten-Templates:
+  branchen/vergleich/integrationen/warum/sicherheit/ueber-uns/keine-bewertungen/
+  contact/faq. Premium PDP (product.liquid: Sticky-Kaufbox, Cross-Sell) +
+  reichere collection.liquid. Zip ist Build-Artefakt (websites/.gitignore *.zip).
+- **Zahlung/Login startklar (ehrlich „nicht-konfiguriert" ohne Keys):**
+  - `lib/stripe.ts`: + `billingPortalSessionErstellen`, + `stripeWebhookVerifizieren`
+    (HMAC-SHA256, konstante Zeit, 5-Min-Replay-Schutz).
+  - Routen: `app/api/portal`, `app/api/stripe/webhook`, `app/api/auth/login`,
+    `app/api/auth/register`.
+  - `lib/supabase.ts`: GoTrue-REST Login/Registrierung, dependency-frei.
+  - `app/konto/KontoClient.tsx`: echtes Login-/Registrierungsformular (nur wenn
+    NEXT_PUBLIC_SUPABASE_* gesetzt), Refresh-Token als HttpOnly/Secure-Cookie.
+  - `.env.example` erweitert; Anleitung `docs/ZAHLUNG-UND-LOGIN.md`.
+  - Tests: `test/zahlung-login.test.ts` (14) grün; Suite 77 grün; tsc + build ok.
+  - Offener Anschlusspunkt: Plan-Freischaltung aus verifiziertem Webhook braucht
+    Kundendatenbank (Punkt 1 unten) — in webhook/route.ts klar markiert.
+- **Kundendatenbank + Plan-Freischaltung (2026-07):**
+  - `lib/kunden.ts`: Supabase-PostgREST-Store (Service-Role), `aboFreischalten`
+    (idempotenter Upsert), `aboLesen`, `customerIdFuerEmail`. Ehrlich
+    „nicht-konfiguriert" ohne SUPABASE_SERVICE_ROLE_KEY.
+  - `lib/stripe.ts`: + `webhookEreignisDeuten` (reine Funktion, Event → Abo).
+  - `lib/supabase.ts`: + `sitzungBenutzer` (Refresh-Token → verifizierter User).
+  - Webhook schaltet verifizierte Käufe automatisch frei; Portal leitet
+    customerId sicher aus der Sitzung ab (kein IDOR), Return-URL aus APP_URL.
+  - `supabase/schema.sql` (Tabelle `abos`, RLS an, nur Service-Role-Zugriff).
+  - `.env.example` + `docs/ZAHLUNG-UND-LOGIN.md` erweitert.
+  - Tests: `test/kunden.test.ts` (15) grün; Suite 92 grün; tsc + build ok.
+  - Rest-Härtung offen: Rate-Limit auf /api/auth/* (braucht Redis/Upstash).
+
+## NÄCHSTE OFFENE AUFGABEN (Reihenfolge)
+1. **Fundament (Enterprise-Blocker, braucht Provider-Entscheidung + Zustimmung
+   für externen Dienst):** Postgres + echte Anmeldung + Mandantentrennung/RBAC,
+   serverseitige Datenhaltung + Quota-Enforcement. Siehe BESTANDSAUFNAHME.md.
+2. **Integrations-Hub real:** OAuth2-Route + verschlüsselter Token-Store +
+   Adapter (erst 1–2 echte Connectors) + Human-in-the-Loop + Audit-Log.
+3. **Lint-Bereinigung:** 29 vorbestehende Next-16-Befunde, dann CI-Lint blockierend.
+4. **Higgsfield (autorisiert):** Büroszene/Shop-Visuals + pro-Abo Tutorial-Videos
+   (eine KI-Stimme). Videos an passendes Shopify-Produkt hängen. Erst wenn System
+   fertig; Videos dann in lib/onboarding.ts pro Tarif einhängen.
+5. **Shop-Theme** an den hellen Look angleichen.
 
 ## Regeln
 - Ehrlich: nur behaupten, was real läuft & geprüft ist (echtes Ausführen,
@@ -68,3 +117,18 @@ Aktuell sind die ~14 echten Seiten noch im ALTEN dunklen HUD-Look
 - Kleine grüne Schritte auf den Feature-Branch committen. Auf Deutsch antworten.
 - Stille Wartung (ACC-Wache): keine Shopify-Produkte/Preise/Beschreibungen
   ändern, nichts löschen, keine E-Mails senden (nur Entwürfe), keine Secrets.
+
+## Plattform-Ausbau (platform-backend) — Stand
+Phasen 0–7 fertig & grün. Phase 8 (Hardening) offen. Details:
+`docs/plattform-ausbau/`.
+- **Live-Dienste jetzt real bewiesen** (nicht mehr nur Attrappen):
+  `docs/plattform-ausbau/VERIFIKATION-LIVE-DIENSTE.md` — Postgres-RLS (Cross-
+  Tenant auf DB-Ebene geblockt, App-Rolle muss `NOBYPASSRLS` sein), Qdrant-
+  Mandantentrennung, Redis-Zähler, **echte lokale Inferenz** über ModelRouter→
+  LiteLLM→Ollama (`qwen2.5:0.5b`, CPU). Tests: `platform-backend/tests/
+  test_live_services.py` (opt-in, skippt ohne Dienst → CI bleibt offline-grün).
+- **v2-Dashboard liest echte Compute-Daten** vom Backend, wenn
+  `PLATFORM_BACKEND_URL` gesetzt ist; sonst ehrlich „—". Helfer:
+  `ai-command-center/lib/platform-backend.ts`.
+- Teststand: backend 84 grün (80 offline + 4 live), ruff sauber; App 210 grün,
+  tsc/Build grün.

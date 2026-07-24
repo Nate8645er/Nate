@@ -1,0 +1,2 @@
+<div class="page"><h1>Adressen</h1><a href="{{ routes.account_url }}">← Konto</a>
+{% for address in customer.addresses %}<p>{{ address | format_address }}</p>{% endfor %}</div>

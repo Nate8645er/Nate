@@ -1,0 +1,51 @@
+name: platform-backend release
+
+# Baut das gehaertete Image und pusht es nach GHCR. Zwei Ausloeser:
+#  - Tag `pb-v*`  (z. B. pb-v0.1.0) -> Version = Tag.
+#  - manuell (workflow_dispatch) mit Eingabe `version` -> ohne Tag ausloesbar,
+#    falls die Umgebung keine Tag-Pushes erlaubt (ein Klick im Actions-Tab).
+# Additiv; beruehrt die bestehende CI nicht.
+on:
+  push:
+    tags: ["pb-v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Image-Version (ohne fuehrendes v), z. B. 0.1.0"
+        required: true
+        default: "0.1.0"
+
+permissions:
+  contents: read
+  packages: write   # noetig fuer GHCR-Push (GITHUB_TOKEN)
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Login GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Metadaten (Tags/Labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/platform-backend
+          tags: |
+            type=match,pattern=pb-v(.*),group=1
+            type=raw,value=${{ github.event.inputs.version }},enable=${{ github.event_name == 'workflow_dispatch' }}
+            type=sha,format=long
+      - name: Build & Push (per Digest gepinnt)
+        uses: docker/build-push-action@v6
+        with:
+          context: platform-backend
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          provenance: true
+          sbom: true

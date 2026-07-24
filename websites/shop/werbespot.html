@@ -1,0 +1,73 @@
+<!--
+  WERBESPOT – cinematischer Video-Abschnitt für den Shopify-Shop.
+
+  Eigenständig: HTML + CSS, minimales JavaScript nur für Autoplay-Fallback.
+  Alle Klassen sind mit "wsp" geprefixt, damit nichts mit dem Theme kollidiert.
+  Respektiert "prefers-reduced-motion" (dann kein Autoplay).
+
+  ── EINBAU IN SHOPIFY ──────────────────────────────────────────────────────
+  1. VIDEO HOCHLADEN: Shopify-Admin > Inhalte > Dateien > die Datei
+     "werbespot-team.mp4" hochladen. Danach Rechtsklick > "URL kopieren".
+  2. Unten bei <source src="…"> die kopierte URL einsetzen (ersetzt den
+     Platzhalter DEINE-WERBESPOT-URL).
+  3. Theme > Anpassen > Abschnitt hinzufügen > "Custom Liquid" (oder Custom
+     HTML). Den gesamten Inhalt ab <div class="wsp-embed"> bis zum Ende
+     einfügen und speichern. Alternativ als Snippet "snippets/werbespot.liquid"
+     anlegen und mit {% render 'werbespot' %} einbinden.
+
+  Tipp: In Liquid kann die URL auch direkt gesetzt werden, z. B.
+  <source src="{{ 'werbespot-team.mp4' | file_url }}" type="video/mp4">
+-->
+<div class="wsp-embed">
+  <div class="wsp-head">
+    <span class="wsp-dot"></span>
+    <span class="wsp-label">Werbespot · Ihre KI-Abteilung in Bewegung</span>
+  </div>
+
+  <div class="wsp-stage">
+    <video
+      class="wsp-video"
+      playsinline
+      muted
+      loop
+      autoplay
+      controls
+      preload="metadata"
+      aria-label="Werbespot des AI Command Center"
+    >
+      <source src="DEINE-WERBESPOT-URL" type="video/mp4" />
+      Ihr Browser kann dieses Video nicht abspielen.
+    </video>
+  </div>
+
+  <p class="wsp-note">
+    Ihr Team ab Tag 1 · Ihre Firma verbunden · echte Ergebnisse statt Chatbot.
+  </p>
+
+  <style>
+    .wsp-embed{--wsp-a:#ff8c2a;--wsp-b:#ff5f1f;max-width:960px;margin:0 auto;padding:8px;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#1c1917}
+    .wsp-head{display:flex;align-items:center;gap:8px;margin:0 0 12px 2px}
+    .wsp-dot{width:9px;height:9px;border-radius:50%;background:var(--wsp-a);
+      box-shadow:0 0 0 4px rgba(255,140,42,.18);animation:wsp-pulse 2s ease-in-out infinite}
+    .wsp-label{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#c25e0e}
+    .wsp-stage{overflow:hidden;border-radius:18px;background:#07070d;
+      border:1px solid rgba(28,25,23,.1);box-shadow:0 30px 90px -30px rgba(28,25,23,.6)}
+    .wsp-video{display:block;width:100%;height:auto;background:#07070d}
+    .wsp-note{margin:12px 0 0;text-align:center;font-size:13px;color:#7c7161}
+    @keyframes wsp-pulse{0%,100%{opacity:1}50%{opacity:.45}}
+    @media (prefers-reduced-motion:reduce){.wsp-dot{animation:none}}
+  </style>
+
+  <script>
+    (function () {
+      var root = document.currentScript.closest(".wsp-embed");
+      if (!root) return;
+      var v = root.querySelector(".wsp-video");
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        v.removeAttribute("autoplay");
+        v.pause && v.pause();
+      }
+    })();
+  </script>
+</div>

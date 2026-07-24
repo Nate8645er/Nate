@@ -1,0 +1,5 @@
+<div class="page">
+  <h1>Suche</h1>
+  {% form 'search' %}<input type="search" name="q" value="{{ search.terms | escape }}" placeholder="Suchen…"><button class="btn" type="submit">Suchen</button>{% endform %}
+  {% if search.performed %}<div class="grid-prod">{% for item in search.results %}<a class="prod" href="{{ item.url }}"><strong>{{ item.title }}</strong></a>{% else %}<p>Keine Treffer.</p>{% endfor %}</div>{% endif %}
+</div>

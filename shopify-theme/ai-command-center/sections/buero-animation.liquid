@@ -1,0 +1,278 @@
+{% comment %}
+  KI-Büro v3: ein seriöses, modernes Büro aus der Vogelperspektive.
+  Mitarbeiter sitzen an Arbeitsplätzen und tippen, einige laufen durch
+  den Gang, ein Drucker druckt laufend Seiten aus und stapelt sie.
+  Ruhige, professionelle Motion – reines CSS (transform/opacity).
+{% endcomment %}
+
+<section class="acc-section acc-office-sec">
+  <div class="acc-wrap">
+    <div class="acc-shead acc-reveal">
+      <span class="acc-micro">{{ section.settings.label }}</span>
+      <h2>{{ section.settings.titel }}</h2>
+      <p class="office__intro">{{ section.settings.intro }}</p>
+    </div>
+
+    <div class="office acc-reveal" role="img" aria-label="Animiertes KI-Büro: Mitarbeiter arbeiten an Computern, ein Drucker druckt Seiten aus.">
+      <div class="office__floor">
+
+        {% comment %} ---- Arbeitsplätze: 4 oben, 2 unten zentriert ---- {% endcomment %}
+        {% assign tags = "CODING,MARKETING,ANALYSE,RESEARCH,FINANZEN,KOMMANDO" | split: "," %}
+        {% assign cols = "#0e9488,#e0447c,#3b82f6,#7c5cd6,#0d9488,#2563eb" | split: "," %}
+        {% assign mkind = "code,mail,code,doc,code,mail" | split: "," %}
+        {% for t in tags %}
+          {% assign i = forloop.index0 %}
+          {% if i < 4 %}
+            {% assign col = i | times: 23 | plus: 5 %}
+            {% assign row = 9 %}
+          {% else %}
+            {% assign col = i | minus: 4 | times: 24 | plus: 29 %}
+            {% assign row = 49 %}
+          {% endif %}
+          {% assign bob = i | modulo: 4 | times: 1 | plus: 3 %}
+          <div class="ws" style="left:{{ col }}%; top:{{ row }}%; --c:{{ cols[i] }};">
+            <span class="ws__tag">{{ t }}</span>
+            <div class="ws__desk">
+              <div class="ws__mon ws__mon--{{ mkind[i] }}">
+                <div class="ws__scroll">
+                  <span></span><span></span><span></span><span></span><span></span><span></span>
+                  <span></span><span></span><span></span><span></span><span></span><span></span>
+                </div>
+              </div>
+              <div class="ws__kbd"></div>
+            </div>
+            <div class="ws__worker" style="animation-duration:{{ bob }}00ms;">
+              <span class="ws__arm ws__arm--l"></span>
+              <span class="ws__arm ws__arm--r"></span>
+              <span class="ws__head"></span>
+            </div>
+          </div>
+        {% endfor %}
+
+        {% comment %} ---- Laufende Mitarbeiter im Gang ---- {% endcomment %}
+        <div class="walker g1" style="--c:#334155;"><span class="wk__head"></span><span class="wk__body"></span></div>
+        <div class="walker g2" style="--c:#0e9488;"><span class="wk__head"></span><span class="wk__body"></span></div>
+        <div class="walker g3" style="--c:#ee7712;"><span class="wk__head"></span><span class="wk__body"></span></div>
+        <div class="walker g4" style="--c:#7c5cd6;"><span class="wk__head"></span><span class="wk__body"></span></div>
+
+        {% comment %} ---- Drucker-Station: druckt laufend Seiten ---- {% endcomment %}
+        <div class="printer">
+          <span class="printer__label">DRUCKER</span>
+          <div class="printer__body">
+            <span class="printer__led"></span>
+            <div class="printer__slot"></div>
+            <div class="printer__sheet"><i></i><i></i><i></i></div>
+          </div>
+          <div class="printer__tray">
+            <span class="printer__stack s1"></span>
+            <span class="printer__stack s2"></span>
+            <span class="printer__stack s3"></span>
+          </div>
+        </div>
+
+        {% comment %} ---- Besprechungsecke ---- {% endcomment %}
+        <div class="meet">
+          <span class="meet__label">MEETING</span>
+          <div class="meet__table"></div>
+          <div class="meet__fig" style="--c:#2563eb; left:50%; top:-4px;"></div>
+          <div class="meet__fig" style="--c:#e0447c; left:-4px; top:50%;"></div>
+          <div class="meet__fig" style="--c:#0e9488; right:-4px; top:50%;"></div>
+        </div>
+
+        {% comment %} ---- Pflanzen fürs Büro-Gefühl ---- {% endcomment %}
+        <div class="plant" style="left:1.5%; top:2%;"></div>
+        <div class="plant" style="right:1.5%; bottom:3%;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .office__intro { max-width: 660px; margin: var(--sp-3) auto 0; color: var(--acc-text-dim); }
+
+  /* ---- Büro-Boden (Draufsicht) ---- */
+  .office {
+    position: relative;
+    height: 490px;
+    border-radius: 22px;
+    overflow: hidden;
+    border: 1px solid var(--acc-line);
+    background:
+      radial-gradient(60rem 30rem at 50% -20%, rgba(238,119,18,.06), transparent 60%),
+      linear-gradient(180deg, #f6f0e5 0%, #efe7d8 100%);
+    box-shadow: var(--acc-glow);
+  }
+  .office__floor {
+    position: absolute; inset: 14px; border-radius: 16px; overflow: hidden;
+    background: #efe8db;
+    box-shadow: inset 0 0 40px rgba(120,95,55,.14);
+  }
+  /* dezente Bodenfliesen */
+  .office__floor::before {
+    content: ""; position: absolute; inset: 0; opacity: .55;
+    background-image:
+      linear-gradient(rgba(120,95,55,.10) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(120,95,55,.10) 1px, transparent 1px);
+    background-size: 46px 46px;
+  }
+
+  /* ---- Arbeitsplatz ---- */
+  .ws { position: absolute; width: 18%; height: 27%; }
+  .ws__tag {
+    position: absolute; top: -2px; left: 50%; transform: translateX(-50%);
+    padding: 2px 8px; border-radius: 999px; white-space: nowrap; z-index: 3;
+    font-family: var(--acc-mono); font-size: 8px; font-weight: 700; letter-spacing: .1em;
+    color: #fff; background: color-mix(in srgb, var(--c) 88%, #000);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--c) 45%, transparent);
+  }
+  /* Schreibtisch */
+  .ws__desk {
+    position: absolute; left: 8%; right: 8%; top: 22%; height: 46%;
+    border-radius: 8px;
+    background: linear-gradient(180deg, #d8c7a8, #c9b591);
+    box-shadow: 0 8px 16px -8px rgba(80,60,30,.5), inset 0 1px 0 rgba(255,255,255,.5);
+    border: 1px solid rgba(120,95,55,.35);
+  }
+  /* Monitor (Draufsicht: schmale leuchtende Kante) */
+  .ws__mon {
+    position: absolute; left: 14%; right: 14%; top: 10%; height: 34%;
+    border-radius: 4px; overflow: hidden;
+    background: #171c2b; border: 1px solid #0c1020;
+    box-shadow: 0 0 14px -3px color-mix(in srgb, var(--c) 55%, transparent), inset 0 1px 0 rgba(255,255,255,.12);
+  }
+  .ws__scroll {
+    position: absolute; left: 4px; right: 4px; top: 4px; display: grid; gap: 3px;
+    animation: ws-scroll 3.4s linear infinite;
+  }
+  @keyframes ws-scroll { from { transform: translateY(6px); } to { transform: translateY(-50%); } }
+  .ws__scroll span { height: 3px; border-radius: 1.5px; background: color-mix(in srgb, var(--c) 60%, #64748b); opacity:.85; }
+  .ws__mon--code .ws__scroll span:nth-child(3n+1) { background: #22c55e; width: 60%; }
+  .ws__mon--code .ws__scroll span:nth-child(3n+2) { background: #eab308; width: 80%; margin-left: 8px; }
+  .ws__mon--code .ws__scroll span:nth-child(3n)   { background: #38bdf8; width: 45%; }
+  .ws__mon--mail .ws__scroll span { background: #a78bfa; width: 92%; }
+  .ws__mon--doc  .ws__scroll span:nth-child(2n) { width: 70%; }
+  /* Tastatur */
+  .ws__kbd {
+    position: absolute; left: 26%; right: 26%; bottom: 12%; height: 12%;
+    border-radius: 3px; background: #b9a480;
+    box-shadow: inset 0 0 0 1px rgba(120,95,55,.4), inset 0 -2px 0 rgba(120,95,55,.25);
+  }
+  /* Mitarbeiter (Kopf + Schultern von oben) tippt */
+  .ws__worker {
+    position: absolute; left: 50%; bottom: 4%; width: 30%; height: 26%;
+    transform: translateX(-50%);
+    animation: ws-type 3s ease-in-out infinite;
+  }
+  @keyframes ws-type { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(1.5px); } }
+  .ws__head {
+    position: absolute; left: 50%; top: 30%; width: 46%; padding-bottom: 46%;
+    transform: translateX(-50%); border-radius: 50%;
+    background: radial-gradient(circle at 50% 35%, #f0d3b4, #d9b48c);
+    box-shadow: 0 2px 5px rgba(0,0,0,.25);
+  }
+  .ws__worker::before {
+    content: ""; position: absolute; left: 50%; top: 46%; width: 100%; height: 60%;
+    transform: translateX(-50%); border-radius: 40% 40% 30% 30%;
+    background: linear-gradient(180deg, var(--c), color-mix(in srgb, var(--c) 70%, #000));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.25);
+  }
+  .ws__arm { position: absolute; top: 52%; width: 26%; height: 30%; border-radius: 6px; background: color-mix(in srgb, var(--c) 82%, #000); z-index: 2; }
+  .ws__arm--l { left: 10%; transform-origin: top center; animation: ws-tap .28s ease-in-out infinite; }
+  .ws__arm--r { right: 10%; transform-origin: top center; animation: ws-tap .28s ease-in-out infinite .14s; }
+  @keyframes ws-tap { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+
+  /* ---- Laufende Mitarbeiter ---- */
+  .walker { position: absolute; width: 16px; height: 22px; z-index: 5; }
+  .walker .wk__head { position: absolute; top: 0; left: 50%; width: 10px; height: 10px; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(circle at 50% 35%, #f0d3b4, #d9b48c); box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+  .walker .wk__body { position: absolute; top: 8px; left: 50%; width: 14px; height: 14px; transform: translateX(-50%); border-radius: 6px 6px 5px 5px; background: linear-gradient(180deg, var(--c), color-mix(in srgb, var(--c) 65%, #000)); box-shadow: 0 2px 4px rgba(0,0,0,.3); animation: wk-bob .5s ease-in-out infinite; }
+  .walker::after { content: ""; position: absolute; bottom: -3px; left: 50%; width: 14px; height: 4px; transform: translateX(-50%); border-radius: 50%; background: rgba(80,60,30,.28); filter: blur(1.5px); }
+  @keyframes wk-bob { 0%,100% { transform: translateX(-50%) translateY(0);} 50% { transform: translateX(-50%) translateY(-1.5px);} }
+  .g1 { animation: walk-h1 16s linear infinite; }
+  .g2 { animation: walk-h2 20s linear infinite; }
+  .g3 { animation: walk-v1 18s linear infinite; }
+  .g4 { animation: walk-h1 22s linear infinite reverse; }
+  /* Gänge: horizontaler Mittelgang bei ~44%, vertikale Verbindung */
+  @keyframes walk-h1 { 0% { left: 4%; top: 44%; } 50% { left: 74%; top: 44%; } 100% { left: 4%; top: 44%; } }
+  @keyframes walk-h2 { 0% { left: 74%; top: 47%; } 50% { left: 6%; top: 47%; } 100% { left: 74%; top: 47%; } }
+  @keyframes walk-v1 { 0% { left: 48%; top: 8%; } 50% { left: 48%; top: 80%; } 100% { left: 48%; top: 8%; } }
+
+  /* ---- Drucker ---- */
+  .printer { position: absolute; right: 3%; top: 52%; width: 15%; height: 40%; z-index: 4; }
+  .printer__label { position: absolute; top: -4px; left: 50%; transform: translateX(-50%); font-family: var(--acc-mono); font-size: 8px; font-weight: 700; letter-spacing: .12em; color: var(--acc-text-dim); }
+  .printer__body {
+    position: absolute; top: 14%; left: 6%; right: 6%; height: 44%;
+    border-radius: 6px;
+    background: linear-gradient(180deg, #cfd4da, #aeb4bd);
+    border: 1px solid #8b929c;
+    box-shadow: 0 6px 12px -6px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.6);
+  }
+  .printer__led { position: absolute; top: 5px; right: 7px; width: 5px; height: 5px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 6px #22c55e; animation: pr-led 1.5s steps(1) infinite; }
+  @keyframes pr-led { 0%,60% { opacity: 1; } 61%,100% { opacity: .25; } }
+  .printer__slot { position: absolute; left: 12%; right: 12%; bottom: 4px; height: 4px; border-radius: 2px; background: #454b55; box-shadow: inset 0 1px 2px rgba(0,0,0,.5); }
+  /* Blatt kommt unten aus dem Drucker */
+  .printer__sheet {
+    position: absolute; left: 16%; right: 16%; top: 100%; height: 0;
+    background: #fff; border: 1px solid #d7d2c6; border-top: none; border-radius: 0 0 2px 2px;
+    box-shadow: 0 4px 8px -4px rgba(0,0,0,.35);
+    display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 0 4px;
+    overflow: hidden; transform-origin: top center;
+    animation: pr-print 3.2s ease-in-out infinite;
+  }
+  .printer__sheet i { height: 2px; border-radius: 1px; background: #9aa3b2; opacity: 0; }
+  .printer__sheet i:nth-child(2) { width: 70%; }
+  .printer__sheet i:nth-child(3) { width: 85%; }
+  @keyframes pr-print {
+    0%   { height: 0; opacity: 0; }
+    10%  { opacity: 1; }
+    55%  { height: 30px; opacity: 1; }
+    70%  { height: 30px; opacity: 1; }
+    85%  { height: 30px; opacity: 0; }
+    100% { height: 0; opacity: 0; }
+  }
+  .printer__sheet i { animation: pr-ink 3.2s ease-in-out infinite; }
+  @keyframes pr-ink { 0%,20% { opacity: 0; } 55%,80% { opacity: .9; } 100% { opacity: 0; } }
+  /* Ablage: der Stapel wächst mit jedem Blatt */
+  .printer__tray { position: absolute; left: 10%; right: 10%; bottom: 2%; height: 16%; border-radius: 3px; background: #b7bcc4; box-shadow: inset 0 1px 2px rgba(0,0,0,.25); }
+  .printer__stack { position: absolute; left: 12%; right: 12%; height: 3px; background: #fff; border: 1px solid #dcd7cb; border-radius: 1px; }
+  .printer__stack.s1 { bottom: 3px; animation: pr-stack 9.6s steps(1) infinite; }
+  .printer__stack.s2 { bottom: 7px; animation: pr-stack 9.6s steps(1) infinite 3.2s; }
+  .printer__stack.s3 { bottom: 11px; animation: pr-stack 9.6s steps(1) infinite 6.4s; }
+  @keyframes pr-stack { 0%,29% { opacity: 0; } 30%,100% { opacity: 1; } }
+
+  /* ---- Besprechungsecke ---- */
+  .meet { position: absolute; left: 3%; top: 54%; width: 20%; height: 36%; z-index: 3; }
+  .meet__label { position: absolute; top: -4px; left: 50%; transform: translateX(-50%); font-family: var(--acc-mono); font-size: 8px; font-weight: 700; letter-spacing: .12em; color: var(--acc-text-dim); }
+  .meet__table { position: absolute; left: 50%; top: 50%; width: 54%; padding-bottom: 54%; transform: translate(-50%,-50%); border-radius: 50%; background: radial-gradient(circle at 50% 40%, #e7dcc6, #cdbf9f); box-shadow: 0 4px 10px -4px rgba(80,60,30,.5), inset 0 0 0 2px rgba(255,255,255,.4); }
+  .meet__fig { position: absolute; width: 13px; height: 13px; border-radius: 50%; background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--c) 60%, #fff), var(--c)); box-shadow: 0 2px 4px rgba(0,0,0,.3); animation: meet-lean 3.6s ease-in-out infinite; }
+  .meet__fig:nth-child(3) { animation-delay: 1.2s; }
+  .meet__fig:nth-child(4) { animation-delay: 2.4s; }
+  @keyframes meet-lean { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-1.5px); } }
+
+  /* ---- Pflanzen ---- */
+  .plant { position: absolute; width: 20px; height: 20px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #4ea56a, #2f7d4a); box-shadow: 0 3px 8px -3px rgba(30,80,45,.6), inset 0 2px 3px rgba(255,255,255,.25); z-index: 4; }
+  .plant::after { content: ""; position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; transform: translate(-50%,-50%); border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.35), transparent 70%); }
+
+  @media (max-width: 700px) {
+    .office { height: 380px; }
+    .ws__tag, .ws__mon--doc .ws__scroll { display: initial; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ws__worker, .ws__arm, .ws__scroll, .walker .wk__body,
+    .g1, .g2, .g3, .g4, .printer__sheet, .printer__sheet i,
+    .printer__led, .printer__stack, .meet__fig { animation: none !important; }
+    .printer__sheet { height: 20px; opacity: 1; }
+    .printer__stack { opacity: 1; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "KI-Büro (seriös)",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Micro-Label", "default": "IHRE BELEGSCHAFT ARBEITET" },
+    { "type": "text", "id": "titel", "label": "Titel", "default": "Ein ganzes Büro, das für Sie arbeitet." },
+    { "type": "textarea", "id": "intro", "label": "Intro", "default": "Jede Abteilung ein Arbeitsplatz – Coding, Marketing, Analyse, Finanzen und mehr. Ihre KI-Belegschaft sitzt am Rechner und erledigt Auftrag für Auftrag, während der Drucker die fertigen Ergebnisse ausgibt. Kein Chatbot – ein arbeitendes Team." }
+  ],
+  "presets": [{ "name": "KI-Büro (seriös)" }]
+}
+{% endschema %}

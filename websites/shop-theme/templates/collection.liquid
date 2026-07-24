@@ -1,0 +1,27 @@
+<section class="page-hero">
+  <h1>{% if collection.title != blank %}{{ collection.title }}{% else %}Alle <span class="grad">Pakete</span>{% endif %}</h1>
+  <p>{% if collection.description != blank %}{{ collection.description | strip_html }}{% else %}Wählen Sie das Paket, das zu Ihrer Firmengrösse passt – von Gratis bis Enterprise.{% endif %}</p>
+</section>
+
+<section class="pdp-more" style="padding-top:20px">
+  <div class="wrap">
+    <div class="grid-prod">
+      {% for product in collection.products %}
+        <a class="prod" href="{{ product.url }}">
+          {% if product.featured_image %}
+            <img src="{{ product.featured_image | image_url: width: 500 }}" alt="{{ product.title | escape }}">
+          {% else %}
+            <div class="prod-ph"><span class="grad">{{ product.title }}</span></div>
+          {% endif %}
+          <strong>{{ product.title }}</strong>
+          {% if product.description != blank %}<p class="prod-sub">{{ product.description | strip_html | truncatewords: 16 }}</p>{% endif %}
+          <div class="price">{{ product.price | money }}<span> / Monat</span></div>
+          <span class="btn btn-ghost btn-sm prod-cta">Ansehen →</span>
+        </a>
+      {% else %}
+        <p>Noch keine Produkte in dieser Kategorie.</p>
+      {% endfor %}
+    </div>
+    <p style="text-align:center;margin-top:34px"><a class="btn" href="{{ routes.root_url }}#pakete">Pakete auf einen Blick vergleichen</a></p>
+  </div>
+</section>

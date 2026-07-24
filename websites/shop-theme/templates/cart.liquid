@@ -1,0 +1,12 @@
+<div class="page">
+  <h1>Warenkorb</h1>
+  {% if cart.item_count > 0 %}
+  {% form 'cart', cart %}
+    {% for item in cart.items %}
+      <p>{{ item.product.title }} × {{ item.quantity }} — {{ item.final_line_price | money }}</p>
+    {% endfor %}
+    <p><strong>Total: {{ cart.total_price | money }}</strong></p>
+    <button class="btn" type="submit" name="checkout">Zur Kasse</button>
+  {% endform %}
+  {% else %}<p>Ihr Warenkorb ist leer.</p><a class="btn" href="{{ routes.all_products_collection_url }}">Zum Shop</a>{% endif %}
+</div>
