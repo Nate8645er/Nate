@@ -1,7 +1,9 @@
 /**
  * Preis-/Paket-Daten – zentrale, editierbare Quelle für die Verkaufsseite (/preise).
  *
- * WICHTIG: Die Beträge sind Beispielpreise. Passen Sie sie an Ihr Angebot an;
+ * WICHTIG: Die Beträge sind mit dem Live-Shopify-Shop abgeglichen (Stand
+ * 2026-07-24); der Shop ist die verbindliche Quelle. Bei Preisänderungen dort
+ * auch hier nachziehen. Passen Sie sie an Ihr Angebot an;
  * die Seite und der Vergleich lesen ausschliesslich aus dieser Datei.
  * Währung: CHF (Schweiz). `planId` verknüpft das Paket mit der internen
  * Abo-Stufe (Lizenz/Onboarding), damit Kauf → Zugang konsistent bleibt.
@@ -59,8 +61,8 @@ export const PAKETE: readonly Paket[] = [
     planId: "PERSONAL",
     untertitel: "Ihr KI-Einstieg für Einzelpersonen.",
     zielgruppe: "Einzelpersonen & Einstieg",
-    preisMonat: 19,
-    preisJahr: 190,
+    preisMonat: 19.9,
+    preisJahr: 199,
     leistungen: [
       "4 KI-Agenten (Kern-Team)",
       "10 Missionen pro Tag",
@@ -76,8 +78,8 @@ export const PAKETE: readonly Paket[] = [
     planId: "STARTER",
     untertitel: "Ihre kompakte KI-Abteilung für den Start.",
     zielgruppe: "Selbstständige & kleine Teams",
-    preisMonat: 49,
-    preisJahr: 490,
+    preisMonat: 199,
+    preisJahr: 1990,
     leistungen: [
       "12 spezialisierte KI-Agenten",
       "25 Missionen pro Tag",
@@ -93,8 +95,8 @@ export const PAKETE: readonly Paket[] = [
     planId: "PROFESSIONAL",
     untertitel: "Fachteams inkl. Finanzen, Analyse & erste Integrationen.",
     zielgruppe: "Wachsende Firmen",
-    preisMonat: 179,
-    preisJahr: 1790,
+    preisMonat: 799,
+    preisJahr: 7990,
     badge: "Beliebt",
     hervorgehoben: true,
     leistungen: [
@@ -112,8 +114,8 @@ export const PAKETE: readonly Paket[] = [
     planId: "BUSINESS",
     untertitel: "Ihre digitale Abteilung mit allen Integrationen.",
     zielgruppe: "Grössere Teams & Firmen",
-    preisMonat: 390,
-    preisJahr: 3900,
+    preisMonat: 2499,
+    preisJahr: 24990,
     leistungen: [
       "Alles aus Pro – plus:",
       "250 KI-Agenten als digitale Abteilung",
@@ -129,8 +131,8 @@ export const PAKETE: readonly Paket[] = [
     planId: "ENTERPRISE",
     untertitel: "Ihre KI-Abteilung im eigenen Haus – Datenhoheit inklusive.",
     zielgruppe: "Grosse & regulierte Unternehmen",
-    preisMonat: 790,
-    preisJahr: 7900,
+    preisMonat: 8900,
+    preisJahr: 89000,
     leistungen: [
       "Alles aus Business – plus:",
       "Bis 1000 virtuelle Mitarbeitende",

@@ -100,7 +100,7 @@ def build():
 
     s.append(Paragraph("Bausteine", H2))
     tbl = Table([
-        [Paragraph("<b>Enterprise Cloud</b>", BODY), Paragraph("Gehostet, jeder Mandant isoliert. Richtpreis auf Anfrage / gemäss Offerte.", BODY)],
+        [Paragraph("<b>Enterprise Cloud</b>", BODY), Paragraph("Gehostet, jeder Mandant isoliert. Ab CHF 8'900/Monat (Einstiegs-Richtpreis).", BODY)],
         [Paragraph("<b>On-Premise / Private</b>", BODY), Paragraph("Installation im Kundennetz (Docker/k3s), SSO-Anbindung, eigene Modelle. Projektpreis.", BODY)],
         [Paragraph("<b>Add-ons</b>", BODY), Paragraph("ERP/CRM-Integration, dedizierte GPU, Compliance-/Audit-Export.", BODY)],
     ], colWidths=[45 * mm, 129 * mm])
