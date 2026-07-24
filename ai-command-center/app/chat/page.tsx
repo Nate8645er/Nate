@@ -20,6 +20,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ArtifactFile } from "@/lib/agents/types";
 import { SKILLS, skillSuche, skillVerfuegbar, SKILL_AB_STUFE, type SkillStufe } from "@/lib/skills";
+import { kundenSchluesselHeaders } from "@/lib/kundenschluessel-client";
 import WorkNav from "@/app/components/WorkNav";
 import { usePlanGate } from "@/app/components/PlanGuard";
 
@@ -246,6 +247,8 @@ export default function KommandoPage() {
         } catch {
           /* Storage nicht lesbar */
         }
+        // Eigener LLM-Schlüssel des Kunden (nur im Browser gespeichert).
+        Object.assign(headers, kundenSchluesselHeaders());
         const context = {
           branche: safeGet(BRANCHE_KEY),
           groesse: safeGet(GROESSE_KEY),

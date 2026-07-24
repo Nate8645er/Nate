@@ -15,7 +15,9 @@
  */
 
 import { webRecherche, RECHERCHE_QUELLEN } from "@/lib/agents/browser";
+import { kundenSchluesselAusHeaders, alsMap } from "@/lib/agents/kundenschluessel";
 import { runMission } from "@/lib/agents/orchestrator";
+import { customerKeyStore } from "@/lib/agents/providers";
 import type { AgentEvent, MissionContext } from "@/lib/agents/types";
 import { flagFromEnv } from "@/lib/flags";
 import { consumeUsage, planFromLicenseToken, ultraAktiv, ULTRA_EXTRA_QUELLEN } from "@/lib/license";
@@ -56,6 +58,11 @@ export async function POST(request: Request): Promise<Response> {
 
   const missionGoal = goal.trim();
   const context = sanitizeContext(rawContext);
+
+  // „Bring your own key": eigener LLM-Schlüssel des Kunden (nur diese Anfrage,
+  // nie gespeichert/geloggt). Fehlt er, greift der Betreiber-Env-Key bzw. der
+  // Provider meldet ehrlich „nicht konfiguriert".
+  const kundenKey = kundenSchluesselAusHeaders((n) => request.headers.get(n));
 
   // Plan + Tageslimit VOR dem Missionsstart durchsetzen (stateless).
   const plan = planFromLicenseToken(request.headers.get("x-acc-license"));
@@ -147,7 +154,10 @@ export async function POST(request: Request): Promise<Response> {
           }
         }
         // Plan aus dem validierten Lizenz-Token steuert den Agenten-Fan-out.
-        await runMission(missionGoal, emit, missionContext, plan);
+        // Mit dem eigenen Schlüssel des Kunden umhüllt (nur für diese Anfrage).
+        await customerKeyStore.run(alsMap(kundenKey), () =>
+          runMission(missionGoal, emit, missionContext, plan),
+        );
       } catch (err) {
         emit({
           type: "error",

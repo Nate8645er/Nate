@@ -14,6 +14,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import WorkNav from "@/app/components/WorkNav";
 import WorkFooter from "@/app/components/WorkFooter";
+import KiZugang from "@/app/components/KiZugang";
 
 const BRANCHE_KEY = "acc-branche";
 const GROESSE_KEY = "acc-groesse";
@@ -121,8 +122,13 @@ export default function EinstellungenPage() {
           )}
         </div>
 
+        {/* Mein KI-Zugang (Bring your own key) */}
+        <div className="mt-8">
+          <KiZugang />
+        </div>
+
         {/* Unternehmensprofil */}
-        <section className="mt-8 rounded-2xl acc-card p-6">
+        <section className="mt-6 rounded-2xl acc-card p-6">
           <h2 className="text-lg font-semibold">Unternehmensprofil</h2>
           <p className="mt-1 text-sm text-[#6f6557]">
             Branche und Grösse fliessen in jeden Auftrag ein – Ihre Belegschaft
