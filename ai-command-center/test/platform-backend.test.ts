@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { backendBaseUrl, fetchCompute, formatMemoryGb, primaryDevice, routeModel, runMissionViaBackend, type ComputeResponse } from "@/lib/platform-backend";
+import { backendBaseUrl, describePlacement, fetchCompute, formatMemoryGb, primaryDevice, routeModel, runMissionViaBackend, type ComputeResponse } from "@/lib/platform-backend";
 
 const SAMPLE: ComputeResponse = {
   gpu_available: false,
@@ -130,6 +130,15 @@ describe("platform-backend Anbindung (ehrlich, additiv)", () => {
     const notOk = (async () =>
       new Response(JSON.stringify({ ok: false, text: null }), { status: 200 })) as unknown as typeof fetch;
     expect(await runMissionViaBackend("z", "t", { baseUrl: "http://x:8000", fetchImpl: notOk })).toBeNull();
+  });
+
+  it("describePlacement: null → '—', local → 'Lokal', cloud → 'Cloud'", () => {
+    expect(describePlacement(null)).toEqual({ label: "—", hint: "Backend nicht verbunden" });
+    expect(describePlacement({ placement: "local", reason: "R", fallback: null }).label).toBe("Lokal (im Haus)");
+    expect(describePlacement({ placement: "cloud", reason: "R2", fallback: "local" })).toEqual({
+      label: "Cloud",
+      hint: "R2",
+    });
   });
 
   it("primaryDevice: bevorzugt GPU, sonst CPU, null-sicher", () => {

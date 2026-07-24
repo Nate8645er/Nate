@@ -93,6 +93,13 @@ export interface RouteResponse {
   fallback: "local" | "cloud" | null;
 }
 
+/** Menschlich lesbares Label für die Routing-Entscheidung (v2-UI). */
+export function describePlacement(d: RouteResponse | null): { label: string; hint: string } {
+  if (!d) return { label: "—", hint: "Backend nicht verbunden" };
+  const wo = d.placement === "local" ? "Lokal (im Haus)" : "Cloud";
+  return { label: wo, hint: d.reason };
+}
+
 /**
  * Fragt die Routing-Entscheidung des Backends ab (local ↔ cloud + Begründung).
  * Gibt `null` zurück, wenn nicht konfiguriert/nicht erreichbar/Timeout — nie werfen.
