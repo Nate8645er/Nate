@@ -42,6 +42,15 @@ services:
     ports: ["7233:7233"]
     depends_on: [postgres]
 
+  keycloak:                       # Cutover — OIDC-Login (§3). Dev-Realm 'ki' importiert.
+    image: quay.io/keycloak/keycloak:26.0
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: dev-only-change-me
+    ports: ["8080:8080"]
+    volumes: ["./deploy/keycloak:/opt/keycloak/data/import:ro"]
+
   backend:                        # Phase 9 — das platform-backend selbst (gehärtetes Image)
     build:
       context: .
@@ -58,6 +67,9 @@ services:
       MINIO_ENDPOINT: http://minio:9000
       MINIO_ACCESS_KEY: platform
       MINIO_SECRET_KEY: dev-only-change-me
+      # Auth-Kette aktiv: Tokens werden gegen den Dev-Realm 'ki' verifiziert.
+      KEYCLOAK_ISSUER: http://keycloak:8080/realms/ki
+      KEYCLOAK_AUDIENCE: account
     ports: ["8000:8000"]
     # Gehärtet wie in Produktion (siehe deploy/k8s/backend.yaml).
     user: "10001:10001"
