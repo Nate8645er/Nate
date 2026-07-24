@@ -21,7 +21,6 @@ import type { AgentEvent, AgentRole, AgentStatus, ArtifactFile } from "@/lib/age
 import AgentWorld, { type WorldAgent } from "@/app/components/AgentWorld";
 import AboBanner from "@/app/components/AboBanner";
 import { vorlagenFuer } from "@/lib/vorlagen";
-import { kundenSchluesselHeaders } from "@/lib/kundenschluessel-client";
 import type { BranchenId } from "@/lib/roi";
 
 /** Dashboard-Branchenlabel → ROI/Vorlagen-BranchenId (für passende Vorlagen). */
@@ -1344,8 +1343,6 @@ export default function DashboardPage() {
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (licenseToken) headers["x-acc-license"] = licenseToken;
       if (usageToken) headers["x-acc-usage"] = usageToken;
-      // Eigener LLM-Schlüssel des Kunden (nur im Browser gespeichert).
-      Object.assign(headers, kundenSchluesselHeaders());
       const res = await fetch("/api/mission", {
         method: "POST",
         headers,

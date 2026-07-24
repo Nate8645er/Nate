@@ -19,7 +19,6 @@ import { useCallback, useEffect, useState } from "react";
 import WorkNav from "@/app/components/WorkNav";
 import { usePlanGate } from "@/app/components/PlanGuard";
 import WorkFooter from "@/app/components/WorkFooter";
-import { kundenSchluesselHeaders } from "@/lib/kundenschluessel-client";
 
 const WORKFLOWS_KEY = "acc-workflows";
 const LICENSE_TOKEN_KEY = "acc-license-token";
@@ -142,8 +141,6 @@ export default function WorkflowsPage() {
         } catch {
           /* Storage nicht lesbar */
         }
-        // Eigener LLM-Schlüssel des Kunden (nur im Browser gespeichert).
-        Object.assign(headers, kundenSchluesselHeaders());
         const context = {
           branche: safeGet(BRANCHE_KEY),
           groesse: safeGet(GROESSE_KEY),

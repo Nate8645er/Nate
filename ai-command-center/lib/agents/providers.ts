@@ -23,15 +23,6 @@ const MAX_TOKENS = 4096;
  */
 export const tokenBudgetStore = new AsyncLocalStorage<number>();
 
-/**
- * „Bring your own key": API-Keys des KUNDEN (Provider → Key), gültig NUR für die
- * Dauer der Anfrage. Der Kunde verbindet sein Unternehmen mit seinem eigenen
- * Schlüssel; die KI-Nutzung läuft auf seiner Rechnung. Wird vom Mission-Endpunkt
- * per `run()` um die Anfrage gelegt – NIE server-seitig gespeichert, NIE geloggt.
- * Hat Vorrang vor den (optionalen) Betreiber-Env-Keys.
- */
-export const customerKeyStore = new AsyncLocalStorage<Record<string, string>>();
-
 /** Aktives max_tokens: Mission-Budget, sonst Obergrenze. */
 function aktivesMaxTokens(): number {
   const budget = tokenBudgetStore.getStore();
@@ -124,9 +115,6 @@ function endpointUrl(provider: Provider): string {
  * Providern (local/meta) ist er optional – dann kein Authorization-Header.
  */
 function authKey(provider: Provider): string | undefined {
-  // Vorrang: eigener Schlüssel des Kunden (nur in dieser Anfrage), sonst Env.
-  const kunde = customerKeyStore.getStore()?.[provider]?.trim();
-  if (kunde) return kunde;
   return process.env[ENDPOINTS[provider].envKey]?.trim() || undefined;
 }
 
