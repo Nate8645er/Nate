@@ -42,6 +42,31 @@ services:
     ports: ["7233:7233"]
     depends_on: [postgres]
 
+  backend:                        # Phase 9 — das platform-backend selbst (gehärtetes Image)
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: platform-backend:dev
+    environment:
+      PLATFORM_ENV: development
+      # An die Dienste im selben Compose-Netz verdrahtet. Die DB-Rolle hier ist
+      # zur Vereinfachung 'platform'; in PRODUKTION eine Rolle mit NOBYPASSRLS.
+      DATABASE_URL: postgresql://platform:dev-only-change-me@postgres:5432/platform
+      REDIS_URL: redis://redis:6379/0
+      QDRANT_URL: http://qdrant:6333
+      TEMPORAL_ADDRESS: temporal:7233
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY: platform
+      MINIO_SECRET_KEY: dev-only-change-me
+    ports: ["8000:8000"]
+    # Gehärtet wie in Produktion (siehe deploy/k8s/backend.yaml).
+    user: "10001:10001"
+    read_only: true
+    tmpfs: ["/tmp"]
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+    depends_on: [postgres, redis, qdrant]
+
 volumes:
   pgdata:
   qdrant:

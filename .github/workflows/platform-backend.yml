@@ -22,5 +22,35 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
+          pip install ruff==0.14.4
+      - name: Lint (ruff, blockierend)
+        run: ruff check app tests
+      - name: SAST (bandit, blockierend ab Severity MEDIUM)
+        run: bandit -r app -ll
       - name: Tests (ohne GPU, ohne Netz)
+        # Live-Service-Tests überspringen sich selbst, wenn kein Dienst läuft.
         run: python -m pytest
+
+  docker:
+    # Beweist, dass das Container-Image reproduzierbar baut (Deploy-Pfad real).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: platform-backend
+          push: false
+          load: true
+          tags: platform-backend:ci
+      - name: Smoke-Test (non-root, read-only, Endpunkte)
+        run: |
+          docker run -d --name pf --user 10001:10001 --read-only --tmpfs /tmp \
+            -p 8000:8000 platform-backend:ci
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:8000/health/live && break || sleep 1
+          done
+          curl -sf http://127.0.0.1:8000/health/ready
+          curl -sf http://127.0.0.1:8000/metrics | grep -q http_requests_total
+          test "$(docker exec pf id -u)" = "10001"
