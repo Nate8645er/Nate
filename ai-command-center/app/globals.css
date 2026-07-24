@@ -22,14 +22,14 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), "Segoe UI", Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), var(--font-geist-sans), "Segoe UI", Arial, Helvetica, sans-serif;
   font-feature-settings: "ss01", "cv05";
   text-rendering: optimizeLegibility;
 }
 
-/* Marken-Typografie: Space Grotesk fuer alle Ueberschriften (wie im Shop) */
+/* Marken-Typografie: Sora fuer alle Ueberschriften (neues Premium-Dark-Design) */
 h1, h2, h3, h4 {
-  font-family: var(--font-space-grotesk), var(--font-geist-sans), sans-serif;
+  font-family: var(--font-sora), var(--font-space-grotesk), var(--font-geist-sans), sans-serif;
   letter-spacing: -0.02em;
 }
 
@@ -39,7 +39,7 @@ h1, h2, h3, h4 {
 /* ------------------------------------------------------------------ */
 
 ::selection {
-  background: rgba(255, 140, 42, 0.28);
+  background: rgba(34, 211, 238, 0.28);
 }
 
 /* Moderne, schmale Scrollbar */
@@ -110,9 +110,9 @@ h1, h2, h3, h4 {
   }
 }
 
-/* Gradient-Akzent-Text (Markenverlauf) */
+/* Gradient-Akzent-Text (Markenverlauf) – neues Premium-Dark: Indigo→Cyan→Violett */
 .acc-grad-text {
-  background: linear-gradient(100deg, #ff8c2a 8%, #ff5f1f 42%, #c026d3 96%);
+  background: linear-gradient(100deg, #818cf8 4%, #22d3ee 48%, #a855f7 96%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

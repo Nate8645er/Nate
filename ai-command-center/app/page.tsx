@@ -156,7 +156,7 @@ const PLANS: Plan[] = [
 const FEATURE_ACCENTS = [
   "bg-[#eef0ff] text-[#5b52d6]",
   "bg-[#e6faf6] text-[#0f766e]",
-  "bg-[#fff4e6] text-[#c25e0e]",
+  "bg-[#fff4e6] text-[#22d3ee]",
   "bg-[#fdeef7] text-[#be185d]",
 ];
 
@@ -346,7 +346,7 @@ function ProductShowcase() {
         {/* Kopfzeile */}
         <div className="flex items-center justify-between border-b border-[#e8e1d2] pb-3">
           <div className="flex items-center gap-2.5">
-            <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f]" />
+            <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-br from-[#818cf8] to-[#a855f7]" />
             <span className="text-sm font-bold">AI Command Center</span>
           </div>
           <span className="text-[11px] font-semibold uppercase tracking-wider text-[#0f766e] hidden sm:inline">
@@ -357,7 +357,7 @@ function ProductShowcase() {
         <div className="mt-5 grid gap-5 sm:grid-cols-[1fr_1.2fr_1fr] sm:gap-6">
           {/* Globus-Andeutung */}
           <div className="flex items-center justify-center rounded-xl bg-[#faf6ee] p-4">
-            <svg viewBox="0 0 120 120" className="h-28 w-28 text-[#ff8c2a]" aria-hidden="true">
+            <svg viewBox="0 0 120 120" className="h-28 w-28 text-[#6366f1]" aria-hidden="true">
               <g className="hud-spin-slow" fill="none" stroke="currentColor">
                 <circle cx="60" cy="60" r="44" strokeOpacity="0.55" />
                 <ellipse cx="60" cy="60" rx="44" ry="18" strokeOpacity="0.4" />
@@ -373,12 +373,12 @@ function ProductShowcase() {
           {/* Agenten-Chips + Aktivität */}
           <div className="flex flex-col justify-between gap-4">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e] mb-2">Aktive Agenten</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-[#22d3ee] mb-2">Aktive Agenten</p>
               <div className="flex flex-wrap gap-2">
                 {["Research", "Code", "Finanzen", "Design", "Recht", "Daten"].map((a) => (
                   <span
                     key={a}
-                    className="rounded-full border border-[#ffb066]/40 bg-[#fff4e6] px-3 py-1 text-xs font-medium text-[#c25e0e]"
+                    className="rounded-full border border-[#818cf8]/40 bg-[#fff4e6] px-3 py-1 text-xs font-medium text-[#22d3ee]"
                   >
                     {a}
                   </span>
@@ -389,7 +389,7 @@ function ProductShowcase() {
               {[
                 [82, "from-[#6d5efc] to-[#8b5cf6]"],
                 [64, "from-[#2dd4bf] to-[#0f766e]"],
-                [91, "from-[#ff8c2a] to-[#ff5f1f]"],
+                [91, "from-[#6366f1] to-[#a855f7]"],
               ].map(([w, grad], i) => (
                 <div key={i} className="h-1.5 overflow-hidden rounded-full bg-[#efe9dd]">
                   <div className={`h-full rounded-full bg-gradient-to-r ${grad}`} style={{ width: `${w}%` }} />
@@ -401,24 +401,24 @@ function ProductShowcase() {
           {/* Score-Ring */}
           <div className="flex flex-col items-center justify-center gap-1 rounded-xl bg-[#faf6ee] p-4">
             <svg viewBox="0 0 100 100" className="h-24 w-24" aria-hidden="true">
-              <circle cx="50" cy="50" r="40" fill="none" stroke="#ff8c2a" strokeOpacity="0.16" strokeWidth="7" />
+              <circle cx="50" cy="50" r="40" fill="none" stroke="#6366f1" strokeOpacity="0.16" strokeWidth="7" />
               <circle
                 cx="50"
                 cy="50"
                 r="40"
                 fill="none"
-                stroke="#ff8c2a"
+                stroke="#6366f1"
                 strokeWidth="7"
                 strokeLinecap="round"
                 strokeDasharray="251.3"
                 strokeDashoffset="0"
                 transform="rotate(-90 50 50)"
               />
-              <text x="50" y="55" textAnchor="middle" fill="#c25e0e" fontSize="20" fontWeight="700">
+              <text x="50" y="55" textAnchor="middle" fill="#22d3ee" fontSize="20" fontWeight="700">
                 100
               </text>
             </svg>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Quality-Score</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#22d3ee]">Quality-Score</span>
           </div>
         </div>
 
@@ -431,7 +431,7 @@ function ProductShowcase() {
           ].map(([m, s, done]) => (
             <div key={m as string} className="flex items-center justify-between rounded-lg border border-[#efe9dd] bg-[#faf6ee] px-3 py-2">
               <span className="text-xs font-medium text-[#4a4335]">{m}</span>
-              <span className={`text-[10px] font-bold uppercase tracking-wide ${done ? "text-[#177245]" : "text-[#c25e0e]"}`}>{s}</span>
+              <span className={`text-[10px] font-bold uppercase tracking-wide ${done ? "text-[#177245]" : "text-[#22d3ee]"}`}>{s}</span>
             </div>
           ))}
         </div>
@@ -448,10 +448,10 @@ export default function Home() {
   return (
     <div className="acc-page flex flex-1 flex-col font-sans text-[#1c1917]">
       {/* Navigation */}
-      <header className="sticky top-0 z-20 border-b border-[#e8e1d2] bg-white/75 backdrop-blur-xl">
+      <header className="sticky top-0 z-20 border-b border-[#e8e1d2] bg-[#0a0b14]/80 backdrop-blur-xl">
         <nav className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f]" aria-hidden="true" />
+            <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-br from-[#818cf8] to-[#a855f7]" aria-hidden="true" />
             <span className="text-sm font-bold">AI Command Center</span>
           </Link>
           <div className="flex items-center gap-3 sm:gap-6">
@@ -466,7 +466,7 @@ export default function Home() {
             </Link>
             <Link
               href="/dashboard"
-              className="shop-btn rounded-full bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-5 py-2 text-sm font-bold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)]"
+              className="shop-btn rounded-full bg-gradient-to-r from-[#6366f1] to-[#a855f7] px-5 py-2 text-sm font-bold text-white shadow-[0_6px_20px_-6px_rgba(99,102,241,0.5)]"
             >
               Kostenlos testen
             </Link>
@@ -478,7 +478,7 @@ export default function Home() {
         {/* 1) Hero: Produktbühne */}
         <section className="relative overflow-hidden px-6 pb-24 pt-20 sm:pt-28">
           <div className="acc-in mx-auto max-w-3xl text-center">
-            <p className="mb-6 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">
+            <p className="mb-6 text-[11px] font-bold uppercase tracking-wider text-[#22d3ee]">
               Die erste digitale KI-Belegschaft der Schweiz
             </p>
             <h1 className="text-balance text-4xl font-semibold tracking-tight sm:text-6xl">
@@ -493,13 +493,13 @@ export default function Home() {
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
                 href="/dashboard"
-                className="shop-btn inline-flex h-12 w-full items-center justify-center rounded-full bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-8 text-base font-bold text-white shadow-[0_10px_30px_-8px_rgba(255,110,30,0.55)] sm:w-auto"
+                className="shop-btn inline-flex h-12 w-full items-center justify-center rounded-full bg-gradient-to-r from-[#6366f1] to-[#a855f7] px-8 text-base font-bold text-white shadow-[0_10px_30px_-8px_rgba(99,102,241,0.55)] sm:w-auto"
               >
                 Kostenlos testen
               </Link>
               <a
                 href="#abos"
-                className="shop-btn inline-flex h-12 w-full items-center justify-center rounded-full border border-[#e0d8c6] bg-white/70 px-8 text-base font-semibold text-[#4a4335] hover:border-[#ffb066] sm:w-auto"
+                className="shop-btn inline-flex h-12 w-full items-center justify-center rounded-full border border-[#e0d8c6] bg-white/70 px-8 text-base font-semibold text-[#4a4335] hover:border-[#818cf8] sm:w-auto"
               >
                 Abos ansehen
               </a>
@@ -514,7 +514,7 @@ export default function Home() {
         <section className="border-t border-[#e8e1d2] px-6 py-20">
           <div className="mx-auto max-w-6xl">
             <div className="mx-auto max-w-2xl text-center">
-              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Ihre digitale Belegschaft</p>
+              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#22d3ee]">Ihre digitale Belegschaft</p>
               <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
                 Ein ganzes <span className="acc-grad-text">Büro</span>, das für Sie arbeitet
               </h2>
@@ -527,8 +527,8 @@ export default function Home() {
                 drucken – dieselbe Live-Ansicht wie im KI-System (Dashboard). */}
             <div className="mt-10 rounded-3xl border border-[#e8e1d2] bg-white/70 p-3 shadow-[0_30px_80px_-40px_rgba(28,25,23,0.28)] sm:p-4">
               <div className="mb-2.5 flex items-center gap-2 px-1">
-                <span className="inline-block h-2.5 w-2.5 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f]" />
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">
+                <span className="inline-block h-2.5 w-2.5 rounded-full bg-gradient-to-br from-[#818cf8] to-[#a855f7]" />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#22d3ee]">
                   Ihr KI-Büro · live bei der Arbeit
                 </span>
               </div>
@@ -541,7 +541,7 @@ export default function Home() {
         <section id="abos" className="scroll-mt-24 border-t border-[#e8e1d2] px-6 py-24">
           <div className="mx-auto max-w-[88rem]">
             <div className="mx-auto max-w-2xl text-center">
-              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Abos</p>
+              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#22d3ee]">Abos</p>
               <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
                 Wählen Sie die Grösse Ihrer <span className="acc-grad-text">KI-Abteilung</span>
               </h2>
@@ -555,11 +555,11 @@ export default function Home() {
                 <article
                   key={plan.name}
                   className={`shop-card acc-card relative flex flex-col rounded-2xl p-6 ${
-                    plan.highlight ? "ring-2 ring-[#ff8c2a]/40" : ""
+                    plan.highlight ? "ring-2 ring-[#6366f1]/40" : ""
                   }`}
                 >
                   {plan.badge && (
-                    <span className="absolute -top-3 left-6 rounded-full bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-3 py-0.5 text-xs font-semibold text-white shadow-[0_4px_14px_-4px_rgba(255,110,30,0.6)]">
+                    <span className="absolute -top-3 left-6 rounded-full bg-gradient-to-r from-[#6366f1] to-[#a855f7] px-3 py-0.5 text-xs font-semibold text-white shadow-[0_4px_14px_-4px_rgba(99,102,241,0.6)]">
                       {plan.badge}
                     </span>
                   )}
@@ -573,13 +573,13 @@ export default function Home() {
                       oder {plan.priceYear} – 2 Monate geschenkt
                     </p>
                   )}
-                  <p className="mt-3 inline-flex w-fit rounded-full border border-[#ffb066]/40 bg-[#fff4e6] px-3 py-1 text-xs font-medium text-[#c25e0e]">
+                  <p className="mt-3 inline-flex w-fit rounded-full border border-[#818cf8]/40 bg-[#fff4e6] px-3 py-1 text-xs font-medium text-[#22d3ee]">
                     {plan.team}
                   </p>
                   <ul className="mt-5 flex-1 space-y-2.5 text-sm leading-6 text-[#4a4335]">
                     {plan.benefits.map((b) => (
                       <li key={b} className="flex gap-2">
-                        <svg viewBox="0 0 20 20" className="mt-1 h-4 w-4 shrink-0 text-[#ff8c2a]" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                        <svg viewBox="0 0 20 20" className="mt-1 h-4 w-4 shrink-0 text-[#6366f1]" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                           <path d="m4 10.5 4 4 8-9" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                         <span>{b}</span>
@@ -590,13 +590,13 @@ export default function Home() {
                     <a
                       href={SHOP_BASE.startsWith("#") ? SHOP_BASE : `${SHOP_BASE}/${plan.handle}`}
                       {...(SHOP_BASE.startsWith("#") ? {} : { target: "_blank", rel: "noopener noreferrer" })}
-                      className="shop-btn inline-flex h-11 items-center justify-center rounded-full bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-5 text-sm font-bold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)]"
+                      className="shop-btn inline-flex h-11 items-center justify-center rounded-full bg-gradient-to-r from-[#6366f1] to-[#a855f7] px-5 text-sm font-bold text-white shadow-[0_6px_20px_-6px_rgba(99,102,241,0.5)]"
                     >
                       Jetzt kaufen
                     </a>
                     <Link
                       href="/dashboard"
-                      className="shop-btn inline-flex h-11 items-center justify-center rounded-full border border-[#e0d8c6] bg-white/70 px-5 text-sm font-semibold text-[#4a4335] hover:border-[#ffb066]"
+                      className="shop-btn inline-flex h-11 items-center justify-center rounded-full border border-[#e0d8c6] bg-white/70 px-5 text-sm font-semibold text-[#4a4335] hover:border-[#818cf8]"
                     >
                       Testen
                     </Link>
@@ -611,7 +611,7 @@ export default function Home() {
         <section id="funktionen" className="scroll-mt-24 border-t border-[#e8e1d2] px-6 py-24">
           <div className="mx-auto max-w-6xl">
             <div className="mx-auto max-w-2xl text-center">
-              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Funktionen</p>
+              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#22d3ee]">Funktionen</p>
               <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
                 Was Ihr <span className="acc-grad-text">Team</span> kann
               </h2>
@@ -627,7 +627,7 @@ export default function Home() {
                   {f.href && (
                     <Link
                       href={f.href}
-                      className="mt-4 inline-block text-sm font-semibold text-[#c25e0e] underline underline-offset-4 hover:text-[#ff5f1f]"
+                      className="mt-4 inline-block text-sm font-semibold text-[#22d3ee] underline underline-offset-4 hover:text-[#a855f7]"
                     >
                       {f.linkLabel}
                     </Link>
@@ -642,7 +642,7 @@ export default function Home() {
         <section id="werbespot" className="scroll-mt-24 border-t border-[#e8e1d2] px-6 py-24">
           <div className="mx-auto max-w-4xl">
             <div className="mx-auto max-w-2xl text-center">
-              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Werbespot</p>
+              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#22d3ee]">Werbespot</p>
               <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
                 Ihre ganze <span className="acc-grad-text">KI-Abteilung</span> – in Bewegung
               </h2>
@@ -673,28 +673,29 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 3a) Erklär-Video mit Sprecher */}
+        {/* 3a) Erklär-Video: das KI-System in 2 Minuten erklärt */}
         <section id="video" className="scroll-mt-24 border-t border-[#e8e1d2] px-6 py-24">
           <div className="mx-auto max-w-4xl">
             <div className="mx-auto max-w-2xl text-center">
-              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Echter Systemrundgang</p>
+              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#22d3ee]">In 2 Minuten erklärt</p>
               <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                Sehen Sie das <span className="acc-grad-text">echte System</span> – Bereich für Bereich
+                Das <span className="acc-grad-text">KI-System</span> – in 2 Minuten erklärt
               </h2>
               <p className="mt-4 text-[#6f6557]">
-                Eine echte Bildschirm-Aufnahme aller Bereiche: Dashboard, Einrichtung,
-                Integrationen, Skills, Autopilot und mehr.
+                Wie Ihre digitale Belegschaft arbeitet: Sie geben einen Auftrag, das Team
+                plant, recherchiert, schreibt und programmiert – und liefert fertige
+                Ergebnisse, geprüft mit Quality-Score. Kein Chatbot, sondern eine ganze
+                Abteilung, die für Sie ausführt.
               </p>
             </div>
             <div className="shop-stage mt-10">
               <video
                 controls
                 preload="metadata"
-                poster="/shop-hero.webp"
-                className="w-full rounded-2xl border border-[#e8e1d2] shadow-[0_24px_80px_-24px_rgba(255,120,40,0.28)]"
+                poster="/erklaervideo-poster.jpg"
+                className="w-full rounded-2xl border border-[#e8e1d2] shadow-[0_24px_80px_-24px_rgba(99,102,241,0.28)]"
               >
-                <source src="/ki-system-tour.mp4" type="video/mp4" />
-                <source src="/ki-system-tour.webm" type="video/webm" />
+                <source src="/erklaervideo.mp4" type="video/mp4" />
                 Ihr Browser kann dieses Video nicht abspielen.
               </video>
             </div>
@@ -705,7 +706,7 @@ export default function Home() {
         <section id="unternehmen" className="scroll-mt-24 border-t border-[#e8e1d2] px-6 py-24">
           <div className="mx-auto max-w-6xl">
             <div className="mx-auto max-w-2xl text-center">
-              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">Für Unternehmen gebaut</p>
+              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#22d3ee]">Für Unternehmen gebaut</p>
               <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
                 Professionell. Sicher. Sofort einsatzbereit.
               </h2>
@@ -714,7 +715,7 @@ export default function Home() {
             {/* Zahlenleiste – ehrliche System-Fakten, keine Skill-Zählung */}
             <div className="mt-14 grid grid-cols-2 gap-6 text-center lg:grid-cols-4">
               {[
-                ["1000", "Mitarbeitende", "Belegschaft im Enterprise-Ausbau", "from-[#ff8c2a] to-[#ff5f1f]"],
+                ["1000", "Mitarbeitende", "Belegschaft im Enterprise-Ausbau", "from-[#6366f1] to-[#a855f7]"],
                 ["24", "Spezialisten", "Dynamische Abteilungen – live pro Auftrag (Enterprise)", "from-[#6d5efc] to-[#8b5cf6]"],
                 ["24/7", "im Einsatz", "Autopilot erledigt wiederkehrende Aufträge", "from-[#2dd4bf] to-[#0f766e]"],
                 ["100", "Quality-Score", "Jedes Ergebnis geprüft, bevor Sie es sehen", "from-[#f472b6] to-[#be185d]"],
@@ -758,7 +759,7 @@ export default function Home() {
             </div>
 
             {/* Enterprise-Kontakt */}
-            <div className="mt-10 flex flex-col items-center justify-between gap-4 rounded-2xl border border-[#ffb066]/40 bg-gradient-to-br from-[#fff4e6] to-white p-8 sm:flex-row">
+            <div className="mt-10 flex flex-col items-center justify-between gap-4 rounded-2xl border border-[#818cf8]/40 bg-gradient-to-br from-[#fff4e6] to-white p-8 sm:flex-row">
               <div>
                 <h3 className="text-lg font-semibold">
                   Grösseres Vorhaben? Sprechen wir darüber.
@@ -770,7 +771,7 @@ export default function Home() {
               </div>
               <a
                 href="mailto:beamswiss@gmail.com?subject=Enterprise-Anfrage%20AI%20Command%20Center"
-                className="shop-btn shrink-0 rounded-xl bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-6 py-3 text-sm font-bold text-white shadow-[0_6px_20px_-6px_rgba(255,110,30,0.5)]"
+                className="shop-btn shrink-0 rounded-xl bg-gradient-to-r from-[#6366f1] to-[#a855f7] px-6 py-3 text-sm font-bold text-white shadow-[0_6px_20px_-6px_rgba(99,102,241,0.5)]"
               >
                 Gespräch vereinbaren
               </a>
@@ -794,7 +795,7 @@ export default function Home() {
         <section className="border-t border-[#e8e1d2] px-6 py-24">
           <div className="mx-auto max-w-3xl">
             <div className="text-center">
-              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#c25e0e]">FAQ</p>
+              <p className="mb-4 text-[11px] font-bold uppercase tracking-wider text-[#22d3ee]">FAQ</p>
               <h2 className="text-3xl font-semibold tracking-tight">
                 Häufige Fragen
               </h2>
@@ -807,7 +808,7 @@ export default function Home() {
                 >
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-semibold [&::-webkit-details-marker]:hidden">
                     {item.q}
-                    <svg viewBox="0 0 20 20" className="h-5 w-5 shrink-0 text-[#ff8c2a] transition-transform group-open:rotate-45" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                    <svg viewBox="0 0 20 20" className="h-5 w-5 shrink-0 text-[#6366f1] transition-transform group-open:rotate-45" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
                       <path d="M10 4v12M4 10h12" strokeLinecap="round" />
                     </svg>
                   </summary>
@@ -831,13 +832,13 @@ export default function Home() {
             <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
                 href="/dashboard"
-                className="shop-btn inline-flex h-12 items-center justify-center rounded-full bg-gradient-to-r from-[#ff8c2a] to-[#ff5f1f] px-8 text-base font-bold text-white shadow-[0_10px_30px_-8px_rgba(255,110,30,0.55)]"
+                className="shop-btn inline-flex h-12 items-center justify-center rounded-full bg-gradient-to-r from-[#6366f1] to-[#a855f7] px-8 text-base font-bold text-white shadow-[0_10px_30px_-8px_rgba(99,102,241,0.55)]"
               >
                 Kostenlos testen
               </Link>
               <a
                 href="#abos"
-                className="shop-btn inline-flex h-12 items-center justify-center rounded-full border border-[#e0d8c6] bg-white/70 px-8 text-base font-semibold text-[#4a4335] hover:border-[#ffb066]"
+                className="shop-btn inline-flex h-12 items-center justify-center rounded-full border border-[#e0d8c6] bg-white/70 px-8 text-base font-semibold text-[#4a4335] hover:border-[#818cf8]"
               >
                 Abos ansehen
               </a>
@@ -850,7 +851,7 @@ export default function Home() {
       <footer className="border-t border-[#e8e1d2] px-6 py-10">
         <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-6 sm:flex-row">
           <div className="flex items-center gap-2.5">
-            <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-br from-[#ffb066] to-[#ff5f1f]" aria-hidden="true" />
+            <span className="inline-block h-3 w-3 rounded-full bg-gradient-to-br from-[#818cf8] to-[#a855f7]" aria-hidden="true" />
             <span className="text-sm font-bold">AI Command Center</span>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm">
