@@ -140,6 +140,69 @@ export function hasApiKey(provider: Provider): boolean {
 }
 
 /**
+ * Bevorzugte Reihenfolge für den EIN-KEY-BETRIEB: Der Betreiber hinterlegt
+ * nur EINEN Provider-Key (z. B. ANTHROPIC_API_KEY in Vercel), und das ganze
+ * Team arbeitet echt darüber – der Kunde braucht nie einen eigenen Key. Ist
+ * ein von einem Agenten gewünschter Provider nicht konfiguriert, wird auf den
+ * ersten hier gelisteten konfigurierten Provider umgeleitet.
+ */
+const FALLBACK_ORDER: readonly Provider[] = [
+  "anthropic",
+  "openai",
+  "moonshot",
+  "google",
+  "xai",
+  "deepseek",
+  "mistral",
+  "qwen",
+  "meta",
+  "local",
+];
+
+/** Standard-Modell je Provider, wenn ein Agent dorthin umgeleitet wird. */
+const FALLBACK_MODEL: Record<Provider, string> = {
+  anthropic: "claude-sonnet-5",
+  openai: "gpt-4o-mini",
+  moonshot: "kimi-k3",
+  google: "gemini-2.5-flash",
+  xai: "grok-4",
+  deepseek: "deepseek-chat",
+  mistral: "mistral-large-latest",
+  qwen: "qwen-max",
+  meta: "llama-3.3-70b",
+  local: "local-model",
+};
+
+/** Erster konfigurierter Provider (Key/URL vorhanden) in Präferenzreihenfolge. */
+export function firstConfiguredProvider(): Provider | null {
+  for (const p of FALLBACK_ORDER) {
+    if (hasApiKey(p)) return p;
+  }
+  return null;
+}
+
+/**
+ * Löst (provider, model) für einen Agenten auf.
+ *
+ * - Hat der gewünschte Provider einen Key, bleibt alles unverändert (volle
+ *   Modell-Vielfalt, wenn der Betreiber mehrere Keys hinterlegt).
+ * - Sonst wird auf den ersten konfigurierten Provider umgeleitet und dessen
+ *   Standard-Modell (per <PROVIDER>_MODEL überschreibbar) genutzt. So genügt
+ *   EIN Key (z. B. Anthropic), damit das gesamte Team echt arbeitet.
+ * - Ist gar kein Provider konfiguriert, gibt es null zurück → der Orchestrator
+ *   greift dann sauber auf den Demo-Fallback zurück.
+ */
+export function resolveProviderModel(
+  provider: Provider,
+  model: string,
+): { provider: Provider; model: string } | null {
+  if (hasApiKey(provider)) return { provider, model };
+  const fallback = firstConfiguredProvider();
+  if (!fallback) return null;
+  return { provider: fallback, model: modelId(fallback, FALLBACK_MODEL[fallback]) };
+}
+
+/**
  * Ruft das angegebene Modell beim jeweiligen Provider auf.
  *
  * Netz-/Timeout-Fehler und HTTP 5xx werden genau einmal wiederholt;
