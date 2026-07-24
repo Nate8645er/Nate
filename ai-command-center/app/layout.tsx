@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
+import { Geist, Geist_Mono, Space_Grotesk, Sora, Inter } from "next/font/google";
 import "./globals.css";
 
 // display:"swap" + Fallback: Text bleibt sichtbar (System-Schrift), falls ein
@@ -26,6 +26,23 @@ const spaceGrotesk = Space_Grotesk({
   fallback: ["system-ui", "arial"],
 });
 
+// Neues Marken-Schriftpaar (dunkler Premium-Shop): Sora für Überschriften,
+// Inter für Fliesstext. display:"swap" + Fallback = kein Blank beim Boot.
+const sora = Sora({
+  variable: "--font-sora",
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
+  display: "swap",
+  fallback: ["system-ui", "arial"],
+});
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  display: "swap",
+  fallback: ["system-ui", "arial"],
+});
+
 export const metadata: Metadata = {
   title: "AI Command Center – Ihre komplette KI-Abteilung im Abo",
   description:
@@ -41,7 +58,7 @@ export default function RootLayout({
   return (
     <html
       lang="de"
-      className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} ${sora.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
