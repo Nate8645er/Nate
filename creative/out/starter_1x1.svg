@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#12151d"/>
+      <stop offset="1" stop-color="#0b0d12"/>
+    </linearGradient>
+    <style>
+      text { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; fill: #e7ebf3; }
+      .brand { font-size: 35px; fill: #8b93a7; letter-spacing: 3px; }
+      .name  { font-size: 119px; font-weight: 700; }
+      .price { font-size: 63px; font-weight: 700; fill: #6c8cff; }
+      .aud   { font-size: 37px; fill: #8b93a7; }
+      .feat  { font-size: 39px; }
+      .foot  { font-size: 28px; fill: #8b93a7; }
+    </style>
+  </defs>
+  <rect width="1080" height="1080" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1080" height="15" fill="#6c8cff"/>
+  <text x="86" y="119" class="brand">KI-PLATTFORM</text>
+  <text x="86" y="259" class="name">Starter</text>
+  <text x="86" y="356" class="price">CHF 19.00 / Monat</text>
+  <text x="86" y="416" class="aud">Einzelunternehmer</text>
+  <line x1="86" y1="475" x2="994" y2="475" stroke="#232838" stroke-width="2"/>
+    <circle cx="96" cy="550" r="7" fill="#6c8cff"/><text x="120" y="562" class="feat">Schnelle Cloud-Modelle</text>
+    <circle cx="96" cy="628" r="7" fill="#6c8cff"/><text x="120" y="640" class="feat">3 Agenten</text>
+    <circle cx="96" cy="706" r="7" fill="#6c8cff"/><text x="120" y="718" class="feat">2 Mio. Tokens/Monat</text>
+    <circle cx="96" cy="784" r="7" fill="#6c8cff"/><text x="120" y="796" class="feat">E-Mail-Support</text>
+    <circle cx="96" cy="862" r="7" fill="#6c8cff"/><text x="120" y="874" class="feat">1 Integration</text>
+  <text x="86" y="994" class="foot">Preise KI-Plattform · inkl. MwSt</text>
+</svg>

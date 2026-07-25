@@ -1,0 +1,43 @@
+{
+  "_comment": "Tarif-Wahrheit fuer die Creative-Pipeline (Produkt C). Spiegelt platform-backend/migrations/002_seed_plans.sql. Preise CHF inkl. MwSt (Schweizer Recht, ehrlich). Aendert sich hier etwas, `python generate.py` neu ausfuehren.",
+  "brand": "KI-Plattform",
+  "currency": "CHF",
+  "vat_note": "inkl. MwSt",
+  "tariffs": [
+    {
+      "code": "free",
+      "name": "Free",
+      "price_display": "Kostenlos",
+      "audience": "Zum Testen",
+      "features": ["1 lokales Modell", "1 Agent", "100'000 Tokens/Monat", "Kein Support"]
+    },
+    {
+      "code": "starter",
+      "name": "Starter",
+      "price_display": "CHF 19.00 / Monat",
+      "audience": "Einzelunternehmer",
+      "features": ["Schnelle Cloud-Modelle", "3 Agenten", "2 Mio. Tokens/Monat", "E-Mail-Support", "1 Integration"]
+    },
+    {
+      "code": "pro",
+      "name": "Pro",
+      "price_display": "CHF 49.00 / Monat",
+      "audience": "KMU",
+      "features": ["Starke Cloud- + lokale Modelle", "10 Agenten", "10 Mio. Tokens/Monat", "3 Integrationen", "E-Mail-Support"]
+    },
+    {
+      "code": "business",
+      "name": "Business",
+      "price_display": "CHF 149.00 / Monat",
+      "audience": "Teams",
+      "features": ["Alle Modelle, freie Wahl", "30 Agenten", "50 Mio. Tokens/Monat", "SSO + Team-Verwaltung", "Alle Integrationen"]
+    },
+    {
+      "code": "enterprise",
+      "name": "Enterprise",
+      "price_display": "Auf Anfrage",
+      "audience": "Konzern / Individuell",
+      "features": ["Alles + dedizierte Instanz", "Unbegrenzte Agenten", "SLA + Onboarding", "Eigener Mandant"]
+    }
+  ]
+}

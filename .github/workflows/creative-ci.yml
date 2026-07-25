@@ -1,0 +1,31 @@
+name: creative CI
+
+# Leichte CI fuer Produkt C: Tests + Generator wirklich ausfuehren und pruefen,
+# dass alle erwarteten SVGs entstehen. Nur bei Aenderungen unter creative/.
+on:
+  push:
+    paths: ["creative/**", ".github/workflows/creative-ci.yml"]
+  pull_request:
+    paths: ["creative/**", ".github/workflows/creative-ci.yml"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: creative
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --upgrade pip pytest
+      - name: Kompilieren
+        run: python -m py_compile generate.py
+      - name: Tests
+        run: pytest -q
+      - name: Generator ausfuehren + Ausgabe pruefen
+        run: |
+          python generate.py
+          test "$(ls out/*.svg | wc -l)" -eq 15
+          test -f out/index.html

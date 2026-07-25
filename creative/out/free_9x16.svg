@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#12151d"/>
+      <stop offset="1" stop-color="#0b0d12"/>
+    </linearGradient>
+    <style>
+      text { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; fill: #e7ebf3; }
+      .brand { font-size: 35px; fill: #8b93a7; letter-spacing: 3px; }
+      .name  { font-size: 119px; font-weight: 700; }
+      .price { font-size: 63px; font-weight: 700; fill: #6c8cff; }
+      .aud   { font-size: 37px; fill: #8b93a7; }
+      .feat  { font-size: 39px; }
+      .foot  { font-size: 28px; fill: #8b93a7; }
+    </style>
+  </defs>
+  <rect width="1080" height="1920" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1080" height="27" fill="#6c8cff"/>
+  <text x="86" y="211" class="brand">KI-PLATTFORM</text>
+  <text x="86" y="461" class="name">Free</text>
+  <text x="86" y="634" class="price">Kostenlos</text>
+  <text x="86" y="739" class="aud">Zum Testen</text>
+  <line x1="86" y1="845" x2="994" y2="845" stroke="#232838" stroke-width="2"/>
+    <circle cx="96" cy="986" r="7" fill="#6c8cff"/><text x="120" y="998" class="feat">1 lokales Modell</text>
+    <circle cx="96" cy="1124" r="7" fill="#6c8cff"/><text x="120" y="1136" class="feat">1 Agent</text>
+    <circle cx="96" cy="1262" r="7" fill="#6c8cff"/><text x="120" y="1274" class="feat">100'000 Tokens/Monat</text>
+    <circle cx="96" cy="1400" r="7" fill="#6c8cff"/><text x="120" y="1412" class="feat">Kein Support</text>
+  <text x="86" y="1834" class="foot">Preise KI-Plattform · inkl. MwSt</text>
+</svg>
