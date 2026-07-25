@@ -12,7 +12,7 @@
   <h2>1. Geltungsbereich</h2>
   <p>
     Diese AGB gelten für den Abschluss von Abonnements über
-    {{ shop.metafields.legal.company_name | default: "[Firmenname]" }}
+    {{ settings.legal_company_name | default: "[Firmenname]" }}
     ("Anbieterin") für den Zugang zur KI-Plattform.
   </p>
 
@@ -43,7 +43,7 @@
   <p>
     Das Abonnement kann jederzeit auf das Ende der laufenden Abrechnungs­periode
     gekündigt werden, im Kundenkonto oder per E-Mail an
-    {{ shop.metafields.legal.contact_email | default: "[kontakt@beispiel.ch]" }}.
+    {{ settings.legal_contact_email | default: "[kontakt@beispiel.ch]" }}.
     Es entstehen keine Kündigungsgebühren. Bereits bezahlte Perioden werden
     nicht anteilig rückerstattet, der Zugang bleibt bis zum Ende der
     bezahlten Periode bestehen.

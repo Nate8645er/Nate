@@ -7,21 +7,44 @@ Stores: eigene Domain, eigenes Theme, eigene Rechtstexte.
 
 ```
 store/
+  layout/
+    theme.liquid            Grundgeruest (Header/Footer/Meta), bindet base.css ein
+  assets/
+    base.css                Globale Palette (dunkel/Premium), gemeinsam fuer alle Sektionen
   sections/
-    tariffs.liquid          Tarif-Vergleich als Theme-Sektion (Bloecke = Tarife)
+    header.liquid           Logo + Navigation (Bloecke) + Warenkorb-Link
+    footer.liquid           Copyright + Links zu den Rechtstexten (blendet fehlende aus)
+    hero.liquid             Startseiten-Aufmacher (Ueberschrift/Unterzeile editierbar)
+    tariffs.liquid          Tarif-Vergleich (Bloecke = Tarife)
   templates/
+    index.liquid            Startseite: Hero + Tarife
     page.impressum.liquid   Anbieterkennzeichnung
     page.agb.liquid         AGB: Preise, Abrechnung, Kuendigung, Haftung
     page.datenschutz.liquid Datenschutzerklaerung (revDSG, ggf. DSGVO)
     page.widerruf.liquid    Kuendigung + freiwillige 14-Tage-Kulanz
+  config/
+    settings_schema.json    Theme-Einstellungen, u.a. Firmendaten fuer die Rechtstexte
 ```
 
-**Vor Veröffentlichung:** In jeder Rechtstext-Datei die `shop.metafields.legal.*`-
-Platzhalter (Firmenname, Adresse, UID, Kontakt) über Theme-Einstellungen oder
-Metafields mit den echten Angaben füllen — hier bewusst nicht erfunden.
-Alle vier Seiten sind Vorlagen und ersetzen keine Rechtsberatung.
+Alle Liquid-Dateien sind auf Tag-Balance und die `{% schema %}`-JSONs auf
+Gültigkeit geprüft (kein Shopify-CLI in dieser Umgebung verfügbar, daher
+strukturelle statt Live-Validierung).
 
-Weitere Theme-Teile (Layout, Kundenbereich) folgen additiv.
+## Vor Veröffentlichung: zwei operative Schritte
+
+1. **Firmendaten eintragen**: Theme-Editor → Einstellungen → „Firmendaten
+   (Rechtstexte)" — füllt `settings.legal_*`, das die vier Rechtstext-Seiten
+   referenzieren. Hier bewusst **keine** Firmendaten erfunden (Master-Prompt:
+   keine erfundenen Fakten); ungefüllt zeigen die Seiten `[Platzhalter]`.
+2. **Seiten anlegen**: Im Shopify-Admin unter „Onlineshop → Seiten" vier
+   Seiten mit **genau diesen Handles** anlegen und der passenden Vorlage
+   zuweisen, damit Footer-Links und `page.<handle>.liquid` greifen:
+   `impressum` → `page.impressum`, `agb` → `page.agb`,
+   `datenschutz` → `page.datenschutz`, `widerruf` → `page.widerruf`.
+   Der Footer blendet einen Link automatisch aus, solange die zugehörige
+   Seite noch nicht existiert (bricht also nichts, wenn das noch aussteht).
+
+Alle vier Rechtstexte sind Vorlagen und ersetzen keine Rechtsberatung.
 
 ## Automatische Freischaltung (Store → Plattform)
 
@@ -55,5 +78,15 @@ shopify theme dev --path store
 - [x] Keine Fake-Verknappung, keine Countdown-Balken.
 - [x] Keine erfundenen Bewertungen/Testimonials.
 - [x] Keine falschen Streichpreise.
-- [x] Impressum, AGB, Datenschutz, Widerruf/Kündigung als Seitenvorlagen —
-      **Firmendaten-Platzhalter müssen vor Live-Schaltung gefüllt werden.**
+- [x] Impressum, AGB, Datenschutz, Widerruf/Kündigung als Seitenvorlagen,
+      im Footer verlinkt — **Firmendaten vor Live-Schaltung im Theme-Editor
+      eintragen (siehe oben).**
+
+## Bewusst offen
+
+- Kein Produkt-/Warenkorb-Template (Abo-Produkte laufen über den
+  Checkout-Flow, kein klassisches Produktdetail-Layout nötig für 5 SKUs).
+- Kein Kundenbereich mit Onboarding-Videos — wartet auf die
+  Erklärvideos aus `../creative/video/` (Produkt C).
+- Lighthouse-Performance-Check (DoD ≥ 90 mobil) — braucht einen echten
+  Shopify-Store-Deploy, hier nicht durchführbar.

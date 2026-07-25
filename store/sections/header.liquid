@@ -1,0 +1,39 @@
+<header style="border-bottom:1px solid #232838;background:#0b0d12;">
+  <div class="page-width" style="display:flex;align-items:center;gap:24px;padding:18px 20px;">
+    <a href="/" style="color:#e7ebf3;text-decoration:none;font-weight:700;font-size:18px;letter-spacing:.3px;">
+      {{ section.settings.logo_text | default: shop.name | escape }}
+    </a>
+    <nav style="display:flex;gap:20px;margin-left:auto;">
+      {%- for block in section.blocks -%}
+        <a {{ block.shopify_attributes }}
+           href="{{ block.settings.url }}"
+           style="color:#8b93a7;text-decoration:none;font-size:14px;">
+          {{ block.settings.label | escape }}
+        </a>
+      {%- endfor -%}
+      <a href="/cart" style="color:#e7ebf3;text-decoration:none;font-size:14px;" aria-label="Warenkorb">
+        Warenkorb{% if cart.item_count > 0 %} ({{ cart.item_count }}){% endif %}
+      </a>
+    </nav>
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    { "type": "text", "id": "logo_text", "label": "Logo-Text", "default": "KI-Plattform" }
+  ],
+  "blocks": [
+    {
+      "type": "link",
+      "name": "Navigationslink",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Beschriftung", "default": "Tarife" },
+        { "type": "url", "id": "url", "label": "Link" }
+      ]
+    }
+  ],
+  "max_blocks": 6
+}
+{% endschema %}

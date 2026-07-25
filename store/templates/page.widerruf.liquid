@@ -14,7 +14,7 @@
     Sie können Ihr Abonnement jederzeit auf das Ende der laufenden
     Abrechnungsperiode kündigen — im Kundenkonto unter „Abo verwalten" oder
     per E-Mail an
-    {{ shop.metafields.legal.contact_email | default: "[kontakt@beispiel.ch]" }}.
+    {{ settings.legal_contact_email | default: "[kontakt@beispiel.ch]" }}.
     Es entstehen keine Kündigungsgebühren. Nach der Kündigung bleibt der
     Zugang bis zum Ende der bereits bezahlten Periode aktiv.
   </p>
@@ -32,7 +32,7 @@
   <h2>Ablauf</h2>
   <p>
     Anfrage an
-    {{ shop.metafields.legal.contact_email | default: "[kontakt@beispiel.ch]" }}
+    {{ settings.legal_contact_email | default: "[kontakt@beispiel.ch]" }}
     mit Bestellnummer. Die Rückerstattung erfolgt auf dem ursprünglichen
     Zahlungsweg innerhalb von 10 Werktagen.
   </p>

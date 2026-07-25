@@ -10,27 +10,27 @@
 
   <h2>Anbieterin</h2>
   <p>
-    {{ shop.metafields.legal.company_name | default: "[Firmenname eintragen]" }}<br>
-    {{ shop.metafields.legal.street | default: "[Strasse Nr.]" }}<br>
-    {{ shop.metafields.legal.zip_city | default: "[PLZ Ort]" }}<br>
+    {{ settings.legal_company_name | default: "[Firmenname eintragen]" }}<br>
+    {{ settings.legal_street | default: "[Strasse Nr.]" }}<br>
+    {{ settings.legal_zip_city | default: "[PLZ Ort]" }}<br>
     Schweiz
   </p>
 
   <h2>Kontakt</h2>
   <p>
-    E-Mail: {{ shop.metafields.legal.contact_email | default: "[kontakt@beispiel.ch]" }}<br>
-    Telefon: {{ shop.metafields.legal.phone | default: "[optional]" }}
+    E-Mail: {{ settings.legal_contact_email | default: "[kontakt@beispiel.ch]" }}<br>
+    Telefon: {{ settings.legal_phone | default: "[optional]" }}
   </p>
 
   <h2>Handelsregister</h2>
   <p>
-    Rechtsform: {{ shop.metafields.legal.legal_form | default: "[z.B. Einzelunternehmen / GmbH / AG]" }}<br>
-    UID: {{ shop.metafields.legal.uid | default: "[CHE-xxx.xxx.xxx]" }}<br>
-    MWST-Nr.: {{ shop.metafields.legal.vat_number | default: "[falls MWST-pflichtig]" }}
+    Rechtsform: {{ settings.legal_form | default: "[z.B. Einzelunternehmen / GmbH / AG]" }}<br>
+    UID: {{ settings.legal_uid | default: "[CHE-xxx.xxx.xxx]" }}<br>
+    MWST-Nr.: {{ settings.legal_vat_number | default: "[falls MWST-pflichtig]" }}
   </p>
 
   <h2>Verantwortlich für den Inhalt</h2>
-  <p>{{ shop.metafields.legal.responsible_person | default: "[Name der verantwortlichen Person]" }}</p>
+  <p>{{ settings.legal_responsible_person | default: "[Name der verantwortlichen Person]" }}</p>
 
   <p style="color:#8b93a7;font-size:13px;margin-top:32px;">
     Diese Seite wurde als Vorlage generiert. Vor Veröffentlichung sind alle

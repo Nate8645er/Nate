@@ -1,0 +1,23 @@
+name: store CI
+
+# Strukturelle Validierung des Shopify-Themes (Produkt B): Liquid-Tag-Balance
+# + Schema-JSON-Gueltigkeit. Kein Shopify-CLI verfuegbar -> ersetzt keinen
+# echten Theme-Check, faengt aber die haeufigsten Fehler ab.
+on:
+  push:
+    paths: ["store/**", ".github/workflows/store-ci.yml"]
+  pull_request:
+    paths: ["store/**", ".github/workflows/store-ci.yml"]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: store
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python validate.py

@@ -1,0 +1,25 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "KI-Plattform Store",
+    "theme_version": "0.1.0",
+    "theme_author": "Nate",
+    "theme_documentation_url": "",
+    "theme_support_url": ""
+  },
+  {
+    "name": "Firmendaten (Rechtstexte)",
+    "settings": [
+      { "type": "header", "content": "Fuer Impressum/AGB/Datenschutz — siehe store/README.md" },
+      { "type": "text", "id": "legal_company_name", "label": "Firmenname" },
+      { "type": "text", "id": "legal_street", "label": "Strasse Nr." },
+      { "type": "text", "id": "legal_zip_city", "label": "PLZ Ort" },
+      { "type": "text", "id": "legal_contact_email", "label": "Kontakt-E-Mail" },
+      { "type": "text", "id": "legal_phone", "label": "Telefon (optional)" },
+      { "type": "text", "id": "legal_form", "label": "Rechtsform" },
+      { "type": "text", "id": "legal_uid", "label": "UID (CHE-...)" },
+      { "type": "text", "id": "legal_vat_number", "label": "MWST-Nr. (falls pflichtig)" },
+      { "type": "text", "id": "legal_responsible_person", "label": "Verantwortliche Person" }
+    ]
+  }
+]

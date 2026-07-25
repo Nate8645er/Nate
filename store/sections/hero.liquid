@@ -1,0 +1,21 @@
+<section style="padding:80px 20px 40px;text-align:center;">
+  <div class="page-width">
+    <h1 style="font-size:40px;font-weight:700;margin:0 0 12px;color:#e7ebf3;">
+      {{ section.settings.heading | escape }}
+    </h1>
+    <p style="color:#8b93a7;font-size:17px;max-width:640px;margin:0 auto;">
+      {{ section.settings.subheading | escape }}
+    </p>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Überschrift", "default": "Eine KI-Plattform für Ihr Unternehmen" },
+    { "type": "textarea", "id": "subheading", "label": "Unterzeile", "default": "Chat, Agenten und Automatisierung — Modelle frei wählbar, Preise transparent in CHF inkl. MwSt." }
+  ],
+  "presets": [{ "name": "Hero" }]
+}
+{% endschema %}

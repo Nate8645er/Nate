@@ -1,0 +1,31 @@
+<footer style="border-top:1px solid #232838;background:#0b0d12;margin-top:48px;">
+  <div class="page-width" style="padding:32px 20px;display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center;">
+    <div style="color:#8b93a7;font-size:13px;">
+      &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. Alle Preise CHF inkl. MwSt.
+    </div>
+    <nav style="display:flex;gap:18px;flex-wrap:wrap;">
+      {%- comment -%}
+        Setzt voraus, dass im Shopify-Admin Seiten mit genau diesen Handles
+        existieren und den Vorlagen page.impressum/agb/datenschutz/widerruf
+        zugewiesen sind (siehe store/README.md). Fehlt eine Seite (noch nicht
+        angelegt), wird der Link ausgeblendet statt kaputt zu verlinken.
+      {%- endcomment -%}
+      {%- if pages['impressum'] -%}
+        <a href="{{ pages['impressum'].url }}" style="color:#8b93a7;text-decoration:none;font-size:13px;">Impressum</a>
+      {%- endif -%}
+      {%- if pages['agb'] -%}
+        <a href="{{ pages['agb'].url }}" style="color:#8b93a7;text-decoration:none;font-size:13px;">AGB</a>
+      {%- endif -%}
+      {%- if pages['datenschutz'] -%}
+        <a href="{{ pages['datenschutz'].url }}" style="color:#8b93a7;text-decoration:none;font-size:13px;">Datenschutz</a>
+      {%- endif -%}
+      {%- if pages['widerruf'] -%}
+        <a href="{{ pages['widerruf'].url }}" style="color:#8b93a7;text-decoration:none;font-size:13px;">Widerruf &amp; Kündigung</a>
+      {%- endif -%}
+    </nav>
+  </div>
+</footer>
+
+{% schema %}
+{ "name": "Footer", "settings": [] }
+{% endschema %}

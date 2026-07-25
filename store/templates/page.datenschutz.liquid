@@ -10,10 +10,10 @@
 
   <h2>1. Verantwortliche Stelle</h2>
   <p>
-    {{ shop.metafields.legal.company_name | default: "[Firmenname]" }},
-    {{ shop.metafields.legal.street | default: "[Strasse Nr.]" }},
-    {{ shop.metafields.legal.zip_city | default: "[PLZ Ort]" }}, Schweiz.
-    Kontakt: {{ shop.metafields.legal.contact_email | default: "[kontakt@beispiel.ch]" }}
+    {{ settings.legal_company_name | default: "[Firmenname]" }},
+    {{ settings.legal_street | default: "[Strasse Nr.]" }},
+    {{ settings.legal_zip_city | default: "[PLZ Ort]" }}, Schweiz.
+    Kontakt: {{ settings.legal_contact_email | default: "[kontakt@beispiel.ch]" }}
   </p>
 
   <h2>2. Welche Daten wir bearbeiten</h2>
@@ -54,7 +54,7 @@
     Sie haben das Recht auf Auskunft, Berichtigung, Löschung und
     Herausgabe Ihrer Daten im Rahmen des geltenden Rechts (revDSG, ggf.
     DSGVO). Anfragen richten Sie an
-    {{ shop.metafields.legal.contact_email | default: "[kontakt@beispiel.ch]" }}.
+    {{ settings.legal_contact_email | default: "[kontakt@beispiel.ch]" }}.
   </p>
 
   <h2>7. Datensicherheit</h2>
