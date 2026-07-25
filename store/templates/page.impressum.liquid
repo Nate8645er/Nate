@@ -1,0 +1,40 @@
+{%- comment -%}
+  Impressum. Schweizer Recht verlangt korrekte Anbieterkennzeichnung
+  (Art. 3 UWG i.V.m. OR). Alle {{ '{{ ... }}' }}-Platzhalter mit den echten
+  Firmendaten fuellen, bevor die Seite live geht — hier werden bewusst KEINE
+  Firmendaten erfunden (Master-Prompt: keine erfundenen Fakten).
+{%- endcomment -%}
+
+<div class="page-width" style="max-width:760px;margin:0 auto;padding:48px 20px;color:#e7ebf3;">
+  <h1>Impressum</h1>
+
+  <h2>Anbieterin</h2>
+  <p>
+    {{ shop.metafields.legal.company_name | default: "[Firmenname eintragen]" }}<br>
+    {{ shop.metafields.legal.street | default: "[Strasse Nr.]" }}<br>
+    {{ shop.metafields.legal.zip_city | default: "[PLZ Ort]" }}<br>
+    Schweiz
+  </p>
+
+  <h2>Kontakt</h2>
+  <p>
+    E-Mail: {{ shop.metafields.legal.contact_email | default: "[kontakt@beispiel.ch]" }}<br>
+    Telefon: {{ shop.metafields.legal.phone | default: "[optional]" }}
+  </p>
+
+  <h2>Handelsregister</h2>
+  <p>
+    Rechtsform: {{ shop.metafields.legal.legal_form | default: "[z.B. Einzelunternehmen / GmbH / AG]" }}<br>
+    UID: {{ shop.metafields.legal.uid | default: "[CHE-xxx.xxx.xxx]" }}<br>
+    MWST-Nr.: {{ shop.metafields.legal.vat_number | default: "[falls MWST-pflichtig]" }}
+  </p>
+
+  <h2>Verantwortlich für den Inhalt</h2>
+  <p>{{ shop.metafields.legal.responsible_person | default: "[Name der verantwortlichen Person]" }}</p>
+
+  <p style="color:#8b93a7;font-size:13px;margin-top:32px;">
+    Diese Seite wurde als Vorlage generiert. Vor Veröffentlichung sind alle
+    Platzhalter mit den korrekten, tatsächlichen Angaben zu ersetzen (z. B.
+    über Theme-Einstellungen/Metafields).
+  </p>
+</div>

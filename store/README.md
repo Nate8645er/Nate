@@ -8,10 +8,20 @@ Stores: eigene Domain, eigenes Theme, eigene Rechtstexte.
 ```
 store/
   sections/
-    tariffs.liquid   Tarif-Vergleich als Theme-Sektion (Bloecke = Tarife)
+    tariffs.liquid          Tarif-Vergleich als Theme-Sektion (Bloecke = Tarife)
+  templates/
+    page.impressum.liquid   Anbieterkennzeichnung
+    page.agb.liquid         AGB: Preise, Abrechnung, Kuendigung, Haftung
+    page.datenschutz.liquid Datenschutzerklaerung (revDSG, ggf. DSGVO)
+    page.widerruf.liquid    Kuendigung + freiwillige 14-Tage-Kulanz
 ```
 
-Weitere Theme-Teile (Layout, Rechtstexte, Kundenbereich) folgen additiv.
+**Vor Veröffentlichung:** In jeder Rechtstext-Datei die `shop.metafields.legal.*`-
+Platzhalter (Firmenname, Adresse, UID, Kontakt) über Theme-Einstellungen oder
+Metafields mit den echten Angaben füllen — hier bewusst nicht erfunden.
+Alle vier Seiten sind Vorlagen und ersetzen keine Rechtsberatung.
+
+Weitere Theme-Teile (Layout, Kundenbereich) folgen additiv.
 
 ## Automatische Freischaltung (Store → Plattform)
 
@@ -45,4 +55,5 @@ shopify theme dev --path store
 - [x] Keine Fake-Verknappung, keine Countdown-Balken.
 - [x] Keine erfundenen Bewertungen/Testimonials.
 - [x] Keine falschen Streichpreise.
-- [ ] Impressum, AGB, Datenschutz, Widerruf/Kündigung (folgen als eigene Seiten).
+- [x] Impressum, AGB, Datenschutz, Widerruf/Kündigung als Seitenvorlagen —
+      **Firmendaten-Platzhalter müssen vor Live-Schaltung gefüllt werden.**

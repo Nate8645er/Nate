@@ -1,0 +1,82 @@
+{%- comment -%}
+  Allgemeine Geschaeftsbedingungen fuer den Abo-Verkauf (Produkt B). Deckt die
+  im Master-Prompt geforderten Punkte ab (Kap. 4.5): Preise CHF inkl. MwSt,
+  Kuendigungsbedingungen klar, keine Fake-Verknappung/Streichpreise.
+  Firmendaten als Platzhalter — siehe page.impressum.liquid.
+{%- endcomment -%}
+
+<div class="page-width" style="max-width:760px;margin:0 auto;padding:48px 20px;color:#e7ebf3;line-height:1.6;">
+  <h1>Allgemeine Geschäftsbedingungen (AGB)</h1>
+  <p style="color:#8b93a7;">Stand: {{ 'now' | date: "%d.%m.%Y" }}</p>
+
+  <h2>1. Geltungsbereich</h2>
+  <p>
+    Diese AGB gelten für den Abschluss von Abonnements über
+    {{ shop.metafields.legal.company_name | default: "[Firmenname]" }}
+    ("Anbieterin") für den Zugang zur KI-Plattform.
+  </p>
+
+  <h2>2. Vertragsschluss</h2>
+  <p>
+    Der Vertrag kommt mit Abschluss der Bestellung und Bestätigung durch die
+    Anbieterin zustande. Der Zugang wird nach Zahlungseingang automatisiert
+    freigeschaltet.
+  </p>
+
+  <h2>3. Preise</h2>
+  <p>
+    Alle Preise sind in Schweizer Franken (CHF) und verstehen sich
+    <strong>inklusive Mehrwertsteuer</strong>. Es gelten die zum Zeitpunkt der
+    Bestellung auf der Tarif-Seite angegebenen Preise. Preisänderungen für
+    künftige Abrechnungsperioden werden mindestens 30 Tage im Voraus
+    kommuniziert.
+  </p>
+
+  <h2>4. Abrechnung und Zahlung</h2>
+  <p>
+    Abonnements werden monatlich im Voraus abgerechnet und automatisch
+    verlängert, bis sie gekündigt werden. Bei Zahlungsausfall kann der
+    Zugang bis zur Begleichung ausgesetzt werden.
+  </p>
+
+  <h2>5. Kündigung</h2>
+  <p>
+    Das Abonnement kann jederzeit auf das Ende der laufenden Abrechnungs­periode
+    gekündigt werden, im Kundenkonto oder per E-Mail an
+    {{ shop.metafields.legal.contact_email | default: "[kontakt@beispiel.ch]" }}.
+    Es entstehen keine Kündigungsgebühren. Bereits bezahlte Perioden werden
+    nicht anteilig rückerstattet, der Zugang bleibt bis zum Ende der
+    bezahlten Periode bestehen.
+  </p>
+
+  <h2>6. Leistungsumfang</h2>
+  <p>
+    Der Funktionsumfang richtet sich nach dem gewählten Tarif (siehe
+    Tarif-Seite). Änderungen des Leistungsumfangs innerhalb eines Tarifs
+    werden vorab kommuniziert.
+  </p>
+
+  <h2>7. Verfügbarkeit</h2>
+  <p>
+    Die Anbieterin bemüht sich um eine hohe Verfügbarkeit, kann diese jedoch
+    nicht garantieren (Wartungsfenster, Störungen bei Drittanbietern).
+  </p>
+
+  <h2>8. Haftung</h2>
+  <p>
+    Die Haftung richtet sich nach den gesetzlichen Bestimmungen des
+    schweizerischen Obligationenrechts. Eine Haftung für leichte Fahrlässigkeit
+    wird, soweit gesetzlich zulässig, ausgeschlossen.
+  </p>
+
+  <h2>9. Anwendbares Recht und Gerichtsstand</h2>
+  <p>
+    Es gilt schweizerisches Recht. Gerichtsstand ist der Sitz der Anbieterin,
+    soweit zwingende gesetzliche Vorschriften nichts anderes bestimmen.
+  </p>
+
+  <p style="color:#8b93a7;font-size:13px;margin-top:32px;">
+    Diese AGB sind eine Vorlage und ersetzen keine Rechtsberatung. Vor
+    Veröffentlichung durch eine fachkundige Person prüfen lassen.
+  </p>
+</div>

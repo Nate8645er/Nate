@@ -1,0 +1,70 @@
+{%- comment -%}
+  Datenschutzerklaerung. Orientiert an revDSG (Schweiz) und, soweit
+  einschlaegig, DSGVO (bei Angeboten an EU-Kundschaft). Platzhalter fuer
+  Firmendaten wie in page.impressum.liquid.
+{%- endcomment -%}
+
+<div class="page-width" style="max-width:760px;margin:0 auto;padding:48px 20px;color:#e7ebf3;line-height:1.6;">
+  <h1>Datenschutzerklärung</h1>
+  <p style="color:#8b93a7;">Stand: {{ 'now' | date: "%d.%m.%Y" }}</p>
+
+  <h2>1. Verantwortliche Stelle</h2>
+  <p>
+    {{ shop.metafields.legal.company_name | default: "[Firmenname]" }},
+    {{ shop.metafields.legal.street | default: "[Strasse Nr.]" }},
+    {{ shop.metafields.legal.zip_city | default: "[PLZ Ort]" }}, Schweiz.
+    Kontakt: {{ shop.metafields.legal.contact_email | default: "[kontakt@beispiel.ch]" }}
+  </p>
+
+  <h2>2. Welche Daten wir bearbeiten</h2>
+  <ul>
+    <li>Bestell- und Zahlungsdaten (Name, E-Mail, Adresse, Zahlungsart) — zur
+      Vertragsabwicklung.</li>
+    <li>Kontodaten der KI-Plattform (E-Mail, Nutzungs-/Token-Statistiken) —
+      zur Bereitstellung des Dienstes und Abrechnung.</li>
+    <li>Chat-Inhalte innerhalb der Plattform — zur Erbringung der Funktion,
+      mandantengetrennt gespeichert.</li>
+    <li>Technische Daten (IP-Adresse, Log-Dateien) — zur Sicherheit und
+      Fehlerbehebung.</li>
+  </ul>
+
+  <h2>3. Zweck der Bearbeitung</h2>
+  <p>
+    Vertragsabwicklung, Kontoverwaltung, Rechnungsstellung, Betrieb und
+    Absicherung der Plattform, Support.
+  </p>
+
+  <h2>4. Weitergabe an Dritte</h2>
+  <p>
+    Zur Vertragserfüllung werden Daten an folgende Auftragsverarbeiter
+    weitergegeben, soweit eingesetzt: Zahlungsdienstleister (z. B. Stripe),
+    Hosting-/Infrastrukturanbieter, KI-Modellanbieter (zur Verarbeitung von
+    Chat-Anfragen, entsprechend der gewählten Modelle). Es findet keine
+    Weitergabe zu Werbezwecken statt.
+  </p>
+
+  <h2>5. Aufbewahrungsdauer</h2>
+  <p>
+    Daten werden so lange aufbewahrt, wie es für die Vertragserfüllung und
+    gesetzliche Aufbewahrungspflichten erforderlich ist.
+  </p>
+
+  <h2>6. Ihre Rechte</h2>
+  <p>
+    Sie haben das Recht auf Auskunft, Berichtigung, Löschung und
+    Herausgabe Ihrer Daten im Rahmen des geltenden Rechts (revDSG, ggf.
+    DSGVO). Anfragen richten Sie an
+    {{ shop.metafields.legal.contact_email | default: "[kontakt@beispiel.ch]" }}.
+  </p>
+
+  <h2>7. Datensicherheit</h2>
+  <p>
+    Die Plattform trennt Kundendaten technisch pro Mandant (Datenbankebene)
+    und verschlüsselt Verbindungen. Zugangsdaten werden gehasht gespeichert.
+  </p>
+
+  <p style="color:#8b93a7;font-size:13px;margin-top:32px;">
+    Diese Erklärung ist eine Vorlage und ersetzt keine Rechtsberatung. Vor
+    Veröffentlichung durch eine fachkundige Person prüfen lassen.
+  </p>
+</div>
