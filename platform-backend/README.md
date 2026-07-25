@@ -133,6 +133,10 @@ einen Postgres-Service hoch.
 - Chat: Payload-Grenzen (Länge/Anzahl Messages), Konversations-Eigentumsprüfung,
   generische Upstream-Fehler (kein Info-Leak). Docker-Image als Nicht-root
   mit Healthcheck.
+- **Rate-Limiting** pro Mandant auf `/v1/chat` und `/v1/agents/{id}/chat`
+  (30 Aufrufe/60s, Sliding Window, In-Process). Bei horizontaler Skalierung
+  (mehrere Prozesse/Pods) durch einen gemeinsamen Speicher (Redis) ersetzen —
+  siehe Kommentar in `app/ratelimit.py`.
 
 ## Status / bewusst offen (Phase 3+)
 

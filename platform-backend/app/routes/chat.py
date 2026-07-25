@@ -12,6 +12,7 @@ from ..auth import Principal, require_principal
 from ..completions import run_chat
 from ..models_catalog import is_registered
 from ..plans import model_allowed
+from ..ratelimit import chat_limiter
 
 router = APIRouter()
 
@@ -47,6 +48,7 @@ def ensure_model_available(model: str, principal: Principal) -> None:
 
 @router.post("/v1/chat")
 async def chat(req: ChatRequest, principal: Principal = Depends(require_principal)):
+    chat_limiter.check(principal.tenant_id)
     ensure_model_available(req.model, principal)
     return await run_chat(
         principal,

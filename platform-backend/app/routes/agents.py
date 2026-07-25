@@ -12,6 +12,7 @@ from ..completions import run_chat
 from ..db import tenant_tx
 from ..models_catalog import is_registered
 from ..plans import model_allowed
+from ..ratelimit import chat_limiter
 from .chat import MAX_MESSAGES, ChatMessage, ensure_model_available
 
 router = APIRouter()
@@ -118,6 +119,7 @@ async def run_agent(
 ):
     """Fuehrt den Agenten aus: sein System-Prompt + sein Modell, ansonsten die
     gemeinsame Chat-Bahn (Limit, Gateway, Persistenz, Verbrauch)."""
+    chat_limiter.check(principal.tenant_id)
     with tenant_tx(principal.tenant_id) as conn:
         agent = conn.execute(
             "SELECT model, system_prompt FROM agents WHERE id = %s", (agent_id,)
