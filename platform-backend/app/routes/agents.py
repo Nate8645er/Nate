@@ -8,9 +8,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from ..auth import Principal, require_principal
+from ..completions import run_chat
 from ..db import tenant_tx
 from ..models_catalog import is_registered
 from ..plans import model_allowed
+from .chat import MAX_MESSAGES, ChatMessage, ensure_model_available
 
 router = APIRouter()
 
@@ -19,6 +21,12 @@ class AgentCreate(BaseModel):
     name: str = Field(min_length=1, max_length=120)
     model: str = Field(max_length=200)
     system_prompt: str = Field(default="", max_length=20_000)
+
+
+class AgentChatRequest(BaseModel):
+    messages: list[ChatMessage] = Field(min_length=1, max_length=MAX_MESSAGES)
+    conversation_id: uuid.UUID | None = None
+    temperature: float | None = Field(default=None, ge=0.0, le=2.0)
 
 
 def _serialize(r) -> dict:
@@ -100,3 +108,31 @@ async def delete_agent(
         ).fetchone()
     if deleted is None:
         raise HTTPException(status_code=404, detail="Agent nicht gefunden")
+
+
+@router.post("/v1/agents/{agent_id}/chat")
+async def run_agent(
+    agent_id: uuid.UUID,
+    req: AgentChatRequest,
+    principal: Principal = Depends(require_principal),
+):
+    """Fuehrt den Agenten aus: sein System-Prompt + sein Modell, ansonsten die
+    gemeinsame Chat-Bahn (Limit, Gateway, Persistenz, Verbrauch)."""
+    with tenant_tx(principal.tenant_id) as conn:
+        agent = conn.execute(
+            "SELECT model, system_prompt FROM agents WHERE id = %s", (agent_id,)
+        ).fetchone()
+    if agent is None:
+        raise HTTPException(status_code=404, detail="Agent nicht gefunden")
+
+    # Das Agentenmodell kann seit dem Anlegen aus dem Tarif gefallen sein -> pruefen.
+    ensure_model_available(agent["model"], principal)
+
+    return await run_chat(
+        principal,
+        model=agent["model"],
+        messages=[m.model_dump() for m in req.messages],
+        conversation_id=req.conversation_id,
+        system_prompt=agent["system_prompt"],
+        temperature=req.temperature,
+    )

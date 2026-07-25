@@ -98,3 +98,29 @@ def test_agents_isolated_between_tenants(client):
     assert client.get(f"/v1/agents/{agent_id}", headers=hb).status_code == 404
     # A schon.
     assert client.get(f"/v1/agents/{agent_id}", headers=ha).status_code == 200
+
+
+def test_run_unknown_agent_404(client):
+    key = _provision(client, "free")
+    h = {"Authorization": "Bearer " + key}
+    r = client.post(
+        "/v1/agents/00000000-0000-0000-0000-000000000000/chat",
+        headers=h,
+        json={"messages": [{"role": "user", "content": "hi"}]},
+    )
+    assert r.status_code == 404
+
+
+def test_run_agent_reaches_gateway(client):
+    # Kein Gateway erreichbar -> die Bahn laeuft bis zum Gateway und liefert 502
+    # (beweist: Agent geladen, Modell akzeptiert, Limit ok, Weiterleitung).
+    key = _provision(client, "free")
+    h = {"Authorization": "Bearer " + key}
+    created = client.post("/v1/agents", headers=h, json={"name": "Run", "model": "ollama/llama3.2"})
+    agent_id = created.json()["id"]
+    r = client.post(
+        f"/v1/agents/{agent_id}/chat",
+        headers=h,
+        json={"messages": [{"role": "user", "content": "hallo"}]},
+    )
+    assert r.status_code == 502
