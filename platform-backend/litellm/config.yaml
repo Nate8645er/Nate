@@ -2,11 +2,20 @@
 # Keys kommen aus der Umgebung (os.environ/...), niemals hartkodiert.
 # Start: litellm --config litellm/config.yaml
 #
-# Die Modell-Aliase hier entsprechen den in den Tarifen (002_seed_plans.sql)
-# freigeschalteten Namen (anbieter/modell), damit die Whitelist im Backend und
-# das Gateway dieselbe Sprache sprechen.
+# Die Modell-Aliase hier entsprechen den in den Tarifen (002_seed_plans.sql /
+# 008_openrouter_plans.sql) freigeschalteten Namen, damit die Whitelist im
+# Backend (app/models_catalog.py) und das Gateway dieselbe Sprache sprechen.
+#
+# ZWEI WEGE zu denselben Anbietern:
+#   1. Direkt (anthropic/..., openai/...) — braucht je einen eigenen Key.
+#   2. Ueber OpenRouter (openrouter/...) — EIN Key fuer alle Anbieter.
+# Der OpenRouter-Weg ist der praktische: ohne eigene Vertraege bei OpenAI,
+# Google, xAI, Moonshot usw. sind deren Modelle sonst nicht erreichbar.
 
 model_list:
+  # ------------------------------------------------------------------
+  # Direkt-Anbindungen (nur nutzbar, wenn der jeweilige Key gesetzt ist)
+  # ------------------------------------------------------------------
   - model_name: anthropic/claude-opus-4-8
     litellm_params:
       model: anthropic/claude-opus-4-8
@@ -32,6 +41,76 @@ model_list:
     litellm_params:
       model: ollama/llama3.2
       api_base: os.environ/OLLAMA_BASE_URL
+
+  # ------------------------------------------------------------------
+  # Das KI-Team ueber OpenRouter — EIN Key, 13 Anbieter.
+  # Alle IDs gegen den Live-Katalog geprueft und per ops/council_check.py
+  # real getestet (13/13 haben geantwortet).
+  # ------------------------------------------------------------------
+  - model_name: openrouter/openai/gpt-5.6-sol-pro
+    litellm_params:
+      model: openrouter/openai/gpt-5.6-sol-pro
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  - model_name: openrouter/anthropic/claude-opus-4.8
+    litellm_params:
+      model: openrouter/anthropic/claude-opus-4.8
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  - model_name: openrouter/google/gemini-3.1-pro-preview
+    litellm_params:
+      model: openrouter/google/gemini-3.1-pro-preview
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  - model_name: openrouter/x-ai/grok-4.5
+    litellm_params:
+      model: openrouter/x-ai/grok-4.5
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  - model_name: openrouter/moonshotai/kimi-k3
+    litellm_params:
+      model: openrouter/moonshotai/kimi-k3
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  - model_name: openrouter/deepseek/deepseek-v4-pro
+    litellm_params:
+      model: openrouter/deepseek/deepseek-v4-pro
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  - model_name: openrouter/qwen/qwen3.7-max
+    litellm_params:
+      model: openrouter/qwen/qwen3.7-max
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  - model_name: openrouter/meta-llama/llama-4-maverick
+    litellm_params:
+      model: openrouter/meta-llama/llama-4-maverick
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  - model_name: openrouter/mistralai/mistral-large-2512
+    litellm_params:
+      model: openrouter/mistralai/mistral-large-2512
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  - model_name: openrouter/z-ai/glm-5.2
+    litellm_params:
+      model: openrouter/z-ai/glm-5.2
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  - model_name: openrouter/microsoft/phi-4
+    litellm_params:
+      model: openrouter/microsoft/phi-4
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  - model_name: openrouter/cohere/command-a
+    litellm_params:
+      model: openrouter/cohere/command-a
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  - model_name: openrouter/nvidia/nemotron-3-ultra-550b-a55b
+    litellm_params:
+      model: openrouter/nvidia/nemotron-3-ultra-550b-a55b
+      api_key: os.environ/OPENROUTER_API_KEY
 
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
