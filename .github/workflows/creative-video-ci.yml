@@ -1,0 +1,33 @@
+name: creative-video CI
+
+# Tests + ein echter Render als Rauchtest fuer Produkt C (Erklaervideo).
+# Nur bei Aenderungen unter creative/video/.
+on:
+  push:
+    paths: ["creative/video/**", ".github/workflows/creative-video-ci.yml"]
+  pull_request:
+    paths: ["creative/video/**", ".github/workflows/creative-video-ci.yml"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: creative/video
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+      - run: npm ci
+      - name: Sicherheitscheck
+        run: npm audit --audit-level=high
+      - name: Tests
+        run: npm test
+      - name: Chromium fuer Remotion vorbereiten
+        run: npx remotion browser ensure
+      - name: Rauchtest-Render
+        run: npm run render
+      - name: Ausgabe pruefen
+        run: test -s out/explainer.mp4
