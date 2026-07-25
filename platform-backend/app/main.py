@@ -9,12 +9,14 @@ import contextlib
 import os
 import pathlib
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 from .config import settings
 from .db import close_pool, get_pool, migrate
+from .metrics import MetricsMiddleware
 from .routes import admin, agents, billing, chat, conversations, models, usage, webhooks
 
 
@@ -31,6 +33,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Platform Backend (Produkt A)", version="0.1.0", lifespan=lifespan)
+app.add_middleware(MetricsMiddleware)
 
 if settings.cors_origins:
     app.add_middleware(
@@ -60,6 +63,13 @@ async def health():
     except Exception:  # noqa: BLE001 — Health darf nie werfen
         db_ok = False
     return {"status": "ok", "db": db_ok}
+
+
+@app.get("/metrics")
+async def metrics():
+    """Prometheus-Format. Bewusst ohne Auth: enthaelt keine mandantenspezifischen
+    Daten (nur globale Zaehler/Histogramme), wie bei Prometheus-Scrapes ueblich."""
+    return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
 # Statisches Chat-UI zuletzt mounten (die API-Routen oben haben Vorrang).

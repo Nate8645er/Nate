@@ -11,6 +11,7 @@ from fastapi import HTTPException
 from .auth import Principal
 from .config import settings
 from .db import tenant_tx
+from .metrics import record_chat_usage
 
 log = logging.getLogger("platform.completions")
 
@@ -109,6 +110,8 @@ async def run_chat(
             "VALUES (%s,%s,%s,%s)",
             (principal.tenant_id, model, tokens_in, tokens_out),
         )
+
+    record_chat_usage(model, tokens_in, tokens_out)
 
     return {
         "conversation_id": str(conversation_id),

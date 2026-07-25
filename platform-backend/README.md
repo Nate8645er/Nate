@@ -73,6 +73,7 @@ curl -s localhost:8080/v1/usage -H "Authorization: Bearer pk_..."
 |---------|------|-------|--------|
 | GET  | `/` | Statisches Chat-UI (Modellwechsel + Verbrauch) | — |
 | GET  | `/health` | Liveness + DB-Check | — |
+| GET  | `/metrics` | Prometheus-Metriken (Requests, Latenz, Chat-Verbrauch) | — |
 | POST | `/admin/provision` | Mandant + API-Key anlegen | `X-Admin-Token` |
 | POST | `/v1/chat` | Chat via Gateway, mit Tarif-/Limit-Prüfung | Bearer API-Key |
 | GET  | `/v1/models` | Im Tarif freigeschaltete Modelle (fürs UI-Dropdown) | Bearer API-Key |

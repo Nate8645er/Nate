@@ -85,8 +85,20 @@ Test-DB. Für eine Kapazitätsaussage zur echten Produktionsumgebung (Hosting,
 Worker-Anzahl, Netzwerklatenz zu Postgres/LiteLLM) reicht das nicht — dafür
 bräuchte es einen Test gegen die tatsächliche Zielinfrastruktur.
 
-## Monitoring (bewusst offen)
+## Monitoring
 
-`/health` liefert Liveness + DB-Erreichbarkeit; strukturierte Logs über
-`logging` (siehe `app/routes/chat.py`, `app/billing.py`). Anbindung an
-Grafana/Prometheus (Master-Prompt Kap. 3.2) ist noch nicht umgesetzt.
+`/health` liefert Liveness + DB-Erreichbarkeit. `/metrics` liefert
+Prometheus-Metriken (`app/metrics.py`), ohne Auth (keine mandantenspezifischen
+Daten, nur globale Zähler/Histogramme):
+
+- `http_requests_total{method,route,status}` — Requests, mit **Routen-Vorlage**
+  statt rohem Pfad (`/v1/agents/{agent_id}`, nicht die echte UUID) — verhindert
+  Kardinalitäts-Explosion in Grafana/Prometheus, real getestet (zwei
+  verschiedene IDs landen im selben Label).
+- `http_request_duration_seconds{method,route}` — Latenz-Histogramm.
+- `chat_completions_total{model}` / `chat_tokens_total{model,direction}` —
+  fachliche Zahlen aus `app/completions.py`.
+
+Anbindung an ein Grafana-Dashboard (Master-Prompt Kap. 3.2) ist der nächste
+Schritt, sobald eine echte Prometheus-Instanz läuft — der Scrape-Endpunkt
+selbst ist fertig und getestet.
