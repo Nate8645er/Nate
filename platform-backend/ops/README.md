@@ -1,4 +1,54 @@
-# Betrieb — Backup & Wiederherstellung (Phase 7)
+# Betrieb — Werkzeuge
+
+## Das KI-Team ("Council") — echte Zweitmeinungen von 13 Anbietern
+
+`ops/council.py` fragt über **OpenRouter** wirklich verschiedene Anbieter-Modelle
+(nicht 13× dasselbe Modell) und sammelt ihre unabhängigen Antworten. Nützlich
+für Architektur-Entscheidungen, bei denen eine zweite, andersartige Sicht mehr
+bringt als eine weitere Runde desselben Modells.
+
+```bash
+set -a; . ./.env; set +a          # OPENROUTER_API_KEY laden
+python3 ops/council.py --dry-run "Frage"          # zeigt nur, wer gefragt wuerde (0 Kosten)
+python3 ops/council.py --only OpenAI,Google "Frage"
+python3 ops/council.py "Frage"                     # alle 13
+python3 ops/council_check.py                       # Verfuegbarkeits-Check aller 13
+```
+
+**Die 13 Mitglieder** (je das stärkste real existierende Modell pro Anbieter,
+IDs aus dem Live-Katalog, per `council_check.py` verifiziert — **13/13 haben
+wirklich geantwortet**):
+
+| Anbieter | Modell-ID |
+|---|---|
+| OpenAI | `openai/gpt-5.6-sol-pro` |
+| Anthropic | `anthropic/claude-opus-4.8` |
+| Google | `google/gemini-3.1-pro-preview` |
+| xAI | `x-ai/grok-4.5` |
+| Moonshot | `moonshotai/kimi-k3` |
+| DeepSeek | `deepseek/deepseek-v4-pro` |
+| Alibaba | `qwen/qwen3.7-max` |
+| Meta | `meta-llama/llama-4-maverick` |
+| Mistral | `mistralai/mistral-large-2512` |
+| Z-AI | `z-ai/glm-5.2` |
+| Microsoft | `microsoft/phi-4` |
+| Cohere | `cohere/command-a` |
+| NVIDIA | `nvidia/nemotron-3-ultra-550b-a55b` |
+
+**Wichtig zur Ehrlichkeit:** Mehrere kursierende Modellnamen existieren *nicht*
+(geprüft gegen den Live-Katalog): „GPT-5.6 Sol Ultra", „Gemini 3.1 Pro Ultra",
+„Grok 4.5 Heavy", „Qwen 3.8 Max", „Mistral Large 3", „Command A+",
+„Nemotron Ultra". Die Tabelle oben enthält nur IDs, die wirklich antworten.
+
+**Kosten:** Jeder Lauf verbraucht echte OpenRouter-Credits. Ein Durchlauf aller
+13 mit kurzer Frage lag bei ~2.1k Token rein / ~2.9k raus. `--dry-run` zeigt die
+Auswahl ohne zu senden. Reasoning-Modelle (Gemini, Kimi, DeepSeek, GLM)
+verbrauchen ihr Budget zuerst intern — bei zu kleinem `--max-tokens` kommt eine
+leere Antwort zurück; das ist kein Ausfall, sondern ein zu enges Limit.
+
+---
+
+# Backup & Wiederherstellung (Phase 7)
 
 ## Backup
 
