@@ -82,8 +82,10 @@ curl -s localhost:8080/v1/usage -H "Authorization: Bearer pk_..."
 | GET  | `/v1/conversations/{id}` | Eine Unterhaltung mit Nachrichten | Bearer API-Key |
 | GET/POST | `/v1/agents…` | Agenten verwalten + ausführen (Tarif-Limit) | Bearer API-Key |
 | GET  | `/v1/billing` | Tarif, Abo-Zustand, Verbrauch, Historie | Bearer API-Key |
+| GET/POST/DELETE | `/v1/integrations…` | Integrationen-Gerüst (Tarif-Limit) — s.u. | Bearer API-Key |
 | POST | `/webhooks/shopify/orders-paid` | Kauf → Mandant freischalten | HMAC (Shopify) |
 | POST | `/webhooks/stripe` | Abo-Ereignisse (Kauf/Wechsel/Zahlung/Kündigung) | HMAC (Stripe) |
+| GET  | `/dashboard.html` | Widget-Dashboard (Agenten/Verbrauch/Historie, Drag-and-Drop) | — (Key im Browser) |
 
 ## Abrechnung (Phase 4)
 
@@ -170,3 +172,15 @@ Aus den Reviews dokumentiert, nicht vergessen:
 - **Streaming** (`stream`-Param) noch nicht unterstützt (Phase 3).
 - Modellwechsel-UI + Agenten-Ebene (Phase 3); Store-Webhook `orders/paid` →
   `/admin/provision` (Phase 5).
+- **`/v1/integrations` ist ein ehrliches Gerüst, keine fertige Integration.**
+  Mandantentrennung (RLS) und Tarif-Limit (`plans.max_integrations`) sind
+  vollständig durchgesetzt und getestet; es gibt aber **keinen echten
+  OAuth-Flow** zu Slack/Notion/Google — es existieren keine echten
+  Client-IDs/Secrets in dieser Umgebung. `status` bleibt beim Anlegen daher
+  immer `disconnected`. Für eine echte Anbindung fehlen: OAuth-Client-IDs/
+  Secrets pro Provider (Umgebungsvariablen), ein `/v1/integrations/{provider}/
+  callback`-Endpunkt, verschlüsselte Token-Speicherung statt Klartext in
+  `config` (siehe `# TODO` in `app/routes/integrations.py`).
+- **`dashboard.html`** ist noch nicht mit `index.html` verlinkt (nur ein
+  „← Chat"-Link zurück) — beide UIs bewusst als getrennte, unabhängig
+  ladbare Seiten gehalten.

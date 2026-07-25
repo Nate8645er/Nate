@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Plattform — Dashboard</title>
+<style>
+  :root {
+    --bg:#0b0d12; --panel:#12151d; --panel2:#171b25; --border:#232838;
+    --text:#e7ebf3; --muted:#8b93a7; --accent:#6c8cff; --accent2:#3b5bdb;
+    --ok:#2fbf71; --danger:#ff6b6b; --warn:#ffb454;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text);
+    font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+  header { display:flex; align-items:center; gap:12px; padding:12px 18px;
+    border-bottom:1px solid var(--border); background:var(--panel); }
+  header h1 { font-size:15px; font-weight:600; margin:0; letter-spacing:.2px; }
+  header .spacer { flex:1; }
+  header a.navlink { color:var(--muted); text-decoration:none; font-size:13px;
+    border:1px solid var(--border); border-radius:9px; padding:7px 11px; }
+  header a.navlink:hover { color:var(--text); border-color:var(--accent); }
+  select, input, button, textarea { font:inherit; color:var(--text);
+    background:var(--panel2); border:1px solid var(--border); border-radius:9px;
+    padding:9px 11px; outline:none; }
+  select:focus, input:focus, textarea:focus { border-color:var(--accent); }
+  button { background:var(--accent2); border-color:var(--accent2); cursor:pointer;
+    font-weight:600; }
+  button:hover { background:var(--accent); border-color:var(--accent); }
+  button:disabled { opacity:.55; cursor:not-allowed; background:var(--panel2); border-color:var(--border); }
+  button.ghost { background:transparent; border-color:var(--border); font-weight:500; }
+  button.danger-btn { background:transparent; border-color:var(--border); color:var(--danger);
+    font-weight:600; padding:5px 9px; font-size:13px; }
+  button.danger-btn:hover { background:var(--danger); border-color:var(--danger); color:#1a0a0a; }
+  button.danger-btn.confirm { background:var(--danger); border-color:var(--danger); color:#1a0a0a; }
+  main { max-width:1180px; margin:0 auto; padding:20px; }
+  .hint { color:var(--muted); font-size:12.5px; }
+  .err { color:var(--danger); font-size:13px; min-height:18px; margin-top:6px; }
+  .setup { background:var(--panel); border:1px solid var(--border); border-radius:14px;
+    padding:18px; margin-bottom:16px; max-width:520px; }
+  .setup label { display:block; font-size:12.5px; color:var(--muted); margin:0 0 6px; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+
+  .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap:16px; align-items:start; }
+  .widget { background:var(--panel); border:1px solid var(--border); border-radius:14px;
+    padding:0; overflow:hidden; transition:border-color .15s, opacity .15s; }
+  .widget.drag-over { border-color:var(--accent); }
+  .widget.dragging { opacity:.45; }
+  .widget-head { display:flex; align-items:center; gap:10px; padding:13px 16px;
+    border-bottom:1px solid var(--border); background:var(--panel2); cursor:grab; }
+  .widget-head:active { cursor:grabbing; }
+  .widget-head .handle { color:var(--muted); font-size:14px; letter-spacing:1px; user-select:none; }
+  .widget-head h2 { font-size:14px; font-weight:600; margin:0; flex:1; letter-spacing:.2px; }
+  .widget-head .badge { font-size:11.5px; color:var(--muted); background:var(--bg);
+    border:1px solid var(--border); border-radius:999px; padding:3px 9px; }
+  .widget-body { padding:16px; }
+  .widget-body .loading { color:var(--muted); font-size:13px; }
+  .empty { color:var(--muted); font-size:13px; padding:8px 0; }
+
+  .agent-row { display:flex; align-items:center; gap:10px; padding:9px 0;
+    border-bottom:1px solid var(--border); }
+  .agent-row:last-child { border-bottom:none; }
+  .agent-row .info { flex:1; min-width:0; }
+  .agent-row .name { font-weight:600; font-size:13.5px; }
+  .agent-row .model { color:var(--muted); font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+  .agent-form { margin-top:14px; padding-top:14px; border-top:1px solid var(--border);
+    display:flex; flex-direction:column; gap:9px; }
+  .agent-form label { font-size:12px; color:var(--muted); }
+  .agent-form input, .agent-form select, .agent-form textarea { width:100%; }
+  .agent-form textarea { resize:vertical; min-height:52px; }
+
+  .usage-plan { display:flex; align-items:baseline; gap:8px; margin-bottom:4px; }
+  .usage-plan .plan-name { font-size:16px; font-weight:700; }
+  .usage-plan .price { color:var(--muted); font-size:12.5px; }
+  .progress { background:var(--panel2); border:1px solid var(--border); border-radius:999px;
+    height:10px; overflow:hidden; margin:12px 0 6px; }
+  .progress-fill { height:100%; background:var(--accent); transition:width .3s; }
+  .usage-nums { font-size:12.5px; color:var(--muted); display:flex; justify-content:space-between; }
+  .status-line { margin-top:14px; padding-top:12px; border-top:1px solid var(--border);
+    font-size:13px; display:flex; flex-direction:column; gap:4px; }
+  .status-ok { color:var(--ok); }
+  .status-warn { color:var(--danger); font-weight:600; }
+
+  .hist-row { display:flex; justify-content:space-between; gap:10px; padding:9px 0;
+    border-bottom:1px solid var(--border); font-size:13px; }
+  .hist-row:last-child { border-bottom:none; }
+  .hist-row .type { font-weight:600; }
+  .hist-row .date { color:var(--muted); font-size:11.5px; }
+  .hist-row .amount { color:var(--muted); white-space:nowrap; }
+</style>
+</head>
+<body>
+<header>
+  <h1>KI-Plattform · Dashboard</h1>
+  <div class="spacer"></div>
+  <a class="navlink" href="/index.html">← Chat</a>
+  <button class="ghost" id="logout" title="API-Key vergessen">⎋</button>
+</header>
+
+<main>
+  <div class="setup" id="setup">
+    <label for="key">API-Schlüssel (aus <code>/admin/provision</code>)</label>
+    <div class="row">
+      <input id="key" type="password" placeholder="pk_…" style="flex:1;min-width:220px" />
+      <button id="connect">Verbinden</button>
+    </div>
+    <p class="hint">Der Schlüssel bleibt nur lokal im Browser (localStorage).</p>
+    <div class="err" id="setupErr"></div>
+  </div>
+
+  <div id="board" style="display:none">
+    <p class="hint" style="margin:0 0 14px">Widgets per Ziehen an der Kopfzeile neu anordnen — die Reihenfolge wird gespeichert.</p>
+    <div class="grid" id="grid"></div>
+  </div>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let KEY = localStorage.getItem("pk") || "";
+
+function authHeader() { return { "Authorization": "Bearer " + KEY, "Content-Type": "application/json" }; }
+
+async function apiGet(path) {
+  const r = await fetch(path, { headers: authHeader() });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.detail || ("HTTP " + r.status));
+  return data;
+}
+
+async function apiSend(path, method, body) {
+  const r = await fetch(path, { method, headers: authHeader(), body: body ? JSON.stringify(body) : undefined });
+  if (r.status === 204) return null;
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.detail || ("HTTP " + r.status));
+  return data;
+}
+
+/* ---------------------------------------------------------------------
+   Widget-Registry: jedes Widget hat eine id, einen Titel und eine
+   render(bodyEl)-Funktion, die Inhalt+Fehlerbehandlung selbst uebernimmt.
+--------------------------------------------------------------------- */
+const WIDGETS = {
+  agents: { title: "Agenten", render: renderAgentsWidget },
+  usage:  { title: "Verbrauch", render: renderUsageWidget },
+  billing:{ title: "Abrechnungshistorie", render: renderBillingWidget },
+};
+const DEFAULT_ORDER = ["agents", "usage", "billing"];
+const LAYOUT_KEY = "dashboard_layout";
+
+function loadLayout() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(LAYOUT_KEY) || "null");
+    if (Array.isArray(saved) && saved.length) {
+      const known = saved.filter((id) => WIDGETS[id]);
+      const missing = DEFAULT_ORDER.filter((id) => !known.includes(id));
+      return [...known, ...missing];
+    }
+  } catch {}
+  return [...DEFAULT_ORDER];
+}
+
+function saveLayout() {
+  const order = [...$("grid").children].map((el) => el.dataset.widgetId);
+  localStorage.setItem(LAYOUT_KEY, JSON.stringify(order));
+}
+
+function buildGrid() {
+  const grid = $("grid");
+  grid.innerHTML = "";
+  for (const id of loadLayout()) {
+    const w = WIDGETS[id];
+    if (!w) continue;
+    const el = document.createElement("div");
+    el.className = "widget";
+    el.dataset.widgetId = id;
+    el.draggable = true;
+    el.innerHTML = `
+      <div class="widget-head">
+        <span class="handle">⠿</span>
+        <h2>${w.title}</h2>
+        <span class="badge" data-role="badge"></span>
+      </div>
+      <div class="widget-body" data-role="body"><div class="loading">Lädt…</div></div>
+    `;
+    grid.appendChild(el);
+    wireDrag(el);
+    w.render(el.querySelector('[data-role="body"]'), el.querySelector('[data-role="badge"]'));
+  }
+}
+
+/* ---- Drag & Drop (Vanilla HTML5, keine Bibliothek) ------------------- */
+function wireDrag(el) {
+  el.addEventListener("dragstart", () => {
+    el.classList.add("dragging");
+  });
+  el.addEventListener("dragend", () => {
+    el.classList.remove("dragging");
+    [...$("grid").children].forEach((c) => c.classList.remove("drag-over"));
+    saveLayout();
+  });
+  el.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    const dragging = $("grid").querySelector(".dragging");
+    if (!dragging || dragging === el) return;
+    const rect = el.getBoundingClientRect();
+    const before = (e.clientX - rect.left) < rect.width / 2;
+    el.classList.add("drag-over");
+    $("grid").insertBefore(dragging, before ? el : el.nextSibling);
+  });
+  el.addEventListener("dragleave", () => el.classList.remove("drag-over"));
+  el.addEventListener("drop", (e) => {
+    e.preventDefault();
+    el.classList.remove("drag-over");
+  });
+}
+
+/* ---------------------------------------------------------------------
+   Widget: Agenten
+--------------------------------------------------------------------- */
+async function renderAgentsWidget(body, badge) {
+  let models = [];
+  let maxAgents = 0;
+
+  async function load() {
+    body.innerHTML = '<div class="loading">Lädt…</div>';
+    try {
+      const [agentsData, modelsData] = await Promise.all([
+        apiGet("/v1/agents"),
+        apiGet("/v1/models"),
+      ]);
+      models = modelsData.models || [];
+      maxAgents = agentsData.max_agents;
+      badge.textContent = `${agentsData.count}/${agentsData.max_agents}`;
+      draw(agentsData.agents || []);
+    } catch (e) {
+      body.innerHTML = `<div class="err">Fehler beim Laden: ${escapeHtml(e.message)}</div>`;
+    }
+  }
+
+  function draw(agents) {
+    const list = document.createElement("div");
+    if (!agents.length) {
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = "Noch keine Agenten angelegt.";
+      list.appendChild(empty);
+    } else {
+      for (const a of agents) {
+        const row = document.createElement("div");
+        row.className = "agent-row";
+        row.innerHTML = `
+          <div class="info">
+            <div class="name"></div>
+            <div class="model"></div>
+          </div>
+        `;
+        row.querySelector(".name").textContent = a.name;
+        row.querySelector(".model").textContent = a.model;
+        const del = document.createElement("button");
+        del.className = "danger-btn";
+        del.textContent = "Löschen";
+        del.title = "Agent löschen";
+        let armed = false;
+        let armTimer = null;
+        del.onclick = async () => {
+          if (!armed) {
+            armed = true;
+            del.classList.add("confirm");
+            del.textContent = "Sicher?";
+            armTimer = setTimeout(() => {
+              armed = false;
+              del.classList.remove("confirm");
+              del.textContent = "Löschen";
+            }, 3000);
+            return;
+          }
+          clearTimeout(armTimer);
+          del.disabled = true;
+          try {
+            await apiSend(`/v1/agents/${encodeURIComponent(a.id)}`, "DELETE");
+            await load();
+          } catch (e) {
+            body.querySelector('[data-role="agentErr"]').textContent = "Löschen fehlgeschlagen: " + e.message;
+            del.disabled = false;
+            del.classList.remove("confirm");
+            del.textContent = "Löschen";
+            armed = false;
+          }
+        };
+        row.appendChild(del);
+        list.appendChild(row);
+      }
+    }
+
+    const form = document.createElement("form");
+    form.className = "agent-form";
+    const modelOptions = models.map((m) => `<option value="${escapeHtml(m.id)}">${escapeHtml(m.label)}</option>`).join("");
+    form.innerHTML = `
+      <label for="agName">Neuer Agent</label>
+      <input id="agName" type="text" placeholder="Name" required maxlength="120" />
+      <select id="agModel" ${models.length ? "" : "disabled"}>
+        ${models.length ? modelOptions : '<option value="">Keine Modelle verfügbar</option>'}
+      </select>
+      <textarea id="agPrompt" placeholder="System-Prompt (optional)" maxlength="20000"></textarea>
+      <div class="row">
+        <button type="submit" ${models.length ? "" : "disabled"}>Anlegen</button>
+        <span class="hint" style="flex:1">${maxAgents ? "Tarif-Limit: " + maxAgents + " Agenten" : ""}</span>
+      </div>
+      <div class="err" data-role="agentErr"></div>
+    `;
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const errEl = form.querySelector('[data-role="agentErr"]');
+      errEl.textContent = "";
+      const name = form.querySelector("#agName").value.trim();
+      const model = form.querySelector("#agModel").value;
+      const system_prompt = form.querySelector("#agPrompt").value.trim();
+      if (!name || !model) { errEl.textContent = "Name und Modell sind erforderlich."; return; }
+      const btn = form.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      try {
+        await apiSend("/v1/agents", "POST", { name, model, system_prompt });
+        await load();
+      } catch (e) {
+        errEl.textContent = e.message;
+        btn.disabled = false;
+      }
+    };
+    list.appendChild(form);
+
+    body.innerHTML = "";
+    body.appendChild(list);
+  }
+
+  await load();
+}
+
+/* ---------------------------------------------------------------------
+   Widget: Verbrauch
+--------------------------------------------------------------------- */
+async function renderUsageWidget(body, badge) {
+  try {
+    const b = await apiGet("/v1/billing");
+    badge.textContent = b.plan;
+    const pct = Math.max(0, Math.min(100, b.usage.percent));
+    const warn = b.account_status !== "active" || (b.subscription_status && b.subscription_status !== "active");
+    const barColor = pct >= 90 ? "var(--danger)" : (pct >= 70 ? "var(--warn)" : "var(--accent)");
+    const periodEnd = b.current_period_end ? new Date(b.current_period_end).toLocaleDateString("de-CH") : "—";
+    body.innerHTML = `
+      <div class="usage-plan">
+        <span class="plan-name"></span>
+        <span class="price"></span>
+      </div>
+      <div class="progress"><div class="progress-fill" style="width:${pct}%;background:${barColor}"></div></div>
+      <div class="usage-nums">
+        <span></span>
+        <span>${pct}%</span>
+      </div>
+      <div class="status-line">
+        <span class="${warn ? "status-warn" : "status-ok"}"></span>
+        <span class="hint">Abrechnungsperiode endet: ${periodEnd}</span>
+      </div>
+    `;
+    body.querySelector(".plan-name").textContent = b.plan;
+    body.querySelector(".price").textContent = `${b.price_chf} ${b.currency} · ${b.vat_note}`;
+    body.querySelector(".usage-nums span").textContent = `${b.usage.tokens_total} / ${b.usage.limit} Tokens`;
+    body.querySelector(".status-line span").textContent =
+      `Konto: ${b.account_status} · Abo: ${b.subscription_status || "—"}`;
+  } catch (e) {
+    body.innerHTML = `<div class="err">Fehler beim Laden: ${escapeHtml(e.message)}</div>`;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Widget: Abrechnungshistorie
+--------------------------------------------------------------------- */
+const HIST_LABELS = {
+  subscription_started: "Abo gestartet",
+  plan_changed: "Tarif geändert",
+  subscription_cancelled: "Abo gekündigt",
+  invoice_paid: "Zahlung erhalten",
+  payment_failed: "Zahlung fehlgeschlagen",
+};
+
+async function renderBillingWidget(body, badge) {
+  try {
+    const b = await apiGet("/v1/billing");
+    const history = b.history || [];
+    badge.textContent = history.length ? `${history.length} Einträge` : "";
+    if (!history.length) {
+      body.innerHTML = '<div class="empty">Keine Buchungen vorhanden.</div>';
+      return;
+    }
+    const list = document.createElement("div");
+    for (const h of history) {
+      const row = document.createElement("div");
+      row.className = "hist-row";
+      const date = new Date(h.occurred_at).toLocaleString("de-CH");
+      row.innerHTML = `
+        <span>
+          <span class="type"></span><br/>
+          <span class="date"></span>
+        </span>
+        <span class="amount"></span>
+      `;
+      row.querySelector(".type").textContent = HIST_LABELS[h.type] || h.type;
+      row.querySelector(".date").textContent = date + (h.plan ? " · " + h.plan : "");
+      row.querySelector(".amount").textContent = h.amount_chf != null ? `${h.amount_chf} CHF` : "—";
+      list.appendChild(row);
+    }
+    body.innerHTML = "";
+    body.appendChild(list);
+  } catch (e) {
+    body.innerHTML = `<div class="err">Fehler beim Laden: ${escapeHtml(e.message)}</div>`;
+  }
+}
+
+/* ---- Hilfsfunktionen -------------------------------------------------- */
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+/* ---- Auth / Bootstrap -------------------------------------------------- */
+async function connect() {
+  $("setupErr").textContent = "";
+  KEY = $("key").value.trim();
+  if (!KEY) { $("setupErr").textContent = "Bitte einen Schlüssel eingeben."; return; }
+  try {
+    await apiGet("/v1/models");
+    localStorage.setItem("pk", KEY);
+    $("setup").style.display = "none";
+    $("board").style.display = "block";
+    buildGrid();
+  } catch (e) {
+    $("setupErr").textContent = "Verbindung fehlgeschlagen: " + e.message;
+  }
+}
+
+$("connect").onclick = connect;
+$("logout").onclick = () => { localStorage.removeItem("pk"); localStorage.removeItem(LAYOUT_KEY); location.reload(); };
+$("key").addEventListener("keydown", (e) => { if (e.key === "Enter") connect(); });
+
+if (KEY) { $("key").value = KEY; connect(); }
+</script>
+</body>
+</html>
