@@ -51,10 +51,42 @@ Der komplette Zyklus wurde real ausgeführt (nicht nur beschrieben):
 Ergebnis: **Backup → Restore → Rechte → RLS** funktioniert durchgängig und
 ist nicht nur behauptet, sondern einmal vollständig durchgespielt.
 
-## Monitoring / Lasttest (bewusst offen)
+## Lasttest — durchgeführt
 
-- Monitoring: `/health` liefert Liveness + DB-Erreichbarkeit; strukturierte
-  Logs über `logging` (siehe `app/routes/chat.py`, `app/billing.py`). Anbindung
-  an Grafana/Prometheus (Master-Prompt Kap. 3.2) ist noch nicht umgesetzt.
-- Lasttest: noch nicht durchgeführt — braucht eine laufende Umgebung mit
-  echtem LiteLLM-Gateway, die hier nicht verfügbar ist.
+```bash
+DATABASE_URL=postgresql://app_rw:...@host/db \
+MIGRATE_DATABASE_URL=postgresql://postgres:...@host/db \
+ADMIN_TOKEN=... \
+  python ops/loadtest.py --concurrency 20 --requests 1000 --path /v1/models
+```
+
+Treibt echte Requests gegen die echte FastAPI-App (ASGI in-process via
+`httpx.ASGITransport`) — durchläuft Auth, RLS-gebundene DB-Zugriffe und
+JSON-Serialisierung wie im echten Betrieb. Bewusst **nicht** durch einen
+echten uvicorn-Prozess/Netzwerk-Stack getunnelt (kein Reverse-Proxy hier zu
+testen); `/v1/chat` bewusst ausgeklammert, da es ein laufendes LiteLLM-Gateway
+braucht, das hier nicht verfügbar ist.
+
+**Real gemessen** (gegen den temporären Postgres-Cluster dieser Session):
+
+| Pfad | Nebenläufigkeit | Requests | Fehler | Durchsatz | p50 | p95 | p99 |
+|---|---|---|---|---|---|---|---|
+| `/v1/models` | 20 | 1000 | 0 | 337.7 req/s | 2.9 ms | 3.6 ms | 4.5 ms |
+| `/v1/usage`  | 20 | 1000 | 0 | 280.6 req/s | 3.5 ms | 4.4 ms | 5.5 ms |
+| `/v1/models` | 50 | 2000 | 0 | 349.7 req/s | 2.8 ms | 3.4 ms | 3.8 ms |
+
+Bei Nebenläufigkeit 50 — über der DB-Connection-Pool-Größe von 10
+(`app/db.py`) — bleiben alle Requests fehlerfrei; `psycopg_pool` queued
+wartende Anfragen, statt sie abzulehnen. Durchsatz bleibt stabil.
+
+**Ehrliche Grenzen dieses Tests:** Single-Prozess, in-process (kein
+Netzwerk/Reverse-Proxy, keine mehreren uvicorn-Worker), gegen eine lokale
+Test-DB. Für eine Kapazitätsaussage zur echten Produktionsumgebung (Hosting,
+Worker-Anzahl, Netzwerklatenz zu Postgres/LiteLLM) reicht das nicht — dafür
+bräuchte es einen Test gegen die tatsächliche Zielinfrastruktur.
+
+## Monitoring (bewusst offen)
+
+`/health` liefert Liveness + DB-Erreichbarkeit; strukturierte Logs über
+`logging` (siehe `app/routes/chat.py`, `app/billing.py`). Anbindung an
+Grafana/Prometheus (Master-Prompt Kap. 3.2) ist noch nicht umgesetzt.
