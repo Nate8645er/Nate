@@ -1,0 +1,82 @@
+{%- comment -%}
+  Tarif-Vergleich (Produkt B). Ehrlich nach Schweizer Recht (UWG/PBV):
+  - Preise in CHF inkl. MwSt, klar ausgewiesen.
+  - Keine Fake-Verknappung, keine erfundenen Bewertungen, keine Streichpreise.
+  Bearbeitbar im Theme-Editor ueber Bloecke (ein Block = ein Tarif).
+{%- endcomment -%}
+
+<section class="tariffs" style="background:#0b0d12;color:#e7ebf3;padding:64px 20px;">
+  <div style="max-width:1100px;margin:0 auto;">
+    <h2 style="font-size:32px;font-weight:700;margin:0 0 8px;text-align:center;">
+      {{ section.settings.heading | escape }}
+    </h2>
+    <p style="color:#8b93a7;text-align:center;margin:0 0 40px;">
+      {{ section.settings.subheading | escape }}
+    </p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;">
+      {%- for block in section.blocks -%}
+        <div {{ block.shopify_attributes }}
+             style="background:#12151d;border:1px solid {% if block.settings.highlight %}#6c8cff{% else %}#232838{% endif %};border-radius:14px;padding:22px;display:flex;flex-direction:column;">
+          <h3 style="margin:0 0 4px;font-size:20px;">{{ block.settings.name | escape }}</h3>
+          <p style="color:#8b93a7;margin:0 0 14px;font-size:13px;">{{ block.settings.audience | escape }}</p>
+          <p style="font-size:26px;font-weight:700;color:#6c8cff;margin:0;">{{ block.settings.price | escape }}</p>
+          <p style="color:#8b93a7;font-size:12px;margin:2px 0 16px;">inkl. MwSt</p>
+          <ul style="list-style:none;padding:0;margin:0 0 20px;flex:1;">
+            {%- assign feats = block.settings.features | newline_to_br | split: '<br />' -%}
+            {%- for f in feats -%}
+              {%- assign t = f | strip -%}
+              {%- if t != '' -%}
+                <li style="padding:6px 0;border-bottom:1px solid #1b2030;font-size:14px;">{{ t | escape }}</li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+          {%- if block.settings.cta_url != blank -%}
+            <a href="{{ block.settings.cta_url }}"
+               style="text-align:center;background:#3b5bdb;color:#fff;text-decoration:none;font-weight:600;padding:11px;border-radius:9px;">
+              {{ block.settings.cta_label | default: 'Auswählen' | escape }}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Tarife",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Überschrift", "default": "Tarife" },
+    { "type": "text", "id": "subheading", "label": "Unterzeile", "default": "Ehrlicher Vergleich — Preise in CHF inkl. MwSt." }
+  ],
+  "blocks": [
+    {
+      "type": "plan",
+      "name": "Tarif",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Name", "default": "Pro" },
+        { "type": "text", "id": "audience", "label": "Zielgruppe", "default": "KMU" },
+        { "type": "text", "id": "price", "label": "Preis (CHF inkl. MwSt)", "default": "CHF 49.00 / Monat" },
+        { "type": "textarea", "id": "features", "label": "Funktionen (eine pro Zeile)", "default": "Starke Cloud- + lokale Modelle\n10 Agenten\n10 Mio. Tokens/Monat\n3 Integrationen" },
+        { "type": "checkbox", "id": "highlight", "label": "Hervorheben", "default": false },
+        { "type": "url", "id": "cta_url", "label": "Button-Link" },
+        { "type": "text", "id": "cta_label", "label": "Button-Text", "default": "Auswählen" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Tarife",
+      "blocks": [
+        { "type": "plan", "settings": { "name": "Free", "audience": "Zum Testen", "price": "Kostenlos", "features": "1 lokales Modell\n1 Agent\n100'000 Tokens/Monat\nKein Support" } },
+        { "type": "plan", "settings": { "name": "Starter", "audience": "Einzelunternehmer", "price": "CHF 19.00 / Monat", "features": "Schnelle Cloud-Modelle\n3 Agenten\n2 Mio. Tokens/Monat\nE-Mail-Support" } },
+        { "type": "plan", "settings": { "name": "Pro", "audience": "KMU", "price": "CHF 49.00 / Monat", "highlight": true, "features": "Starke Cloud- + lokale Modelle\n10 Agenten\n10 Mio. Tokens/Monat\n3 Integrationen" } },
+        { "type": "plan", "settings": { "name": "Business", "audience": "Teams", "price": "CHF 149.00 / Monat", "features": "Alle Modelle, freie Wahl\n30 Agenten\n50 Mio. Tokens/Monat\nSSO + Team-Verwaltung" } },
+        { "type": "plan", "settings": { "name": "Enterprise", "audience": "Konzern / Individuell", "price": "Auf Anfrage", "features": "Alles + dedizierte Instanz\nUnbegrenzte Agenten\nSLA + Onboarding\nEigener Mandant" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

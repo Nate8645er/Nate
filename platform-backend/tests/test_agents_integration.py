@@ -6,7 +6,6 @@ Laeuft nur mit gesetzter PLATFORM_TEST_DATABASE_URL (privilegierte Verbindung).
 from __future__ import annotations
 
 import os
-import urllib.parse as up
 
 import pytest
 
@@ -16,47 +15,8 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-@pytest.fixture()
-def client():
-    import psycopg
-    from fastapi.testclient import TestClient
-
-    from app.config import settings
-    from app.db import close_pool, migrate
-
-    close_pool()
-    settings.migrate_database_url = DSN
-    migrate()
-
-    with psycopg.connect(DSN, autocommit=True) as conn:
-        conn.execute("ALTER ROLE app_rw LOGIN PASSWORD 'app_rw_test'")
-
-    p = up.urlparse(DSN)
-    settings.database_url = (
-        f"postgresql://app_rw:app_rw_test@{p.hostname}:{p.port or 5432}{p.path}"
-    )
-    close_pool()
-    os.environ["ADMIN_TOKEN"] = "test-admin"
-
-    from app.main import app
-
-    with TestClient(app) as c:
-        yield c
-    close_pool()
-
-
-def _provision(client, plan="free"):
-    r = client.post(
-        "/admin/provision",
-        headers={"X-Admin-Token": "test-admin"},
-        json={"tenant_name": "T", "owner_email": "t@example.ch", "plan_code": plan},
-    )
-    assert r.status_code == 200, r.text
-    return r.json()["api_key"]
-
-
-def test_max_agents_limit_enforced(client):
-    key = _provision(client, "free")  # free: max_agents=1, Modelle: ollama/llama3.2
+def test_max_agents_limit_enforced(client, prov):
+    key = prov("free")  # free: max_agents=1, Modelle: ollama/llama3.2
     h = {"Authorization": "Bearer " + key}
 
     r1 = client.post("/v1/agents", headers=h, json={"name": "A1", "model": "ollama/llama3.2"})
@@ -71,8 +31,8 @@ def test_max_agents_limit_enforced(client):
     assert lst["count"] == 1 and lst["max_agents"] == 1
 
 
-def test_model_gating_on_agent_create(client):
-    key = _provision(client, "free")
+def test_model_gating_on_agent_create(client, prov):
+    key = prov("free")
     h = {"Authorization": "Bearer " + key}
     # Nicht im Free-Tarif freigeschaltet.
     r = client.post("/v1/agents", headers=h, json={"name": "X", "model": "anthropic/claude-opus-4-8"})
@@ -82,9 +42,9 @@ def test_model_gating_on_agent_create(client):
     assert r2.status_code == 403
 
 
-def test_agents_isolated_between_tenants(client):
-    key_a = _provision(client, "free")
-    key_b = _provision(client, "free")
+def test_agents_isolated_between_tenants(client, prov):
+    key_a = prov("free")
+    key_b = prov("free")
     ha = {"Authorization": "Bearer " + key_a}
     hb = {"Authorization": "Bearer " + key_b}
 
@@ -100,8 +60,8 @@ def test_agents_isolated_between_tenants(client):
     assert client.get(f"/v1/agents/{agent_id}", headers=ha).status_code == 200
 
 
-def test_run_unknown_agent_404(client):
-    key = _provision(client, "free")
+def test_run_unknown_agent_404(client, prov):
+    key = prov("free")
     h = {"Authorization": "Bearer " + key}
     r = client.post(
         "/v1/agents/00000000-0000-0000-0000-000000000000/chat",
@@ -111,10 +71,10 @@ def test_run_unknown_agent_404(client):
     assert r.status_code == 404
 
 
-def test_run_agent_reaches_gateway(client):
+def test_run_agent_reaches_gateway(client, prov):
     # Kein Gateway erreichbar -> die Bahn laeuft bis zum Gateway und liefert 502
     # (beweist: Agent geladen, Modell akzeptiert, Limit ok, Weiterleitung).
-    key = _provision(client, "free")
+    key = prov("free")
     h = {"Authorization": "Bearer " + key}
     created = client.post("/v1/agents", headers=h, json={"name": "Run", "model": "ollama/llama3.2"})
     agent_id = created.json()["id"]
