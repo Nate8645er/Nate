@@ -1,0 +1,13 @@
+{
+  "_comment": "Deutsches Voiceover-Skript, ein Eintrag pro Video-Szene (Reihenfolge = Szenenreihenfolge in TariffExplainer.tsx). Kurze, natürlich sprechbare Sätze — die tatsächliche Sprechdauer (gemessen, nicht geraten) bestimmt anschliessend die Szenenlänge im Video.",
+  "voice": "de_DE-thorsten-medium",
+  "scenes": [
+    { "id": "title", "text": "Die KI-Plattform. Tarife im Überblick, Preise inklusive Mehrwertsteuer." },
+    { "id": "free", "text": "Free, zum Testen. Ein lokales Modell, ein Agent, hunderttausend Tokens im Monat. Kostenlos." },
+    { "id": "starter", "text": "Starter, für Einzelunternehmer. Schnelle Cloud-Modelle, drei Agenten, zwei Millionen Tokens im Monat. Neunzehn Franken." },
+    { "id": "pro", "text": "Pro, für kleine und mittlere Unternehmen. Cloud- und lokale Modelle, zehn Agenten, zehn Millionen Tokens im Monat. Neunundvierzig Franken." },
+    { "id": "business", "text": "Business, für Teams. Alle Modelle frei wählbar, dreissig Agenten, Single-Sign-On und Teamverwaltung. Hundertneunundvierzig Franken." },
+    { "id": "enterprise", "text": "Enterprise, für Konzerne. Dedizierte Instanz, unbegrenzte Agenten, garantierte Servicequalität. Auf Anfrage." },
+    { "id": "outro", "text": "Tarif wählen und noch heute starten. Jederzeit kündbar." }
+  ]
+}

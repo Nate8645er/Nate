@@ -1,8 +1,9 @@
 import {describe, expect, it} from 'vitest';
 import {TARIFFS} from './tariffs';
 import {TOTAL_FRAMES, FPS} from './TariffExplainer';
+import timing from '../narration/out/timing.json';
 
-describe('Timing', () => {
+describe('Tarifdaten', () => {
   it('deckt alle 5 Tarife ab', () => {
     expect(TARIFFS).toHaveLength(5);
     expect(TARIFFS.map((t) => t.code)).toEqual([
@@ -22,11 +23,26 @@ describe('Timing', () => {
       expect(t.features.length).toBeGreaterThan(0);
     }
   });
+});
 
-  it('Gesamtlaenge ist Titel + 5 Tarife + Outro', () => {
-    // 90 (Titel) + 5*120 (Tarife) + 90 (Outro) = 780 Frames = 26s bei 30fps.
-    expect(TOTAL_FRAMES).toBe(780);
-    expect(FPS).toBe(30);
-    expect(TOTAL_FRAMES / FPS).toBe(26);
+describe('Timing (aus echt gemessenen Sprechdauern, narration/out/timing.json)', () => {
+  it('hat fuer jede Szene (Titel + 5 Tarife + Outro) einen Timing-Eintrag', () => {
+    const ids = timing.scenes.map((s) => s.id);
+    expect(ids).toEqual(['title', 'free', 'starter', 'pro', 'business', 'enterprise', 'outro']);
+  });
+
+  it('Gesamtlaenge = Summe aller gemessenen Szenendauern (keine Magic Number)', () => {
+    const expectedFrames = timing.scenes.reduce(
+      (sum, s) => sum + Math.round(s.scene_duration_s * timing.fps),
+      0
+    );
+    expect(TOTAL_FRAMES).toBe(expectedFrames);
+    expect(FPS).toBe(timing.fps);
+  });
+
+  it('jede Szene ist mindestens so lang wie die gemessene Sprechdauer', () => {
+    for (const s of timing.scenes) {
+      expect(s.scene_duration_s).toBeGreaterThanOrEqual(s.speech_duration_s);
+    }
   });
 });

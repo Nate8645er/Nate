@@ -1,6 +1,6 @@
 name: creative-video CI
 
-# Tests + ein echter Render als Rauchtest fuer Produkt C (Erklaervideo).
+# Tests + ein echter Render (mit Voiceover) als Rauchtest fuer Produkt C.
 # Nur bei Aenderungen unter creative/video/.
 on:
   push:
@@ -19,7 +19,25 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+      - run: pip install -r narration/requirements.txt
+      - name: Deutsches Piper-Modell laden (~63 MB, nicht im Git)
+        run: |
+          mkdir -p .models/piper-de
+          curl -sL -o .models/piper-de/de_DE-thorsten-medium.onnx \
+            "https://huggingface.co/rhasspy/piper-voices/resolve/main/de/de_DE/thorsten/medium/de_DE-thorsten-medium.onnx"
+          curl -sL -o .models/piper-de/de_DE-thorsten-medium.onnx.json \
+            "https://huggingface.co/rhasspy/piper-voices/resolve/main/de/de_DE/thorsten/medium/de_DE-thorsten-medium.onnx.json"
+      - name: Voiceover synthetisieren + Untertitel erzeugen
+        run: |
+          cd narration
+          python3 synthesize.py
+          mkdir -p ../public/audio && cp out/*.wav ../public/audio/
+          python3 generate_srt.py
+          python3 -m pytest -q test_generate_srt.py
       - run: npm ci
       - name: Sicherheitscheck
         run: npm audit --audit-level=high
@@ -29,5 +47,7 @@ jobs:
         run: npx remotion browser ensure
       - name: Rauchtest-Render
         run: npm run render
-      - name: Ausgabe pruefen
-        run: test -s out/explainer.mp4
+      - name: Ausgabe pruefen (Video + Audiospur vorhanden)
+        run: |
+          test -s out/explainer.mp4
+          ffprobe -v error -select_streams a -show_entries stream=codec_name -of csv=p=0 out/explainer.mp4 | grep -q aac

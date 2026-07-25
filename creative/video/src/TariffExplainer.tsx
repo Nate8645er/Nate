@@ -1,7 +1,9 @@
 import React from 'react';
 import {
   AbsoluteFill,
+  Audio,
   Sequence,
+  staticFile,
   useCurrentFrame,
   interpolate,
   spring,
@@ -9,11 +11,19 @@ import {
 } from 'remotion';
 import {BRAND, TARIFFS, VAT_NOTE, Tariff} from './tariffs';
 import {COLORS, FONT} from './theme';
+import timing from '../narration/out/timing.json';
 
-const FPS = 30;
-const TITLE_FRAMES = 90; // 3s
-const TARIFF_FRAMES = 120; // 4s pro Tarif
-const OUTRO_FRAMES = 90; // 3s
+const FPS = timing.fps;
+
+// Szenendauer in Frames = ECHT GEMESSENE Sprechdauer (+ Puffer) aus
+// narration/synthesize.py — kein geraetes Timing. Reihenfolge in
+// timing.json entspricht der Szenenreihenfolge unten (title, 5 Tarife, outro).
+const sceneFrames: Record<string, number> = Object.fromEntries(
+  timing.scenes.map((s) => [s.id, Math.round(s.scene_duration_s * FPS)])
+);
+
+const TITLE_FRAMES = sceneFrames['title'];
+const OUTRO_FRAMES = sceneFrames['outro'];
 
 function fadeInOut(frame: number, durationInFrames: number, fps: number): number {
   const inOp = interpolate(frame, [0, fps * 0.4], [0, 1], {extrapolateRight: 'clamp'});
@@ -56,10 +66,13 @@ const Title: React.FC = () => {
   );
 };
 
-const TariffScene: React.FC<{tariff: Tariff}> = ({tariff}) => {
+const TariffScene: React.FC<{tariff: Tariff; durationInFrames: number}> = ({
+  tariff,
+  durationInFrames,
+}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
-  const opacity = fadeInOut(frame, TARIFF_FRAMES, fps);
+  const opacity = fadeInOut(frame, durationInFrames, fps);
   const slideIn = spring({frame, fps, config: {damping: 200}});
   const translateX = interpolate(slideIn, [0, 1], [40, 0]);
 
@@ -160,8 +173,9 @@ export const TariffExplainer: React.FC = () => {
 
   const tariffRanges = TARIFFS.map((t) => {
     const from = cursor;
-    cursor += TARIFF_FRAMES;
-    return {tariff: t, from};
+    const durationInFrames = sceneFrames[t.code];
+    cursor += durationInFrames;
+    return {tariff: t, from, durationInFrames};
   });
 
   const outroFrom = cursor;
@@ -170,18 +184,22 @@ export const TariffExplainer: React.FC = () => {
     <AbsoluteFill style={{backgroundColor: COLORS.bg}}>
       <Sequence from={titleFrom} durationInFrames={TITLE_FRAMES}>
         <Title />
+        <Audio src={staticFile('audio/title.wav')} />
       </Sequence>
-      {tariffRanges.map(({tariff, from}) => (
-        <Sequence key={tariff.code} from={from} durationInFrames={TARIFF_FRAMES}>
-          <TariffScene tariff={tariff} />
+      {tariffRanges.map(({tariff, from, durationInFrames}) => (
+        <Sequence key={tariff.code} from={from} durationInFrames={durationInFrames}>
+          <TariffScene tariff={tariff} durationInFrames={durationInFrames} />
+          <Audio src={staticFile(`audio/${tariff.code}.wav`)} />
         </Sequence>
       ))}
       <Sequence from={outroFrom} durationInFrames={OUTRO_FRAMES}>
         <Outro />
+        <Audio src={staticFile('audio/outro.wav')} />
       </Sequence>
     </AbsoluteFill>
   );
 };
 
-export const TOTAL_FRAMES = TITLE_FRAMES + TARIFFS.length * TARIFF_FRAMES + OUTRO_FRAMES;
+export const TOTAL_FRAMES =
+  TITLE_FRAMES + TARIFFS.reduce((sum, t) => sum + sceneFrames[t.code], 0) + OUTRO_FRAMES;
 export {FPS};
