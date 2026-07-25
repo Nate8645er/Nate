@@ -98,12 +98,26 @@ Der Stripe-Webhook hält Tarif und Zugang synchron mit dem Abo:
 
 - **Signatur**: HMAC-SHA256 über `{timestamp}.{body}` inkl. 300-s-Zeitfenster
   (Replay-Schutz), konstant-Zeit verglichen. Ohne Stripe-SDK (Stdlib).
-- **Idempotenz**: `processed_webhooks` (Provider + Event-ID). Bei Ereignissen,
-  die etwas **anlegen**, laufen Belegung und Anlage in **einer** Transaktion —
-  bricht die Anlage ab, greift die Wiederzustellung korrekt. Ein `400`
-  verbraucht die Ereignis-Kennung nicht.
+- **Idempotenz**: `processed_webhooks` (Provider + Event-ID). **Jedes** Ereignis
+  — nicht nur Neuanlagen — belegt seine Kennung und ändert Zustand in **einer**
+  Transaktion; bricht ein Schritt ab, greift die Wiederzustellung korrekt statt
+  den Zustand dauerhaft falsch stehen zu lassen. Ein `400` (ungültiger Auftrag)
+  verbraucht die Kennung nicht; eine **fehlende** Kennung wird fail-closed mit
+  `400` abgelehnt (nie fail-open verarbeitet).
 - **Tarif-Zuordnung**: `metadata.plan_code` am Stripe-Objekt, sonst
   `STRIPE_PRICE_MAP` (Preis-ID → Tarif).
+- **`metadata.tenant_id`-Härtung**: wird nur akzeptiert, wenn es eine gültige
+  UUID ist **und** die zahlende E-Mail nachweislich zu einem Nutzer genau
+  dieses Mandanten gehört (RLS-geprüft) — verhindert die Übernahme eines
+  fremden Mandanten über frei wählbare Checkout-Metadaten. Zweite
+  Verteidigungslinie: `stripe_customer_id` wird nie überschrieben, wenn
+  bereits ein *anderer* Kunde verknüpft ist.
+- **Admin- vs. billing-Sperre**: `tenants.suspended_reason` unterscheidet
+  `'admin'` (manuell durch den Betreiber) von `'billing'` (Abo inaktiv). Ein
+  reguläres `invoice.paid` hebt eine administrative Sperre **nicht** auf.
+- **Body-Limit**: Webhook-Bodies werden gestreamt und ab 1 MiB mit `413`
+  abgebrochen (`app/http_limits.py`) — schützt auch gegen fehlenden/falschen
+  `Content-Length`-Header (Chunked Transfer-Encoding).
 
 ## Tests
 

@@ -1,6 +1,11 @@
 """Abrechnung (Phase 4):
   POST /webhooks/stripe  — Abo-Ereignisse: Kauf, Tarifwechsel, Zahlung, Kuendigung
   GET  /v1/billing       — Kundenansicht: Tarif, Abo-Zustand, Verbrauch, Historie
+
+Sicherheitsprinzip (Security-Review): jedes Ereignis, das etwas ANLEGT oder
+ZUSTAND AENDERT, belegt seine Idempotenz-Kennung und fuehrt die Aenderung in
+EINER Transaktion aus. Validierung (Tarif/E-Mail bekannt?) passiert VOR dem
+Belegen, damit ein abgelehntes Event (400) die Kennung nicht verbraucht.
 """
 from __future__ import annotations
 
@@ -17,12 +22,13 @@ from ..billing import (
     claim_event,
     find_tenant_by_customer,
     link_stripe_customer,
-    mark_processed,
     plan_code_from_event,
     record_billing_event,
+    resolve_metadata_tenant,
     verify_stripe_signature,
 )
 from ..db import admin_tx, tenant_tx
+from ..http_limits import read_bounded_body
 from ..provisioning import provision_tenant
 
 router = APIRouter()
@@ -48,7 +54,7 @@ def _email_from_session(obj: dict) -> str | None:
 
 @router.post("/webhooks/stripe")
 async def stripe_webhook(request: Request):
-    raw = await request.body()
+    raw = await read_bounded_body(request)
     secret = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
     if not verify_stripe_signature(raw, request.headers.get("Stripe-Signature", ""), secret):
         raise HTTPException(status_code=401, detail="Ungueltige Signatur")
@@ -61,26 +67,38 @@ async def stripe_webhook(request: Request):
     event_id = event.get("id", "")
     etype = event.get("type", "")
     obj = ((event.get("data") or {}).get("object")) or {}
-
     customer_id = obj.get("customer") or ""
+
+    if not event_id:
+        # Fail-closed: ohne Kennung keine Idempotenz moeglich. Lieber ablehnen
+        # (Stripe stellt praktisch immer eine id) als riskieren, ein Replay
+        # doppelt zu verarbeiten.
+        raise HTTPException(status_code=400, detail="Event ohne Kennung")
+
     tenant_id = find_tenant_by_customer(customer_id)
 
     # ---- Kauf abgeschlossen -------------------------------------------------
     if etype == "checkout.session.completed":
         plan_code = plan_code_from_event(obj)
-        meta_tenant = (obj.get("metadata") or {}).get("tenant_id")
         subscription_id = obj.get("subscription") or None
-
-        if tenant_id is None and meta_tenant:
-            tenant_id = str(meta_tenant)  # Upgrade eines bestehenden Mandanten
+        email = _email_from_session(obj)
 
         if tenant_id is None:
-            # Neukauf ohne bestehenden Mandanten -> freischalten (wie Store-Weg).
-            # Erst validieren, dann Belegung + Anlage in EINER Transaktion.
-            email = _email_from_session(obj)
+            # Nur akzeptieren, wenn Eigentum am Ziel-Mandanten nachgewiesen ist
+            # (gueltige UUID + payer_email gehoert zu einem Nutzer dieses
+            # Mandanten) — verhindert Uebernahme eines fremden Mandanten ueber
+            # frei waehlbare Checkout-Metadaten.
+            meta_tenant = (obj.get("metadata") or {}).get("tenant_id")
+            if meta_tenant:
+                tenant_id = resolve_metadata_tenant(meta_tenant, email)
+
+        if tenant_id is None:
+            # Neukauf ohne bestehenden/nachgewiesenen Mandanten -> freischalten.
+            # Validieren BEVOR die Ereignis-Kennung belegt wird.
             if not email or not plan_code:
                 log.warning("checkout.session.completed ohne E-Mail/Tarif: %s", event_id)
                 raise HTTPException(status_code=400, detail="Kein Tarif oder keine E-Mail")
+
             with admin_tx() as conn:
                 if not claim_event(conn, "stripe", event_id):
                     return {"status": "duplicate_ignored", "event": event_id}
@@ -88,57 +106,80 @@ async def stripe_webhook(request: Request):
                     tenant_name=email.split("@")[0], owner_email=email,
                     plan_code=plan_code, conn=conn,
                 )
-            tenant_id = result["tenant_id"]
-        elif not mark_processed("stripe", event_id):
-            return {"status": "duplicate_ignored", "event": event_id}
+                new_tenant_id = result["tenant_id"]
+                link_stripe_customer(new_tenant_id, customer_id, subscription_id, conn=conn)
+                apply_subscription_state(
+                    new_tenant_id, plan_code, "active", subscription_id=subscription_id, conn=conn
+                )
+                record_billing_event(
+                    new_tenant_id, "subscription_started", plan_code,
+                    external_id=event_id, conn=conn,
+                )
+            return {"status": "provisioned", "tenant_id": new_tenant_id, "plan": plan_code}
 
-        link_stripe_customer(tenant_id, customer_id, subscription_id)
-        apply_subscription_state(tenant_id, plan_code, "active", subscription_id=subscription_id)
-        record_billing_event(tenant_id, "subscription_started", plan_code, external_id=event_id)
+        # Bestehender/nachgewiesener Mandant -> verknuepfen + aktivieren.
+        with admin_tx() as conn:
+            if not claim_event(conn, "stripe", event_id):
+                return {"status": "duplicate_ignored", "event": event_id}
+            link_stripe_customer(tenant_id, customer_id, subscription_id, conn=conn)
+            apply_subscription_state(
+                tenant_id, plan_code, "active", subscription_id=subscription_id, conn=conn
+            )
+            record_billing_event(
+                tenant_id, "subscription_started", plan_code, external_id=event_id, conn=conn
+            )
         return {"status": "provisioned", "tenant_id": tenant_id, "plan": plan_code}
 
-    # Ab hier ist ein bekannter Mandant noetig.
+    # Ab hier ist ein bekannter Mandant noetig — ohne Zuordnung nicht belegen,
+    # damit eine spaetere Zustellung (Mandant dann bekannt) noch greift.
     if tenant_id is None:
         log.info("Stripe-Event %s ohne zugeordneten Mandanten (customer=%s)", etype, customer_id)
         return {"status": "ignored_unknown_customer", "event": event_id}
-
-    # Idempotenz fuer die restlichen Ereignisse. Diese setzen nur Zustand
-    # (Tarif/Status), legen also nichts an — eine eigene Transaktion genuegt.
-    if not mark_processed("stripe", event_id):
-        return {"status": "duplicate_ignored", "event": event_id}
 
     # ---- Abo geaendert / gekuendigt -----------------------------------------
     if etype in {"customer.subscription.created", "customer.subscription.updated"}:
         plan_code = plan_code_from_event(obj)
         status = obj.get("status", "active")
-        apply_subscription_state(
-            tenant_id, plan_code, status,
-            current_period_end=_ts(obj.get("current_period_end")),
-            subscription_id=obj.get("id"),
-        )
-        record_billing_event(tenant_id, "plan_changed", plan_code, external_id=event_id)
+        with admin_tx() as conn:
+            if not claim_event(conn, "stripe", event_id):
+                return {"status": "duplicate_ignored", "event": event_id}
+            apply_subscription_state(
+                tenant_id, plan_code, status,
+                current_period_end=_ts(obj.get("current_period_end")),
+                subscription_id=obj.get("id"), conn=conn,
+            )
+            record_billing_event(tenant_id, "plan_changed", plan_code, external_id=event_id, conn=conn)
         return {"status": "updated", "tenant_id": tenant_id, "plan": plan_code}
 
     if etype == "customer.subscription.deleted":
-        apply_subscription_state(tenant_id, None, "canceled", subscription_id=obj.get("id"))
-        record_billing_event(tenant_id, "subscription_cancelled", external_id=event_id)
+        with admin_tx() as conn:
+            if not claim_event(conn, "stripe", event_id):
+                return {"status": "duplicate_ignored", "event": event_id}
+            apply_subscription_state(tenant_id, None, "canceled", subscription_id=obj.get("id"), conn=conn)
+            record_billing_event(tenant_id, "subscription_cancelled", external_id=event_id, conn=conn)
         return {"status": "cancelled", "tenant_id": tenant_id}
 
     # ---- Zahlungen ----------------------------------------------------------
     if etype == "invoice.paid":
-        record_billing_event(
-            tenant_id, "invoice_paid",
-            amount_chf_cents=obj.get("amount_paid"), external_id=event_id,
-        )
-        apply_subscription_state(tenant_id, None, "active")
+        with admin_tx() as conn:
+            if not claim_event(conn, "stripe", event_id):
+                return {"status": "duplicate_ignored", "event": event_id}
+            apply_subscription_state(tenant_id, None, "active", conn=conn)
+            record_billing_event(
+                tenant_id, "invoice_paid", amount_chf_cents=obj.get("amount_paid"),
+                external_id=event_id, conn=conn,
+            )
         return {"status": "invoice_paid", "tenant_id": tenant_id}
 
     if etype == "invoice.payment_failed":
-        record_billing_event(
-            tenant_id, "payment_failed",
-            amount_chf_cents=obj.get("amount_due"), external_id=event_id,
-        )
-        apply_subscription_state(tenant_id, None, "past_due")  # sperrt den Mandanten
+        with admin_tx() as conn:
+            if not claim_event(conn, "stripe", event_id):
+                return {"status": "duplicate_ignored", "event": event_id}
+            apply_subscription_state(tenant_id, None, "past_due", conn=conn)  # sperrt den Mandanten
+            record_billing_event(
+                tenant_id, "payment_failed", amount_chf_cents=obj.get("amount_due"),
+                external_id=event_id, conn=conn,
+            )
         return {"status": "payment_failed", "tenant_id": tenant_id}
 
     return {"status": "ignored", "event": event_id, "type": etype}

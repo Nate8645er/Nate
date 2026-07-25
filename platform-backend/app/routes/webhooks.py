@@ -18,6 +18,7 @@ from fastapi import APIRouter, HTTPException, Request
 
 from ..billing import claim_event
 from ..db import admin_tx
+from ..http_limits import read_bounded_body
 from ..provisioning import provision_tenant
 
 router = APIRouter()
@@ -49,7 +50,7 @@ def email_from_order(order: dict) -> str | None:
 
 @router.post("/webhooks/shopify/orders-paid")
 async def orders_paid(request: Request):
-    raw = await request.body()
+    raw = await read_bounded_body(request)
     header_hmac = request.headers.get("X-Shopify-Hmac-Sha256", "")
     secret = os.environ.get("SHOPIFY_WEBHOOK_SECRET", "")
 
@@ -75,6 +76,10 @@ async def orders_paid(request: Request):
     # laufen in EINER Transaktion — bricht die Anlage ab, wird auch die Belegung
     # zurueckgerollt und die Wiederzustellung greift korrekt.
     event_id = request.headers.get("X-Shopify-Webhook-Id") or str(order.get("id") or "")
+    if not event_id:
+        # Fail-closed: ohne Kennung keine Idempotenz moeglich (sonst koennte
+        # jede Wiederzustellung einen weiteren Mandanten anlegen).
+        raise HTTPException(status_code=400, detail="Auftrag ohne Kennung")
     tenant_name = order.get("customer", {}).get("first_name") or email.split("@")[0]
 
     with admin_tx() as conn:

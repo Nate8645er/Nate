@@ -54,6 +54,14 @@ def test_missing_pieces_rejected():
     assert verify_stripe_signature(body, sign(body, 1000), "", now=1000) is False
 
 
+def test_non_ascii_signature_candidate_rejected_not_crashed():
+    # compare_digest wirft TypeError bei Nicht-ASCII-Strings — muss als
+    # Nicht-Treffer behandelt werden, nicht als 500 durchschlagen.
+    body = b'{"id":"evt_1"}'
+    header = f"t=1000,v1={chr(252)}"  # 'ü' — kam frueher als latin-1-Byte durch
+    assert verify_stripe_signature(body, header, SECRET, now=1000) is False
+
+
 def test_plan_code_from_metadata():
     assert plan_code_from_event({"metadata": {"plan_code": "Pro"}}) == "pro"
 

@@ -11,6 +11,7 @@ import hmac
 import logging
 import os
 import time
+import uuid as uuid_mod
 
 from .db import admin_tx, tenant_tx
 
@@ -61,7 +62,15 @@ def verify_stripe_signature(
         return False
     signed_payload = f"{ts}.".encode() + raw_body
     expected = hmac.new(secret.encode(), signed_payload, hashlib.sha256).hexdigest()
-    return any(hmac.compare_digest(expected, s) for s in sigs)
+    for s in sigs:
+        # compare_digest wirft TypeError bei Nicht-ASCII-Kandidaten (Header
+        # werden latin-1-dekodiert) — als Nicht-Treffer werten, nicht crashen.
+        try:
+            if hmac.compare_digest(expected, s):
+                return True
+        except TypeError:
+            continue
+    return False
 
 
 # --------------------------------------------------------------------------
@@ -104,15 +113,22 @@ def plan_code_from_event(obj: dict) -> str | None:
 # Idempotenz
 # --------------------------------------------------------------------------
 def claim_event(conn, provider: str, event_id: str) -> bool:
-    """Atomare Variante: belegt das Event INNERHALB der uebergebenen Transaktion.
+    """Belegt das Event INNERHALB der uebergebenen Transaktion.
 
-    Damit sind Belegung und die eigentliche Verarbeitung (z. B. Mandant anlegen)
-    ein einziger Commit: bricht die Verarbeitung ab, wird auch die Belegung
-    zurueckgerollt und eine Wiederzustellung greift korrekt.
-    True = neu, False = bereits verarbeitet.
+    Damit sind Belegung und die eigentliche Verarbeitung (z. B. Mandant
+    anlegen, Abo-Zustand setzen) EIN Commit: bricht die Verarbeitung ab, wird
+    auch die Belegung zurueckgerollt und eine Wiederzustellung greift korrekt.
+    True = neu (und jetzt belegt), False = bereits verarbeitet.
+
+    Ohne event_id ist keine Idempotenz moeglich — das wird hier als "bereits
+    verarbeitet" (False) gewertet, also FAIL-CLOSED: lieber ein Event uebersehen
+    (vom Betreiber manuell nachholbar) als durch Fail-Open versehentlich
+    doppelte Mandanten anzulegen. Aufrufer sollten eine fehlende event_id aber
+    schon vorher mit 400 ablehnen (siehe routes/billing.py, routes/webhooks.py).
     """
     if not event_id:
-        return True  # ohne Kennung keine Idempotenz moeglich; nicht blockieren
+        log.warning("claim_event ohne event_id fuer provider=%s — als Duplikat behandelt", provider)
+        return False
     row = conn.execute(
         "INSERT INTO processed_webhooks (provider, event_id) VALUES (%s, %s) "
         "ON CONFLICT (provider, event_id) DO NOTHING RETURNING event_id",
@@ -121,18 +137,8 @@ def claim_event(conn, provider: str, event_id: str) -> bool:
     return row is not None
 
 
-def mark_processed(provider: str, event_id: str) -> bool:
-    """Bequeme Variante mit eigener Transaktion — nur fuer Ereignisse, deren
-    Verarbeitung ohnehin wiederholbar ist (Zustandsupdates wie 'status=active').
-    Fuer alles, was etwas ANLEGT, claim_event in der Arbeits-Transaktion nutzen."""
-    if not event_id:
-        return True
-    with admin_tx() as conn:
-        return claim_event(conn, provider, event_id)
-
-
 # --------------------------------------------------------------------------
-# Anwendung von Abo-Aenderungen
+# Mandanten-Zuordnung / Eigentumsnachweis
 # --------------------------------------------------------------------------
 def find_tenant_by_customer(customer_id: str) -> str | None:
     if not customer_id:
@@ -144,13 +150,54 @@ def find_tenant_by_customer(customer_id: str) -> str | None:
     return str(row["id"]) if row else None
 
 
-def link_stripe_customer(tenant_id: str, customer_id: str, subscription_id: str | None) -> None:
-    with admin_tx() as conn:
-        conn.execute(
-            "UPDATE tenants SET stripe_customer_id = %s, stripe_subscription_id = %s "
-            "WHERE id = %s",
-            (customer_id or None, subscription_id or None, tenant_id),
+def resolve_metadata_tenant(raw_tenant_id, payer_email: str | None) -> str | None:
+    """Prueft ein aus Checkout-Metadaten stammendes tenant_id, BEVOR es
+    irgendetwas steuert. Ohne diese Pruefung koennte ein Angreifer, der
+    metadata.tenant_id setzen kann, die Abrechnung eines fremden Mandanten
+    uebernehmen (Security-Review, Befund HOCH-1).
+
+    Akzeptiert nur, wenn:
+      1. raw_tenant_id eine gueltige UUID ist, UND
+      2. payer_email zu einem registrierten Nutzer GENAU dieses Mandanten
+         gehoert (Eigentumsnachweis — RLS-gefiltert, kein Cross-Tenant-Read).
+    """
+    if not raw_tenant_id or not payer_email:
+        return None
+    try:
+        tenant_id = str(uuid_mod.UUID(str(raw_tenant_id)))
+    except (ValueError, AttributeError, TypeError):
+        log.warning("metadata.tenant_id ist keine gueltige UUID: %r", raw_tenant_id)
+        return None
+
+    with tenant_tx(tenant_id) as conn:
+        owns = conn.execute(
+            "SELECT 1 FROM users WHERE email = %s", (payer_email,)
+        ).fetchone()
+    if owns is None:
+        log.warning(
+            "metadata.tenant_id abgelehnt (kein Eigentumsnachweis fuer %s): %s",
+            payer_email, tenant_id,
         )
+        return None
+    return tenant_id
+
+
+def link_stripe_customer(tenant_id: str, customer_id: str, subscription_id: str | None, conn=None) -> None:
+    """Verknuepft die Stripe-Customer-ID nur, wenn noch keine ANDERE verknuepft
+    ist (verhindert Ueberschreiben/Kapern einer bestehenden Verknuepfung —
+    zweite Verteidigungslinie neben resolve_metadata_tenant)."""
+    def _do(c):
+        c.execute(
+            "UPDATE tenants SET stripe_customer_id = %s, "
+            "stripe_subscription_id = COALESCE(%s, stripe_subscription_id) "
+            "WHERE id = %s AND (stripe_customer_id IS NULL OR stripe_customer_id = %s)",
+            (customer_id or None, subscription_id, tenant_id, customer_id or None),
+        )
+    if conn is not None:
+        _do(conn)
+    else:
+        with admin_tx() as c:
+            _do(c)
 
 
 def apply_subscription_state(
@@ -159,37 +206,56 @@ def apply_subscription_state(
     subscription_status: str,
     current_period_end=None,
     subscription_id: str | None = None,
+    conn=None,
 ) -> None:
     """Setzt Tarif + Abo-Zustand am Mandanten. Ein nicht-aktives Abo sperrt den
-    Mandanten (auth.py -> 403), ein wieder aktives entsperrt ihn."""
-    tenant_status = "active" if subscription_status in ACTIVE_STATUSES else "suspended"
-    with admin_tx() as conn:
+    Mandanten (auth.py -> 403), ein wieder aktives entsperrt ihn — AUSSER der
+    Mandant ist administrativ gesperrt (suspended_reason='admin'): das darf ein
+    regulaeres invoice.paid nicht aufheben (Security-Review, Befund MEDIUM)."""
+    def _do(c):
         plan_id = None
         if plan_code:
-            plan = conn.execute(
-                "SELECT id FROM plans WHERE code = %s", (plan_code,)
-            ).fetchone()
+            plan = c.execute("SELECT id FROM plans WHERE code = %s", (plan_code,)).fetchone()
             if plan is None:
                 log.warning("Unbekannter Tarif '%s' im Abo-Event", plan_code)
             else:
                 plan_id = plan["id"]
 
+        current = c.execute(
+            "SELECT suspended_reason FROM tenants WHERE id = %s", (tenant_id,)
+        ).fetchone()
+        current_reason = current["suspended_reason"] if current else None
+
+        if subscription_status in ACTIVE_STATUSES:
+            if current_reason == "admin":
+                new_status, new_reason = "suspended", "admin"  # admin-Sperre bleibt bestehen
+            else:
+                new_status, new_reason = "active", None
+        else:
+            new_status, new_reason = "suspended", "billing"
+
         if plan_id is not None:
-            conn.execute(
+            c.execute(
                 "UPDATE tenants SET plan_id = %s, subscription_status = %s, status = %s, "
-                "current_period_end = %s, stripe_subscription_id = COALESCE(%s, stripe_subscription_id) "
-                "WHERE id = %s",
-                (plan_id, subscription_status, tenant_status, current_period_end,
+                "suspended_reason = %s, current_period_end = %s, "
+                "stripe_subscription_id = COALESCE(%s, stripe_subscription_id) WHERE id = %s",
+                (plan_id, subscription_status, new_status, new_reason, current_period_end,
                  subscription_id, tenant_id),
             )
         else:
-            conn.execute(
-                "UPDATE tenants SET subscription_status = %s, status = %s, "
+            c.execute(
+                "UPDATE tenants SET subscription_status = %s, status = %s, suspended_reason = %s, "
                 "current_period_end = %s, stripe_subscription_id = COALESCE(%s, stripe_subscription_id) "
                 "WHERE id = %s",
-                (subscription_status, tenant_status, current_period_end,
+                (subscription_status, new_status, new_reason, current_period_end,
                  subscription_id, tenant_id),
             )
+
+    if conn is not None:
+        _do(conn)
+    else:
+        with admin_tx() as c:
+            _do(c)
 
 
 def record_billing_event(
@@ -198,10 +264,21 @@ def record_billing_event(
     plan_code: str | None = None,
     amount_chf_cents: int | None = None,
     external_id: str | None = None,
+    conn=None,
 ) -> None:
     """Schreibt die kundensichtbare Historie (mandantengebunden via RLS)."""
-    with tenant_tx(tenant_id) as conn:
+    if conn is not None:
+        # Gemeinsame Transaktion: Mandantenkontext auf DIESER Verbindung setzen
+        # (wie in provisioning.py), damit die WITH-CHECK-Policy erfuellt ist.
+        conn.execute("SELECT set_config('app.current_tenant', %s, true)", (str(tenant_id),))
         conn.execute(
+            "INSERT INTO billing_events (tenant_id, type, plan_code, amount_chf_cents, external_id) "
+            "VALUES (%s,%s,%s,%s,%s)",
+            (tenant_id, type_, plan_code, amount_chf_cents, external_id),
+        )
+        return
+    with tenant_tx(tenant_id) as c:
+        c.execute(
             "INSERT INTO billing_events (tenant_id, type, plan_code, amount_chf_cents, external_id) "
             "VALUES (%s,%s,%s,%s,%s)",
             (tenant_id, type_, plan_code, amount_chf_cents, external_id),

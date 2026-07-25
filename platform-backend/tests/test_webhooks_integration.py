@@ -83,6 +83,30 @@ def test_duplicate_order_provisions_only_once(client):
     assert n == 1
 
 
+def test_missing_order_id_and_header_rejected_400(client):
+    """Fail-closed: ohne X-Shopify-Webhook-Id UND ohne order.id ist keine
+    Idempotenz moeglich -> ablehnen statt fail-open zu verarbeiten."""
+    body = json.dumps(
+        {"email": "keine-id@example.ch", "line_items": [{"sku": "plan-pro"}]}
+    ).encode()
+    r = client.post(
+        "/webhooks/shopify/orders-paid",
+        content=body,
+        headers={"X-Shopify-Hmac-Sha256": _sign(body), "Content-Type": "application/json"},
+    )
+    assert r.status_code == 400
+
+
+def test_oversized_body_rejected_413(client):
+    huge = b"x" * 1_500_000
+    r = client.post(
+        "/webhooks/shopify/orders-paid",
+        content=huge,
+        headers={"X-Shopify-Hmac-Sha256": "irrelevant", "Content-Type": "application/octet-stream"},
+    )
+    assert r.status_code == 413
+
+
 def test_invalid_order_does_not_burn_event_id(client):
     """Ein 400 darf die Ereignis-Kennung nicht verbrauchen: eine korrigierte
     Wiederzustellung mit derselben Kennung muss noch freischalten koennen."""
