@@ -1,15 +1,10 @@
 """Smoke-Tests der Endpunkt-Verdrahtung: Routing + Auth-Gate + statisches UI.
 Ohne DB — die geschuetzten Routen antworten 401, bevor sie die DB beruehren."""
-import os
+# Die Dummy-Umgebung setzt conftest.py (wird vor den Testmodulen geladen);
+# diese Tests treffen keinen DB-Pfad, der Pool oeffnet lazy.
+from fastapi.testclient import TestClient
 
-# Dummy-Env, damit config importierbar ist (Pool wird lazy erst bei DB-Zugriff
-# geoeffnet; diese Tests treffen keinen DB-Pfad).
-os.environ.setdefault("DATABASE_URL", "postgresql://u:p@127.0.0.1:1/db")
-os.environ.setdefault("MIGRATE_DATABASE_URL", "postgresql://u:p@127.0.0.1:1/db")
-
-from fastapi.testclient import TestClient  # noqa: E402
-
-from app.main import app  # noqa: E402
+from app.main import app
 
 client = TestClient(app)
 

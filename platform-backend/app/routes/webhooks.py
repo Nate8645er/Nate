@@ -16,6 +16,8 @@ import os
 
 from fastapi import APIRouter, HTTPException, Request
 
+from ..billing import claim_event
+from ..db import admin_tx
 from ..provisioning import provision_tenant
 
 router = APIRouter()
@@ -61,14 +63,27 @@ async def orders_paid(request: Request):
     except (ValueError, UnicodeDecodeError):
         raise HTTPException(status_code=400, detail="Ungueltiger Body")
 
+    # Erst validieren: ein unbrauchbarer Auftrag soll die Ereignis-Kennung nicht
+    # verbrauchen (sonst wuerde eine korrigierte Wiederzustellung verworfen).
     plan_code = plan_code_from_order(order)
     email = email_from_order(order)
     if not plan_code or not email:
         log.warning("orders/paid ohne Tarif-SKU oder E-Mail: order=%s", order.get("id"))
         raise HTTPException(status_code=400, detail="Kein Tarif (plan-<code>) oder keine E-Mail im Auftrag")
 
+    # Idempotenz: Shopify stellt Webhooks mehrfach zu. Belegung und Anlage
+    # laufen in EINER Transaktion — bricht die Anlage ab, wird auch die Belegung
+    # zurueckgerollt und die Wiederzustellung greift korrekt.
+    event_id = request.headers.get("X-Shopify-Webhook-Id") or str(order.get("id") or "")
     tenant_name = order.get("customer", {}).get("first_name") or email.split("@")[0]
-    result = provision_tenant(tenant_name=tenant_name, owner_email=email, plan_code=plan_code)
+
+    with admin_tx() as conn:
+        if not claim_event(conn, "shopify", event_id):
+            log.info("orders/paid Wiederholung ignoriert: %s", event_id)
+            return {"status": "duplicate_ignored", "event": event_id}
+        result = provision_tenant(
+            tenant_name=tenant_name, owner_email=email, plan_code=plan_code, conn=conn
+        )
     log.info("Mandant via Store-Kauf freigeschaltet: tenant=%s plan=%s", result["tenant_id"], plan_code)
 
     # Hinweis: Der Klartext-Key wird hier NICHT an Shopify zurueckgegeben. Die

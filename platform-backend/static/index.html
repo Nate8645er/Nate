@@ -98,10 +98,15 @@ async function loadModels() {
 
 async function refreshUsage() {
   try {
-    const r = await fetch("/v1/usage", { headers: authHeader() });
+    const r = await fetch("/v1/billing", { headers: authHeader() });
     if (!r.ok) return;
-    const u = await r.json();
-    $("usage").textContent = `${u.plan} · ${u.month.tokens_total}/${u.month.limit} Tokens`;
+    const b = await r.json();
+    const pct = b.usage.percent;
+    $("usage").textContent = `${b.plan} · ${b.usage.tokens_total}/${b.usage.limit} Tokens (${pct}%)`;
+    // Abo-Zustand sichtbar machen, wenn er Aufmerksamkeit braucht.
+    const warn = b.account_status !== "active" || (b.subscription_status && b.subscription_status !== "active");
+    $("usage").style.color = warn ? "#ff6b6b" : (pct >= 90 ? "#ffb454" : "#8b93a7");
+    if (warn) $("usage").title = `Konto: ${b.account_status} · Abo: ${b.subscription_status || "—"}`;
   } catch {}
 }
 

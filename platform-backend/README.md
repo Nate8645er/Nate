@@ -79,6 +79,31 @@ curl -s localhost:8080/v1/usage -H "Authorization: Bearer pk_..."
 | GET  | `/v1/usage` | Monatsverbrauch des Mandanten | Bearer API-Key |
 | GET  | `/v1/conversations` | Liste der Unterhaltungen | Bearer API-Key |
 | GET  | `/v1/conversations/{id}` | Eine Unterhaltung mit Nachrichten | Bearer API-Key |
+| GET/POST | `/v1/agents…` | Agenten verwalten + ausführen (Tarif-Limit) | Bearer API-Key |
+| GET  | `/v1/billing` | Tarif, Abo-Zustand, Verbrauch, Historie | Bearer API-Key |
+| POST | `/webhooks/shopify/orders-paid` | Kauf → Mandant freischalten | HMAC (Shopify) |
+| POST | `/webhooks/stripe` | Abo-Ereignisse (Kauf/Wechsel/Zahlung/Kündigung) | HMAC (Stripe) |
+
+## Abrechnung (Phase 4)
+
+Der Stripe-Webhook hält Tarif und Zugang synchron mit dem Abo:
+
+| Ereignis | Wirkung |
+|---|---|
+| `checkout.session.completed` | Mandant freischalten (oder verknüpfen), Tarif setzen |
+| `customer.subscription.updated` | Tarifwechsel (Up-/Downgrade) übernehmen |
+| `invoice.payment_failed` | Mandant auf `suspended` → Zugang gesperrt (401/403) |
+| `invoice.paid` | Mandant wieder `active` |
+| `customer.subscription.deleted` | Kündigung → gesperrt |
+
+- **Signatur**: HMAC-SHA256 über `{timestamp}.{body}` inkl. 300-s-Zeitfenster
+  (Replay-Schutz), konstant-Zeit verglichen. Ohne Stripe-SDK (Stdlib).
+- **Idempotenz**: `processed_webhooks` (Provider + Event-ID). Bei Ereignissen,
+  die etwas **anlegen**, laufen Belegung und Anlage in **einer** Transaktion —
+  bricht die Anlage ab, greift die Wiederzustellung korrekt. Ein `400`
+  verbraucht die Ereignis-Kennung nicht.
+- **Tarif-Zuordnung**: `metadata.plan_code` am Stripe-Objekt, sonst
+  `STRIPE_PRICE_MAP` (Preis-ID → Tarif).
 
 ## Tests
 
@@ -113,7 +138,10 @@ einen Postgres-Service hoch.
 
 Aus den Reviews dokumentiert, nicht vergessen:
 - **Harte Token-Limit-Durchsetzung** (aktuell TOCTOU zwischen Check und
-  Persistenz möglich) → LiteLLM Virtual Keys/Budgets pro Mandant (Phase 4).
+  Persistenz möglich) → LiteLLM Virtual Keys/Budgets pro Mandant.
+- **Nutzungsbasierte Abrechnung**: `usage_events` ist die Datengrundlage, aber
+  der Verbrauch wird noch **nicht** an Stripe/Lago gemeldet (aktuell reine
+  Tarif-Pauschale + Limit). Meldung an ein Usage-Billing folgt.
 - **Token-Undercount**, wenn das Gateway kein `usage`-Objekt liefert (z.B.
   Ollama) → Tokenizer-Schätzung (Phase 3).
 - **Verbrauchsverlust**, falls die Persistenz nach erfolgreichem Call scheitert
