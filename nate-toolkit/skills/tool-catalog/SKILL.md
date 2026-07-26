@@ -262,6 +262,75 @@ abweicht.
 | Bildungsplattform | LibreEdu, OpenCourseLab | nicht anwendbar |
 | Payment-Beispiele | adyen-examples | nur Referenz — wir nutzen Stripe direkt per HMAC, kein SDK |
 
+## Verifikationslauf: "welche gehen als Python-Bibliothek?" (26.07.)
+
+Auf explizite Nachfrage echt geprueft statt vermutet — jeder Eintrag unten
+wurde live gegen `https://pypi.org/pypi/<paket>/json` abgefragt (nicht aus
+Erinnerung). "Geht" heisst hier: **existiert als PyPI-Paket, waere pip-
+installierbar**. Das ist NICHT dasselbe wie "funktioniert hier sinnvoll ohne
+weitere Infrastruktur" — chromadb/weaviate-client/qdrant-client z.B.
+installieren sich, aber ohne laufenden Server bringen sie ohne echte
+Kandidaten-Integration keinen Nutzen (siehe Spalte oben in den Themen-
+Tabellen). Keines dieser Pakete wurde in `platform-backend/requirements.txt`
+aufgenommen — nur was wirklich gebraucht wird, kommt dort rein (siehe Redis/
+Composio oben), alles andere waere Abhaengigkeits- und CVE-Flaeche ohne
+Funktion.
+
+| Repo | PyPI-Paket | Verifiziert |
+|---|---|---|
+| crewAIInc/crewAI | `crewai` | 1.15.7 |
+| openai/openai-agents-python | `openai-agents` | 0.18.3 |
+| microsoft/autogen | `pyautogen` | 0.10.0 |
+| langchain-ai/langgraph | `langgraph` | 1.2.9 |
+| langchain-ai/langchain | `langchain` | 1.3.14 |
+| camel-ai/camel | `camel-ai` | 0.2.90 |
+| ag2ai/ag2 | `ag2` | 0.14.0 |
+| pydantic/pydantic-ai | `pydantic-ai` | 2.18.0 |
+| agno-agi/agno | `agno` | 2.8.4 |
+| huggingface/smolagents | `smolagents` | 1.26.0 |
+| microsoft/semantic-kernel | `semantic-kernel` | 1.44.0 |
+| BerriAI/litellm | `litellm` | 1.93.0 |
+| e2b-dev/e2b | `e2b` | 2.35.0 |
+| composiohq/composio | `composio-core` | 0.7.21 |
+| langchain-ai/langsmith-sdk | `langsmith` | 0.10.10 |
+| browser-use/browser-use | `browser-use` | 0.13.6 |
+| unclecode/crawl4ai | `crawl4ai` | 0.9.2 |
+| firecrawl/firecrawl | `firecrawl-py` | 4.32.1 |
+| run-llama/llama_index | `llama-index` | 0.14.23 |
+| deepset-ai/haystack | `haystack-ai` | 3.0.0 |
+| chroma-core/chroma | `chromadb` | 1.5.9 |
+| qdrant/qdrant | `qdrant-client` | 1.18.0 |
+| weaviate/weaviate | `weaviate-client` | 4.22.0 |
+| milvus-io/milvus | `pymilvus` | 3.0.0 |
+| mem0ai/mem0 | `mem0ai` | 2.0.14 |
+| zep-ai/zep | `zep-cloud` | 3.25.0 |
+| langfuse/langfuse | `langfuse` | 4.14.1 |
+| confident-ai/deepeval | `deepeval` | 4.1.3 |
+| Arize-ai/phoenix | `arize-phoenix` | 19.6.0 |
+| openlit/openlit | `openlit` | 1.44.0 |
+| Aider-AI/aider | `aider-chat` | 0.86.2 |
+| sinaptik-ai/pandas-ai | `pandasai` | 3.0.0 |
+| getsentry/sentry | `sentry-sdk` | 2.66.1 |
+| hashicorp/vault | `hvac` (Client, nicht Vault selbst) | 2.4.0 |
+| SeleniumHQ/selenium | `selenium` | 4.46.0 |
+| SYSTRAN/faster-whisper | `faster-whisper` | 1.2.1 |
+| openai/whisper | `openai-whisper` | 20250625 |
+| coqui-ai/TTS | `TTS` | 0.22.0 |
+
+Alle 37 gefunden — kein einziger Fehlschlag in dieser Auswahl, weil bewusst
+nur Repos geprueft wurden, die tatsaechlich eine Python-Bibliothek
+veroeffentlichen (nicht: n8n, Kubernetes, Blender, Odoo, ... — die haben gar
+kein PyPI-Paket, weil sie keine Python-Bibliotheken sind, siehe Kategorien
+oben/unten).
+
+**Der ehrliche Rest der Liste** (die grosse Mehrheit): Repos wie n8n,
+Kubernetes, Odoo, Blender, Home Assistant, ArduPilot, Metasploit sind
+Anwendungen/Dienste/Firmware — es gibt fuer sie gar kein PyPI-Paket zu
+pruefen, weil "pip install" fuer sie kategorisch nicht der Installationsweg
+ist (Docker-Image, eigener Server, Hardware-Flash, ...). Das ist keine
+Bewertungsluecke, sondern der Punkt: "geht als Python-Bibliothek" ist bei
+denen keine sinnvolle Frage.
+
 ## Priorisierung durch ultra-architect (26.07.)
 
 Auf die Frage "welche 5 Kandidaten helfen Produkt A/B/C JETZT wirklich
