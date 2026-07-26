@@ -78,7 +78,17 @@ def scan_detect_secrets() -> list[str]:
     # Ohne --all-files scannt detect-secrets nur GIT-GETRACKTE Dateien —
     # genau richtig: node_modules, out/, .models/ usw. sind gitignored und
     # wuerden den Scan sonst minutenlang blockieren (real gemessen).
-    rc, out = run(["detect-secrets", "scan"], cwd=ROOT)
+    #
+    # .secrets.baseline muss ausgeschlossen werden: sie enthaelt die HASHES
+    # der bereits geprueften Funde, die detect-secrets sonst selbst wieder als
+    # "Hex High Entropy String" meldet. Lokal fiel das zunaechst nicht auf,
+    # weil die Datei noch untracked war — in CI (committet) schlug der Scan
+    # dann fehl. Deshalb hier explizit ausschliessen statt sich auf den
+    # Tracking-Zustand zu verlassen.
+    rc, out = run(
+        ["detect-secrets", "scan", "--exclude-files", r"^\.secrets\.baseline$"],
+        cwd=ROOT,
+    )
     if rc != 0:
         return [f"detect-secrets Fehler: {out.strip()[:200]}"]
     try:
