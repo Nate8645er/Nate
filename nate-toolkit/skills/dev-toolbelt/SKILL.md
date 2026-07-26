@@ -29,6 +29,7 @@ Alle Angaben durch Ausfuehren geprueft, nicht aus der Dokumentation abgeschriebe
 | `node` / `npm` | 22.22.2 / 10.9.7 | JS-Laufzeit, `npm audit` fuer JS-CVEs |
 | `python3` | 3.11 (Umgebung), 3.12 in CI | Hauptsprache des Projekts |
 | PostgreSQL | 16.13 | via `/usr/lib/postgresql/16/bin`, lokaler Testcluster moeglich |
+| `redis-server` | 7.0.15 | vorinstalliert, aber standardmaessig nicht gestartet — lokal fuer Rate-Limiting (`platform-backend/app/ratelimit.py`, `REDIS_URL`) startbar, `tests/test_ratelimit_redis.py` startet/stoppt es selbst |
 | `ffmpeg` | 6.1.1 | Video/Audio (Remotion-Rendering, Untertitel) |
 | Chromium | vorinstalliert | `/opt/pw-browsers/chromium` (Playwright) |
 | Piper TTS | 1.6.0 | deutsches lokales Voiceover |

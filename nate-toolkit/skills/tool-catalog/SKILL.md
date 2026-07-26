@@ -241,7 +241,8 @@ abweicht.
 | Dateiverwaltung/Storage | Filebrowser, Nextcloud Server, MinIO, Ceph, Seafile | Kandidat falls eigener Objektspeicher noetig wird |
 | Security-Scan | Falco | nur Referenz — Trivy/Grype bereits in Runde 1 als "blockiert" dokumentiert |
 | Karten | OpenStreetMap, MapLibre | nicht anwendbar |
-| Datenbanken | Redis, Dragonfly, MySQL, MongoDB | Kandidat fuer Caching (aktuell eigene Sliding-Window-Rate-Limiter-Implementierung) |
+| Datenbanken | Redis | **umgesetzt** — `app/ratelimit.py` nutzt Redis optional (`REDIS_URL`) fuer den Sliding-Window-Rate-Limiter bei mehreren Prozessen/Pods; In-Process bleibt Standard ohne die Variable |
+| " | Dragonfly, MySQL, MongoDB | nur Referenz — Dragonfly waere Redis-API-kompatibel, kein Grund zum Wechsel solange kein Redis-Feature fehlt |
 | " | postgres/postgres | **bereits Kern unseres Stacks** |
 | ML-Frameworks | scikit-learn, PyTorch, TensorFlow, PyTorch Lightning | nur Referenz — kein eigenes Modelltraining geplant |
 | Desktop-Frameworks | Tauri, Electron | nur Referenz |
@@ -261,18 +262,45 @@ abweicht.
 | Bildungsplattform | LibreEdu, OpenCourseLab | nicht anwendbar |
 | Payment-Beispiele | adyen-examples | nur Referenz — wir nutzen Stripe direkt per HMAC, kein SDK |
 
+## Priorisierung durch ultra-architect (26.07.)
+
+Auf die Frage "welche 5 Kandidaten helfen Produkt A/B/C JETZT wirklich
+weiter" kam eine kritischere Antwort als erwartet: **keine 5, sondern 2** —
+der Rest der offenen Punkte in `platform-backend/README.md`/`store/README.md`
+ist kein Werkzeug-Problem, sondern fertig zu codende Arbeit mit bereits
+vorhandenem Stack (Stripe-Usage-Reporting, Streaming, Dashboard-Verlinkung,
+harte Token-Limits).
+
+Nur zwei Kandidaten trafen einen dokumentierten, konkreten Engpass:
+
+1. **Redis** — `app/ratelimit.py` sagte selbst, dass In-Process-Rate-Limiting
+   bei mehr als einem Prozess/Pod durch gemeinsamen Speicher ersetzt werden
+   muss. **Umgesetzt** (siehe oben): `REDIS_URL` schaltet einen atomaren,
+   Redis-backed Sliding-Window-Limiter frei; ohne die Variable bleibt der
+   In-Process-Limiter Standard. Getestet gegen einen echten lokalen
+   `redis-server` (`tests/test_ratelimit_redis.py`, 6 Tests, inkl. Beweis,
+   dass zwei Limiter-Instanzen sich ein Kontingent teilen).
+2. **Composio** — `/v1/integrations` ist laut README ein "ehrliches Geruest
+   ohne echten OAuth-Flow". Composio liefert vorgefertigte OAuth-
+   Integrationen fuer Slack/Notion/Google. **Noch nicht umgesetzt** — naechster
+   konkreter Schritt, wenn echte OAuth-Anbindung gebraucht wird.
+
+Explizites Veto des Architekten gegen den Rest: Vault (Overkill fuer aktuelle
+Team-/Secret-Groesse), Sentry/Langfuse (Monitoring existiert schon via
+Prometheus + Council-Check), n8n/Inngest (einziger Workflow-Bedarf ist ein
+einzelner Webhook, dafuer reicht ein FastAPI-Endpoint).
+
 ## Zusammenfassung
 
 - **Bereits genutzt/verfuegbar:** ollama, Piper, litellm, FastAPI, PostgreSQL,
-  Prometheus, Playwright/Chromium, MCP Python-SDK, uv, ruff, pre-commit, bat,
-  fd, ripgrep, tmux, TypeScript, Python.
-- **Echte Kandidaten fuer Produkt A/B/C**, wenn konkret gebraucht: E2B,
-  openai-agents-python, dspy, smolagents, composio, agentops, langfuse,
-  phoenix, inngest/trigger.dev, supabase-mcp, vault, opentelemetry-collector,
-  sentry, meilisearch/typesense, graphiti/zep/mem0, metabase, hugo,
-  ionic/expo/react-native, Shopify/dawn+hydrogen+polaris (Produkt B),
-  n8n/windmill (Automatisierung), Redis/Dragonfly (Caching), Chatwoot/
-  Formbricks (Kundenservice).
+  Redis (optional, `REDIS_URL`), Prometheus, Playwright/Chromium,
+  MCP Python-SDK, uv, ruff, pre-commit, bat, fd, ripgrep, tmux, TypeScript,
+  Python.
+- **Echte Kandidaten fuer Produkt A/B/C**, wenn konkret gebraucht (nach
+  Architektur-Review priorisiert: Composio zuerst, Rest nur bei echtem
+  Bedarf): Composio, E2B, openai-agents-python, dspy, smolagents, agentops,
+  langfuse, phoenix, meilisearch/typesense, graphiti/zep/mem0, metabase,
+  hugo, ionic/expo/react-native, Shopify/dawn+hydrogen+polaris (Produkt B).
 - **Bewusst nicht aktiviert:** sqlmap, Metasploit Framework — Angriffs-
   werkzeuge ohne aktuellen autorisierten Pentest-/CTF-Auftrag.
 - **Nur Referenz oder nicht anwendbar:** der grosse Rest — meist weil es

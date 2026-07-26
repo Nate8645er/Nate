@@ -151,9 +151,11 @@ einen Postgres-Service hoch.
   generische Upstream-Fehler (kein Info-Leak). Docker-Image als Nicht-root
   mit Healthcheck.
 - **Rate-Limiting** pro Mandant auf `/v1/chat` und `/v1/agents/{id}/chat`
-  (30 Aufrufe/60s, Sliding Window, In-Process). Bei horizontaler Skalierung
-  (mehrere Prozesse/Pods) durch einen gemeinsamen Speicher (Redis) ersetzen —
-  siehe Kommentar in `app/ratelimit.py`.
+  (30 Aufrufe/60s, Sliding Window). In-Process per Default (ein Prozess
+  genuegt fuer lokale Entwicklung); `REDIS_URL` setzen fuer horizontale
+  Skalierung (mehrere Prozesse/Pods teilen sich dann EIN Kontingent statt
+  je eines) — atomar per Lua-Script, siehe `app/ratelimit.py` und
+  `tests/test_ratelimit_redis.py` (Test gegen echten lokalen redis-server).
 
 ## Status / bewusst offen (Phase 3+)
 

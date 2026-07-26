@@ -30,6 +30,11 @@ class Settings:
     litellm_base_url: str = os.environ.get("LITELLM_BASE_URL", "http://localhost:4000")
     litellm_master_key: str = os.environ.get("LITELLM_MASTER_KEY", "")
 
+    # Redis fuer das Rate-Limiting bei mehr als einem Backend-Prozess/Pod.
+    # Leer = In-Process-Limiter (Standard, reicht fuer einen einzelnen
+    # Prozess/lokale Entwicklung). Siehe ratelimit.py.
+    redis_url: str = os.environ.get("REDIS_URL", "")
+
     # Betrieb
     request_timeout_s: float = float(os.environ.get("REQUEST_TIMEOUT_S", "120"))
     # Kommagetrennte Liste erlaubter CORS-Origins; leer = nur same-origin.
