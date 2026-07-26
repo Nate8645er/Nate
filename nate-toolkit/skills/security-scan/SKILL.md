@@ -28,10 +28,17 @@ Exit-Code 0 = sauber, 1 = Befunde. Damit auch in CI verwendbar.
 | Pruefung | Werkzeug | Findet |
 |---|---|---|
 | Getrackte Secret-Dateien | `git ls-files` | versehentlich eingecheckte `.env`, `*.pem`, `*.key` |
-| Key-Muster im Git-Inhalt | `git grep` | OpenRouter-, Anthropic-, Stripe-, GitHub-, AWS-Keys im Code |
+| Key-Muster, aktueller Stand | `git grep` | OpenRouter-, Anthropic-, Stripe-, GitHub-, AWS-Keys im Code |
+| Key-Muster, **gesamte Historie** | `git log -S --pickaxe-regex` | einen Key, der committet und in einem SPAETEREN Commit wieder entfernt wurde — `git grep` allein saehe das nicht, der Key bleibt aber fuer jeden Klon lesbar |
 | Breite Secret-Suche | `detect-secrets` | High-Entropy-Strings, weitere Key-Formate |
 | Python-CVEs | `pip-audit` | bekannte Schwachstellen in jeder `requirements.txt` |
 | JS-CVEs | `npm audit` | bekannte Schwachstellen in jeder `package.json` |
+
+**Ein Historien-Fund ist NICHT durch neuen Code behebbar** — nur durch
+sofortige Rotation beim Anbieter (der Key gilt als kompromittiert) und,
+falls gewuenscht, einen bewussten, manuellen History-Rewrite
+(`git filter-repo` + Force-Push), was ausserhalb dieses Skripts entschieden
+werden muss.
 
 ## Wichtig zur Interpretation
 
@@ -48,6 +55,16 @@ Exit-Code 0 = sauber, 1 = Befunde. Damit auch in CI verwendbar.
    sobald er im Git liegt (auch nach dem Loeschen bleibt er in der Historie).
 2. Aus dem Code entfernen, in die `.env` verschieben.
 3. Pruefen, ob `.gitignore` den Pfad wirklich abdeckt: `git check-ignore -v .env`
+
+## Bekannte Grenze: die Baseline ist ungeschuetzt editierbar
+
+`.secrets.baseline` ist eine normale JSON-Datei ohne Signatur. Jemand koennte
+theoretisch einen echten Fund per Hand eintragen und ihn damit dauerhaft als
+"schon geprueft" unterdruecken. Der reale Schutz dagegen ist der
+**Code-Review der PR-Diff**: `.secrets.baseline` ist git-getrackt, jede
+Aenderung daran erscheint sichtbar im Diff. Wer PRs reviewt, sollte
+Aenderungen an dieser Datei genauso pruefen wie Aenderungen an Produktivcode
+— eine leise wachsende Baseline ohne Begruendung ist selbst ein Warnsignal.
 
 ## Warum nicht gitleaks/trivy
 

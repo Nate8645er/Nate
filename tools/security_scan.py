@@ -53,22 +53,56 @@ def check_tracked_secrets() -> list[str]:
     return findings
 
 
+# Bekannte Key-Formate. Gemeinsam genutzt von der aktuellen-Stand-Pruefung
+# UND der Historien-Pruefung (siehe unten) — ein Key, der einmal committet
+# und spaeter wieder entfernt wurde, bleibt sonst unentdeckt in der Historie.
+KEY_PATTERNS = [
+    (r"sk-or-v1-[A-Za-z0-9]{32}", "OpenRouter-Key"),
+    (r"sk-ant-[A-Za-z0-9_-]{20}", "Anthropic-Key"),
+    (r"sk_live_[A-Za-z0-9]{20}", "Stripe-Live-Key"),
+    (r"whsec_[A-Za-z0-9]{20}", "Stripe-Webhook-Secret"),
+    (r"ghp_[A-Za-z0-9]{30}", "GitHub-Token"),
+    (r"AKIA[A-Z0-9]{16}", "AWS-Access-Key"),
+]
+
+
 def check_key_patterns() -> list[str]:
-    """Bekannte Key-Formate im getrackten Inhalt (nicht nur Dateinamen)."""
-    patterns = [
-        (r"sk-or-v1-[A-Za-z0-9]{32}", "OpenRouter-Key"),
-        (r"sk-ant-[A-Za-z0-9_-]{20}", "Anthropic-Key"),
-        (r"sk_live_[A-Za-z0-9]{20}", "Stripe-Live-Key"),
-        (r"whsec_[A-Za-z0-9]{20}", "Stripe-Webhook-Secret"),
-        (r"ghp_[A-Za-z0-9]{30}", "GitHub-Token"),
-        (r"AKIA[A-Z0-9]{16}", "AWS-Access-Key"),
-    ]
+    """Bekannte Key-Formate im AKTUELLEN getrackten Inhalt (nicht nur Dateinamen)."""
     findings = []
-    for pat, label in patterns:
+    for pat, label in KEY_PATTERNS:
         rc, out = run(["git", "grep", "-nIE", pat], cwd=ROOT)
         if rc == 0 and out.strip():
             for line in out.strip().splitlines()[:5]:
                 findings.append(f"{label} im Git-Inhalt: {line[:160]}")
+    return findings
+
+
+def check_key_patterns_in_history() -> list[str]:
+    """Dieselben Muster in der GESAMTEN Git-Historie, nicht nur im aktuellen
+    Stand. `git grep` (oben) saehe einen Key nicht mehr, sobald er in einem
+    spaeteren Commit wieder entfernt wurde — er bliebe aber fuer jeden, der
+    das Repo klont, in der Historie lesbar. Nutzt `git log -S<muster>
+    --pickaxe-regex`, das genau die Commits findet, die die Vorkommen-Anzahl
+    eines Musters aendern (also Hinzufuegen ODER Entfernen).
+
+    Ein Fund hier ist NICHT durch neuen Code behebbar — nur durch sofortige
+    Rotation des Keys beim Anbieter und ggf. History-Rewrite (git filter-repo)
+    plus Force-Push, was ausserhalb dieses Skripts eine bewusste, manuelle
+    Entscheidung sein muss.
+    """
+    findings = []
+    for pat, label in KEY_PATTERNS:
+        rc, out = run(
+            ["git", "log", "--all", "--oneline", "-S", pat, "--pickaxe-regex"],
+            cwd=ROOT,
+        )
+        if rc == 0 and out.strip():
+            commits = out.strip().splitlines()
+            findings.append(
+                f"{label} in der Git-HISTORIE gefunden ({len(commits)} Commit(s)): "
+                f"{commits[0][:100]} — SOFORT beim Anbieter rotieren, unabhaengig "
+                f"vom aktuellen Dateistand!"
+            )
     return findings
 
 
@@ -158,7 +192,8 @@ def main() -> int:
 
     sections: list[tuple[str, list[str]]] = [
         ("Getrackte Secret-Dateien", check_tracked_secrets()),
-        ("Key-Muster im Git-Inhalt", check_key_patterns()),
+        ("Key-Muster im Git-Inhalt (aktueller Stand)", check_key_patterns()),
+        ("Key-Muster in der Git-HISTORIE", check_key_patterns_in_history()),
         ("detect-secrets", scan_detect_secrets()),
     ]
     if not args.quick:
