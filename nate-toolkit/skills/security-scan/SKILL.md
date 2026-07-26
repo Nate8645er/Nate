@@ -29,7 +29,7 @@ Exit-Code 0 = sauber, 1 = Befunde. Damit auch in CI verwendbar.
 |---|---|---|
 | Getrackte Secret-Dateien | `git ls-files` | versehentlich eingecheckte `.env`, `*.pem`, `*.key` |
 | Key-Muster, aktueller Stand | `git grep` | OpenRouter-, Anthropic-, Stripe-, GitHub-, AWS-Keys im Code |
-| Key-Muster, **gesamte Historie** | `git log -S --pickaxe-regex` | einen Key, der committet und in einem SPAETEREN Commit wieder entfernt wurde — `git grep` allein saehe das nicht, der Key bleibt aber fuer jeden Klon lesbar |
+| Key-Muster, **Historie DIESES Branches** | `git log HEAD -S --pickaxe-regex` | einen Key, der committet und in einem SPAETEREN Commit wieder entfernt wurde — `git grep` allein saehe das nicht, der Key bleibt aber fuer jeden Klon lesbar. Bewusst nur `HEAD`, nicht `--all`: dieses Repo hat viele parallele Branches aus fremden Sitzungen, deren Historie diese PR weder eingefuehrt hat noch rotieren/umschreiben kann |
 | Breite Secret-Suche | `detect-secrets` | High-Entropy-Strings, weitere Key-Formate |
 | Python-CVEs | `pip-audit` | bekannte Schwachstellen in jeder `requirements.txt` |
 | JS-CVEs | `npm audit` | bekannte Schwachstellen in jeder `package.json` |

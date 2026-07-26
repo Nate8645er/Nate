@@ -78,12 +78,22 @@ def check_key_patterns() -> list[str]:
 
 
 def check_key_patterns_in_history() -> list[str]:
-    """Dieselben Muster in der GESAMTEN Git-Historie, nicht nur im aktuellen
-    Stand. `git grep` (oben) saehe einen Key nicht mehr, sobald er in einem
-    spaeteren Commit wieder entfernt wurde — er bliebe aber fuer jeden, der
-    das Repo klont, in der Historie lesbar. Nutzt `git log -S<muster>
-    --pickaxe-regex`, das genau die Commits findet, die die Vorkommen-Anzahl
-    eines Musters aendern (also Hinzufuegen ODER Entfernen).
+    """Dieselben Muster in der Historie DIESES Branches (HEAD), nicht nur im
+    aktuellen Stand. `git grep` (oben) saehe einen Key nicht mehr, sobald er
+    in einem spaeteren Commit wieder entfernt wurde — er bliebe aber fuer
+    jeden, der das Repo klont, in der Historie lesbar. Nutzt `git log
+    -S<muster> --pickaxe-regex`, das genau die Commits findet, die die
+    Vorkommen-Anzahl eines Musters aendern (also Hinzufuegen ODER Entfernen).
+
+    Bewusst NUR `HEAD`, nicht `--all`: Dieses Repo enthaelt viele parallele
+    Branches aus unabhaengigen Sitzungen (JARVIS, Javier Mobile, ...). Mit
+    `--all` in einem `fetch-depth: 0`-CI-Checkout meldet der Scan auch Funde
+    aus fremden Branches, die dieser PR nicht eingefuehrt hat und die er auch
+    nicht rotieren/umschreiben kann (kein Zugriff, keine Verantwortung) — real
+    beobachtet mit Commit bb71776 (ein Test-Platzhalter "sk-ant-HIER-DEINEN-
+    SCHLUESSEL-EINFUEGEN" auf einem JARVIS-Branch, keine Ahnenschaft zu HEAD,
+    kein echter Schluessel). `HEAD` allein findet trotzdem jeden Key, der auf
+    DIESEM Branch committet und spaeter wieder entfernt wurde.
 
     Ein Fund hier ist NICHT durch neuen Code behebbar — nur durch sofortige
     Rotation des Keys beim Anbieter und ggf. History-Rewrite (git filter-repo)
@@ -93,7 +103,7 @@ def check_key_patterns_in_history() -> list[str]:
     findings = []
     for pat, label in KEY_PATTERNS:
         rc, out = run(
-            ["git", "log", "--all", "--oneline", "-S", pat, "--pickaxe-regex"],
+            ["git", "log", "HEAD", "--oneline", "-S", pat, "--pickaxe-regex"],
             cwd=ROOT,
         )
         if rc == 0 and out.strip():
