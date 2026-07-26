@@ -30,8 +30,8 @@
     {
       "name": "nate-toolkit",
       "source": "./nate-toolkit",
-      "description": "Werkzeugkasten: Sicherheits-Rundumcheck (Secrets im Code/Git + CVEs in Python und JS), das 13-Anbieter-KI-Team ueber OpenRouter fuer echte Zweitmeinungen, und der gepruefte Ueberblick ueber die real verfuegbaren Werkzeuge dieser Umgebung.",
-      "version": "1.0.0",
+      "description": "Werkzeugkasten: Sicherheits-Rundumcheck (Secrets im Code/Git + CVEs in Python und JS), das 13-Anbieter-KI-Team ueber OpenRouter fuer echte Zweitmeinungen, der gepruefte Ueberblick ueber die real verfuegbaren Werkzeuge dieser Umgebung, und ein ehrlicher Katalog der ~85 genannten GitHub-Repos.",
+      "version": "1.1.0",
       "author": {
         "name": "Nate"
       },
