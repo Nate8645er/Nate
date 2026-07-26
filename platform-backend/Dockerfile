@@ -12,7 +12,14 @@ WORKDIR /app
 
 # Abhaengigkeiten zuerst (bessere Layer-Caches).
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt \
+    # composio-core==0.7.21 schreibt "Pillow<11" vor, aber die einzige
+    # Pillow-Version darin (10.4.0) hat 24 bekannte CVEs ohne Patch
+    # innerhalb von <11 -- siehe Kommentar in requirements.txt. Zwei
+    # getrennte pip-Aufrufe noetig, weil ein einzelner "pip install -r"
+    # mit beiden Angaben gleichzeitig hart am Resolver-Konflikt scheitert;
+    # als zweiter Schritt akzeptiert pip das Upgrade anstandslos (getestet).
+    && pip install --no-cache-dir --upgrade "pillow>=12.3.0"
 
 # Anwendungscode + Migrationen + statisches UI.
 COPY app ./app

@@ -43,7 +43,7 @@ Diese Tabelle ordnet jedes genannte Repo ein:
 | microsoft/PromptWizard | nur Referenz | Forschungs-Tool zur Prompt-Optimierung |
 | Significant-Gravitas/AutoGPT | nur Referenz | autonomer Agent, eigene Infrastruktur |
 | huggingface/smolagents | Kandidat | sehr schlankes Agenten-Framework, passt zur "einfach halten"-Linie |
-| composiohq/composio | Kandidat | vorgefertigte Tool-Integrationen (genau das, was `integrations.py` bisher nur als Slack/Notion-Skelett hat) |
+| composiohq/composio | **umgesetzt** | echter OAuth-Flow fuer `/v1/integrations` via `app/composio_client.py`, opt-in per `COMPOSIO_API_KEY` |
 | langgenius/dify | nur Referenz | No-Code-Agenten-Plattform, eigener Server, Konkurrenzprodukt zu Produkt A |
 
 ## LLM-Inferenz & lokale Modelle (Infrastruktur, teils bereits genutzt)
@@ -349,10 +349,16 @@ Nur zwei Kandidaten trafen einen dokumentierten, konkreten Engpass:
    In-Process-Limiter Standard. Getestet gegen einen echten lokalen
    `redis-server` (`tests/test_ratelimit_redis.py`, 6 Tests, inkl. Beweis,
    dass zwei Limiter-Instanzen sich ein Kontingent teilen).
-2. **Composio** — `/v1/integrations` ist laut README ein "ehrliches Geruest
-   ohne echten OAuth-Flow". Composio liefert vorgefertigte OAuth-
-   Integrationen fuer Slack/Notion/Google. **Noch nicht umgesetzt** — naechster
-   konkreter Schritt, wenn echte OAuth-Anbindung gebraucht wird.
+2. **Composio** — `/v1/integrations` war laut README ein "ehrliches Geruest
+   ohne echten OAuth-Flow". **Umgesetzt** (siehe `app/composio_client.py`):
+   `COMPOSIO_API_KEY` gesetzt -> `create_integration` initiiert eine echte
+   Verbindung (liefert `connect_url` zurueck), ein neuer
+   `POST /v1/integrations/{id}/refresh`-Endpunkt bestaetigt den echten
+   Status. Ohne den Key exakt das alte Verhalten. Getestet mit einem
+   gefaelschten Composio-Toolset gegen eine echte Postgres-DB
+   (`tests/test_integrations_composio.py`, 5 Tests) -- kein echter
+   Composio-Account existiert in dieser Umgebung, daher ungetestet bleibt
+   nur das externe Composio-API-Verhalten selbst, nicht unser Code-Pfad.
 
 Explizites Veto des Architekten gegen den Rest: Vault (Overkill fuer aktuelle
 Team-/Secret-Groesse), Sentry/Langfuse (Monitoring existiert schon via
@@ -362,14 +368,15 @@ einzelner Webhook, dafuer reicht ein FastAPI-Endpoint).
 ## Zusammenfassung
 
 - **Bereits genutzt/verfuegbar:** ollama, Piper, litellm, FastAPI, PostgreSQL,
-  Redis (optional, `REDIS_URL`), Prometheus, Playwright/Chromium,
-  MCP Python-SDK, uv, ruff, pre-commit, bat, fd, ripgrep, tmux, TypeScript,
-  Python.
-- **Echte Kandidaten fuer Produkt A/B/C**, wenn konkret gebraucht (nach
-  Architektur-Review priorisiert: Composio zuerst, Rest nur bei echtem
-  Bedarf): Composio, E2B, openai-agents-python, dspy, smolagents, agentops,
-  langfuse, phoenix, meilisearch/typesense, graphiti/zep/mem0, metabase,
-  hugo, ionic/expo/react-native, Shopify/dawn+hydrogen+polaris (Produkt B).
+  Redis (optional, `REDIS_URL`), Composio (optional, `COMPOSIO_API_KEY`),
+  Prometheus, Playwright/Chromium, MCP Python-SDK, uv, ruff, pre-commit, bat,
+  fd, ripgrep, tmux, TypeScript, Python.
+- **Echte Kandidaten fuer Produkt A/B/C**, wenn konkret gebraucht (beide vom
+  Architektur-Review priorisierten Punkte -- Redis, Composio -- sind
+  umgesetzt; der Rest nur bei echtem Bedarf): E2B, openai-agents-python,
+  dspy, smolagents, agentops, langfuse, phoenix, meilisearch/typesense,
+  graphiti/zep/mem0, metabase, hugo, ionic/expo/react-native,
+  Shopify/dawn+hydrogen+polaris (Produkt B).
 - **Bewusst nicht aktiviert:** sqlmap, Metasploit Framework — Angriffs-
   werkzeuge ohne aktuellen autorisierten Pentest-/CTF-Auftrag.
 - **Nur Referenz oder nicht anwendbar:** der grosse Rest — meist weil es

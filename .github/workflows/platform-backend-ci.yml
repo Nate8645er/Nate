@@ -36,6 +36,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt pytest
+          # composio-core schreibt "Pillow<11" vor (24 unbehobene CVEs darin);
+          # zweiter Schritt noetig, siehe Kommentar in requirements.txt.
+          pip install --upgrade "pillow>=12.3.0"
       - name: Kompilieren
         run: python -m py_compile app/*.py app/routes/*.py
       - name: Tests (Unit + RLS-Integration)

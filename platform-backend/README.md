@@ -174,15 +174,19 @@ Aus den Reviews dokumentiert, nicht vergessen:
 - **Streaming** (`stream`-Param) noch nicht unterstützt (Phase 3).
 - Modellwechsel-UI + Agenten-Ebene (Phase 3); Store-Webhook `orders/paid` →
   `/admin/provision` (Phase 5).
-- **`/v1/integrations` ist ein ehrliches Gerüst, keine fertige Integration.**
-  Mandantentrennung (RLS) und Tarif-Limit (`plans.max_integrations`) sind
-  vollständig durchgesetzt und getestet; es gibt aber **keinen echten
-  OAuth-Flow** zu Slack/Notion/Google — es existieren keine echten
-  Client-IDs/Secrets in dieser Umgebung. `status` bleibt beim Anlegen daher
-  immer `disconnected`. Für eine echte Anbindung fehlen: OAuth-Client-IDs/
-  Secrets pro Provider (Umgebungsvariablen), ein `/v1/integrations/{provider}/
-  callback`-Endpunkt, verschlüsselte Token-Speicherung statt Klartext in
-  `config` (siehe `# TODO` in `app/routes/integrations.py`).
+- **`/v1/integrations`** hat jetzt einen echten OAuth-Weg über Composio
+  (`app/composio_client.py`), statt selbst Client-IDs/Secrets pro Provider zu
+  verwalten: `COMPOSIO_API_KEY` gesetzt → `POST /v1/integrations` initiiert
+  eine echte Verbindung und liefert eine echte Login-URL (`connect_url`)
+  zurück; `POST /v1/integrations/{id}/refresh` fragt den echten
+  Verbindungsstatus ab und setzt `status` auf `connected`, sobald Composio
+  das bestätigt. Mandantentrennung (RLS) und Tarif-Limit
+  (`plans.max_integrations`) bleiben unabhängig davon durchgesetzt und
+  getestet. **Ohne** `COMPOSIO_API_KEY` (kein Composio-Account in dieser
+  Umgebung) bleibt exakt das bisherige Gerüst-Verhalten: `status` bleibt
+  beim Anlegen immer `disconnected`, keine externe Anfrage, kein Fehler.
+  Noch offen: verschlüsselte Token-Speicherung, falls Composio in `config`
+  mehr als die Connected-Account-ID zurückgibt.
 - **`dashboard.html`** ist noch nicht mit `index.html` verlinkt (nur ein
   „← Chat"-Link zurück) — beide UIs bewusst als getrennte, unabhängig
   ladbare Seiten gehalten.

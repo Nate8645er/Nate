@@ -7,3 +7,20 @@ httpx==0.28.1
 pydantic[email]==2.10.4
 prometheus-client==0.26.0
 redis==8.0.1
+composio-core==0.7.21
+# ACHTUNG -- composio-core==0.7.21 (aktuellste Version) schreibt selbst
+# "Pillow<11,>=10.2.0" vor. Pillow 10.4.0 (das Maximum in dieser Vorgabe) hat
+# 24 bekannte CVEs (pip-audit), fuer die es KEINEN Patch innerhalb von <11
+# gibt -- nur ab 12.x. Ein einzelner "pip install -r requirements.txt"-Lauf
+# kann Pillow deshalb NICHT hier mit-pinnen (harter Resolver-Konflikt, siehe
+# unten) -- der zweite Schritt ist Pflicht, kein Nice-to-have:
+#
+#   pip install -r requirements.txt
+#   pip install --upgrade "pillow>=12.3.0"
+#
+# Getestet (frisches venv): ComposioToolSet(...) baut mit Pillow 12.3.0
+# weiterhin fehlerfrei (der PIL-Import in
+# composio/tools/local/clipboardtool/actions/image.py funktioniert
+# unveraendert) -- composio-cores Vorgabe ist ueberkonservativ, kein echter
+# Kompatibilitaetsbruch. Ohne den zweiten Schritt bleibt Pillow bei 10.4.0
+# mit 24 offenen CVEs.

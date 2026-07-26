@@ -35,6 +35,11 @@ class Settings:
     # Prozess/lokale Entwicklung). Siehe ratelimit.py.
     redis_url: str = os.environ.get("REDIS_URL", "")
 
+    # Composio (echter OAuth-Flow fuer /v1/integrations). Leer = Geruest-
+    # Verhalten wie bisher (status bleibt 'disconnected'). Siehe
+    # composio_client.py.
+    composio_api_key: str = os.environ.get("COMPOSIO_API_KEY", "")
+
     # Betrieb
     request_timeout_s: float = float(os.environ.get("REQUEST_TIMEOUT_S", "120"))
     # Kommagetrennte Liste erlaubter CORS-Origins; leer = nur same-origin.

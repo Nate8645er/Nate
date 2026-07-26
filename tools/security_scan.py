@@ -167,6 +167,26 @@ def scan_detect_secrets() -> list[str]:
     return findings
 
 
+# Bekannte, DOKUMENTIERTE Ausnahmen -- kein "wegdiskutieren", sondern ein
+# konkreter, benannter Fall mit Begruendung. Aktuell einer: composio-core
+# (aktuellste Version) schreibt selbst "Pillow<11" vor; Pillow 10.4.0 (das
+# Maximum in dieser Spanne) hat 24 CVEs ohne Patch innerhalb von <11.
+# requirements.txt kann Pillow deshalb NICHT selbst mit-pinnen (harter
+# Resolver-Konflikt, siehe Kommentar dort) -- Dockerfile und CI
+# (platform-backend-ci.yml) erzwingen stattdessen einen zweiten
+# "pip install --upgrade pillow>=12.3.0"-Schritt NACH der Installation, den
+# ein isoliertes `pip-audit -r requirements.txt` nicht sehen kann (es loest
+# requirements.txt frisch und fuer sich auf). Deshalb hier als einzige,
+# benannte Ausnahme gefiltert -- jede ANDERE Pillow-Version oder jedes
+# andere Paket wird normal gemeldet.
+KNOWN_MITIGATED_DEPS = {
+    ("pillow", "10.4.0"): (
+        "composio-core==0.7.21 erzwingt Pillow<11; Dockerfile und CI "
+        "upgraden danach separat auf pillow>=12.3.0 (siehe requirements.txt)"
+    ),
+}
+
+
 def scan_pip_audit() -> list[str]:
     if not shutil.which("pip-audit"):
         return ["pip-audit nicht installiert — uebersprungen"]
@@ -174,9 +194,40 @@ def scan_pip_audit() -> list[str]:
     for req in sorted(ROOT.rglob("requirements.txt")):
         if "node_modules" in req.parts:
             continue
-        rc, out = run(["pip-audit", "-r", str(req)])
-        if rc != 0 and "No known vulnerabilities" not in out:
-            findings.append(f"{req.relative_to(ROOT)}: {out.strip()[:400]}")
+        # Stdout/stderr bewusst GETRENNT halten (nicht die gemeinsame
+        # run()-Ausgabe nutzen): pip-audit schreibt das JSON nach stdout und
+        # eine Zusammenfassungszeile ("Found N known vulnerabilities...")
+        # nach stderr -- zusammengefuegt waere das kein gueltiges JSON mehr.
+        try:
+            p = subprocess.run(
+                ["pip-audit", "-r", str(req), "--format", "json"],
+                cwd=ROOT, capture_output=True, text=True, timeout=600,
+            )
+        except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
+            findings.append(f"{req.relative_to(ROOT)}: pip-audit fehlgeschlagen: {exc}")
+            continue
+        if p.returncode == 0:
+            continue
+        try:
+            data = json.loads(p.stdout)
+        except json.JSONDecodeError:
+            findings.append(
+                f"{req.relative_to(ROOT)}: {(p.stdout + p.stderr).strip()[:400]}"
+            )
+            continue
+        rel = req.relative_to(ROOT)
+        for dep in data.get("dependencies", []):
+            vulns = dep.get("vulns") or []
+            if not vulns:
+                continue
+            key = (dep["name"].lower(), dep["version"])
+            if key in KNOWN_MITIGATED_DEPS:
+                continue
+            ids = ", ".join(v.get("id", "?") for v in vulns[:5])
+            findings.append(
+                f"{rel}: {dep['name']}=={dep['version']} "
+                f"({len(vulns)} CVE(s): {ids})"
+            )
     return findings
 
 
