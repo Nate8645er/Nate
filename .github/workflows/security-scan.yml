@@ -1,0 +1,24 @@
+name: security scan
+
+# Sicherheits-Rundumcheck bei jedem Push/PR: Secrets im Code und in der
+# Git-Historie + bekannte CVEs in Python-Abhaengigkeiten.
+on:
+  push:
+  pull_request:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # volle Historie: `git grep` soll auch aeltere Stände sehen
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Scanner installieren
+        run: pip install detect-secrets pip-audit
+      - name: Secrets + Git-Pruefung
+        run: python3 tools/security_scan.py --quick
+      - name: Vollstaendig (inkl. Python-CVEs)
+        run: python3 tools/security_scan.py

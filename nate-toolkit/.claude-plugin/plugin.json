@@ -1,0 +1,17 @@
+{
+  "name": "nate-toolkit",
+  "description": "Werkzeugkasten fuer Nates Projekte: echter Sicherheits-Rundumcheck (Secrets + CVEs), das 13-Anbieter-KI-Team ueber OpenRouter, und der Ueberblick ueber die real verfuegbaren CLI-Werkzeuge. Alles im Repo versioniert — ueberlebt neue Sitzungen und Container.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Nate",
+    "email": "beamswiss@gmail.com"
+  },
+  "keywords": [
+    "security",
+    "secrets",
+    "cve",
+    "multi-model",
+    "openrouter",
+    "tooling"
+  ]
+}

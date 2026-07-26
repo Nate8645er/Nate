@@ -5,8 +5,8 @@
     "email": "beamswiss@gmail.com"
   },
   "metadata": {
-    "description": "Nates privater Plugin-Marketplace. Enthaelt ULTRA AI ENTERPRISE OS.",
-    "version": "1.0.0"
+    "description": "Nates privater Plugin-Marketplace: ULTRA AI ENTERPRISE OS (Orchestrierung) und nate-toolkit (Sicherheit, KI-Team, Werkzeuge).",
+    "version": "1.1.0"
   },
   "plugins": [
     {
@@ -26,6 +26,24 @@
         "quality"
       ],
       "category": "productivity"
+    },
+    {
+      "name": "nate-toolkit",
+      "source": "./nate-toolkit",
+      "description": "Werkzeugkasten: Sicherheits-Rundumcheck (Secrets im Code/Git + CVEs in Python und JS), das 13-Anbieter-KI-Team ueber OpenRouter fuer echte Zweitmeinungen, und der gepruefte Ueberblick ueber die real verfuegbaren Werkzeuge dieser Umgebung.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Nate"
+      },
+      "keywords": [
+        "security",
+        "secrets",
+        "cve",
+        "multi-model",
+        "openrouter",
+        "tooling"
+      ],
+      "category": "development"
     }
   ]
 }
