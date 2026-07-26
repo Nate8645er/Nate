@@ -190,19 +190,99 @@ Diese Tabelle ordnet jedes genannte Repo ein:
 | flutter/flutter | nur Referenz | eigenes Sprach-Oekosystem (Dart), groesserer Umstieg |
 | facebook/react-native | Kandidat | naheliegendste Wahl, falls eine native App noetig wird |
 
+## Runde 2 — ~300 weitere genannte Repos (26.07., kompakt bewertet)
+
+Gleiche Bewertungslogik wie oben, nur dichter: bei dieser Menge wuerde eine
+Einzelbegruendung pro Repo (wie in Runde 1) die Datei auf ein Vielfaches
+aufblaehen — und genau das widerspricht der eigenen Regel aus `CLAUDE.md`
+("nicht mit Kleinkram vollstopfen"). Deshalb hier pro Themenblock **eine
+gemeinsame Einordnung**, mit Einzelnennung nur, wo der Status vom Block
+abweicht.
+
+| Themenblock | Repos (Auswahl) | Status |
+|---|---|---|
+| Multi-Agent-Frameworks | crewAI, AutoGen, LangGraph, LangChain, MetaGPT, CAMEL, agent-zero, AG2, Mastra, pydantic-ai, Agno, ChatDev, AutoGPT, SuperAGI, taskade/agentic | nur Referenz — Alternativen zu unserem eigenen schlanken FastAPI+LiteLLM-Agentenmodell, keine Ersetzung geplant |
+| KI-Chat-Oberflaechen | LibreChat, anything-llm, lobe-chat, FlowiseAI, FastChat | nur Referenz — Konkurrenz zum eigenen Dashboard |
+| Multi-Provider-Gateway | BerriAI/litellm | **bereits genutzt** (`litellm/config.yaml`) |
+| " | songquanpeng/one-api | nur Referenz — litellm deckt den Bedarf bereits ab |
+| KI-Coding-Agenten | aider, cline, Roo-Code, continue, sourcegraph/amp, devika, bolt.new, CodeFuse | nur Referenz — wir arbeiten bereits mit Claude Code selbst |
+| Bild-/Video-Generierung | ComfyUI, Stability generative-models, AnimateDiff, FramePack, stable-diffusion-webui, InvokeAI, Fooocus, FLUX | Kandidat fuer Produkt C, aber GPU-Server noetig — hier nicht lauffaehig; aktuell deckt MuAPI (Cloud-API, kein eigener Server) denselben Bedarf |
+| TTS/STT | coqui TTS, OpenVoice, chatterbox, whisper, faster-whisper, bark, audiocraft, stable-audio-tools | Kandidat falls Sprache-zu-Text gebraucht wird |
+| " | rhasspy/piper | **bereits genutzt** (Produkt C Voiceover) |
+| Talking-Head/Avatar | LivePortrait, SadTalker | Kandidat, aktuell kein Avatar-Feature geplant |
+| Browser-/Computer-Steuerung | open-interpreter, browser-use, Selenium, crawl4ai, firecrawl, jina-reader, Stagehand, Browserbase, Puppeteer | Kandidat je nach Automatisierungsbedarf |
+| " | microsoft/playwright | **bereits verfuegbar** (Chromium vorinstalliert, siehe `dev-toolbelt`) |
+| RAG/Vektor-Suche/Wissensgraph | llama_index, Haystack, Chroma, Qdrant, Weaviate, Milvus, Neo4j, Memgraph, mem0, Zep | Kandidat fuer Agenten-Gedaechtnis in Produkt A, noch nicht gebaut |
+| Automatisierung/Workflow | n8n, Activepieces, Windmill, Trigger.dev, Temporal, Airflow, Inngest | Kandidat — ueberschneidet sich mit unseren eigenen Webhook-Handlern (`routes/webhooks.py`) |
+| Notebooks/Datenanalyse | JupyterLab, pandas-ai | Kandidat fuer eigene Datenanalyse, nicht produktkritisch |
+| Self-hosted Backend-Plattformen | Supabase, Appwrite, PocketBase | nur Referenz — eigenes Postgres+FastAPI+RLS bereits gebaut |
+| Deploy/PaaS | Coolify, Dokploy, CapRover | Kandidat fuer eigenes Hosting, aktuell laeuft Deploy ueber `render.yaml` (Render.com) |
+| LLM-Inferenz/Serving (GPU) | vLLM, SGLang, transformers, TGI, mlc-llm, exo, llama.cpp, LMDeploy, ExLlamaV2, PEFT, Accelerate, TensorRT-LLM | nur Referenz — brauchen eigenen GPU-Server, den diese Sandbox nicht hat |
+| Frontend-Frameworks | React Native, Flutter, Expo, Next.js, Nuxt, Astro, Remix, Gatsby, Eleventy | Kandidat nur falls eigene Web-/Mobile-App noetig wird (Dashboard ist bewusst simples HTML/JS) |
+| Social/Marketing-Planung | Postiz | Kandidat fuer Produkt B Social-Media-Planung |
+| Business-Analytics | maybe-finance, Plausible, PostHog, Grafana | Kandidat fuer spaetere Business-Dashboards |
+| Persoenliche Produktivitaet | Firefly III, Actual, AppFlowy, Outline, Immich, Paperless-ngx, Logseq, Joplin, Standard Notes | nicht anwendbar — privates Tooling ohne Bezug zu Produkt A/B/C |
+| Hardware/Robotik/CAD/3D-Druck/Drohnen/Game-Engines | ROS2, ArduPilot, PX4, Home Assistant, Godot, Bevy, Unity ML-Agents, ESPHome, Zigbee2MQTT, OctoPrint, PrusaSlicer, FreeCAD, OpenSCAD | **nicht anwendbar** — komplett ausserhalb der drei Produkte, keine Hardware in dieser Sandbox |
+| Offensive Security/Pentesting | sqlmap, Metasploit Framework | **bewusst nicht aktiviert** — Angriffswerkzeuge, die ohne konkreten autorisierten Pentest-/CTF-Auftrag nicht eingesetzt werden (gilt generell fuer diese Sitzung, nicht nur hier) |
+| " | OWASP ZAP, Nuclei, httpx (ProjectDiscovery), Ghidra, Rizin, SonarQube | Kandidat als *defensiver* Scanner der eigenen Plattform, falls explizit beauftragt — aktuell kein solcher Auftrag |
+| Backend-Frameworks | Express, NestJS, gRPC | nur Referenz — unser Stack ist FastAPI |
+| " | fastapi/fastapi | **bereits Kernstueck** von Produkt A |
+| Test-Tools | Cypress, Jest | Kandidat falls Frontend-E2E-Tests noetig werden |
+| UI-Kits/Design-Systeme | shadcn/ui, Tailwind CSS, Radix, Chakra UI, MUI | Kandidat falls Dashboard auf ein echtes Frontend-Framework umgestellt wird |
+| Streaming/Media-Server/3D | OBS Studio, Owncast, MediaMTX, Instant-NGP, Nerfstudio, Blender | nicht anwendbar — kein Video-Streaming- oder 3D-Produkt |
+| Container/Infra/IaC | docker compose, Buildx, Moby, Kubernetes, Helm, k3s, Terraform, Pulumi, Crossplane | nur Referenz — Docker-Daemon in dieser Sandbox nicht verfuegbar (siehe `dev-toolbelt`), Deploy laeuft ueber Render |
+| Chat-/Community-Plattformen | Mattermost, Element, Rocket.Chat, Discourse, NodeBB | nicht anwendbar — kein internes Chat-Produkt geplant |
+| Videokonferenz/Sprachassistent | Jitsi, LiveKit, LiveKit Agents, Pipecat, Vocode, Rhasspy | Kandidat NUR falls ein Sprachassistent-Feature (wie das separate JAVIER-Projekt) auf diese Plattform kommt |
+| CRM/ERP | Twenty, Evolution API, ERPNext, Frappe CRM, Odoo, Monica | nur Referenz — Konkurrenzprodukte, keine Integration geplant |
+| Kalender/Termine | Nextcloud Calendar, Easy!Appointments | Kandidat fuer Produkt B Kundentermine (Cal.com bereits in Runde 1 gelistet) |
+| E-Mail-Infrastruktur | Postal, Mailcow, Listmonk, Mailtrain | Kandidat falls eigener Mailversand noetig wird — aktuell kein SMTP-Feature gebaut |
+| Suche | SearXNG | Kandidat (Meilisearch/Typesense bereits in Runde 1) |
+| Monitoring/Observability | Loki, Jaeger, Helicone, OpenLIT, DeepEval | Kandidat (Prometheus **bereits genutzt** in `metrics.py`; Sentry/Langfuse/Phoenix bereits Runde 1) |
+| Dateiverwaltung/Storage | Filebrowser, Nextcloud Server, MinIO, Ceph, Seafile | Kandidat falls eigener Objektspeicher noetig wird |
+| Security-Scan | Falco | nur Referenz — Trivy/Grype bereits in Runde 1 als "blockiert" dokumentiert |
+| Karten | OpenStreetMap, MapLibre | nicht anwendbar |
+| Datenbanken | Redis, Dragonfly, MySQL, MongoDB | Kandidat fuer Caching (aktuell eigene Sliding-Window-Rate-Limiter-Implementierung) |
+| " | postgres/postgres | **bereits Kern unseres Stacks** |
+| ML-Frameworks | scikit-learn, PyTorch, TensorFlow, PyTorch Lightning | nur Referenz — kein eigenes Modelltraining geplant |
+| Desktop-Frameworks | Tauri, Electron | nur Referenz |
+| OCR/PDF/Uebersetzung | OCRmyPDF, Stirling-PDF, Tesseract, PaddleOCR, LibreTranslate, Argos Translate | Kandidat falls ein Rechnungs-/Dokumenten-Feature gebaut wird |
+| Passwort-Manager | Bitwarden, KeePassXC | nicht anwendbar — eigenes Secret-Management via `.env`, Vault als Kandidat bereits in Runde 1 |
+| Support/Formulare/Doku | Chatwoot, Formbricks, Typebot, Documenso, InvoiceNinja, Akaunting, FreeScout, SurveyJS | Kandidat fuer Kundenservice-Ausbau von Produkt A/B |
+| Shopify-eigene Werkzeuge | Shopify/cli, Shopify/dawn, Shopify/hydrogen, Shopify/polaris | **Kandidat, direkt relevant** — das sind Shopifys eigene Theme-/Storefront-Werkzeuge fuer Produkt B, kein Fremdprodukt |
+| E-Commerce-Alternativen | Vendure, Spree, Sylius, WooCommerce, Bagisto, ReactionCommerce, Sharetribe, Magento, Shopware | nur Referenz — Konkurrenzprodukte zu Shopify, Produkt B baut bewusst AUF Shopify auf |
+| Website-Builder/No-Code | Plasmic, GrapesJS, Webstudio, Builder.io, Budibase, NocoBase | nur Referenz |
+| CMS | KeystoneJS, Ghost | nur Referenz (Strapi/Directus/Payload bereits Runde 1) |
+| Auth | NextAuth, Clerk, Supabase Auth | Kandidat falls Login ueber eigene API-Keys hinauswaechst |
+| SaaS-Starter-Kits | BoxyHQ, Nextacular, Makerkit, Wasp/open-saas | nur Referenz — Produkt A ist bereits weiter als ein Starter-Kit |
+| MCP | modelcontextprotocol/servers | Kandidat — Registry mit Hunderten MCP-Servern, ergaenzt die bereits genutzten SDKs |
+| " | Gmail-MCP-Server | nur Referenz — diese Sitzung nutzt bereits einen offiziellen Gmail-MCP-Server |
+| Affiliate/Links | Dub, Kutt | Kandidat |
+| Marketing/SEO-Themes | Hugo-Modules, Starlight | Kandidat (Hugo selbst bereits Runde 1) |
+| Bildungsplattform | LibreEdu, OpenCourseLab | nicht anwendbar |
+| Payment-Beispiele | adyen-examples | nur Referenz — wir nutzen Stripe direkt per HMAC, kein SDK |
+
 ## Zusammenfassung
 
-- **Bereits genutzt/verfuegbar:** ollama, MCP Python-SDK, uv, ruff, pre-commit,
-  bat, fd, ripgrep, tmux, TypeScript, Python.
+- **Bereits genutzt/verfuegbar:** ollama, Piper, litellm, FastAPI, PostgreSQL,
+  Prometheus, Playwright/Chromium, MCP Python-SDK, uv, ruff, pre-commit, bat,
+  fd, ripgrep, tmux, TypeScript, Python.
 - **Echte Kandidaten fuer Produkt A/B/C**, wenn konkret gebraucht: E2B,
   openai-agents-python, dspy, smolagents, composio, agentops, langfuse,
   phoenix, inngest/trigger.dev, supabase-mcp, vault, opentelemetry-collector,
-  sentry, meilisearch/typesense, graphiti/zep, metabase, hugo,
-  ionic/expo/react-native.
-- **Nur Referenz oder nicht anwendbar:** der Rest — meist weil es Editoren,
-  Konkurrenzprodukte oder Infrastruktur ist, die einen eigenen Server/GPU
-  braucht, den diese Sandbox nicht hat.
+  sentry, meilisearch/typesense, graphiti/zep/mem0, metabase, hugo,
+  ionic/expo/react-native, Shopify/dawn+hydrogen+polaris (Produkt B),
+  n8n/windmill (Automatisierung), Redis/Dragonfly (Caching), Chatwoot/
+  Formbricks (Kundenservice).
+- **Bewusst nicht aktiviert:** sqlmap, Metasploit Framework — Angriffs-
+  werkzeuge ohne aktuellen autorisierten Pentest-/CTF-Auftrag.
+- **Nur Referenz oder nicht anwendbar:** der grosse Rest — meist weil es
+  Editoren, Konkurrenzprodukte, Hardware/Robotik/Game-Engines oder
+  Infrastruktur ist, die einen eigenen Server/GPU/Cluster braucht, den diese
+  Sandbox nicht hat.
 
 Wird ein Kandidat konkret gebraucht, wird er **gezielt integriert** (Code,
 Tests, Doku) — nicht pauschal "installiert". Das ist der ehrliche Unterschied
-zwischen "in der Liste erwaehnt" und "im Produkt wirksam".
+zwischen "in der Liste erwaehnt" und "im Produkt wirksam". Diese Datei selbst
+ist der reale Mechanismus, der das ueberlebt: sie ist committet und wird bei
+jedem "was ist mit Repo X"/"installiere Y" zuerst konsultiert (siehe
+`CLAUDE.md` und der Trigger-Beschreibung oben).
