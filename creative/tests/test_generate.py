@@ -46,3 +46,58 @@ def test_real_tariffs_has_five():
     data = g.load_tariffs(HERE / "tariffs.json")
     codes = {t["code"] for t in data["tariffs"]}
     assert codes == {"free", "starter", "pro", "business", "enterprise"}
+
+
+# --- Hintergrundbilder (MuAPI) + deterministischer Text-Overlay ---
+
+def test_no_backdrop_produces_plain_gradient():
+    """Ohne Hintergrundbild bleibt alles wie bisher — die Pipeline
+    funktioniert vollstaendig ohne bezahlte Bildgenerierung."""
+    t = {"name": "Pro", "price_display": "CHF 49.00", "audience": "KMU", "features": []}
+    svg = g.card_svg(t, "Marke", "inkl. MwSt", 1080, 1080)
+    assert "<image" not in svg
+    assert 'fill="url(#bg)"' in svg
+
+
+def test_backdrop_is_embedded_with_scrim():
+    """Mit Hintergrundbild: Bild eingebunden UND Abdunkelung darueber,
+    damit der Text lesbar bleibt."""
+    t = {"name": "Pro", "price_display": "CHF 49.00", "audience": "KMU", "features": []}
+    svg = g.card_svg(t, "Marke", "inkl. MwSt", 1080, 1080,
+                     backdrop_href="../backdrops/pro.png")
+    assert '<image href="../backdrops/pro.png"' in svg
+    assert 'fill="url(#scrim)"' in svg
+    assert 'id="scrim"' in svg
+
+
+def test_price_text_is_always_rendered_by_us_not_the_image():
+    """Kernregel (Schweizer PBV): Preis und Pflichtangabe stehen IMMER als
+    echter SVG-Text im Dokument — auch mit Hintergrundbild. Sie duerfen nie
+    aus einem generativen Bildmodell stammen."""
+    t = {"name": "Pro", "price_display": "CHF 49.00 / Monat", "audience": "KMU",
+         "features": ["10 Agenten"]}
+    for href in (None, "../backdrops/pro.png"):
+        svg = g.card_svg(t, "Marke", "inkl. MwSt", 1080, 1350, backdrop_href=href)
+        assert "CHF 49.00 / Monat" in svg
+        assert "inkl. MwSt" in svg
+        assert 'class="price"' in svg
+
+
+def test_backdrop_prompts_forbid_text():
+    """Jeder Bild-Prompt muss die Text-Verbotsklausel enthalten — sonst
+    schreibt das Modell Pseudo-Text ins Bild, der mit dem echten Preis
+    kollidiert."""
+    import muapi_backdrop as mb
+    assert "no text" in mb.NO_TEXT_CLAUSE.lower()
+    assert "no letters" in mb.NO_TEXT_CLAUSE.lower()
+    assert "no numbers" in mb.NO_TEXT_CLAUSE.lower()
+    # Alle Tarife haben ein Motiv, und keines beschreibt Text/Zahlen.
+    assert set(mb.BACKDROPS) == {"free", "starter", "pro", "business", "enterprise"}
+    for code, prompt in mb.BACKDROPS.items():
+        low = prompt.lower()
+        for verboten in ("text", "logo", "price", "chf", "word"):
+            assert verboten not in low, f"{code}: Prompt erwaehnt '{verboten}'"
+
+
+def test_find_backdrop_returns_none_when_missing(tmp_path):
+    assert g.find_backdrop("gibtsnicht", tmp_path) is None

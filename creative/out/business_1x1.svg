@@ -1,8 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1080" height="1080" viewBox="0 0 1080 1080">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#12151d"/>
       <stop offset="1" stop-color="#0b0d12"/>
+    </linearGradient>
+    <linearGradient id="scrim" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#0b0d12" stop-opacity="0.92"/>
+      <stop offset="0.55" stop-color="#0b0d12" stop-opacity="0.72"/>
+      <stop offset="1" stop-color="#0b0d12" stop-opacity="0.45"/>
     </linearGradient>
     <style>
       text { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; fill: #e7ebf3; }
@@ -15,6 +20,7 @@
     </style>
   </defs>
   <rect width="1080" height="1080" fill="url(#bg)"/>
+  
   <rect x="0" y="0" width="1080" height="15" fill="#6c8cff"/>
   <text x="86" y="119" class="brand">KI-PLATTFORM</text>
   <text x="86" y="259" class="name">Business</text>

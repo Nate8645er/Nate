@@ -14,7 +14,11 @@ resvg) — ohne laufende Kosten.
 from __future__ import annotations
 
 import json
+import os
 import pathlib
+
+# Generierte Hintergrundbilder (optional, siehe muapi_backdrop.py).
+BACKDROP_DIR = pathlib.Path(__file__).resolve().parent / "backdrops"
 
 # Werbe-Formate (Breite x Hoehe): 1:1, 4:5, 9:16.
 FORMATS: dict[str, tuple[int, int]] = {
@@ -43,8 +47,17 @@ def esc(s: str) -> str:
     )
 
 
-def card_svg(tariff: dict, brand: str, vat_note: str, w: int, h: int) -> str:
-    """Ein Tarif-Creative als vollstaendiges SVG-Dokument."""
+def card_svg(tariff: dict, brand: str, vat_note: str, w: int, h: int,
+             backdrop_href: str | None = None) -> str:
+    """Ein Tarif-Creative als vollstaendiges SVG-Dokument.
+
+    `backdrop_href`: optionaler Pfad zu einem generierten Hintergrundbild
+    (siehe muapi_backdrop.py). Das Bild liefert NUR die Atmosphaere — alle
+    Texte werden hier deterministisch darueber gelegt, damit Preise und
+    Pflichtangaben garantiert korrekt und lesbar sind (Schweizer PBV).
+    Ueber dem Bild liegt ein Abdunkelungs-Verlauf ("Scrim"), damit der Text
+    unabhaengig vom Bildinhalt lesbar bleibt.
+    """
     pad = round(w * 0.08)
     cx = pad
     # Vertikale Startpunkte proportional zur Hoehe.
@@ -70,11 +83,25 @@ def card_svg(tariff: dict, brand: str, vat_note: str, w: int, h: int) -> str:
         )
     feats_svg = "\n    ".join(feat_els)
 
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}">
+    # Hintergrundbild (falls vorhanden) + Abdunkelung fuer Textlesbarkeit.
+    backdrop_svg = ""
+    if backdrop_href:
+        backdrop_svg = (
+            f'<image href="{esc(backdrop_href)}" x="0" y="0" '
+            f'width="{w}" height="{h}" preserveAspectRatio="xMidYMid slice"/>\n'
+            f'  <rect width="{w}" height="{h}" fill="url(#scrim)"/>'
+        )
+
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{w}" height="{h}" viewBox="0 0 {w} {h}">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="{PANEL}"/>
       <stop offset="1" stop-color="{BG}"/>
+    </linearGradient>
+    <linearGradient id="scrim" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="{BG}" stop-opacity="0.92"/>
+      <stop offset="0.55" stop-color="{BG}" stop-opacity="0.72"/>
+      <stop offset="1" stop-color="{BG}" stop-opacity="0.45"/>
     </linearGradient>
     <style>
       text {{ font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; fill: {TEXT}; }}
@@ -87,6 +114,7 @@ def card_svg(tariff: dict, brand: str, vat_note: str, w: int, h: int) -> str:
     </style>
   </defs>
   <rect width="{w}" height="{h}" fill="url(#bg)"/>
+  {backdrop_svg}
   <rect x="0" y="0" width="{w}" height="{round(h*0.014)}" fill="{ACCENT}"/>
   <text x="{cx}" y="{y_brand}" class="brand">{esc(brand.upper())}</text>
   <text x="{cx}" y="{y_name}" class="name">{esc(tariff.get("name",""))}</text>
@@ -98,15 +126,35 @@ def card_svg(tariff: dict, brand: str, vat_note: str, w: int, h: int) -> str:
 </svg>'''
 
 
-def build_all(data: dict, outdir: pathlib.Path) -> list[pathlib.Path]:
-    """Rendert alle Tarife in allen Formaten. Gibt die geschriebenen Pfade zurueck."""
+def find_backdrop(code: str, outdir: pathlib.Path) -> str | None:
+    """Sucht ein generiertes Hintergrundbild fuer diesen Tarif.
+
+    Gibt einen RELATIVEN Pfad zurueck (kein base64): SVG und PNG reisen
+    gemeinsam, das haelt das Repository klein. Beim Rastern nach PNG/JPG —
+    was Werbeplattformen ohnehin brauchen — wird daraus eine eigenstaendige
+    Datei.
+    """
+    png = BACKDROP_DIR / f"{code}.png"
+    if not png.is_file():
+        return None
+    return os.path.relpath(png, outdir)
+
+
+def build_all(data: dict, outdir: pathlib.Path, use_backdrops: bool = True) -> list[pathlib.Path]:
+    """Rendert alle Tarife in allen Formaten. Gibt die geschriebenen Pfade zurueck.
+
+    Liegt zu einem Tarif ein Hintergrundbild in backdrops/ vor, wird es
+    automatisch verwendet — sonst der reine Farbverlauf. Die Pipeline
+    funktioniert also mit und ohne bezahlte Bildgenerierung.
+    """
     outdir.mkdir(parents=True, exist_ok=True)
     brand = data.get("brand", "")
     vat = data.get("vat_note", "")
     written: list[pathlib.Path] = []
     for t in data["tariffs"]:
+        href = find_backdrop(t["code"], outdir) if use_backdrops else None
         for fmt, (w, h) in FORMATS.items():
-            svg = card_svg(t, brand, vat, w, h)
+            svg = card_svg(t, brand, vat, w, h, backdrop_href=href)
             p = outdir / f"{t['code']}_{fmt}.svg"
             p.write_text(svg, encoding="utf-8")
             written.append(p)

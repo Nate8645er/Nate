@@ -1,0 +1,5 @@
+# Generierte Hintergrundbilder (MuAPI, kostenpflichtig) — bewusst nicht
+# committet, wie .models/ und public/audio/ bei der Video-Pipeline.
+# Ohne diesen Ordner rendert generate.py automatisch backdrop-frei
+# (reiner Farbverlauf) — die Pipeline funktioniert immer, auch ohne Key.
+backdrops/
