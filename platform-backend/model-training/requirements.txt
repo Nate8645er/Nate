@@ -1,0 +1,22 @@
+# Fine-Tuning-Pipeline -- eigene requirements, getrennt vom API-Backend
+# (platform-backend/requirements.txt). Diese Pipeline laeuft NICHT im
+# selben Prozess/Image wie das FastAPI-Backend.
+#
+# Versionen sind die aktuellen PyPI-Releases zum Zeitpunkt der Erstellung
+# (2026-07-27) und wurden in einer virtuellen Umgebung tatsaechlich
+# installiert + importiert (kein GPU noetig dafuer) -- siehe README.md,
+# Abschnitt "Was verifiziert wurde".
+#
+# torch bewusst NICHT hier gepinnt: auf einer echten Trainings-GPU muss die
+# CUDA-passende Variante von https://pytorch.org/get-started/locally/
+# installiert werden (abhaengig von CUDA-Version des Hosts/Cloud-Anbieters).
+# Beispiel: pip install torch --index-url https://download.pytorch.org/whl/cu124
+
+transformers==5.14.1
+peft==0.19.1
+trl==1.9.1
+bitsandbytes==0.50.0
+accelerate==1.14.0
+datasets==5.0.0
+sentencepiece==0.2.2
+protobuf==7.35.1

@@ -1,0 +1,29 @@
+# Beispiel-Modelfile fuer Ollama, nach GGUF-Export des gemergten Modells.
+# Wird von scripts/export_to_ollama.sh automatisch generiert -- diese Datei
+# hier ist die dokumentierte Referenz zum Nachlesen/Anpassen.
+#
+# Ersetze <PFAD_ZUM_GGUF> durch den echten Pfad, z.B.
+# output/merged-model/model-q4_k_m.gguf
+
+FROM <PFAD_ZUM_GGUF>
+
+# Qwen2.5-Instruct verwendet ChatML (<|im_start|>/<|im_end|>). Falls die
+# GGUF-Konvertierung das chat_template aus tokenizer_config.json bereits
+# eingebettet hat, erkennt "ollama create" es automatisch und dieser Block
+# ist nur ein expliziter Fallback.
+TEMPLATE """{{ if .System }}<|im_start|>system
+{{ .System }}<|im_end|>
+{{ end }}{{ if .Prompt }}<|im_start|>user
+{{ .Prompt }}<|im_end|>
+{{ end }}<|im_start|>assistant
+{{ .Response }}<|im_end|>
+"""
+
+PARAMETER stop "<|im_start|>"
+PARAMETER stop "<|im_end|>"
+PARAMETER temperature 0.3
+
+# WICHTIG: hier den echten Firmennamen statt eines erfundenen Fantasienamens
+# eintragen (siehe README.md, Abschnitt "Registrierung im Gateway" -- keine
+# Namen, die wie Konkurrenzprodukte klingen, siehe app/models_catalog.py).
+SYSTEM """Du bist das lokal fine-getunte Support-Modell dieser Plattform. Antworte praezise, ehrlich und nur mit tatsaechlichem Wissen ueber diese Plattform."""
