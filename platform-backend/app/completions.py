@@ -84,6 +84,21 @@ def _estimate_tokens(text: str) -> int:
     return max(1, len(text) // 4)
 
 
+def _resolve_conversation_id(tenant_id: str, conversation_id):
+    """Legt bei Bedarf sofort eine neue Konversation an, statt das erst am
+    Streamende in _persist_and_release zu tun -- damit der Client die ID
+    schon im ersten SSE-Chunk erfaehrt und Folgenachrichten wirklich an
+    dieselbe Konversation anhaengen kann, statt bei jeder Nachricht neu
+    anzufangen (vorher: die ID erreichte den Client im Stream-Pfad nie)."""
+    if conversation_id is not None:
+        return conversation_id
+    with tenant_tx(tenant_id) as conn:
+        return conn.execute(
+            "INSERT INTO conversations (tenant_id) VALUES (%s) RETURNING id",
+            (tenant_id,),
+        ).fetchone()["id"]
+
+
 def _validate_conversation(tenant_id: str, conversation_id) -> None:
     """Prueft die Konversation VOR jeder Reservierung/jedem Gateway-Aufruf --
     eine falsche conversation_id soll nicht erst nach einem echten
@@ -318,6 +333,11 @@ async def _stream_events(
     tokens_in = tokens_out = 0
     usage_seen = False
 
+    # Erster Chunk, noch vor jeder Gateway-Antwort: die Konversations-ID, damit
+    # der Client sie fuer die naechste Nachricht speichern kann (siehe
+    # _resolve_conversation_id).
+    yield f"data: {json.dumps({'conversation_id': str(conversation_id)})}\n\n".encode()
+
     try:
         async with httpx.AsyncClient(timeout=settings.request_timeout_s) as client:
             try:
@@ -395,6 +415,7 @@ async def stream_chat(
     429/404 noch als echter Statuscode ankommt (nach dem ersten gesendeten
     Byte ist der Statuscode fest auf 200)."""
     _validate_conversation(principal.tenant_id, conversation_id)
+    conversation_id = _resolve_conversation_id(principal.tenant_id, conversation_id)
 
     out_messages = messages
     if system_prompt:

@@ -281,3 +281,30 @@ Aus den Reviews dokumentiert, nicht vergessen:
 - **`dashboard.html`** ist noch nicht mit `index.html` verlinkt (nur ein
   „← Chat"-Link zurück) — beide UIs bewusst als getrennte, unabhängig
   ladbare Seiten gehalten.
+- ~~Konversations-Fortsetzung faktisch kaputt: der Stream-Pfad gab die
+  `conversation_id` nirgends an den Client zurück, jede Nachricht legte
+  serverseitig eine neue Konversation an~~ — **behoben** (gefunden von
+  `ultra-architect` beim Weiterentwicklungs-Audit, 27.07.): `stream_chat`
+  löst die `conversation_id` jetzt VOR dem Gateway-Aufruf auf
+  (`_resolve_conversation_id`) und `_stream_events` sendet sie als ersten
+  SSE-Chunk. `static/index.html` liest sie aus dem Stream, speichert sie
+  pro API-Key in `localStorage` und hängt Folgenachrichten wirklich an
+  dieselbe Konversation an; ein „+ Neu"-Button startet bewusst eine neue.
+  Eine veraltete gespeicherte ID (404 vom Server) wird clientseitig einmalig
+  automatisch verworfen und als neue Konversation fortgesetzt statt den Chat
+  tot enden zu lassen. Echter Regressionstest gegen eine echte Postgres-DB
+  (zwei Nachrichten landen nachweislich in derselben Konversation, nicht in
+  zwei getrennten): `tests/test_chat_streaming.py::test_stream_returns_conversation_id_for_continuation`.
+  Zusätzlich: mobiler mit Zeilenumbruch (`header{flex-wrap}` +
+  `@media (max-width:640px)`) in `index.html` und `dashboard.html`, da der
+  Header vorher auf schmalen Bildschirmen überlaufen konnte (keine
+  Breakpoints trotz Viewport-Meta-Tag).
+
+### Vom Weiterentwicklungs-Audit noch offen (nicht in dieser Runde umgesetzt)
+
+- **Agenten-Chat im UI**: `POST /v1/agents/{id}/chat` ist voll funktionsfähig
+  (inkl. Streaming), aber `dashboard.html` kann Agenten nur anlegen/löschen,
+  nicht mit ihnen chatten — nur per eigenem curl-Aufruf nutzbar.
+- **`/v1/integrations` ohne UI**: Composio-OAuth-Fluss ist serverseitig
+  fertig und getestet, aber im Dashboard nicht bedienbar (kein Widget in der
+  `WIDGETS`-Registry).

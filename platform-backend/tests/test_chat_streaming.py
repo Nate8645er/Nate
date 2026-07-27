@@ -140,6 +140,58 @@ def test_stream_releases_reservation_after_completion(client, prov, monkeypatch)
     assert row["reserved_tokens"] == 0
 
 
+def test_stream_returns_conversation_id_for_continuation(client, prov, monkeypatch):
+    """Regression fuer den Bug, den ultra-architect gefunden hat: der Stream-
+    Pfad gab die conversation_id nirgends an den Client zurueck, weshalb jede
+    Nachricht serverseitig eine NEUE Konversation anlegte statt eine
+    bestehende fortzusetzen. Beweist beide Haelften: (1) die erste Antwort
+    enthaelt einen conversation_id-Chunk, (2) eine zweite Nachricht MIT
+    dieser ID haengt wirklich an dieselbe Konversation an (4 Nachrichten,
+    nicht 2+2 in getrennten Konversationen)."""
+    import re
+
+    def _stream_one(msg):
+        chunks = [{"choices": [{"delta": {"content": "Antwort zu: " + msg}}]}]
+        fake = _fake_client_factory(chunks, with_usage=True)
+        monkeypatch.setattr("app.completions.httpx.AsyncClient", lambda *a, **kw: fake)
+
+    key = prov("starter")
+    h = {"Authorization": "Bearer " + key}
+
+    _stream_one("Erste")
+    with client.stream(
+        "POST", "/v1/chat", headers=h,
+        json={"model": "ollama/llama3.2", "messages": [{"role": "user", "content": "Erste"}], "stream": True},
+    ) as r:
+        assert r.status_code == 200
+        body = b"".join(r.iter_bytes()).decode()
+
+    ids = re.findall(r'"conversation_id":\s*"([0-9a-f-]{36})"', body)
+    assert ids, "kein conversation_id-Chunk im Stream gefunden"
+    conv_id = ids[0]
+    # Alle Chunks (falls mehrere) muessen dieselbe ID tragen -- keine zweite
+    # Konversation waehrend desselben Streams.
+    assert all(i == conv_id for i in ids)
+
+    _stream_one("Zweite")
+    with client.stream(
+        "POST", "/v1/chat", headers=h,
+        json={
+            "model": "ollama/llama3.2",
+            "messages": [{"role": "user", "content": "Erste"}, {"role": "user", "content": "Zweite"}],
+            "conversation_id": conv_id,
+            "stream": True,
+        },
+    ) as r2:
+        assert r2.status_code == 200
+        list(r2.iter_bytes())
+
+    conv = client.get(f"/v1/conversations/{conv_id}", headers=h)
+    assert conv.status_code == 200
+    messages = conv.json()["messages"]
+    assert len(messages) == 4, "beide Nachrichten muessen in DERSELBEN Konversation gelandet sein"
+
+
 def test_stream_unregistered_model_rejected_before_streaming_starts(client, prov):
     """Ohne Gateway-Mock: ein nicht registriertes Modell muss VOR jedem
     Streaming-Versuch mit 403 abgelehnt werden (Modellvalidierung passiert

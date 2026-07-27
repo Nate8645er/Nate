@@ -31,9 +31,15 @@
   .brand-font { font-family:"Space Grotesk", -apple-system, sans-serif; }
 
   header {
-    display:flex; align-items:center; gap:14px; padding:14px 22px;
+    display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px; padding:14px 22px;
     border-bottom:1px solid var(--border-soft); background:rgba(10,12,19,0.75);
     backdrop-filter:blur(10px); position:sticky; top:0; z-index:10;
+  }
+  @media (max-width: 640px) {
+    header { padding:12px 16px; }
+    header h1 { display:none; }
+    header .spacer { flex-basis:100%; height:0; }
+    header select#model { flex:1; min-width:0; }
   }
   .brandmark {
     width:22px; height:22px; border-radius:7px; flex-shrink:0;
@@ -131,6 +137,7 @@
   <div class="spacer"></div>
   <select id="model" title="Modell wählen"></select>
   <span class="usage" id="usage">–</span>
+  <button class="ghost" id="newChat" title="Neue Unterhaltung starten" style="padding:9px 12px;">+ Neu</button>
   <a class="ghost" href="/dashboard.html"
      style="text-decoration:none;padding:9px 13px;border-radius:9px;border:1px solid var(--border);font-size:14px;"
      title="Zum Dashboard">Dashboard →</a>
@@ -169,6 +176,11 @@ let convId = null;
 let history = [];
 
 function authHeader() { return { "Authorization": "Bearer " + KEY, "Content-Type": "application/json" }; }
+// Pro API-Key eine eigene gespeicherte Konversation -- verhindert, dass ein
+// Schluesselwechsel versehentlich die conversation_id eines anderen Mandanten
+// wiederverwendet (die serverseitige Pruefung wuerde das ohnehin als 404
+// ablehnen, aber so kommt es gar nicht erst dazu).
+function convKey() { return "convId:" + KEY; }
 
 async function loadModels() {
   const r = await fetch("/v1/models", { headers: authHeader() });
@@ -225,6 +237,7 @@ async function connect() {
   try {
     await loadModels();
     localStorage.setItem("pk", KEY);
+    convId = localStorage.getItem(convKey());
     $("setupWrap").style.display = "none";
     $("chat").style.display = "block";
     refreshUsage();
@@ -251,13 +264,22 @@ async function send() {
   let full = "";
   let tokensIn = 0, tokensOut = 0;
 
-  try {
+  // `retry` faengt genau EINEN Fall ab: eine lokal gespeicherte
+  // conversation_id, die der Server nicht (mehr) kennt (404) -- z.B. weil sie
+  // aus einer aelteren Sitzung stammt. Statt den Nutzer mit einem toten Ende
+  // stehen zu lassen, wird einmalig ohne conversation_id neu versucht.
+  async function attempt(retry) {
     const r = await fetch("/v1/chat", {
       method: "POST", headers: authHeader(),
       body: JSON.stringify({ model, messages: history, conversation_id: convId, stream: true }),
     });
     if (!r.ok) {
       const data = await r.json().catch(() => ({}));
+      if (r.status === 404 && retry) {
+        convId = null;
+        localStorage.removeItem(convKey());
+        return attempt(false);
+      }
       throw new Error(data.detail || ("HTTP " + r.status));
     }
 
@@ -276,6 +298,10 @@ async function send() {
         if (chunk === "[DONE]") continue;
         let obj;
         try { obj = JSON.parse(chunk); } catch { continue; }
+        if (obj.conversation_id) {
+          convId = obj.conversation_id;
+          localStorage.setItem(convKey(), convId);
+        }
         const piece = obj.choices?.[0]?.delta?.content;
         if (piece) {
           if (!assistantEl) { hideTyping(); assistantEl = addMsg("assistant", ""); }
@@ -286,7 +312,10 @@ async function send() {
         if (obj.usage) { tokensIn = obj.usage.prompt_tokens || 0; tokensOut = obj.usage.completion_tokens || 0; }
       }
     }
+  }
 
+  try {
+    await attempt(true);
     hideTyping();
     if (!assistantEl) assistantEl = addMsg("assistant", full || "(keine Antwort)");
     const meta = document.createElement("span");
@@ -307,6 +336,13 @@ async function send() {
 $("connect").onclick = connect;
 $("send").onclick = send;
 $("logout").onclick = () => { localStorage.removeItem("pk"); location.reload(); };
+$("newChat").onclick = () => {
+  convId = null;
+  localStorage.removeItem(convKey());
+  history = [];
+  $("log").innerHTML = "";
+  $("chatErr").textContent = "";
+};
 $("input").addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
 });
