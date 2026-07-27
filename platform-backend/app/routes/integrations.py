@@ -20,7 +20,7 @@ from psycopg.types.json import Jsonb
 from pydantic import BaseModel, Field
 
 from ..auth import Principal, require_principal
-from ..composio_client import build_toolset, map_status
+from ..composio_client import build_toolset, composio_app_slug, map_status
 from ..db import admin_tx, tenant_tx
 
 log = logging.getLogger("platform.integrations")
@@ -96,7 +96,7 @@ async def create_integration(
     if toolset is not None:
         try:
             conn_req = toolset.initiate_connection(
-                app=req.provider, redirect_url=req.redirect_url
+                app=composio_app_slug(req.provider), redirect_url=req.redirect_url
             )
             config["composio_connected_account_id"] = conn_req.connectedAccountId
             connect_url = conn_req.redirectUrl

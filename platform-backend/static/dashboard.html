@@ -297,7 +297,37 @@ async function renderAgentsWidget(body, badge) {
     const form = document.createElement("form");
     form.className = "agent-form";
     const modelOptions = models.map((m) => `<option value="${escapeHtml(m.id)}">${escapeHtml(m.label)}</option>`).join("");
+    // Vorlagen fuellen Name/System-Prompt vor -- der Agent selbst entsteht
+    // genau wie jeder manuell angelegte, ueber denselben POST /v1/agents.
+    // Keine neue Backend-Funktion noetig, nur ein schnellerer Start.
+    const PRESETS = {
+      "": { name: "", prompt: "" },
+      coding: {
+        name: "Coding-Assistent",
+        prompt: "Du bist ein präziser Programmier-Assistent. Erkläre Code klar, " +
+          "schlage konkrete, lauffähige Verbesserungen vor, und weise auf Bugs " +
+          "oder Sicherheitsprobleme hin, wenn du welche siehst. Bei Unsicherheit " +
+          "sag das offen, statt zu raten."
+      },
+      writing: {
+        name: "Text-Assistent",
+        prompt: "Du hilfst beim Formulieren und Überarbeiten von Texten (E-Mails, " +
+          "Beschreibungen, Dokumentation). Klar, knapp, ohne Floskeln."
+      },
+      support: {
+        name: "Kundensupport-Assistent",
+        prompt: "Du beantwortest Kundenfragen freundlich und präzise. Bei Unsicherheit " +
+          "sag ehrlich, dass du es nicht weißt, statt etwas zu erfinden."
+      },
+    };
     form.innerHTML = `
+      <label for="agPreset">Vorlage (optional)</label>
+      <select id="agPreset">
+        <option value="">— Leer, selbst schreiben —</option>
+        <option value="coding">Coding-Assistent</option>
+        <option value="writing">Text-Assistent</option>
+        <option value="support">Kundensupport-Assistent</option>
+      </select>
       <label for="agName">Neuer Agent</label>
       <input id="agName" type="text" placeholder="Name" required maxlength="120" />
       <select id="agModel" ${models.length ? "" : "disabled"}>
@@ -310,6 +340,11 @@ async function renderAgentsWidget(body, badge) {
       </div>
       <div class="err" data-role="agentErr"></div>
     `;
+    form.querySelector("#agPreset").onchange = (e) => {
+      const p = PRESETS[e.target.value] || PRESETS[""];
+      form.querySelector("#agName").value = p.name;
+      form.querySelector("#agPrompt").value = p.prompt;
+    };
     form.onsubmit = async (e) => {
       e.preventDefault();
       const errEl = form.querySelector('[data-role="agentErr"]');

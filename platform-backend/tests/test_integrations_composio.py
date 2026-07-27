@@ -33,6 +33,16 @@ class _FakeToolsetFails:
         raise RuntimeError("Composio ist down (simuliert)")
 
 
+class _RecordingToolset:
+    """Zeichnet nur auf, welcher App-Slug tatsaechlich an Composio
+    weitergereicht wird -- beweist composio_app_slug()."""
+    calls = []
+
+    def initiate_connection(self, app, redirect_url=None):
+        type(self).calls.append(app)
+        return SimpleNamespace(connectedAccountId="rec-1", redirectUrl="https://composio.example/rec-1")
+
+
 def test_create_without_composio_configured_unchanged(client, prov, monkeypatch):
     """Ohne COMPOSIO_API_KEY: exakt das bisherige Geruest-Verhalten."""
     monkeypatch.setattr("app.routes.integrations.build_toolset", lambda: None)
@@ -81,6 +91,20 @@ def test_refresh_without_stored_connection_is_400(client, prov, monkeypatch):
 
     r = client.post(f"/v1/integrations/{integration_id}/refresh", headers=h)
     assert r.status_code == 400
+
+
+def test_google_provider_maps_to_gmail_app_slug(client, prov, monkeypatch):
+    """provider='google' muss als Composio-App-Slug 'gmail' ankommen (der
+    dokumentierte, aber unverifizierte Standardwert aus composio_client.py),
+    nicht das wortwoertliche 'google' -- Composio kennt kein Einzel-App
+    namens 'google'."""
+    _RecordingToolset.calls = []
+    monkeypatch.setattr("app.routes.integrations.build_toolset", lambda: _RecordingToolset())
+    key = prov("starter")
+    h = {"Authorization": "Bearer " + key}
+    r = client.post("/v1/integrations", headers=h, json={"provider": "google"})
+    assert r.status_code == 201, r.text
+    assert _RecordingToolset.calls == ["gmail"]
 
 
 def test_refresh_marks_connected_when_composio_reports_active(client, prov, monkeypatch):
