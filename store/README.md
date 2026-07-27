@@ -62,19 +62,21 @@ Der Kauf löst die Kontoerstellung in Produkt A aus:
    Zugangsdaten an den Kunden ist ein separater Schritt (E-Mail-Flow).
 
 **Erledigt:** Die 5 Abo-Produkte sind im verbundenen Store (katzenufos.com)
-als **Draft** angelegt, mit genau diesen SKUs: `plan-free`, `plan-starter`,
-`plan-pro`, `plan-business`, `plan-enterprise`. Vor Live-Schaltung noch offen:
+als **Active** angelegt, mit genau diesen SKUs: `plan-free`, `plan-starter`,
+`plan-pro`, `plan-business`, `plan-enterprise` — inkl. je einem generierten
+Cover-Bild (Marken-Karte, Space-Grotesk-artige Beschriftung, dieselben
+Design-Tokens wie das Theme; erzeugt mit Pillow, hochgeladen über Shopifys
+eigene Staged-Uploads-API, kein externer Bild-Host).
 
-- Status von Draft auf Active setzen (im Shopify-Admin oder per
-  `bulk-update-product-status`), sobald geprüft ist, dass Checkout +
-  Webhook-Flow wie erwartet funktionieren.
 - `plan-enterprise` hat bewusst keinen Selbstbedienungs-Checkout (Preis
   "Auf Anfrage") — `tariffs.liquid` zeigt für diesen Tarif keinen
   Kaufen-Button (kein `cta_url` im Preset), das Produkt existiert nur für
   die SKU-Konvention/interne Zuordnung.
-- Keine Produktbilder hinterlegt (Theme ist bewusst bild-frei, siehe
-  „Design"-Abschnitt) — bei Bedarf über `upload-image` + `create-product`-
-  Update ergänzen.
+- **Wichtig, ungeprüft:** Die Aktivierung wurde auf Zusage hin ausgeführt,
+  dass `platform-backend` bereits live deployed und per echtem
+  `orders/paid`-Webhook (SHOPIFY_WEBHOOK_SECRET) mit diesem Store verbunden
+  ist. Das wurde von hier aus nicht selbst verifiziert — falls das doch
+  nicht zutrifft, zahlen echte Kunden ohne automatische Kontoerstellung.
 
 ## Deploy-Regel (nicht verhandelbar)
 
