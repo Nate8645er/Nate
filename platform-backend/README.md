@@ -258,8 +258,13 @@ Aus den Reviews dokumentiert, nicht vergessen:
   bevor ueberhaupt an das Gateway weitergeleitet wird. Empirisch bestaetigt
   (26.07., echte Postgres-DB) und als Regressionstest festgehalten:
   `tests/test_model_validation_integration.py`.
-- Modellwechsel-UI + Agenten-Ebene (Phase 3); Store-Webhook `orders/paid` →
-  `/admin/provision` (Phase 5).
+- ~~Modellwechsel-UI + Agenten-Ebene (Phase 3); Store-Webhook `orders/paid` →
+  `/admin/provision` (Phase 5)~~ — **umgesetzt**: Modellauswahl in
+  `static/index.html` (`#model`-Select, befüllt aus `GET /v1/models`),
+  Agenten-Endpunkte in `app/routes/agents.py` (`GET/POST /v1/agents`,
+  `POST /v1/agents/{id}/chat`), Store-Webhook in `app/routes/webhooks.py`
+  (`POST /webhooks/shopify/orders-paid`, HMAC-verifiziert, idempotent über
+  `claim_event`, ruft `provision_tenant` in derselben Transaktion auf).
 - **`/v1/integrations`** hat jetzt einen echten OAuth-Weg über Composio
   (`app/composio_client.py`), statt selbst Client-IDs/Secrets pro Provider zu
   verwalten: `COMPOSIO_API_KEY` gesetzt → `POST /v1/integrations` initiiert
