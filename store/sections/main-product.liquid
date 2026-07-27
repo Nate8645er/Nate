@@ -9,6 +9,14 @@
   <div style="max-width:720px;margin:0 auto;">
     <a href="/" style="color:#8b93ab;text-decoration:none;font-size:13px;">← Zurück zu allen Tarifen</a>
 
+    {%- if product.featured_media -%}
+      <img src="{{ product.featured_media | image_url: width: 1200 }}"
+           alt="{{ product.featured_media.alt | default: product.title | escape }}"
+           width="1200" height="{{ 1200 | divided_by: product.featured_media.aspect_ratio }}"
+           loading="eager"
+           style="width:100%;height:auto;border-radius:16px;border:1px solid #242a3d;margin:24px 0 8px;display:block;">
+    {%- endif -%}
+
     <h1 class="brand-font" style="font-size:clamp(30px,4.5vw,42px);font-weight:700;margin:20px 0 6px;letter-spacing:-0.02em;">{{ product.title | escape }}</h1>
     <p style="color:#7c8bfa;font-size:28px;font-weight:700;margin:0 0 4px;">
       {{ product.price | money }}

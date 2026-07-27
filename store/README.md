@@ -107,6 +107,19 @@ Dieselben Design-Tokens wie `platform-backend/static/{index,dashboard}.html`
 derselbe Akzentfarbverlauf. Ein Look ueber Produkt A und Produkt B hinweg,
 nicht zwei getrennte Marken-Identitaeten.
 
+## Verdrahtung mit den echten Shopify-Produkten
+
+- `sections/main-product.liquid` zeigt jetzt das hinterlegte Produktbild
+  (`product.featured_media`), sofern eines existiert — greift automatisch
+  für die 5 live angelegten Abo-Produkte.
+- `sections/tariffs.liquid`: Die Standard-Werte der Tarif-Karten
+  (`cta_url` in den `presets`) verlinken jetzt auf die echten Produktseiten
+  (`/products/ki-plattform-abo-<code>`), ausser Enterprise (bewusst ohne
+  Button, siehe oben). **Hinweis:** Presets greifen nur, wenn die Sektion
+  neu über den Theme-Editor hinzugefügt wird — bereits bestehende
+  Sektions-Instanzen in einem laufenden Theme behalten ihre gespeicherten
+  Einstellungen und müssten dort manuell nachgezogen werden.
+
 ## Bewusst offen
 
 - Kein Kundenbereich mit Onboarding-Videos — wartet auf die
