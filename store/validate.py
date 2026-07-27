@@ -35,9 +35,35 @@ def check_file(path: pathlib.Path) -> list[str]:
         if "sections" not in path.parts:
             errors.append("{% schema %} ausserhalb von sections/ — nur dort gueltig")
         try:
-            json.loads(schema_match.group(1))
+            schema = json.loads(schema_match.group(1))
         except json.JSONDecodeError as e:
             errors.append(f"schema-JSON ungueltig: {e}")
+        else:
+            errors.extend(_check_empty_defaults(schema))
+
+    return errors
+
+
+def _check_empty_defaults(schema: dict) -> list[str]:
+    """Shopify lehnt bei der Theme-Datei-Upload-API ein `"default": ""` auf
+    Text-artigen Einstellungen ab ("default darf nicht leer sein") -- ein
+    struktureller JSON-Check allein sieht das nicht, hat aber schon einmal
+    einen Datei-Upload live scheitern lassen (features.liquid, 27.07.),
+    ohne dass diese Validierung hier das vorher bemerkt haette."""
+    errors = []
+
+    def scan(settings, where: str):
+        for entry in settings or []:
+            if isinstance(entry, dict) and entry.get("default") == "":
+                errors.append(
+                    f"{where}: setting '{entry.get('id')}' (type={entry.get('type')}) "
+                    "hat \"default\": \"\" -- Shopify lehnt das beim Upload ab, "
+                    "Feld ohne default lassen oder echten Wert setzen"
+                )
+
+    scan(schema.get("settings"), "settings")
+    for block in schema.get("blocks") or []:
+        scan(block.get("settings"), f"blocks[{block.get('type')}]")
 
     return errors
 
