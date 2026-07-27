@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from ..auth import Principal, require_principal
-from ..completions import run_chat
+from ..completions import run_chat, stream_chat
 from ..models_catalog import is_registered
 from ..plans import model_allowed
 from ..ratelimit import chat_limiter
@@ -32,6 +32,7 @@ class ChatRequest(BaseModel):
     messages: list[ChatMessage] = Field(min_length=1, max_length=MAX_MESSAGES)
     conversation_id: uuid.UUID | None = None
     temperature: float | None = Field(default=None, ge=0.0, le=2.0)
+    stream: bool = False
 
 
 def ensure_model_available(model: str, principal: Principal) -> None:
@@ -50,6 +51,14 @@ def ensure_model_available(model: str, principal: Principal) -> None:
 async def chat(req: ChatRequest, principal: Principal = Depends(require_principal)):
     chat_limiter.check(principal.tenant_id)
     ensure_model_available(req.model, principal)
+    if req.stream:
+        return await stream_chat(
+            principal,
+            model=req.model,
+            messages=[m.model_dump() for m in req.messages],
+            conversation_id=req.conversation_id,
+            temperature=req.temperature,
+        )
     return await run_chat(
         principal,
         model=req.model,

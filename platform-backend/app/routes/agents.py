@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from ..auth import Principal, require_principal
-from ..completions import run_chat
+from ..completions import run_chat, stream_chat
 from ..db import tenant_tx
 from ..models_catalog import is_registered
 from ..plans import model_allowed
@@ -28,6 +28,7 @@ class AgentChatRequest(BaseModel):
     messages: list[ChatMessage] = Field(min_length=1, max_length=MAX_MESSAGES)
     conversation_id: uuid.UUID | None = None
     temperature: float | None = Field(default=None, ge=0.0, le=2.0)
+    stream: bool = False
 
 
 def _serialize(r) -> dict:
@@ -130,6 +131,15 @@ async def run_agent(
     # Das Agentenmodell kann seit dem Anlegen aus dem Tarif gefallen sein -> pruefen.
     ensure_model_available(agent["model"], principal)
 
+    if req.stream:
+        return await stream_chat(
+            principal,
+            model=agent["model"],
+            messages=[m.model_dump() for m in req.messages],
+            conversation_id=req.conversation_id,
+            system_prompt=agent["system_prompt"],
+            temperature=req.temperature,
+        )
     return await run_chat(
         principal,
         model=agent["model"],

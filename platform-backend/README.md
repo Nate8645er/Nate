@@ -188,7 +188,17 @@ Aus den Reviews dokumentiert, nicht vergessen:
   `tests/test_completions_token_estimate.py`.
 - **Verbrauchsverlust**, falls die Persistenz nach erfolgreichem Call scheitert
   → Retry/Outbox (Phase 3/4).
-- **Streaming** (`stream`-Param) noch nicht unterstützt (Phase 3).
+- ~~Streaming (`stream`-Param) noch nicht unterstützt~~ — **umgesetzt**:
+  `POST /v1/chat` und `POST /v1/agents/{id}/chat` mit `"stream": true`
+  liefern Server-Sent-Events (OpenAI-kompatibles Chunk-Format), direkt vom
+  LiteLLM-Gateway durchgereicht. Modellvalidierung, Konversationspruefung
+  und Token-Reservierung laufen VOR dem ersten gesendeten Byte (danach ist
+  der HTTP-Statuscode fest auf 200). Bittet das Gateway per
+  `stream_options.include_usage` um echte Nutzungsdaten im letzten Chunk;
+  fehlen sie, greift dieselbe Schaetzung wie im nicht-streamenden Pfad.
+  Reservierung wird nach Streamende (Erfolg wie Fehler) zuverlaessig
+  freigegeben. Getestet mit einem gefaelschten SSE-Gateway gegen eine echte
+  Postgres-DB: `tests/test_chat_streaming.py`.
 - ~~Enterprise-`"*"` laesst jedes Modell zu; unbekannte enden als 502 statt
   403~~ — **stimmt nicht (mehr)**: `is_registered()` in `models_catalog.py`
   prueft unabhaengig vom Tarif-Wildcard gegen die registrierte Gateway-Liste,
