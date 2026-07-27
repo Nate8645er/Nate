@@ -15,6 +15,7 @@ from .auth import Principal
 from .config import settings
 from .db import tenant_tx
 from .metrics import record_chat_usage
+from .stripe_usage import report_usage
 
 log = logging.getLogger("platform.completions")
 
@@ -236,6 +237,7 @@ async def run_chat(
     conversation_id = _persist_and_release(
         principal, conversation_id, last_user, model, answer, tokens_in, tokens_out, reserve_estimate,
     )
+    await report_usage(principal.stripe_customer_id, tokens_in + tokens_out)
 
     return {
         "conversation_id": str(conversation_id),
@@ -327,6 +329,7 @@ async def _stream_events(
     _persist_and_release(
         principal, conversation_id, last_user, model, answer, tokens_in, tokens_out, reserve_estimate,
     )
+    await report_usage(principal.stripe_customer_id, tokens_in + tokens_out)
 
 
 async def stream_chat(

@@ -40,6 +40,12 @@ class Settings:
     # composio_client.py.
     composio_api_key: str = os.environ.get("COMPOSIO_API_KEY", "")
 
+    # Stripe (nutzungsbasierte Abrechnung, Billing-Meters-API). Leer =
+    # keine Meldung an Stripe, kein Fehler. Siehe stripe_usage.py. Getrennt
+    # von STRIPE_WEBHOOK_SECRET (verifiziert eingehende Webhooks) -- dieser
+    # Key wird fuer ausgehende API-Aufrufe an Stripe gebraucht.
+    stripe_secret_key: str = os.environ.get("STRIPE_SECRET_KEY", "")
+
     # Betrieb
     request_timeout_s: float = float(os.environ.get("REQUEST_TIMEOUT_S", "120"))
     # Kommagetrennte Liste erlaubter CORS-Origins; leer = nur same-origin.

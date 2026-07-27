@@ -175,9 +175,22 @@ Aus den Reviews dokumentiert, nicht vergessen:
   Tokens bleiben "haengen", falls der Prozess mitten im Request abstuerzt
   (kein periodischer Aufraeum-Job); bei normalem Fehlerpfad (Gateway-Fehler,
   Timeout, Exception) wird immer freigegeben.
-- **Nutzungsbasierte Abrechnung**: `usage_events` ist die Datengrundlage, aber
-  der Verbrauch wird noch **nicht** an Stripe/Lago gemeldet (aktuell reine
-  Tarif-Pauschale + Limit). Meldung an ein Usage-Billing folgt.
+- ~~Nutzungsbasierte Abrechnung: usage_events ist die Datengrundlage, aber
+  der Verbrauch wird nicht an Stripe gemeldet~~ — **umgesetzt, mit echter
+  Einschraenkung**: `app/stripe_usage.py` meldet nach jedem abgeschlossenen
+  Chat-Aufruf (streamend wie nicht-streamend) den Token-Verbrauch als
+  Stripe-Meter-Event (`event_name="platform_tokens"`), sofern
+  `STRIPE_SECRET_KEY` gesetzt UND der Mandant einen verknuepften
+  `stripe_customer_id` hat (aus `link_stripe_customer`, siehe `billing.py`).
+  Ohne den Key: no-op, kein Fehler — Verbrauch bleibt wie bisher nur lokal
+  in `usage_events`/`GET /v1/usage` sichtbar. Meldung ist Best-Effort: ein
+  Stripe-Ausfall wird geloggt, laesst aber nie einen Chat-Request scheitern.
+  **Ehrliche Grenze**: in dieser Umgebung existiert kein echter Stripe-
+  Account, daher ist nur die Aufrufstruktur (Endpoint, Feldnamen, Auth)
+  gegen die oeffentliche Stripe-Dokumentation gebaut und mit einem
+  gefaelschten HTTP-Client getestet (`tests/test_stripe_usage.py`) — nicht
+  gegen die echte Stripe-API verifiziert. In Stripe muss vorher ein Billing-
+  Meter mit exakt diesem `event_name` angelegt werden.
 - ~~Token-Undercount, wenn das Gateway kein `usage`-Objekt liefert~~ —
   **behoben**: `app/completions.py` schaetzt Tokens (~4 Zeichen/Token) wenn
   `usage` fehlt, statt still 0 zu zaehlen — sonst haette ein Mandant ueber

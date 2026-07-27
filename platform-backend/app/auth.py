@@ -22,6 +22,7 @@ class Principal:
     monthly_token_limit: int
     max_agents: int
     status: str
+    stripe_customer_id: str | None = None
 
 
 def hash_key(clear: str) -> str:
@@ -51,6 +52,7 @@ async def require_principal(
         row = conn.execute(
             """
             SELECT t.id AS tenant_id, t.name AS tenant_name, t.status AS status,
+                   t.stripe_customer_id AS stripe_customer_id,
                    p.code AS plan_code, p.allowed_models, p.monthly_token_limit,
                    p.max_agents
             FROM api_keys k
@@ -77,4 +79,5 @@ async def require_principal(
         monthly_token_limit=int(row["monthly_token_limit"]),
         max_agents=int(row["max_agents"]),
         status=row["status"],
+        stripe_customer_id=row["stripe_customer_id"],
     )
