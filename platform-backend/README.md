@@ -160,8 +160,21 @@ einen Postgres-Service hoch.
 ## Status / bewusst offen (Phase 3+)
 
 Aus den Reviews dokumentiert, nicht vergessen:
-- **Harte Token-Limit-Durchsetzung** (aktuell TOCTOU zwischen Check und
-  Persistenz möglich) → LiteLLM Virtual Keys/Budgets pro Mandant.
+- ~~Harte Token-Limit-Durchsetzung (TOCTOU zwischen Check und Persistenz)~~
+  — **behoben**: `app/completions.py` reserviert das Token-Kontingent jetzt
+  ATOMAR (`_reserve_tokens`, ein einzelnes `UPDATE ... WHERE ...`) BEVOR das
+  Gateway kontaktiert wird, statt nur vorab zu pruefen. Postgres serialisiert
+  konkurrierende Reservierungen auf derselben `tenants`-Zeile automatisch —
+  zwei gleichzeitige Anfragen koennen das Limit nicht mehr gemeinsam
+  ueberschreiten. Die Reservierung wird NICHT waehrend des (langsamen)
+  Gateway-Aufrufs gehalten (eigener kurzer Commit davor/danach), um den
+  kleinen DB-Verbindungspool (`max_size=10`) nicht zu blockieren. Mit
+  echter Nebenlaeufigkeit getestet (zwei Threads, zwei DB-Verbindungen,
+  nicht nur sequenziell — der alte Bug zeigte sich nur bei echtem Race):
+  `tests/test_token_reservation.py`. Bekannte Restluecke: reservierte
+  Tokens bleiben "haengen", falls der Prozess mitten im Request abstuerzt
+  (kein periodischer Aufraeum-Job); bei normalem Fehlerpfad (Gateway-Fehler,
+  Timeout, Exception) wird immer freigegeben.
 - **Nutzungsbasierte Abrechnung**: `usage_events` ist die Datengrundlage, aber
   der Verbrauch wird noch **nicht** an Stripe/Lago gemeldet (aktuell reine
   Tarif-Pauschale + Limit). Meldung an ein Usage-Billing folgt.
