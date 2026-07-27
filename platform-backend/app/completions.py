@@ -3,6 +3,7 @@ streamend). Erzwingt das Monats-Token-Limit, leitet an das LiteLLM-Gateway
 weiter, persistiert Nachrichten + Verbrauch (mandantengebunden via RLS)."""
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 from collections.abc import AsyncIterator
@@ -155,6 +156,54 @@ def _persist_and_release(
     return conversation_id
 
 
+# README-dokumentierte Luecke: Persistenz-Fehler NACH einem erfolgreichen
+# Gateway-Aufruf verlieren den Verbrauch (Kosten beim Anbieter sind bereits
+# entstanden -- der Mandant hat das Modell wirklich benutzt, aber es wird nie
+# abgerechnet/gezaehlt). Ein voller Outbox mit Wiederaufnahme ueber
+# Prozessneustarts hinweg bleibt Phase 4 (braucht eine Queue). Diese
+# Wiederholung deckt den haeufigeren Fall ab: einen kurzen, transienten
+# DB-Fehler (Verbindungsabbruch, Pool-Erschoepfungsspitze) INNERHALB
+# derselben Anfrage.
+_PERSIST_RETRY_ATTEMPTS = 3
+_PERSIST_RETRY_BACKOFF_S = 0.3
+
+
+async def _persist_and_release_with_retry(
+    principal: Principal,
+    conversation_id,
+    last_user_message: str,
+    model: str,
+    answer: str,
+    tokens_in: int,
+    tokens_out: int,
+    reserve_estimate: int,
+):
+    last_exc: Exception | None = None
+    for attempt in range(1, _PERSIST_RETRY_ATTEMPTS + 1):
+        try:
+            return _persist_and_release(
+                principal, conversation_id, last_user_message, model,
+                answer, tokens_in, tokens_out, reserve_estimate,
+            )
+        except Exception as exc:  # noqa: BLE001 -- jeder DB-Fehler ist hier ein Grund zum erneuten Versuch
+            last_exc = exc
+            log.warning(
+                "Persistenz fehlgeschlagen (Versuch %d/%d) fuer Mandant %s: %s",
+                attempt, _PERSIST_RETRY_ATTEMPTS, principal.tenant_id, exc,
+            )
+            if attempt < _PERSIST_RETRY_ATTEMPTS:
+                await asyncio.sleep(_PERSIST_RETRY_BACKOFF_S * attempt)
+    # Alle Versuche gescheitert: die Modellantwort ist real (Kosten beim
+    # Anbieter sind entstanden), aber ohne Outbox nicht mehr rekonstruierbar.
+    # Vollstaendig geloggt, damit es wenigstens manuell nachvollziehbar bleibt.
+    log.error(
+        "Persistenz endgueltig fehlgeschlagen nach %d Versuchen -- Mandant=%s Modell=%s "
+        "tokens_in=%d tokens_out=%d Antwort (gekuerzt)=%r",
+        _PERSIST_RETRY_ATTEMPTS, principal.tenant_id, model, tokens_in, tokens_out, answer[:200],
+    )
+    raise last_exc
+
+
 def _build_payload(model: str, out_messages: list[dict], tenant_id: str,
                     temperature: float | None, stream: bool) -> dict:
     payload = {"model": model, "messages": out_messages, "user": tenant_id}
@@ -234,7 +283,7 @@ async def run_chat(
         raise
 
     last_user = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
-    conversation_id = _persist_and_release(
+    conversation_id = await _persist_and_release_with_retry(
         principal, conversation_id, last_user, model, answer, tokens_in, tokens_out, reserve_estimate,
     )
     await report_usage(principal.stripe_customer_id, tokens_in + tokens_out)
@@ -326,7 +375,7 @@ async def _stream_events(
         )
 
     last_user = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
-    _persist_and_release(
+    await _persist_and_release_with_retry(
         principal, conversation_id, last_user, model, answer, tokens_in, tokens_out, reserve_estimate,
     )
     await report_usage(principal.stripe_customer_id, tokens_in + tokens_out)

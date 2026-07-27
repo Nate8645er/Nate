@@ -230,8 +230,17 @@ Aus den Reviews dokumentiert, nicht vergessen:
   Total-Blindspot. Getestet inkl. Beweis, dass der geschaetzte Verbrauch
   wirklich gegen `GET /v1/usage` und das Monats-Limit zaehlt:
   `tests/test_completions_token_estimate.py`.
-- **Verbrauchsverlust**, falls die Persistenz nach erfolgreichem Call scheitert
-  → Retry/Outbox (Phase 3/4).
+- **Verbrauchsverlust bei Persistenz-Fehlern: teilweise behoben.**
+  `_persist_and_release_with_retry` in `app/completions.py` wiederholt die
+  Persistenz-Transaktion bis zu 3× (kurzer Backoff dazwischen), wenn sie
+  nach einem bereits erfolgreichen (kostenpflichtigen) Gateway-Aufruf
+  fehlschlägt — deckt den häufigeren Fall ab: einen kurzen transienten
+  DB-Fehler (Verbindungsabbruch, Pool-Spitze) innerhalb derselben Anfrage.
+  **Nicht behoben:** ein voller Outbox mit Wiederaufnahme über
+  Prozessneustarts hinweg bleibt Phase 4 (braucht eine Queue) — stirbt der
+  Prozess mitten in allen 3 Versuchen, ist die Antwort trotzdem weg, nur
+  vollständig geloggt statt still verschwunden. Getestet (Retry-Logik
+  isoliert, nicht die DB-Schicht selbst): `tests/test_persist_retry.py`.
 - ~~Streaming (`stream`-Param) noch nicht unterstützt~~ — **umgesetzt**:
   `POST /v1/chat` und `POST /v1/agents/{id}/chat` mit `"stream": true`
   liefern Server-Sent-Events (OpenAI-kompatibles Chunk-Format), direkt vom
