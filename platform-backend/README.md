@@ -165,8 +165,14 @@ Aus den Reviews dokumentiert, nicht vergessen:
 - **Nutzungsbasierte Abrechnung**: `usage_events` ist die Datengrundlage, aber
   der Verbrauch wird noch **nicht** an Stripe/Lago gemeldet (aktuell reine
   Tarif-Pauschale + Limit). Meldung an ein Usage-Billing folgt.
-- **Token-Undercount**, wenn das Gateway kein `usage`-Objekt liefert (z.B.
-  Ollama) → Tokenizer-Schätzung (Phase 3).
+- ~~Token-Undercount, wenn das Gateway kein `usage`-Objekt liefert~~ —
+  **behoben**: `app/completions.py` schaetzt Tokens (~4 Zeichen/Token) wenn
+  `usage` fehlt, statt still 0 zu zaehlen — sonst haette ein Mandant ueber
+  ein Modell ohne `usage`-Feld effektiv unbegrenzt und unverrechnet chatten
+  koennen. Kein echter Tokenizer (ungenau), aber verhindert den
+  Total-Blindspot. Getestet inkl. Beweis, dass der geschaetzte Verbrauch
+  wirklich gegen `GET /v1/usage` und das Monats-Limit zaehlt:
+  `tests/test_completions_token_estimate.py`.
 - **Verbrauchsverlust**, falls die Persistenz nach erfolgreichem Call scheitert
   → Retry/Outbox (Phase 3/4).
 - **Streaming** (`stream`-Param) noch nicht unterstützt (Phase 3).

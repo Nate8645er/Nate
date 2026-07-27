@@ -25,6 +25,19 @@ def _month_usage(conn, tenant_id: str) -> int:
     return int(row["used"])
 
 
+def _estimate_tokens(text: str) -> int:
+    """Grobe Schaetzung ohne echten Tokenizer, NUR als Rueckfallebene wenn
+    das Gateway kein usage-Objekt liefert (manche Ollama-Antworten je nach
+    LiteLLM-Version). ~4 Zeichen/Token ist eine verbreitete Faustregel fuer
+    lateinische Texte -- ungenau, aber weit besser als stillschweigend 0:
+    ohne jede Schaetzung zaehlt dieser Verbrauch NIE gegen das Monats-Limit,
+    ein Mandant koennte ueber ein Modell ohne usage-Objekt effektiv
+    unbegrenzt und unverrechnet chatten."""
+    if not text:
+        return 0
+    return max(1, len(text) // 4)
+
+
 async def run_chat(
     principal: Principal,
     model: str,
@@ -75,8 +88,21 @@ async def run_chat(
     data = resp.json()
     answer = data.get("choices", [{}])[0].get("message", {}).get("content", "")
     usage = data.get("usage", {}) or {}
-    tokens_in = int(usage.get("prompt_tokens", 0))
-    tokens_out = int(usage.get("completion_tokens", 0))
+    if usage:
+        tokens_in = int(usage.get("prompt_tokens", 0))
+        tokens_out = int(usage.get("completion_tokens", 0))
+    else:
+        # Kein usage-Objekt vom Gateway -- geschaetzt statt stillschweigend 0
+        # (siehe _estimate_tokens). Betrifft in der Praxis vor allem lokale
+        # Modelle, deren Antwort nicht immer ein OpenAI-kompatibles
+        # usage-Feld enthaelt.
+        prompt_text = "\n".join(m.get("content", "") for m in out_messages)
+        tokens_in = _estimate_tokens(prompt_text)
+        tokens_out = _estimate_tokens(answer)
+        log.info(
+            "Gateway ohne usage-Objekt fuer Modell %s -- Tokens geschaetzt (in=%d, out=%d)",
+            model, tokens_in, tokens_out,
+        )
 
     # 3) Persistenz (mandantengebunden).
     with tenant_tx(principal.tenant_id) as conn:
