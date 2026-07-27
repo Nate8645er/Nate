@@ -15,9 +15,13 @@ store/
     header.liquid           Logo + Navigation (Bloecke) + Warenkorb-Link
     footer.liquid           Copyright + Links zu den Rechtstexten (blendet fehlende aus)
     hero.liquid             Startseiten-Aufmacher (Ueberschrift/Unterzeile editierbar)
+    features.liquid         Funktionen-Grid (Bloecke) -- was die Plattform WIRKLICH kann
     tariffs.liquid          Tarif-Vergleich (Bloecke = Tarife)
+    faq.liquid              Haeufige Fragen (Bloecke, <details>-Akkordeon, kein JS)
+    main-product.liquid     Produktseite pro Abo-SKU (Preis kommt von Shopify, nicht hart kodiert)
   templates/
-    index.liquid            Startseite: Hero + Tarife
+    index.liquid            Startseite: Hero + Funktionen + Tarife + FAQ
+    product.liquid          Bindet main-product.liquid ein (fuer die 5 Abo-Produkte)
     page.impressum.liquid   Anbieterkennzeichnung
     page.agb.liquid         AGB: Preise, Abrechnung, Kuendigung, Haftung
     page.datenschutz.liquid Datenschutzerklaerung (revDSG, ggf. DSGVO)
@@ -84,9 +88,12 @@ shopify theme dev --path store
 
 ## Bewusst offen
 
-- Kein Produkt-/Warenkorb-Template (Abo-Produkte laufen über den
-  Checkout-Flow, kein klassisches Produktdetail-Layout nötig für 5 SKUs).
 - Kein Kundenbereich mit Onboarding-Videos — wartet auf die
   Erklärvideos aus `../creative/video/` (Produkt C).
 - Lighthouse-Performance-Check (DoD ≥ 90 mobil) — braucht einen echten
   Shopify-Store-Deploy, hier nicht durchführbar.
+- `features.liquid`/`faq.liquid` sind neue Standard-Inhalte (Runde 2) —
+  Texte im Theme-Editor anpassbar, aber die Standardwerte beschreiben nur,
+  was in `platform-backend/` tatsächlich existiert und getestet ist (13er-
+  Council, echte Composio-Integrationen, Streaming, automatisches
+  Onboarding). Ändert sich eine dieser Fähigkeiten, hier nachziehen.

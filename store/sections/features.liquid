@@ -1,0 +1,65 @@
+{%- comment -%}
+  Funktionen-Uebersicht (Produkt B, ergaenzt tariffs.liquid). Beschreibt nur,
+  was in Produkt A tatsaechlich existiert und getestet ist -- keine
+  erfundenen Zukunftsversprechen (Master-Prompt: keine erfundenen Fakten).
+  Bearbeitbar im Theme-Editor ueber Bloecke (ein Block = eine Funktion).
+{%- endcomment -%}
+
+<section class="features" style="background:#0b0d12;color:#e7ebf3;padding:64px 20px;">
+  <div style="max-width:1100px;margin:0 auto;">
+    <h2 style="font-size:32px;font-weight:700;margin:0 0 8px;text-align:center;">
+      {{ section.settings.heading | escape }}
+    </h2>
+    <p style="color:#8b93a7;text-align:center;margin:0 0 40px;max-width:640px;margin-left:auto;margin-right:auto;">
+      {{ section.settings.subheading | escape }}
+    </p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;">
+      {%- for block in section.blocks -%}
+        <div {{ block.shopify_attributes }}
+             style="background:#12151d;border:1px solid #232838;border-radius:14px;padding:24px;">
+          <div style="font-size:28px;margin-bottom:10px;">{{ block.settings.icon | escape }}</div>
+          <h3 style="margin:0 0 8px;font-size:18px;">{{ block.settings.title | escape }}</h3>
+          <p style="color:#8b93a7;margin:0;font-size:14px;line-height:1.6;">{{ block.settings.text | escape }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Funktionen",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Überschrift", "default": "Was die Plattform wirklich kann" },
+    { "type": "textarea", "id": "subheading", "label": "Unterzeile", "default": "Kein Marketing-Blabla — jede Funktion hier ist gebaut, getestet und läuft." }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Funktion",
+      "settings": [
+        { "type": "text", "id": "icon", "label": "Icon (Emoji)", "default": "⚡" },
+        { "type": "text", "id": "title", "label": "Titel", "default": "" },
+        { "type": "textarea", "id": "text", "label": "Beschreibung", "default": "" }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "Funktionen",
+      "blocks": [
+        { "type": "feature", "settings": { "icon": "🧠", "title": "13 KI-Modelle, ein Chat", "text": "Claude, GPT, Gemini, Grok, DeepSeek und weitere über ein einziges Gateway — frei wählbar je nach Tarif, kein Anbieter-Wechsel nötig." } },
+        { "type": "feature", "settings": { "icon": "💬", "title": "Antworten in Echtzeit", "text": "Streaming-Antworten (Server-Sent Events) statt Warten auf den ganzen Text — wie bei den großen Chat-Anbietern." } },
+        { "type": "feature", "settings": { "icon": "🔌", "title": "Echte Integrationen", "text": "Slack, Notion und Google per echtem Login verbinden (OAuth) — kein Copy-Paste von API-Keys zwischen Diensten." } },
+        { "type": "feature", "settings": { "icon": "🖥️", "title": "Lokale Modelle inklusive", "text": "Ollama-Modelle laufen auf eigener Infrastruktur mit — keine Cloud-Kosten für einfache Anfragen, volle Datenkontrolle." } },
+        { "type": "feature", "settings": { "icon": "🤖", "title": "Eigene Agenten", "text": "Agenten mit festem System-Prompt und Modell anlegen — für wiederkehrende Aufgaben, ohne den Prompt jedes Mal neu zu schreiben." } },
+        { "type": "feature", "settings": { "icon": "🔒", "title": "Echte Mandantentrennung", "text": "Jeder Kunde sieht ausschließlich seine eigenen Daten — durchgesetzt auf Datenbankebene (Row-Level-Security), nicht nur im UI." } },
+        { "type": "feature", "settings": { "icon": "📊", "title": "Transparenter Verbrauch", "text": "Live-Übersicht über verbrauchte Tokens pro Monat, pro Modell — keine Überraschung auf der Rechnung." } },
+        { "type": "feature", "settings": { "icon": "🇨🇭", "title": "Schweizer Preise, ehrlich", "text": "Alle Preise in CHF inklusive Mehrwertsteuer, jederzeit kündbar — keine versteckten Gebühren." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

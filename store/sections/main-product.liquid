@@ -1,0 +1,49 @@
+{%- comment -%}
+  Produktseite fuer die 5 Abo-SKUs (plan-free .. plan-enterprise). Bewusst
+  schlicht: kein Variantenwaehler-Schnickschnack noetig fuer ein Abo-Produkt
+  mit genau einer Variante. Preis kommt direkt von Shopify (product.price),
+  nicht hart kodiert -- eine Wahrheit (Master-Prompt DoD).
+{%- endcomment -%}
+
+<section style="padding:64px 20px;color:#e7ebf3;">
+  <div style="max-width:720px;margin:0 auto;">
+    <a href="/" style="color:#8b93a7;text-decoration:none;font-size:13px;">← Zurück zu allen Tarifen</a>
+
+    <h1 style="font-size:38px;font-weight:700;margin:20px 0 6px;">{{ product.title | escape }}</h1>
+    <p style="color:#6c8cff;font-size:28px;font-weight:700;margin:0 0 4px;">
+      {{ product.price | money }}
+    </p>
+    <p style="color:#8b93a7;font-size:13px;margin:0 0 28px;">inkl. MwSt · monatlich · jederzeit kündbar</p>
+
+    {%- if product.description != blank -%}
+      <div style="color:#c3c9d6;font-size:15px;line-height:1.7;margin-bottom:32px;">
+        {{ product.description }}
+      </div>
+    {%- endif -%}
+
+    {%- form 'product', product -%}
+      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+      <button type="submit"
+              {% if product.selected_or_first_available_variant.available == false %}disabled{% endif %}
+              style="width:100%;background:#3b5bdb;color:#fff;border:none;padding:16px;border-radius:10px;
+                     font-weight:700;font-size:16px;cursor:pointer;">
+        {%- if product.selected_or_first_available_variant.available -%}
+          Jetzt starten
+        {%- else -%}
+          Derzeit nicht verfügbar
+        {%- endif -%}
+      </button>
+    {%- endform -%}
+
+    <p style="color:#5c6478;font-size:12px;margin-top:14px;text-align:center;">
+      Nach dem Kauf wirst du automatisch angemeldet — kein Schlüssel zum Kopieren.
+    </p>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Produkt (Abo)",
+  "settings": []
+}
+{% endschema %}
