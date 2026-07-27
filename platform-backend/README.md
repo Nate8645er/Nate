@@ -169,9 +169,13 @@ Aus den Reviews dokumentiert, nicht vergessen:
   Ollama) → Tokenizer-Schätzung (Phase 3).
 - **Verbrauchsverlust**, falls die Persistenz nach erfolgreichem Call scheitert
   → Retry/Outbox (Phase 3/4).
-- **Enterprise-`"*"`** lässt jedes Modell zu; unbekannte enden als 502 statt 403
-  → gegen die registrierte Gateway-Liste validieren (Phase 3).
 - **Streaming** (`stream`-Param) noch nicht unterstützt (Phase 3).
+- ~~Enterprise-`"*"` laesst jedes Modell zu; unbekannte enden als 502 statt
+  403~~ — **stimmt nicht (mehr)**: `is_registered()` in `models_catalog.py`
+  prueft unabhaengig vom Tarif-Wildcard gegen die registrierte Gateway-Liste,
+  bevor ueberhaupt an das Gateway weitergeleitet wird. Empirisch bestaetigt
+  (26.07., echte Postgres-DB) und als Regressionstest festgehalten:
+  `tests/test_model_validation_integration.py`.
 - Modellwechsel-UI + Agenten-Ebene (Phase 3); Store-Webhook `orders/paid` →
   `/admin/provision` (Phase 5).
 - **`/v1/integrations`** hat jetzt einen echten OAuth-Weg über Composio
