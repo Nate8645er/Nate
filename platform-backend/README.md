@@ -75,7 +75,7 @@ curl -s localhost:8080/v1/usage -H "Authorization: Bearer pk_..."
 | GET  | `/health` | Liveness + DB-Check | — |
 | GET  | `/metrics` | Prometheus-Metriken (Requests, Latenz, Chat-Verbrauch) | — |
 | POST | `/admin/provision` | Mandant + API-Key anlegen | `X-Admin-Token` |
-| POST | `/v1/chat` | Chat via Gateway, mit Tarif-/Limit-Prüfung | Bearer API-Key |
+| POST | `/v1/chat` | Chat via Gateway, mit Tarif-/Limit-Prüfung (optional `enable_web_tool`, s.u.) | Bearer API-Key |
 | GET  | `/v1/models` | Im Tarif freigeschaltete Modelle (fürs UI-Dropdown) | Bearer API-Key |
 | GET  | `/v1/usage` | Monatsverbrauch des Mandanten | Bearer API-Key |
 | GET  | `/v1/conversations` | Liste der Unterhaltungen | Bearer API-Key |
@@ -278,6 +278,118 @@ Aus den Reviews dokumentiert, nicht vergessen:
   beim Anlegen immer `disconnected`, keine externe Anfrage, kein Fehler.
   Noch offen: verschlüsselte Token-Speicherung, falls Composio in `config`
   mehr als die Connected-Account-ID zurückgibt.
+- **`/v1/integrations`: „github“ und „shopify“ als weitere Provider** —
+  `KNOWN_PROVIDERS` in `app/routes/integrations.py` umfasst jetzt
+  `slack`/`notion`/`google`/`github`/`shopify`. Anders als „google“ (das bei
+  Composio in einzelne Produkte wie „gmail“ aufgeteilt ist) sind „github“ und
+  „shopify“ Composios eigene, öffentlich dokumentierte App-Slugs und werden
+  unverändert durchgereicht (`composio_app_slug()` gibt unbekannte Provider
+  wörtlich zurück). Wie beim „google“→„gmail“-Mapping gilt: aus Composios
+  öffentlicher Doku entnommen, in dieser Umgebung **nicht** gegen einen
+  echten Composio-Account verifiziert — vor dem ersten echten Einsatz im
+  Composio-Dashboard nachschlagen. Migration `011_integrations_more_providers.sql`
+  erweitert die DB-seitige CHECK-Constraint entsprechend. Getestet:
+  `tests/test_integrations_composio.py::test_github_and_shopify_are_accepted_and_passed_through_unchanged`.
+- **Web-Lese-Werkzeug im Chat (`web_fetch`), streng begrenzt** — die KI kann
+  im nicht-streamenden `/v1/chat`-Pfad optional den Text einer öffentlichen
+  Webseite lesen, um eine Frage besser zu beantworten (z.B. „was steht auf
+  https://…“). Implementiert in `app/web_fetch_tool.py`
+  (SSRF-Absicherung + Extraktion) und `app/completions.py::run_chat`
+  (Tool-Call-Orchestrierung).
+  - **Opt-in, nicht global**: nur wenn die Anfrage `"enable_web_tool": true`
+    setzt, wird das Tool überhaupt an das Gateway gereicht
+    (`tools=[web_fetch-Schema]`, `tool_choice: "auto"`). Ohne das Flag ist
+    das Verhalten exakt wie zuvor — kein bestehender Test/Chat-Aufruf
+    ändert sich.
+  - **Nur der nicht-streamende Pfad** (`run_chat`) bekommt das Tool. Der
+    SSE-Streaming-Pfad (`stream_chat`/`_stream_events`) ignoriert
+    `enable_web_tool` bewusst — Tool-Calls im SSE-Chunk-Format zu parsen ist
+    deutlich komplexer und ist eine bewusste, dokumentierte Einschränkung
+    dieser ersten Runde, kein Bug.
+  - **Ablauf**: antwortet das Gateway mit `tool_calls`, führt der Server
+    `web_fetch` selbst aus, hängt das Ergebnis als `role: tool`-Nachricht an
+    und ruft das Gateway ein zweites (und letztes) Mal auf, diesmal ohne
+    `tools`, um eine endgültige Antwort zu erzwingen. Harte Obergrenzen im
+    Code (nicht nur Kommentar): höchstens 3 Tool-Calls pro Anfrage
+    (`MAX_TOOL_CALLS_PER_REQUEST`), höchstens 2 Gateway-Rundgänge insgesamt
+    (`MAX_GATEWAY_ROUNDS`, strukturell erzwungen — es gibt im Code schlicht
+    keinen dritten `_post_gateway`-Aufruf).
+  - **Was es kann**: HTTP-GET auf eine vom Modell/Nutzer genannte
+    `http(s)://`-URL, Text grob aus dem HTML extrahiert, auf ~6000 Zeichen
+    gekürzt, als Tool-Ergebnis an das Modell zurückgegeben.
+  - **Was es bewusst NICHT kann** (kein Bug, kein Scope): kein Login, keine
+    Formulare, keine Cookies/Sessions, kein Klicken, keine Browser-
+    Automation, keine Aktionen mit Nebeneffekten auf fremden Seiten — nur
+    Lesen von öffentlich erreichbarem Text. Kein Einsatz im SSE-Streaming-
+    Pfad.
+  - **SSRF-Absicherung** (das Kernstück, siehe `app/web_fetch_tool.py`):
+    nur `http`/`https` erlaubt; Hostname wird per DNS aufgelöst und JEDE
+    aufgelöste Adresse gegen `ipaddress` geprüft (`is_private`,
+    `is_loopback`, `is_link_local`, `is_multicast`, `is_reserved`,
+    `is_unspecified`) — blockt u.a. `127.0.0.1` (auch als IPv4-mapped-IPv6
+    `::ffff:127.0.0.1`, Dezimal `2130706433`, Hex `0x7f000001` oder verkürzt
+    `127.1`), den Cloud-Metadata-Endpunkt `169.254.169.254` (auch via
+    Userinfo-Verwirrung `user@169.254.169.254`), `10.x`/`172.16-31.x`/
+    `192.168.x`, `::1`; Redirects werden manuell verfolgt
+    (`follow_redirects=False`, max. 3 Hops) und bei JEDEM Hop erneut geprüft,
+    damit ein Redirect die Sperre nicht umgehen kann; Timeout 8s;
+    Antwortgröße per gestreamtem Read auf 2 MB begrenzt; jeder Fehler
+    (Sicherheits-Ablehnung, DNS-Fehler, Timeout, HTTP-Fehler) liefert ein
+    klares Fehler-Tool-Ergebnis statt die Chat-Anfrage abstürzen zu lassen.
+    - **DNS-Aufloesung non-blocking** (Sicherheitsreview, Finding 1,
+      behoben): `check_url_is_safe`/`_ensure_public_host` sind `async def`;
+      der `socket.getaddrinfo`-Call läuft per
+      `loop.run_in_executor(None, socket.getaddrinfo, ...)` in einem Thread
+      und ist mit `asyncio.wait_for(timeout=3.0)` begrenzt. Vorher blockierte
+      ein absichtlich nicht antwortender Nameserver den GESAMTEN
+      Event-Loop des Worker-Prozesses (alle Mandanten, nicht nur den
+      auslösenden) für die volle Resolver-Timeout-Dauer. Dokumentiertes
+      Restrisiko: der ausgelagerte Thread selbst lässt sich nicht hart
+      abbrechen und läuft im Hintergrund bis der Resolver aufgibt — bei
+      sehr vielen gleichzeitigen, absichtlich hängenden Lookups kann das
+      den Default-Executor-Threadpool auf Dauer belegen; das eigentliche
+      HOCH-Risiko (Event-Loop-Blockade, alle Mandanten betroffen) ist damit
+      aber gelöst.
+    - **DNS-Rebinding strukturell ausgeschlossen** (Sicherheitsreview,
+      Finding 2, behoben): früher löste die Prüfung den Hostnamen auf und
+      httpx danach — beim eigentlichen Request — ein ZWEITES, unabhängiges
+      Mal; ein Angreifer mit eigenem autoritativem Nameserver konnte der
+      Prüfung eine öffentliche IP zeigen und dem echten Connect
+      Sekunden später `169.254.169.254`/`127.0.0.1`. Jetzt löst
+      `check_url_is_safe` den Hostnamen GENAU EINMAL pro Hop auf und gibt
+      `(host, pinned_ip)` zurück; der tatsächliche Request verbindet sich
+      per `httpx.URL.copy_with(host=pinned_ip)` DIREKT zu dieser IP — httpx
+      bekommt dadurch keine Gelegenheit mehr für eine eigene Auflösung.
+      Damit HTTPS (SNI + Zertifikatsprüfung) und namensbasiertes virtuelles
+      Hosting trotzdem korrekt bleiben, tragen `Host`-Header und die
+      httpx/httpcore-Request-Extension `extensions={"sni_hostname": host}`
+      weiterhin den Original-Hostnamen (httpcore ≥ 0.28 reicht
+      `sni_hostname` als `server_hostname` an den TLS-Handshake durch, dort
+      wird auch die Zertifikatsprüfung dagegen validiert — praktisch
+      verifiziert gegen einen lokalen HTTPS-Server mit selbstsigniertem
+      Zertifikat: Connect per IP gelingt mit korrektem Host/SNI, dieselbe
+      Verbindung OHNE die Überschreibung schlägt nachweislich mit
+      `CERTIFICATE_VERIFY_FAILED: … IP address mismatch` fehl).
+  - Getestet gegen eine echte Postgres-DB (Orchestrierung, Tool-Call-Cap,
+    Rundgang-Cap, unverändertes Default-Verhalten):
+    `tests/test_chat_web_tool.py`. **Pflicht-Tests für die SSRF-Absicherung**
+    (isolierte Prüf-Funktion, kein echter Netzwerk-Request nötig):
+    `tests/test_web_fetch_tool.py` — deckt u.a. `http://127.0.0.1/`,
+    `http://169.254.169.254/latest/meta-data/`, `http://10.0.0.1/`,
+    `http://[::1]/`, `file:///etc/passwd` sowie die o.g. Bypass-Schreibweisen
+    ab; zusätzlich strukturelle Tests, die beweisen, dass `getaddrinfo` pro
+    Hostname nur EINMAL pro `web_fetch()`-Durchlauf aufgerufen wird und der
+    tatsächliche Connect gegen die zuerst validierte IP geht (Finding 2),
+    sowie dass eine hängende DNS-Auflösung den Event-Loop nicht blockiert
+    und nach `DNS_RESOLVE_TIMEOUT_S` klar fehlschlägt (Finding 1).
+  - **Token-Reservierung** (Sicherheitsreview, Punkt 4, behoben): mit
+    `enable_web_tool=True` reserviert `_reserve_or_429` zusätzlich zum
+    üblichen `_RESPONSE_RESERVE_TOKENS`-Puffer noch
+    `_WEB_TOOL_RESERVE_TOKENS = MAX_TOOL_CALLS_PER_REQUEST * MAX_RESULT_CHARS // 4`
+    Tokens (grobe ~4-Zeichen/Token-Schätzung), weil bis zu 3 Tool-Ergebnisse
+    (je bis zu 6000 Zeichen) zusätzlich in den zweiten Gateway-Rundgang
+    einfließen können — vorher war die Vorab-Reservierung dafür pauschal zu
+    knapp.
 - **`dashboard.html`** ist noch nicht mit `index.html` verlinkt (nur ein
   „← Chat"-Link zurück) — beide UIs bewusst als getrennte, unabhängig
   ladbare Seiten gehalten.

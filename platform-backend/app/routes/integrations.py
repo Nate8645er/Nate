@@ -27,7 +27,14 @@ log = logging.getLogger("platform.integrations")
 
 router = APIRouter()
 
-KNOWN_PROVIDERS = {"slack", "notion", "google"}
+KNOWN_PROVIDERS = {"slack", "notion", "google", "github", "shopify"}
+# "github" und "shopify" sind Composios oeffentlich dokumentierte App-Slugs
+# fuer diese Dienste und werden -- anders als "google" -- unveraendert an
+# Composio durchgereicht (composio_app_slug() gibt unbekannte Provider-Namen
+# bereits woertlich zurueck). Wie beim "google"-Slug gilt: aus Composios
+# oeffentlicher Doku entnommen, in dieser Umgebung aber UNGEPRUEFT gegen
+# einen echten Composio-Account -- vor dem ersten echten Einsatz im Composio-
+# Dashboard nachschlagen und bei Abweichung entsprechend anpassen.
 
 
 class IntegrationCreate(BaseModel):

@@ -17,8 +17,18 @@ from .config import settings
 from .db import tenant_tx
 from .metrics import record_chat_usage
 from .stripe_usage import report_usage
+from .web_fetch_tool import MAX_RESULT_CHARS, WEB_FETCH_TOOL_SCHEMA, web_fetch
 
 log = logging.getLogger("platform.completions")
+
+# Harte Obergrenzen fuer den optionalen web_fetch-Tool-Aufruf im
+# nicht-streamenden Chat-Pfad (run_chat) -- verhindert Endlosschleifen und
+# unkontrollierte Gateway-Kosten, nicht nur per Kommentar dokumentiert.
+# Nur der nicht-streamende Pfad bekommt das Tool: Tool-Calls im SSE-Format
+# zu parsen ist deutlich komplexer und bleibt eine bewusste Einschraenkung
+# dieser ersten Runde (siehe README).
+MAX_TOOL_CALLS_PER_REQUEST = 3
+MAX_GATEWAY_ROUNDS = 2
 
 
 def _month_usage(conn, tenant_id: str) -> int:
@@ -36,6 +46,14 @@ def _month_usage(conn, tenant_id: str) -> int:
 # exakten Werts (den es vorab nicht geben kann); wird nach dem Aufruf sofort
 # durch die echte (oder geschaetzte) Nutzung ersetzt.
 _RESPONSE_RESERVE_TOKENS = 4000
+
+# Zusaetzlicher Puffer, wenn enable_web_tool=True: bis zu MAX_TOOL_CALLS_PER_REQUEST
+# Tool-Ergebnisse (je bis zu MAX_RESULT_CHARS Zeichen, siehe web_fetch_tool.py)
+# fliessen als zusaetzliche `role: tool`-Nachrichten in den ZWEITEN
+# Gateway-Rundgang ein -- ohne diesen Puffer reserviert _RESPONSE_RESERVE_TOKENS
+# allein systematisch zu wenig fuer genau diesen Fall. Grobe Schaetzung analog
+# _estimate_tokens (~4 Zeichen/Token), bewusst grosszuegig statt exakt.
+_WEB_TOOL_RESERVE_TOKENS = MAX_TOOL_CALLS_PER_REQUEST * MAX_RESULT_CHARS // 4
 
 
 def _reserve_tokens(conn, tenant_id: str, estimate: int, limit: int) -> bool:
@@ -113,11 +131,19 @@ def _validate_conversation(tenant_id: str, conversation_id) -> None:
         raise HTTPException(status_code=404, detail="Konversation nicht gefunden")
 
 
-def _reserve_or_429(principal: Principal, prompt_text: str) -> int:
+def _reserve_or_429(
+    principal: Principal, prompt_text: str, enable_web_tool: bool = False
+) -> int:
     """Reserviert atomar das geschaetzte Kontingent fuer diesen Aufruf und
     gibt den reservierten Betrag zurueck (zum spaeteren Freigeben). Wirft 429,
-    wenn das Monats-Limit dadurch ueberschritten wuerde."""
+    wenn das Monats-Limit dadurch ueberschritten wuerde.
+
+    `enable_web_tool=True` haengt _WEB_TOOL_RESERVE_TOKENS an die Reservierung
+    an, weil in diesem Fall zusaetzliche Tool-Ergebnisse in den zweiten
+    Gateway-Rundgang einfliessen koennen (siehe _WEB_TOOL_RESERVE_TOKENS)."""
     reserve_estimate = _estimate_tokens(prompt_text) + _RESPONSE_RESERVE_TOKENS
+    if enable_web_tool:
+        reserve_estimate += _WEB_TOOL_RESERVE_TOKENS
     with tenant_tx(principal.tenant_id) as conn:
         reserved = _reserve_tokens(
             conn, principal.tenant_id, reserve_estimate, principal.monthly_token_limit
@@ -220,10 +246,14 @@ async def _persist_and_release_with_retry(
 
 
 def _build_payload(model: str, out_messages: list[dict], tenant_id: str,
-                    temperature: float | None, stream: bool) -> dict:
+                    temperature: float | None, stream: bool,
+                    tools: list[dict] | None = None) -> dict:
     payload = {"model": model, "messages": out_messages, "user": tenant_id}
     if temperature is not None:
         payload["temperature"] = temperature
+    if tools:
+        payload["tools"] = tools
+        payload["tool_choice"] = "auto"
     if stream:
         payload["stream"] = True
         # Bittet das Gateway, im letzten Stream-Chunk ein echtes usage-Objekt
@@ -241,6 +271,55 @@ def _gateway_headers() -> dict:
     return headers
 
 
+async def _post_gateway(payload: dict, headers: dict) -> dict:
+    """Ein einzelner nicht-streamender Gateway-Rundgang. Wirft HTTPException
+    bei Netzwerk-/Gateway-Fehlern -- gemeinsam genutzt vom ersten Aufruf und
+    (falls das Modell Tool-Calls anfordert) vom zweiten Rundgang mit den
+    Tool-Ergebnissen."""
+    try:
+        async with httpx.AsyncClient(timeout=settings.request_timeout_s) as client:
+            resp = await client.post(
+                f"{settings.litellm_base_url}/v1/chat/completions",
+                json=payload,
+                headers=headers,
+            )
+    except httpx.HTTPError as exc:
+        log.warning("Gateway nicht erreichbar: %s", exc)
+        raise HTTPException(status_code=502, detail="Upstream-Gateway nicht erreichbar")
+
+    if resp.status_code >= 400:
+        log.warning("Gateway-Fehler %s: %s", resp.status_code, resp.text[:500])
+        raise HTTPException(status_code=502, detail="Upstream-Gateway-Fehler")
+
+    return resp.json()
+
+
+async def _run_tool_calls(tool_calls: list[dict]) -> list[dict]:
+    """Fuehrt bis zu MAX_TOOL_CALLS_PER_REQUEST angeforderte `web_fetch`-
+    Tool-Calls tatsaechlich aus und baut die dazugehoerigen `role: tool`-
+    Antwortnachrichten. Unbekannte Tool-Namen oder nicht parsebare Argumente
+    fuehren zu einem Fehler-Tool-Ergebnis statt zu einem Crash -- das Modell
+    bekommt so trotzdem eine Antwort, auf die es reagieren kann."""
+    tool_messages: list[dict] = []
+    for call in tool_calls[:MAX_TOOL_CALLS_PER_REQUEST]:
+        call_id = call.get("id")
+        fn = call.get("function", {}) or {}
+        name = fn.get("name")
+        if name != "web_fetch":
+            content = f"Fehler: Unbekanntes Werkzeug '{name}'."
+        else:
+            try:
+                args = json.loads(fn.get("arguments") or "{}")
+                url = args["url"]
+            except (json.JSONDecodeError, KeyError, TypeError) as exc:
+                log.info("web_fetch Tool-Call mit ungueltigen Argumenten: %s", exc)
+                content = "Fehler: Ungueltige Argumente fuer web_fetch."
+            else:
+                content = await web_fetch(url)
+        tool_messages.append({"role": "tool", "tool_call_id": call_id, "content": content})
+    return tool_messages
+
+
 async def run_chat(
     principal: Principal,
     model: str,
@@ -248,44 +327,60 @@ async def run_chat(
     conversation_id=None,
     system_prompt: str | None = None,
     temperature: float | None = None,
+    enable_web_tool: bool = False,
 ) -> dict:
     """Fuehrt eine NICHT-streamende Chat-Vervollstaendigung aus. `messages`
     sind bereits validierte Dicts ({role, content}). Modell-Validierung
-    (registriert + Tarif) macht der Aufrufer."""
+    (registriert + Tarif) macht der Aufrufer.
+
+    `enable_web_tool=True` haengt das `web_fetch`-Tool an (opt-in, siehe
+    ChatRequest.enable_web_tool) -- Standardverhalten ohne das Flag ist exakt
+    unveraendert. Fordert das Modell Tool-Calls an, werden sie serverseitig
+    ausgefuehrt (SSRF-abgesichert, siehe web_fetch_tool.py) und das Gateway
+    genau EIN zweites Mal aufgerufen (harte Obergrenze MAX_GATEWAY_ROUNDS),
+    diesmal ohne Tools, um eine endgueltige Antwort zu erzwingen."""
     _validate_conversation(principal.tenant_id, conversation_id)
 
     out_messages = messages
     if system_prompt:
         out_messages = [{"role": "system", "content": system_prompt}, *messages]
     prompt_text = "\n".join(m.get("content", "") for m in out_messages)
-    reserve_estimate = _reserve_or_429(principal, prompt_text)
+    reserve_estimate = _reserve_or_429(principal, prompt_text, enable_web_tool)
 
-    payload = _build_payload(model, out_messages, principal.tenant_id, temperature, stream=False)
+    tools = [WEB_FETCH_TOOL_SCHEMA] if enable_web_tool else None
     headers = _gateway_headers()
 
     try:
-        try:
-            async with httpx.AsyncClient(timeout=settings.request_timeout_s) as client:
-                resp = await client.post(
-                    f"{settings.litellm_base_url}/v1/chat/completions",
-                    json=payload,
-                    headers=headers,
-                )
-        except httpx.HTTPError as exc:
-            log.warning("Gateway nicht erreichbar: %s", exc)
-            raise HTTPException(status_code=502, detail="Upstream-Gateway nicht erreichbar")
-
-        if resp.status_code >= 400:
-            log.warning("Gateway-Fehler %s: %s", resp.status_code, resp.text[:500])
-            raise HTTPException(status_code=502, detail="Upstream-Gateway-Fehler")
-
-        data = resp.json()
-        answer = data.get("choices", [{}])[0].get("message", {}).get("content", "")
+        payload = _build_payload(
+            model, out_messages, principal.tenant_id, temperature, stream=False, tools=tools,
+        )
+        data = await _post_gateway(payload, headers)
+        message = data.get("choices", [{}])[0].get("message", {}) or {}
         usage = data.get("usage", {}) or {}
-        if usage:
-            tokens_in = int(usage.get("prompt_tokens", 0))
-            tokens_out = int(usage.get("completion_tokens", 0))
-        else:
+        tokens_in = int(usage.get("prompt_tokens", 0)) if usage else 0
+        tokens_out = int(usage.get("completion_tokens", 0)) if usage else 0
+        usage_seen = bool(usage)
+
+        tool_calls = message.get("tool_calls") if enable_web_tool else None
+        if tool_calls:
+            tool_messages = await _run_tool_calls(tool_calls)
+            # Zweiter (und letzter -- MAX_GATEWAY_ROUNDS=2) Rundgang: ohne
+            # `tools`, damit das Modell eine endgueltige Antwort liefert statt
+            # weitere Tool-Calls anzufordern, fuer die kein Budget mehr besteht.
+            out_messages = [*out_messages, message, *tool_messages]
+            payload2 = _build_payload(
+                model, out_messages, principal.tenant_id, temperature, stream=False,
+            )
+            data = await _post_gateway(payload2, headers)
+            message = data.get("choices", [{}])[0].get("message", {}) or {}
+            usage2 = data.get("usage", {}) or {}
+            if usage2:
+                usage_seen = True
+                tokens_in += int(usage2.get("prompt_tokens", 0))
+                tokens_out += int(usage2.get("completion_tokens", 0))
+
+        answer = message.get("content") or ""
+        if not usage_seen:
             tokens_in = _estimate_tokens(prompt_text)
             tokens_out = _estimate_tokens(answer)
             log.info(

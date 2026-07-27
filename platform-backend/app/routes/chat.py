@@ -33,6 +33,13 @@ class ChatRequest(BaseModel):
     conversation_id: uuid.UUID | None = None
     temperature: float | None = Field(default=None, ge=0.0, le=2.0)
     stream: bool = False
+    enable_web_tool: bool = Field(
+        default=False,
+        description="Opt-in: haengt das serverseitige web_fetch-Tool an (nur "
+        "oeffentliche Seiten lesen, kein Login/Formulare/Aktionen). Nur "
+        "wirksam wenn stream=False -- der SSE-Streaming-Pfad bekommt das "
+        "Tool in dieser Runde nicht, das Feld wird dort ignoriert.",
+    )
 
 
 def ensure_model_available(model: str, principal: Principal) -> None:
@@ -65,4 +72,5 @@ async def chat(req: ChatRequest, principal: Principal = Depends(require_principa
         messages=[m.model_dump() for m in req.messages],
         conversation_id=req.conversation_id,
         temperature=req.temperature,
+        enable_web_tool=req.enable_web_tool,
     )

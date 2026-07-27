@@ -107,6 +107,27 @@ def test_google_provider_maps_to_gmail_app_slug(client, prov, monkeypatch):
     assert _RecordingToolset.calls == ["gmail"]
 
 
+def test_github_and_shopify_are_accepted_and_passed_through_unchanged(client, prov, monkeypatch):
+    """provider='github'/'shopify' muessen als gueltig akzeptiert werden und
+    -- anders als 'google' -- unveraendert (woertlich) als Composio-App-Slug
+    ankommen, da composio_app_slug() unbekannte Provider unveraendert
+    zurueckgibt."""
+    _RecordingToolset.calls = []
+    monkeypatch.setattr("app.routes.integrations.build_toolset", lambda: _RecordingToolset())
+    # 'starter' erlaubt nur 1 Integration (max_integrations=1) -- fuer zwei
+    # Provider auf demselben Mandanten braucht es einen Tarif mit hoeherem
+    # Limit, nicht die Tarif-Durchsetzung selbst testen wir hier.
+    key = prov("pro")
+    h = {"Authorization": "Bearer " + key}
+
+    r = client.post("/v1/integrations", headers=h, json={"provider": "github"})
+    assert r.status_code == 201, r.text
+    r = client.post("/v1/integrations", headers=h, json={"provider": "shopify"})
+    assert r.status_code == 201, r.text
+
+    assert _RecordingToolset.calls == ["github", "shopify"]
+
+
 def test_refresh_marks_connected_when_composio_reports_active(client, prov, monkeypatch):
     monkeypatch.setattr("app.routes.integrations.build_toolset", lambda: _FakeToolsetOK())
     key = prov("starter")
