@@ -19,9 +19,11 @@ store/
     tariffs.liquid          Tarif-Vergleich (Bloecke = Tarife)
     faq.liquid              Haeufige Fragen (Bloecke, <details>-Akkordeon, kein JS)
     main-product.liquid     Produktseite pro Abo-SKU (Preis kommt von Shopify, nicht hart kodiert)
+    how-it-works.liquid     "Wie es funktioniert" -- WAS/WIE/WARUM (Bloecke: Ablaufschritte + Wert-Argumente)
   templates/
     index.liquid            Startseite: Hero + Funktionen + Tarife + FAQ
     product.liquid          Bindet main-product.liquid ein (fuer die 5 Abo-Produkte)
+    page.wie-es-funktioniert.liquid  Bindet how-it-works.liquid ein (Produkt-Erklaerseite)
     page.impressum.liquid   Anbieterkennzeichnung
     page.agb.liquid         AGB: Preise, Abrechnung, Kuendigung, Haftung
     page.datenschutz.liquid Datenschutzerklaerung (revDSG, ggf. DSGVO)
@@ -40,9 +42,11 @@ strukturelle statt Live-Validierung).
    (Rechtstexte)" — füllt `settings.legal_*`, das die vier Rechtstext-Seiten
    referenzieren. Hier bewusst **keine** Firmendaten erfunden (Master-Prompt:
    keine erfundenen Fakten); ungefüllt zeigen die Seiten `[Platzhalter]`.
-2. **Seiten anlegen**: Im Shopify-Admin unter „Onlineshop → Seiten" vier
+2. **Seiten anlegen**: Im Shopify-Admin unter „Onlineshop → Seiten" fünf
    Seiten mit **genau diesen Handles** anlegen und der passenden Vorlage
    zuweisen, damit Footer-Links und `page.<handle>.liquid` greifen:
+   `wie-es-funktioniert` → `page.wie-es-funktioniert` (Produkt-Erklaerseite,
+   keine Rechtstext-Seite — kein Eintrag unter „Firmendaten" nötig),
    `impressum` → `page.impressum`, `agb` → `page.agb`,
    `datenschutz` → `page.datenschutz`, `widerruf` → `page.widerruf`.
    Der Footer blendet einen Link automatisch aus, solange die zugehörige

@@ -5,10 +5,23 @@
     </div>
     <nav style="display:flex;gap:18px;flex-wrap:wrap;">
       {%- comment -%}
-        Setzt voraus, dass im Shopify-Admin Seiten mit genau diesen Handles
-        existieren und den Vorlagen page.impressum/agb/datenschutz/widerruf
-        zugewiesen sind (siehe store/README.md). Fehlt eine Seite (noch nicht
-        angelegt), wird der Link ausgeblendet statt kaputt zu verlinken.
+        "Wie es funktioniert" ist keine Rechtstext-Seite, sondern die
+        Produkt-Erklaerseite -- deshalb farblich hervorgehoben (--text statt
+        --muted) und vor den Rechtstexten. Gleiche Absicherung wie bei diesen:
+        Seite (Handle "wie-es-funktioniert") muss im Shopify-Admin angelegt
+        und der Vorlage page.wie-es-funktioniert zugewiesen sein (siehe
+        store/README.md), sonst wird der Link ausgeblendet statt kaputt zu
+        verlinken.
+      {%- endcomment -%}
+      {%- if pages['wie-es-funktioniert'] -%}
+        <a href="{{ pages['wie-es-funktioniert'].url }}" style="color:#eef0f7;text-decoration:none;font-size:13px;font-weight:600;">Wie es funktioniert</a>
+      {%- endif -%}
+      {%- comment -%}
+        Ab hier die Rechtstexte: setzt voraus, dass im Shopify-Admin Seiten
+        mit genau diesen Handles existieren und den Vorlagen
+        page.impressum/agb/datenschutz/widerruf zugewiesen sind (siehe
+        store/README.md). Fehlt eine Seite (noch nicht angelegt), wird der
+        Link ausgeblendet statt kaputt zu verlinken.
       {%- endcomment -%}
       {%- if pages['impressum'] -%}
         <a href="{{ pages['impressum'].url }}" style="color:#8b93ab;text-decoration:none;font-size:13px;">Impressum</a>

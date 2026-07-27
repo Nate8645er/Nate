@@ -1,0 +1,11 @@
+{%- comment -%}
+  "Wie es funktioniert" -- Produkt-Erklaerseite (WAS/WIE/WARUM), bindet die
+  editierbare Sektion ein. Gleiches Einbinde-Muster wie product.liquid
+  ({% section 'main-product' %}): eine Zeile, der Inhalt lebt in der Sektion.
+
+  Setzt voraus, dass im Shopify-Admin eine Seite mit Handle
+  "wie-es-funktioniert" existiert und dieser Vorlage zugewiesen ist
+  (analog zu impressum/agb/datenschutz/widerruf, siehe store/README.md).
+{%- endcomment -%}
+
+{% section 'how-it-works' %}
