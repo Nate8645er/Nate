@@ -5,15 +5,15 @@
   nicht hart kodiert -- eine Wahrheit (Master-Prompt DoD).
 {%- endcomment -%}
 
-<section style="padding:64px 20px;color:#e7ebf3;">
+<section style="padding:64px 20px;color:#eef0f7;">
   <div style="max-width:720px;margin:0 auto;">
-    <a href="/" style="color:#8b93a7;text-decoration:none;font-size:13px;">← Zurück zu allen Tarifen</a>
+    <a href="/" style="color:#8b93ab;text-decoration:none;font-size:13px;">← Zurück zu allen Tarifen</a>
 
-    <h1 style="font-size:38px;font-weight:700;margin:20px 0 6px;">{{ product.title | escape }}</h1>
-    <p style="color:#6c8cff;font-size:28px;font-weight:700;margin:0 0 4px;">
+    <h1 class="brand-font" style="font-size:clamp(30px,4.5vw,42px);font-weight:700;margin:20px 0 6px;letter-spacing:-0.02em;">{{ product.title | escape }}</h1>
+    <p style="color:#7c8bfa;font-size:28px;font-weight:700;margin:0 0 4px;">
       {{ product.price | money }}
     </p>
-    <p style="color:#8b93a7;font-size:13px;margin:0 0 28px;">inkl. MwSt · monatlich · jederzeit kündbar</p>
+    <p style="color:#8b93ab;font-size:13px;margin:0 0 28px;">inkl. MwSt · monatlich · jederzeit kündbar</p>
 
     {%- if product.description != blank -%}
       <div style="color:#c3c9d6;font-size:15px;line-height:1.7;margin-bottom:32px;">
@@ -25,7 +25,7 @@
       <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
       <button type="submit"
               {% if product.selected_or_first_available_variant.available == false %}disabled{% endif %}
-              style="width:100%;background:#3b5bdb;color:#fff;border:none;padding:16px;border-radius:10px;
+              style="width:100%;background:#4c56b0;color:#fff;border:none;padding:16px;border-radius:10px;
                      font-weight:700;font-size:16px;cursor:pointer;">
         {%- if product.selected_or_first_available_variant.available -%}
           Jetzt starten

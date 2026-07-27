@@ -5,22 +5,22 @@
   Bearbeitbar im Theme-Editor ueber Bloecke (ein Block = eine Funktion).
 {%- endcomment -%}
 
-<section class="features" style="background:#0b0d12;color:#e7ebf3;padding:64px 20px;">
+<section class="features" style="background:#07080d;color:#eef0f7;padding:64px 20px;">
   <div style="max-width:1100px;margin:0 auto;">
-    <h2 style="font-size:32px;font-weight:700;margin:0 0 8px;text-align:center;">
+    <h2 class="brand-font" style="font-size:clamp(26px,3.5vw,36px);font-weight:700;margin:0 0 8px;text-align:center;letter-spacing:-0.01em;">
       {{ section.settings.heading | escape }}
     </h2>
-    <p style="color:#8b93a7;text-align:center;margin:0 0 40px;max-width:640px;margin-left:auto;margin-right:auto;">
+    <p style="color:#8b93ab;text-align:center;margin:0 0 40px;max-width:640px;margin-left:auto;margin-right:auto;">
       {{ section.settings.subheading | escape }}
     </p>
 
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;">
       {%- for block in section.blocks -%}
         <div {{ block.shopify_attributes }}
-             style="background:#12151d;border:1px solid #232838;border-radius:14px;padding:24px;">
+             style="background:#12151f;border:1px solid #242a3d;border-radius:14px;padding:24px;">
           <div style="font-size:28px;margin-bottom:10px;">{{ block.settings.icon | escape }}</div>
-          <h3 style="margin:0 0 8px;font-size:18px;">{{ block.settings.title | escape }}</h3>
-          <p style="color:#8b93a7;margin:0;font-size:14px;line-height:1.6;">{{ block.settings.text | escape }}</p>
+          <h3 class="brand-font" style="margin:0 0 8px;font-size:18px;letter-spacing:-0.005em;">{{ block.settings.title | escape }}</h3>
+          <p style="color:#8b93ab;margin:0;font-size:14px;line-height:1.6;">{{ block.settings.text | escape }}</p>
         </div>
       {%- endfor -%}
     </div>

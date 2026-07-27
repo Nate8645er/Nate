@@ -1,25 +1,38 @@
 /* Globales Grundgeruest — dunkel, ruhig, Premium-SaaS (Master-Prompt 4.2).
    Kein Glitzer, keine Countdown-Balken. Sektionen (tariffs.liquid etc.)
    bringen ihre Kernfarben bewusst inline mit, damit sie im Theme-Editor
-   unabhaengig funktionieren; hier nur das gemeinsame Grundgeruest. */
+   unabhaengig funktionieren; hier nur das gemeinsame Grundgeruest.
+
+   Dieselben Design-Tokens wie platform-backend/static/{index,dashboard}.html
+   -- ein Look ueber Produkt A (Plattform) und Produkt B (Store) hinweg,
+   nicht zwei getrennte Marken. */
 
 :root {
-  --bg: #0b0d12;
-  --panel: #12151d;
-  --border: #232838;
-  --text: #e7ebf3;
-  --muted: #8b93a7;
-  --accent: #6c8cff;
+  --bg: #07080d;
+  --panel: #12151f;
+  --panel-2: #171b28;
+  --border: #242a3d;
+  --border-soft: #1a1f2e;
+  --text: #eef0f7;
+  --muted: #8b93ab;
+  --accent: #7c8bfa;
+  --accent-2: #4c56b0;
+  --signal: #3fe3c4;
 }
 
 * { box-sizing: border-box; }
+html { color-scheme: dark; }
 
 html, body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, sans-serif;
+  background-image: radial-gradient(680px 420px at 12% -8%, rgba(124,139,250,0.09), transparent 60%);
+  background-repeat: no-repeat;
 }
+
+.brand-font { font-family: "Space Grotesk", -apple-system, sans-serif; }
 
 a { color: var(--accent); }
 
@@ -30,3 +43,7 @@ a { color: var(--accent); }
 }
 
 #main-content { min-height: 50vh; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}

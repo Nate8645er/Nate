@@ -5,23 +5,23 @@
   Bearbeitbar im Theme-Editor ueber Bloecke (ein Block = ein Tarif).
 {%- endcomment -%}
 
-<section class="tariffs" style="background:#0b0d12;color:#e7ebf3;padding:64px 20px;">
+<section class="tariffs" style="background:#07080d;color:#eef0f7;padding:64px 20px;">
   <div style="max-width:1100px;margin:0 auto;">
-    <h2 style="font-size:32px;font-weight:700;margin:0 0 8px;text-align:center;">
+    <h2 class="brand-font" style="font-size:clamp(26px,3.5vw,36px);font-weight:700;margin:0 0 8px;text-align:center;letter-spacing:-0.01em;">
       {{ section.settings.heading | escape }}
     </h2>
-    <p style="color:#8b93a7;text-align:center;margin:0 0 40px;">
+    <p style="color:#8b93ab;text-align:center;margin:0 0 40px;">
       {{ section.settings.subheading | escape }}
     </p>
 
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;">
       {%- for block in section.blocks -%}
         <div {{ block.shopify_attributes }}
-             style="background:#12151d;border:1px solid {% if block.settings.highlight %}#6c8cff{% else %}#232838{% endif %};border-radius:14px;padding:22px;display:flex;flex-direction:column;">
-          <h3 style="margin:0 0 4px;font-size:20px;">{{ block.settings.name | escape }}</h3>
-          <p style="color:#8b93a7;margin:0 0 14px;font-size:13px;">{{ block.settings.audience | escape }}</p>
-          <p style="font-size:26px;font-weight:700;color:#6c8cff;margin:0;">{{ block.settings.price | escape }}</p>
-          <p style="color:#8b93a7;font-size:12px;margin:2px 0 16px;">inkl. MwSt</p>
+             style="background:#12151f;border:1px solid {% if block.settings.highlight %}#7c8bfa{% else %}#242a3d{% endif %};border-radius:14px;padding:22px;display:flex;flex-direction:column;">
+          <h3 class="brand-font" style="margin:0 0 4px;font-size:21px;letter-spacing:-0.01em;">{{ block.settings.name | escape }}</h3>
+          <p style="color:#8b93ab;margin:0 0 14px;font-size:13px;">{{ block.settings.audience | escape }}</p>
+          <p style="font-size:26px;font-weight:700;color:#7c8bfa;margin:0;">{{ block.settings.price | escape }}</p>
+          <p style="color:#8b93ab;font-size:12px;margin:2px 0 16px;">inkl. MwSt</p>
           <ul style="list-style:none;padding:0;margin:0 0 20px;flex:1;">
             {%- assign feats = block.settings.features | newline_to_br | split: '<br />' -%}
             {%- for f in feats -%}
@@ -33,7 +33,7 @@
           </ul>
           {%- if block.settings.cta_url != blank -%}
             <a href="{{ block.settings.cta_url }}"
-               style="text-align:center;background:#3b5bdb;color:#fff;text-decoration:none;font-weight:600;padding:11px;border-radius:9px;">
+               style="text-align:center;background:#4c56b0;color:#fff;text-decoration:none;font-weight:600;padding:11px;border-radius:9px;">
               {{ block.settings.cta_label | default: 'Auswählen' | escape }}
             </a>
           {%- endif -%}

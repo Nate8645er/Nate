@@ -86,6 +86,13 @@ shopify theme dev --path store
       im Footer verlinkt — **Firmendaten vor Live-Schaltung im Theme-Editor
       eintragen (siehe oben).**
 
+## Design
+
+Dieselben Design-Tokens wie `platform-backend/static/{index,dashboard}.html`
+(siehe `assets/base.css`): tieferes Off-Black, Space-Grotesk-Ueberschriften,
+derselbe Akzentfarbverlauf. Ein Look ueber Produkt A und Produkt B hinweg,
+nicht zwei getrennte Marken-Identitaeten.
+
 ## Bewusst offen
 
 - Kein Kundenbereich mit Onboarding-Videos — wartet auf die
