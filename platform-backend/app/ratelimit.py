@@ -124,18 +124,32 @@ class RedisSlidingWindowLimiter:
             self._redis.delete(k)
 
 
-def _build_chat_limiter():
+def _build_limiter(max_calls: int, window_s: float):
     """REDIS_URL gesetzt -> Redis-backed (mehrere Prozesse/Pods sicher),
     sonst In-Process (Standard fuer lokale Entwicklung/Tests, keine
     zusaetzliche Infrastruktur noetig)."""
     if not settings.redis_url:
-        return SlidingWindowLimiter(max_calls=30, window_s=60.0)
+        return SlidingWindowLimiter(max_calls=max_calls, window_s=window_s)
     import redis as redis_lib
 
     client = redis_lib.Redis.from_url(settings.redis_url)
-    return RedisSlidingWindowLimiter(max_calls=30, window_s=60.0, redis_client=client)
+    return RedisSlidingWindowLimiter(max_calls=max_calls, window_s=window_s, redis_client=client)
 
 
 # Chat/Agenten-Ausfuehrung ist der teuerste Pfad (LLM-Aufruf) -> eigenes,
 # enges Limit. Andere Lese-Routen sind unkritisch und bleiben ungedrosselt.
-chat_limiter = _build_chat_limiter()
+chat_limiter = _build_limiter(max_calls=30, window_s=60.0)
+
+# Selbstbedienungs-Registrierung (/v1/auth/signup): schuetzt gegen
+# Massen-Registrierung (z.B. Free-Tarif-Abuse per Skript) -- pro IP, da eine
+# neue Registrierung per Definition noch keine bekannte E-Mail-Identitaet hat.
+signup_limiter = _build_limiter(max_calls=5, window_s=3600.0)
+
+# Login (/v1/auth/login): Brute-Force-Schutz in ZWEI Richtungen --
+#   - pro IP: verhindert, dass ein Angreifer viele verschiedene E-Mails von
+#     einer Quelle aus durchprobiert (Credential Stuffing).
+#   - pro E-Mail: verhindert, dass EIN Konto von vielen IPs aus (verteilter
+#     Angriff) durchprobiert wird -- ein reines IP-Limit wuerde das nicht
+#     abdecken.
+login_limiter_ip = _build_limiter(max_calls=20, window_s=300.0)
+login_limiter_email = _build_limiter(max_calls=8, window_s=300.0)

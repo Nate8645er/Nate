@@ -157,17 +157,32 @@
   <h1 class="brand-font">KI-Plattform · Dashboard</h1>
   <div class="spacer"></div>
   <a class="navlink" href="/index.html">← Chat</a>
-  <button class="ghost" id="logout" title="API-Key vergessen">⎋</button>
+  <button class="ghost" id="logout" title="Abmelden">⎋</button>
 </header>
 
 <main>
   <div class="setup" id="setup">
-    <label for="key">API-Schlüssel (aus <code>/admin/provision</code>)</label>
-    <div class="row">
-      <input id="key" type="password" placeholder="pk_…" style="flex:1;min-width:220px" />
-      <button id="connect">Verbinden</button>
+    <h2 class="brand-font" id="authTitle" style="margin:0 0 6px;font-size:18px;">Willkommen zurück</h2>
+    <p class="hint" id="authLead" style="margin:0 0 14px;">Mit E-Mail und Passwort anmelden — kein API-Schlüssel nötig.</p>
+
+    <div id="signupNameRow" style="display:none">
+      <label for="authName">Name / Firma</label>
+      <input id="authName" type="text" placeholder="Acme GmbH" autocomplete="organization"
+        style="width:100%;margin-bottom:12px" />
     </div>
-    <p class="hint">Der Schlüssel bleibt nur lokal im Browser (localStorage).</p>
+
+    <label for="authEmail">E-Mail</label>
+    <input id="authEmail" type="email" placeholder="du@firma.ch" autocomplete="email"
+      style="width:100%;margin-bottom:12px" />
+
+    <label for="authPassword">Passwort</label>
+    <input id="authPassword" type="password" placeholder="Mind. 8 Zeichen" autocomplete="current-password"
+      style="width:100%" />
+
+    <div class="row" style="margin-top:16px">
+      <button id="authSubmit">Anmelden</button>
+      <button class="ghost" id="authToggle" type="button">Noch kein Konto? Registrieren</button>
+    </div>
     <div class="err" id="setupErr"></div>
   </div>
 
@@ -179,19 +194,33 @@
 
 <script>
 const $ = (id) => document.getElementById(id);
+// Legacy: ein in einer FRUEHEREN Sitzung lokal gespeicherter roher API-Key --
+// die Oberflaeche bietet dafuer kein Eingabefeld mehr an (E-Mail+Passwort
+// ersetzt das, siehe authSubmit), ein bestehender Key soll aber weiter
+// automatisch anmelden.
 let KEY = localStorage.getItem("pk") || "";
 
-function authHeader() { return { "Authorization": "Bearer " + KEY, "Content-Type": "application/json" }; }
+// Bearer-Header nur noch fuer den Legacy-Pfad; bei einer Session-Anmeldung
+// genuegt das HttpOnly-Cookie, das dank credentials:"include" automatisch
+// mitgeschickt wird.
+function authHeader() {
+  const h = { "Content-Type": "application/json" };
+  if (KEY) h["Authorization"] = "Bearer " + KEY;
+  return h;
+}
 
 async function apiGet(path) {
-  const r = await fetch(path, { headers: authHeader() });
+  const r = await fetch(path, { headers: authHeader(), credentials: "include" });
   const data = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(data.detail || ("HTTP " + r.status));
   return data;
 }
 
 async function apiSend(path, method, body) {
-  const r = await fetch(path, { method, headers: authHeader(), body: body ? JSON.stringify(body) : undefined });
+  const r = await fetch(path, {
+    method, headers: authHeader(), credentials: "include",
+    body: body ? JSON.stringify(body) : undefined,
+  });
   if (r.status === 204) return null;
   const data = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(data.detail || ("HTTP " + r.status));
@@ -349,7 +378,7 @@ async function renderAgentsWidget(body, badge) {
       // gemerkte conversation_id, die der Server nicht mehr kennt (404).
       async function attempt(retry) {
         const r = await fetch(`/v1/agents/${encodeURIComponent(agent.id)}/chat`, {
-          method: "POST", headers: authHeader(),
+          method: "POST", headers: authHeader(), credentials: "include",
           body: JSON.stringify({ messages: st.history, conversation_id: st.conversationId, stream: true }),
         });
         if (!r.ok) {
@@ -869,26 +898,97 @@ function escapeHtml(s) {
 }
 
 /* ---- Auth / Bootstrap -------------------------------------------------- */
+// Gemeinsamer Einstieg nach erfolgreicher Authentifizierung (Legacy-Bearer-
+// Key ODER neue Session-Anmeldung) -- siehe static/index.html fuer dasselbe
+// Muster (dort ausfuehrlicher kommentiert).
+async function enterApp() {
+  await apiGet("/v1/models");
+  $("setup").style.display = "none";
+  $("board").style.display = "block";
+  buildGrid();
+}
+
+// Legacy-Pfad: nur noch fuer einen bereits in localStorage gespeicherten
+// rohen API-Key. Kein Eingabefeld mehr dafuer (siehe setup-Formular).
 async function connect() {
-  $("setupErr").textContent = "";
-  KEY = $("key").value.trim();
-  if (!KEY) { $("setupErr").textContent = "Bitte einen Schlüssel eingeben."; return; }
+  if (!KEY) return;
   try {
-    await apiGet("/v1/models");
-    localStorage.setItem("pk", KEY);
-    $("setup").style.display = "none";
-    $("board").style.display = "block";
-    buildGrid();
+    await enterApp();
   } catch (e) {
-    $("setupErr").textContent = "Verbindung fehlgeschlagen: " + e.message;
+    localStorage.removeItem("pk");
+    KEY = "";
   }
 }
 
-$("connect").onclick = connect;
-$("logout").onclick = () => { localStorage.removeItem("pk"); localStorage.removeItem(LAYOUT_KEY); location.reload(); };
-$("key").addEventListener("keydown", (e) => { if (e.key === "Enter") connect(); });
+// Neuer Web-Login-Pfad: E-Mail+Passwort, Umschalter Anmelden/Registrieren --
+// identisches Muster wie static/index.html.
+let authMode = "login"; // "login" | "signup"
 
-if (KEY) { $("key").value = KEY; connect(); }
+function setAuthMode(mode) {
+  authMode = mode;
+  const isSignup = mode === "signup";
+  $("signupNameRow").style.display = isSignup ? "block" : "none";
+  $("authTitle").textContent = isSignup ? "Konto erstellen" : "Willkommen zurück";
+  $("authLead").textContent = isSignup
+    ? "Kostenloser Free-Tarif, sofort startklar — keine Kreditkarte nötig."
+    : "Mit E-Mail und Passwort anmelden — kein API-Schlüssel nötig.";
+  $("authSubmit").textContent = isSignup ? "Registrieren" : "Anmelden";
+  $("authToggle").textContent = isSignup ? "Schon ein Konto? Anmelden" : "Noch kein Konto? Registrieren";
+  $("setupErr").textContent = "";
+}
+
+async function submitAuth() {
+  $("setupErr").textContent = "";
+  const email = $("authEmail").value.trim();
+  const password = $("authPassword").value;
+  if (!email || !password) {
+    $("setupErr").textContent = "Bitte E-Mail und Passwort eingeben.";
+    return;
+  }
+  $("authSubmit").disabled = true;
+  try {
+    const path = authMode === "signup" ? "/v1/auth/signup" : "/v1/auth/login";
+    const payload = authMode === "signup"
+      ? { name: $("authName").value.trim() || email.split("@")[0], email, password }
+      : { email, password };
+    const r = await fetch(path, {
+      method: "POST", credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const body = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(body.detail || ("HTTP " + r.status));
+    await enterApp();
+  } catch (e) {
+    $("setupErr").textContent = e.message;
+  } finally {
+    $("authSubmit").disabled = false;
+  }
+}
+
+async function doLogout() {
+  try {
+    await fetch("/v1/auth/logout", { method: "POST", credentials: "include" });
+  } catch { /* Cookie wird clientseitig ohnehin entfernt (s.u.) */ }
+  localStorage.removeItem("pk");
+  localStorage.removeItem(LAYOUT_KEY);
+  KEY = "";
+  location.reload();
+}
+
+$("authSubmit").onclick = submitAuth;
+$("authToggle").onclick = () => setAuthMode(authMode === "signup" ? "login" : "signup");
+$("authPassword").addEventListener("keydown", (e) => { if (e.key === "Enter") submitAuth(); });
+$("logout").onclick = doLogout;
+
+// Sitzung beim Laden wiederherstellen: zuerst ein evtl. vorhandener
+// Legacy-API-Key, sonst still per Cookie versuchen -- schlaegt beides fehl,
+// bleibt das Login/Registrieren-Formular sichtbar (Default).
+if (KEY) {
+  connect();
+} else {
+  enterApp().catch(() => { /* keine gültige Session -- Login-Formular zeigen */ });
+}
 </script>
 </body>
 </html>

@@ -275,20 +275,35 @@
       <a class="ghost" href="/dashboard.html"
          style="text-decoration:none;padding:9px 13px;border-radius:9px;border:1px solid var(--border);font-size:14px;"
          title="Zum Dashboard">Dashboard →</a>
-      <button class="ghost" id="logout" title="API-Key vergessen" style="padding:9px 12px;">⎋</button>
+      <button class="ghost" id="logout" title="Abmelden" style="padding:9px 12px;">⎋</button>
     </header>
 
     <main>
       <div class="setup-wrap" id="setupWrap">
         <div class="setup" id="setup">
-          <h2 class="brand-font">Willkommen zurück</h2>
-          <p class="lead">Mit deinem API-Schlüssel anmelden, um loszulegen.</p>
-          <label for="key">API-Schlüssel (aus <code>/admin/provision</code>)</label>
-          <div class="row">
-            <input id="key" type="password" placeholder="pk_…" style="flex:1;min-width:0" />
-            <button id="connect">Verbinden</button>
+          <h2 class="brand-font" id="authTitle">Willkommen zurück</h2>
+          <p class="lead" id="authLead">Mit E-Mail und Passwort anmelden — kein API-Schlüssel nötig.</p>
+
+          <div id="signupNameRow" style="display:none">
+            <label for="authName">Name / Firma</label>
+            <input id="authName" type="text" placeholder="Acme GmbH" autocomplete="organization"
+              style="width:100%;margin-bottom:12px" />
           </div>
-          <p class="hint">Der Schlüssel bleibt nur lokal im Browser (localStorage). Das Modell wird pro Tarif freigeschaltet.</p>
+
+          <label for="authEmail">E-Mail</label>
+          <input id="authEmail" type="email" placeholder="du@firma.ch" autocomplete="email"
+            style="width:100%;margin-bottom:12px" />
+
+          <label for="authPassword">Passwort</label>
+          <input id="authPassword" type="password" placeholder="Mind. 8 Zeichen" autocomplete="current-password"
+            style="width:100%" />
+
+          <div class="row" style="margin-top:16px">
+            <button id="authSubmit">Anmelden</button>
+            <button class="ghost" id="authToggle" type="button">Noch kein Konto? Registrieren</button>
+          </div>
+          <p class="hint">Free-Tarif ist dauerhaft kostenlos, keine Kreditkarte nötig. Dein Passwort bleibt
+            gehasht auf dem Server — nie ein Schlüssel zum Kopieren.</p>
           <div class="err" id="setupErr"></div>
         </div>
       </div>
@@ -309,18 +324,35 @@
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
+// Legacy: ein in einer FRUEHEREN Sitzung lokal gespeicherter roher API-Key.
+// Fuer NEUE Logins bietet die Oberflaeche das nicht mehr an (E-Mail+Passwort
+// ersetzt das, siehe authSubmit/enterApp) -- ein bereits vorhandener Key soll
+// aber weiter funktionieren, statt den Nutzer unnoetig auszusperren.
 let KEY = localStorage.getItem("pk") || "";
+// Bei einer Cookie-Session (kein KEY) dient die Mandanten-ID als Namensraum
+// fuer die pro-Konto gespeicherte conversation_id -- sonst wuerden sich
+// mehrere per Cookie angemeldete Konten auf demselben Browser dieselbe
+// "convId:"-Ablage teilen.
+let SESSION_TENANT_ID = localStorage.getItem("tenantId") || "";
 let convId = null;
 let activeConvId = null;
 let conversations = [];
 let history = [];
 
-function authHeader() { return { "Authorization": "Bearer " + KEY, "Content-Type": "application/json" }; }
-// Pro API-Key eine eigene gespeicherte Konversation -- verhindert, dass ein
-// Schluesselwechsel versehentlich die conversation_id eines anderen Mandanten
-// wiederverwendet (die serverseitige Pruefung wuerde das ohnehin als 404
-// ablehnen, aber so kommt es gar nicht erst dazu).
-function convKey() { return "convId:" + KEY; }
+// Bearer-Header nur noch fuer den Legacy-Pfad (alter localStorage-Key);
+// bei einer Session-Anmeldung genuegt das HttpOnly-Cookie, das der Browser
+// dank `credentials:"include"` automatisch mitschickt -- kein Header noetig
+// oder moeglich (HttpOnly ist per JS gar nicht auslesbar).
+function authHeader() {
+  const h = { "Content-Type": "application/json" };
+  if (KEY) h["Authorization"] = "Bearer " + KEY;
+  return h;
+}
+// Pro API-Key/Mandant eine eigene gespeicherte Konversation -- verhindert,
+// dass ein Konto-/Schluesselwechsel versehentlich die conversation_id eines
+// anderen Mandanten wiederverwendet (die serverseitige Pruefung wuerde das
+// ohnehin als 404 ablehnen, aber so kommt es gar nicht erst dazu).
+function convKey() { return "convId:" + (KEY || SESSION_TENANT_ID || "session"); }
 
 // --- Markdown-Rendering (sanitisiert) ---------------------------------
 // Modell-Antworten sind nicht vertrauenswuerdig (Prompt-Injection kann
@@ -376,7 +408,7 @@ function scheduleMarkdownRender(bodyEl, getRaw) {
 }
 
 async function loadModels() {
-  const r = await fetch("/v1/models", { headers: authHeader() });
+  const r = await fetch("/v1/models", { headers: authHeader(), credentials: "include" });
   if (!r.ok) throw new Error((await r.json()).detail || ("HTTP " + r.status));
   const data = await r.json();
   const sel = $("model");
@@ -391,7 +423,7 @@ async function loadModels() {
 
 async function refreshUsage() {
   try {
-    const r = await fetch("/v1/billing", { headers: authHeader() });
+    const r = await fetch("/v1/billing", { headers: authHeader(), credentials: "include" });
     if (!r.ok) return;
     const b = await r.json();
     const pct = b.usage.percent;
@@ -527,7 +559,7 @@ async function loadConversations() {
   const list = $("convList");
   list.innerHTML = '<div class="conv-skeleton"></div><div class="conv-skeleton"></div><div class="conv-skeleton"></div>';
   try {
-    const r = await fetch("/v1/conversations", { headers: authHeader() });
+    const r = await fetch("/v1/conversations", { headers: authHeader(), credentials: "include" });
     if (!r.ok) throw new Error("HTTP " + r.status);
     const data = await r.json();
     conversations = data.conversations || [];
@@ -566,7 +598,7 @@ async function openConversation(id) {
   if (id === activeConvId) { closeSidebarMobile(); return; }
   $("chatErr").textContent = "";
   try {
-    const r = await fetch("/v1/conversations/" + id, { headers: authHeader() });
+    const r = await fetch("/v1/conversations/" + id, { headers: authHeader(), credentials: "include" });
     if (!r.ok) throw new Error("HTTP " + r.status);
     const data = await r.json();
     convId = data.id;
@@ -606,33 +638,110 @@ function startNewChat() {
 function openSidebarMobile() { document.body.classList.add("sidebar-open"); $("sidebarToggle").setAttribute("aria-expanded", "true"); }
 function closeSidebarMobile() { document.body.classList.remove("sidebar-open"); $("sidebarToggle").setAttribute("aria-expanded", "false"); }
 
-async function connect() {
-  $("setupErr").textContent = "";
-  KEY = $("key").value.trim();
-  if (!KEY) { $("setupErr").textContent = "Bitte einen Schlüssel eingeben."; return; }
-  try {
-    await loadModels();
-    localStorage.setItem("pk", KEY);
-    $("setupWrap").style.display = "none";
-    $("chat").style.display = "block";
-    refreshUsage();
+// Gemeinsamer Einstieg NACH erfolgreicher Authentifizierung -- egal ob per
+// Legacy-Bearer-Key (connect()) oder per neuer Session-Anmeldung
+// (submitAuth()). loadModels() wirft (401/403), wenn die Anmeldung in
+// Wirklichkeit doch nicht (mehr) gilt -- dann bleibt das Setup-Formular
+// unveraendert sichtbar, statt eine leere Chat-Ansicht zu zeigen.
+async function enterApp() {
+  await loadModels();
+  $("setupWrap").style.display = "none";
+  $("chat").style.display = "block";
+  refreshUsage();
 
-    convId = localStorage.getItem(convKey());
-    await loadConversations();
-    // Falls eine fruehere Sitzung noch eine convId gespeichert hatte: nur
-    // wiederherstellen, wenn sie auch wirklich noch existiert (sonst 404
-    // beim ersten Senden) -- die gerade geladene Liste reicht dafuer aus,
-    // kein Extra-Request noetig.
-    if (convId && conversations.some((c) => c.id === convId)) {
-      await openConversation(convId);
-    } else {
-      convId = null;
-      localStorage.removeItem(convKey());
-      renderEmptyState();
-    }
-  } catch (e) {
-    $("setupErr").textContent = "Verbindung fehlgeschlagen: " + e.message;
+  convId = localStorage.getItem(convKey());
+  await loadConversations();
+  // Falls eine fruehere Sitzung noch eine convId gespeichert hatte: nur
+  // wiederherstellen, wenn sie auch wirklich noch existiert (sonst 404
+  // beim ersten Senden) -- die gerade geladene Liste reicht dafuer aus,
+  // kein Extra-Request noetig.
+  if (convId && conversations.some((c) => c.id === convId)) {
+    await openConversation(convId);
+  } else {
+    convId = null;
+    localStorage.removeItem(convKey());
+    renderEmptyState();
   }
+}
+
+// Legacy-Pfad: nur noch fuer einen bereits in localStorage gespeicherten
+// rohen API-Key (aus einer FRUEHEREN Sitzung) -- die Oberflaeche bietet
+// dafuer kein Eingabefeld mehr an (siehe setup-Formular), aber ein
+// bestehender Key soll beim naechsten Laden weiter automatisch anmelden.
+async function connect() {
+  if (!KEY) return;
+  $("setupErr").textContent = "";
+  try {
+    await enterApp();
+  } catch (e) {
+    // Alter Key nicht mehr gueltig -- verwerfen und normales Login-Formular
+    // zeigen, statt den Nutzer mit einer stillen Endlosschleife auszusperren.
+    localStorage.removeItem("pk");
+    KEY = "";
+    $("setupErr").textContent = "";
+  }
+}
+
+// Neuer Web-Login-Pfad: E-Mail+Passwort, Umschalter Anmelden/Registrieren.
+// Setzt bei Erfolg ein HttpOnly-Session-Cookie (siehe app/routes/auth.py) --
+// der Roh-API-Key wird fuer diesen Pfad nie an den Client ausgeliefert.
+let authMode = "login"; // "login" | "signup"
+
+function setAuthMode(mode) {
+  authMode = mode;
+  const isSignup = mode === "signup";
+  $("signupNameRow").style.display = isSignup ? "block" : "none";
+  $("authTitle").textContent = isSignup ? "Konto erstellen" : "Willkommen zurück";
+  $("authLead").textContent = isSignup
+    ? "Kostenloser Free-Tarif, sofort startklar — keine Kreditkarte nötig."
+    : "Mit E-Mail und Passwort anmelden — kein API-Schlüssel nötig.";
+  $("authSubmit").textContent = isSignup ? "Registrieren" : "Anmelden";
+  $("authToggle").textContent = isSignup ? "Schon ein Konto? Anmelden" : "Noch kein Konto? Registrieren";
+  $("setupErr").textContent = "";
+}
+
+async function submitAuth() {
+  $("setupErr").textContent = "";
+  const email = $("authEmail").value.trim();
+  const password = $("authPassword").value;
+  if (!email || !password) {
+    $("setupErr").textContent = "Bitte E-Mail und Passwort eingeben.";
+    return;
+  }
+  $("authSubmit").disabled = true;
+  try {
+    const path = authMode === "signup" ? "/v1/auth/signup" : "/v1/auth/login";
+    const payload = authMode === "signup"
+      ? { name: $("authName").value.trim() || email.split("@")[0], email, password }
+      : { email, password };
+    const r = await fetch(path, {
+      method: "POST", credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const body = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(body.detail || ("HTTP " + r.status));
+    if (body.tenant_id) {
+      SESSION_TENANT_ID = body.tenant_id;
+      localStorage.setItem("tenantId", SESSION_TENANT_ID);
+    }
+    await enterApp();
+  } catch (e) {
+    $("setupErr").textContent = e.message;
+  } finally {
+    $("authSubmit").disabled = false;
+  }
+}
+
+async function doLogout() {
+  try {
+    await fetch("/v1/auth/logout", { method: "POST", credentials: "include" });
+  } catch { /* Cookie wird clientseitig ohnehin entfernt (s.u.) */ }
+  localStorage.removeItem("pk");
+  localStorage.removeItem("tenantId");
+  KEY = "";
+  SESSION_TENANT_ID = "";
+  location.reload();
 }
 
 // Liest den SSE-Stream von /v1/chat (stream:true) und schreibt Text live in
@@ -661,7 +770,7 @@ async function send() {
   // stehen zu lassen, wird einmalig ohne conversation_id neu versucht.
   async function attempt(retry) {
     const r = await fetch("/v1/chat", {
-      method: "POST", headers: authHeader(),
+      method: "POST", headers: authHeader(), credentials: "include",
       body: JSON.stringify({ model, messages: history, conversation_id: convId, stream: true }),
     });
     if (!r.ok) {
@@ -747,9 +856,11 @@ function autoGrow(el) {
   el.style.height = Math.min(el.scrollHeight, 200) + "px";
 }
 
-$("connect").onclick = connect;
+$("authSubmit").onclick = submitAuth;
+$("authToggle").onclick = () => setAuthMode(authMode === "signup" ? "login" : "signup");
+$("authPassword").addEventListener("keydown", (e) => { if (e.key === "Enter") submitAuth(); });
 $("send").onclick = send;
-$("logout").onclick = () => { localStorage.removeItem("pk"); location.reload(); };
+$("logout").onclick = doLogout;
 $("newChat").onclick = startNewChat;
 $("newChatSide").onclick = startNewChat;
 $("sidebarToggle").onclick = () => {
@@ -764,8 +875,15 @@ $("input").addEventListener("keydown", (e) => {
 });
 $("input").addEventListener("input", () => autoGrow($("input")));
 
-// Auto-Connect, wenn ein Schlüssel gespeichert ist.
-if (KEY) { $("key").value = KEY; connect(); }
+// Sitzung beim Laden wiederherstellen: zuerst ein evtl. noch vorhandener
+// Legacy-API-Key (frühere Sitzung), sonst still per Cookie versuchen (falls
+// eine Session besteht) -- schlägt beides fehl, bleibt einfach das neue
+// Login/Registrieren-Formular sichtbar (Default-Zustand des Markups).
+if (KEY) {
+  connect();
+} else {
+  enterApp().catch(() => { /* keine gültige Session -- Login-Formular zeigen */ });
+}
 </script>
 </body>
 </html>

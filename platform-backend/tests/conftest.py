@@ -47,7 +47,14 @@ def client():
 
     from app.main import app
 
-    with TestClient(app) as c:
+    # base_url="https://..." statt des Standards "http://testserver": die
+    # Session-Cookies aus app/routes/auth.py setzen bewusst das Secure-Flag
+    # (siehe dortiger Kommentar). httpx' Cookie-Jar haengt Secure-Cookies NUR
+    # an Requests mit https-Schema an -- mit dem http-Standard wuerde jeder
+    # Test, der nach dem Login eine authentifizierte Folgeanfrage erwartet,
+    # das Cookie stillschweigend verlieren (kein echter TLS-Handshake noetig,
+    # es ist nur die Schema-Pruefung der Cookie-Jar-Logik).
+    with TestClient(app, base_url="https://testserver") as c:
         yield c
     close_pool()
 

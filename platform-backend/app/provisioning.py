@@ -21,17 +21,26 @@ def _provision_in(conn, tenant_name: str, owner_email: str, plan_code: str) -> d
     ).fetchone()["id"]
 
     # users/api_keys sind RLS-geschuetzt; Mandantenkontext setzen, damit die
-    # INSERTs die WITH CHECK-Policy erfuellen.
+    # INSERTs die WITH CHECK-Policy erfuellen. is_local=true gilt fuer den
+    # Rest DIESER Transaktion -- ruft ein Aufrufer (z.B. der Web-Signup in
+    # app/routes/auth.py) mit einer eigenen offenen `conn` auf, bleibt der
+    # Kontext auch fuer dessen NACHFOLGENDE Statements (z.B. password_hash
+    # setzen) in derselben Transaktion gesetzt.
     conn.execute("SELECT set_config('app.current_tenant', %s, true)", (str(tenant_id),))
-    conn.execute(
-        "INSERT INTO users (tenant_id, email, role) VALUES (%s, %s, 'owner')",
+    user_id = conn.execute(
+        "INSERT INTO users (tenant_id, email, role) VALUES (%s, %s, 'owner') RETURNING id",
         (tenant_id, owner_email),
-    )
+    ).fetchone()["id"]
     conn.execute(
         "INSERT INTO api_keys (tenant_id, key_hash, label) VALUES (%s, %s, 'initial')",
         (tenant_id, key_hash),
     )
-    return {"tenant_id": str(tenant_id), "plan": plan_code, "api_key": clear_key}
+    return {
+        "tenant_id": str(tenant_id),
+        "user_id": str(user_id),
+        "plan": plan_code,
+        "api_key": clear_key,
+    }
 
 
 def provision_tenant(

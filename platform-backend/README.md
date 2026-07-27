@@ -7,8 +7,9 @@ Datenbankebene (Row Level Security), Tarif-Durchsetzung und Verbrauchsmessung.
 ## Architektur (kurz)
 
 ```
-Client ──Bearer API-Key──▶ FastAPI (dieses Backend)
-                              │  Auth: api_keys → Mandant + Tarif
+Browser ──E-Mail+Passwort──▶ POST /v1/auth/login/signup ──▶ HttpOnly-Session-Cookie
+Client  ──Bearer API-Key────▶ FastAPI (dieses Backend)
+                              │  Auth: api_keys ODER sessions → Mandant + Tarif
                               │  RLS:  SET LOCAL app.current_tenant
                               ▼
                           Postgres (RLS erzwingt Mandantentrennung)
@@ -29,6 +30,11 @@ Client ──Bearer API-Key──▶ FastAPI (dieses Backend)
 - **`api_keys`** ist bewusst nicht RLS-gebunden: der Login-Lookup erfolgt über
   den global-eindeutigen, geheimen `key_hash`; ohne diese Ausnahme entstünde
   ein Henne-Ei-Problem (der Mandant wird erst durch den Lookup bestimmt).
+  **`sessions`** (Web-Login, s.u.) folgt demselben Muster über den Hash des
+  Session-Cookie-Tokens. **`user_directory`** (E-Mail → Mandant/Nutzer) ist
+  ebenfalls nicht RLS-gebunden, speichert aber bewusst KEIN Geheimnis — der
+  eigentliche `password_hash` bleibt in `users`, weiterhin voll RLS-gebunden
+  (siehe Abschnitt "Web-Login" und Migration `012_password_auth.sql`).
 - **Tarife**: `migrations/002_seed_plans.sql` (Free … Enterprise, Master-Prompt
   3.3). Modelle sind pro Tarif freigeschaltet, nicht pro Nutzer hart kodiert.
 - **Gateway**: LiteLLM (`litellm/config.yaml`) — ein Zugang für alle Anbieter
@@ -75,23 +81,116 @@ curl -s localhost:8080/v1/usage -H "Authorization: Bearer pk_..."
 | GET  | `/health` | Liveness + DB-Check | — |
 | GET  | `/metrics` | Prometheus-Metriken (Requests, Latenz, Chat-Verbrauch) | — |
 | POST | `/admin/provision` | Mandant + API-Key anlegen | `X-Admin-Token` |
-| POST | `/v1/chat` | Chat via Gateway, mit Tarif-/Limit-Prüfung (optional `enable_web_tool`, s.u.) | Bearer API-Key |
-| GET  | `/v1/models` | Im Tarif freigeschaltete Modelle (fürs UI-Dropdown) | Bearer API-Key |
-| GET  | `/v1/usage` | Monatsverbrauch des Mandanten | Bearer API-Key |
-| GET  | `/v1/conversations` | Liste der Unterhaltungen | Bearer API-Key |
-| GET  | `/v1/conversations/{id}` | Eine Unterhaltung mit Nachrichten | Bearer API-Key |
-| GET/POST | `/v1/agents…` | Agenten verwalten + ausführen (Tarif-Limit) | Bearer API-Key |
-| GET  | `/v1/billing` | Tarif, Abo-Zustand, Verbrauch, Historie | Bearer API-Key |
-| GET/POST/DELETE | `/v1/integrations…` | Integrationen-Gerüst (Tarif-Limit) — s.u. | Bearer API-Key |
+| POST | `/v1/auth/signup` | Selbstbedienung: Free-Tarif-Mandant + Passwort anlegen, meldet direkt an | — (rate-limited) |
+| POST | `/v1/auth/login` | E-Mail+Passwort prüfen, Session-Cookie setzen | — (rate-limited) |
+| POST | `/v1/auth/logout` | Session serverseitig löschen + Cookie entfernen | Bearer API-Key **oder** Session-Cookie |
+| POST | `/v1/chat` | Chat via Gateway, mit Tarif-/Limit-Prüfung (optional `enable_web_tool`, s.u.) | Bearer API-Key **oder** Session-Cookie |
+| GET  | `/v1/models` | Im Tarif freigeschaltete Modelle (fürs UI-Dropdown) | Bearer API-Key **oder** Session-Cookie |
+| GET  | `/v1/usage` | Monatsverbrauch des Mandanten | Bearer API-Key **oder** Session-Cookie |
+| GET  | `/v1/conversations` | Liste der Unterhaltungen | Bearer API-Key **oder** Session-Cookie |
+| GET  | `/v1/conversations/{id}` | Eine Unterhaltung mit Nachrichten | Bearer API-Key **oder** Session-Cookie |
+| GET/POST | `/v1/agents…` | Agenten verwalten + ausführen (Tarif-Limit) | Bearer API-Key **oder** Session-Cookie |
+| GET  | `/v1/billing` | Tarif, Abo-Zustand, Verbrauch, Historie | Bearer API-Key **oder** Session-Cookie |
+| GET/POST/DELETE | `/v1/integrations…` | Integrationen-Gerüst (Tarif-Limit) — s.u. | Bearer API-Key **oder** Session-Cookie |
 | POST | `/webhooks/shopify/orders-paid` | Kauf → Mandant freischalten | HMAC (Shopify) |
 | POST | `/webhooks/stripe` | Abo-Ereignisse (Kauf/Wechsel/Zahlung/Kündigung) | HMAC (Stripe) |
-| GET  | `/dashboard.html` | Widget-Dashboard (Agenten/Verbrauch/Historie, Drag-and-Drop) | — (Key im Browser) |
+| GET  | `/dashboard.html` | Widget-Dashboard (Agenten/Verbrauch/Historie, Drag-and-Drop) | — (E-Mail+Passwort im Browser) |
 | GET  | `/v1/checkout/{session_id}/claim` | Liefert den frisch erzeugten API-Key EINMAL (Onboarding, s.u.) | — (Session-ID als Abholschein) |
 | GET  | `/checkout-success.html` | Erfolgsseite nach Stripe-Checkout — loggt automatisch ein | — |
 
-## Onboarding ohne manuellen API-Key-Klick
+## Web-Login: E-Mail+Passwort statt rohem API-Key
 
-Bis eben musste ein zahlender Kunde nach dem Stripe-Kauf seinen eigenen
+Bis eben musste sich jeder Kunde im Chat-UI (`static/index.html`) einen
+rohen `pk_...`-API-Schlüssel einfügen — ganz anders als bei
+ChatGPT/Claude/Kimi (E-Mail+Passwort, nie ein Schlüssel zu Gesicht). Dazu
+kam eine echte Lücke: es gab **überhaupt keinen** Weg, sich selbst für den
+Free-Tarif anzumelden — nur `/admin/provision` (admin-token-geschützt) und
+die Stripe/Shopify-Webhooks konnten einen Mandanten anlegen. Das widersprach
+der Store-FAQ (`store/sections/faq.liquid`: "Free-Tarif dauerhaft kostenlos,
+keine Kreditkarte nötig"). Beides behoben:
+
+- **`POST /v1/auth/signup`** `{name, email, password}` — legt einen
+  **eigenen** Free-Tarif-Mandanten an (`provision_tenant(plan_code="free")`),
+  setzt das Passwort (bcrypt) und meldet direkt per Session-Cookie an. Der
+  rohe API-Key wird für diesen Pfad **nie** an den Client ausgeliefert.
+  Rate-limited pro IP (`app/ratelimit.py::signup_limiter`, 5/Std.) gegen
+  Massen-Registrierung.
+- **`POST /v1/auth/login`** `{email, password}` — sucht den Nutzer per
+  E-Mail (siehe Architektur unten), prüft mit `bcrypt.checkpw` (timing-sicher
+  von Haus aus + zusätzlicher Dummy-Hash-Vergleich bei unbekannter E-Mail,
+  siehe `app/auth.py::DUMMY_PASSWORD_HASH`), setzt bei Erfolg ein neues
+  Session-Cookie. Bei Fehlschlag **immer** dieselbe generische Meldung
+  ("E-Mail oder Passwort falsch") — ob die E-Mail existiert, ist von außen
+  nicht unterscheidbar. Rate-limited in **zwei** Richtungen
+  (`login_limiter_ip`, `login_limiter_email`, je 300s-Fenster): schützt
+  sowohl gegen Credential Stuffing (viele E-Mails von einer IP) als auch
+  gegen verteilten Brute-Force gegen EIN Konto (viele IPs, eine E-Mail).
+- **`POST /v1/auth/logout`** — löscht die Session serverseitig und das
+  Cookie.
+- **Cookie**: `HttpOnly` (kein JS-Zugriff, kein XSS-Diebstahl), `Secure`
+  (nur über HTTPS), `SameSite=Lax`. Das ist eine **bewusste,
+  dokumentierte CSRF-Haltung** für diese Runde — schützt gegen die
+  meisten Cross-Site-Fälle (kein Cookie bei einfachen Cross-Site-Requests
+  wie `<img>`/`<form>`), aber **kein** zusätzliches CSRF-Token. Reicht für
+  eine Same-Origin-App ohne Cross-Site-Formulare.
+
+**Architektur des E-Mail-Lookups** (Henne-Ei-Problem wie bei `api_keys`: der
+Mandant ist beim Login noch unbekannt, RLS kann für diesen einen Schritt
+nicht greifen): `user_directory` (Migration `012_password_auth.sql`) bildet
+GLOBAL eindeutig E-Mail → (`tenant_id`, `user_id`) ab, speichert aber
+**bewusst kein Geheimnis** — anders als `api_keys` wäre das bei einer
+E-Mail-Adresse (niedrige Entropie, oft bekannt) auch nicht vertretbar. Der
+eigentliche `password_hash` bleibt in `users`, weiterhin voll RLS-gebunden —
+`app/billing.py::resolve_metadata_tenant` verlässt sich beim
+Stripe-Metadaten-Härten (Security-Review HOCH-1) genau darauf, dass `users`
+RLS-gefiltert ist; das durfte diese Migration nicht antasten. Der Login
+läuft daher zweistufig: `user_directory` per `admin_tx()` nach E-Mail
+durchsuchen (liefert nur `tenant_id`/`user_id`), dann mit bekanntem
+`tenant_id` ganz normal `tenant_tx()` den `password_hash` aus `users` lesen.
+
+`app/auth.py::require_principal()` akzeptiert jetzt **beide** Wege zum
+selben `Principal` — `Authorization: Bearer pk_...` (Entwickler/API-Zugriff,
+unverändert) **oder** das Session-Cookie (`sessions`-Tabelle, gleiche
+Hash-nur-Speicherung wie `api_keys`) — Bearer hat Vorrang. Der Rest der App
+(RLS, Tarif-Limits) unterscheidet nicht, wie authentifiziert wurde.
+
+**Frontend** (`static/index.html`, `static/dashboard.html`): der Setup-Bereich
+zeigt jetzt ein E-Mail+Passwort-Formular mit Umschalter Anmelden/Registrieren
+statt eines Schlüssel-Eingabefelds. Alle `fetch()`-Aufrufe senden
+`credentials:"include"`, damit das Cookie mitgeschickt wird. Ein in einer
+**früheren** Sitzung lokal gespeicherter roher Key (`localStorage.pk`) bleibt
+für den Legacy-Bearer-Pfad funktionsfähig (kein Bruch alter Sitzungen); neue
+Logins bieten dafür aber kein Eingabefeld mehr an.
+
+**Getestet** gegen eine echte Postgres-DB (`tests/test_auth_integration.py`):
+Signup→Login mit denselben Daten, generische Fehlermeldung bei
+falschem Passwort **und** unbekannter E-Mail (identischer Text), Session-
+Cookie liefert denselben `Principal` wie ein Bearer-Token für denselben
+Mandanten, abgelaufene/unbekannte Session → 401, Rate-Limits greifen,
+doppelte Signup-E-Mail → 409 ohne verwaisten Mandanten, bestehender
+Bearer-Pfad funktioniert unverändert (Regression).
+
+**Bewusst offen / nicht in dieser Runde**:
+- **Kein Passwort-Reset per E-Mail** — es gibt keine echte SMTP-/
+  E-Mail-Versand-Infrastruktur in dieser Umgebung. Ein Nutzer, der sein
+  Passwort vergisst, hat aktuell keinen Selbstbedienungsweg zurück (nur
+  `/admin/provision` bzw. direkter DB-Zugriff durch den Betreiber).
+- **Kein OAuth/"Login mit Google"** — bräuchte eine echte OAuth-App-
+  Registrierung, die es hier nicht gibt.
+- Bestehende, per `/admin/provision` oder Webhook angelegte `users`-Zeilen
+  haben (noch) kein Passwort und tauchen nicht in `user_directory` auf —
+  sie bleiben dem Bearer-API-Key-Pfad vorbehalten, bis sich jemand mit
+  derselben E-Mail einmal über `/v1/auth/signup` selbst registriert (dann
+  entsteht ein zweiter, separater Mandant mit derselben E-Mail — global
+  eindeutig ist die E-Mail nur innerhalb von `user_directory`, nicht über
+  alle `users`-Zeilen hinweg).
+
+## Onboarding nach Stripe-Kauf (zahlende Kunden)
+
+Ergänzt den Web-Login oben: unmittelbar nach einem Stripe-Kauf ist die
+Checkout-Session-ID (noch) kein Login-Cookie — dafür gibt es einen
+eigenen, einmaligen Abholweg direkt im Anschluss an den Kauf. Bis eben
+musste ein zahlender Kunde nach dem Stripe-Kauf seinen eigenen
 API-Key irgendwo suchen — es gab keine Zustellung, keine Erfolgsseite. Anders
 als bei ChatGPT/Claude/Kimi (Abo kaufen → direkt loslegen) hätte der Kunde
 nie Zugriff auf sein eigenes Konto bekommen. Behoben, ohne neue externe
@@ -166,8 +265,10 @@ PLATFORM_TEST_DATABASE_URL=postgresql://postgres:...@localhost:5432/platform pyt
 Abgedeckt: Tarif-Logik, API-Key-Erzeugung/Hashing, Schema-Struktur (RLS/FORCE,
 Idempotenz, api_keys-Ausnahme) sowie — mit gesetzter Test-DB — der
 Laufzeit-Nachweis, dass `app_rw` nur die Zeilen des gesetzten Mandanten sieht
-und ohne Kontext gar keine. Die CI (`platform-backend-ci.yml`) fährt dafür
-einen Postgres-Service hoch.
+und ohne Kontext gar keine. Der neue Web-Login-Pfad (Signup/Login/Session-
+Cookie/Rate-Limits) hat einen eigenen Laufzeit-Nachweis in
+`tests/test_auth_integration.py`. Die CI (`platform-backend-ci.yml`) fährt
+dafür einen Postgres-Service hoch.
 
 ## Sicherheit
 
@@ -177,16 +278,26 @@ einen Postgres-Service hoch.
   fail-closed (`${VAR:?}`), keine bekannten Default-Passwörter.
 - API-Keys werden nur als SHA-256-Hash gespeichert, Klartext genau einmal
   ausgegeben. `pk_` + 256-Bit-Zufall.
+- **Passwörter** (Web-Login) werden mit **bcrypt** gehasht (nicht SHA-256 —
+  Passwörter haben niedrige Entropie und brauchen einen absichtlich
+  langsamen, Brute-Force-resistenten Hash). Login-Fehlschläge liefern immer
+  dieselbe generische Meldung, inkl. eines Dummy-Hash-Vergleichs bei
+  unbekannter E-Mail gegen einen Timing-Seitenkanal.
+- **Session-Cookies** (Web-Login) wie API-Keys nur als SHA-256-Hash
+  gespeichert (hochentropischer Zufallstoken, kein Passwort), `HttpOnly` +
+  `Secure` + `SameSite=Lax`.
 - `/admin/provision` per konstant-Zeit-Vergleich gegen `ADMIN_TOKEN`.
 - Chat: Payload-Grenzen (Länge/Anzahl Messages), Konversations-Eigentumsprüfung,
   generische Upstream-Fehler (kein Info-Leak). Docker-Image als Nicht-root
   mit Healthcheck.
 - **Rate-Limiting** pro Mandant auf `/v1/chat` und `/v1/agents/{id}/chat`
-  (30 Aufrufe/60s, Sliding Window). In-Process per Default (ein Prozess
-  genuegt fuer lokale Entwicklung); `REDIS_URL` setzen fuer horizontale
-  Skalierung (mehrere Prozesse/Pods teilen sich dann EIN Kontingent statt
-  je eines) — atomar per Lua-Script, siehe `app/ratelimit.py` und
-  `tests/test_ratelimit_redis.py` (Test gegen echten lokalen redis-server).
+  (30 Aufrufe/60s, Sliding Window), pro IP auf `/v1/auth/signup` (5/Std.) und
+  pro IP **und** E-Mail auf `/v1/auth/login` (je 8-20/5min, siehe Abschnitt
+  "Web-Login"). In-Process per Default (ein Prozess genuegt fuer lokale
+  Entwicklung); `REDIS_URL` setzen fuer horizontale Skalierung (mehrere
+  Prozesse/Pods teilen sich dann EIN Kontingent statt je eines) — atomar per
+  Lua-Script, siehe `app/ratelimit.py` und `tests/test_ratelimit_redis.py`
+  (Test gegen echten lokalen redis-server).
 
 ## Status / bewusst offen (Phase 3+)
 
@@ -420,3 +531,9 @@ Aus den Reviews dokumentiert, nicht vergessen:
 - **`/v1/integrations` ohne UI**: Composio-OAuth-Fluss ist serverseitig
   fertig und getestet, aber im Dashboard nicht bedienbar (kein Widget in der
   `WIDGETS`-Registry).
+- **Kein Passwort-Reset** (Web-Login): keine SMTP-/E-Mail-Infrastruktur in
+  dieser Umgebung — siehe Abschnitt "Web-Login" für die volle Einschränkung.
+- **Kein CSRF-Token** neben `SameSite=Lax`: bewusste Entscheidung für diese
+  Runde (Same-Origin-App ohne Cross-Site-Formulare), dokumentiert im
+  Abschnitt "Web-Login" — kein Ersatz, sollte Cross-Site-Einbettung
+  gebraucht werden.

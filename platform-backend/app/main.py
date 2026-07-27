@@ -17,7 +17,7 @@ from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from .config import settings
 from .db import close_pool, get_pool, migrate
 from .metrics import MetricsMiddleware
-from .routes import admin, agents, billing, chat, conversations, integrations, models, usage, webhooks
+from .routes import admin, agents, auth, billing, chat, conversations, integrations, models, usage, webhooks
 
 
 @contextlib.asynccontextmanager
@@ -44,6 +44,7 @@ if settings.cors_origins:
     )
 
 app.include_router(chat.router)
+app.include_router(auth.router)
 app.include_router(usage.router)
 app.include_router(admin.router)
 app.include_router(models.router)
