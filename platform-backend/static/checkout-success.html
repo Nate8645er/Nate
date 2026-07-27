@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Willkommen — KI-Plattform</title>
+<style>
+  :root {
+    --bg:#0b0d12; --panel:#12151d; --panel2:#171b25; --border:#232838;
+    --text:#e7ebf3; --muted:#8b93a7; --accent:#6c8cff; --accent2:#3b5bdb;
+    --ok:#2fbf71; --danger:#ff6b6b;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); min-height:100vh;
+    display:flex; align-items:center; justify-content:center;
+    font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+  .card { background:var(--panel); border:1px solid var(--border); border-radius:16px;
+    padding:36px; max-width:440px; width:100%; text-align:center; }
+  h1 { font-size:22px; margin:0 0 10px; }
+  p { color:var(--muted); font-size:14.5px; margin:0 0 20px; }
+  .spinner { width:34px; height:34px; margin:0 auto 20px; border-radius:50%;
+    border:3px solid var(--border); border-top-color:var(--accent);
+    animation:spin 0.8s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .ok { color:var(--ok); font-size:34px; margin-bottom:6px; }
+  .err { color:var(--danger); font-size:13.5px; margin-top:14px; }
+  a.button { display:inline-block; background:var(--accent2); border:1px solid var(--accent2);
+    color:var(--text); text-decoration:none; padding:11px 22px; border-radius:9px;
+    font-weight:600; }
+  a.button:hover { background:var(--accent); border-color:var(--accent); }
+</style>
+</head>
+<body>
+<div class="card" id="card">
+  <div class="spinner"></div>
+  <h1>Konto wird eingerichtet …</h1>
+  <p>Einen Moment — dein Zugang ist gleich bereit, du musst nichts kopieren oder eintragen.</p>
+</div>
+
+<script>
+// Stripe haengt die Checkout-Session-ID an die success_url an, sobald man in
+// der Stripe-Konfiguration "?session_id={CHECKOUT_SESSION_ID}" einsetzt.
+// Ohne diese ID kann diese Seite nicht wissen, welches Konto gerade
+// entstanden ist.
+const params = new URLSearchParams(location.search);
+const sessionId = params.get("session_id");
+const card = document.getElementById("card");
+
+function showError(msg) {
+  card.innerHTML =
+    '<h1>Fast geschafft</h1>' +
+    '<p>' + msg + '</p>' +
+    '<div class="err" id="err"></div>' +
+    '<a class="button" href="/index.html">Manuell mit API-Key anmelden →</a>';
+}
+
+function showSuccess() {
+  card.innerHTML =
+    '<div class="ok">✓</div>' +
+    '<h1>Bereit!</h1>' +
+    '<p>Dein Konto ist eingerichtet. Du wirst weitergeleitet …</p>' +
+    '<a class="button" href="/index.html">Direkt zum Chat →</a>';
+  setTimeout(() => { location.href = "/index.html"; }, 1200);
+}
+
+async function tryClaim() {
+  const r = await fetch(`/v1/checkout/${encodeURIComponent(sessionId)}/claim`);
+  if (r.status === 200) {
+    const data = await r.json();
+    // Genau der Schritt, der bisher fehlte: der Kunde muss den Key nie sehen
+    // oder selbst eintragen -- die Seite speichert ihn direkt, wie bei
+    // ChatGPT/Claude/Kimi nach dem Abo-Kauf.
+    localStorage.setItem("pk", data.api_key);
+    return true;
+  }
+  return false;
+}
+
+async function poll() {
+  if (!sessionId) {
+    showError(
+      "Diese Seite braucht die Checkout-Bestätigung von Stripe " +
+      "(fehlender <code>session_id</code>-Parameter in der URL)."
+    );
+    return;
+  }
+  // Die Provisionierung laeuft ueber einen asynchronen Stripe-Webhook, der
+  // etwas nach dem Redirect auf diese Seite ankommen kann -- deshalb kurz
+  // mit wachsendem Abstand erneut versuchen statt sofort aufzugeben.
+  const delays = [500, 1000, 1500, 2000, 3000, 3000, 3000, 3000];
+  for (const d of delays) {
+    try {
+      if (await tryClaim()) { showSuccess(); return; }
+    } catch (e) { /* Netzwerkfehler: naechster Versuch */ }
+    await new Promise((res) => setTimeout(res, d));
+  }
+  showError(
+    "Die Bestätigung von Stripe ist noch nicht angekommen. " +
+    "Bitte Seite in ein paar Sekunden neu laden, oder mit deinem API-Key " +
+    "manuell anmelden (E-Mail mit dem Schlüssel folgt in Kürze)."
+  );
+}
+
+poll();
+</script>
+</body>
+</html>

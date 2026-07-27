@@ -86,6 +86,37 @@ curl -s localhost:8080/v1/usage -H "Authorization: Bearer pk_..."
 | POST | `/webhooks/shopify/orders-paid` | Kauf → Mandant freischalten | HMAC (Shopify) |
 | POST | `/webhooks/stripe` | Abo-Ereignisse (Kauf/Wechsel/Zahlung/Kündigung) | HMAC (Stripe) |
 | GET  | `/dashboard.html` | Widget-Dashboard (Agenten/Verbrauch/Historie, Drag-and-Drop) | — (Key im Browser) |
+| GET  | `/v1/checkout/{session_id}/claim` | Liefert den frisch erzeugten API-Key EINMAL (Onboarding, s.u.) | — (Session-ID als Abholschein) |
+| GET  | `/checkout-success.html` | Erfolgsseite nach Stripe-Checkout — loggt automatisch ein | — |
+
+## Onboarding ohne manuellen API-Key-Klick
+
+Bis eben musste ein zahlender Kunde nach dem Stripe-Kauf seinen eigenen
+API-Key irgendwo suchen — es gab keine Zustellung, keine Erfolgsseite. Anders
+als bei ChatGPT/Claude/Kimi (Abo kaufen → direkt loslegen) hätte der Kunde
+nie Zugriff auf sein eigenes Konto bekommen. Behoben, ohne neue externe
+Abhängigkeit:
+
+1. `checkout.session.completed` legt beim Neukauf wie bisher Mandant + Key
+   an, hinterlegt den Klartext-Key zusätzlich unter der Stripe-Checkout-
+   Session-ID (`checkout_handoffs`, Migration 010) — ein einmalig
+   abrufbarer, zeitlich begrenzter (60 Min.) Abholschein.
+2. Stripes `success_url` mit `?session_id={CHECKOUT_SESSION_ID}` (Stripe-
+   eigene Konvention) zeigt auf `/checkout-success.html`.
+3. Die Seite pollt `GET /v1/checkout/{session_id}/claim` (kurz, mit
+   wachsendem Abstand — der Webhook kann etwas nach dem Redirect ankommen),
+   speichert den Key automatisch im Browser (`localStorage`, wie beim
+   normalen Chat-Login) und leitet zum Chat weiter — **kein Kopieren, kein
+   Einfügen, kein Suchen** durch den Kunden.
+
+Der Abholschein ist nach dem ersten Abruf sofort gelöscht (single-use) —
+ein zweiter Versuch mit derselben Session-ID liefert 404, genau wie eine
+unbekannte oder abgelaufene ID. Getestet gegen eine echte Postgres-DB
+inkl. Beweis, dass der abgeholte Key wirklich funktioniert:
+`tests/test_checkout_handoff.py`. Im Stripe-Dashboard muss die
+`success_url` des Checkout-Links auf
+`https://<domain>/checkout-success.html?session_id={CHECKOUT_SESSION_ID}`
+gesetzt werden, damit das greift.
 
 ## Abrechnung (Phase 4)
 

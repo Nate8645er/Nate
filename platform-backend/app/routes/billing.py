@@ -19,12 +19,14 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from ..auth import Principal, require_principal
 from ..billing import (
     apply_subscription_state,
+    claim_checkout_handoff,
     claim_event,
     find_tenant_by_customer,
     link_stripe_customer,
     plan_code_from_event,
     record_billing_event,
     resolve_metadata_tenant,
+    store_checkout_handoff,
     verify_stripe_signature,
 )
 from ..db import admin_tx, tenant_tx
@@ -115,6 +117,14 @@ async def stripe_webhook(request: Request):
                     new_tenant_id, "subscription_started", plan_code,
                     external_id=event_id, conn=conn,
                 )
+                # Kunde muss nach dem Kauf direkt loslegen koennen (wie bei
+                # ChatGPT/Claude/Kimi), nicht seinen eigenen API-Key suchen
+                # oder ihn manuell anfordern. Die Checkout-Session-ID kommt
+                # als ?session_id=... auf der Stripe-success_url zurueck
+                # (Stripe-eigene Konvention) und dient als Abholschein.
+                session_id = obj.get("id")
+                if session_id:
+                    store_checkout_handoff(session_id, new_tenant_id, result["api_key"], conn=conn)
             return {"status": "provisioned", "tenant_id": new_tenant_id, "plan": plan_code}
 
         # Bestehender/nachgewiesener Mandant -> verknuepfen + aktivieren.
@@ -183,6 +193,23 @@ async def stripe_webhook(request: Request):
         return {"status": "payment_failed", "tenant_id": tenant_id}
 
     return {"status": "ignored", "event": event_id, "type": etype}
+
+
+@router.get("/v1/checkout/{session_id}/claim")
+async def claim_checkout(session_id: str):
+    """Fuer die Erfolgsseite nach dem Stripe-Checkout (checkout-success.html):
+    liefert den frisch erzeugten API-Key genau EINMAL, direkt anhand der
+    Checkout-Session-ID aus der Stripe-success_url (?session_id=...). Kein
+    Principal/API-Key noetig -- den hat der Kunde ja noch nicht.
+
+    404 heisst entweder "Webhook noch nicht angekommen" (Client soll kurz
+    erneut versuchen) ODER "schon abgeholt/abgelaufen" -- absichtlich nicht
+    unterscheidbar, sonst liesse sich damit erraten, ob eine Session-ID
+    jemals gueltig war."""
+    result = claim_checkout_handoff(session_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Noch nicht bereit oder bereits abgeholt")
+    return result
 
 
 @router.get("/v1/billing")

@@ -200,6 +200,52 @@ def link_stripe_customer(tenant_id: str, customer_id: str, subscription_id: str 
             _do(c)
 
 
+def store_checkout_handoff(stripe_session_id: str, tenant_id: str, api_key_clear: str, conn=None) -> None:
+    """Legt den einmalig abrufbaren Abholschein fuer den frisch erzeugten
+    Klartext-API-Key ab -- die Erfolgsseite nach dem Stripe-Checkout holt ihn
+    per stripe_session_id ab (claim_checkout_handoff), damit der Kunde direkt
+    loslegen kann statt seinen eigenen API-Key suchen zu muessen."""
+    def _do(c):
+        c.execute(
+            "INSERT INTO checkout_handoffs (stripe_session_id, tenant_id, api_key_clear) "
+            "VALUES (%s,%s,%s) ON CONFLICT (stripe_session_id) DO NOTHING",
+            (stripe_session_id, tenant_id, api_key_clear),
+        )
+    if conn is not None:
+        _do(conn)
+    else:
+        with admin_tx() as c:
+            _do(c)
+
+
+# Abholschein gilt nur kurz -- der Kunde landet direkt nach dem Checkout auf
+# der Erfolgsseite, nicht Stunden spaeter. Begrenzt die Zeit, in der ein
+# geleakter Session-Link (Browser-Verlauf, geteilter Bildschirm) noch etwas
+# wert waere.
+_CHECKOUT_HANDOFF_TTL_MINUTES = 60
+
+
+def claim_checkout_handoff(stripe_session_id: str) -> dict | None:
+    """Liefert (tenant_id, api_key_clear) genau EINMAL und loescht den
+    Abholschein danach unwiderruflich -- weder erneuter Abruf noch
+    abgelaufene Scheine liefern etwas."""
+    with admin_tx() as conn:
+        # "%s minutes" innerhalb eines String-Literals wuerde psycopg NICHT
+        # als Bind-Parameter erkennen (Platzhalter in Anfuehrungszeichen
+        # werden nicht gebunden) -- deshalb ueber Multiplikation mit einem
+        # festen Intervall-Literal, ausserhalb jeder Quotes.
+        row = conn.execute(
+            "DELETE FROM checkout_handoffs "
+            "WHERE stripe_session_id = %s "
+            "AND created_at > now() - (%s * interval '1 minute') "
+            "RETURNING tenant_id, api_key_clear",
+            (stripe_session_id, _CHECKOUT_HANDOFF_TTL_MINUTES),
+        ).fetchone()
+    if row is None:
+        return None
+    return {"tenant_id": str(row["tenant_id"]), "api_key": row["api_key_clear"]}
+
+
 def apply_subscription_state(
     tenant_id: str,
     plan_code: str | None,
