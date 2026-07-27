@@ -3,6 +3,10 @@
   was in Produkt A tatsaechlich existiert und getestet ist -- keine
   erfundenen Zukunftsversprechen (Master-Prompt: keine erfundenen Fakten).
   Bearbeitbar im Theme-Editor ueber Bloecke (ein Block = eine Funktion).
+
+  Icons sind schlanke, selbst gezeichnete Inline-SVGs (Liniensymbole, 22x22,
+  currentColor) statt Emoji -- ueber ein "select" im Schema weiterhin frei
+  im Theme-Editor waehlbar, kein hartkodiertes Bild noetig.
 {%- endcomment -%}
 
 <section class="features" style="background:#07080d;color:#eef0f7;padding:64px 20px;">
@@ -18,7 +22,55 @@
       {%- for block in section.blocks -%}
         <div {{ block.shopify_attributes }}
              style="background:#12151f;border:1px solid #242a3d;border-radius:14px;padding:24px;">
-          <div style="font-size:28px;margin-bottom:10px;">{{ block.settings.icon | escape }}</div>
+          <div aria-hidden="true" style="width:44px;height:44px;border-radius:11px;background:#171b28;border:1px solid #242a3d;display:flex;align-items:center;justify-content:center;color:#7c8bfa;margin-bottom:14px;">
+            {%- case block.settings.icon -%}
+              {%- when 'models' -%}
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 3 21 7.5 12 12 3 7.5 Z"></path>
+                  <path d="M3 12 12 16.5 21 12"></path>
+                  <path d="M3 16.5 12 21 21 16.5"></path>
+                </svg>
+              {%- when 'chat' -%}
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 5.5h16a1 1 0 0 1 1 1V15a1 1 0 0 1-1 1H9l-4.2 3.2a.5.5 0 0 1-.8-.4V16H4a1 1 0 0 1-1-1V6.5a1 1 0 0 1 1-1Z"></path>
+                  <circle cx="8.5" cy="11" r="0.9" fill="currentColor" stroke="none"></circle>
+                  <circle cx="12" cy="11" r="0.9" fill="currentColor" stroke="none"></circle>
+                  <circle cx="15.5" cy="11" r="0.9" fill="currentColor" stroke="none"></circle>
+                </svg>
+              {%- when 'link' -%}
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9.5 14.5 14.5 9.5"></path>
+                  <path d="M11 6.5 12.6 4.9a3.2 3.2 0 0 1 4.5 4.5L15.5 11"></path>
+                  <path d="M13 17.5 11.4 19.1a3.2 3.2 0 0 1-4.5-4.5L8.5 13"></path>
+                </svg>
+              {%- when 'server' -%}
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="4.5" width="16" height="6" rx="1.4"></rect>
+                  <rect x="4" y="13.5" width="16" height="6" rx="1.4"></rect>
+                  <circle cx="7.5" cy="7.5" r="0.9" fill="currentColor" stroke="none"></circle>
+                  <circle cx="7.5" cy="16.5" r="0.9" fill="currentColor" stroke="none"></circle>
+                </svg>
+              {%- when 'agent' -%}
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="7" y="7" width="10" height="10" rx="1.6"></rect>
+                  <path d="M9.5 7V4M14.5 7V4M9.5 20v-3M14.5 20v-3M7 9.5H4M7 14.5H4M20 9.5h-3M20 14.5h-3"></path>
+                </svg>
+              {%- when 'lock' -%}
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="5.5" y="11" width="13" height="9" rx="1.8"></rect>
+                  <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
+                </svg>
+              {%- when 'chart' -%}
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 20V10M11 20V4M18 20v-7"></path>
+                </svg>
+              {%- when 'swiss' -%}
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3.5" y="3.5" width="17" height="17" rx="3.5"></rect>
+                  <path d="M12 8v8M8 12h8"></path>
+                </svg>
+            {%- endcase -%}
+          </div>
           <h3 class="brand-font" style="margin:0 0 8px;font-size:18px;letter-spacing:-0.005em;">{{ block.settings.title | escape }}</h3>
           <p style="color:#8b93ab;margin:0;font-size:14px;line-height:1.6;">{{ block.settings.text | escape }}</p>
         </div>
@@ -39,7 +91,22 @@
       "type": "feature",
       "name": "Funktion",
       "settings": [
-        { "type": "text", "id": "icon", "label": "Icon (Emoji)", "default": "⚡" },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "models", "label": "Mehrere Modelle" },
+            { "value": "chat", "label": "Chat" },
+            { "value": "link", "label": "Integration" },
+            { "value": "server", "label": "Server / lokal" },
+            { "value": "agent", "label": "Agent" },
+            { "value": "lock", "label": "Sicherheit" },
+            { "value": "chart", "label": "Statistik" },
+            { "value": "swiss", "label": "Schweiz" }
+          ],
+          "default": "models"
+        },
         { "type": "text", "id": "title", "label": "Titel", "default": "" },
         { "type": "textarea", "id": "text", "label": "Beschreibung", "default": "" }
       ]
@@ -50,14 +117,14 @@
     {
       "name": "Funktionen",
       "blocks": [
-        { "type": "feature", "settings": { "icon": "🧠", "title": "13 KI-Modelle, ein Chat", "text": "Claude, GPT, Gemini, Grok, DeepSeek und weitere über ein einziges Gateway — frei wählbar je nach Tarif, kein Anbieter-Wechsel nötig." } },
-        { "type": "feature", "settings": { "icon": "💬", "title": "Antworten in Echtzeit", "text": "Streaming-Antworten (Server-Sent Events) statt Warten auf den ganzen Text — wie bei den großen Chat-Anbietern." } },
-        { "type": "feature", "settings": { "icon": "🔌", "title": "Echte Integrationen", "text": "Slack, Notion und Google per echtem Login verbinden (OAuth) — kein Copy-Paste von API-Keys zwischen Diensten." } },
-        { "type": "feature", "settings": { "icon": "🖥️", "title": "Lokale Modelle inklusive", "text": "Ollama-Modelle laufen auf eigener Infrastruktur mit — keine Cloud-Kosten für einfache Anfragen, volle Datenkontrolle." } },
-        { "type": "feature", "settings": { "icon": "🤖", "title": "Eigene Agenten", "text": "Agenten mit festem System-Prompt und Modell anlegen — für wiederkehrende Aufgaben, ohne den Prompt jedes Mal neu zu schreiben." } },
-        { "type": "feature", "settings": { "icon": "🔒", "title": "Echte Mandantentrennung", "text": "Jeder Kunde sieht ausschließlich seine eigenen Daten — durchgesetzt auf Datenbankebene (Row-Level-Security), nicht nur im UI." } },
-        { "type": "feature", "settings": { "icon": "📊", "title": "Transparenter Verbrauch", "text": "Live-Übersicht über verbrauchte Tokens pro Monat, pro Modell — keine Überraschung auf der Rechnung." } },
-        { "type": "feature", "settings": { "icon": "🇨🇭", "title": "Schweizer Preise, ehrlich", "text": "Alle Preise in CHF inklusive Mehrwertsteuer, jederzeit kündbar — keine versteckten Gebühren." } }
+        { "type": "feature", "settings": { "icon": "models", "title": "13 KI-Modelle, ein Chat", "text": "Claude, GPT, Gemini, Grok, DeepSeek und weitere über ein einziges Gateway — frei wählbar je nach Tarif, kein Anbieter-Wechsel nötig." } },
+        { "type": "feature", "settings": { "icon": "chat", "title": "Antworten in Echtzeit", "text": "Streaming-Antworten (Server-Sent Events) statt Warten auf den ganzen Text — wie bei den großen Chat-Anbietern." } },
+        { "type": "feature", "settings": { "icon": "link", "title": "Echte Integrationen", "text": "Slack, Notion und Google per echtem Login verbinden (OAuth) — kein Copy-Paste von API-Keys zwischen Diensten." } },
+        { "type": "feature", "settings": { "icon": "server", "title": "Lokale Modelle inklusive", "text": "Ollama-Modelle laufen auf eigener Infrastruktur mit — keine Cloud-Kosten für einfache Anfragen, volle Datenkontrolle." } },
+        { "type": "feature", "settings": { "icon": "agent", "title": "Eigene Agenten", "text": "Agenten mit festem System-Prompt und Modell anlegen — für wiederkehrende Aufgaben, ohne den Prompt jedes Mal neu zu schreiben." } },
+        { "type": "feature", "settings": { "icon": "lock", "title": "Echte Mandantentrennung", "text": "Jeder Kunde sieht ausschließlich seine eigenen Daten — durchgesetzt auf Datenbankebene (Row-Level-Security), nicht nur im UI." } },
+        { "type": "feature", "settings": { "icon": "chart", "title": "Transparenter Verbrauch", "text": "Live-Übersicht über verbrauchte Tokens pro Monat, pro Modell — keine Überraschung auf der Rechnung." } },
+        { "type": "feature", "settings": { "icon": "swiss", "title": "Schweizer Preise, ehrlich", "text": "Alle Preise in CHF inklusive Mehrwertsteuer, jederzeit kündbar — keine versteckten Gebühren." } }
       ]
     }
   ]

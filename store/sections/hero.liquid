@@ -1,5 +1,32 @@
 <section style="padding:100px 20px 48px;text-align:center;position:relative;overflow:hidden;">
   <div style="position:absolute;inset:0;background:radial-gradient(560px 340px at 50% 0%, rgba(124,139,250,0.14), transparent 65%);pointer-events:none;"></div>
+
+  {%- comment -%}
+    Abstrakte Grafik statt reinem Verlauf: duenne Linien laufen von einem
+    Punkt oben (das "eine Gateway") zu mehreren Knoten (den vielen Modellen/
+    Quellen) -- visualisiert die Kernaussage "viele Modelle, ein Zugang" statt
+    ein austauschbares Deko-Muster. Rein statisch bis auf ein dezentes Pulsieren
+    des Gateway-Punkts; Farben ausschliesslich aus dem bestehenden Token-Satz.
+  {%- endcomment -%}
+  <svg aria-hidden="true" focusable="false" viewBox="0 0 720 200"
+       style="position:absolute;top:14px;left:50%;transform:translateX(-50%);width:min(720px,94%);height:auto;opacity:0.55;pointer-events:none;">
+    <g stroke="#7c8bfa" stroke-width="1" fill="none" opacity="0.55">
+      <path d="M360 6 L48 190"></path>
+      <path d="M360 6 L162 196"></path>
+      <path d="M360 6 L268 200"></path>
+      <path d="M360 6 L452 200"></path>
+      <path d="M360 6 L558 196"></path>
+      <path d="M360 6 L672 190"></path>
+    </g>
+    <circle cx="48" cy="190" r="3.5" fill="#7c8bfa" opacity="0.5"></circle>
+    <circle cx="162" cy="196" r="3.5" fill="#7c8bfa" opacity="0.5"></circle>
+    <circle cx="268" cy="200" r="3.5" fill="#7c8bfa" opacity="0.5"></circle>
+    <circle cx="452" cy="200" r="3.5" fill="#7c8bfa" opacity="0.5"></circle>
+    <circle cx="558" cy="196" r="3.5" fill="#7c8bfa" opacity="0.5"></circle>
+    <circle cx="672" cy="190" r="3.5" fill="#7c8bfa" opacity="0.5"></circle>
+    <circle class="hero-gateway" cx="360" cy="6" r="5" fill="#3fe3c4"></circle>
+  </svg>
+
   <div class="page-width" style="position:relative;">
     <h1 class="brand-font" style="font-size:clamp(32px,5vw,52px);font-weight:700;margin:0 0 16px;color:#eef0f7;letter-spacing:-0.02em;line-height:1.1;text-wrap:balance;">
       {{ section.settings.heading | escape }}
@@ -8,6 +35,21 @@
       {{ section.settings.subheading | escape }}
     </p>
   </div>
+
+  <style>
+    .hero-gateway {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: hero-gateway-pulse 3.4s ease-in-out infinite;
+    }
+    @keyframes hero-gateway-pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.55; transform: scale(1.3); }
+    }
+    @media (max-width: 640px) {
+      section > svg[aria-hidden="true"] { opacity: 0.3; top: 4px; }
+    }
+  </style>
 </section>
 
 {% schema %}
