@@ -324,35 +324,27 @@
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
-// Legacy: ein in einer FRUEHEREN Sitzung lokal gespeicherter roher API-Key.
-// Fuer NEUE Logins bietet die Oberflaeche das nicht mehr an (E-Mail+Passwort
-// ersetzt das, siehe authSubmit/enterApp) -- ein bereits vorhandener Key soll
-// aber weiter funktionieren, statt den Nutzer unnoetig auszusperren.
-let KEY = localStorage.getItem("pk") || "";
-// Bei einer Cookie-Session (kein KEY) dient die Mandanten-ID als Namensraum
-// fuer die pro-Konto gespeicherte conversation_id -- sonst wuerden sich
-// mehrere per Cookie angemeldete Konten auf demselben Browser dieselbe
-// "convId:"-Ablage teilen.
+// Die Mandanten-ID dient als Namensraum fuer die pro-Konto gespeicherte
+// conversation_id -- sonst wuerden sich mehrere auf demselben Browser
+// angemeldete Konten dieselbe "convId:"-Ablage teilen.
 let SESSION_TENANT_ID = localStorage.getItem("tenantId") || "";
 let convId = null;
 let activeConvId = null;
 let conversations = [];
 let history = [];
 
-// Bearer-Header nur noch fuer den Legacy-Pfad (alter localStorage-Key);
-// bei einer Session-Anmeldung genuegt das HttpOnly-Cookie, das der Browser
-// dank `credentials:"include"` automatisch mitschickt -- kein Header noetig
-// oder moeglich (HttpOnly ist per JS gar nicht auslesbar).
+// Authentifizierung laeuft ausschliesslich ueber das HttpOnly-Session-Cookie,
+// das der Browser dank `credentials:"include"` automatisch mitschickt -- kein
+// Header noetig oder moeglich (HttpOnly ist per JS gar nicht auslesbar). Es
+// gibt keinen API-Key mehr, der hier eingesetzt werden koennte.
 function authHeader() {
-  const h = { "Content-Type": "application/json" };
-  if (KEY) h["Authorization"] = "Bearer " + KEY;
-  return h;
+  return { "Content-Type": "application/json" };
 }
-// Pro API-Key/Mandant eine eigene gespeicherte Konversation -- verhindert,
-// dass ein Konto-/Schluesselwechsel versehentlich die conversation_id eines
-// anderen Mandanten wiederverwendet (die serverseitige Pruefung wuerde das
-// ohnehin als 404 ablehnen, aber so kommt es gar nicht erst dazu).
-function convKey() { return "convId:" + (KEY || SESSION_TENANT_ID || "session"); }
+// Pro Mandant eine eigene gespeicherte Konversation -- verhindert, dass ein
+// Konto-Wechsel versehentlich die conversation_id eines anderen Mandanten
+// wiederverwendet (die serverseitige Pruefung wuerde das ohnehin als 404
+// ablehnen, aber so kommt es gar nicht erst dazu).
+function convKey() { return "convId:" + (SESSION_TENANT_ID || "session"); }
 
 // --- Markdown-Rendering (sanitisiert) ---------------------------------
 // Modell-Antworten sind nicht vertrauenswuerdig (Prompt-Injection kann
@@ -638,11 +630,11 @@ function startNewChat() {
 function openSidebarMobile() { document.body.classList.add("sidebar-open"); $("sidebarToggle").setAttribute("aria-expanded", "true"); }
 function closeSidebarMobile() { document.body.classList.remove("sidebar-open"); $("sidebarToggle").setAttribute("aria-expanded", "false"); }
 
-// Gemeinsamer Einstieg NACH erfolgreicher Authentifizierung -- egal ob per
-// Legacy-Bearer-Key (connect()) oder per neuer Session-Anmeldung
-// (submitAuth()). loadModels() wirft (401/403), wenn die Anmeldung in
-// Wirklichkeit doch nicht (mehr) gilt -- dann bleibt das Setup-Formular
-// unveraendert sichtbar, statt eine leere Chat-Ansicht zu zeigen.
+// Gemeinsamer Einstieg NACH erfolgreicher Authentifizierung (submitAuth()
+// oder eine beim Laden noch gueltige Session, siehe Bootstrap unten).
+// loadModels() wirft (401/403), wenn die Anmeldung in Wirklichkeit doch
+// nicht (mehr) gilt -- dann bleibt das Setup-Formular unveraendert sichtbar,
+// statt eine leere Chat-Ansicht zu zeigen.
 async function enterApp() {
   await loadModels();
   $("setupWrap").style.display = "none";
@@ -664,27 +656,9 @@ async function enterApp() {
   }
 }
 
-// Legacy-Pfad: nur noch fuer einen bereits in localStorage gespeicherten
-// rohen API-Key (aus einer FRUEHEREN Sitzung) -- die Oberflaeche bietet
-// dafuer kein Eingabefeld mehr an (siehe setup-Formular), aber ein
-// bestehender Key soll beim naechsten Laden weiter automatisch anmelden.
-async function connect() {
-  if (!KEY) return;
-  $("setupErr").textContent = "";
-  try {
-    await enterApp();
-  } catch (e) {
-    // Alter Key nicht mehr gueltig -- verwerfen und normales Login-Formular
-    // zeigen, statt den Nutzer mit einer stillen Endlosschleife auszusperren.
-    localStorage.removeItem("pk");
-    KEY = "";
-    $("setupErr").textContent = "";
-  }
-}
-
-// Neuer Web-Login-Pfad: E-Mail+Passwort, Umschalter Anmelden/Registrieren.
+// Web-Login-Pfad: E-Mail+Passwort, Umschalter Anmelden/Registrieren.
 // Setzt bei Erfolg ein HttpOnly-Session-Cookie (siehe app/routes/auth.py) --
-// der Roh-API-Key wird fuer diesen Pfad nie an den Client ausgeliefert.
+// es gibt keinen API-Key mehr, den der Client je zu Gesicht bekommen koennte.
 let authMode = "login"; // "login" | "signup"
 
 function setAuthMode(mode) {
@@ -737,9 +711,7 @@ async function doLogout() {
   try {
     await fetch("/v1/auth/logout", { method: "POST", credentials: "include" });
   } catch { /* Cookie wird clientseitig ohnehin entfernt (s.u.) */ }
-  localStorage.removeItem("pk");
   localStorage.removeItem("tenantId");
-  KEY = "";
   SESSION_TENANT_ID = "";
   location.reload();
 }
@@ -875,15 +847,10 @@ $("input").addEventListener("keydown", (e) => {
 });
 $("input").addEventListener("input", () => autoGrow($("input")));
 
-// Sitzung beim Laden wiederherstellen: zuerst ein evtl. noch vorhandener
-// Legacy-API-Key (frühere Sitzung), sonst still per Cookie versuchen (falls
-// eine Session besteht) -- schlägt beides fehl, bleibt einfach das neue
+// Sitzung beim Laden wiederherstellen: still per Cookie versuchen (falls
+// eine Session besteht) -- schlägt das fehl, bleibt einfach das
 // Login/Registrieren-Formular sichtbar (Default-Zustand des Markups).
-if (KEY) {
-  connect();
-} else {
-  enterApp().catch(() => { /* keine gültige Session -- Login-Formular zeigen */ });
-}
+enterApp().catch(() => { /* keine gültige Session -- Login-Formular zeigen */ });
 </script>
 </body>
 </html>

@@ -17,7 +17,19 @@ from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from .config import settings
 from .db import close_pool, get_pool, migrate
 from .metrics import MetricsMiddleware
-from .routes import admin, agents, auth, billing, chat, conversations, integrations, models, usage, webhooks
+from .routes import (
+    admin,
+    agents,
+    attachments,
+    auth,
+    billing,
+    chat,
+    conversations,
+    integrations,
+    models,
+    usage,
+    webhooks,
+)
 
 
 @contextlib.asynccontextmanager
@@ -53,6 +65,7 @@ app.include_router(agents.router)
 app.include_router(webhooks.router)
 app.include_router(billing.router)
 app.include_router(integrations.router)
+app.include_router(attachments.router)
 
 
 @app.get("/health")

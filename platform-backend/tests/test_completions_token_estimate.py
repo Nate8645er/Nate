@@ -50,11 +50,9 @@ class TestMissingUsageFallback:
 
     def test_missing_usage_object_falls_back_to_estimate(self, client, prov, monkeypatch):
         monkeypatch.setattr("app.completions.httpx.AsyncClient", self._FakeAsyncClient)
-        key = prov("starter")
-        h = {"Authorization": "Bearer " + key}
+        prov("starter")
         r = client.post(
             "/v1/chat",
-            headers=h,
             json={"model": "ollama/llama3.2", "messages": [{"role": "user", "content": "Hallo, wie geht es dir heute?"}]},
         )
         assert r.status_code == 200, r.text
@@ -66,16 +64,15 @@ class TestMissingUsageFallback:
         """Beweist den eigentlichen Zweck: geschaetzter Verbrauch zaehlt
         wirklich gegen das Limit, nicht nur kosmetisch in der Antwort."""
         monkeypatch.setattr("app.completions.httpx.AsyncClient", self._FakeAsyncClient)
-        key = prov("free")  # monthly_token_limit = 100000
-        h = {"Authorization": "Bearer " + key}
+        prov("free")  # monthly_token_limit = 100000
 
         r1 = client.post(
-            "/v1/chat", headers=h,
+            "/v1/chat",
             json={"model": "ollama/llama3.2", "messages": [{"role": "user", "content": "hi"}]},
         )
         assert r1.status_code == 200
         used_after_one = r1.json()["usage"]["tokens_in"] + r1.json()["usage"]["tokens_out"]
         assert used_after_one > 0
 
-        usage = client.get("/v1/usage", headers=h).json()
+        usage = client.get("/v1/usage").json()
         assert usage["month"]["tokens_total"] == used_after_one

@@ -33,26 +33,33 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import httpx  # noqa: E402
 
 
-async def _provision(client: httpx.AsyncClient, admin_token: str, n: int) -> list[str]:
-    keys = []
-    for i in range(n):
-        r = await client.post(
-            "/admin/provision",
-            headers={"X-Admin-Token": admin_token},
-            json={"tenant_name": f"load{i}", "owner_email": f"load{i}@example.ch", "plan_code": "pro"},
-        )
-        r.raise_for_status()
-        keys.append(r.json()["api_key"])
-    return keys
+async def _provision_and_login(transport: httpx.ASGITransport, admin_token: str, i: int) -> httpx.AsyncClient:
+    """Legt Mandant `i` per /admin/provision an (jetzt mit Pflicht-Passwort,
+    kein API-Key mehr) und meldet eine EIGENE httpx.AsyncClient-Instanz per
+    /v1/auth/login an. Jeder Worker braucht seinen eigenen Client, weil das
+    Session-Cookie in dessen Cookie-Jar liegt -- ein gemeinsam genutzter
+    Client wuerde mit jedem Login die Session des vorherigen Mandanten
+    ueberschreiben."""
+    email = f"load{i}@example.ch"
+    password = "loadtest-password-1"
+    client = httpx.AsyncClient(transport=transport, base_url="https://loadtest")
+    r = await client.post(
+        "/admin/provision",
+        headers={"X-Admin-Token": admin_token},
+        json={"tenant_name": f"load{i}", "owner_email": email, "plan_code": "pro", "password": password},
+    )
+    r.raise_for_status()
+    login = await client.post("/v1/auth/login", json={"email": email, "password": password})
+    login.raise_for_status()
+    return client
 
 
-async def _worker(client: httpx.AsyncClient, key: str, path: str, n: int, latencies: list[float]) -> int:
+async def _worker(client: httpx.AsyncClient, path: str, n: int, latencies: list[float]) -> int:
     errors = 0
-    headers = {"Authorization": "Bearer " + key}
     for _ in range(n):
         t0 = time.perf_counter()
         try:
-            r = await client.get(path, headers=headers)
+            r = await client.get(path)
             latencies.append(time.perf_counter() - t0)
             if r.status_code != 200:
                 errors += 1
@@ -85,16 +92,20 @@ async def main() -> None:
     from app.main import app
 
     transport = httpx.ASGITransport(app=app)
-    async with httpx.AsyncClient(transport=transport, base_url="http://loadtest") as client:
-        keys = await _provision(client, admin_token, args.concurrency)
-
+    # https-Basis-URL: die Session-Cookies aus app/auth.py setzen bewusst das
+    # Secure-Flag -- httpx haengt Secure-Cookies nur an Requests mit
+    # https-Schema an (siehe derselbe Kommentar in tests/conftest.py).
+    clients = await asyncio.gather(*[
+        _provision_and_login(transport, admin_token, i) for i in range(args.concurrency)
+    ])
+    try:
         per_worker = max(1, args.requests // args.concurrency)
         latencies: list[float] = []
         all_latencies: list[list[float]] = [[] for _ in range(args.concurrency)]
 
         t_start = time.perf_counter()
         errors = await asyncio.gather(*[
-            _worker(client, keys[i], args.path, per_worker, all_latencies[i])
+            _worker(clients[i], args.path, per_worker, all_latencies[i])
             for i in range(args.concurrency)
         ])
         wall = time.perf_counter() - t_start
@@ -104,6 +115,8 @@ async def main() -> None:
         latencies.sort()
         total_errors = sum(errors)
         total_requests = len(latencies)
+    finally:
+        await asyncio.gather(*(c.aclose() for c in clients))
 
     print(f"Pfad:            {args.path}")
     print(f"Nebenlaeufigkeit: {args.concurrency}")

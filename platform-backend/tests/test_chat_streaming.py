@@ -75,10 +75,9 @@ def test_stream_forwards_chunks_and_persists_real_usage(client, prov, monkeypatc
     fake = _fake_client_factory(chunks, with_usage=True)
     monkeypatch.setattr("app.completions.httpx.AsyncClient", lambda *a, **kw: fake)
 
-    key = prov("starter")
-    h = {"Authorization": "Bearer " + key}
+    prov("starter")
     with client.stream(
-        "POST", "/v1/chat", headers=h,
+        "POST", "/v1/chat",
         json={"model": "ollama/llama3.2", "messages": [{"role": "user", "content": "Hi"}], "stream": True},
     ) as r:
         assert r.status_code == 200
@@ -88,7 +87,7 @@ def test_stream_forwards_chunks_and_persists_real_usage(client, prov, monkeypatc
     assert ", Welt!" in body
     assert "[DONE]" in body
 
-    usage = client.get("/v1/usage", headers=h).json()
+    usage = client.get("/v1/usage").json()
     # Echte usage-Werte aus dem letzten Chunk (11+22=33), nicht geschaetzt.
     assert usage["month"]["tokens_total"] == 33
 
@@ -98,16 +97,15 @@ def test_stream_without_usage_object_falls_back_to_estimate(client, prov, monkey
     fake = _fake_client_factory(chunks, with_usage=False)
     monkeypatch.setattr("app.completions.httpx.AsyncClient", lambda *a, **kw: fake)
 
-    key = prov("starter")
-    h = {"Authorization": "Bearer " + key}
+    prov("starter")
     with client.stream(
-        "POST", "/v1/chat", headers=h,
+        "POST", "/v1/chat",
         json={"model": "ollama/llama3.2", "messages": [{"role": "user", "content": "Hi"}], "stream": True},
     ) as r:
         assert r.status_code == 200
         list(r.iter_bytes())
 
-    usage = client.get("/v1/usage", headers=h).json()
+    usage = client.get("/v1/usage").json()
     assert usage["month"]["tokens_total"] > 0
 
 
@@ -123,14 +121,19 @@ def test_stream_releases_reservation_after_completion(client, prov, monkeypatch)
 
     prov_resp = client.post(
         "/admin/provision", headers={"X-Admin-Token": "test-admin"},
-        json={"tenant_name": "StreamT", "owner_email": "stream@example.ch", "plan_code": "starter"},
+        json={
+            "tenant_name": "StreamT", "owner_email": "stream@example.ch",
+            "plan_code": "starter", "password": "stream-test-password-1",
+        },
     )
     tenant_id = prov_resp.json()["tenant_id"]
-    key = prov_resp.json()["api_key"]
-    h = {"Authorization": "Bearer " + key}
+    login = client.post(
+        "/v1/auth/login", json={"email": "stream@example.ch", "password": "stream-test-password-1"}
+    )
+    assert login.status_code == 200, login.text
 
     with client.stream(
-        "POST", "/v1/chat", headers=h,
+        "POST", "/v1/chat",
         json={"model": "ollama/llama3.2", "messages": [{"role": "user", "content": "Hi"}], "stream": True},
     ) as r:
         list(r.iter_bytes())
@@ -155,12 +158,11 @@ def test_stream_returns_conversation_id_for_continuation(client, prov, monkeypat
         fake = _fake_client_factory(chunks, with_usage=True)
         monkeypatch.setattr("app.completions.httpx.AsyncClient", lambda *a, **kw: fake)
 
-    key = prov("starter")
-    h = {"Authorization": "Bearer " + key}
+    prov("starter")
 
     _stream_one("Erste")
     with client.stream(
-        "POST", "/v1/chat", headers=h,
+        "POST", "/v1/chat",
         json={"model": "ollama/llama3.2", "messages": [{"role": "user", "content": "Erste"}], "stream": True},
     ) as r:
         assert r.status_code == 200
@@ -175,7 +177,7 @@ def test_stream_returns_conversation_id_for_continuation(client, prov, monkeypat
 
     _stream_one("Zweite")
     with client.stream(
-        "POST", "/v1/chat", headers=h,
+        "POST", "/v1/chat",
         json={
             "model": "ollama/llama3.2",
             "messages": [{"role": "user", "content": "Erste"}, {"role": "user", "content": "Zweite"}],
@@ -186,7 +188,7 @@ def test_stream_returns_conversation_id_for_continuation(client, prov, monkeypat
         assert r2.status_code == 200
         list(r2.iter_bytes())
 
-    conv = client.get(f"/v1/conversations/{conv_id}", headers=h)
+    conv = client.get(f"/v1/conversations/{conv_id}")
     assert conv.status_code == 200
     messages = conv.json()["messages"]
     assert len(messages) == 4, "beide Nachrichten muessen in DERSELBEN Konversation gelandet sein"
@@ -196,10 +198,9 @@ def test_stream_unregistered_model_rejected_before_streaming_starts(client, prov
     """Ohne Gateway-Mock: ein nicht registriertes Modell muss VOR jedem
     Streaming-Versuch mit 403 abgelehnt werden (Modellvalidierung passiert
     vor stream_chat)."""
-    key = prov("starter")
-    h = {"Authorization": "Bearer " + key}
+    prov("starter")
     r = client.post(
-        "/v1/chat", headers=h,
+        "/v1/chat",
         json={"model": "erfundenes/modell", "messages": [{"role": "user", "content": "Hi"}], "stream": True},
     )
     assert r.status_code == 403

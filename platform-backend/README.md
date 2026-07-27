@@ -8,14 +8,19 @@ Datenbankebene (Row Level Security), Tarif-Durchsetzung und Verbrauchsmessung.
 
 ```
 Browser ──E-Mail+Passwort──▶ POST /v1/auth/login/signup ──▶ HttpOnly-Session-Cookie
-Client  ──Bearer API-Key────▶ FastAPI (dieses Backend)
-                              │  Auth: api_keys ODER sessions → Mandant + Tarif
+                              │  Auth: sessions → Mandant + Tarif
                               │  RLS:  SET LOCAL app.current_tenant
                               ▼
                           Postgres (RLS erzwingt Mandantentrennung)
                               ▲
         Chat ──▶ LiteLLM-Gateway ──▶ Anthropic / OpenAI / Ollama (lokal)
 ```
+
+Es gibt **einen einzigen** Authentifizierungsweg: das HttpOnly-Session-Cookie.
+Ein frueher parallel existierender `Authorization: Bearer pk_...`-API-Schluessel
+(Entwickler-/Programmzugriff) ist **vollstaendig entfernt** — Migration
+`013_drop_api_keys.sql`, `app/auth.py`. Es gibt keinen Weg mehr, sich ohne
+Browser-Session zu authentifizieren, auch nicht fuer Automatisierung/CI.
 
 - **Mandantentrennung (real erzwungen)**: `migrations/001_init.sql` aktiviert
   `ENABLE`+`FORCE ROW LEVEL SECURITY` auf allen mandantengebundenen Tabellen.
@@ -27,14 +32,15 @@ Client  ──Bearer API-Key────▶ FastAPI (dieses Backend)
   setzt pro Transaktion `app.current_tenant`; die DB filtert automatisch. Ein
   App-Bug kann keine fremden Zeilen liefern — bewiesen durch
   `tests/test_rls_integration.py` gegen eine echte DB.
-- **`api_keys`** ist bewusst nicht RLS-gebunden: der Login-Lookup erfolgt über
-  den global-eindeutigen, geheimen `key_hash`; ohne diese Ausnahme entstünde
-  ein Henne-Ei-Problem (der Mandant wird erst durch den Lookup bestimmt).
-  **`sessions`** (Web-Login, s.u.) folgt demselben Muster über den Hash des
-  Session-Cookie-Tokens. **`user_directory`** (E-Mail → Mandant/Nutzer) ist
-  ebenfalls nicht RLS-gebunden, speichert aber bewusst KEIN Geheimnis — der
-  eigentliche `password_hash` bleibt in `users`, weiterhin voll RLS-gebunden
-  (siehe Abschnitt "Web-Login" und Migration `012_password_auth.sql`).
+- **`sessions`** (Web-Login, s.u.) ist bewusst nicht RLS-gebunden: der
+  Login-Lookup erfolgt über den Hash des hochentropischen Session-Cookie-
+  Tokens; ohne diese Ausnahme entstünde ein Henne-Ei-Problem (der Mandant
+  wird erst durch den Lookup bestimmt). **`user_directory`** (E-Mail →
+  Mandant/Nutzer) ist ebenfalls nicht RLS-gebunden, speichert aber bewusst
+  KEIN Geheimnis — der eigentliche `password_hash` bleibt in `users`,
+  weiterhin voll RLS-gebunden (siehe Abschnitt "Web-Login" und Migration
+  `012_password_auth.sql`). Die frühere `api_keys`-Tabelle (gleiches Muster,
+  über `key_hash`) ist per Migration `013_drop_api_keys.sql` gedroppt.
 - **Tarife**: `migrations/002_seed_plans.sql` (Free … Enterprise, Master-Prompt
   3.3). Modelle sind pro Tarif freigeschaltet, nicht pro Nutzer hart kodiert.
 - **Gateway**: LiteLLM (`litellm/config.yaml`) — ein Zugang für alle Anbieter
@@ -56,21 +62,34 @@ Rolle `app_rw` an; die Migrationen (Owner-Rolle) erstellen Schema, Policies und
 Grants. `migrate()` führt jede SQL-Datei genau einmal aus (Tracking-Tabelle
 `schema_migrations`) — Neustarts gegen ein bestehendes Volume sind unkritisch.
 
-Dann:
+Dann entweder als Kunde selbst (Self-Service, Free-Tarif):
 
 ```bash
-# 1) Mandant provisionieren (liefert einmalig den API-Key)
-curl -sX POST localhost:8080/admin/provision \
-  -H "X-Admin-Token: $ADMIN_TOKEN" -H 'Content-Type: application/json' \
-  -d '{"tenant_name":"Acme","owner_email":"chef@acme.ch","plan_code":"pro"}'
+# Signup setzt direkt ein Session-Cookie (-c speichert es in cookies.txt,
+# -b schickt es bei Folgeanfragen mit).
+curl -sX POST localhost:8080/v1/auth/signup -c cookies.txt \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Acme","email":"chef@acme.ch","password":"ein-gutes-passwort"}'
 
-# 2) Chat (mit dem zurückgegebenen api_key)
-curl -sX POST localhost:8080/v1/chat \
-  -H "Authorization: Bearer pk_..." -H 'Content-Type: application/json' \
+curl -sX POST localhost:8080/v1/chat -b cookies.txt -H 'Content-Type: application/json' \
   -d '{"model":"ollama/llama3.2","messages":[{"role":"user","content":"Hallo"}]}'
 
-# 3) Verbrauch ansehen
-curl -s localhost:8080/v1/usage -H "Authorization: Bearer pk_..."
+curl -s localhost:8080/v1/usage -b cookies.txt
+```
+
+... oder per Admin/Ops fuer einen bestehenden Tarif (Support-Fall, initiales
+Passwort wird dem Kunden out-of-band mitgeteilt):
+
+```bash
+# 1) Mandant provisionieren -- Pflicht-Feld "password", kein API-Key mehr
+curl -sX POST localhost:8080/admin/provision \
+  -H "X-Admin-Token: $ADMIN_TOKEN" -H 'Content-Type: application/json' \
+  -d '{"tenant_name":"Acme","owner_email":"chef@acme.ch","plan_code":"pro","password":"initiales-passwort"}'
+
+# 2) Kunde meldet sich damit selbst an (Session-Cookie wie oben)
+curl -sX POST localhost:8080/v1/auth/login -c cookies.txt \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"chef@acme.ch","password":"initiales-passwort"}'
 ```
 
 ## Endpunkte
@@ -80,41 +99,53 @@ curl -s localhost:8080/v1/usage -H "Authorization: Bearer pk_..."
 | GET  | `/` | Statisches Chat-UI (Modellwechsel + Verbrauch) | — |
 | GET  | `/health` | Liveness + DB-Check | — |
 | GET  | `/metrics` | Prometheus-Metriken (Requests, Latenz, Chat-Verbrauch) | — |
-| POST | `/admin/provision` | Mandant + API-Key anlegen | `X-Admin-Token` |
+| POST | `/admin/provision` | Mandant + Owner mit initialem Passwort anlegen | `X-Admin-Token` |
 | POST | `/v1/auth/signup` | Selbstbedienung: Free-Tarif-Mandant + Passwort anlegen, meldet direkt an | — (rate-limited) |
 | POST | `/v1/auth/login` | E-Mail+Passwort prüfen, Session-Cookie setzen | — (rate-limited) |
-| POST | `/v1/auth/logout` | Session serverseitig löschen + Cookie entfernen | Bearer API-Key **oder** Session-Cookie |
-| POST | `/v1/chat` | Chat via Gateway, mit Tarif-/Limit-Prüfung (optional `enable_web_tool`, s.u.) | Bearer API-Key **oder** Session-Cookie |
-| GET  | `/v1/models` | Im Tarif freigeschaltete Modelle (fürs UI-Dropdown) | Bearer API-Key **oder** Session-Cookie |
-| GET  | `/v1/usage` | Monatsverbrauch des Mandanten | Bearer API-Key **oder** Session-Cookie |
-| GET  | `/v1/conversations` | Liste der Unterhaltungen | Bearer API-Key **oder** Session-Cookie |
-| GET  | `/v1/conversations/{id}` | Eine Unterhaltung mit Nachrichten | Bearer API-Key **oder** Session-Cookie |
-| GET/POST | `/v1/agents…` | Agenten verwalten + ausführen (Tarif-Limit) | Bearer API-Key **oder** Session-Cookie |
-| GET  | `/v1/billing` | Tarif, Abo-Zustand, Verbrauch, Historie | Bearer API-Key **oder** Session-Cookie |
-| GET/POST/DELETE | `/v1/integrations…` | Integrationen-Gerüst (Tarif-Limit) — s.u. | Bearer API-Key **oder** Session-Cookie |
+| POST | `/v1/auth/logout` | Session serverseitig löschen + Cookie entfernen | Session-Cookie |
+| POST | `/v1/chat` | Chat via Gateway, mit Tarif-/Limit-Prüfung (optional `enable_web_tool`, Bild-Anhänge, s.u.) | Session-Cookie |
+| POST | `/v1/attachments/extract` | Dokument (PDF/Text/Markdown) hochladen, extrahierten Text zurückgeben (s.u.) | Session-Cookie |
+| GET  | `/v1/models` | Im Tarif freigeschaltete Modelle (fürs UI-Dropdown), inkl. `vision`-Feld | Session-Cookie |
+| GET  | `/v1/usage` | Monatsverbrauch des Mandanten | Session-Cookie |
+| GET  | `/v1/conversations` | Liste der Unterhaltungen | Session-Cookie |
+| GET  | `/v1/conversations/{id}` | Eine Unterhaltung mit Nachrichten | Session-Cookie |
+| GET/POST | `/v1/agents…` | Agenten verwalten + ausführen (Tarif-Limit) | Session-Cookie |
+| GET  | `/v1/billing` | Tarif, Abo-Zustand, Verbrauch, Historie | Session-Cookie |
+| GET/POST/DELETE | `/v1/integrations…` | Integrationen-Gerüst (Tarif-Limit) — s.u. | Session-Cookie |
 | POST | `/webhooks/shopify/orders-paid` | Kauf → Mandant freischalten | HMAC (Shopify) |
 | POST | `/webhooks/stripe` | Abo-Ereignisse (Kauf/Wechsel/Zahlung/Kündigung) | HMAC (Stripe) |
 | GET  | `/dashboard.html` | Widget-Dashboard (Agenten/Verbrauch/Historie, Drag-and-Drop) | — (E-Mail+Passwort im Browser) |
-| GET  | `/v1/checkout/{session_id}/claim` | Liefert den frisch erzeugten API-Key EINMAL (Onboarding, s.u.) | — (Session-ID als Abholschein) |
+| GET  | `/v1/checkout/{session_id}/claim` | Setzt das Session-Cookie EINMAL per Set-Cookie (Onboarding, s.u.) | — (Session-ID als Abholschein) |
 | GET  | `/checkout-success.html` | Erfolgsseite nach Stripe-Checkout — loggt automatisch ein | — |
 
-## Web-Login: E-Mail+Passwort statt rohem API-Key
+## Web-Login: E-Mail+Passwort ist der EINZIGE Authentifizierungsweg
 
-Bis eben musste sich jeder Kunde im Chat-UI (`static/index.html`) einen
-rohen `pk_...`-API-Schlüssel einfügen — ganz anders als bei
-ChatGPT/Claude/Kimi (E-Mail+Passwort, nie ein Schlüssel zu Gesicht). Dazu
-kam eine echte Lücke: es gab **überhaupt keinen** Weg, sich selbst für den
+Frueher musste sich jeder Kunde im Chat-UI (`static/index.html`) einen
+rohen `pk_...`-API-Schlüssel einfügen, UND es gab parallel einen
+`Authorization: Bearer pk_...`-Entwickler-/Programmzugriff — ganz anders als
+bei ChatGPT/Claude/Kimi (E-Mail+Passwort, nie ein Schlüssel zu Gesicht).
+**Produktentscheidung**: das API-Schlüssel-Konzept ist vollstaendig aus der
+Plattform entfernt — nicht nur aus der UI, auch als Entwickler-/
+Programmzugriff. Migration `013_drop_api_keys.sql` droppt die `api_keys`-
+Tabelle real (kein "deprecated liegen lassen"); `app/auth.py` kennt keinen
+Bearer-Pfad mehr, `require_principal()` akzeptiert ausschließlich das
+Session-Cookie. Ein mitgeschickter `Authorization`-Header wird schlicht
+nicht mehr gelesen — auch ein wohlgeformt aussehender, frei erfundener
+Bearer-Token führt zu 401, genau wie ein fehlendes Cookie (siehe
+`tests/test_auth_integration.py::test_bearer_token_path_is_completely_gone`).
+
+Dazu kam eine echte Lücke: es gab **überhaupt keinen** Weg, sich selbst für den
 Free-Tarif anzumelden — nur `/admin/provision` (admin-token-geschützt) und
 die Stripe/Shopify-Webhooks konnten einen Mandanten anlegen. Das widersprach
 der Store-FAQ (`store/sections/faq.liquid`: "Free-Tarif dauerhaft kostenlos,
 keine Kreditkarte nötig"). Beides behoben:
 
 - **`POST /v1/auth/signup`** `{name, email, password}` — legt einen
-  **eigenen** Free-Tarif-Mandanten an (`provision_tenant(plan_code="free")`),
-  setzt das Passwort (bcrypt) und meldet direkt per Session-Cookie an. Der
-  rohe API-Key wird für diesen Pfad **nie** an den Client ausgeliefert.
-  Rate-limited pro IP (`app/ratelimit.py::signup_limiter`, 5/Std.) gegen
-  Massen-Registrierung.
+  **eigenen** Free-Tarif-Mandanten an (`provision_tenant(plan_code="free",
+  password=...)`), setzt das Passwort (bcrypt) und meldet direkt per
+  Session-Cookie an. Es gibt keinen API-Key mehr, der hier ausgeliefert
+  werden könnte. Rate-limited pro IP (`app/ratelimit.py::signup_limiter`,
+  5/Std.) gegen Massen-Registrierung.
 - **`POST /v1/auth/login`** `{email, password}` — sucht den Nutzer per
   E-Mail (siehe Architektur unten), prüft mit `bcrypt.checkpw` (timing-sicher
   von Haus aus + zusätzlicher Dummy-Hash-Vergleich bei unbekannter E-Mail,
@@ -134,88 +165,190 @@ keine Kreditkarte nötig"). Beides behoben:
   wie `<img>`/`<form>`), aber **kein** zusätzliches CSRF-Token. Reicht für
   eine Same-Origin-App ohne Cross-Site-Formulare.
 
-**Architektur des E-Mail-Lookups** (Henne-Ei-Problem wie bei `api_keys`: der
-Mandant ist beim Login noch unbekannt, RLS kann für diesen einen Schritt
-nicht greifen): `user_directory` (Migration `012_password_auth.sql`) bildet
-GLOBAL eindeutig E-Mail → (`tenant_id`, `user_id`) ab, speichert aber
-**bewusst kein Geheimnis** — anders als `api_keys` wäre das bei einer
-E-Mail-Adresse (niedrige Entropie, oft bekannt) auch nicht vertretbar. Der
-eigentliche `password_hash` bleibt in `users`, weiterhin voll RLS-gebunden —
-`app/billing.py::resolve_metadata_tenant` verlässt sich beim
+**Architektur des E-Mail-Lookups** (dasselbe Henne-Ei-Problem, das früher
+`api_keys` löste: der Mandant ist beim Login noch unbekannt, RLS kann für
+diesen einen Schritt nicht greifen): `user_directory` (Migration
+`012_password_auth.sql`) bildet GLOBAL eindeutig E-Mail → (`tenant_id`,
+`user_id`) ab, speichert aber **bewusst kein Geheimnis** — bei einer
+E-Mail-Adresse (niedrige Entropie, oft bekannt) wäre das auch nicht
+vertretbar. Der eigentliche `password_hash` bleibt in `users`, weiterhin voll
+RLS-gebunden — `app/billing.py::resolve_metadata_tenant` verlässt sich beim
 Stripe-Metadaten-Härten (Security-Review HOCH-1) genau darauf, dass `users`
 RLS-gefiltert ist; das durfte diese Migration nicht antasten. Der Login
 läuft daher zweistufig: `user_directory` per `admin_tx()` nach E-Mail
 durchsuchen (liefert nur `tenant_id`/`user_id`), dann mit bekanntem
 `tenant_id` ganz normal `tenant_tx()` den `password_hash` aus `users` lesen.
 
-`app/auth.py::require_principal()` akzeptiert jetzt **beide** Wege zum
-selben `Principal` — `Authorization: Bearer pk_...` (Entwickler/API-Zugriff,
-unverändert) **oder** das Session-Cookie (`sessions`-Tabelle, gleiche
-Hash-nur-Speicherung wie `api_keys`) — Bearer hat Vorrang. Der Rest der App
-(RLS, Tarif-Limits) unterscheidet nicht, wie authentifiziert wurde.
+`app/auth.py::require_principal()` akzeptiert **ausschließlich** das
+Session-Cookie (`sessions`-Tabelle, gleiche Hash-nur-Speicherung wie früher
+bei `api_keys`) — es gibt keinen Bearer-Zweig mehr, der Authorization-Header
+wird von der Funktionssignatur her gar nicht mehr entgegengenommen. Fehlt das
+Cookie oder ist es ungültig/abgelaufen: 401, ohne Unterscheidung nach außen.
+
+`app/auth.py::create_session()` erzeugt eine Session in einer übergebenen
+Transaktion und wird an **drei** Stellen genutzt: `/v1/auth/signup`,
+`/v1/auth/login` (beide in `app/routes/auth.py`) und dem Stripe-Checkout-
+Autologin (`app/routes/billing.py`, s.u.) — an einer Stelle definiert, damit
+Session-Erzeugung nicht dupliziert ist.
 
 **Frontend** (`static/index.html`, `static/dashboard.html`): der Setup-Bereich
-zeigt jetzt ein E-Mail+Passwort-Formular mit Umschalter Anmelden/Registrieren
-statt eines Schlüssel-Eingabefelds. Alle `fetch()`-Aufrufe senden
-`credentials:"include"`, damit das Cookie mitgeschickt wird. Ein in einer
-**früheren** Sitzung lokal gespeicherter roher Key (`localStorage.pk`) bleibt
-für den Legacy-Bearer-Pfad funktionsfähig (kein Bruch alter Sitzungen); neue
-Logins bieten dafür aber kein Eingabefeld mehr an.
+zeigt ein E-Mail+Passwort-Formular mit Umschalter Anmelden/Registrieren. Alle
+`fetch()`-Aufrufe senden `credentials:"include"`, damit das Cookie
+mitgeschickt wird. Der frühere `localStorage.pk`-Fallback für einen in einer
+Legacy-Sitzung gespeicherten rohen Key ist entfernt — es gibt keinen API-Key
+mehr, den er lesen könnte.
 
 **Getestet** gegen eine echte Postgres-DB (`tests/test_auth_integration.py`):
 Signup→Login mit denselben Daten, generische Fehlermeldung bei
-falschem Passwort **und** unbekannter E-Mail (identischer Text), Session-
-Cookie liefert denselben `Principal` wie ein Bearer-Token für denselben
-Mandanten, abgelaufene/unbekannte Session → 401, Rate-Limits greifen,
-doppelte Signup-E-Mail → 409 ohne verwaisten Mandanten, bestehender
-Bearer-Pfad funktioniert unverändert (Regression).
+falschem Passwort **und** unbekannter E-Mail (identischer Text), zwei
+unabhängige Sessions (zwei Konten, zwei `TestClient`-Instanzen) sehen jeweils
+nur ihren eigenen Mandanten, abgelaufene/unbekannte Session → 401,
+Rate-Limits greifen, doppelte Signup-E-Mail → 409 ohne verwaisten Mandanten,
+und explizit: ein frei erfundener `Authorization: Bearer`-Header wird
+ignoriert und bleibt 401 (`test_bearer_token_path_is_completely_gone`) — der
+Beweis, dass der alte Pfad wirklich weg ist, nicht nur zusätzlich zum Cookie
+"auch noch" akzeptiert wird. **Regressionstests für den Sicherheits-Fund**
+(`tests/test_account_claim_integration.py`): ein passwortlos provisionierter
+(Stripe-artiger) Nutzer hat sofort einen `user_directory`-Eintrag; ein
+Angreifer kann NICHT mehr per `/v1/auth/signup` mit derselben E-Mail einen
+konkurrierenden Mandanten anlegen (kein Übernahme-Fenster mehr); der echte
+Eigentümer kann sich per Signup mit seiner eigenen E-Mail erfolgreich ein
+Passwort setzen und anschließend per `/v1/auth/login` damit anmelden
+("Konto beanspruchen" funktioniert Ende-zu-Ende).
 
-**Bewusst offen / nicht in dieser Runde**:
+**Bewusst offen / nicht in dieser Runde** — seit der API-Key-Entfernung
+**wichtiger** als vorher, weil es jetzt keinen Bearer-Fallback mehr gibt,
+der eine Luecke hier ueberbruecken koennte:
 - **Kein Passwort-Reset per E-Mail** — es gibt keine echte SMTP-/
   E-Mail-Versand-Infrastruktur in dieser Umgebung. Ein Nutzer, der sein
   Passwort vergisst, hat aktuell keinen Selbstbedienungsweg zurück (nur
-  `/admin/provision` bzw. direkter DB-Zugriff durch den Betreiber).
+  `/admin/provision` — legt aber einen NEUEN Mandanten an, kein Passwort-
+  Reset fuer den bestehenden — bzw. direkter DB-Zugriff durch den
+  Betreiber).
 - **Kein OAuth/"Login mit Google"** — bräuchte eine echte OAuth-App-
   Registrierung, die es hier nicht gibt.
-- Bestehende, per `/admin/provision` oder Webhook angelegte `users`-Zeilen
-  haben (noch) kein Passwort und tauchen nicht in `user_directory` auf —
-  sie bleiben dem Bearer-API-Key-Pfad vorbehalten, bis sich jemand mit
-  derselben E-Mail einmal über `/v1/auth/signup` selbst registriert (dann
-  entsteht ein zweiter, separater Mandant mit derselben E-Mail — global
-  eindeutig ist die E-Mail nur innerhalb von `user_directory`, nicht über
-  alle `users`-Zeilen hinweg).
+- **Über Stripe/Shopify provisionierte Mandanten ohne Passwort**: der Kunde
+  vergibt im Checkout kein Passwort. `/admin/provision` verlangt zwingend ein
+  Passwort (Pflichtfeld). Die beiden Webhook-Pfade (Stripe, Shopify) legen
+  weiterhin ohne Passwort an — **aber** (Sicherheits-Fix, siehe Kasten unten)
+  `provision_tenant()` reserviert die E-Mail seit diesem Review in JEDEM Fall
+  sofort in `user_directory`, auch ohne Passwort:
+  - **Stripe**: bekommt sofort eine Session per Auto-Login
+    (`/v1/checkout/{id}/claim`, s.u.). Läuft diese Session nach
+    `SESSION_TTL_DAYS` (30 Tage) ab oder geht das Cookie verloren, kann sich
+    der Kunde jetzt trotzdem wieder Zugriff verschaffen: `/v1/auth/signup`
+    mit genau seiner eigenen E-Mail setzt sein erstes Passwort auf dem
+    BESTEHENDEN Konto ("Konto beanspruchen", s.u.) — kein Passwort-Reset-
+    Flow auf `checkout-success.html` mehr nötig, auch wenn der wie bisher
+    eine bequemere Alternative wäre (nicht in dieser Runde umgesetzt).
+  - **Shopify**: noch kein Auto-Login (kein Live-Redirect auf eine eigene
+    Erfolgsseite wie bei Stripe) — siehe eigener Abschnitt unten. Der Kunde
+    beansprucht sein Konto stattdessen direkt über `/v1/auth/signup`.
+
+> ### Sicherheits-Fund (behoben): E-Mail-Übernahme bei passwortlosen Konten
+>
+> **Fund**: `provision_tenant()` legte bei Stripe-/Shopify-Käufen einen
+> `users`-Eintrag an, aber **keinen** `user_directory`-Eintrag (der wurde nur
+> gesetzt, wenn `password` übergeben wurde). Der 409-Doppelregistrierungs-
+> Schutz in `/v1/auth/signup` griff deshalb **nicht** für diese E-Mail, bis
+> jemand sie über `user_directory` reservierte.
+>
+> **Angriff**: Ein Angreifer, der nur die E-Mail-Adresse eines zahlenden
+> Stripe-Kunden kennt, registriert sich selbst per `POST /v1/auth/signup`
+> mit genau dieser E-Mail (kein Passwort des Opfers nötig — es ist sein
+> eigenes neues Signup) und bekommt einen `user_directory`-Eintrag, der die
+> E-Mail auf seinen eigenen, neuen Free-Mandanten zeigt. Läuft die 30-Tage-
+> Session des echten Kunden ab, kann sich dieser nie mehr mit seiner eigenen
+> E-Mail registrieren (409 — die E-Mail "gehört" jetzt dem Angreifer-
+> Mandanten) — **dauerhafter Verlust des Zugriffs auf das eigene, bezahlte
+> Konto**. Kein Zeitfenster-Zufall: vom Angreifer jederzeit aktiv auslösbar,
+> sobald er die E-Mail kennt.
+>
+> **Fix** (`app/provisioning.py`, `app/routes/auth.py`):
+> 1. `provision_tenant()` reserviert die E-Mail jetzt **immer sofort** in
+>    `user_directory` — auch ohne Passwort. Schließt das Zeitfenster
+>    vollständig: die E-Mail gehört ab dem ersten Kauf/Anlegen "ihrem"
+>    Mandanten, ein Angreifer kann sie nicht mehr für einen eigenen Mandanten
+>    kapern.
+> 2. `POST /v1/auth/signup` unterscheidet jetzt zwei Fälle für eine bereits
+>    in `user_directory` stehende E-Mail (`_claim_existing_account` in
+>    `app/routes/auth.py`): ist `users.password_hash` **NULL** (passwortlos
+>    angelegt, z. B. per Stripe/Shopify), ist das der **echte Eigentümer**,
+>    der jetzt sein erstes Passwort setzt ("Konto beanspruchen") — Passwort
+>    wird auf dem **bestehenden** Nutzer gesetzt, Session für den
+>    **bestehenden** Mandanten erzeugt, **kein** neuer Mandant. Existiert
+>    bereits ein Passwort, bleibt es beim bisherigen 409 (echter
+>    Doppel-Versuch).
+>
+> **Verbleibendes Restrisiko (ehrlich benannt, keine SMTP-Infrastruktur in
+> dieser Umgebung)**: `_claim_existing_account` verifiziert nicht, dass die
+> Person, die das Passwort setzt, wirklich die E-Mail-Adresse kontrolliert —
+> wer zuerst mit einer bekannten Kunden-E-Mail bei `/v1/auth/signup`
+> ankommt, "beansprucht" das Konto. Strukturell dasselbe Problem wie der
+> ursprüngliche Fund, aber zeitlich **vor** statt **nach** dem ersten
+> Kauf-Ereignis: der Angreifer müsste schneller sein als der zahlende Kunde
+> selbst (der direkt nach dem Kauf per Auto-Login bereits eingeloggt ist),
+> nicht nur irgendwann innerhalb der 30-Tage-Session zuschlagen — ein deutlich
+> kleineres Fenster, aber **nicht null**. Echte Behebung bräuchte einen
+> Bestätigungslink (E-Mail-Verifikation vor dem Setzen des Passworts) —
+> **nicht umgesetzt**, da keine echte SMTP-Infrastruktur in dieser Umgebung
+> existiert. Nächster Schritt, sobald SMTP verfügbar ist: `/v1/auth/signup`
+> verschickt bei einer bereits reservierten, passwortlosen E-Mail einen
+> zeitlich begrenzten Bestätigungslink statt das Passwort sofort zu setzen;
+> erst der Klick darauf schaltet das neue Passwort scharf.
 
 ## Onboarding nach Stripe-Kauf (zahlende Kunden)
 
 Ergänzt den Web-Login oben: unmittelbar nach einem Stripe-Kauf ist die
 Checkout-Session-ID (noch) kein Login-Cookie — dafür gibt es einen
-eigenen, einmaligen Abholweg direkt im Anschluss an den Kauf. Bis eben
-musste ein zahlender Kunde nach dem Stripe-Kauf seinen eigenen
-API-Key irgendwo suchen — es gab keine Zustellung, keine Erfolgsseite. Anders
-als bei ChatGPT/Claude/Kimi (Abo kaufen → direkt loslegen) hätte der Kunde
-nie Zugriff auf sein eigenes Konto bekommen. Behoben, ohne neue externe
+eigenen, einmaligen Abholweg direkt im Anschluss an den Kauf. Der Kunde
+vergibt im Stripe-Checkout-Formular kein Passwort — statt eines API-Keys
+(frueher) erzeugt der Webhook deshalb direkt eine Session
+(`app/auth.py::create_session`, dieselbe Logik wie beim Web-Login) und
+liefert sie per `Set-Cookie` aus. Anders als bei ChatGPT/Claude/Kimi (Abo
+kaufen → direkt loslegen) hätte der Kunde sonst seine eigenen
+Zugangsdaten irgendwo suchen müssen. Behoben, ohne neue externe
 Abhängigkeit:
 
-1. `checkout.session.completed` legt beim Neukauf wie bisher Mandant + Key
-   an, hinterlegt den Klartext-Key zusätzlich unter der Stripe-Checkout-
-   Session-ID (`checkout_handoffs`, Migration 010) — ein einmalig
-   abrufbarer, zeitlich begrenzter (60 Min.) Abholschein.
+1. `checkout.session.completed` legt beim Neukauf wie bisher Mandant an,
+   erzeugt zusätzlich eine Session und hinterlegt deren Klartext-Token unter
+   der Stripe-Checkout-Session-ID (`checkout_handoffs.session_token_clear`,
+   Migration 010 + `013_drop_api_keys.sql` für die Umbenennung von
+   `api_key_clear`) — ein einmalig abrufbarer, zeitlich begrenzter
+   (60 Min.) Abholschein.
 2. Stripes `success_url` mit `?session_id={CHECKOUT_SESSION_ID}` (Stripe-
    eigene Konvention) zeigt auf `/checkout-success.html`.
 3. Die Seite pollt `GET /v1/checkout/{session_id}/claim` (kurz, mit
-   wachsendem Abstand — der Webhook kann etwas nach dem Redirect ankommen),
-   speichert den Key automatisch im Browser (`localStorage`, wie beim
-   normalen Chat-Login) und leitet zum Chat weiter — **kein Kopieren, kein
-   Einfügen, kein Suchen** durch den Kunden.
+   wachsendem Abstand — der Webhook kann etwas nach dem Redirect ankommen)
+   mit `credentials:"include"`. Bei Erfolg setzt die Antwort das
+   HttpOnly-Session-Cookie per `Set-Cookie` — der Browser übernimmt es
+   automatisch, die Seite selbst sieht nie ein Klartext-Geheimnis — und
+   leitet zum Chat weiter — **kein Kopieren, kein Einfügen, kein Suchen**
+   durch den Kunden.
 
 Der Abholschein ist nach dem ersten Abruf sofort gelöscht (single-use) —
 ein zweiter Versuch mit derselben Session-ID liefert 404, genau wie eine
 unbekannte oder abgelaufene ID. Getestet gegen eine echte Postgres-DB
-inkl. Beweis, dass der abgeholte Key wirklich funktioniert:
-`tests/test_checkout_handoff.py`. Im Stripe-Dashboard muss die
-`success_url` des Checkout-Links auf
+inkl. Beweis, dass die abgeholte Session wirklich funktioniert (Folgeanfrage
+auf demselben Client ist authentifiziert): `tests/test_checkout_handoff.py`.
+Im Stripe-Dashboard muss die `success_url` des Checkout-Links auf
 `https://<domain>/checkout-success.html?session_id={CHECKOUT_SESSION_ID}`
 gesetzt werden, damit das greift.
+
+**Ehrliche Einschränkung** (siehe auch Abschnitt "Web-Login" oben, Kasten
+"Sicherheits-Fund"): dieser Kunde hat nie ein Passwort gesetzt. Läuft die
+per Auto-Login erzeugte Session ab (30 Tage) oder geht das Cookie verloren,
+kann sich der Kunde seit dem Sicherheits-Fix trotzdem wieder Zugriff
+verschaffen — `POST /v1/auth/signup` mit genau seiner eigenen E-Mail setzt
+sein erstes Passwort auf dem bestehenden Konto ("Konto beanspruchen"), statt
+mit 409 abgelehnt zu werden oder (der ursprüngliche Fund) einem Angreifer
+einen neuen, konkurrierenden Mandanten für dieselbe E-Mail zu erlauben. Ein
+dedizierter Passwort-Setzen-Schritt direkt auf `checkout-success.html` wäre
+komfortabler (kein Umweg über das Signup-Formular), ist aber nicht Teil
+dieser Runde — funktional deckt `/v1/auth/signup` denselben Fall bereits ab.
+Verbleibende, bewusst nicht geschlossene Lücke ohne echte SMTP-
+Infrastruktur: kein Nachweis, dass wer das Passwort setzt, auch wirklich die
+E-Mail-Adresse kontrolliert (Details im Kasten oben).
 
 ## Abrechnung (Phase 4)
 
@@ -252,6 +385,143 @@ Der Stripe-Webhook hält Tarif und Zugang synchron mit dem Abo:
   abgebrochen (`app/http_limits.py`) — schützt auch gegen fehlenden/falschen
   `Content-Length`-Header (Chunked Transfer-Encoding).
 
+## Datei-/Bild-Anhänge im Chat (Vision + Dokument-Kontext)
+
+Backend-Teil dieser Runde (Frontend-UI für Anhänge folgt in einer
+**separaten, späteren Runde** — bewusst nicht in dieser, siehe unten und
+CLAUDE.md: `static/index.html`/`static/dashboard.html` standen wegen
+paralleler Arbeit eines anderen Agenten nicht zur Disposition).
+
+### Was geht
+
+- **Bilder an Vision-fähige Modelle**: `POST /v1/chat` akzeptiert `content`
+  jetzt entweder als einfachen String (wie bisher, unverändert) **oder** als
+  Liste OpenAI-kompatibler Content-Blöcke:
+  ```json
+  {"role": "user", "content": [
+    {"type": "text", "text": "Was zeigt dieses Bild?"},
+    {"type": "image_url", "image_url": {"url": "data:image/png;base64,iVBOR..."}}
+  ]}
+  ```
+  `GET /v1/models` liefert pro Modell zusätzlich ein `"vision": true/false`
+  -Feld (`app/models_catalog.py::KNOWN_MODELS`), damit das (spätere)
+  Frontend die Anhang-Funktion nur bei passenden Modellen anbieten kann.
+- **Dokument-Text-Extraktion**: `POST /v1/attachments/extract` (multipart,
+  Feld `file`) nimmt ein PDF, eine Text- oder Markdown-Datei entgegen und
+  gibt den extrahierten, auf `MAX_DOCUMENT_CHARS` (20 000 Zeichen, analog
+  `MAX_RESULT_CHARS` in `web_fetch_tool.py`) gekürzten Text direkt zurück —
+  **kein** persistenter Datei-Storage, die Datei existiert nur für die Dauer
+  dieser einen Anfrage im Speicher. Funktioniert mit **jedem** registrierten
+  Modell (kein Vision nötig) — der Text ist reiner Chat-Kontext.
+
+### Endpunkt-Design-Entscheidung (und Begründung)
+
+Zwei unterschiedliche Wege für zwei unterschiedliche Anhang-Arten, bewusst
+**nicht** einheitlich über einen Upload-Endpunkt:
+
+- **Bilder → direkt im JSON-Body von `POST /v1/chat`** (Base64-Data-URI im
+  Content-Block, kein separater Upload-Endpunkt). Ein Bild ist typischerweise
+  klein genug, dass der ~33 % Base64-Overhead gegenüber Storage-Management
+  (Upload, Referenz-ID, Aufräumen) die einfachere Wahl ist — und ein Bild ist
+  ohnehin nur für **diese eine** Chat-Anfrage relevant, es gibt nichts zu
+  persistieren.
+- **Dokumente → eigener `POST /v1/attachments/extract`-Endpunkt** (multipart,
+  gibt den extrahierten Text direkt zurück). Dokumente (v.a. PDFs) können
+  deutlich größer als ein Chat-Bild sein UND nur der (kurze, gekürzte)
+  extrahierte **Text** soll in den Chat-Kontext einfließen, nicht die
+  Rohdatei — ein eigener Extraktions-Roundtrip vermeidet, dass potenziell
+  mehrere MB Rohdatei durch den ohnehin schon Base64-kodierten Chat-Request
+  geschleust werden müssten. Kein persistenter Storage nötig (Text wird vom
+  Frontend als zusätzliche `role: "system"`-Nachricht vor die eigentliche
+  User-Nachricht in `messages` gehängt, siehe
+  `app/attachments.py::build_document_context_message`) — kein
+  Aufräum-Problem, weil nichts gespeichert wird.
+
+### Sicherheit / Validierung (`app/attachments.py`, `app/routes/chat.py`)
+
+- **Vision-Pflicht**: Bild-Content wird nur akzeptiert, wenn das gewählte
+  Modell `"vision": true` hat (`models_catalog.supports_vision`) — sonst
+  klare `400` ("Modell '…' unterstützt keine Bild-Eingabe"), nie
+  stillschweigend ignoriert oder ungeprüft an ein Modell weitergereicht, das
+  damit nicht umgehen kann. Gilt **sowohl** für `/v1/chat` **als auch** für
+  `/v1/agents/{id}/chat` (`AgentChatRequest` nutzt dieselbe multimodale
+  `ChatMessage`-Klasse — ohne die gemeinsame `validate_attachments()`-Prüfung
+  hätte der Agenten-Pfad Bild-Anhänge komplett unvalidiert durchgereicht,
+  siehe `tests/test_agents_integration.py::test_agent_chat_rejects_image_for_non_vision_model`).
+- **MIME-Type wird wirklich geprüft** — nicht nur der behauptete
+  `data:image/…`-Präfix. Nach dem Base64-Decode werden die ECHTEN
+  Magic-Bytes/Signaturen (PNG/JPEG/GIF/WebP) geprüft; stimmen sie nicht mit
+  dem behaupteten Typ überein oder passt gar keine bekannte Signatur, wird
+  abgelehnt (`400`) — eine Datei, die sich als Bild ausgibt, aber etwas
+  anderes ist, kommt nie durch. Dieselbe Grundregel für PDFs (Signatur
+  `%PDF-`): ein als PDF deklarierter Upload ohne diese Signatur wird
+  abgelehnt statt als Text durchgereicht zu werden.
+- **Größenlimits (DoS-Schutz)**: `MAX_IMAGE_BYTES` = 5 MB pro Bild (nach
+  Base64-Decode geprüft), `MAX_IMAGES_PER_MESSAGE` = 4 Bilder pro Nachricht,
+  `MAX_DOCUMENT_RAW_BYTES` = 10 MB Rohdatei — **vor** dem (potenziell teuren)
+  PDF-Parsing geprüft, per gestreamtem Read (`app/http_limits.py::read_bounded_upload`,
+  gleiches Prinzip wie bei Webhook-Bodies: ein `Content-Length`-Header allein
+  reicht nicht). Ungültiges Base64 oder kaputte/korrupte Bild-/PDF-Daten
+  geben eine klare `400` zurück, nie einen Crash.
+- **Token-Reservierung**: Bild-Anhänge tragen 0 Zeichen zur
+  zeichenbasierten `_estimate_tokens`-Schätzung bei, verursachen bei den
+  meisten Anbietern aber realen Tokenverbrauch. `app/completions.py`
+  reserviert deshalb zusätzlich `_IMAGE_TOKEN_RESERVE_PER_IMAGE` (grobe,
+  dokumentierte Pauschale, analog `_WEB_TOOL_RESERVE_TOKENS`) pro Bild — nur
+  als Rückfallebene relevant, wenn das Gateway kein `usage`-Objekt liefert;
+  der Normalfall liefert echte Nutzungsdaten und ersetzt die Schätzung
+  sofort danach.
+- **Persistenz**: `messages.content` in der DB ist `text NOT NULL` und
+  speichert keine Bild-Binärdaten (wäre unnötiges Aufblähen der Tabelle) —
+  `app/completions.py::_stringify_content` extrahiert nur den Text-Anteil
+  plus einen Platzhalter (`"[N Bild(er) angehängt]"`).
+
+### Vision-Recherche: welche Modelle unterstützen Bild-Eingabe?
+
+Jedes `"vision"`-Feld in `app/models_catalog.py::KNOWN_MODELS` ist gegen die
+tatsächliche Anbieter-Dokumentation der jeweiligen Modell-**Familie**
+recherchiert (nicht geraten) — volle Begründung je Eintrag im Moduldoc von
+`models_catalog.py`. Kurzfassung:
+
+| Vision = True | Quelle/Begründung |
+|---|---|
+| Anthropic Claude (Opus/Sonnet/Haiku, direkt + über OpenRouter) | Durchgehend multimodal seit Claude 3 — https://docs.claude.com/en/docs/build-with-claude/vision |
+| OpenAI GPT-4o (direkt + über OpenRouter-Familie) | https://platform.openai.com/docs/guides/vision |
+| Google Gemini (OpenRouter) | Nativ multimodal seit Gemini 1.5 |
+| xAI Grok (OpenRouter) | Bild-Eingabe seit Grok-1.5V/Grok-2 |
+| Meta Llama 4 Maverick (OpenRouter) | Meta hat Llama 4 (Scout/Maverick) explizit als nativ multimodal veröffentlicht — anders als Llama 3.x |
+
+| Vision = False | Begründung |
+|---|---|
+| `ollama/llama3.2` (lokal) | Reine Text-Variante — **nicht** mit dem separaten `llama3.2-vision` verwechseln, das hier nicht registriert ist |
+| Moonshot Kimi-K-Reihe, DeepSeek-V-Reihe, Qwen "-Max"-Reihe, Mistral "Large"-Reihe, Zhipu GLM-Chat-Flaggschiff, Microsoft "Phi-4" (ohne "-multimodal"), Cohere Command A, NVIDIA Nemotron | Bei allen ist Bild-Eingabe dokumentiert eine **separate** Modell-Linie (DeepSeek-VL, Qwen-VL, Pixtral, GLM-4V, Phi-4-multimodal, Aya Vision) — das hier registrierte Flaggschiff-Chatmodell selbst ist text-only. Bewusst `False` statt einer optimistischen Vermutung. |
+
+### Was bewusst NICHT geht (kein Bug, kein Scope dieser Runde)
+
+- **Kein Video, keine Audio-Anhänge** — nur Bilder (Vision) und
+  Text-Dokumente (PDF/Text/Markdown).
+- **Kein Frontend-UI** für Anhänge — weder `static/index.html` noch
+  `static/dashboard.html` wurden in dieser Runde angefasst (parallele Arbeit
+  eines anderen, sicherheitskritischen Agenten an genau diesen Dateien).
+  Beide Endpunkte (`POST /v1/chat` mit Bild-Content-Blöcken, `POST
+  /v1/attachments/extract`) sind vollständig funktionsfähig und getestet,
+  aber nur per direktem API-Aufruf (curl/Client) nutzbar, bis das Frontend
+  in einer Folge-Runde ergänzt wird.
+- **Kein OCR für gescannte PDFs** — `pypdf` extrahiert nur eingebetteten
+  Text; ein reiner Bildscan ohne Textebene liefert eine klare `400`
+  ("PDF enthält keinen extrahierbaren Text"), keinen leeren Erfolg.
+- **Keine Persistenz von Bild-Binärdaten** — weder in der DB noch als
+  Datei-Storage (siehe oben, bewusste Design-Entscheidung).
+
+Getestet gegen eine echte Postgres-DB: `tests/test_attachments.py` (reine
+Validierungslogik, ohne DB), `tests/test_chat_vision_integration.py`
+(Vision-Pflicht, Größenlimit, gefälschte MIME-Signatur, Rückwärts-
+Kompatibilität des String-`content`-Pfads, jeweils End-to-End über
+`/v1/chat`), `tests/test_attachments_integration.py` (`/v1/attachments/extract`
+End-to-End inkl. Auth-Pflicht und Größenlimit vor dem Parsen),
+`tests/test_agents_integration.py` (Regression: dieselbe Validierung greift
+auch im Agenten-Chat-Pfad).
+
 ## Tests
 
 ```bash
@@ -262,13 +532,20 @@ pytest -q                                  # Unit-Tests (ohne DB)
 PLATFORM_TEST_DATABASE_URL=postgresql://postgres:...@localhost:5432/platform pytest -q
 ```
 
-Abgedeckt: Tarif-Logik, API-Key-Erzeugung/Hashing, Schema-Struktur (RLS/FORCE,
-Idempotenz, api_keys-Ausnahme) sowie — mit gesetzter Test-DB — der
-Laufzeit-Nachweis, dass `app_rw` nur die Zeilen des gesetzten Mandanten sieht
-und ohne Kontext gar keine. Der neue Web-Login-Pfad (Signup/Login/Session-
-Cookie/Rate-Limits) hat einen eigenen Laufzeit-Nachweis in
-`tests/test_auth_integration.py`. Die CI (`platform-backend-ci.yml`) fährt
-dafür einen Postgres-Service hoch.
+Abgedeckt: Tarif-Logik, Passwort-/Session-Token-Hashing, Schema-Struktur
+(RLS/FORCE, Idempotenz) sowie — mit gesetzter Test-DB — der Laufzeit-Nachweis,
+dass `app_rw` nur die Zeilen des gesetzten Mandanten sieht und ohne Kontext
+gar keine. Der Web-Login-Pfad (Signup/Login/Session-Cookie/Rate-Limits, der
+EINZIGE Auth-Weg) hat einen eigenen Laufzeit-Nachweis in
+`tests/test_auth_integration.py` — inklusive des expliziten Beweises, dass
+ein erfundener `Authorization: Bearer`-Header wirkungslos bleibt (401). Die
+`prov()`-Test-Fixture (`tests/conftest.py`) provisioniert über
+`/admin/provision` (jetzt mit Pflicht-Passwort) und meldet den `TestClient`
+per `/v1/auth/login` an, statt einen API-Key als Header zu reichen; Tests,
+die zwei GLEICHZEITIG gültige Mandanten-Sitzungen brauchen (RLS-Isolation),
+nutzen dafür zwei unabhängige `TestClient`-Instanzen (`client2`/`prov2`) —
+eine einzelne Instanz hält immer nur eine Session in ihrem Cookie-Jar. Die
+CI (`platform-backend-ci.yml`) fährt dafür einen Postgres-Service hoch.
 
 ## Sicherheit
 
@@ -276,28 +553,55 @@ dafür einen Postgres-Service hoch.
   kein BYPASSRLS); Migrationen laufen getrennt über eine privilegierte Rolle.
 - Keine Secrets im Code — alles aus `.env` (in `.gitignore`); Compose ist
   fail-closed (`${VAR:?}`), keine bekannten Default-Passwörter.
-- API-Keys werden nur als SHA-256-Hash gespeichert, Klartext genau einmal
-  ausgegeben. `pk_` + 256-Bit-Zufall.
+- **Kein API-Key mehr** — das gesamte Konzept ist entfernt (Migration
+  `013_drop_api_keys.sql`, `app/auth.py`). Der einzige Authentifizierungsweg
+  ist das Session-Cookie, auch für Entwickler-/Programmzugriff.
 - **Passwörter** (Web-Login) werden mit **bcrypt** gehasht (nicht SHA-256 —
   Passwörter haben niedrige Entropie und brauchen einen absichtlich
   langsamen, Brute-Force-resistenten Hash). Login-Fehlschläge liefern immer
   dieselbe generische Meldung, inkl. eines Dummy-Hash-Vergleichs bei
-  unbekannter E-Mail gegen einen Timing-Seitenkanal.
-- **Session-Cookies** (Web-Login) wie API-Keys nur als SHA-256-Hash
-  gespeichert (hochentropischer Zufallstoken, kein Passwort), `HttpOnly` +
-  `Secure` + `SameSite=Lax`.
-- `/admin/provision` per konstant-Zeit-Vergleich gegen `ADMIN_TOKEN`.
+  unbekannter E-Mail gegen einen Timing-Seitenkanal. **Timing-Konstanz
+  zwischen "E-Mail unbekannt" und "E-Mail bekannt, Passwort falsch"
+  (Security-Review, behoben)**: der "bekannt"-Zweig macht neben dem
+  `admin_tx()`-Lookup zusätzlich eine zweite `tenant_tx()`-DB-Rundreise vor
+  dem bcrypt-Vergleich — ohne eine äquivalente Rundreise im "unbekannt"-Zweig
+  wäre dieser messbar schneller gewesen (eine DB-Rundreise weniger), ein
+  Timing-Seitenkanal, der verraten hätte, ob eine E-Mail existiert. Fix:
+  `app/routes/auth.py::login()` führt im "unbekannt"-Zweig jetzt dieselbe Art
+  Rundreise gegen eine feste, garantiert nie existierende Sentinel-
+  Tenant/User-Kombination aus.
+- **Session-Cookies** (Web-Login) nur als SHA-256-Hash gespeichert
+  (hochentropischer Zufallstoken, kein Passwort), `HttpOnly` + `Secure` +
+  `SameSite=Lax`. Kein CSRF-Token über `SameSite=Lax` hinaus (siehe
+  Abschnitt "Web-Login") — bewusste, dokumentierte Einschränkung dieser
+  Runde, kein Ersatz sollte Cross-Site-Einbettung gebraucht werden.
+- `/admin/provision` per konstant-Zeit-Vergleich gegen `ADMIN_TOKEN`; verlangt
+  jetzt zwingend ein initiales Passwort (Pflichtfeld, gleiche Länge/Grenzen
+  wie `/v1/auth/signup`).
 - Chat: Payload-Grenzen (Länge/Anzahl Messages), Konversations-Eigentumsprüfung,
   generische Upstream-Fehler (kein Info-Leak). Docker-Image als Nicht-root
   mit Healthcheck.
 - **Rate-Limiting** pro Mandant auf `/v1/chat` und `/v1/agents/{id}/chat`
-  (30 Aufrufe/60s, Sliding Window), pro IP auf `/v1/auth/signup` (5/Std.) und
-  pro IP **und** E-Mail auf `/v1/auth/login` (je 8-20/5min, siehe Abschnitt
-  "Web-Login"). In-Process per Default (ein Prozess genuegt fuer lokale
-  Entwicklung); `REDIS_URL` setzen fuer horizontale Skalierung (mehrere
-  Prozesse/Pods teilen sich dann EIN Kontingent statt je eines) — atomar per
-  Lua-Script, siehe `app/ratelimit.py` und `tests/test_ratelimit_redis.py`
-  (Test gegen echten lokalen redis-server).
+  (30 Aufrufe/60s, Sliding Window), pro IP **und** E-Mail auf
+  `/v1/auth/signup` (je 5/Std. — die E-Mail-Komponente ist neu, Security-
+  Review Punkt C: bremst verteilte Masse-Enumeration derselben Ziel-E-Mail
+  über viele IPs, die ein reines IP-Limit nicht abdeckt) und pro IP **und**
+  E-Mail auf `/v1/auth/login` (je 8-20/5min, siehe Abschnitt "Web-Login").
+  Zusätzlich pro IP auf `GET /v1/checkout/{session_id}/claim` (20/5min,
+  Security-Review Punkt B — dieser unauthentifizierte, schreibende Endpunkt
+  hatte bisher **kein** Rate-Limiting, obwohl er wie Login/Signup öffentlich
+  erreichbar ist und eine DB-Schreiboperation auslöst). In-Process per
+  Default (ein Prozess genuegt fuer lokale Entwicklung); `REDIS_URL` setzen
+  fuer horizontale Skalierung (mehrere Prozesse/Pods teilen sich dann EIN
+  Kontingent statt je eines) — atomar per Lua-Script, siehe
+  `app/ratelimit.py` und `tests/test_ratelimit_redis.py` (Test gegen echten
+  lokalen redis-server).
+- **E-Mail-Enumeration über `/v1/auth/signup`** (409 "bereits registriert"
+  verrät, ob eine E-Mail schon existiert): akzeptierter, bei Self-Service-
+  Signup üblicher Trade-off (anders als Login wird dieser Zweig nicht auf
+  Nicht-Unterscheidbarkeit gehärtet) — durch den neuen E-Mail-Rate-Limiter
+  (s.o.) zumindest gegen Masse-Enumeration gebremst, aber nicht grundsätzlich
+  beseitigt.
 
 ## Status / bewusst offen (Phase 3+)
 
@@ -511,8 +815,9 @@ Aus den Reviews dokumentiert, nicht vergessen:
   löst die `conversation_id` jetzt VOR dem Gateway-Aufruf auf
   (`_resolve_conversation_id`) und `_stream_events` sendet sie als ersten
   SSE-Chunk. `static/index.html` liest sie aus dem Stream, speichert sie
-  pro API-Key in `localStorage` und hängt Folgenachrichten wirklich an
-  dieselbe Konversation an; ein „+ Neu"-Button startet bewusst eine neue.
+  pro Mandant (Namensraum: `tenant_id`, seit der API-Key-Entfernung nicht
+  mehr pro Schlüssel) in `localStorage` und hängt Folgenachrichten wirklich
+  an dieselbe Konversation an; ein „+ Neu"-Button startet bewusst eine neue.
   Eine veraltete gespeicherte ID (404 vom Server) wird clientseitig einmalig
   automatisch verworfen und als neue Konversation fortgesetzt statt den Chat
   tot enden zu lassen. Echter Regressionstest gegen eine echte Postgres-DB

@@ -200,16 +200,17 @@ def link_stripe_customer(tenant_id: str, customer_id: str, subscription_id: str 
             _do(c)
 
 
-def store_checkout_handoff(stripe_session_id: str, tenant_id: str, api_key_clear: str, conn=None) -> None:
-    """Legt den einmalig abrufbaren Abholschein fuer den frisch erzeugten
-    Klartext-API-Key ab -- die Erfolgsseite nach dem Stripe-Checkout holt ihn
-    per stripe_session_id ab (claim_checkout_handoff), damit der Kunde direkt
-    loslegen kann statt seinen eigenen API-Key suchen zu muessen."""
+def store_checkout_handoff(stripe_session_id: str, tenant_id: str, session_token_clear: str, conn=None) -> None:
+    """Legt den einmalig abrufbaren Abholschein fuer die frisch erzeugte
+    Session ab -- die Erfolgsseite nach dem Stripe-Checkout holt ihn per
+    stripe_session_id ab (claim_checkout_handoff), setzt das Session-Cookie
+    und der Kunde landet direkt eingeloggt im Chat, statt sich selbst
+    anmelden zu muessen (er hat im Checkout ja kein Passwort vergeben)."""
     def _do(c):
         c.execute(
-            "INSERT INTO checkout_handoffs (stripe_session_id, tenant_id, api_key_clear) "
+            "INSERT INTO checkout_handoffs (stripe_session_id, tenant_id, session_token_clear) "
             "VALUES (%s,%s,%s) ON CONFLICT (stripe_session_id) DO NOTHING",
-            (stripe_session_id, tenant_id, api_key_clear),
+            (stripe_session_id, tenant_id, session_token_clear),
         )
     if conn is not None:
         _do(conn)
@@ -226,7 +227,7 @@ _CHECKOUT_HANDOFF_TTL_MINUTES = 60
 
 
 def claim_checkout_handoff(stripe_session_id: str) -> dict | None:
-    """Liefert (tenant_id, api_key_clear) genau EINMAL und loescht den
+    """Liefert (tenant_id, session_token_clear) genau EINMAL und loescht den
     Abholschein danach unwiderruflich -- weder erneuter Abruf noch
     abgelaufene Scheine liefern etwas."""
     with admin_tx() as conn:
@@ -238,12 +239,12 @@ def claim_checkout_handoff(stripe_session_id: str) -> dict | None:
             "DELETE FROM checkout_handoffs "
             "WHERE stripe_session_id = %s "
             "AND created_at > now() - (%s * interval '1 minute') "
-            "RETURNING tenant_id, api_key_clear",
+            "RETURNING tenant_id, session_token_clear",
             (stripe_session_id, _CHECKOUT_HANDOFF_TTL_MINUTES),
         ).fetchone()
     if row is None:
         return None
-    return {"tenant_id": str(row["tenant_id"]), "api_key": row["api_key_clear"]}
+    return {"tenant_id": str(row["tenant_id"]), "session_token": row["session_token_clear"]}
 
 
 def apply_subscription_state(

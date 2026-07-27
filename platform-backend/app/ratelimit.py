@@ -20,9 +20,19 @@ import time
 import uuid
 from collections import deque
 
-from fastapi import HTTPException
+from fastapi import HTTPException, Request
 
 from .config import settings
+
+
+def client_ip(request: Request) -> str:
+    """Client-IP fuer IP-gebundene Limiter (Signup, Login, Checkout-Claim).
+    An EINER Stelle definiert statt in jeder Route dupliziert. Ein fehlender
+    `request.client` (z.B. bestimmte Test-/Proxy-Setups ohne echten
+    Transport) faellt auf eine feste Zeichenkette zurueck statt zu crashen --
+    das Limit greift dann eben global statt pro Quelle, lieber das als ein
+    500er auf einem unauthentifizierten Endpunkt."""
+    return request.client.host if request.client else "unknown"
 
 
 class SlidingWindowLimiter:
@@ -145,6 +155,13 @@ chat_limiter = _build_limiter(max_calls=30, window_s=60.0)
 # neue Registrierung per Definition noch keine bekannte E-Mail-Identitaet hat.
 signup_limiter = _build_limiter(max_calls=5, window_s=3600.0)
 
+# Zusaetzlich pro E-Mail (Security-Review, Punkt C): das 409 "bereits
+# registriert" verraet, ob eine E-Mail schon existiert (akzeptierter
+# Self-Service-Signup-Trade-off, siehe README) -- ein reines IP-Limit bremst
+# aber nur EINEN Absender, nicht verteilte Massen-Enumeration derselben
+# Ziel-E-Mail ueber viele IPs. Analog zu login_limiter_email.
+signup_limiter_email = _build_limiter(max_calls=5, window_s=3600.0)
+
 # Login (/v1/auth/login): Brute-Force-Schutz in ZWEI Richtungen --
 #   - pro IP: verhindert, dass ein Angreifer viele verschiedene E-Mails von
 #     einer Quelle aus durchprobiert (Credential Stuffing).
@@ -153,3 +170,11 @@ signup_limiter = _build_limiter(max_calls=5, window_s=3600.0)
 #     abdecken.
 login_limiter_ip = _build_limiter(max_calls=20, window_s=300.0)
 login_limiter_email = _build_limiter(max_calls=8, window_s=300.0)
+
+# Checkout-Claim (/v1/checkout/{session_id}/claim, app/routes/billing.py):
+# anders als Login/Signup war dieser unauthentifizierte Endpunkt bisher OHNE
+# Limiter, obwohl er eine DB-Schreiboperation ausloest (Session anlegen,
+# Handoff-Zeile loeschen) -- ein Angreifer koennte beliebig viele
+# Session-IDs durchprobieren/DB-Last erzeugen. Nur pro IP (kein E-Mail-Bezug
+# moeglich, die Session-ID ist das einzige, was der Aufrufer mitbringt).
+checkout_claim_limiter = _build_limiter(max_calls=20, window_s=300.0)

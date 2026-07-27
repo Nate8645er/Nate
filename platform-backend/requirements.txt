@@ -12,6 +12,15 @@ httpx==0.28.1
 pydantic[email]==2.10.4
 prometheus-client==0.26.0
 redis==8.0.1
+# python-multipart: FastAPI braucht das explizit fuer multipart/form-data
+# (Datei-Uploads, z.B. UploadFile in POST /v1/attachments/extract) -- ist
+# NICHT in fastapi selbst gebuendelt.
+python-multipart==0.0.32
+# pypdf: PDF-Textextraktion fuer Dokument-Anhaenge (app/attachments.py).
+# Weit verbreitete, aktiv gepflegte, reine Python-Bibliothek -- kein
+# natives Poppler/System-Abhaengigkeit noetig (anders als z.B. pdfminer.six
+# mit schwereren Abhaengigkeiten oder pymupdf mit AGPL-Lizenz).
+pypdf==6.14.2
 composio-core==0.7.21
 # ACHTUNG -- composio-core==0.7.21 (aktuellste Version) schreibt selbst
 # "Pillow<11,>=10.2.0" vor. Pillow 10.4.0 (das Maximum in dieser Vorgabe) hat

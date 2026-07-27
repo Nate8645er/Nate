@@ -49,7 +49,7 @@ def close_pool() -> None:
 @contextlib.contextmanager
 def admin_tx() -> Iterator[psycopg.Connection]:
     """Transaktion OHNE Mandantenkontext — nur fuer nicht-RLS-Tabellen
-    (plans, tenants, api_keys)."""
+    (plans, tenants, sessions, user_directory, checkout_handoffs)."""
     with get_pool().connection() as conn:
         with conn.transaction():
             yield conn

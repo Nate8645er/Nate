@@ -91,6 +91,20 @@ async def orders_paid(request: Request):
         )
     log.info("Mandant via Store-Kauf freigeschaltet: tenant=%s plan=%s", result["tenant_id"], plan_code)
 
-    # Hinweis: Der Klartext-Key wird hier NICHT an Shopify zurueckgegeben. Die
-    # Zustellung an den Kunden (E-Mail) uebernimmt ein separater Schritt.
+    # Bewusst offene Luecke (bestand bereits vor der Session-Cookie-
+    # Umstellung, ist keine neue Regression): der Kunde hat im
+    # Shopify-Checkout kein Passwort vergeben, und anders als beim
+    # Stripe-Checkout (app/routes/billing.py) gibt es hier keinen
+    # Live-Redirect auf eine eigene Erfolgsseite, ueber den eine frisch
+    # erzeugte Session per Cookie ausgeliefert werden koennte.
+    # provision_tenant() legt den Mandanten deshalb OHNE Passwort an -- aber
+    # (Sicherheits-Fix, siehe app/provisioning.py) SEHR WOHL mit sofortigem
+    # `user_directory`-Eintrag. Der Kunde hat also KEINEN Auto-Login wie bei
+    # Stripe, aber einen regulaeren Weg zurueck: `/v1/auth/signup` mit
+    # genau dieser E-Mail beansprucht das bestehende Konto und setzt das
+    # erste Passwort (`_claim_existing_account` in `app/routes/auth.py`),
+    # statt mit 409 abgelehnt zu werden oder (der urspruengliche Fund) einem
+    # Angreifer einen konkurrierenden Mandanten fuer dieselbe E-Mail zu
+    # erlauben. Ein direkter Live-Redirect mit Auto-Login waere komfortabler,
+    # ist aber nicht Teil dieser Runde.
     return {"status": "provisioned", "tenant_id": result["tenant_id"], "plan": plan_code}

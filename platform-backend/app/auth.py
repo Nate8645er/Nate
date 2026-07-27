@@ -1,26 +1,31 @@
-"""Authentifizierung: mandantengebundene API-Schluessel UND Web-Sessions.
+"""Authentifizierung: ausschliesslich Web-Sessions (HttpOnly-Cookie).
 
-Zwei gleichwertige Wege zum selben `Principal`:
-  - `Authorization: Bearer <klartext-key>` -- Entwickler/API-Zugriff. Gespeichert
-    wird nur der SHA-256-Hash, Lookup ueber `api_keys`.
+Es gibt EINEN Weg zu einem `Principal`:
   - Session-Cookie (HttpOnly) -- Web-Login per E-Mail+Passwort
-    (`app/routes/auth.py`). Gespeichert wird nur der SHA-256-Hash des
-    Session-Tokens, Lookup ueber `sessions`. Beide Tabellen sind bewusst NICHT
-    RLS-gebunden -- Henne-Ei-Problem: der Mandant wird ja erst durch den
-    Lookup bestimmt, RLS haette sich also selbst blockiert (der Fund setzt
-    ausserdem in beiden Faellen bereits Kenntnis eines hochentropischen
-    Geheimnisses voraus, nicht nur einer erratbaren ID).
+    (`app/routes/auth.py`, `app/routes/billing.py` fuer den Stripe-
+    Checkout-Autologin). Gespeichert wird nur der SHA-256-Hash des
+    Session-Tokens, Lookup ueber `sessions`. Diese Tabelle ist bewusst
+    NICHT RLS-gebunden -- Henne-Ei-Problem: der Mandant wird ja erst durch
+    den Lookup bestimmt, RLS haette sich also selbst blockiert (der Fund
+    setzt ausserdem bereits Kenntnis eines hochentropischen Geheimnisses
+    voraus, nicht nur einer erratbaren ID).
+
+Der frueher parallel existierende `Authorization: Bearer pk_...`-API-
+Schluessel-Pfad (Entwickler-/Programmzugriff) ist bewusst entfernt worden --
+siehe Migration `013_drop_api_keys.sql` und `app/provisioning.py`. Es gibt
+keinen Weg mehr, sich ohne Browser-Session zu authentifizieren.
 """
 from __future__ import annotations
 
+import datetime as dt
 import hashlib
 import secrets
 from dataclasses import dataclass
 
 import bcrypt
-from fastapi import Cookie, Header, HTTPException
+from fastapi import Cookie, HTTPException, Response
 
-# Name des Session-Cookies (siehe app/routes/auth.py) und Gueltigkeitsdauer.
+# Name des Session-Cookies und Gueltigkeitsdauer.
 SESSION_COOKIE_NAME = "session"
 SESSION_TTL_DAYS = 30
 
@@ -41,17 +46,11 @@ def hash_key(clear: str) -> str:
     return hashlib.sha256(clear.encode("utf-8")).hexdigest()
 
 
-def generate_key() -> tuple[str, str]:
-    """Erzeugt (klartext, hash). Klartext wird dem Kunden genau einmal gezeigt."""
-    clear = "pk_" + secrets.token_urlsafe(32)
-    return clear, hash_key(clear)
-
-
 def generate_session_token() -> tuple[str, str]:
-    """Erzeugt (klartext, hash) fuer ein Session-Cookie. Gleiche Technik wie
-    API-Keys (hochentropischer Zufallswert, nur der Hash landet in der DB) --
-    anders als ein Passwort hat ein Session-Token volle Entropie, SHA-256
-    reicht hier (kein Brute-Force-Ziel wie bei niedrigentropischen Passwoertern)."""
+    """Erzeugt (klartext, hash) fuer ein Session-Cookie. Hochentropischer
+    Zufallswert (secrets.token_urlsafe(32), 256 Bit) -- SHA-256 auf den Hash
+    reicht hier (kein Brute-Force-Ziel wie bei niedrigentropischen
+    Passwoertern), nur der Hash landet in der DB."""
     clear = secrets.token_urlsafe(32)
     return clear, hash_key(clear)
 
@@ -60,7 +59,7 @@ def hash_password(password: str) -> str:
     """bcrypt statt SHA-256: Passwoerter haben niedrige Entropie (Menschen
     denken sie sich aus) und muessen absichtlich LANGSAM/Brute-Force-resistent
     gehasht werden -- SHA-256 waere hier falsch (das ist nur fuer die bereits
-    hochentropischen API-Keys/Session-Tokens oben in Ordnung)."""
+    hochentropischen Session-Tokens oben in Ordnung)."""
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("ascii")
 
 
@@ -81,6 +80,47 @@ def verify_password(password: str, password_hash: str) -> bool:
 # als eine bekannte E-Mail mit falschem Passwort, was das "nie verraten ob
 # die E-Mail existiert"-Ziel per Timing-Seitenkanal unterlaufen wuerde.
 DUMMY_PASSWORD_HASH = hash_password("nur-fuer-timing-konstanz-nie-echt-verwendet")
+
+
+def create_session(conn, tenant_id: str, user_id: str) -> str:
+    """Legt eine neue Session in der uebergebenen Transaktion an und gibt den
+    KLARTEXT-Token zurueck (wird nur als Cookie an den Client gereicht, nie
+    gespeichert). Gemeinsam genutzt von `app/routes/auth.py` (Signup/Login)
+    und `app/routes/billing.py` (Stripe-Checkout-Autologin ohne Passwort) --
+    an EINER Stelle definiert, damit Session-Erzeugung nicht dupliziert
+    wird."""
+    token, token_hash = generate_session_token()
+    expires_at = dt.datetime.now(dt.timezone.utc) + dt.timedelta(days=SESSION_TTL_DAYS)
+    conn.execute(
+        "INSERT INTO sessions (token_hash, tenant_id, user_id, expires_at) "
+        "VALUES (%s, %s, %s, %s)",
+        (token_hash, tenant_id, user_id, expires_at),
+    )
+    return token
+
+
+def set_session_cookie(response: Response, token: str) -> None:
+    """Setzt das HttpOnly-Session-Cookie auf der uebergebenen Response.
+    Gemeinsam genutzt von `app/routes/auth.py` und `app/routes/billing.py`
+    (Checkout-Claim).
+
+    HttpOnly: per JavaScript nicht auslesbar (kein XSS-Diebstahl des
+    Session-Tokens). Secure: nur ueber HTTPS uebertragen. SameSite=Lax:
+    bewusste, dokumentierte CSRF-Haltung fuer diese Runde -- schuetzt gegen
+    die meisten Cross-Site-Faelle (Cookie wird bei einfachen Cross-Site-
+    Requests wie <img>/<form> NICHT mitgeschickt), ohne ein zusaetzliches
+    CSRF-Token einzufuehren. Reicht fuer eine Same-Origin-App ohne
+    Cross-Site-Formulare; kein Ersatz fuer ein echtes CSRF-Token, sollte
+    diese App spaeter Cross-Site-Einbettung brauchen."""
+    response.set_cookie(
+        key=SESSION_COOKIE_NAME,
+        value=token,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=SESSION_TTL_DAYS * 86400,
+        path="/",
+    )
 
 
 def _row_to_principal(row) -> Principal:
@@ -104,40 +144,10 @@ _PRINCIPAL_COLUMNS = """
 """
 
 
-def _principal_from_api_key(token: str):
-    key_hash = hash_key(token)
-
-    from .db import admin_tx  # lazy: haelt dieses Modul ohne DB importierbar
-
-    # Lookup laeuft ueber admin_tx (api_keys-Join braucht Tenant-uebergreifende
-    # Sicht auf genau diese eine Zeile; RLS wuerde sich sonst selbst blockieren,
-    # weil der Mandant erst hier bestimmt wird).
-    with admin_tx() as conn:
-        row = conn.execute(
-            f"""
-            SELECT {_PRINCIPAL_COLUMNS}
-            FROM api_keys k
-            JOIN tenants t ON t.id = k.tenant_id
-            JOIN plans   p ON p.id = t.plan_id
-            WHERE k.key_hash = %s
-            """,
-            (key_hash,),
-        ).fetchone()
-        if row is None:
-            raise HTTPException(status_code=401, detail="Ungueltiger API-Schluessel")
-        conn.execute(
-            "UPDATE api_keys SET last_used_at = now() WHERE key_hash = %s", (key_hash,)
-        )
-
-    if row["status"] != "active":
-        raise HTTPException(status_code=403, detail=f"Mandant {row['status']}")
-    return _row_to_principal(row)
-
-
 def _principal_from_session(token: str):
     token_hash = hash_key(token)
 
-    from .db import admin_tx  # lazy, wie oben
+    from .db import admin_tx  # lazy: haelt dieses Modul ohne DB importierbar
 
     with admin_tx() as conn:
         row = conn.execute(
@@ -165,17 +175,11 @@ def _principal_from_session(token: str):
 
 
 async def require_principal(
-    authorization: str = Header(default=""),
     session: str | None = Cookie(default=None, alias=SESSION_COOKIE_NAME),
 ) -> Principal:
-    """Bearer-API-Key ODER Session-Cookie -- beide fuehren zum selben
-    `Principal`, der Rest der App (RLS, Tarif-Limits) unterscheidet nicht,
-    wie authentifiziert wurde. Bearer hat Vorrang (unveraendertes Verhalten
-    fuer bestehende API-Clients)."""
-    if authorization.lower().startswith("bearer "):
-        return _principal_from_api_key(authorization[7:].strip())
+    """Ausschliesslich Session-Cookie -- kein Bearer-Token-Pfad mehr. Fehlt
+    das Cookie oder ist es ungueltig/abgelaufen, ist das Ergebnis in beiden
+    Faellen 401 (kein Unterschied nach aussen, siehe `_principal_from_session`)."""
     if session:
         return _principal_from_session(session)
-    raise HTTPException(
-        status_code=401, detail="Anmeldung erforderlich (Bearer-Token oder Session-Cookie)"
-    )
+    raise HTTPException(status_code=401, detail="Anmeldung erforderlich (Session-Cookie)")

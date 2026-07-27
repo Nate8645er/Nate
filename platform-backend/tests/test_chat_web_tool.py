@@ -66,10 +66,9 @@ def test_web_tool_disabled_by_default_unchanged_behavior(client, prov, monkeypat
     ])
     monkeypatch.setattr("app.completions.httpx.AsyncClient", fake)
 
-    key = prov("starter")
-    h = {"Authorization": "Bearer " + key}
+    prov("starter")
     r = client.post(
-        "/v1/chat", headers=h,
+        "/v1/chat",
         json={"model": "ollama/llama3.2", "messages": [{"role": "user", "content": "Hi"}]},
     )
     assert r.status_code == 200, r.text
@@ -86,10 +85,9 @@ def test_web_tool_enabled_attaches_schema_when_model_uses_no_tool(client, prov, 
     ])
     monkeypatch.setattr("app.completions.httpx.AsyncClient", fake)
 
-    key = prov("starter")
-    h = {"Authorization": "Bearer " + key}
+    prov("starter")
     r = client.post(
-        "/v1/chat", headers=h,
+        "/v1/chat",
         json={
             "model": "ollama/llama3.2",
             "messages": [{"role": "user", "content": "Hi"}],
@@ -124,10 +122,9 @@ def test_web_tool_call_runs_and_triggers_second_gateway_round(client, prov, monk
 
     monkeypatch.setattr("app.completions.web_fetch", _fake_web_fetch)
 
-    key = prov("starter")
-    h = {"Authorization": "Bearer " + key}
+    prov("starter")
     r = client.post(
-        "/v1/chat", headers=h,
+        "/v1/chat",
         json={
             "model": "ollama/llama3.2",
             "messages": [{"role": "user", "content": "Was steht auf http://example.com/?"}],
@@ -159,7 +156,7 @@ def test_web_tool_call_runs_and_triggers_second_gateway_round(client, prov, monk
     assert tool_msg["content"] == "Hallo Welt."
 
     # Verbrauch aus BEIDEN Rundgaengen zaehlt (10+20 in, 5+8 out = 43 total).
-    usage = client.get("/v1/usage", headers=h).json()
+    usage = client.get("/v1/usage").json()
     assert usage["month"]["tokens_total"] == 43
 
 
@@ -180,10 +177,9 @@ def test_web_tool_calls_capped_at_three_per_request(client, prov, monkeypatch):
 
     monkeypatch.setattr("app.completions.web_fetch", _fake_web_fetch)
 
-    key = prov("starter")
-    h = {"Authorization": "Bearer " + key}
+    prov("starter")
     r = client.post(
-        "/v1/chat", headers=h,
+        "/v1/chat",
         json={
             "model": "ollama/llama3.2",
             "messages": [{"role": "user", "content": "Lies mir 5 Seiten vor"}],
@@ -238,10 +234,9 @@ def test_web_tool_ignored_on_streaming_path(client, prov, monkeypatch):
 
     monkeypatch.setattr("app.completions.httpx.AsyncClient", _FakeStreamClient())
 
-    key = prov("starter")
-    h = {"Authorization": "Bearer " + key}
+    prov("starter")
     with client.stream(
-        "POST", "/v1/chat", headers=h,
+        "POST", "/v1/chat",
         json={
             "model": "ollama/llama3.2",
             "messages": [{"role": "user", "content": "Hi"}],

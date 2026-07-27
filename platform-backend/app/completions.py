@@ -55,6 +55,52 @@ _RESPONSE_RESERVE_TOKENS = 4000
 # _estimate_tokens (~4 Zeichen/Token), bewusst grosszuegig statt exakt.
 _WEB_TOOL_RESERVE_TOKENS = MAX_TOOL_CALLS_PER_REQUEST * MAX_RESULT_CHARS // 4
 
+# Grobe, dokumentierte Pauschale pro Bild im Prompt (Vision-Anhaenge, siehe
+# routes/chat.py): Bild-Content-Bloecke tragen 0 Zeichen zur zeichenbasierten
+# _estimate_tokens-Schaetzung bei, verursachen bei den meisten Anbietern aber
+# einen spuerbaren echten Tokenverbrauch (Groessenordnung abhaengig von
+# Aufloesung/Anbieter). Ohne diesen Puffer wuerde eine Anfrage mit mehreren
+# Bildern und wenig Text systematisch zu knapp reserviert, WENN das Gateway
+# kein usage-Objekt liefert (der Normalfall liefert echte Nutzungsdaten und
+# ersetzt diese Schaetzung sofort danach -- siehe _persist_and_release*).
+_IMAGE_TOKEN_RESERVE_PER_IMAGE = 1500
+
+
+def _count_images(messages: list[dict]) -> int:
+    """Zaehlt `image_url`-Content-Bloecke ueber alle Nachrichten hinweg --
+    fuer die Vorab-Token-Reservierung (siehe _IMAGE_TOKEN_RESERVE_PER_IMAGE)."""
+    total = 0
+    for m in messages:
+        content = m.get("content")
+        if isinstance(content, list):
+            total += sum(1 for b in content if b.get("type") == "image_url")
+    return total
+
+
+def _stringify_content(content) -> str:
+    """Wandelt ein Nachrichten-`content`-Feld (String ODER Liste multimodaler
+    Content-Bloecke, siehe routes/chat.py) in reinen Text um -- fuer die
+    zeichenbasierte Token-Schaetzung (_estimate_tokens) UND fuer die
+    Persistenz in `messages.content` (DB-Spalte ist `text NOT NULL`, kann
+    keine Bild-Binaerdaten aufnehmen -- und sollte es auch nicht, das waere
+    unnoetiges Aufblaehen der Tabelle). Bild-Bloecke werden durch einen
+    kurzen Platzhalter ersetzt, damit ihr Vorhandensein trotzdem sichtbar
+    bleibt."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts: list[str] = []
+        n_images = 0
+        for block in content:
+            if block.get("type") == "text":
+                parts.append(block.get("text", ""))
+            elif block.get("type") == "image_url":
+                n_images += 1
+        if n_images:
+            parts.append(f"[{n_images} Bild(er) angehaengt]")
+        return "\n".join(p for p in parts if p)
+    return ""
+
 
 def _reserve_tokens(conn, tenant_id: str, estimate: int, limit: int) -> bool:
     """Atomar: reserviert `estimate` Tokens, wenn (bereits verbrauchte +
@@ -132,7 +178,10 @@ def _validate_conversation(tenant_id: str, conversation_id) -> None:
 
 
 def _reserve_or_429(
-    principal: Principal, prompt_text: str, enable_web_tool: bool = False
+    principal: Principal,
+    prompt_text: str,
+    enable_web_tool: bool = False,
+    extra_reserve_tokens: int = 0,
 ) -> int:
     """Reserviert atomar das geschaetzte Kontingent fuer diesen Aufruf und
     gibt den reservierten Betrag zurueck (zum spaeteren Freigeben). Wirft 429,
@@ -140,8 +189,13 @@ def _reserve_or_429(
 
     `enable_web_tool=True` haengt _WEB_TOOL_RESERVE_TOKENS an die Reservierung
     an, weil in diesem Fall zusaetzliche Tool-Ergebnisse in den zweiten
-    Gateway-Rundgang einfliessen koennen (siehe _WEB_TOOL_RESERVE_TOKENS)."""
-    reserve_estimate = _estimate_tokens(prompt_text) + _RESPONSE_RESERVE_TOKENS
+    Gateway-Rundgang einfliessen koennen (siehe _WEB_TOOL_RESERVE_TOKENS).
+    `extra_reserve_tokens` deckt weitere, vom Aufrufer bereits bezifferte
+    Zusatzverbraeuche ab (aktuell: Bild-Anhaenge, siehe
+    _IMAGE_TOKEN_RESERVE_PER_IMAGE/_count_images)."""
+    reserve_estimate = (
+        _estimate_tokens(prompt_text) + _RESPONSE_RESERVE_TOKENS + extra_reserve_tokens
+    )
     if enable_web_tool:
         reserve_estimate += _WEB_TOOL_RESERVE_TOKENS
     with tenant_tx(principal.tenant_id) as conn:
@@ -344,8 +398,9 @@ async def run_chat(
     out_messages = messages
     if system_prompt:
         out_messages = [{"role": "system", "content": system_prompt}, *messages]
-    prompt_text = "\n".join(m.get("content", "") for m in out_messages)
-    reserve_estimate = _reserve_or_429(principal, prompt_text, enable_web_tool)
+    prompt_text = "\n".join(_stringify_content(m.get("content", "")) for m in out_messages)
+    image_reserve = _count_images(messages) * _IMAGE_TOKEN_RESERVE_PER_IMAGE
+    reserve_estimate = _reserve_or_429(principal, prompt_text, enable_web_tool, image_reserve)
 
     tools = [WEB_FETCH_TOOL_SCHEMA] if enable_web_tool else None
     headers = _gateway_headers()
@@ -392,7 +447,9 @@ async def run_chat(
             _release_reservation(conn, principal.tenant_id, reserve_estimate)
         raise
 
-    last_user = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
+    last_user = _stringify_content(
+        next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
+    )
     conversation_id = await _persist_and_release_with_retry(
         principal, conversation_id, last_user, model, answer, tokens_in, tokens_out, reserve_estimate,
     )
@@ -489,7 +546,9 @@ async def _stream_events(
             model, tokens_in, tokens_out,
         )
 
-    last_user = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
+    last_user = _stringify_content(
+        next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
+    )
     await _persist_and_release_with_retry(
         principal, conversation_id, last_user, model, answer, tokens_in, tokens_out, reserve_estimate,
     )
@@ -515,8 +574,9 @@ async def stream_chat(
     out_messages = messages
     if system_prompt:
         out_messages = [{"role": "system", "content": system_prompt}, *messages]
-    prompt_text = "\n".join(m.get("content", "") for m in out_messages)
-    reserve_estimate = _reserve_or_429(principal, prompt_text)
+    prompt_text = "\n".join(_stringify_content(m.get("content", "")) for m in out_messages)
+    image_reserve = _count_images(messages) * _IMAGE_TOKEN_RESERVE_PER_IMAGE
+    reserve_estimate = _reserve_or_429(principal, prompt_text, extra_reserve_tokens=image_reserve)
 
     generator = _stream_events(
         principal, model, messages, conversation_id, out_messages,

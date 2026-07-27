@@ -20,10 +20,16 @@ pytestmark = pytest.mark.skipif(
 
 
 def _new_tenant(client, plan="free"):
+    # Kein Session-Login noetig -- diese Tests rufen _reserve_tokens/
+    # _release_reservation direkt auf (kein HTTP-Auth-Pfad involviert), nur
+    # das Passwort-Feld ist seit der API-Key-Entfernung Pflicht.
     r = client.post(
         "/admin/provision",
         headers={"X-Admin-Token": "test-admin"},
-        json={"tenant_name": "ConcurrencyT", "owner_email": "conc@example.ch", "plan_code": plan},
+        json={
+            "tenant_name": "ConcurrencyT", "owner_email": "conc@example.ch",
+            "plan_code": plan, "password": "concurrency-test-password-1",
+        },
     )
     assert r.status_code == 200, r.text
     return r.json()["tenant_id"]

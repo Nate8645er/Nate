@@ -32,10 +32,11 @@ def test_path_params_use_route_template_not_raw_id():
     Zeitreihe pro ID."""
     from fastapi.testclient import TestClient
 
-    # Falsches Schema (nicht "Bearer") -> require_principal wirft 401 SOFORT,
-    # ohne DB-Zugriff (auth.py prueft den Prefix zuerst). Das Routing (und
-    # damit scope["route"]) ist zu diesem Zeitpunkt trotzdem schon aufgeloest
-    # — passendes Muster fuer diesen DB-freien Testlauf.
+    # Kein Session-Cookie vorhanden -> require_principal wirft 401 SOFORT,
+    # ohne DB-Zugriff (der Authorization-Header wird gar nicht mehr gelesen,
+    # es gibt keinen Bearer-Pfad mehr). Das Routing (und damit
+    # scope["route"]) ist zu diesem Zeitpunkt trotzdem schon aufgeloest —
+    # passendes Muster fuer diesen DB-freien Testlauf.
     client = TestClient(app)
     client.get("/v1/agents/11111111-1111-1111-1111-111111111111", headers={"Authorization": "Token x"})
     client.get("/v1/agents/22222222-2222-2222-2222-222222222222", headers={"Authorization": "Token x"})

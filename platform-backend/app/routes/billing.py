@@ -14,9 +14,9 @@ import json
 import logging
 import os
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 
-from ..auth import Principal, require_principal
+from ..auth import Principal, create_session, require_principal, set_session_cookie
 from ..billing import (
     apply_subscription_state,
     claim_checkout_handoff,
@@ -32,6 +32,7 @@ from ..billing import (
 from ..db import admin_tx, tenant_tx
 from ..http_limits import read_bounded_body
 from ..provisioning import provision_tenant
+from ..ratelimit import checkout_claim_limiter, client_ip
 
 router = APIRouter()
 log = logging.getLogger("platform.billing.routes")
@@ -104,11 +105,15 @@ async def stripe_webhook(request: Request):
             with admin_tx() as conn:
                 if not claim_event(conn, "stripe", event_id):
                     return {"status": "duplicate_ignored", "event": event_id}
+                # Kein Passwort vom Kunden vorhanden (Checkout-Formular fragt
+                # keins ab) -- statt eines API-Keys wird direkt eine Session
+                # erzeugt (create_session, dieselbe Logik wie beim Web-Login).
                 result = provision_tenant(
                     tenant_name=email.split("@")[0], owner_email=email,
                     plan_code=plan_code, conn=conn,
                 )
                 new_tenant_id = result["tenant_id"]
+                user_id = result["user_id"]
                 link_stripe_customer(new_tenant_id, customer_id, subscription_id, conn=conn)
                 apply_subscription_state(
                     new_tenant_id, plan_code, "active", subscription_id=subscription_id, conn=conn
@@ -118,13 +123,15 @@ async def stripe_webhook(request: Request):
                     external_id=event_id, conn=conn,
                 )
                 # Kunde muss nach dem Kauf direkt loslegen koennen (wie bei
-                # ChatGPT/Claude/Kimi), nicht seinen eigenen API-Key suchen
-                # oder ihn manuell anfordern. Die Checkout-Session-ID kommt
-                # als ?session_id=... auf der Stripe-success_url zurueck
-                # (Stripe-eigene Konvention) und dient als Abholschein.
+                # ChatGPT/Claude/Kimi), nicht sich selbst anmelden muessen
+                # (er hat ja noch kein Passwort). Die Checkout-Session-ID
+                # kommt als ?session_id=... auf der Stripe-success_url zurueck
+                # (Stripe-eigene Konvention) und dient als Abholschein fuer
+                # die frisch erzeugte Session.
                 session_id = obj.get("id")
                 if session_id:
-                    store_checkout_handoff(session_id, new_tenant_id, result["api_key"], conn=conn)
+                    session_token = create_session(conn, new_tenant_id, user_id)
+                    store_checkout_handoff(session_id, new_tenant_id, session_token, conn=conn)
             return {"status": "provisioned", "tenant_id": new_tenant_id, "plan": plan_code}
 
         # Bestehender/nachgewiesener Mandant -> verknuepfen + aktivieren.
@@ -196,20 +203,28 @@ async def stripe_webhook(request: Request):
 
 
 @router.get("/v1/checkout/{session_id}/claim")
-async def claim_checkout(session_id: str):
+async def claim_checkout(session_id: str, request: Request, response: Response):
     """Fuer die Erfolgsseite nach dem Stripe-Checkout (checkout-success.html):
-    liefert den frisch erzeugten API-Key genau EINMAL, direkt anhand der
-    Checkout-Session-ID aus der Stripe-success_url (?session_id=...). Kein
-    Principal/API-Key noetig -- den hat der Kunde ja noch nicht.
+    setzt das Session-Cookie genau EINMAL, direkt anhand der Checkout-
+    Session-ID aus der Stripe-success_url (?session_id=...). Kein
+    Principal/Session-Cookie noetig, um HIERHER zu kommen -- den hat der
+    Kunde ja noch nicht; die Antwort selbst liefert ihn per `Set-Cookie`.
 
     404 heisst entweder "Webhook noch nicht angekommen" (Client soll kurz
     erneut versuchen) ODER "schon abgeholt/abgelaufen" -- absichtlich nicht
     unterscheidbar, sonst liesse sich damit erraten, ob eine Session-ID
-    jemals gueltig war."""
+    jemals gueltig war.
+
+    Security-Review Punkt B: anders als Login/Signup hatte dieser
+    unauthentifizierte Endpunkt bisher KEIN Rate-Limiting, obwohl er eine
+    DB-Schreiboperation ausloest (Session anlegen, Handoff-Zeile loeschen)
+    -- selber IP-Limiter-Mechanismus wie beim Login (app/ratelimit.py)."""
+    checkout_claim_limiter.check(client_ip(request))
     result = claim_checkout_handoff(session_id)
     if result is None:
         raise HTTPException(status_code=404, detail="Noch nicht bereit oder bereits abgeholt")
-    return result
+    set_session_cookie(response, result["session_token"])
+    return {"status": "ok", "tenant_id": result["tenant_id"]}
 
 
 @router.get("/v1/billing")

@@ -18,11 +18,9 @@ pytestmark = pytest.mark.skipif(
 
 
 def test_enterprise_wildcard_unregistered_model_is_403_not_502(client, prov):
-    key = prov("enterprise")
-    h = {"Authorization": "Bearer " + key}
+    prov("enterprise")
     r = client.post(
         "/v1/chat",
-        headers=h,
         json={"model": "erfundenes/modell-xyz", "messages": [{"role": "user", "content": "hi"}]},
     )
     assert r.status_code == 403
@@ -33,11 +31,9 @@ def test_enterprise_wildcard_registered_model_passes_validation(client, prov):
     """Enterprise + registriertes Modell kommt durch die Validierung (503/502
     vom nicht erreichbaren Gateway ist erwartet -- hier geht es nur darum,
     dass KEIN 403 vor dem Gateway-Aufruf kommt)."""
-    key = prov("enterprise")
-    h = {"Authorization": "Bearer " + key}
+    prov("enterprise")
     r = client.post(
         "/v1/chat",
-        headers=h,
         json={"model": "ollama/llama3.2", "messages": [{"role": "user", "content": "hi"}]},
     )
     assert r.status_code != 403

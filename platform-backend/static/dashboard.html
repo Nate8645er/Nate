@@ -194,19 +194,12 @@
 
 <script>
 const $ = (id) => document.getElementById(id);
-// Legacy: ein in einer FRUEHEREN Sitzung lokal gespeicherter roher API-Key --
-// die Oberflaeche bietet dafuer kein Eingabefeld mehr an (E-Mail+Passwort
-// ersetzt das, siehe authSubmit), ein bestehender Key soll aber weiter
-// automatisch anmelden.
-let KEY = localStorage.getItem("pk") || "";
 
-// Bearer-Header nur noch fuer den Legacy-Pfad; bei einer Session-Anmeldung
-// genuegt das HttpOnly-Cookie, das dank credentials:"include" automatisch
-// mitgeschickt wird.
+// Authentifizierung laeuft ausschliesslich ueber das HttpOnly-Session-Cookie,
+// das dank credentials:"include" automatisch mitgeschickt wird -- es gibt
+// keinen API-Key mehr.
 function authHeader() {
-  const h = { "Content-Type": "application/json" };
-  if (KEY) h["Authorization"] = "Bearer " + KEY;
-  return h;
+  return { "Content-Type": "application/json" };
 }
 
 async function apiGet(path) {
@@ -898,9 +891,8 @@ function escapeHtml(s) {
 }
 
 /* ---- Auth / Bootstrap -------------------------------------------------- */
-// Gemeinsamer Einstieg nach erfolgreicher Authentifizierung (Legacy-Bearer-
-// Key ODER neue Session-Anmeldung) -- siehe static/index.html fuer dasselbe
-// Muster (dort ausfuehrlicher kommentiert).
+// Gemeinsamer Einstieg nach erfolgreicher Session-Anmeldung -- siehe
+// static/index.html fuer dasselbe Muster (dort ausfuehrlicher kommentiert).
 async function enterApp() {
   await apiGet("/v1/models");
   $("setup").style.display = "none";
@@ -908,19 +900,7 @@ async function enterApp() {
   buildGrid();
 }
 
-// Legacy-Pfad: nur noch fuer einen bereits in localStorage gespeicherten
-// rohen API-Key. Kein Eingabefeld mehr dafuer (siehe setup-Formular).
-async function connect() {
-  if (!KEY) return;
-  try {
-    await enterApp();
-  } catch (e) {
-    localStorage.removeItem("pk");
-    KEY = "";
-  }
-}
-
-// Neuer Web-Login-Pfad: E-Mail+Passwort, Umschalter Anmelden/Registrieren --
+// Web-Login-Pfad: E-Mail+Passwort, Umschalter Anmelden/Registrieren --
 // identisches Muster wie static/index.html.
 let authMode = "login"; // "login" | "signup"
 
@@ -970,9 +950,7 @@ async function doLogout() {
   try {
     await fetch("/v1/auth/logout", { method: "POST", credentials: "include" });
   } catch { /* Cookie wird clientseitig ohnehin entfernt (s.u.) */ }
-  localStorage.removeItem("pk");
   localStorage.removeItem(LAYOUT_KEY);
-  KEY = "";
   location.reload();
 }
 
@@ -981,14 +959,9 @@ $("authToggle").onclick = () => setAuthMode(authMode === "signup" ? "login" : "s
 $("authPassword").addEventListener("keydown", (e) => { if (e.key === "Enter") submitAuth(); });
 $("logout").onclick = doLogout;
 
-// Sitzung beim Laden wiederherstellen: zuerst ein evtl. vorhandener
-// Legacy-API-Key, sonst still per Cookie versuchen -- schlaegt beides fehl,
-// bleibt das Login/Registrieren-Formular sichtbar (Default).
-if (KEY) {
-  connect();
-} else {
-  enterApp().catch(() => { /* keine gültige Session -- Login-Formular zeigen */ });
-}
+// Sitzung beim Laden wiederherstellen: still per Cookie versuchen -- schlaegt
+// das fehl, bleibt das Login/Registrieren-Formular sichtbar (Default).
+enterApp().catch(() => { /* keine gültige Session -- Login-Formular zeigen */ });
 </script>
 </body>
 </html>

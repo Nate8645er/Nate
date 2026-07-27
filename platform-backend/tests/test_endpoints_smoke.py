@@ -17,8 +17,11 @@ def test_protected_routes_require_auth():
     assert client.post("/v1/chat", json={"model": "x", "messages": [{"role": "user", "content": "hi"}]}).status_code == 401
 
 
-def test_bad_bearer_is_rejected_shape():
-    # Falsches Schema -> 401 (kein DB-Zugriff noetig).
+def test_arbitrary_authorization_header_is_ignored_and_still_401():
+    # Es gibt keinen Bearer-Pfad mehr -- require_principal liest den
+    # Authorization-Header ueberhaupt nicht (nur noch das Session-Cookie).
+    # Ein mitgeschickter Header aendert also nichts: ohne Cookie bleibt es
+    # bei 401, ganz ohne DB-Zugriff.
     r = client.get("/v1/models", headers={"Authorization": "Token abc"})
     assert r.status_code == 401
 

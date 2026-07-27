@@ -93,6 +93,7 @@ def test_openrouter_models_use_single_key():
 
 def test_catalog_entries_wellformed():
     for m in KNOWN_MODELS:
-        assert set(m) == {"id", "label", "provider", "local"}
+        assert set(m) == {"id", "label", "provider", "local", "vision"}
         assert m["id"] and m["label"] and m["provider"]
         assert isinstance(m["local"], bool)
+        assert isinstance(m["vision"], bool)

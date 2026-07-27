@@ -1,5 +1,7 @@
-"""Web-Login per E-Mail+Passwort (Selbstbedienung) -- Ergaenzung zum
-bestehenden Bearer-API-Key-Pfad (`app/auth.py`), nicht dessen Ersatz.
+"""Web-Login per E-Mail+Passwort -- der EINZIGE Authentifizierungspfad der
+Plattform (siehe `app/auth.py`). Der frueher parallel existierende
+`Authorization: Bearer pk_...`-API-Schluessel ist vollstaendig entfernt
+(Migration `013_drop_api_keys.sql`).
 
 Loest zwei Luecken auf einmal:
   - Bisher gab es UEBERHAUPT keinen Weg, sich selbst fuer den Free-Tarif
@@ -8,36 +10,44 @@ Loest zwei Luecken auf einmal:
     Free-Tarif-Mandanten selbst an, wie es die Store-FAQ bereits verspricht.
   - Bisher musste sich JEDER Kunde einen rohen `pk_...`-Key ins Chat-UI
     einfuegen. `/v1/auth/login` gibt stattdessen ein HttpOnly-Session-Cookie
-    aus -- der Client sieht den Roh-Key fuer diesen Pfad nie.
-
-Der API-Key bleibt fuer Entwickler/Automatisierung unveraendert nutzbar
-(`app/auth.py::require_principal` akzeptiert weiterhin `Authorization: Bearer
-pk_...`); dieser Router ist ausschliesslich der neue Web-Login-Pfad.
+    aus -- der Client sieht nie ein Geheimnis, das er selbst verwalten
+    muesste.
 """
 from __future__ import annotations
 
-import datetime as dt
-
-import psycopg
 from fastapi import APIRouter, HTTPException, Request, Response
 from pydantic import BaseModel, EmailStr, Field
 
 from ..auth import (
     DUMMY_PASSWORD_HASH,
     SESSION_COOKIE_NAME,
-    SESSION_TTL_DAYS,
-    generate_session_token,
+    create_session,
     hash_key,
     hash_password,
+    set_session_cookie,
     verify_password,
 )
 from ..db import admin_tx, tenant_tx
 from ..provisioning import provision_tenant
-from ..ratelimit import login_limiter_email, login_limiter_ip, signup_limiter
+from ..ratelimit import (
+    client_ip,
+    login_limiter_email,
+    login_limiter_ip,
+    signup_limiter,
+    signup_limiter_email,
+)
 
 router = APIRouter(prefix="/v1/auth", tags=["auth"])
 
 _GENERIC_LOGIN_ERROR = "E-Mail oder Passwort falsch"
+
+# Fixer Sentinel-Mandant fuer die Timing-Dummy-Rundreise im Login (siehe
+# login() unten) -- eine echte, aber garantiert nie einem Nutzer gehoerende
+# UUID (die Nil-UUID kommt aus gen_random_uuid() praktisch nie heraus).
+# Muss keine echte Zeile in `tenants` haben: `tenant_tx` setzt nur eine
+# Session-Variable, es gibt keinen Fremdschluessel-Zwang dafuer.
+_TIMING_SENTINEL_TENANT_ID = "00000000-0000-0000-0000-000000000000"
+_TIMING_SENTINEL_USER_ID = "00000000-0000-0000-0000-000000000000"
 
 
 class SignupRequest(BaseModel):
@@ -55,79 +65,104 @@ class LoginRequest(BaseModel):
     password: str = Field(min_length=1, max_length=72)
 
 
-def _client_ip(request: Request) -> str:
-    return request.client.host if request.client else "unknown"
+def _claim_existing_account(email_lower: str, password: str) -> dict | None:
+    """Kritischer Sicherheitsfund (Fix, siehe app/provisioning.py):
+    `provision_tenant()` reserviert JEDE E-Mail sofort in `user_directory`,
+    auch ohne Passwort (Stripe-/Shopify-Kauf ohne Passwort-Feld im
+    Checkout). Ohne diese Funktion wuerde ein Signup mit einer solchen
+    E-Mail einfach mit 409 abgelehnt -- der ECHTE Eigentuemer (der noch nie
+    ein Passwort gesetzt hat) haette dann KEINEN Weg mehr, sich jemals per
+    Passwort anzumelden, sobald seine Autologin-Session (Checkout-Handoff)
+    abgelaufen ist.
 
+    Zwei Faelle, sobald die E-Mail bereits in `user_directory` steht:
+      - `users.password_hash` ist NULL  -> das ist der echte Eigentuemer,
+        der jetzt sein erstes Passwort setzt ("Konto beanspruchen"). Setzt
+        das Passwort auf dem BESTEHENDEN Nutzer, legt eine Session fuer den
+        BESTEHENDEN Mandanten an -- kein neuer Mandant.
+      - `users.password_hash` ist bereits gesetzt -> echter Doppel-Versuch.
 
-def _set_session_cookie(response: Response, token: str) -> None:
-    # HttpOnly: per JavaScript nicht auslesbar (kein XSS-Diebstahl des
-    # Session-Tokens). Secure: nur ueber HTTPS uebertragen. SameSite=Lax:
-    # bewusste, dokumentierte CSRF-Haltung fuer diese Runde -- schuetzt gegen
-    # die meisten Cross-Site-Faelle (Cookie wird bei einfachen Cross-Site-
-    # Requests wie <img>/<form> NICHT mitgeschickt), ohne ein zusaetzliches
-    # CSRF-Token einzufuehren. Reicht fuer eine Same-Origin-App ohne
-    # Cross-Site-Formulare; kein Ersatz fuer ein echtes CSRF-Token, sollte
-    # diese App spaeter Cross-Site-Einbettung brauchen.
-    response.set_cookie(
-        key=SESSION_COOKIE_NAME,
-        value=token,
-        httponly=True,
-        secure=True,
-        samesite="lax",
-        max_age=SESSION_TTL_DAYS * 86400,
-        path="/",
-    )
+    Gibt `None` zurueck, wenn die E-Mail unbekannt ist ODER bereits ein
+    Passwort existiert -- der Aufrufer faehrt dann mit dem normalen
+    Neu-Anlage-Pfad (`provision_tenant`) fort, der im zweiten Fall ganz
+    regulaer mit 409 scheitert (UniqueViolation auf `user_directory`).
 
+    Bekanntes Restrisiko OHNE E-Mail-Verifikation (siehe README): wer zuerst
+    hier ankommt, beansprucht das Konto. Strukturell dasselbe Problem wie
+    der urspruengliche Fund, aber zeitlich VOR statt NACH dem ersten
+    Kauf-Ereignis -- ein deutlich kleineres Fenster (der Angreifer muesste
+    schneller sein als der zahlende Kunde selbst, nicht nur irgendwann
+    innerhalb von 30 Tagen zuschlagen), aber nicht null."""
+    with admin_tx() as conn:
+        directory_row = conn.execute(
+            "SELECT tenant_id, user_id FROM user_directory WHERE email_lower = %s",
+            (email_lower,),
+        ).fetchone()
+    if directory_row is None:
+        return None
 
-def _create_session(conn, tenant_id: str, user_id: str) -> str:
-    """Legt eine neue Session in der uebergebenen Transaktion an und gibt den
-    KLARTEXT-Token zurueck (wird nur als Cookie an den Client gereicht, nie
-    gespeichert)."""
-    token, token_hash = generate_session_token()
-    expires_at = dt.datetime.now(dt.timezone.utc) + dt.timedelta(days=SESSION_TTL_DAYS)
-    conn.execute(
-        "INSERT INTO sessions (token_hash, tenant_id, user_id, expires_at) "
-        "VALUES (%s, %s, %s, %s)",
-        (token_hash, tenant_id, user_id, expires_at),
-    )
-    return token
+    tenant_id = str(directory_row["tenant_id"])
+    user_id = str(directory_row["user_id"])
+
+    with tenant_tx(tenant_id) as conn:
+        user = conn.execute(
+            "SELECT password_hash FROM users WHERE id = %s", (user_id,)
+        ).fetchone()
+        if user is None or user["password_hash"] is not None:
+            # Kein beanspruchbares Konto (Doppel-Versuch, oder -- durch die
+            # Fremdschluessel praktisch ausgeschlossen -- ein verwaister
+            # Directory-Eintrag). Aufrufer nimmt den regulaeren 409-Pfad.
+            return None
+        conn.execute(
+            "UPDATE users SET password_hash = %s WHERE id = %s",
+            (hash_password(password), user_id),
+        )
+        plan_row = conn.execute(
+            "SELECT p.code FROM tenants t JOIN plans p ON p.id = t.plan_id WHERE t.id = %s",
+            (tenant_id,),
+        ).fetchone()
+        plan_code = plan_row["code"] if plan_row else "free"
+
+    with admin_tx() as conn:
+        session_token = create_session(conn, tenant_id, user_id)
+
+    return {"tenant_id": tenant_id, "plan": plan_code, "session_token": session_token}
 
 
 @router.post("/signup")
 async def signup(req: SignupRequest, request: Request, response: Response):
     """Legt einen NEUEN Free-Tarif-Mandanten + Owner-Nutzer mit Passwort an
-    und meldet ihn direkt per Session-Cookie an -- kein API-Key wird an den
-    Client gereicht (anders als `/admin/provision`)."""
-    signup_limiter.check(_client_ip(request))
+    und meldet ihn direkt per Session-Cookie an -- AUSSER die E-Mail ist
+    bereits einem passwortlos angelegten Mandanten zugeordnet: dann wird
+    stattdessen dieses bestehende Konto beansprucht (siehe
+    `_claim_existing_account`)."""
+    email_lower = str(req.email).lower()
+    signup_limiter.check(client_ip(request))
+    signup_limiter_email.check(email_lower)
 
-    email_lower = req.email.lower()
+    claimed = _claim_existing_account(email_lower, req.password)
+    if claimed is not None:
+        set_session_cookie(response, claimed["session_token"])
+        return {
+            "status": "ok",
+            "tenant_id": claimed["tenant_id"],
+            "plan": claimed["plan"],
+            "claimed": True,
+        }
+
     with admin_tx() as conn:
+        # provision_tenant() haelt Passwort-Hash + user_directory-Eintrag
+        # (inkl. 409 bei doppelter E-Mail) an EINER Stelle -- siehe
+        # app/provisioning.py, genutzt auch von /admin/provision.
         result = provision_tenant(
-            tenant_name=req.name, owner_email=str(req.email), plan_code="free", conn=conn
+            tenant_name=req.name, owner_email=str(req.email), plan_code="free",
+            password=req.password, conn=conn,
         )
         tenant_id = result["tenant_id"]
         user_id = result["user_id"]
+        session_token = create_session(conn, tenant_id, user_id)
 
-        conn.execute(
-            "UPDATE users SET password_hash = %s WHERE id = %s",
-            (hash_password(req.password), user_id),
-        )
-        try:
-            conn.execute(
-                "INSERT INTO user_directory (email_lower, tenant_id, user_id) "
-                "VALUES (%s, %s, %s)",
-                (email_lower, tenant_id, user_id),
-            )
-        except psycopg.errors.UniqueViolation as exc:
-            # Rollback der gesamten Transaktion (inkl. gerade angelegtem
-            # Mandanten) -- kein verwaister Mandant bei doppelter E-Mail.
-            raise HTTPException(
-                status_code=409, detail="Diese E-Mail-Adresse ist bereits registriert"
-            ) from exc
-
-        session_token = _create_session(conn, tenant_id, user_id)
-
-    _set_session_cookie(response, session_token)
+    set_session_cookie(response, session_token)
     return {"status": "ok", "tenant_id": tenant_id, "plan": "free"}
 
 
@@ -137,7 +172,7 @@ async def login(req: LoginRequest, request: Request, response: Response):
     Bei Fehlschlag IMMER dieselbe generische Meldung -- ob die E-Mail
     existiert oder nur das Passwort falsch war, ist von aussen nicht
     unterscheidbar (weder am Text noch (bestmoeglich) an der Laufzeit)."""
-    ip = _client_ip(request)
+    ip = client_ip(request)
     email_lower = req.email.lower()
     # Beide Richtungen pruefen -- entweder kann zuerst zuschlagen.
     login_limiter_ip.check(ip)
@@ -153,8 +188,23 @@ async def login(req: LoginRequest, request: Request, response: Response):
         ).fetchone()
 
     if row is None:
-        # Timing-Konstanz: derselbe bcrypt-Vergleich laeuft auch, wenn die
-        # E-Mail unbekannt ist (siehe Kommentar bei DUMMY_PASSWORD_HASH).
+        # Timing-Konstanz (Security-Review, Punkt A): der "E-Mail bekannt"-
+        # Zweig macht NACH dem admin_tx()-Lookup zusaetzlich eine ZWEITE
+        # DB-Rundreise (tenant_tx, um password_hash zu lesen) vor dem
+        # bcrypt-Vergleich. Ohne eine aequivalente Dummy-Rundreise hier waere
+        # dieser Zweig messbar SCHNELLER (eine DB-Rundreise weniger) als der
+        # "E-Mail bekannt, Passwort falsch"-Zweig -- ein Timing-Seitenkanal,
+        # der genau das unterlaeuft, was dieser Kommentarblock verspricht
+        # ("nie verraten, ob die E-Mail existiert"). Fix: gegen eine feste,
+        # garantiert nie existierende Sentinel-Tenant/User-Kombination
+        # dieselbe Art Rundreise ausfuehren -- RLS filtert sie ohnehin auf
+        # 0 Zeilen (kein Fremdschluessel-Zwang bei set_config, siehe
+        # app/db.py::tenant_tx).
+        with tenant_tx(_TIMING_SENTINEL_TENANT_ID) as conn:
+            conn.execute(
+                "SELECT password_hash FROM users WHERE id = %s",
+                (_TIMING_SENTINEL_USER_ID,),
+            ).fetchone()
         verify_password(req.password, DUMMY_PASSWORD_HASH)
         raise HTTPException(status_code=401, detail=_GENERIC_LOGIN_ERROR)
 
@@ -176,9 +226,9 @@ async def login(req: LoginRequest, request: Request, response: Response):
         raise HTTPException(status_code=401, detail=_GENERIC_LOGIN_ERROR)
 
     with admin_tx() as conn:
-        session_token = _create_session(conn, tenant_id, user_id)
+        session_token = create_session(conn, tenant_id, user_id)
 
-    _set_session_cookie(response, session_token)
+    set_session_cookie(response, session_token)
     return {"status": "ok", "tenant_id": tenant_id}
 
 

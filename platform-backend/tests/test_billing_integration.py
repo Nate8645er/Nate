@@ -117,24 +117,19 @@ def test_lifecycle_upgrade_suspend_resume_cancel(client):
 
 
 def test_suspended_tenant_is_locked_out(client, prov):
-    key = prov("free")
-    h = {"Authorization": "Bearer " + key}
-    assert client.get("/v1/models", headers=h).status_code == 200
+    tenant_id = prov("free")
+    assert client.get("/v1/models").status_code == 200
 
     # Mandanten sperren (wie nach Zahlungsausfall)
     import psycopg
     with psycopg.connect(DSN, autocommit=True) as c:
-        c.execute(
-            "UPDATE tenants SET status='suspended' WHERE id = ("
-            "  SELECT tenant_id FROM api_keys ORDER BY created_at DESC LIMIT 1)"
-        )
-    assert client.get("/v1/models", headers=h).status_code == 403
+        c.execute("UPDATE tenants SET status='suspended' WHERE id = %s", (tenant_id,))
+    assert client.get("/v1/models").status_code == 403
 
 
 def test_billing_overview(client, prov):
-    key = prov("pro")
-    h = {"Authorization": "Bearer " + key}
-    r = client.get("/v1/billing", headers=h)
+    prov("pro")
+    r = client.get("/v1/billing")
     assert r.status_code == 200, r.text
     data = r.json()
     assert data["plan"] == "pro"

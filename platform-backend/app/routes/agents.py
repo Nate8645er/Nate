@@ -13,7 +13,7 @@ from ..db import tenant_tx
 from ..models_catalog import is_registered
 from ..plans import model_allowed
 from ..ratelimit import chat_limiter
-from .chat import MAX_MESSAGES, ChatMessage, ensure_model_available
+from .chat import MAX_MESSAGES, ChatMessage, ensure_model_available, validate_attachments
 
 router = APIRouter()
 
@@ -130,6 +130,10 @@ async def run_agent(
 
     # Das Agentenmodell kann seit dem Anlegen aus dem Tarif gefallen sein -> pruefen.
     ensure_model_available(agent["model"], principal)
+    # Dieselbe Bild-Anhang-Validierung wie /v1/chat (Vision-Pflicht,
+    # Groessen-/Signaturpruefung) -- AgentChatRequest.messages nutzt dieselbe
+    # multimodale ChatMessage-Klasse, s. app/routes/chat.py.
+    validate_attachments(agent["model"], req.messages)
 
     if req.stream:
         return await stream_chat(
