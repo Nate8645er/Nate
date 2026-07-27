@@ -1,0 +1,312 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "heading": "Eine KI-Plattform für Ihr Unternehmen",
+        "subheading": "Chat, Agenten und Automatisierung — Modelle frei wählbar, Preise transparent in CHF inkl. MwSt."
+      }
+    },
+    "features": {
+      "type": "features",
+      "settings": {
+        "heading": "Was die Plattform wirklich kann",
+        "subheading": "Kein Marketing-Blabla — jede Funktion hier ist gebaut, getestet und läuft."
+      },
+      "blocks": {
+        "features_01": {
+          "type": "feature",
+          "settings": {
+            "icon": "models",
+            "title": "13 KI-Modelle, ein Chat",
+            "text": "Claude, GPT, Gemini, Grok, DeepSeek und weitere über ein einziges Gateway — frei wählbar je nach Tarif, kein Anbieter-Wechsel nötig."
+          }
+        },
+        "features_02": {
+          "type": "feature",
+          "settings": {
+            "icon": "chat",
+            "title": "Antworten in Echtzeit",
+            "text": "Streaming-Antworten (Server-Sent Events) statt Warten auf den ganzen Text — wie bei den großen Chat-Anbietern."
+          }
+        },
+        "features_03": {
+          "type": "feature",
+          "settings": {
+            "icon": "link",
+            "title": "Echte Integrationen",
+            "text": "Slack, Notion und Google per echtem Login verbinden (OAuth) — kein Copy-Paste von API-Keys zwischen Diensten."
+          }
+        },
+        "features_04": {
+          "type": "feature",
+          "settings": {
+            "icon": "server",
+            "title": "Lokale Modelle inklusive",
+            "text": "Ollama-Modelle laufen auf eigener Infrastruktur mit — keine Cloud-Kosten für einfache Anfragen, volle Datenkontrolle."
+          }
+        },
+        "features_05": {
+          "type": "feature",
+          "settings": {
+            "icon": "agent",
+            "title": "Eigene Agenten",
+            "text": "Agenten mit festem System-Prompt und Modell anlegen — für wiederkehrende Aufgaben, ohne den Prompt jedes Mal neu zu schreiben."
+          }
+        },
+        "features_06": {
+          "type": "feature",
+          "settings": {
+            "icon": "lock",
+            "title": "Echte Mandantentrennung",
+            "text": "Jeder Kunde sieht ausschließlich seine eigenen Daten — durchgesetzt auf Datenbankebene (Row-Level-Security), nicht nur im UI."
+          }
+        },
+        "features_07": {
+          "type": "feature",
+          "settings": {
+            "icon": "chart",
+            "title": "Transparenter Verbrauch",
+            "text": "Live-Übersicht über verbrauchte Tokens pro Monat, pro Modell — keine Überraschung auf der Rechnung."
+          }
+        },
+        "features_08": {
+          "type": "feature",
+          "settings": {
+            "icon": "swiss",
+            "title": "Schweizer Preise, ehrlich",
+            "text": "Alle Preise in CHF inklusive Mehrwertsteuer, jederzeit kündbar — keine versteckten Gebühren."
+          }
+        }
+      },
+      "block_order": [
+        "features_01",
+        "features_02",
+        "features_03",
+        "features_04",
+        "features_05",
+        "features_06",
+        "features_07",
+        "features_08"
+      ]
+    },
+    "tariffs": {
+      "type": "tariffs",
+      "settings": {
+        "heading": "Tarife",
+        "subheading": "Ehrlicher Vergleich — Preise in CHF inkl. MwSt."
+      },
+      "blocks": {
+        "tariffs_01": {
+          "type": "plan",
+          "settings": {
+            "name": "Free",
+            "audience": "Zum Testen",
+            "price": "Kostenlos",
+            "features": "1 lokales Modell\n1 Agent\n100'000 Tokens/Monat\nKein Support",
+            "cta_url": "/products/ki-plattform-abo-free",
+            "cta_label": "Kostenlos starten"
+          }
+        },
+        "tariffs_02": {
+          "type": "plan",
+          "settings": {
+            "name": "Starter",
+            "audience": "Einzelunternehmer",
+            "price": "CHF 19.00 / Monat",
+            "features": "Schnelle Cloud-Modelle\n3 Agenten\n2 Mio. Tokens/Monat\nE-Mail-Support",
+            "cta_url": "/products/ki-plattform-abo-starter"
+          }
+        },
+        "tariffs_03": {
+          "type": "plan",
+          "settings": {
+            "name": "Pro",
+            "audience": "KMU",
+            "price": "CHF 49.00 / Monat",
+            "highlight": true,
+            "features": "Starke Cloud- + lokale Modelle\n10 Agenten\n10 Mio. Tokens/Monat\n3 Integrationen",
+            "cta_url": "/products/ki-plattform-abo-pro"
+          }
+        },
+        "tariffs_04": {
+          "type": "plan",
+          "settings": {
+            "name": "Business",
+            "audience": "Teams",
+            "price": "CHF 149.00 / Monat",
+            "features": "Alle Modelle, freie Wahl\n30 Agenten\n50 Mio. Tokens/Monat\nSSO + Team-Verwaltung",
+            "cta_url": "/products/ki-plattform-abo-business"
+          }
+        },
+        "tariffs_05": {
+          "type": "plan",
+          "settings": {
+            "name": "Enterprise",
+            "audience": "Konzern / Individuell",
+            "price": "Auf Anfrage",
+            "features": "Alles + dedizierte Instanz\nUnbegrenzte Agenten\nSLA + Onboarding\nEigener Mandant"
+          }
+        }
+      },
+      "block_order": [
+        "tariffs_01",
+        "tariffs_02",
+        "tariffs_03",
+        "tariffs_04",
+        "tariffs_05"
+      ]
+    },
+    "faq": {
+      "type": "faq",
+      "settings": {
+        "heading": "Häufige Fragen"
+      },
+      "blocks": {
+        "faq_01": {
+          "type": "question",
+          "settings": {
+            "question": "Kann ich jederzeit kündigen?",
+            "answer": "Ja. Alle Abos sind monatlich kündbar, ohne Mindestlaufzeit. Nach der Kündigung läuft das Konto bis zum Ende der bezahlten Periode weiter."
+          }
+        },
+        "faq_02": {
+          "type": "question",
+          "settings": {
+            "question": "Muss ich einen API-Key von OpenAI oder Anthropic mitbringen?",
+            "answer": "Nein. Alle Modelle sind bereits im Abo enthalten — du bezahlst einen Tarif und wählst das Modell direkt in der Plattform, ohne eigene Anbieter-Konten."
+          }
+        },
+        "faq_03": {
+          "type": "question",
+          "settings": {
+            "question": "Was passiert nach dem Kauf?",
+            "answer": "Du wirst automatisch angemeldet und landest direkt im Chat — kein Key kopieren, kein Einrichten."
+          }
+        },
+        "faq_04": {
+          "type": "question",
+          "settings": {
+            "question": "Wo werden meine Daten gespeichert?",
+            "answer": "Jeder Kunde ist auf Datenbankebene strikt von anderen Kunden getrennt (Row-Level-Security). Details zur Datenverarbeitung stehen in der Datenschutzerklärung."
+          }
+        },
+        "faq_05": {
+          "type": "question",
+          "settings": {
+            "question": "Kann ich den Tarif wechseln?",
+            "answer": "Ja, jederzeit im Kundenkonto — der neue Tarif gilt ab der nächsten Abrechnungsperiode."
+          }
+        },
+        "faq_06": {
+          "type": "question",
+          "settings": {
+            "question": "Gibt es einen kostenlosen Test?",
+            "answer": "Ja, der Free-Tarif ist dauerhaft kostenlos nutzbar (mit einem lokalen Modell und begrenztem Kontingent) — keine Kreditkarte nötig."
+          }
+        }
+      },
+      "block_order": [
+        "faq_01",
+        "faq_02",
+        "faq_03",
+        "faq_04",
+        "faq_05",
+        "faq_06"
+      ]
+    },
+    "how-it-works": {
+      "type": "how-it-works",
+      "settings": {
+        "heading": "Wie es funktioniert",
+        "subheading": "Was die Plattform ist, wie der Ablauf vom Kauf zum ersten Chat aussieht und warum es sie gibt — ohne Marketing-Umwege.",
+        "was_heading": "Was ist das?",
+        "was_text": "Eine Multi-Tenant-KI-Plattform: mehrere Sprachmodelle — Cloud-Anbieter wie Anthropic und OpenAI sowie mindestens ein lokales Modell — über ein einziges Gateway, dazu eigene Agenten mit festem System-Prompt für wiederkehrende Aufgaben und echte Integrationen (Slack, Notion, Google, GitHub, Shopify) per Login statt Copy-Paste von Schlüsseln. Jeder Kunde ist auf Datenbankebene strikt von anderen getrennt.",
+        "wie_heading": "Vom Kauf zum ersten Chat",
+        "warum_heading": "Warum diese Plattform?",
+        "cta_url": "/",
+        "cta_label": "Tarife ansehen"
+      },
+      "blocks": {
+        "how_it_works_01": {
+          "type": "step",
+          "settings": {
+            "title": "Tarif wählen",
+            "text": "Vom kostenlosen Free-Tarif bis Enterprise — alle Preise in CHF inklusive Mehrwertsteuer, monatlich kündbar."
+          }
+        },
+        "how_it_works_02": {
+          "type": "step",
+          "settings": {
+            "title": "Automatisch angemeldet",
+            "text": "Kein API-Key, kein manuelles Einrichten: der einzige Zugang ist E-Mail und Passwort, wie bei den großen Chat-Anbietern. Nach dem Kauf landest du direkt eingeloggt im Chat."
+          }
+        },
+        "how_it_works_03": {
+          "type": "step",
+          "settings": {
+            "title": "Modell wählen",
+            "text": "Im Chat das passende Modell auswählen — freigeschaltet nach Tarif, wahlweise Cloud oder ein lokales Modell."
+          }
+        },
+        "how_it_works_04": {
+          "type": "step",
+          "settings": {
+            "title": "Chatten oder Agenten nutzen",
+            "text": "Direkt loslegen mit Antworten in Echtzeit, oder einen eigenen Agenten mit festem System-Prompt für wiederkehrende Aufgaben anlegen. Integrationen wie Slack oder Notion lassen sich optional per Login verbinden."
+          }
+        },
+        "how_it_works_05": {
+          "type": "value",
+          "settings": {
+            "icon": "swiss",
+            "title": "Schweizer Preise, ehrlich",
+            "text": "Alle Preise in CHF inklusive Mehrwertsteuer, jederzeit kündbar — keine versteckten Gebühren, kein Streichpreis-Theater."
+          }
+        },
+        "how_it_works_06": {
+          "type": "value",
+          "settings": {
+            "icon": "lock",
+            "title": "Echte Mandantentrennung",
+            "text": "Jeder Kunde sieht ausschließlich seine eigenen Daten — durchgesetzt auf Datenbankebene (Row-Level-Security), nicht nur im Interface."
+          }
+        },
+        "how_it_works_07": {
+          "type": "value",
+          "settings": {
+            "icon": "link",
+            "title": "Keine Anbieter-Bindung",
+            "text": "Mehrere Modelle über ein Gateway frei wählbar — kein eigenes Konto und kein eigener Schlüssel bei jedem einzelnen Anbieter nötig."
+          }
+        },
+        "how_it_works_08": {
+          "type": "value",
+          "settings": {
+            "icon": "chart",
+            "title": "Transparenter Verbrauch",
+            "text": "Laufende Übersicht über verbrauchte Tokens pro Monat und pro Modell — keine Überraschung auf der Rechnung."
+          }
+        }
+      },
+      "block_order": [
+        "how_it_works_01",
+        "how_it_works_02",
+        "how_it_works_03",
+        "how_it_works_04",
+        "how_it_works_05",
+        "how_it_works_06",
+        "how_it_works_07",
+        "how_it_works_08"
+      ]
+    },
+    "main-product": {
+      "type": "main-product",
+      "settings": {}
+    }
+  },
+  "current": "Default",
+  "presets": {
+    "Default": {}
+  }
+}
