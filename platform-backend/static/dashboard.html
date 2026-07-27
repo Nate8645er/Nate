@@ -82,9 +82,9 @@
   .widget-body .loading { color:var(--muted); font-size:13px; }
   .empty { color:var(--muted); font-size:13px; padding:8px 0; }
 
-  .agent-row { display:flex; align-items:center; gap:10px; padding:9px 0;
-    border-bottom:1px solid var(--border-soft); }
-  .agent-row:last-child { border-bottom:none; }
+  .agent-item { padding:9px 0; border-bottom:1px solid var(--border-soft); }
+  .agent-item:last-child { border-bottom:none; }
+  .agent-row { display:flex; align-items:center; gap:10px; }
   .agent-row .info { flex:1; min-width:0; }
   .agent-row .name { font-weight:600; font-size:13.5px; }
   .agent-row .model { color:var(--muted); font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -94,6 +94,37 @@
   .agent-form label { font-size:12px; color:var(--muted); }
   .agent-form input, .agent-form select, .agent-form textarea { width:100%; }
   .agent-form textarea { resize:vertical; min-height:52px; }
+
+  button.chat-toggle-btn { background:transparent; border-color:var(--border); color:var(--text);
+    font-weight:600; padding:5px 9px; font-size:13px; }
+  button.chat-toggle-btn:hover:not(:disabled) { background:var(--panel2); }
+  button.chat-toggle-btn.active { border-color:var(--accent); color:var(--accent); }
+  .agent-chat-panel { margin-top:10px; padding-top:10px; border-top:1px dashed var(--border-soft); }
+  .agent-chat-log { display:flex; flex-direction:column; gap:8px; max-height:220px;
+    overflow-y:auto; padding-right:2px; margin-bottom:8px; }
+  .agent-chat-msg { padding:8px 11px; border-radius:var(--radius-sm); font-size:13px;
+    max-width:88%; white-space:pre-wrap; word-wrap:break-word; }
+  .agent-chat-msg.user { align-self:flex-end; color:#0b0d16; font-weight:500;
+    background:linear-gradient(155deg, var(--accent), #9aa5fb); }
+  .agent-chat-msg.assistant { align-self:flex-start; background:var(--panel2); border:1px solid var(--border-soft); }
+  .agent-chat-composer { display:flex; gap:8px; align-items:flex-end; }
+  .agent-chat-composer textarea { flex:1; resize:vertical; min-height:38px; max-height:120px; }
+
+  .integ-item { padding:9px 0; border-bottom:1px solid var(--border-soft); }
+  .integ-item:last-child { border-bottom:none; }
+  .integ-row { display:flex; align-items:center; gap:10px; }
+  .integ-row .info { flex:1; min-width:0; }
+  .integ-row .provider { font-weight:600; font-size:13.5px; text-transform:capitalize; }
+  .integ-row .status { font-size:12px; }
+  .integ-row .status.connected { color:var(--ok); }
+  .integ-row .status.disconnected { color:var(--muted); }
+  .integ-actions { display:flex; gap:6px; flex-shrink:0; }
+  .integ-extra { margin-top:6px; }
+  .integ-extra a { text-decoration:none; font-weight:600; }
+  .integ-form { margin-top:14px; padding-top:14px; border-top:1px solid var(--border-soft);
+    display:flex; flex-direction:column; gap:9px; }
+  .integ-form label { font-size:12px; color:var(--muted); }
+  .integ-form select { width:100%; }
 
   .usage-plan { display:flex; align-items:baseline; gap:8px; margin-bottom:4px; }
   .usage-plan .plan-name { font-size:17px; font-weight:700; font-family:"Space Grotesk", sans-serif; }
@@ -175,8 +206,9 @@ const WIDGETS = {
   agents: { title: "Agenten", render: renderAgentsWidget },
   usage:  { title: "Verbrauch", render: renderUsageWidget },
   billing:{ title: "Abrechnungshistorie", render: renderBillingWidget },
+  integrations: { title: "Integrationen", render: renderIntegrationsWidget },
 };
-const DEFAULT_ORDER = ["agents", "usage", "billing"];
+const DEFAULT_ORDER = ["agents", "usage", "billing", "integrations"];
 const LAYOUT_KEY = "dashboard_layout";
 
 function loadLayout() {
@@ -252,6 +284,142 @@ function wireDrag(el) {
 async function renderAgentsWidget(body, badge) {
   let models = [];
   let maxAgents = 0;
+  // Chat-Zustand pro Agent (conversation_id + sichtbarer Verlauf) -- lebt in
+  // dieser Closure, ueberlebt also einen erneuten draw() (z.B. nach dem
+  // Loeschen eines anderen Agenten), aber nicht einen Seiten-Reload. Reicht
+  // fuer "Gespraech fortsetzen", ohne ein eigenes Persistenz-UI zu bauen.
+  const chatState = new Map(); // agent.id -> { conversationId, history, open }
+
+  function getChatState(id) {
+    if (!chatState.has(id)) chatState.set(id, { conversationId: null, history: [], open: false });
+    return chatState.get(id);
+  }
+
+  function renderChatMessages(logEl, history) {
+    logEl.innerHTML = "";
+    for (const m of history) {
+      const el = document.createElement("div");
+      el.className = "agent-chat-msg " + m.role;
+      // Anzeige-Fallback nur fuers Auge -- der leere String bleibt in
+      // history (und geht so, wie in index.html send(), unveraendert an
+      // den Server), damit keine erfundene Assistenz-Aussage im naechsten
+      // Request landet.
+      el.textContent = m.content || (m.role === "assistant" ? "(keine Antwort)" : "");
+      logEl.appendChild(el);
+    }
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  // Chat-Panel eines einzelnen Agenten: SSE-Parsing exakt nach dem Muster
+  // aus static/index.html send() -- data:-Zeilen parsen, choices[0].delta.content
+  // fuer Text-Chunks, ein optionales {"conversation_id": "..."} vorab lesen und
+  // fuer die naechste Nachricht an denselben Agenten mitschicken.
+  function buildChatPanel(agent) {
+    const st = getChatState(agent.id);
+    const panel = document.createElement("div");
+    panel.className = "agent-chat-panel";
+    panel.style.display = st.open ? "block" : "none";
+    panel.innerHTML = `
+      <div class="agent-chat-log" data-role="chatLog"></div>
+      <div class="agent-chat-composer">
+        <textarea data-role="chatInput" placeholder="Nachricht an ${escapeHtml(agent.name)}… (Enter sendet, Shift+Enter = Zeile)" rows="1"></textarea>
+        <button type="button" data-role="chatSend">Senden</button>
+      </div>
+      <div class="err" data-role="chatErr"></div>
+    `;
+    const logEl = panel.querySelector('[data-role="chatLog"]');
+    const inputEl = panel.querySelector('[data-role="chatInput"]');
+    const sendBtn = panel.querySelector('[data-role="chatSend"]');
+    const errEl = panel.querySelector('[data-role="chatErr"]');
+    renderChatMessages(logEl, st.history);
+
+    async function sendMessage() {
+      const text = inputEl.value.trim();
+      if (!text) return;
+      errEl.textContent = "";
+      inputEl.value = "";
+      sendBtn.disabled = true;
+      st.history.push({ role: "user", content: text });
+      renderChatMessages(logEl, st.history);
+
+      let assistantIdx = -1;
+      let full = "";
+
+      // `retry` faengt wie in index.html genau EINEN Fall ab: eine lokal
+      // gemerkte conversation_id, die der Server nicht mehr kennt (404).
+      async function attempt(retry) {
+        const r = await fetch(`/v1/agents/${encodeURIComponent(agent.id)}/chat`, {
+          method: "POST", headers: authHeader(),
+          body: JSON.stringify({ messages: st.history, conversation_id: st.conversationId, stream: true }),
+        });
+        if (!r.ok) {
+          const data = await r.json().catch(() => ({}));
+          if (r.status === 404 && retry) {
+            st.conversationId = null;
+            return attempt(false);
+          }
+          throw new Error(data.detail || ("HTTP " + r.status));
+        }
+
+        const reader = r.body.getReader();
+        const decoder = new TextDecoder();
+        let buf = "";
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buf += decoder.decode(value, { stream: true });
+          const lines = buf.split("\n");
+          buf = lines.pop();
+          for (const line of lines) {
+            if (!line.startsWith("data:")) continue;
+            const chunk = line.slice(5).trim();
+            if (chunk === "[DONE]") continue;
+            let obj;
+            try { obj = JSON.parse(chunk); } catch { continue; }
+            if (obj.conversation_id) { st.conversationId = obj.conversation_id; }
+            const piece = obj.choices?.[0]?.delta?.content;
+            if (piece) {
+              if (assistantIdx === -1) {
+                st.history.push({ role: "assistant", content: "" });
+                assistantIdx = st.history.length - 1;
+              }
+              full += piece;
+              st.history[assistantIdx].content = full;
+              renderChatMessages(logEl, st.history);
+            }
+          }
+        }
+      }
+
+      try {
+        await attempt(true);
+        if (assistantIdx === -1) {
+          // Kein delta.content-Chunk kam an (z.B. Gateway nicht erreichbar,
+          // Stream endete nach dem conversation_id-Chunk) -- `full` bleibt
+          // bewusst der rohe (leere) Wert, nicht ein erfundener Text; die
+          // Anzeige uebernimmt renderChatMessages() mit ihrem Fallback.
+          st.history.push({ role: "assistant", content: full });
+          renderChatMessages(logEl, st.history);
+        }
+      } catch (e) {
+        errEl.textContent = "Fehler: " + e.message;
+        // Keine leere Assistenz-Blase stehen lassen, wenn der Stream fehlschlug.
+        if (assistantIdx !== -1 && !st.history[assistantIdx].content) {
+          st.history.splice(assistantIdx, 1);
+          renderChatMessages(logEl, st.history);
+        }
+      } finally {
+        sendBtn.disabled = false;
+      }
+    }
+
+    sendBtn.onclick = sendMessage;
+    inputEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
+
+    return panel;
+  }
 
   async function load() {
     body.innerHTML = '<div class="loading">Lädt…</div>';
@@ -278,6 +446,9 @@ async function renderAgentsWidget(body, badge) {
       list.appendChild(empty);
     } else {
       for (const a of agents) {
+        const item = document.createElement("div");
+        item.className = "agent-item";
+
         const row = document.createElement("div");
         row.className = "agent-row";
         row.innerHTML = `
@@ -288,6 +459,15 @@ async function renderAgentsWidget(body, badge) {
         `;
         row.querySelector(".name").textContent = a.name;
         row.querySelector(".model").textContent = a.model;
+
+        const chatSt = getChatState(a.id);
+        const chatBtn = document.createElement("button");
+        chatBtn.type = "button";
+        chatBtn.className = "chat-toggle-btn" + (chatSt.open ? " active" : "");
+        chatBtn.textContent = "Chat";
+        chatBtn.title = "Mit diesem Agenten chatten";
+        row.appendChild(chatBtn);
+
         const del = document.createElement("button");
         del.className = "danger-btn";
         del.textContent = "Löschen";
@@ -310,6 +490,7 @@ async function renderAgentsWidget(body, badge) {
           del.disabled = true;
           try {
             await apiSend(`/v1/agents/${encodeURIComponent(a.id)}`, "DELETE");
+            chatState.delete(a.id);
             await load();
           } catch (e) {
             body.querySelector('[data-role="agentErr"]').textContent = "Löschen fehlgeschlagen: " + e.message;
@@ -320,7 +501,18 @@ async function renderAgentsWidget(body, badge) {
           }
         };
         row.appendChild(del);
-        list.appendChild(row);
+        item.appendChild(row);
+
+        const chatPanel = buildChatPanel(a);
+        item.appendChild(chatPanel);
+        chatBtn.onclick = () => {
+          chatSt.open = !chatSt.open;
+          chatPanel.style.display = chatSt.open ? "block" : "none";
+          chatBtn.classList.toggle("active", chatSt.open);
+          if (chatSt.open) chatPanel.querySelector('[data-role="chatInput"]').focus();
+        };
+
+        list.appendChild(item);
       }
     }
 
@@ -480,6 +672,195 @@ async function renderBillingWidget(body, badge) {
   } catch (e) {
     body.innerHTML = `<div class="err">Fehler beim Laden: ${escapeHtml(e.message)}</div>`;
   }
+}
+
+/* ---------------------------------------------------------------------
+   Widget: Integrationen
+   Provider-Liste aus app/routes/integrations.py (KNOWN_PROVIDERS) -- nicht
+   erfinden, nur uebernehmen. Ohne COMPOSIO_API_KEY liefert das Backend beim
+   Anlegen kein connect_url und status bleibt 'disconnected' -- das ist der
+   dokumentierte Normalfall (siehe composio_client.py), keine Fehlermeldung.
+--------------------------------------------------------------------- */
+async function renderIntegrationsWidget(body, badge) {
+  const PROVIDERS = ["slack", "notion", "google"];
+  // connect_url kommt nur in der Antwort von POST /v1/integrations zurueck,
+  // nicht aus GET /v1/integrations -- deshalb hier fuer die Dauer der
+  // Sitzung gemerkt, damit der Login-Link nach dem Anlegen sichtbar bleibt.
+  const pendingConnectUrls = new Map(); // integration.id -> connect_url
+
+  async function load() {
+    body.innerHTML = '<div class="loading">Lädt…</div>';
+    try {
+      const data = await apiGet("/v1/integrations");
+      badge.textContent = String(data.count);
+      draw(data.integrations || []);
+    } catch (e) {
+      body.innerHTML = `<div class="err">Fehler beim Laden: ${escapeHtml(e.message)}</div>`;
+    }
+  }
+
+  function statusLabel(status) {
+    return status === "connected" ? "Verbunden" : "Nicht verbunden";
+  }
+
+  function draw(integrations) {
+    const list = document.createElement("div");
+    if (!integrations.length) {
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = "Noch keine Integrationen angelegt.";
+      list.appendChild(empty);
+    } else {
+      for (const it of integrations) {
+        const item = document.createElement("div");
+        item.className = "integ-item";
+
+        const row = document.createElement("div");
+        row.className = "integ-row";
+        row.innerHTML = `
+          <div class="info">
+            <div class="provider"></div>
+            <div class="status"></div>
+          </div>
+        `;
+        row.querySelector(".provider").textContent = it.provider;
+        const statusEl = row.querySelector(".status");
+        statusEl.className = "status " + (it.status === "connected" ? "connected" : "disconnected");
+        statusEl.textContent = statusLabel(it.status);
+
+        const actions = document.createElement("div");
+        actions.className = "integ-actions";
+
+        const refreshBtn = document.createElement("button");
+        refreshBtn.type = "button";
+        refreshBtn.className = "chat-toggle-btn";
+        refreshBtn.textContent = "Aktualisieren";
+        refreshBtn.title = "Verbindungsstatus bei Composio neu abfragen";
+
+        const del = document.createElement("button");
+        del.className = "danger-btn";
+        del.textContent = "Löschen";
+        del.title = "Integration löschen";
+        let armed = false;
+        let armTimer = null;
+        del.onclick = async () => {
+          if (!armed) {
+            armed = true;
+            del.classList.add("confirm");
+            del.textContent = "Sicher?";
+            armTimer = setTimeout(() => {
+              armed = false;
+              del.classList.remove("confirm");
+              del.textContent = "Löschen";
+            }, 3000);
+            return;
+          }
+          clearTimeout(armTimer);
+          del.disabled = true;
+          try {
+            await apiSend(`/v1/integrations/${encodeURIComponent(it.id)}`, "DELETE");
+            pendingConnectUrls.delete(it.id);
+            await load();
+          } catch (e) {
+            errEl.textContent = "Löschen fehlgeschlagen: " + e.message;
+            del.disabled = false;
+            del.classList.remove("confirm");
+            del.textContent = "Löschen";
+            armed = false;
+          }
+        };
+
+        actions.appendChild(refreshBtn);
+        actions.appendChild(del);
+        row.appendChild(actions);
+        item.appendChild(row);
+
+        const extra = document.createElement("div");
+        extra.className = "integ-extra";
+        const errEl = document.createElement("div");
+        errEl.className = "err";
+        item.appendChild(extra);
+        item.appendChild(errEl);
+
+        function renderExtra() {
+          extra.innerHTML = "";
+          const url = pendingConnectUrls.get(it.id);
+          if (url) {
+            const a = document.createElement("a");
+            a.href = url;
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+            a.style.color = "var(--accent)";
+            a.style.fontSize = "13px";
+            a.textContent = "→ Composio-Login abschliessen";
+            extra.appendChild(a);
+          } else if (it.status !== "connected") {
+            const hint = document.createElement("span");
+            hint.className = "hint";
+            hint.textContent = "Kein Login-Link hinterlegt (COMPOSIO_API_KEY nicht " +
+              "konfiguriert oder Login bereits erledigt) — mit „Aktualisieren“ " +
+              "Status neu prüfen.";
+            extra.appendChild(hint);
+          }
+        }
+        renderExtra();
+
+        refreshBtn.onclick = async () => {
+          errEl.textContent = "";
+          refreshBtn.disabled = true;
+          try {
+            const updated = await apiSend(`/v1/integrations/${encodeURIComponent(it.id)}/refresh`, "POST");
+            it.status = updated.status;
+            statusEl.className = "status " + (it.status === "connected" ? "connected" : "disconnected");
+            statusEl.textContent = statusLabel(it.status);
+            if (it.status === "connected") pendingConnectUrls.delete(it.id);
+            renderExtra();
+          } catch (e) {
+            errEl.textContent = e.message;
+          } finally {
+            refreshBtn.disabled = false;
+          }
+        };
+
+        list.appendChild(item);
+      }
+    }
+
+    const form = document.createElement("form");
+    form.className = "integ-form";
+    form.innerHTML = `
+      <label for="intProvider">Neue Integration</label>
+      <select id="intProvider">
+        ${PROVIDERS.map((p) => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("")}
+      </select>
+      <div class="row">
+        <button type="submit">Anlegen</button>
+      </div>
+      <div class="err" data-role="intErr"></div>
+    `;
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const errEl2 = form.querySelector('[data-role="intErr"]');
+      errEl2.textContent = "";
+      const provider = form.querySelector("#intProvider").value;
+      const btn = form.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      try {
+        const created = await apiSend("/v1/integrations", "POST", { provider });
+        if (created.connect_url) pendingConnectUrls.set(created.id, created.connect_url);
+        await load();
+      } catch (e) {
+        errEl2.textContent = e.message;
+        btn.disabled = false;
+      }
+    };
+    list.appendChild(form);
+
+    body.innerHTML = "";
+    body.appendChild(list);
+  }
+
+  await load();
 }
 
 /* ---- Hilfsfunktionen -------------------------------------------------- */

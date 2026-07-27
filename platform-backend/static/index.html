@@ -41,6 +41,64 @@
     header .spacer { flex-basis:100%; height:0; }
     header select#model { flex:1; min-width:0; }
   }
+
+  /* App-Shell: Sidebar + Hauptspalte */
+  .app-shell { display:flex; align-items:stretch; min-height:100vh; }
+  .main-col { flex:1; min-width:0; display:flex; flex-direction:column; }
+
+  .sidebar-toggle-btn { display:none; }
+
+  .sidebar {
+    flex:0 0 272px; width:272px; background:var(--bg-soft); border-right:1px solid var(--border-soft);
+    display:flex; flex-direction:column; position:sticky; top:0; height:100vh; overflow:hidden;
+  }
+  .sidebar-top { padding:14px 14px 6px; }
+  .new-conv-btn {
+    width:100%; display:flex; align-items:center; gap:8px; justify-content:flex-start;
+    font-size:13.5px; padding:10px 12px;
+  }
+  .new-conv-btn span { font-size:16px; line-height:1; font-weight:600; }
+  .conv-list { flex:1; min-height:0; overflow-y:auto; padding:6px 10px 14px; display:flex; flex-direction:column; gap:3px; }
+  .conv-item {
+    display:flex; flex-direction:column; gap:2px; text-align:left; width:100%;
+    background:transparent; border:1px solid transparent; color:var(--muted);
+    font-weight:500; padding:9px 11px; border-radius:var(--radius-sm);
+    transition:background 140ms var(--ease-out), color 140ms var(--ease-out), border-color 140ms var(--ease-out);
+  }
+  /* :not(:disabled) hebt die Spezifitaet ueber die globale
+     button:hover:not(:disabled)-Regel (Akzentfarbe) an -- sonst wuerde
+     jeder Hover auf diesen Buttons in Akzentfarbe aufblitzen statt im
+     dezenten Sidebar-Ton zu bleiben. Gleiches Muster wie button.ghost. */
+  .conv-item:hover:not(:disabled) { background:var(--panel-2); color:var(--text); }
+  .conv-item.active { background:var(--panel-2); border-color:var(--border); color:var(--text); font-weight:600; }
+  .conv-title { font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .conv-date { font-size:11px; color:var(--muted-dim); }
+  .conv-item.active .conv-date { color:var(--muted); }
+  .conv-empty, .conv-error { padding:12px 11px; font-size:12.5px; line-height:1.5; color:var(--muted-dim); }
+  .conv-error { color:var(--danger); }
+  .conv-skeleton {
+    height:40px; border-radius:var(--radius-sm); margin:0 0 3px;
+    background:linear-gradient(90deg, var(--panel-2) 25%, var(--border-soft) 37%, var(--panel-2) 63%);
+    background-size:400% 100%; animation:skeleton-sheen 1.6s ease-in-out infinite;
+  }
+  @keyframes skeleton-sheen { 0% { background-position:100% 0; } 100% { background-position:0 0; } }
+
+  .sidebar-scrim { display:none; }
+
+  @media (max-width: 640px) {
+    header .sidebar-toggle-btn { display:inline-flex; }
+    .sidebar {
+      position:fixed; inset:0 auto 0 0; z-index:40; width:82vw; max-width:300px;
+      transform:translateX(-100%); transition:transform 240ms var(--ease-out);
+      box-shadow:24px 0 60px -32px rgba(0,0,0,0.6);
+    }
+    body.sidebar-open .sidebar { transform:translateX(0); }
+    .sidebar-scrim {
+      display:block; position:fixed; inset:0; background:rgba(4,5,9,0.6); z-index:35;
+      opacity:0; pointer-events:none; transition:opacity 200ms var(--ease-out);
+    }
+    body.sidebar-open .sidebar-scrim { opacity:1; pointer-events:auto; }
+  }
   .brandmark {
     width:22px; height:22px; border-radius:7px; flex-shrink:0;
     background:linear-gradient(135deg, var(--accent), var(--signal));
@@ -91,7 +149,7 @@
   #log { display:flex; flex-direction:column; gap:14px; min-height:52vh; padding:6px 0 20px; }
   .msg {
     padding:12px 15px; border-radius:var(--radius-md); max-width:80%;
-    white-space:pre-wrap; word-wrap:break-word; font-size:14.5px;
+    word-wrap:break-word; font-size:14.5px;
     animation:msg-in 260ms var(--ease-out) both;
   }
   @keyframes msg-in { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
@@ -99,10 +157,69 @@
     align-self:flex-end; color:#0b0d16; font-weight:500;
     background:linear-gradient(155deg, var(--accent), #9aa5fb);
   }
-  .msg.assistant { align-self:flex-start; background:var(--panel-2); border:1px solid var(--border-soft); }
-  .msg .meta { display:block; font-size:11px; opacity:0.7; margin-top:7px; font-variant-numeric:tabular-nums; }
+  .msg.user .msg-content { white-space:pre-wrap; word-wrap:break-word; }
+  .msg.assistant { align-self:flex-start; background:var(--panel-2); border:1px solid var(--border-soft); max-width:88%; }
+  .msg-footer { display:flex; align-items:center; gap:6px; margin-top:8px; }
+  .msg .meta { display:block; font-size:11px; opacity:0.7; font-variant-numeric:tabular-nums; }
   .msg.user .meta { color:#0b0d16; }
   .msg.assistant .meta { color:var(--muted); }
+  .msg-copy-btn {
+    display:inline-flex; align-items:center; background:transparent; border:1px solid transparent;
+    color:var(--muted); font-size:11px; font-weight:600; padding:3px 8px; border-radius:7px;
+    transition:background 140ms var(--ease-out), color 140ms var(--ease-out), border-color 140ms var(--ease-out);
+  }
+  .msg-copy-btn:hover:not(:disabled) { background:var(--panel); color:var(--text); border-color:var(--border); }
+  .msg-copy-btn.copied { color:var(--signal); }
+
+  /* Markdown-Inhalt (sanitisiert per DOMPurify) */
+  .msg-content { line-height:1.6; }
+  .msg-content > *:first-child { margin-top:0; }
+  .msg-content > *:last-child { margin-bottom:0; }
+  .msg-content p { margin:0 0 10px; }
+  .msg-content ul, .msg-content ol { margin:0 0 10px; padding-left:22px; }
+  .msg-content li { margin:2px 0; }
+  .msg-content li > p { margin:0; }
+  .msg-content a { color:var(--signal); }
+  .msg-content strong { font-weight:700; }
+  .msg-content h1, .msg-content h2, .msg-content h3 {
+    font-family:"Space Grotesk", sans-serif; line-height:1.25; margin:16px 0 8px; letter-spacing:-0.01em;
+  }
+  .msg-content h1 { font-size:1.25em; } .msg-content h2 { font-size:1.14em; } .msg-content h3 { font-size:1.05em; }
+  .msg-content blockquote {
+    margin:0 0 10px; padding:2px 14px; border-left:3px solid var(--border); color:var(--muted);
+  }
+  .msg-content hr { border:none; border-top:1px solid var(--border-soft); margin:12px 0; }
+  .msg-content table { border-collapse:collapse; width:100%; margin:0 0 12px; font-size:13.5px; display:block; overflow-x:auto; }
+  .msg-content th, .msg-content td { border:1px solid var(--border-soft); padding:6px 10px; text-align:left; }
+  .msg-content th { background:var(--panel); font-weight:600; }
+  .msg-content pre {
+    position:relative; background:var(--bg-soft); border:1px solid var(--border-soft);
+    border-radius:var(--radius-md); padding:14px 15px; padding-top:34px; overflow-x:auto; margin:0 0 12px;
+  }
+  .msg-content pre code { background:none; padding:0; font-size:13px; line-height:1.55; }
+  .code-copy-btn {
+    position:absolute; top:8px; right:8px; padding:4px 9px; font-size:11px; font-weight:600;
+    background:var(--panel-2); border:1px solid var(--border); color:var(--muted); border-radius:7px;
+    opacity:0.75; transition:opacity 140ms var(--ease-out), color 140ms var(--ease-out), border-color 140ms var(--ease-out);
+  }
+  .code-copy-btn:hover:not(:disabled), .code-copy-btn:focus-visible {
+    opacity:1; color:var(--text); background:var(--panel-2);
+  }
+  .code-copy-btn.copied { color:var(--signal); border-color:var(--signal); opacity:1; }
+
+  /* Leerer Zustand / Willkommen im Chat */
+  .empty-state {
+    display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+    gap:16px; min-height:46vh; padding:20px; animation:msg-in 320ms var(--ease-out) both;
+  }
+  .empty-state h2 { margin:0; font-size:21px; letter-spacing:-0.01em; }
+  .empty-state p { margin:0; color:var(--muted); max-width:44ch; font-size:13.5px; }
+  .example-prompts { display:flex; flex-direction:column; gap:8px; width:100%; max-width:440px; margin-top:4px; }
+  .example-prompts button {
+    text-align:left; background:var(--panel-2); border:1px solid var(--border-soft); color:var(--text);
+    font-weight:500; font-size:13.5px; padding:11px 14px; border-radius:var(--radius-md);
+  }
+  .example-prompts button:hover:not(:disabled) { background:var(--panel-2); border-color:var(--accent); }
 
   .typing { display:flex; gap:4px; align-self:flex-start; padding:14px 15px; }
   .typing span {
@@ -117,62 +234,85 @@
     position:sticky; bottom:0; background:linear-gradient(var(--bg) 55%, var(--bg));
     padding:14px 0 18px; display:flex; gap:10px; align-items:flex-end;
   }
-  .composer textarea { flex:1; resize:vertical; min-height:52px; max-height:200px; }
+  .composer textarea { flex:1; resize:none; min-height:52px; max-height:200px; overflow-y:auto; }
   .composer button { padding:0 20px; align-self:stretch; border-radius:var(--radius-sm); }
 
   code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; background:var(--panel-2);
     padding:1px 5px; border-radius:5px; font-size:0.9em; }
 
   @media (prefers-reduced-motion: reduce) {
-    .msg { animation:none; }
+    .msg, .empty-state { animation:none; }
     .typing span { animation:none; opacity:0.6; }
     button, select, input, textarea { transition:none; }
+    .sidebar, .sidebar-scrim, .conv-item, .code-copy-btn, .msg-copy-btn { transition:none; }
+    .conv-skeleton { animation:none; opacity:0.5; }
   }
 </style>
 </head>
 <body>
-<header>
-  <div class="brandmark"></div>
-  <h1 class="brand-font">KI-Plattform</h1>
-  <div class="spacer"></div>
-  <select id="model" title="Modell wählen"></select>
-  <span class="usage" id="usage">–</span>
-  <button class="ghost" id="newChat" title="Neue Unterhaltung starten" style="padding:9px 12px;">+ Neu</button>
-  <a class="ghost" href="/dashboard.html"
-     style="text-decoration:none;padding:9px 13px;border-radius:9px;border:1px solid var(--border);font-size:14px;"
-     title="Zum Dashboard">Dashboard →</a>
-  <button class="ghost" id="logout" title="API-Key vergessen" style="padding:9px 12px;">⎋</button>
-</header>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar" aria-label="Unterhaltungsverlauf">
+    <div class="sidebar-top">
+      <button class="ghost new-conv-btn" id="newChatSide" type="button">
+        <span aria-hidden="true">+</span> Neue Unterhaltung
+      </button>
+    </div>
+    <nav class="conv-list" id="convList" aria-label="Gespeicherte Unterhaltungen"></nav>
+  </aside>
+  <div class="sidebar-scrim" id="sidebarScrim"></div>
 
-<main>
-  <div class="setup-wrap" id="setupWrap">
-    <div class="setup" id="setup">
-      <h2 class="brand-font">Willkommen zurück</h2>
-      <p class="lead">Mit deinem API-Schlüssel anmelden, um loszulegen.</p>
-      <label for="key">API-Schlüssel (aus <code>/admin/provision</code>)</label>
-      <div class="row">
-        <input id="key" type="password" placeholder="pk_…" style="flex:1;min-width:0" />
-        <button id="connect">Verbinden</button>
+  <div class="main-col">
+    <header>
+      <button class="ghost sidebar-toggle-btn" id="sidebarToggle" type="button"
+        title="Verlauf ein-/ausblenden" aria-label="Seitenleiste umschalten" aria-expanded="false"
+        style="padding:9px 11px;">☰</button>
+      <div class="brandmark"></div>
+      <h1 class="brand-font">KI-Plattform</h1>
+      <div class="spacer"></div>
+      <select id="model" title="Modell wählen"></select>
+      <span class="usage" id="usage">–</span>
+      <button class="ghost" id="newChat" title="Neue Unterhaltung starten" style="padding:9px 12px;">+ Neu</button>
+      <a class="ghost" href="/dashboard.html"
+         style="text-decoration:none;padding:9px 13px;border-radius:9px;border:1px solid var(--border);font-size:14px;"
+         title="Zum Dashboard">Dashboard →</a>
+      <button class="ghost" id="logout" title="API-Key vergessen" style="padding:9px 12px;">⎋</button>
+    </header>
+
+    <main>
+      <div class="setup-wrap" id="setupWrap">
+        <div class="setup" id="setup">
+          <h2 class="brand-font">Willkommen zurück</h2>
+          <p class="lead">Mit deinem API-Schlüssel anmelden, um loszulegen.</p>
+          <label for="key">API-Schlüssel (aus <code>/admin/provision</code>)</label>
+          <div class="row">
+            <input id="key" type="password" placeholder="pk_…" style="flex:1;min-width:0" />
+            <button id="connect">Verbinden</button>
+          </div>
+          <p class="hint">Der Schlüssel bleibt nur lokal im Browser (localStorage). Das Modell wird pro Tarif freigeschaltet.</p>
+          <div class="err" id="setupErr"></div>
+        </div>
       </div>
-      <p class="hint">Der Schlüssel bleibt nur lokal im Browser (localStorage). Das Modell wird pro Tarif freigeschaltet.</p>
-      <div class="err" id="setupErr"></div>
-    </div>
-  </div>
 
-  <div id="chat" style="display:none">
-    <div id="log"></div>
-    <div class="composer">
-      <textarea id="input" placeholder="Nachricht… (Enter sendet, Shift+Enter = Zeile)"></textarea>
-      <button id="send">Senden</button>
-    </div>
-    <div class="err" id="chatErr"></div>
+      <div id="chat" style="display:none">
+        <div id="log"></div>
+        <div class="composer">
+          <textarea id="input" placeholder="Nachricht… (Enter sendet, Shift+Enter = Zeile)" rows="1"></textarea>
+          <button id="send">Senden</button>
+        </div>
+        <div class="err" id="chatErr"></div>
+      </div>
+    </main>
   </div>
-</main>
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 let KEY = localStorage.getItem("pk") || "";
 let convId = null;
+let activeConvId = null;
+let conversations = [];
 let history = [];
 
 function authHeader() { return { "Authorization": "Bearer " + KEY, "Content-Type": "application/json" }; }
@@ -181,6 +321,59 @@ function authHeader() { return { "Authorization": "Bearer " + KEY, "Content-Type
 // wiederverwendet (die serverseitige Pruefung wuerde das ohnehin als 404
 // ablehnen, aber so kommt es gar nicht erst dazu).
 function convKey() { return "convId:" + KEY; }
+
+// --- Markdown-Rendering (sanitisiert) ---------------------------------
+// Modell-Antworten sind nicht vertrauenswuerdig (Prompt-Injection kann
+// versuchen, HTML/Script einzuschleusen). Roh-HTML aus marked() geht daher
+// NIE direkt ins DOM -- immer zuerst durch DOMPurify. Schlaegt eine der
+// beiden CDN-Bibliotheken fehl (z.B. offline), faellt renderMarkdown() auf
+// escaped Klartext zurueck statt die Seite brechen zu lassen.
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, (c) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+}
+function renderMarkdown(raw) {
+  if (!raw) return "";
+  try {
+    const html = marked.parse(raw, { breaks: true, gfm: true });
+    return DOMPurify.sanitize(html, { ADD_ATTR: ["target", "rel"] });
+  } catch {
+    return `<p>${escapeHtml(raw)}</p>`;
+  }
+}
+// Fuegt jedem <pre>-Block (Code) genau einmal einen Kopieren-Button hinzu.
+// Idempotent per data-enhanced-Marker, damit wiederholte (throttled)
+// Neu-Renderings waehrend des Streamens keine doppelten Buttons erzeugen.
+function enhanceCodeBlocks(container) {
+  container.querySelectorAll("pre:not([data-enhanced])").forEach((pre) => {
+    pre.dataset.enhanced = "1";
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "code-copy-btn";
+    btn.textContent = "Kopieren";
+    btn.setAttribute("aria-label", "Code kopieren");
+    btn.onclick = () => {
+      const codeEl = pre.querySelector("code");
+      const text = codeEl ? codeEl.innerText : pre.innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = "Kopiert"; btn.classList.add("copied");
+        setTimeout(() => { btn.textContent = "Kopieren"; btn.classList.remove("copied"); }, 1600);
+      });
+    };
+    pre.appendChild(btn);
+  });
+}
+// Buendelt DOM-Updates waehrend des Streamens auf max. 1 pro Frame, statt
+// bei jedem einzelnen SSE-Chunk neu zu parsen/sanitisieren (Performance).
+let renderScheduled = false;
+function scheduleMarkdownRender(bodyEl, getRaw) {
+  if (renderScheduled) return;
+  renderScheduled = true;
+  requestAnimationFrame(() => {
+    renderScheduled = false;
+    bodyEl.innerHTML = renderMarkdown(getRaw());
+    enhanceCodeBlocks(bodyEl);
+  });
+}
 
 async function loadModels() {
   const r = await fetch("/v1/models", { headers: authHeader() });
@@ -210,11 +403,91 @@ async function refreshUsage() {
   } catch {}
 }
 
+const EXAMPLE_PROMPTS = [
+  "Fasse die wichtigsten Punkte dieses Textes in 5 Stichpunkten zusammen.",
+  "Schreib eine Python-Funktion, die eine Liste von Rechnungen nach Faelligkeitsdatum sortiert.",
+  "Erklaer mir den Unterschied zwischen SQL JOIN-Typen an einem kurzen Beispiel.",
+];
+
+function renderEmptyState() {
+  const log = $("log");
+  log.innerHTML = "";
+  const wrap = document.createElement("div");
+  wrap.className = "empty-state";
+  const h2 = document.createElement("h2");
+  h2.className = "brand-font";
+  h2.textContent = "Womit fangen wir an?";
+  const p = document.createElement("p");
+  p.textContent = "Stell eine Frage oder wähle einen Vorschlag.";
+  const box = document.createElement("div");
+  box.className = "example-prompts";
+  for (const prompt of EXAMPLE_PROMPTS) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = prompt;
+    b.onclick = () => { $("input").value = prompt; autoGrow($("input")); $("input").focus(); };
+    box.appendChild(b);
+  }
+  wrap.appendChild(h2); wrap.appendChild(p); wrap.appendChild(box);
+  log.appendChild(wrap);
+}
+
+// Meta-Zeile (Modell/Tokens) + "Kopieren"-Button fuer eine Antwort-Blase.
+// raw wird bei Klick live aus el.dataset.raw gelesen, nicht aus dem
+// Funktions-Argument -- so bleibt der Button auch nach spaeteren Updates
+// (Streaming-Abschluss) korrekt.
+function appendMsgFooter(el, metaText, showCopy) {
+  const footer = document.createElement("div");
+  footer.className = "msg-footer";
+  if (metaText) {
+    const s = document.createElement("span");
+    s.className = "meta";
+    s.textContent = metaText;
+    footer.appendChild(s);
+  }
+  if (showCopy) {
+    const copyBtn = document.createElement("button");
+    copyBtn.type = "button";
+    copyBtn.className = "msg-copy-btn";
+    copyBtn.textContent = "Kopieren";
+    copyBtn.setAttribute("aria-label", "Antwort kopieren");
+    copyBtn.onclick = () => {
+      navigator.clipboard.writeText(el.dataset.raw || "").then(() => {
+        copyBtn.textContent = "Kopiert"; copyBtn.classList.add("copied");
+        setTimeout(() => { copyBtn.textContent = "Kopieren"; copyBtn.classList.remove("copied"); }, 1600);
+      });
+    };
+    footer.appendChild(copyBtn);
+  }
+  el.appendChild(footer);
+  return footer;
+}
+
+// role: "user" | "assistant". Assistant-Inhalte werden als sanitisiertes
+// Markdown gerendert (renderMarkdown), User-Text bleibt reiner Text (kein
+// Rendering noetig/gewuenscht) und behaelt Zeilenumbrueche via CSS pre-wrap.
+// Ein leerer Platzhalter (content === "", fuer den Streaming-Start) bekommt
+// bewusst noch keine Fusszeile -- die kommt erst, wenn die Antwort steht.
 function addMsg(role, content, meta) {
+  $("log").querySelector(".empty-state")?.remove();
   const el = document.createElement("div");
   el.className = "msg " + role;
-  el.textContent = content;
-  if (meta) { const s = document.createElement("span"); s.className = "meta"; s.textContent = meta; el.appendChild(s); }
+  el.dataset.raw = content || "";
+
+  const body = document.createElement("div");
+  body.className = "msg-content";
+  if (role === "assistant") {
+    body.innerHTML = renderMarkdown(content);
+    enhanceCodeBlocks(body);
+  } else {
+    body.textContent = content;
+  }
+  el.appendChild(body);
+
+  if (meta || (role === "assistant" && content)) {
+    appendMsgFooter(el, meta || "", role === "assistant" && !!content);
+  }
+
   $("log").appendChild(el);
   el.scrollIntoView({ behavior: "smooth", block: "end" });
   return el;
@@ -230,6 +503,109 @@ function showTyping() {
 }
 function hideTyping() { $("typingIndicator")?.remove(); }
 
+// --- Sidebar: Konversationsverlauf -------------------------------------
+function formatConvDate(iso) {
+  const d = new Date(iso);
+  const now = new Date();
+  if (d.toDateString() === now.toDateString()) {
+    return d.toLocaleTimeString("de-CH", { hour: "2-digit", minute: "2-digit" });
+  }
+  const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
+  if (d.toDateString() === yesterday.toDateString()) return "Gestern";
+  return d.toLocaleDateString("de-CH", { day: "2-digit", month: "2-digit", year: "2-digit" });
+}
+// title kommt vom Server oft als null (noch nicht gesetzt) -- Fallback ist
+// das Datum statt eines rohen "null". Die Liste liefert keine Nachrichten-
+// inhalte (nur id/title/created_at), ein Fallback aus der ersten Nachricht
+// wuerde also einen zusaetzlichen Request pro Eintrag kosten -- bewusst
+// nicht gemacht, um die Sidebar nicht mit N+1-Requests zu belasten.
+function convLabel(c) {
+  return c.title && c.title.trim() ? c.title : "Unterhaltung vom " + formatConvDate(c.created_at);
+}
+
+async function loadConversations() {
+  const list = $("convList");
+  list.innerHTML = '<div class="conv-skeleton"></div><div class="conv-skeleton"></div><div class="conv-skeleton"></div>';
+  try {
+    const r = await fetch("/v1/conversations", { headers: authHeader() });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const data = await r.json();
+    conversations = data.conversations || [];
+    renderConvList();
+  } catch (e) {
+    list.innerHTML = '<div class="conv-error">Verlauf konnte nicht geladen werden.</div>';
+  }
+}
+
+function renderConvList() {
+  const list = $("convList");
+  list.innerHTML = "";
+  if (!conversations.length) {
+    list.innerHTML = '<div class="conv-empty">Noch keine Unterhaltungen. Starte oben eine neue.</div>';
+    return;
+  }
+  for (const c of conversations) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "conv-item" + (c.id === activeConvId ? " active" : "");
+    btn.dataset.id = c.id;
+    const title = document.createElement("span");
+    title.className = "conv-title";
+    title.textContent = convLabel(c);
+    const date = document.createElement("span");
+    date.className = "conv-date";
+    date.textContent = formatConvDate(c.created_at);
+    btn.appendChild(title);
+    btn.appendChild(date);
+    btn.onclick = () => openConversation(c.id);
+    list.appendChild(btn);
+  }
+}
+
+async function openConversation(id) {
+  if (id === activeConvId) { closeSidebarMobile(); return; }
+  $("chatErr").textContent = "";
+  try {
+    const r = await fetch("/v1/conversations/" + id, { headers: authHeader() });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const data = await r.json();
+    convId = data.id;
+    activeConvId = data.id;
+    localStorage.setItem(convKey(), convId);
+    history = data.messages.map((m) => ({ role: m.role, content: m.content }));
+    $("log").innerHTML = "";
+    if (!data.messages.length) {
+      renderEmptyState();
+    } else {
+      for (const m of data.messages) {
+        const meta = m.role === "assistant" && m.model
+          ? `${m.model} · ${m.tokens_in ?? 0}→${m.tokens_out ?? 0} Tokens`
+          : null;
+        addMsg(m.role, m.content, meta);
+      }
+    }
+    renderConvList();
+    closeSidebarMobile();
+  } catch (e) {
+    $("chatErr").textContent = "Unterhaltung konnte nicht geladen werden: " + e.message;
+  }
+}
+
+function startNewChat() {
+  convId = null;
+  activeConvId = null;
+  localStorage.removeItem(convKey());
+  history = [];
+  renderEmptyState();
+  $("chatErr").textContent = "";
+  renderConvList();
+  closeSidebarMobile();
+  $("input").focus();
+}
+
+function openSidebarMobile() { document.body.classList.add("sidebar-open"); $("sidebarToggle").setAttribute("aria-expanded", "true"); }
+function closeSidebarMobile() { document.body.classList.remove("sidebar-open"); $("sidebarToggle").setAttribute("aria-expanded", "false"); }
+
 async function connect() {
   $("setupErr").textContent = "";
   KEY = $("key").value.trim();
@@ -237,10 +613,23 @@ async function connect() {
   try {
     await loadModels();
     localStorage.setItem("pk", KEY);
-    convId = localStorage.getItem(convKey());
     $("setupWrap").style.display = "none";
     $("chat").style.display = "block";
     refreshUsage();
+
+    convId = localStorage.getItem(convKey());
+    await loadConversations();
+    // Falls eine fruehere Sitzung noch eine convId gespeichert hatte: nur
+    // wiederherstellen, wenn sie auch wirklich noch existiert (sonst 404
+    // beim ersten Senden) -- die gerade geladene Liste reicht dafuer aus,
+    // kein Extra-Request noetig.
+    if (convId && conversations.some((c) => c.id === convId)) {
+      await openConversation(convId);
+    } else {
+      convId = null;
+      localStorage.removeItem(convKey());
+      renderEmptyState();
+    }
   } catch (e) {
     $("setupErr").textContent = "Verbindung fehlgeschlagen: " + e.message;
   }
@@ -254,6 +643,7 @@ async function send() {
   if (!text) return;
   $("chatErr").textContent = "";
   $("input").value = "";
+  autoGrow($("input"));
   addMsg("user", text);
   history.push({ role: "user", content: text });
   const model = $("model").value;
@@ -261,6 +651,7 @@ async function send() {
   showTyping();
 
   let assistantEl = null;
+  let assistantBody = null;
   let full = "";
   let tokensIn = 0, tokensOut = 0;
 
@@ -304,9 +695,10 @@ async function send() {
         }
         const piece = obj.choices?.[0]?.delta?.content;
         if (piece) {
-          if (!assistantEl) { hideTyping(); assistantEl = addMsg("assistant", ""); }
+          if (!assistantEl) { hideTyping(); assistantEl = addMsg("assistant", ""); assistantBody = assistantEl.querySelector(".msg-content"); }
           full += piece;
-          assistantEl.firstChild ? (assistantEl.firstChild.textContent = full) : (assistantEl.textContent = full);
+          assistantEl.dataset.raw = full;
+          scheduleMarkdownRender(assistantBody, () => full);
           assistantEl.scrollIntoView({ behavior: "smooth", block: "end" });
         }
         if (obj.usage) { tokensIn = obj.usage.prompt_tokens || 0; tokensOut = obj.usage.completion_tokens || 0; }
@@ -317,14 +709,27 @@ async function send() {
   try {
     await attempt(true);
     hideTyping();
-    if (!assistantEl) assistantEl = addMsg("assistant", full || "(keine Antwort)");
-    const meta = document.createElement("span");
-    meta.className = "meta";
-    meta.textContent = `${model} · ${tokensIn}→${tokensOut} Tokens`;
-    assistantEl.appendChild(meta);
+    const metaText = `${model} · ${tokensIn}→${tokensOut} Tokens`;
+    if (!assistantEl) {
+      // Kein einziges Chunk kam an -- Platzhaltertext anzeigen, aber nicht
+      // als "echte" Antwort behandeln (dataset.raw bleibt leer, kein
+      // Kopieren-Button fuer einen Nicht-Inhalt).
+      assistantEl = addMsg("assistant", full, metaText);
+      if (!full) assistantEl.querySelector(".msg-content").textContent = "(keine Antwort)";
+    } else {
+      // Letzter, garantiert vollstaendiger Render-Durchlauf (die throttled
+      // Zwischenstaende koennten das allerletzte Chunk verpasst haben) plus
+      // die Fusszeile, die waehrend des Streamings bewusst noch fehlte.
+      assistantEl.dataset.raw = full;
+      assistantBody.innerHTML = renderMarkdown(full);
+      enhanceCodeBlocks(assistantBody);
+      appendMsgFooter(assistantEl, metaText, !!full);
+    }
 
     history.push({ role: "assistant", content: full });
     refreshUsage();
+    loadConversations(); // neue/aktualisierte Unterhaltung in der Sidebar sichtbar machen
+    activeConvId = convId;
   } catch (e) {
     hideTyping();
     $("chatErr").textContent = "Fehler: " + e.message;
@@ -333,19 +738,31 @@ async function send() {
   }
 }
 
+// Auto-wachsendes Eingabefeld: waechst mit dem Inhalt bis max-height (siehe
+// CSS), danach scrollt es intern. Hoehe wird direkt gesetzt (kein CSS-
+// Transition auf height -- das waere teuer/ruckelig), daher kein
+// reduced-motion-Sonderfall noetig.
+function autoGrow(el) {
+  el.style.height = "auto";
+  el.style.height = Math.min(el.scrollHeight, 200) + "px";
+}
+
 $("connect").onclick = connect;
 $("send").onclick = send;
 $("logout").onclick = () => { localStorage.removeItem("pk"); location.reload(); };
-$("newChat").onclick = () => {
-  convId = null;
-  localStorage.removeItem(convKey());
-  history = [];
-  $("log").innerHTML = "";
-  $("chatErr").textContent = "";
+$("newChat").onclick = startNewChat;
+$("newChatSide").onclick = startNewChat;
+$("sidebarToggle").onclick = () => {
+  document.body.classList.contains("sidebar-open") ? closeSidebarMobile() : openSidebarMobile();
 };
+$("sidebarScrim").onclick = closeSidebarMobile;
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && document.body.classList.contains("sidebar-open")) closeSidebarMobile();
+});
 $("input").addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
 });
+$("input").addEventListener("input", () => autoGrow($("input")));
 
 // Auto-Connect, wenn ein Schlüssel gespeichert ist.
 if (KEY) { $("key").value = KEY; connect(); }
