@@ -61,8 +61,20 @@ Der Kauf löst die Kontoerstellung in Produkt A aus:
 3. Er legt Mandant + API-Key an (`provision_tenant`). Die Zustellung der
    Zugangsdaten an den Kunden ist ein separater Schritt (E-Mail-Flow).
 
-**Wichtig:** Lege die Abo-Produkte im Store mit genau diesen SKUs an
-(`plan-free`, `plan-starter`, `plan-pro`, `plan-business`, `plan-enterprise`).
+**Erledigt:** Die 5 Abo-Produkte sind im verbundenen Store (katzenufos.com)
+als **Draft** angelegt, mit genau diesen SKUs: `plan-free`, `plan-starter`,
+`plan-pro`, `plan-business`, `plan-enterprise`. Vor Live-Schaltung noch offen:
+
+- Status von Draft auf Active setzen (im Shopify-Admin oder per
+  `bulk-update-product-status`), sobald geprüft ist, dass Checkout +
+  Webhook-Flow wie erwartet funktionieren.
+- `plan-enterprise` hat bewusst keinen Selbstbedienungs-Checkout (Preis
+  "Auf Anfrage") — `tariffs.liquid` zeigt für diesen Tarif keinen
+  Kaufen-Button (kein `cta_url` im Preset), das Produkt existiert nur für
+  die SKU-Konvention/interne Zuordnung.
+- Keine Produktbilder hinterlegt (Theme ist bewusst bild-frei, siehe
+  „Design"-Abschnitt) — bei Bedarf über `upload-image` + `create-product`-
+  Update ergänzen.
 
 ## Deploy-Regel (nicht verhandelbar)
 
