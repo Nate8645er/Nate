@@ -3,55 +3,74 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Plattform — Dashboard</title>
+<title>KI-Plattform · Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --bg:#0b0d12; --panel:#12151d; --panel2:#171b25; --border:#232838;
-    --text:#e7ebf3; --muted:#8b93a7; --accent:#6c8cff; --accent2:#3b5bdb;
-    --ok:#2fbf71; --danger:#ff6b6b; --warn:#ffb454;
+    --bg:#07080d; --panel:#12151f; --panel2:#171b28; --border:#242a3d; --border-soft:#1a1f2e;
+    --text:#eef0f7; --muted:#8b93ab; --accent:#7c8bfa; --accent2:#4c56b0; --signal:#3fe3c4;
+    --ok:#34d399; --danger:#ff7a7a; --warn:#f5b955;
+    --radius-lg:16px; --radius-md:12px; --radius-sm:9px;
+    --ease-out:cubic-bezier(0.16,1,0.3,1);
   }
   * { box-sizing:border-box; }
-  body { margin:0; background:var(--bg); color:var(--text);
-    font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
-  header { display:flex; align-items:center; gap:12px; padding:12px 18px;
-    border-bottom:1px solid var(--border); background:var(--panel); }
-  header h1 { font-size:15px; font-weight:600; margin:0; letter-spacing:.2px; }
+  html { color-scheme: dark; }
+  body { margin:0; min-height:100vh; background:var(--bg); color:var(--text);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,sans-serif;
+    background-image: radial-gradient(680px 420px at 12% -8%, rgba(124,139,250,0.09), transparent 60%);
+    background-repeat:no-repeat; }
+  .brand-font { font-family:"Space Grotesk", -apple-system, sans-serif; }
+  .brandmark { width:20px; height:20px; border-radius:6px; flex-shrink:0;
+    background:linear-gradient(135deg, var(--accent), var(--signal)); }
+  header { display:flex; align-items:center; gap:12px; padding:14px 22px;
+    border-bottom:1px solid var(--border-soft); background:rgba(10,12,19,0.75);
+    backdrop-filter:blur(10px); position:sticky; top:0; z-index:10; }
+  header h1 { font-size:15px; font-weight:600; margin:0; letter-spacing:-0.01em; }
   header .spacer { flex:1; }
-  header a.navlink { color:var(--muted); text-decoration:none; font-size:13px;
-    border:1px solid var(--border); border-radius:9px; padding:7px 11px; }
+  header a.navlink { color:var(--muted); text-decoration:none; font-size:13.5px;
+    border:1px solid var(--border); border-radius:9px; padding:8px 13px;
+    transition:border-color 160ms var(--ease-out), color 160ms; }
   header a.navlink:hover { color:var(--text); border-color:var(--accent); }
   select, input, button, textarea { font:inherit; color:var(--text);
-    background:var(--panel2); border:1px solid var(--border); border-radius:9px;
-    padding:9px 11px; outline:none; }
-  select:focus, input:focus, textarea:focus { border-color:var(--accent); }
-  button { background:var(--accent2); border-color:var(--accent2); cursor:pointer;
-    font-weight:600; }
-  button:hover { background:var(--accent); border-color:var(--accent); }
-  button:disabled { opacity:.55; cursor:not-allowed; background:var(--panel2); border-color:var(--border); }
-  button.ghost { background:transparent; border-color:var(--border); font-weight:500; }
+    background:var(--panel2); border:1px solid var(--border); border-radius:var(--radius-sm);
+    padding:9px 11px; outline:none; transition:border-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out), transform 120ms var(--ease-out); }
+  select:focus-visible, input:focus-visible, textarea:focus-visible {
+    border-color:var(--accent); box-shadow:0 0 0 3px rgba(124,139,250,0.22); }
+  button { background:var(--accent); border-color:var(--accent); color:#0b0d16; cursor:pointer;
+    font-weight:600; letter-spacing:-0.005em; }
+  button:hover:not(:disabled) { background:#909dfb; border-color:#909dfb; }
+  button:active:not(:disabled) { transform:scale(0.97); }
+  button:disabled { opacity:.5; cursor:not-allowed; background:var(--panel2); border-color:var(--border); color:var(--muted); }
+  button.ghost { background:transparent; border-color:var(--border); font-weight:500; color:var(--text); }
+  button.ghost:hover:not(:disabled) { background:var(--panel2); }
   button.danger-btn { background:transparent; border-color:var(--border); color:var(--danger);
     font-weight:600; padding:5px 9px; font-size:13px; }
   button.danger-btn:hover { background:var(--danger); border-color:var(--danger); color:#1a0a0a; }
   button.danger-btn.confirm { background:var(--danger); border-color:var(--danger); color:#1a0a0a; }
-  main { max-width:1180px; margin:0 auto; padding:20px; }
+  main { max-width:1180px; margin:0 auto; padding:24px 20px; }
   .hint { color:var(--muted); font-size:12.5px; }
   .err { color:var(--danger); font-size:13px; min-height:18px; margin-top:6px; }
-  .setup { background:var(--panel); border:1px solid var(--border); border-radius:14px;
-    padding:18px; margin-bottom:16px; max-width:520px; }
-  .setup label { display:block; font-size:12.5px; color:var(--muted); margin:0 0 6px; }
+  .setup { background:var(--panel); border:1px solid var(--border); border-radius:var(--radius-lg);
+    padding:24px; margin-bottom:16px; max-width:480px;
+    box-shadow:0 24px 60px -32px rgba(0,0,0,0.6); }
+  .setup label { display:block; font-size:12.5px; color:var(--muted); margin:0 0 6px; font-weight:500; }
   .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
 
   .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
     gap:16px; align-items:start; }
-  .widget { background:var(--panel); border:1px solid var(--border); border-radius:14px;
-    padding:0; overflow:hidden; transition:border-color .15s, opacity .15s; }
+  .widget { background:var(--panel); border:1px solid var(--border); border-radius:var(--radius-lg);
+    padding:0; overflow:hidden; transition:border-color .15s, opacity .15s, transform .15s var(--ease-out);
+    animation:widget-in 320ms var(--ease-out) both; }
+  @keyframes widget-in { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
   .widget.drag-over { border-color:var(--accent); }
   .widget.dragging { opacity:.45; }
   .widget-head { display:flex; align-items:center; gap:10px; padding:13px 16px;
-    border-bottom:1px solid var(--border); background:var(--panel2); cursor:grab; }
+    border-bottom:1px solid var(--border-soft); cursor:grab; }
   .widget-head:active { cursor:grabbing; }
   .widget-head .handle { color:var(--muted); font-size:14px; letter-spacing:1px; user-select:none; }
-  .widget-head h2 { font-size:14px; font-weight:600; margin:0; flex:1; letter-spacing:.2px; }
+  .widget-head h2 { font-size:14px; font-weight:600; margin:0; flex:1; letter-spacing:-0.005em; }
   .widget-head .badge { font-size:11.5px; color:var(--muted); background:var(--bg);
     border:1px solid var(--border); border-radius:999px; padding:3px 9px; }
   .widget-body { padding:16px; }
@@ -59,41 +78,47 @@
   .empty { color:var(--muted); font-size:13px; padding:8px 0; }
 
   .agent-row { display:flex; align-items:center; gap:10px; padding:9px 0;
-    border-bottom:1px solid var(--border); }
+    border-bottom:1px solid var(--border-soft); }
   .agent-row:last-child { border-bottom:none; }
   .agent-row .info { flex:1; min-width:0; }
   .agent-row .name { font-weight:600; font-size:13.5px; }
   .agent-row .model { color:var(--muted); font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
-  .agent-form { margin-top:14px; padding-top:14px; border-top:1px solid var(--border);
+  .agent-form { margin-top:14px; padding-top:14px; border-top:1px solid var(--border-soft);
     display:flex; flex-direction:column; gap:9px; }
   .agent-form label { font-size:12px; color:var(--muted); }
   .agent-form input, .agent-form select, .agent-form textarea { width:100%; }
   .agent-form textarea { resize:vertical; min-height:52px; }
 
   .usage-plan { display:flex; align-items:baseline; gap:8px; margin-bottom:4px; }
-  .usage-plan .plan-name { font-size:16px; font-weight:700; }
+  .usage-plan .plan-name { font-size:17px; font-weight:700; font-family:"Space Grotesk", sans-serif; }
   .usage-plan .price { color:var(--muted); font-size:12.5px; }
   .progress { background:var(--panel2); border:1px solid var(--border); border-radius:999px;
-    height:10px; overflow:hidden; margin:12px 0 6px; }
-  .progress-fill { height:100%; background:var(--accent); transition:width .3s; }
-  .usage-nums { font-size:12.5px; color:var(--muted); display:flex; justify-content:space-between; }
-  .status-line { margin-top:14px; padding-top:12px; border-top:1px solid var(--border);
+    height:8px; overflow:hidden; margin:12px 0 6px; }
+  .progress-fill { height:100%; background:linear-gradient(90deg, var(--accent), var(--signal)); transition:width .4s var(--ease-out); }
+  .usage-nums { font-size:12.5px; color:var(--muted); display:flex; justify-content:space-between; font-variant-numeric:tabular-nums; }
+  .status-line { margin-top:14px; padding-top:12px; border-top:1px solid var(--border-soft);
     font-size:13px; display:flex; flex-direction:column; gap:4px; }
   .status-ok { color:var(--ok); }
   .status-warn { color:var(--danger); font-weight:600; }
 
   .hist-row { display:flex; justify-content:space-between; gap:10px; padding:9px 0;
-    border-bottom:1px solid var(--border); font-size:13px; }
+    border-bottom:1px solid var(--border-soft); font-size:13px; }
   .hist-row:last-child { border-bottom:none; }
   .hist-row .type { font-weight:600; }
   .hist-row .date { color:var(--muted); font-size:11.5px; }
   .hist-row .amount { color:var(--muted); white-space:nowrap; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .widget { animation:none; }
+    button, select, input, textarea, .progress-fill { transition:none; }
+  }
 </style>
 </head>
 <body>
 <header>
-  <h1>KI-Plattform · Dashboard</h1>
+  <div class="brandmark"></div>
+  <h1 class="brand-font">KI-Plattform · Dashboard</h1>
   <div class="spacer"></div>
   <a class="navlink" href="/index.html">← Chat</a>
   <button class="ghost" id="logout" title="API-Key vergessen">⎋</button>
