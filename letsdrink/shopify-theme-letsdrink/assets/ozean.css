@@ -201,6 +201,23 @@ body.menu-open .mobile-menu-panel a:nth-child(5) { transition-delay: 0.26s; }
 /* Napf-Insel schwebt */
 .float-bowl { position: absolute; width: clamp(90px, 12vw, 170px); z-index: 1; pointer-events: none; animation: hockBob 6s ease-in-out infinite alternate; filter: drop-shadow(5px 7px 0 rgba(23, 51, 59, 0.25)); }
 
+/* Flaschen-Regen: Mini-Flaschen fallen dauerhaft durch den ganzen Shop.
+   Fixe Ebene auf z-index 1: ueber den Sektions-Hintergruenden, aber unter
+   allen Inhalts-Containern (die liegen auf z-index 2+). */
+#flaschen-regen { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+.regen-flasche { position: absolute; top: -60px; width: clamp(20px, 2.6vw, 32px); opacity: 0; animation: regenFall var(--rspeed, 11s) linear infinite; }
+.regen-flasche svg { display: block; }
+@keyframes regenFall {
+  0%   { opacity: 0; transform: translateY(0) rotate(-8deg); }
+  6%   { opacity: 0.85; }
+  50%  { transform: translateY(55vh) rotate(7deg); }
+  94%  { opacity: 0.85; }
+  100% { opacity: 0; transform: translateY(112vh) rotate(-6deg); }
+}
+/* Inhalte, die nicht in z-2-Containern stecken, ueber den Regen heben */
+.ticker { position: relative; z-index: 2; }
+.footer-inner, .footer-bottom { position: relative; z-index: 2; }
+
 /* Pfotenspur: Abdruecke tauchen nacheinander auf und verblassen */
 .paw-trail { position: absolute; display: flex; gap: clamp(18px, 3vw, 36px); pointer-events: none; z-index: 1; opacity: 0.7; }
 .paw-step { width: clamp(16px, 2.2vw, 26px); height: auto; opacity: 0; animation: pawPop 7s ease-in-out infinite; animation-delay: calc(var(--i) * 0.5s); }
@@ -535,13 +552,14 @@ body.menu-open .mobile-menu-panel a:nth-child(5) { transition-delay: 0.26s; }
   #sticky-atc .sticky-atc-price { display: none; }
   .light-ray { display: none; }
 
-  /* Schmale Bildschirme: Text hat Vorrang vor den Figuren.
-     Napf-Insel und Karawane brauchen Breite, die es mobil nicht gibt.
-     Der Tropfen-Freund wandert in die untere Ecke statt neben den Titel. */
+  /* Schmale Bildschirme: Figuren bleiben sichtbar und in Bewegung,
+     nur kleiner. Sie liegen hinter dem Text (z-index 1), koennen also
+     nichts verdecken. Nur die breite Karawane und die Napf-Insel weichen. */
   .float-bowl, .parade-cross { display: none; }
-  .trab-cross { width: 88px; opacity: 0.8; }
-  .hock-float { width: 48px; opacity: 0.9; top: auto !important; bottom: 5% !important; left: auto !important; right: 4% !important; }
-  .aqua-scene .hock-float { top: 8% !important; bottom: auto !important; right: 8% !important; }
+  .trab-cross { width: 96px; opacity: 0.9; }
+  .hock-float { width: 54px; opacity: 0.9; }
+  .regen-flasche { width: 18px; }
+  .regen-flasche:nth-child(2n) { display: none; }
 }
 
 /* ============================================================
@@ -551,7 +569,7 @@ body.menu-open .mobile-menu-panel a:nth-child(5) { transition-delay: 0.26s; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
   .reveal, .reveal-stagger > *, .hero-pop > *, .p-enter-l, .p-enter-r > *, .product-trust li { opacity: 1 !important; transform: none !important; }
   .ticker-track { animation: none !important; flex-wrap: wrap; justify-content: center; }
-  .bubble, .light-ray, .trab-cross, .hock-float, .parade-cross, .float-bowl, .grass-blade, .droplet, .kibble-bit, .paw-trail { display: none !important; }
+  .bubble, .light-ray, .trab-cross, .hock-float, .parade-cross, .float-bowl, .grass-blade, .droplet, .kibble-bit, .paw-trail, #flaschen-regen { display: none !important; }
   #loader { display: none !important; }
   body.loading { overflow: auto !important; }
 }
