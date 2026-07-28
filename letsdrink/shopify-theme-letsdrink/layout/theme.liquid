@@ -1,125 +1,127 @@
-<!doctype html>
-{%- comment -%}
-  shop.name ist auf diesem Konto "My Store" (geteilter Account mit anderen
-  Marken), deshalb hier bewusst ein fester Markenname statt shop.name.
-{%- endcomment -%}
-{%- assign brand_name = "Let'sDrink" -%}
-<html lang="{{ request.locale.iso_code }}">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#F6F3EC">
-    <link rel="canonical" href="{{ canonical_url }}">
-    <title>
-      {{ page_title }}{% if current_tags %} &ndash; {{ current_tags | join: ', ' }}{% endif %}{% unless page_title contains brand_name %} &ndash; {{ brand_name }}{% endunless %}
-    </title>
-    {% if page_description %}<meta name="description" content="{{ page_description | escape }}">{% endif %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% if page_title %}{{ page_title }} – {% endif %}Let'sDrink</title>
+  {% if page_description %}<meta name="description" content="{{ page_description | escape }}">{% endif %}
+  <meta name="theme-color" content="#1e7f9e">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+  {{ content_for_header }}
+  <link rel="stylesheet" href="{{ 'ozean.css' | asset_url }}">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="loading">
+<a class="skip-link" href="#MainContent">Zum Inhalt springen</a>
+<div id="scroll-progress" aria-hidden="true"></div>
 
-    {%- assign og_title = page_title | default: brand_name -%}
-    {%- assign og_desc = page_description | default: shop.description | default: 'Trinkflasche mit angebautem Napf, 550 ml, für Hund und Katze.' -%}
-    <meta property="og:type" content="{% if template contains 'product' %}product{% else %}website{% endif %}">
-    <meta property="og:site_name" content="{{ brand_name }}">
-    <meta property="og:title" content="{{ og_title | escape }}">
-    <meta property="og:description" content="{{ og_desc | escape }}">
-    <meta property="og:url" content="{{ canonical_url }}">
-    {%- if template contains 'product' and product.featured_image -%}
-      <meta property="og:image" content="https:{{ product.featured_image | image_url: width: 1200 }}">
-    {%- endif -%}
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ og_title | escape }}">
-    <meta name="twitter:description" content="{{ og_desc | escape }}">
+<div id="loader" aria-hidden="true">
+  <div class="loader-blub">💧</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
 
-    {%- if template == 'index' -%}
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": {{ brand_name | json }},
-      "url": {{ shop.url | default: canonical_url | json }},
-      "description": {{ og_desc | json }}
-    }
-    </script>
-    {%- endif -%}
-
-    {{ content_for_header }}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap">
-    {{ 'theme.css' | asset_url | stylesheet_tag }}
-    {{ 'animations.css' | asset_url | stylesheet_tag }}
-    {{ 'rich-interactions.css' | asset_url | stylesheet_tag }}
-    <script src="{{ 'theme.js' | asset_url }}" defer></script>
-    <script src="{{ 'animations.js' | asset_url }}" defer></script>
-    <script src="{{ 'rich-interactions.js' | asset_url }}" defer></script>
-  </head>
-  <body class="tpl-{{ template | replace: '.', '-' | handle }}">
-    <header class="hd">
-      <input type="checkbox" id="nav-toggle" class="nav-toggle" hidden>
-      <div class="wrap hd-in">
-        <a href="{{ routes.root_url }}" class="hd-logo">{{ brand_name }}</a>
-        <label for="nav-toggle" class="nav-burger" aria-label="Menü öffnen und schliessen"><span></span><span></span><span></span></label>
-        <nav class="hd-nav">
-          <a href="{{ routes.root_url }}">Start</a>
-          <a href="{{ routes.all_products_collection_url }}">Alle Produkte</a>
-          <a href="{{ routes.root_url }}pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>
-          <a href="{{ routes.root_url }}pages/haeufige-fragen">Häufige Fragen</a>
-          <a href="{{ routes.root_url }}pages/ueber-uns">Über uns</a>
-          {% if shop.customer_accounts_enabled %}<a href="{{ routes.account_url }}">Konto</a>{% endif %}
-        </nav>
-        <a href="{{ routes.cart_url }}" class="hd-cart" aria-label="Warenkorb">
-          Warenkorb
-          {%- if cart.item_count > 0 -%}<span class="hd-cart-count">{{ cart.item_count }}</span>{%- endif -%}
-        </a>
-      </div>
-    </header>
-
-    <main id="main">{{ content_for_layout }}</main>
-
-    <footer class="ft">
-      <div class="wrap ft-grid">
-        <div class="ft-brand">
-          <p class="ft-logo">{{ brand_name }}</p>
-          <p class="ft-tag">Trinkflasche mit angebautem Napf für Hund und Katze. Versand aus der Schweiz.</p>
-        </div>
-        <div class="ft-col">
-          <h4>Shop</h4>
-          <a href="{{ routes.all_products_collection_url }}">Alle Produkte</a>
-          <a href="{{ routes.root_url }}pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>
-          <a href="{{ routes.root_url }}pages/haeufige-fragen">Häufige Fragen</a>
-        </div>
-        <div class="ft-col">
-          <h4>Über uns</h4>
-          <a href="{{ routes.root_url }}pages/ueber-uns">Über uns</a>
-          <a href="{{ routes.root_url }}pages/kontakt">Kontakt</a>
-          {% if shop.customer_accounts_enabled %}<a href="{{ routes.account_url }}">Mein Konto</a>{% endif %}
-        </div>
-        <div class="ft-col">
-          <h4>Rechtliches</h4>
-          <a href="{{ routes.root_url }}pages/impressum">Impressum</a>
-          <a href="{{ routes.root_url }}pages/datenschutz">Datenschutz</a>
-          <a href="{{ routes.root_url }}pages/agb">AGB</a>
-        </div>
-      </div>
-      <div class="wrap ft-bar">
-        <p>&copy; {{ 'now' | date: '%Y' }} {{ brand_name }}</p>
-        <p class="ft-pay">Sichere Zahlung · Versand aus der Schweiz</p>
-      </div>
-    </footer>
-
-    <div id="consent-bar" class="consent" role="dialog" aria-label="Cookie-Hinweis" hidden>
-      <div class="wrap consent-in">
-        <p>Wir verwenden nur technisch notwendige Cookies für den Betrieb des Shops. Mehr in unserer
-          <a href="{{ routes.root_url }}pages/datenschutz">Datenschutzerklärung</a>.</p>
-        <div class="consent-btns">
-          <button type="button" class="btn btn-sm" data-consent="ok">Verstanden</button>
-        </div>
-      </div>
+<header class="navbar">
+  <div class="nav-inner">
+    <a class="logo" href="{{ routes.root_url }}"><span class="logo-blub">💧</span> Let'sDrink</a>
+    <nav aria-label="Hauptnavigation">
+      {% if linklists.main-menu.links.size > 0 %}
+        {% for link in linklists.main-menu.links %}
+          <a href="{{ link.url }}">{{ link.title }}</a>
+        {% endfor %}
+      {% else %}
+        <a href="{{ routes.root_url }}">Start</a>
+        <a href="{{ routes.all_products_collection_url }}">Shop</a>
+        <a href="{{ routes.root_url }}pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>
+        <a href="{{ routes.root_url }}pages/ueber-uns">Über uns</a>
+      {% endif %}
+    </nav>
+    <div class="nav-icons">
+      <a href="{{ routes.cart_url }}" class="cart-icon" aria-label="Warenkorb">🎒 <span class="cart-count">{{ cart.item_count }}</span></a>
+      <button id="menu-toggle" class="menu-toggle" aria-label="Menü öffnen" aria-expanded="false" aria-controls="mobile-menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
+  </div>
+</header>
 
-    {% unless template == 'customers/login' or template == 'customers/register' %}
-      {% render 'newsletter-popup' %}
-    {% endunless %}
+<div id="mobile-menu" class="mobile-menu" aria-hidden="true">
+  <div class="mobile-menu-backdrop"></div>
+  <nav class="mobile-menu-panel" aria-label="Mobile Navigation">
+    {% if linklists.main-menu.links.size > 0 %}
+      {% for link in linklists.main-menu.links %}
+        <a href="{{ link.url }}">{{ link.title }}</a>
+      {% endfor %}
+    {% else %}
+      <a href="{{ routes.root_url }}">Start</a>
+      <a href="{{ routes.all_products_collection_url }}">Shop</a>
+      <a href="{{ routes.root_url }}pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>
+      <a href="{{ routes.root_url }}pages/ueber-uns">Über uns</a>
+    {% endif %}
+    <a href="{{ routes.cart_url }}">Warenkorb (<span class="cart-count-num">{{ cart.item_count }}</span>)</a>
+  </nav>
+</div>
 
-    <div id="toast-wrap" aria-live="polite"></div>
-  </body>
+<main id="MainContent">{{ content_for_layout }}</main>
+
+<footer class="footer">
+  <span class="grass-blade" style="left:4%" aria-hidden="true"></span>
+  <span class="grass-blade w2" style="left:9%" aria-hidden="true"></span>
+  <span class="grass-blade" style="right:7%;animation-delay:-1.4s" aria-hidden="true"></span>
+  <span class="grass-blade w2" style="right:12%;animation-delay:-3s" aria-hidden="true"></span>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="logo"><span class="logo-blub">💧</span> Let'sDrink</span>
+      <p>Eine Hand, ein Klick, und dein Tier trinkt. Die Trinkflasche mit Napf für Hund und Katze unterwegs.</p>
+    </div>
+    <div class="footer-links">
+      <h4>Navigation</h4>
+      {% if linklists.footer.links.size > 0 %}
+        {% for link in linklists.footer.links %}
+          <a href="{{ link.url }}">{{ link.title }}</a>
+        {% endfor %}
+      {% else %}
+        <a href="{{ routes.all_products_collection_url }}">Alle Produkte</a>
+        <a href="{{ routes.root_url }}pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>
+        <a href="{{ routes.root_url }}pages/ueber-uns">Über uns</a>
+        <a href="{{ routes.root_url }}pages/impressum">Impressum</a>
+        <a href="{{ routes.root_url }}pages/datenschutz">Datenschutz</a>
+        <a href="{{ routes.root_url }}pages/agb">AGB</a>
+      {% endif %}
+    </div>
+    <div class="footer-contact">
+      <h4>Schreib uns</h4>
+      <p>{{ shop.email }}</p>
+      <p>Antwort innerhalb eines Werktags. Ein Mensch, kein Callcenter.</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© {{ 'now' | date: "%Y" }} Let'sDrink. Alle Rechte vorbehalten.</p>
+  </div>
+</footer>
+
+<div id="toast-wrap" aria-live="polite"></div>
+
+<script>
+/* Klickbar-Fix: FAQ-Accordion (Event-Delegation) + Loader-Failsafe.
+   Laeuft eigenstaendig, unabhaengig von ozean.js. */
+(function () {
+  document.addEventListener("click", function (e) {
+    var q = e.target.closest(".faq-q");
+    if (!q) return;
+    var item = q.closest(".faq-item");
+    if (!item) return;
+    var open = item.classList.toggle("open");
+    q.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+  setTimeout(function () {
+    document.body.classList.remove("loading");
+    var l = document.getElementById("loader");
+    if (l && l.parentNode) { l.style.opacity = "0"; l.style.pointerEvents = "none"; }
+  }, 2500);
+})();
+</script>
+<script src="{{ 'ozean.js' | asset_url }}" defer></script>
+</body>
 </html>

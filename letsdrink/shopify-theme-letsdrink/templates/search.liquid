@@ -1,22 +1,31 @@
-<section class="page">
-  <div class="wrap page">
-    <h1>Suche</h1>
-    <form action="{{ routes.search_url }}" method="get" class="search-form">
-      <input type="search" name="q" value="{{ search.terms | escape }}" placeholder="Wonach suchst du?">
-      <button type="submit" class="btn">Suchen</button>
+<section class="search-page">
+  {% render 'wasserblasen' %}
+  <div class="container">
+    <div class="section-head centered">
+      <span class="eyebrow-sticker">Suche</span>
+      <h1 class="section-title">Wonach schnüffelst du?</h1>
+    </div>
+    <form action="{{ routes.search_url }}" method="get" class="search-form" role="search">
+      <input type="search" name="q" value="{{ search.terms | escape }}" placeholder="Suchbegriff eingeben" aria-label="Suchbegriff">
+      <button type="submit" class="btn btn-coral">Suchen</button>
     </form>
 
     {% if search.performed %}
-      <p>{{ search.results_count }} Ergebnis{% if search.results_count != 1 %}se{% endif %} für „{{ search.terms }}“</p>
-      <div class="grid-prod">
-        {% for item in search.results %}
-          <a class="prod" href="{{ item.url }}">
-            {% if item.image %}<img src="{{ item.image | image_url: width: 500 }}" alt="{{ item.title | escape }}">{% endif %}
-            <strong>{{ item.title }}</strong>
-            {% if item.price %}<div class="price">{{ item.price | money }}</div>{% endif %}
-          </a>
-        {% endfor %}
-      </div>
+      {% if search.results_count > 0 %}
+        {% paginate search.results by 12 %}
+          {% for item in search.results %}
+            <div class="search-result">
+              <a href="{{ item.url }}">{{ item.title }}</a>
+              {% if item.price %}<p>{{ item.price | money }}</p>{% endif %}
+            </div>
+          {% endfor %}
+          {% if paginate.pages > 1 %}
+            <nav class="pagination" aria-label="Seiten">{{ paginate | default_pagination }}</nav>
+          {% endif %}
+        {% endpaginate %}
+      {% else %}
+        <p class="collection-empty">Nichts gefunden für „{{ search.terms }}“. Versuch es mit einem anderen Begriff.</p>
+      {% endif %}
     {% endif %}
   </div>
 </section>
