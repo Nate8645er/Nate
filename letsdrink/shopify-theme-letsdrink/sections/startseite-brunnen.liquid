@@ -8,6 +8,7 @@
 
   {%- comment -%} 1. Hero {%- endcomment -%}
   <section class="st__hero" aria-labelledby="st-hero-{{ section.id }}">
+    {% render 'hintergrund-tiere' %}
     <div class="st__hero-media" data-parallax>
       {%- if section.settings.hero_video != blank -%}
         {{
@@ -18,7 +19,8 @@
             muted: true,
             controls: false,
             playsinline: true,
-            image_size: '1200x'
+            image_size: '1200x',
+            class: 'tilt-target'
         }}
       {%- elsif section.settings.hero_image != blank -%}
         {{
@@ -29,7 +31,8 @@
             fetchpriority: 'high',
             sizes: '(min-width: 990px) 55vw, 100vw',
             widths: '600, 900, 1400',
-            alt: section.settings.hero_image_alt
+            alt: section.settings.hero_image_alt,
+            class: 'tilt-target'
         }}
       {%- endif -%}
     </div>

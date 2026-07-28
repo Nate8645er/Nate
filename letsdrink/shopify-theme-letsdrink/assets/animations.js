@@ -12,6 +12,8 @@
     initStickyAtc();
     initAddToCartFeedback();
     initParallax();
+    initHeroMotion();
+    initNewsletterPopup();
   });
 
   /* Sanftes Scrollen zu Anker-Links (#faq, #angebot etc.) */
@@ -167,6 +169,78 @@
       }
     }, { passive: true });
     update();
+  }
+
+  /* Hero-Bild: sanftes Schweben (Zeit-basiert) + Maus-Tilt, EIN kombinierter
+     Transform pro Frame, damit sich beide Effekte nicht überschreiben.
+     Nur Desktop, nur wenn nicht reduced-motion. */
+  function initHeroMotion() {
+    if (reduceMotion || window.innerWidth < 990) return;
+    var el = document.querySelector(".tilt-target");
+    if (!el) return;
+
+    var rx = 0, ry = 0; // Ziel-Rotation aus Mausposition
+    var crx = 0, cry = 0; // aktuelle, sanft angenäherte Rotation
+    var start = null;
+
+    document.addEventListener("mousemove", function (e) {
+      var rect = el.getBoundingClientRect();
+      var relX = (e.clientX - rect.left) / rect.width - 0.5;
+      var relY = (e.clientY - rect.top) / rect.height - 0.5;
+      ry = relX * 6;
+      rx = relY * -6;
+    }, { passive: true });
+
+    function frame(ts) {
+      if (!start) start = ts;
+      var t = (ts - start) / 1000;
+      var bob = Math.sin(t * (Math.PI / 2.75)) * 8;
+      crx += (rx - crx) * 0.06;
+      cry += (ry - cry) * 0.06;
+      el.style.transform =
+        "perspective(900px) rotateX(" + crx.toFixed(2) + "deg) rotateY(" + cry.toFixed(2) + "deg) translateY(" + bob.toFixed(1) + "px)";
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  /* Newsletter-Popup: erscheint einmal pro Sitzung, nach Verzögerung oder
+     wenn die Seite zu 60% gescrollt wurde. Kein Effekt auf LCP (verzögert
+     geladen), Escape und Klick auf Overlay schliessen. */
+  function initNewsletterPopup() {
+    var overlay = document.getElementById("nl-popup-overlay");
+    if (!overlay) return;
+    if (sessionStorage.getItem("ld_newsletter_seen")) return;
+
+    function open() {
+      if (sessionStorage.getItem("ld_newsletter_seen")) return;
+      overlay.hidden = false;
+      requestAnimationFrame(function () { overlay.classList.add("is-open"); });
+      sessionStorage.setItem("ld_newsletter_seen", "1");
+      var firstInput = overlay.querySelector("input");
+      if (firstInput) firstInput.focus();
+    }
+    function close() {
+      overlay.classList.remove("is-open");
+      window.setTimeout(function () { overlay.hidden = true; }, 250);
+    }
+
+    overlay.querySelectorAll("[data-nl-close]").forEach(function (btn) {
+      btn.addEventListener("click", close);
+    });
+    overlay.addEventListener("click", function (e) {
+      if (e.target === overlay) close();
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && overlay.classList.contains("is-open")) close();
+    });
+
+    window.setTimeout(open, 8000);
+    window.addEventListener("scroll", function () {
+      var doc = document.documentElement;
+      var pct = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight)) * 100;
+      if (pct > 60) open();
+    }, { passive: true });
   }
 
   /* Sehr dezenter Konfetti-Effekt: wenige Punkte, kurz, kein externes Skript */

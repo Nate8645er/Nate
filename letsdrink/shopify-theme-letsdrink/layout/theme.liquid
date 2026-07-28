@@ -108,5 +108,9 @@
         </div>
       </div>
     </div>
+
+    {% unless template == 'customers/login' or template == 'customers/register' %}
+      {% render 'newsletter-popup' %}
+    {% endunless %}
   </body>
 </html>
