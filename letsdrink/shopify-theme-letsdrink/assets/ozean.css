@@ -169,8 +169,10 @@ body.menu-open .mobile-menu-panel a:nth-child(5) { transition-delay: 0.26s; }
 .dog-tongue { transform-box: fill-box; transform-origin: 50% 0%; animation: tongueLap 0.7s ease-in-out infinite alternate; }
 @keyframes tongueLap { from { transform: scaleY(0.75); } to { transform: scaleY(1.1); } }
 
-/* Hund trabt mit Flasche quer durchs Bild */
-.trab-cross { position: absolute; width: clamp(110px, 15vw, 200px); z-index: 2; pointer-events: none; animation: trabCross var(--sspeed, 40s) linear infinite; filter: drop-shadow(6px 8px 0 rgba(23, 51, 59, 0.18)); }
+/* Hund trabt mit Flasche quer durchs Bild.
+   z-index 1: Figuren laufen HINTER dem Text (Container liegen auf 2/3),
+   damit sie nie Ueberschriften oder Buttons verdecken. */
+.trab-cross { position: absolute; width: clamp(110px, 15vw, 200px); z-index: 1; pointer-events: none; animation: trabCross var(--sspeed, 40s) linear infinite; filter: drop-shadow(6px 8px 0 rgba(23, 51, 59, 0.18)); }
 .trab-cross svg { animation: trabBounce 0.5s ease-in-out infinite alternate; }
 @keyframes trabCross {
   0%   { transform: translateX(-24vw) translateY(0); }
@@ -184,12 +186,12 @@ body.menu-open .mobile-menu-panel a:nth-child(5) { transition-delay: 0.26s; }
 .trab-cross.rev svg { transform: scaleX(-1); }
 @keyframes trabCrossRev { from { transform: translateX(124vw); } to { transform: translateX(-24vw); } }
 
-/* Katze schwebt/hockt und tapst */
-.hock-float { position: absolute; width: clamp(64px, 8vw, 104px); pointer-events: none; animation: hockBob 5s ease-in-out infinite alternate; filter: drop-shadow(4px 6px 0 rgba(23, 51, 59, 0.16)); }
+/* Tropfen-Freund/Figuren schweben, immer hinter dem Text */
+.hock-float { position: absolute; width: clamp(64px, 8vw, 104px); z-index: 1; pointer-events: none; animation: hockBob 5s ease-in-out infinite alternate; filter: drop-shadow(4px 6px 0 rgba(23, 51, 59, 0.16)); }
 @keyframes hockBob { from { transform: translateY(0) rotate(-3deg); } to { transform: translateY(-26px) rotate(3deg); } }
 
 /* Flaschen-Karawane: alle 6 Farben ziehen vorbei */
-.parade-cross { position: absolute; width: clamp(220px, 30vw, 420px); pointer-events: none; z-index: 2; animation: paradeCross var(--pspeed, 55s) linear infinite; filter: drop-shadow(5px 7px 0 rgba(23, 51, 59, 0.16)); }
+.parade-cross { position: absolute; width: clamp(220px, 30vw, 420px); pointer-events: none; z-index: 1; animation: paradeCross var(--pspeed, 55s) linear infinite; filter: drop-shadow(5px 7px 0 rgba(23, 51, 59, 0.16)); }
 @keyframes paradeCross { from { transform: translateX(-40vw); } to { transform: translateX(130vw); } }
 .parade-bob { transform-box: fill-box; transform-origin: 50% 100%; animation: paradeBob 1.4s ease-in-out infinite alternate; }
 .parade-bob:nth-of-type(2n) { animation-delay: -0.5s; }
@@ -197,7 +199,7 @@ body.menu-open .mobile-menu-panel a:nth-child(5) { transition-delay: 0.26s; }
 @keyframes paradeBob { from { transform: translateY(0) rotate(-2deg); } to { transform: translateY(-6px) rotate(2deg); } }
 
 /* Napf-Insel schwebt */
-.float-bowl { position: absolute; width: clamp(90px, 12vw, 170px); pointer-events: none; animation: hockBob 6s ease-in-out infinite alternate; filter: drop-shadow(5px 7px 0 rgba(23, 51, 59, 0.25)); }
+.float-bowl { position: absolute; width: clamp(90px, 12vw, 170px); z-index: 1; pointer-events: none; animation: hockBob 6s ease-in-out infinite alternate; filter: drop-shadow(5px 7px 0 rgba(23, 51, 59, 0.25)); }
 
 /* Gras am Ufer (statt Seegras) */
 .grass-blade { position: absolute; bottom: 0; width: 16px; height: clamp(70px, 10vw, 140px); border-radius: 10px 10px 0 0; background: var(--grass); border: 3px solid var(--outline); border-bottom: none; transform-origin: bottom center; animation: weedSway 4.2s ease-in-out infinite alternate; pointer-events: none; }
@@ -522,6 +524,14 @@ body.menu-open .mobile-menu-panel a:nth-child(5) { transition-delay: 0.26s; }
   .cart-summary { margin: 36px auto 0; text-align: center; }
   #sticky-atc .sticky-atc-price { display: none; }
   .light-ray { display: none; }
+
+  /* Schmale Bildschirme: Text hat Vorrang vor den Figuren.
+     Napf-Insel und Karawane brauchen Breite, die es mobil nicht gibt.
+     Der Tropfen-Freund wandert in die untere Ecke statt neben den Titel. */
+  .float-bowl, .parade-cross { display: none; }
+  .trab-cross { width: 88px; opacity: 0.8; }
+  .hock-float { width: 48px; opacity: 0.9; top: auto !important; bottom: 5% !important; left: auto !important; right: 4% !important; }
+  .aqua-scene .hock-float { top: 8% !important; bottom: auto !important; right: 8% !important; }
 }
 
 /* ============================================================
