@@ -1,0 +1,101 @@
+{%- comment -%}
+  Section: Technische Daten, Lieferumfang, Vertrauens-Icons
+  Nur bestätigte Fakten. Material/Spülmaschine bewusst nicht befüllt,
+  solange der Lieferant das nicht schriftlich bestätigt (HANDOFF.md Regel 2 & 4).
+{%- endcomment -%}
+
+<section class="pd reveal" id="pd-{{ section.id }}">
+  <div class="wrap pd__grid">
+    <div class="pd__col">
+      <h3 class="pd__h3">{{ section.settings.specs_title }}</h3>
+      <dl class="pd__specs">
+        {%- assign spec_blocks = section.blocks | where: "type", "spec" -%}
+        {%- for block in spec_blocks -%}
+          <div class="pd__spec-row" {{ block.shopify_attributes }}>
+            <dt>{{ block.settings.label }}</dt>
+            <dd>{{ block.settings.value }}</dd>
+          </div>
+        {%- endfor -%}
+      </dl>
+    </div>
+
+    <div class="pd__col">
+      <h3 class="pd__h3">{{ section.settings.scope_title }}</h3>
+      <p class="pd__scope">{{ section.settings.scope_text }}</p>
+
+      {%- assign trust_blocks = section.blocks | where: "type", "trust_icon" -%}
+      {%- if trust_blocks.size > 0 -%}
+        <ul class="pd__trust-icons">
+          {%- for block in trust_blocks -%}
+            <li {{ block.shopify_attributes }}>{{ block.settings.label }}</li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+<style>
+  #pd-{{ section.id }} { padding: 40px 0; }
+  #pd-{{ section.id }} .pd__grid { display: grid; gap: 32px; }
+  #pd-{{ section.id }} .pd__h3 { font-size: 20px; margin-bottom: 14px; }
+  #pd-{{ section.id }} .pd__specs { margin: 0; }
+  #pd-{{ section.id }} .pd__spec-row {
+    display: flex; justify-content: space-between; gap: 16px;
+    padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14.5px;
+  }
+  #pd-{{ section.id }} .pd__spec-row dt { color: var(--muted); }
+  #pd-{{ section.id }} .pd__spec-row dd { margin: 0; font-weight: 600; text-align: right; }
+  #pd-{{ section.id }} .pd__scope { font-size: 15px; line-height: 1.6; }
+  #pd-{{ section.id }} .pd__trust-icons {
+    list-style: none; margin: 20px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px;
+  }
+  #pd-{{ section.id }} .pd__trust-icons li {
+    font-size: 12.5px; font-weight: 600; color: var(--muted);
+    border: 1px solid var(--line); border-radius: 20px; padding: 6px 14px;
+  }
+  @media (min-width: 750px) { #pd-{{ section.id }} .pd__grid { grid-template-columns: 1fr 1fr; } }
+</style>
+
+{% schema %}
+{
+  "name": "Technische Daten",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "specs_title", "label": "Titel links", "default": "Technische Daten" },
+    { "type": "text", "id": "scope_title", "label": "Titel rechts", "default": "Lieferumfang" },
+    { "type": "richtext", "id": "scope_text", "label": "Lieferumfang-Text", "default": "<p>1 Trinkflasche mit Napf, 550 ml, in der gewählten Farbe. Direkt einsatzbereit, keine Montage nötig.</p>" }
+  ],
+  "blocks": [
+    {
+      "type": "spec",
+      "name": "Datenzeile",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Bezeichnung", "default": "Fassungsvermögen" },
+        { "type": "text", "id": "value", "label": "Wert", "default": "550 ml" }
+      ]
+    },
+    {
+      "type": "trust_icon",
+      "name": "Vertrauens-Badge",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Text", "default": "Sichere Zahlung" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Technische Daten",
+      "blocks": [
+        { "type": "spec", "settings": { "label": "Fassungsvermögen", "value": "550 ml" } },
+        { "type": "spec", "settings": { "label": "Farben", "value": "6 (Türkis, Grün, Rosa, Grau, Schwarz, Weiss)" } },
+        { "type": "spec", "settings": { "label": "Verschluss", "value": "Auslaufsicher, Einhandbedienung" } },
+        { "type": "spec", "settings": { "label": "Napf geeignet für", "value": "Wasser und Trockenfutter" } },
+        { "type": "trust_icon", "settings": { "label": "Sichere Zahlung" } },
+        { "type": "trust_icon", "settings": { "label": "Versand aus der Schweiz" } },
+        { "type": "trust_icon", "settings": { "label": "14 Tage Rückgabe" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

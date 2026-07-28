@@ -16,6 +16,17 @@
           {% endfor %}
         </div>
       {% endif %}
+
+      {%- comment -%} Produktvideo, falls als Media hochgeladen (video oder external_video) {%- endcomment -%}
+      {%- assign pdp_video = product.media | where: "media_type", "video" | first -%}
+      {%- unless pdp_video -%}
+        {%- assign pdp_video = product.media | where: "media_type", "external_video" | first -%}
+      {%- endunless -%}
+      {% if pdp_video %}
+        <div class="pdp-video">
+          {{ pdp_video | media_tag: image_size: '800x', controls: true, loading: 'lazy' }}
+        </div>
+      {% endif %}
     </div>
 
     {%- comment -%} Kaufbox {%- endcomment -%}
@@ -102,6 +113,9 @@
 
 {%- comment -%} Produkt-Überzeugung, Section unter dem Kaufbutton {%- endcomment -%}
 {% section 'produkt-ueberzeugung' %}
+
+{%- comment -%} Technische Daten, Lieferumfang, Vertrauens-Badges {%- endcomment -%}
+{% section 'produktdaten' %}
 
 {%- comment -%} Vergleichstabelle {%- endcomment -%}
 {% section 'vergleichstabelle' %}

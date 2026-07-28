@@ -11,6 +11,7 @@
     initCountUp();
     initStickyAtc();
     initAddToCartFeedback();
+    initParallax();
   });
 
   /* Sanftes Scrollen zu Anker-Links (#faq, #angebot etc.) */
@@ -144,6 +145,28 @@
         window.setTimeout(function () { btn.classList.remove("is-success"); }, 1400);
       }, 50);
     });
+  }
+
+  /* Sehr dezenter Parallax auf dem Hero-Bild: nur EIN Element, gedeckelt,
+     nur transform (GPU), kein Effekt auf Layout/Scroll-Performance */
+  function initParallax() {
+    if (reduceMotion) return;
+    var el = document.querySelector("[data-parallax]");
+    if (!el || window.innerWidth < 990) return;
+    var ticking = false;
+    function update() {
+      var rect = el.getBoundingClientRect();
+      var offset = Math.max(-24, Math.min(24, rect.top * 0.06));
+      el.style.transform = "translateY(" + offset + "px)";
+      ticking = false;
+    }
+    document.addEventListener("scroll", function () {
+      if (!ticking) {
+        window.requestAnimationFrame(update);
+        ticking = true;
+      }
+    }, { passive: true });
+    update();
   }
 
   /* Sehr dezenter Konfetti-Effekt: wenige Punkte, kurz, kein externes Skript */

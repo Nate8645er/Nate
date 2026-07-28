@@ -8,7 +8,7 @@
 
   {%- comment -%} 1. Hero {%- endcomment -%}
   <section class="st__hero" aria-labelledby="st-hero-{{ section.id }}">
-    <div class="st__hero-media">
+    <div class="st__hero-media" data-parallax>
       {%- if section.settings.hero_video != blank -%}
         {{
           section.settings.hero_video
@@ -48,7 +48,11 @@
         {%- endif -%}
       {%- endif -%}
     </div>
+    <a class="st__scroll-hint" href="#st-scroll-target-{{ section.id }}" aria-label="Weiter nach unten scrollen">
+      <span class="st__scroll-chevron" aria-hidden="true"></span>
+    </a>
   </section>
+  <span id="st-scroll-target-{{ section.id }}"></span>
 
   {%- comment -%} 2. Problem {%- endcomment -%}
   {%- assign pain_blocks = section.blocks | where: "type", "pain" -%}
@@ -198,7 +202,25 @@
   #st-{{ section.id }} .st__eyebrow--accent { color: var(--st-accent); }
 
   /* Hero */
-  #st-{{ section.id }} .st__hero { display: grid; }
+  #st-{{ section.id }} .st__hero { display: grid; position: relative; }
+  #st-{{ section.id }} .st__scroll-hint {
+    display: none; position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%);
+    width: 32px; height: 32px; align-items: center; justify-content: center;
+  }
+  #st-{{ section.id }} .st__scroll-chevron {
+    width: 10px; height: 10px; border-right: 2px solid #fff; border-bottom: 2px solid #fff;
+    transform: rotate(45deg); animation: st-chevron-bounce 1.6s ease-in-out infinite;
+  }
+  @keyframes st-chevron-bounce {
+    0%, 100% { transform: rotate(45deg) translate(0, 0); opacity: .7; }
+    50% { transform: rotate(45deg) translate(4px, 4px); opacity: 1; }
+  }
+  @media (min-width: 990px) {
+    #st-{{ section.id }} .st__scroll-hint { display: flex; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #st-{{ section.id }} .st__scroll-chevron { animation: none; }
+  }
   #st-{{ section.id }} .st__hero-media { position: relative; background: var(--st-deep); }
   #st-{{ section.id }} .st__hero-media img,
   #st-{{ section.id }} .st__hero-media video {

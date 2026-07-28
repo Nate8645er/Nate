@@ -192,3 +192,26 @@ Retourenverfahren.
 
 Bereits fertig getextet in `shop-texte-trinkflasche.md`, Teil 4.
 Platzhalter `[Name]` und `[E-Mail]` ausfüllen.
+
+---
+
+## Seite: Kontakt
+
+**Handle:** `kontakt`
+
+```
+KONTAKT
+
+Fragen zur Bestellung, zur Flasche oder zur Lieferzeit? Schreib direkt,
+es antwortet ein Mensch, kein Callcenter.
+
+E-Mail: [E-Mail-Adresse]
+Antwortzeit: innerhalb eines Werktags
+
+Für Retouren und Reklamationen: gib deine Bestellnummer gleich mit an,
+dann geht es schneller.
+```
+
+Formular auf dieser Seite: Name, E-Mail, Bestellnummer (optional),
+Nachricht. Shopify stellt das Kontaktformular über `{% form 'contact' %}`
+nativ bereit, keine App nötig.
