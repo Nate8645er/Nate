@@ -1,0 +1,135 @@
+/* Let'sDrink — Motion-Layer
+   Nur transform & opacity, unter 300ms wo UI-Feedback, ease-out.
+   Jede Regel hat einen Zweck: Feedback, Zustandswechsel, räumliche Kontinuität. */
+
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Scroll-Reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity .5s ease-out, transform .5s var(--ease-out);
+}
+.reveal.in { opacity: 1; transform: none; }
+.reveal-stagger.in > * { transition-delay: calc(var(--i, 0) * 70ms); }
+
+/* Sticky Header, schrumpft beim Scrollen */
+.hd { transition: box-shadow .2s ease-out, padding .2s var(--ease-out); }
+.hd.is-scrolled { box-shadow: 0 2px 12px rgba(27,42,36,.08); }
+.hd.is-scrolled .hd-in { padding-top: 10px; padding-bottom: 10px; }
+
+/* Scroll-Fortschrittsbalken */
+.scroll-progress {
+  position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+  background: var(--accent); z-index: 60; transition: width .1s linear;
+}
+
+/* Buttons: Hover-/Klick-Feedback */
+.btn { transition: transform .15s ease-out, box-shadow .15s ease-out, filter .15s ease-out; }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(23,63,60,.18); }
+.btn:active { transform: scale(.97); }
+
+/* Karten: Lift-Effekt */
+.prod { transition: transform .2s var(--ease-out); }
+.prod:hover { transform: translateY(-4px); }
+.prod img { transition: transform .35s var(--ease-out); }
+.prod:hover img { transform: scale(1.04); }
+
+/* Produktbild-Zoom (Galerie-Hauptbild) */
+.pdp-hero-frame { overflow: hidden; border-radius: 6px; }
+.pdp-hero-img { transition: transform .4s var(--ease-out); }
+.pdp-hero-frame:hover .pdp-hero-img { transform: scale(1.06); }
+.pdp-thumb { transition: transform .15s ease-out, border-color .15s ease-out; }
+.pdp-thumb:hover { transform: translateY(-2px); }
+
+/* Sticky Add-to-Cart-Bar (mobil) */
+.sticky-atc {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+  background: #fff; border-top: 1px solid var(--line);
+  padding: 10px 16px; display: flex; align-items: center; gap: 12px;
+  transform: translateY(100%); transition: transform .25s var(--ease-out);
+  box-shadow: 0 -4px 20px rgba(0,0,0,.06);
+}
+.sticky-atc.is-visible { transform: translateY(0); }
+.sticky-atc img { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; flex: none; }
+.sticky-atc-info { flex: 1; min-width: 0; }
+.sticky-atc-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sticky-atc-price { font-size: 13px; color: var(--accent); font-weight: 600; }
+.sticky-atc .btn { padding: 10px 20px; font-size: 14.5px; }
+
+/* Add-to-Cart Erfolgs-Feedback: kurzer Haken-Puls, dezent */
+.pdp-add.is-success {
+  background: var(--accent);
+}
+.pdp-add .add-check {
+  display: inline-block; width: 0; opacity: 0; transform: scale(.6);
+  transition: width .2s var(--ease-out), opacity .2s var(--ease-out), transform .2s var(--ease-out);
+}
+.pdp-add.is-success .add-check { width: 18px; opacity: 1; transform: scale(1); margin-right: 6px; }
+
+.confetti-burst { position: relative; }
+.confetti-dot {
+  position: absolute; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent); opacity: 0; pointer-events: none;
+  animation: confetti-pop .6s var(--ease-out) forwards;
+}
+@keyframes confetti-pop {
+  0% { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(.4); }
+}
+
+/* Animierte Zahlen (Count-up) */
+.count-up { font-variant-numeric: tabular-nums; }
+
+/* FAQ: sanfte Höhen-Animation für <details> */
+.pu__faq-item {
+  overflow: hidden;
+}
+.pu__faq-item .pu__faq-a {
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity .2s ease-out, transform .2s var(--ease-out);
+}
+.pu__faq-item[open] .pu__faq-a {
+  opacity: 1;
+  transform: none;
+}
+
+/* Mobiles Menü: Slide statt Hart-Schnitt */
+@media (max-width: 899px) {
+  .hd-nav {
+    transform: translateY(-8px);
+    opacity: 0;
+    transition: transform .2s var(--ease-out), opacity .2s ease-out;
+  }
+  .nav-toggle:checked ~ .hd-in .hd-nav {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* Vergleichstabelle: Zeilen-Hervorhebung */
+.vgl-row--uns { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+
+/* Ladeanimation (z.B. beim Formular-Submit) */
+.btn.is-loading { color: transparent; position: relative; pointer-events: none; }
+.btn.is-loading::after {
+  content: ""; position: absolute; inset: 0; margin: auto; width: 18px; height: 18px;
+  border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%;
+  animation: btn-spin .6s linear infinite;
+}
+@keyframes btn-spin { to { transform: rotate(360deg); } }
+
+/* Reduced motion: alles sofort, keine Loops */
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .hd, .btn, .prod, .prod img, .pdp-hero-img, .pdp-thumb,
+  .sticky-atc, .pdp-add .add-check, .pu__faq-item .pu__faq-a, .hd-nav {
+    transition: none !important;
+    animation: none !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+  .confetti-dot { display: none; }
+  .btn.is-loading::after { animation: none; }
+}

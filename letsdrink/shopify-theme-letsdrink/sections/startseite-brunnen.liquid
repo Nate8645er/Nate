@@ -53,7 +53,7 @@
   {%- comment -%} 2. Problem {%- endcomment -%}
   {%- assign pain_blocks = section.blocks | where: "type", "pain" -%}
   {%- if pain_blocks.size > 0 -%}
-    <section class="st__pain">
+    <section class="st__pain reveal">
       <h2 class="st__h2">{{ section.settings.pain_title }}</h2>
       <ul class="st__pain-list">
         {%- for block in pain_blocks -%}
@@ -67,7 +67,7 @@
   {%- endif -%}
 
   {%- comment -%} 3. Das Set. Hauptangebot. {%- endcomment -%}
-  <section class="st__offer" aria-labelledby="st-offer-{{ section.id }}">
+  <section class="st__offer reveal" aria-labelledby="st-offer-{{ section.id }}">
     <div class="st__offer-inner">
       <div class="st__offer-copy">
         <p class="st__eyebrow st__eyebrow--accent">{{ section.settings.offer_eyebrow }}</p>
@@ -117,7 +117,7 @@
 
   {%- comment -%} 4. Wiederkauf, optional {%- endcomment -%}
   {%- if section.settings.recur_title != blank -%}
-    <section class="st__recur">
+    <section class="st__recur reveal">
       <div class="st__recur-inner">
         <h2 class="st__h2">{{ section.settings.recur_title }}</h2>
         <div class="st__rte">{{ section.settings.recur_text }}</div>
@@ -147,7 +147,7 @@
   {%- comment -%} 5. Vertrauen {%- endcomment -%}
   {%- assign trust_blocks = section.blocks | where: "type", "trust" -%}
   {%- if trust_blocks.size > 0 -%}
-    <section class="st__trust">
+    <section class="st__trust reveal">
       <ul class="st__trust-list">
         {%- for block in trust_blocks -%}
           <li {{ block.shopify_attributes }}>

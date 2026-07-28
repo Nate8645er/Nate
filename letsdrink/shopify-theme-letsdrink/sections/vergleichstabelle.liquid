@@ -1,0 +1,86 @@
+{%- comment -%}
+  Section: Vergleichstabelle
+  Vergleicht die eigene Lösung mit den zwei echten Alternativen unterwegs:
+  der hohlen Hand und einer gewöhnlichen Flasche ohne Napf. Kein Vergleich
+  mit benannten Konkurrenzprodukten, nur mit der Situation selbst.
+{%- endcomment -%}
+
+<section class="vgl reveal" id="vgl-{{ section.id }}">
+  <div class="wrap">
+    {%- if section.settings.title != blank -%}<h2 class="vgl__h2">{{ section.settings.title }}</h2>{%- endif -%}
+
+    <div class="vgl__table-wrap">
+      <table class="vgl__table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Hohle Hand</th>
+            <th>Gewöhnliche Flasche</th>
+            <th class="vgl-row--uns">{{ section.settings.own_label }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {%- assign row_blocks = section.blocks | where: "type", "row" -%}
+          {%- for block in row_blocks -%}
+            <tr {{ block.shopify_attributes }}>
+              <th scope="row">{{ block.settings.feature }}</th>
+              <td>{% if block.settings.hand %}<span class="vgl-yes">Ja</span>{% else %}<span class="vgl-no">Nein</span>{% endif %}</td>
+              <td>{% if block.settings.bottle %}<span class="vgl-yes">Ja</span>{% else %}<span class="vgl-no">Nein</span>{% endif %}</td>
+              <td class="vgl-row--uns"><span class="vgl-yes">Ja</span></td>
+            </tr>
+          {%- endfor -%}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<style>
+  #vgl-{{ section.id }} { padding: 48px 0; background: var(--surface); }
+  #vgl-{{ section.id }} .vgl__h2 { text-align: center; margin-bottom: 28px; }
+  #vgl-{{ section.id }} .vgl__table-wrap { overflow-x: auto; }
+  #vgl-{{ section.id }} .vgl__table { width: 100%; border-collapse: collapse; min-width: 480px; }
+  #vgl-{{ section.id }} .vgl__table th,
+  #vgl-{{ section.id }} .vgl__table td {
+    padding: 12px 14px; text-align: center; border-bottom: 1px solid var(--line); font-size: 14.5px;
+  }
+  #vgl-{{ section.id }} .vgl__table thead th { font-weight: 600; font-size: 13.5px; color: var(--muted); }
+  #vgl-{{ section.id }} .vgl__table th[scope="row"] { text-align: left; font-weight: 500; }
+  #vgl-{{ section.id }} .vgl-yes { color: var(--accent); font-weight: 600; }
+  #vgl-{{ section.id }} .vgl-no { color: var(--muted); }
+  @media (min-width: 600px) { #vgl-{{ section.id }} .vgl__table-wrap { overflow-x: visible; } }
+</style>
+
+{% schema %}
+{
+  "name": "Vergleichstabelle",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Titel", "default": "Warum eine Flasche mit Napf" },
+    { "type": "text", "id": "own_label", "label": "Spaltenname für das eigene Produkt", "default": "Trinkflasche mit Napf" }
+  ],
+  "blocks": [
+    {
+      "type": "row",
+      "name": "Zeile",
+      "settings": [
+        { "type": "text", "id": "feature", "label": "Merkmal", "default": "Einhandbedienung" },
+        { "type": "checkbox", "id": "hand", "label": "Bei hohler Hand vorhanden", "default": false },
+        { "type": "checkbox", "id": "bottle", "label": "Bei gewöhnlicher Flasche vorhanden", "default": false }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Vergleichstabelle",
+      "blocks": [
+        { "type": "row", "settings": { "feature": "Einhandbedienung", "hand": true, "bottle": false } },
+        { "type": "row", "settings": { "feature": "Wasser läuft zurück in die Flasche", "hand": false, "bottle": false } },
+        { "type": "row", "settings": { "feature": "Auch für Trockenfutter nutzbar", "hand": false, "bottle": false } },
+        { "type": "row", "settings": { "feature": "Auslaufsicher im Rucksack", "hand": false, "bottle": false } },
+        { "type": "row", "settings": { "feature": "Nichts wird weggeschüttet", "hand": false, "bottle": false } }
+      ]
+    }
+  ]
+}
+{% endschema %}
