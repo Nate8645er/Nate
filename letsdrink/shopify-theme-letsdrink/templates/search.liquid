@@ -1,0 +1,22 @@
+<section class="page">
+  <div class="wrap page">
+    <h1>Suche</h1>
+    <form action="{{ routes.search_url }}" method="get" class="search-form">
+      <input type="search" name="q" value="{{ search.terms | escape }}" placeholder="Wonach suchst du?">
+      <button type="submit" class="btn">Suchen</button>
+    </form>
+
+    {% if search.performed %}
+      <p>{{ search.results_count }} Ergebnis{% if search.results_count != 1 %}se{% endif %} für „{{ search.terms }}“</p>
+      <div class="grid-prod">
+        {% for item in search.results %}
+          <a class="prod" href="{{ item.url }}">
+            {% if item.image %}<img src="{{ item.image | image_url: width: 500 }}" alt="{{ item.title | escape }}">{% endif %}
+            <strong>{{ item.title }}</strong>
+            {% if item.price %}<div class="price">{{ item.price | money }}</div>{% endif %}
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>

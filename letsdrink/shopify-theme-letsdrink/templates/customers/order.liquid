@@ -1,0 +1,17 @@
+<section class="page"><div class="wrap page">
+  <h1>Bestellung {{ order.name }}</h1>
+  <p>{{ order.created_at | date: '%d.%m.%Y' }} · {{ order.financial_status_label }} · {{ order.fulfillment_status_label }}</p>
+  <table class="cart-table">
+    <thead><tr><th>Produkt</th><th>Menge</th><th>Preis</th></tr></thead>
+    <tbody>
+      {% for line_item in order.line_items %}
+        <tr>
+          <td>{{ line_item.title }}</td>
+          <td>{{ line_item.quantity }}</td>
+          <td>{{ line_item.final_line_price | money }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="cart-total">Total: {{ order.total_price | money }}</p>
+</div></section>

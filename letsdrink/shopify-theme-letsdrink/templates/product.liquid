@@ -1,0 +1,121 @@
+<section class="pdp">
+  <div class="wrap pdp-grid">
+    {%- comment -%} Galerie {%- endcomment -%}
+    <div class="pdp-media">
+      {% if product.featured_image %}
+        <img class="pdp-hero-img" id="pdp-hero-img" src="{{ product.featured_image | image_url: width: 1000 }}" alt="{{ product.featured_image.alt | default: product.title | escape }}">
+      {% else %}
+        <div class="pdp-hero-ph"><span class="grad">{{ product.title }}</span></div>
+      {% endif %}
+      {% if product.images.size > 1 %}
+        <div class="pdp-thumbs">
+          {% for image in product.images limit: 8 %}
+            <img src="{{ image | image_url: width: 200 }}" alt="{{ image.alt | default: product.title | escape }}" data-full="{{ image | image_url: width: 1000 }}" class="pdp-thumb{% if forloop.first %} is-active{% endif %}">
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {%- comment -%} Kaufbox {%- endcomment -%}
+    <div class="pdp-buy">
+      <a class="pdp-back" href="{{ routes.all_products_collection_url }}">&larr; Alle Produkte</a>
+      <h1>{{ product.title }}</h1>
+      {% if product.description != blank %}
+        <div class="pdp-lead">{{ product.description | strip_html | truncatewords: 34 }}</div>
+      {% endif %}
+      <div class="pdp-price">
+        <span id="pdp-price-current">{{ product.selected_or_first_available_variant.price | money }}</span>
+        {% if product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}
+          <s>{{ product.selected_or_first_available_variant.compare_at_price | money }}</s>
+        {% endif %}
+      </div>
+
+      {% form 'product', product, class: 'pdp-form', id: 'product-form' %}
+        {% unless product.has_only_default_variant %}
+          {%- for option in product.options_with_values -%}
+            <div class="pdp-option">
+              <label class="pdp-label" for="pdp-option-{{ forloop.index0 }}">{{ option.name }}</label>
+              <select id="pdp-option-{{ forloop.index0 }}" class="pdp-select" data-option-index="{{ forloop.index0 }}" data-option-selector>
+                {%- for value in option.values -%}
+                  <option value="{{ value | escape }}" {% if option.selected_value == value %}selected{% endif %}>{{ value }}</option>
+                {%- endfor -%}
+              </select>
+            </div>
+          {%- endfor -%}
+          <select name="id" id="pdp-variant-id" class="pdp-select-hidden" hidden>
+            {% for v in product.variants %}
+              <option value="{{ v.id }}" data-price="{{ v.price }}" data-available="{{ v.available }}" {% if v.id == product.selected_or_first_available_variant.id %}selected{% endif %}>{{ v.title }}</option>
+            {% endfor %}
+          </select>
+        {% else %}
+          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+        {% endunless %}
+
+        {% render 'mengen-rabatt-picker' %}
+
+        <button class="btn pdp-add" type="submit" id="pdp-add-btn" {% unless product.available %}disabled{% endunless %}>
+          {% if product.available %}In den Warenkorb{% else %}Zurzeit nicht verfügbar{% endif %}
+        </button>
+      {% endform %}
+
+      <ul class="pdp-assur">
+        <li>Versand aus der Schweiz, gratis ab CHF 29.90</li>
+        <li>14 Tage Rückgabe, ohne Begründung</li>
+        <li>Läuft sie aus: Ersatz oder Geld zurück, ohne Diskussion</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} Volle Beschreibung {%- endcomment -%}
+{% if product.description != blank %}
+<section class="pdp-desc">
+  <div class="wrap page" style="padding-top:24px;padding-bottom:24px">
+    <h2 style="text-align:left">Details zu {{ product.title }}</h2>
+    <div class="rte">{{ product.description }}</div>
+  </div>
+</section>
+{% endif %}
+
+{%- comment -%} Produkt-Überzeugung, Section unter dem Kaufbutton {%- endcomment -%}
+{% section 'produkt-ueberzeugung' %}
+
+{%- comment -%} Weitere Produkte (Cross-Sell) {%- endcomment -%}
+{% assign quelle = product.collections.first %}
+{% if quelle and quelle.products.size > 1 %}
+<section class="pdp-more">
+  <div class="wrap">
+    <h2>Das <span class="grad">passt auch</span></h2>
+    <div class="grid-prod">
+      {% for p in quelle.products limit: 6 %}
+        {% unless p.id == product.id %}
+          <a class="prod" href="{{ p.url }}">
+            {% if p.featured_image %}<img src="{{ p.featured_image | image_url: width: 500 }}" alt="{{ p.title | escape }}">{% endif %}
+            <strong>{{ p.title }}</strong>
+            <div class="price">{{ p.price | money }}</div>
+          </a>
+        {% endunless %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{%- comment -%} Strukturierte Daten für Rich Results (Product + Offer) {%- endcomment -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": {{ product.title | json }},
+  "description": {{ product.description | strip_html | truncatewords: 40 | json }},
+  {% if product.featured_image %}"image": "https:{{ product.featured_image | image_url: width: 1200 }}",{% endif %}
+  "brand": { "@type": "Brand", "name": {{ shop.name | json }} },
+  "offers": {
+    "@type": "Offer",
+    "price": "{{ product.price | money_without_currency | strip_html }}",
+    "priceCurrency": "{{ cart.currency.iso_code | default: 'CHF' }}",
+    "availability": "https://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}",
+    "url": "{{ shop.url }}{{ product.url }}"
+  }
+}
+</script>

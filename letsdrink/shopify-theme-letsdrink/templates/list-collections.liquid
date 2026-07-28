@@ -1,0 +1,13 @@
+<section class="page">
+  <div class="wrap page">
+    <h1>Kategorien</h1>
+    <div class="grid-prod">
+      {% for c in collections %}
+        <a class="prod" href="{{ c.url }}">
+          {% if c.image %}<img src="{{ c.image | image_url: width: 500 }}" alt="{{ c.title | escape }}">{% endif %}
+          <strong>{{ c.title }}</strong>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>

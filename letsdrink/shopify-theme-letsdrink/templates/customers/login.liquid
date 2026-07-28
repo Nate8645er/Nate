@@ -1,0 +1,14 @@
+<section class="page"><div class="wrap page">
+  <h1>Anmelden</h1>
+  {% form 'customer_login' %}
+    {{ form.errors | default_errors }}
+    <label for="customer_email">E-Mail</label>
+    <input type="email" name="customer[email]" id="customer_email" required autocomplete="email">
+    {% if form.password_needed %}
+      <label for="customer_password">Passwort</label>
+      <input type="password" name="customer[password]" id="customer_password" autocomplete="current-password">
+    {% endif %}
+    <button type="submit" class="btn">Anmelden</button>
+    <a href="{{ routes.account_recover_url }}">Passwort vergessen?</a>
+  {% endform %}
+</div></section>

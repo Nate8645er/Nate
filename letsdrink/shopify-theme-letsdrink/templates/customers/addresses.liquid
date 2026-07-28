@@ -1,0 +1,7 @@
+<section class="page"><div class="wrap page">
+  <h1>Adressen</h1>
+  <p><a href="{{ routes.account_url }}">&larr; Zurück zum Konto</a></p>
+  {% for address in customer.addresses %}
+    <div class="rte">{{ address | format_address }}</div>
+  {% endfor %}
+</div></section>

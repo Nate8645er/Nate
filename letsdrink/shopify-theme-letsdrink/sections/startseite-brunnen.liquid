@@ -1,0 +1,457 @@
+{%- comment -%}
+  Section: Startseite
+  Für Let'sDrink. Ersetzt die komplette Startseite.
+  Reihenfolge: Hero, Problem, Set-Angebot, Wiederkauf (leer = ausgeblendet), Vertrauen.
+{%- endcomment -%}
+
+<div class="st" id="st-{{ section.id }}">
+
+  {%- comment -%} 1. Hero {%- endcomment -%}
+  <section class="st__hero" aria-labelledby="st-hero-{{ section.id }}">
+    <div class="st__hero-media">
+      {%- if section.settings.hero_video != blank -%}
+        {{
+          section.settings.hero_video
+          | video_tag:
+            autoplay: true,
+            loop: true,
+            muted: true,
+            controls: false,
+            playsinline: true,
+            image_size: '1200x'
+        }}
+      {%- elsif section.settings.hero_image != blank -%}
+        {{
+          section.settings.hero_image
+          | image_url: width: 1400
+          | image_tag:
+            loading: 'eager',
+            fetchpriority: 'high',
+            sizes: '(min-width: 990px) 55vw, 100vw',
+            widths: '600, 900, 1400',
+            alt: section.settings.hero_image_alt
+        }}
+      {%- endif -%}
+    </div>
+
+    <div class="st__hero-copy">
+      <p class="st__eyebrow">{{ section.settings.hero_eyebrow }}</p>
+      <h1 class="st__h1" id="st-hero-{{ section.id }}">{{ section.settings.hero_title }}</h1>
+      <p class="st__lede">{{ section.settings.hero_text }}</p>
+
+      {%- if section.settings.hero_cta_link != blank -%}
+        <a class="st__btn" href="{{ section.settings.hero_cta_link }}">
+          {{ section.settings.hero_cta_label }}
+        </a>
+        {%- if section.settings.hero_cta_note != blank -%}
+          <p class="st__btn-note">{{ section.settings.hero_cta_note }}</p>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+  </section>
+
+  {%- comment -%} 2. Problem {%- endcomment -%}
+  {%- assign pain_blocks = section.blocks | where: "type", "pain" -%}
+  {%- if pain_blocks.size > 0 -%}
+    <section class="st__pain">
+      <h2 class="st__h2">{{ section.settings.pain_title }}</h2>
+      <ul class="st__pain-list">
+        {%- for block in pain_blocks -%}
+          <li {{ block.shopify_attributes }}>{{ block.settings.text }}</li>
+        {%- endfor -%}
+      </ul>
+      {%- if section.settings.pain_close != blank -%}
+        <p class="st__pain-close">{{ section.settings.pain_close }}</p>
+      {%- endif -%}
+    </section>
+  {%- endif -%}
+
+  {%- comment -%} 3. Das Set. Hauptangebot. {%- endcomment -%}
+  <section class="st__offer" aria-labelledby="st-offer-{{ section.id }}">
+    <div class="st__offer-inner">
+      <div class="st__offer-copy">
+        <p class="st__eyebrow st__eyebrow--accent">{{ section.settings.offer_eyebrow }}</p>
+        <h2 class="st__h2 st__h2--light" id="st-offer-{{ section.id }}">{{ section.settings.offer_title }}</h2>
+
+        <ul class="st__offer-list">
+          {%- if section.settings.offer_item_1 != blank -%}<li>{{ section.settings.offer_item_1 }}</li>{%- endif -%}
+          {%- if section.settings.offer_item_2 != blank -%}<li>{{ section.settings.offer_item_2 }}</li>{%- endif -%}
+          {%- if section.settings.offer_item_3 != blank -%}<li>{{ section.settings.offer_item_3 }}</li>{%- endif -%}
+        </ul>
+
+        <div class="st__price-row">
+          <span class="st__price">{{ section.settings.offer_price }}</span>
+          {%- if section.settings.offer_price_note != blank -%}
+            <span class="st__price-note">{{ section.settings.offer_price_note }}</span>
+          {%- endif -%}
+        </div>
+
+        {%- if section.settings.offer_cta_link != blank -%}
+          <a class="st__btn st__btn--accent" href="{{ section.settings.offer_cta_link }}">
+            {{ section.settings.offer_cta_label }}
+          </a>
+        {%- endif -%}
+
+        {%- if section.settings.offer_alt_link != blank -%}
+          <p class="st__alt">
+            <a href="{{ section.settings.offer_alt_link }}">{{ section.settings.offer_alt_label }}</a>
+          </p>
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.offer_image != blank -%}
+        <div class="st__offer-media">
+          {{
+            section.settings.offer_image
+            | image_url: width: 900
+            | image_tag:
+              loading: 'lazy',
+              sizes: '(min-width: 750px) 44vw, 92vw',
+              widths: '400, 600, 900',
+              alt: section.settings.offer_image_alt
+          }}
+        </div>
+      {%- endif -%}
+    </div>
+  </section>
+
+  {%- comment -%} 4. Wiederkauf, optional {%- endcomment -%}
+  {%- if section.settings.recur_title != blank -%}
+    <section class="st__recur">
+      <div class="st__recur-inner">
+        <h2 class="st__h2">{{ section.settings.recur_title }}</h2>
+        <div class="st__rte">{{ section.settings.recur_text }}</div>
+        {%- if section.settings.recur_link != blank -%}
+          <a class="st__link" href="{{ section.settings.recur_link }}">{{ section.settings.recur_link_label }}</a>
+        {%- endif -%}
+      </div>
+      {%- if section.settings.recur_image != blank -%}
+        <figure class="st__recur-media">
+          {{
+            section.settings.recur_image
+            | image_url: width: 800
+            | image_tag:
+              loading: 'lazy',
+              sizes: '(min-width: 750px) 40vw, 92vw',
+              widths: '400, 600, 800',
+              alt: section.settings.recur_image_alt
+          }}
+          {%- if section.settings.recur_caption != blank -%}
+            <figcaption>{{ section.settings.recur_caption }}</figcaption>
+          {%- endif -%}
+        </figure>
+      {%- endif -%}
+    </section>
+  {%- endif -%}
+
+  {%- comment -%} 5. Vertrauen {%- endcomment -%}
+  {%- assign trust_blocks = section.blocks | where: "type", "trust" -%}
+  {%- if trust_blocks.size > 0 -%}
+    <section class="st__trust">
+      <ul class="st__trust-list">
+        {%- for block in trust_blocks -%}
+          <li {{ block.shopify_attributes }}>
+            <p class="st__trust-title">{{ block.settings.title }}</p>
+            <p class="st__trust-text">{{ block.settings.text }}</p>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </section>
+  {%- endif -%}
+
+</div>
+
+<style>
+  #st-{{ section.id }} {
+    --st-ink: {{ section.settings.color_ink }};
+    --st-surface: {{ section.settings.color_surface }};
+    --st-deep: {{ section.settings.color_deep }};
+    --st-accent: {{ section.settings.color_accent }};
+    --st-muted: {{ section.settings.color_ink }}99;
+    --st-line: {{ section.settings.color_ink }}1F;
+
+    background: var(--st-surface);
+    color: var(--st-ink);
+    font-family: Inter, system-ui, sans-serif;
+  }
+
+  #st-{{ section.id }} .st__h1,
+  #st-{{ section.id }} .st__h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 600;
+    line-height: 1.12;
+    text-wrap: balance;
+    margin: 0 0 16px;
+  }
+  #st-{{ section.id }} .st__h1 { font-size: clamp(30px, 6vw, 52px); }
+  #st-{{ section.id }} .st__h2 { font-size: clamp(24px, 4.4vw, 36px); }
+  #st-{{ section.id }} .st__h2--light { color: #fff; }
+
+  #st-{{ section.id }} .st__eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--st-muted);
+    margin: 0 0 12px;
+  }
+  #st-{{ section.id }} .st__eyebrow--accent { color: var(--st-accent); }
+
+  /* Hero */
+  #st-{{ section.id }} .st__hero { display: grid; }
+  #st-{{ section.id }} .st__hero-media { position: relative; background: var(--st-deep); }
+  #st-{{ section.id }} .st__hero-media img,
+  #st-{{ section.id }} .st__hero-media video {
+    width: 100%;
+    height: 100%;
+    max-height: 62vh;
+    object-fit: cover;
+    display: block;
+  }
+  #st-{{ section.id }} .st__hero-copy { padding: 32px 20px 40px; }
+  #st-{{ section.id }} .st__lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--st-muted);
+    max-width: 46ch;
+    margin: 0 0 24px;
+  }
+
+  /* Buttons */
+  #st-{{ section.id }} .st__btn {
+    display: inline-block;
+    background: var(--st-deep);
+    color: #fff;
+    font-weight: 600;
+    font-size: 16px;
+    text-decoration: none;
+    padding: 15px 30px;
+    border-radius: 3px;
+    min-height: 44px;
+    transition: filter .16s ease, transform .16s ease;
+  }
+  #st-{{ section.id }} .st__btn--accent { background: var(--st-accent); color: #0c211f; }
+  #st-{{ section.id }} .st__btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+  #st-{{ section.id }} .st__btn:active { transform: translateY(0); }
+  #st-{{ section.id }} .st__btn:focus-visible { outline: 3px solid var(--st-accent); outline-offset: 3px; }
+  #st-{{ section.id }} .st__btn-note {
+    font-size: 13.5px;
+    color: var(--st-muted);
+    margin: 12px 0 0;
+  }
+
+  /* Problem */
+  #st-{{ section.id }} .st__pain { padding: 48px 20px; max-width: 760px; margin: 0 auto; }
+  #st-{{ section.id }} .st__pain-list { list-style: none; margin: 0; padding: 0; }
+  #st-{{ section.id }} .st__pain-list li {
+    font-size: 17px;
+    line-height: 1.55;
+    padding: 14px 0 14px 22px;
+    border-bottom: 1px solid var(--st-line);
+    position: relative;
+  }
+  #st-{{ section.id }} .st__pain-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 1.42em;
+    width: 10px;
+    height: 2px;
+    background: var(--st-accent);
+  }
+  #st-{{ section.id }} .st__pain-close {
+    font-size: 17px;
+    line-height: 1.6;
+    margin: 24px 0 0;
+    max-width: 56ch;
+  }
+
+  /* Angebot */
+  #st-{{ section.id }} .st__offer { background: var(--st-deep); color: #fff; padding: 48px 20px; }
+  #st-{{ section.id }} .st__offer-inner { max-width: 1040px; margin: 0 auto; display: grid; gap: 28px; }
+  #st-{{ section.id }} .st__offer-list {
+    list-style: none;
+    margin: 0 0 24px;
+    padding: 0;
+    color: #ffffffdd;
+    font-size: 16px;
+  }
+  #st-{{ section.id }} .st__offer-list li {
+    padding-left: 20px;
+    position: relative;
+    margin-bottom: 10px;
+  }
+  #st-{{ section.id }} .st__offer-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: .68em;
+    width: 9px;
+    height: 2px;
+    background: var(--st-accent);
+  }
+  #st-{{ section.id }} .st__price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+  }
+  #st-{{ section.id }} .st__price {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 40px;
+    color: #fff;
+    line-height: 1;
+  }
+  #st-{{ section.id }} .st__price-note { font-size: 14px; color: #ffffffaa; }
+  #st-{{ section.id }} .st__alt { margin: 16px 0 0; font-size: 14.5px; }
+  #st-{{ section.id }} .st__alt a { color: #ffffffcc; text-decoration: underline; }
+  #st-{{ section.id }} .st__alt a:focus-visible { outline: 2px solid var(--st-accent); outline-offset: 2px; }
+  #st-{{ section.id }} .st__offer-media img { width: 100%; height: auto; display: block; border-radius: 3px; }
+
+  /* Wiederkauf */
+  #st-{{ section.id }} .st__recur {
+    padding: 48px 20px;
+    max-width: 1040px;
+    margin: 0 auto;
+    display: grid;
+    gap: 26px;
+  }
+  #st-{{ section.id }} .st__rte { font-size: 16.5px; line-height: 1.6; max-width: 58ch; }
+  #st-{{ section.id }} .st__rte p { margin: 0 0 12px; }
+  #st-{{ section.id }} .st__link {
+    display: inline-block;
+    margin-top: 8px;
+    color: var(--st-ink);
+    font-weight: 600;
+    font-size: 15.5px;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    min-height: 44px;
+  }
+  #st-{{ section.id }} .st__link:focus-visible { outline: 3px solid var(--st-accent); outline-offset: 3px; }
+  #st-{{ section.id }} .st__recur-media img { width: 100%; height: auto; display: block; border-radius: 3px; }
+  #st-{{ section.id }} .st__recur-media figcaption {
+    font-size: 13px;
+    color: var(--st-muted);
+    margin-top: 9px;
+  }
+
+  /* Vertrauen */
+  #st-{{ section.id }} .st__trust { border-top: 1px solid var(--st-line); padding: 36px 20px 48px; }
+  #st-{{ section.id }} .st__trust-list {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    max-width: 1040px;
+    display: grid;
+    gap: 20px;
+  }
+  #st-{{ section.id }} .st__trust-title { font-weight: 600; font-size: 15.5px; margin: 0 0 4px; }
+  #st-{{ section.id }} .st__trust-text { font-size: 14.5px; line-height: 1.55; color: var(--st-muted); margin: 0; }
+
+  @media (min-width: 750px) {
+    #st-{{ section.id }} .st__offer-inner { grid-template-columns: 1.1fr .9fr; align-items: center; gap: 44px; }
+    #st-{{ section.id }} .st__recur { grid-template-columns: 1.1fr .9fr; align-items: center; gap: 44px; }
+    #st-{{ section.id }} .st__trust-list { grid-template-columns: repeat({{ trust_blocks.size | at_most: 4 }}, 1fr); gap: 28px; }
+    #st-{{ section.id }} .st__pain { padding: 72px 20px; }
+    #st-{{ section.id }} .st__offer { padding: 72px 20px; }
+    #st-{{ section.id }} .st__recur { padding: 72px 20px; }
+  }
+
+  @media (min-width: 990px) {
+    #st-{{ section.id }} .st__hero { grid-template-columns: 1.15fr 1fr; align-items: center; }
+    #st-{{ section.id }} .st__hero-media img,
+    #st-{{ section.id }} .st__hero-media video { max-height: 78vh; }
+    #st-{{ section.id }} .st__hero-copy { padding: 56px 48px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #st-{{ section.id }} * { transition: none !important; animation: none !important; }
+    #st-{{ section.id }} video { display: none; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Startseite",
+  "tag": "section",
+  "settings": [
+    { "type": "header", "content": "Farben" },
+    { "type": "color", "id": "color_surface", "label": "Hintergrund", "default": "#F6F3EC" },
+    { "type": "color", "id": "color_ink", "label": "Text", "default": "#1B2A24" },
+    { "type": "color", "id": "color_deep", "label": "Dunkle Fläche", "default": "#173F3C" },
+    { "type": "color", "id": "color_accent", "label": "Akzent", "default": "#2E9C93" },
+
+    { "type": "header", "content": "Hero" },
+    { "type": "video", "id": "hero_video", "label": "Video (Hund oder Katze trinkt)" },
+    { "type": "image_picker", "id": "hero_image", "label": "Bild, falls kein Video" },
+    { "type": "text", "id": "hero_image_alt", "label": "Alt-Text", "default": "Trinkflasche mit Napf für Hund und Katze" },
+    { "type": "text", "id": "hero_eyebrow", "label": "Kleine Zeile", "default": "Für Hunde und Katzen, die unterwegs trinken müssen" },
+    { "type": "text", "id": "hero_title", "label": "Titel", "default": "Wasser dabei, aber keine Schüssel. Kennst du." },
+    { "type": "text", "id": "hero_text", "label": "Text", "default": "Knopf drücken, Wasser läuft in den angebauten Napf, dein Tier trinkt. Der Rest läuft zurück in die Flasche. Einhandbedienung, damit du die Leine nicht loslassen musst." },
+    { "type": "url", "id": "hero_cta_link", "label": "Button-Link (auf die Flasche)" },
+    { "type": "text", "id": "hero_cta_label", "label": "Button-Text", "default": "Flasche ansehen" },
+    { "type": "text", "id": "hero_cta_note", "label": "Zeile unter dem Button", "default": "Gratisversand in der Schweiz. 14 Tage Rückgabe." },
+
+    { "type": "header", "content": "Problem" },
+    { "type": "text", "id": "pain_title", "label": "Titel", "default": "Kennst du eines davon?" },
+    { "type": "text", "id": "pain_close", "label": "Abschlusssatz", "default": "Das Problem ist nie das Wasser. Es ist immer das Gefäss." },
+
+    { "type": "header", "content": "Angebot (2er-Set)" },
+    { "type": "text", "id": "offer_eyebrow", "label": "Kleine Zeile", "default": "Das empfohlene Set" },
+    { "type": "text", "id": "offer_title", "label": "Titel", "default": "Zwei Flaschen, einer für den Rucksack, einer fürs Auto" },
+    { "type": "text", "id": "offer_item_1", "label": "Punkt 1", "default": "550 ml, reicht für eine lange Runde" },
+    { "type": "text", "id": "offer_item_2", "label": "Punkt 2", "default": "Einhandbedienung, auslaufsicher verschlossen" },
+    { "type": "text", "id": "offer_item_3", "label": "Punkt 3", "default": "Einzeln gekauft CHF 59.80" },
+    { "type": "text", "id": "offer_price", "label": "Preis", "default": "CHF 49.00" },
+    { "type": "text", "id": "offer_price_note", "label": "Zeile neben dem Preis", "default": "inkl. MwSt, Gratisversand" },
+    { "type": "url", "id": "offer_cta_link", "label": "Button-Link" },
+    { "type": "text", "id": "offer_cta_label", "label": "Button-Text", "default": "Set in den Warenkorb" },
+    { "type": "url", "id": "offer_alt_link", "label": "Alternativ-Link" },
+    { "type": "text", "id": "offer_alt_label", "label": "Alternativ-Text", "default": "Nur eine Flasche, CHF 29.90" },
+    { "type": "image_picker", "id": "offer_image", "label": "Bild vom Set" },
+    { "type": "text", "id": "offer_image_alt", "label": "Alt-Text", "default": "2er-Set Trinkflasche mit Napf" },
+
+    { "type": "header", "content": "Wiederkauf, optional" },
+    { "type": "text", "id": "recur_title", "label": "Titel", "default": "" },
+    { "type": "richtext", "id": "recur_text", "label": "Text", "default": "" },
+    { "type": "url", "id": "recur_link", "label": "Link", "default": "" },
+    { "type": "text", "id": "recur_link_label", "label": "Link-Text", "default": "" },
+    { "type": "image_picker", "id": "recur_image", "label": "Bild" },
+    { "type": "text", "id": "recur_image_alt", "label": "Alt-Text", "default": "" },
+    { "type": "text", "id": "recur_caption", "label": "Bildunterschrift", "default": "" }
+  ],
+  "blocks": [
+    {
+      "type": "pain",
+      "name": "Problem-Zeile",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Zeile", "default": "Auf halber Strecke hechelt er, und du hast nur die hohle Hand." }
+      ]
+    },
+    {
+      "type": "trust",
+      "name": "Vertrauen",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Titel", "default": "Versand in der Schweiz" },
+        { "type": "text", "id": "text", "label": "Text", "default": "Gratis ab CHF 29.90. Lieferzeit steht ehrlich auf der Versandseite." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Startseite",
+      "blocks": [
+        { "type": "pain", "settings": { "text": "Auf halber Strecke hechelt er, und du hast nur die hohle Hand." } },
+        { "type": "pain", "settings": { "text": "Die Schüssel liegt zu Hause, weil sie im Rucksack immer nervt." } },
+        { "type": "pain", "settings": { "text": "Und wenn du doch eine mitnimmst, ist der Rucksack nachher nass." } },
+        { "type": "trust", "settings": { "title": "Versand in der Schweiz", "text": "Gratis ab CHF 29.90. Lieferzeit steht ehrlich auf der Versandseite." } },
+        { "type": "trust", "settings": { "title": "14 Tage Rückgabe", "text": "Gefällt sie nicht, schickst du sie zurück. Ohne Begründung." } },
+        { "type": "trust", "settings": { "title": "Ein Mensch antwortet", "text": "Kein Callcenter. Antwort innerhalb eines Werktags." } },
+        { "type": "trust", "settings": { "title": "Auslaufsicher", "text": "Verschlossen bleibt der Rucksack trocken. Wenn nicht, ist es ein Reklamationsfall." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

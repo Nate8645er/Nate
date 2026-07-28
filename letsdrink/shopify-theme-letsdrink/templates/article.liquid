@@ -1,0 +1,7 @@
+<section class="page">
+  <div class="wrap page">
+    <p class="blog-meta"><a href="{{ blog.url }}">{{ blog.title }}</a> · {{ article.published_at | date: '%d.%m.%Y' }}</p>
+    <h1>{{ article.title }}</h1>
+    <div class="rte">{{ article.content }}</div>
+  </div>
+</section>

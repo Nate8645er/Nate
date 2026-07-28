@@ -1,0 +1,40 @@
+{%- comment -%}
+  Snippet: Mengen-Rabatt-Picker
+  Zeigt "1 Flasche" plus drei Mengen-Schnellwahl-Buttons: 2 kaufen 1 gratis,
+  4 kaufen 2 gratis, 6 kaufen 3 gratis. Ein Klick setzt das echte Mengenfeld
+  (name="quantity") der Produktseite auf 3 / 6 / 9 - der Kunde muss die
+  Freimenge nicht selbst dazuzählen.
+
+  Der eigentliche Rabatt läuft als automatischer Shopify-Rabatt
+  (Kauf 2, erhalte 1 gratis) im Hintergrund. Dieser Picker sorgt nur dafür,
+  dass der Kunde die richtige Gesamtmenge in den Warenkorb bekommt, ohne
+  selbst nachzurechnen.
+{%- endcomment -%}
+
+<div class="qty-picker" data-qty-picker>
+  <p class="qty-picker__label">Menge wählen</p>
+  <div class="qty-picker__options" role="group" aria-label="Menge wählen">
+    <button type="button" class="qty-opt is-active" data-qty="1">1 Flasche</button>
+    <button type="button" class="qty-opt qty-opt--deal" data-qty="3">
+      <span class="qty-opt__main">2 kaufen</span>
+      <span class="qty-opt__sub">1 gratis</span>
+    </button>
+    <button type="button" class="qty-opt qty-opt--deal" data-qty="6">
+      <span class="qty-opt__main">4 kaufen</span>
+      <span class="qty-opt__sub">2 gratis</span>
+    </button>
+    <button type="button" class="qty-opt qty-opt--deal" data-qty="9">
+      <span class="qty-opt__main">6 kaufen</span>
+      <span class="qty-opt__sub">3 gratis</span>
+    </button>
+  </div>
+
+  <div class="qty-picker__manual">
+    <label for="qty-input">oder eigene Menge</label>
+    <input type="number" id="qty-input" name="quantity" value="1" min="1" step="1" class="qty-input" data-qty-input inputmode="numeric">
+  </div>
+
+  <p class="qty-picker__hint" data-qty-hint hidden>
+    Der Rabatt „2 kaufen, 1 gratis“ wird an der Kasse automatisch abgezogen.
+  </p>
+</div>
