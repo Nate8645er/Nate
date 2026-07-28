@@ -1,4 +1,9 @@
 <!doctype html>
+{%- comment -%}
+  shop.name ist auf diesem Konto "My Store" (geteilter Account mit anderen
+  Marken), deshalb hier bewusst ein fester Markenname statt shop.name.
+{%- endcomment -%}
+{%- assign brand_name = "Let'sDrink" -%}
 <html lang="{{ request.locale.iso_code }}">
   <head>
     <meta charset="utf-8">
@@ -6,14 +11,14 @@
     <meta name="theme-color" content="#F6F3EC">
     <link rel="canonical" href="{{ canonical_url }}">
     <title>
-      {{ page_title }}{% if current_tags %} &ndash; {{ current_tags | join: ', ' }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}
+      {{ page_title }}{% if current_tags %} &ndash; {{ current_tags | join: ', ' }}{% endif %}{% unless page_title contains brand_name %} &ndash; {{ brand_name }}{% endunless %}
     </title>
     {% if page_description %}<meta name="description" content="{{ page_description | escape }}">{% endif %}
 
-    {%- assign og_title = page_title | default: shop.name -%}
+    {%- assign og_title = page_title | default: brand_name -%}
     {%- assign og_desc = page_description | default: shop.description | default: 'Trinkflasche mit angebautem Napf, 550 ml, für Hund und Katze.' -%}
     <meta property="og:type" content="{% if template contains 'product' %}product{% else %}website{% endif %}">
-    <meta property="og:site_name" content="{{ shop.name | escape }}">
+    <meta property="og:site_name" content="{{ brand_name }}">
     <meta property="og:title" content="{{ og_title | escape }}">
     <meta property="og:description" content="{{ og_desc | escape }}">
     <meta property="og:url" content="{{ canonical_url }}">
@@ -29,7 +34,7 @@
     {
       "@context": "https://schema.org",
       "@type": "Organization",
-      "name": {{ shop.name | json }},
+      "name": {{ brand_name | json }},
       "url": {{ shop.url | default: canonical_url | json }},
       "description": {{ og_desc | json }}
     }
@@ -51,7 +56,7 @@
     <header class="hd">
       <input type="checkbox" id="nav-toggle" class="nav-toggle" hidden>
       <div class="wrap hd-in">
-        <a href="{{ routes.root_url }}" class="hd-logo">{{ shop.name | default: "Let'sDrink" }}</a>
+        <a href="{{ routes.root_url }}" class="hd-logo">{{ brand_name }}</a>
         <label for="nav-toggle" class="nav-burger" aria-label="Menü öffnen und schliessen"><span></span><span></span><span></span></label>
         <nav class="hd-nav">
           <a href="{{ routes.root_url }}">Start</a>
@@ -73,7 +78,7 @@
     <footer class="ft">
       <div class="wrap ft-grid">
         <div class="ft-brand">
-          <p class="ft-logo">{{ shop.name | default: "Let'sDrink" }}</p>
+          <p class="ft-logo">{{ brand_name }}</p>
           <p class="ft-tag">Trinkflasche mit angebautem Napf für Hund und Katze. Versand aus der Schweiz.</p>
         </div>
         <div class="ft-col">
@@ -96,7 +101,7 @@
         </div>
       </div>
       <div class="wrap ft-bar">
-        <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}</p>
+        <p>&copy; {{ 'now' | date: '%Y' }} {{ brand_name }}</p>
         <p class="ft-pay">Sichere Zahlung · Versand aus der Schweiz</p>
       </div>
     </footer>

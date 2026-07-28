@@ -1,3 +1,12 @@
+{%- comment -%}
+  Section: Produkt-Hauptbereich
+  Galerie, Kaufbox, Fakten-Leiste, Beschreibung, Cross-Sell, Sticky-ATC,
+  strukturierte Daten. Für templates/product.json, main-Section.
+  Enthält bewusst keine {% section %}-Aufrufe (Sections dürfen keine
+  anderen Sections referenzieren) - produkt-ueberzeugung, produktdaten
+  und vergleichstabelle werden direkt im JSON-Template aufgelistet.
+{%- endcomment -%}
+
 <section class="pdp">
   {% render 'hintergrund-tiere' %}
   <div class="wrap pdp-grid">
@@ -112,15 +121,6 @@
 </section>
 {% endif %}
 
-{%- comment -%} Produkt-Überzeugung, Section unter dem Kaufbutton {%- endcomment -%}
-{% section 'produkt-ueberzeugung' %}
-
-{%- comment -%} Technische Daten, Lieferumfang, Vertrauens-Badges {%- endcomment -%}
-{% section 'produktdaten' %}
-
-{%- comment -%} Vergleichstabelle {%- endcomment -%}
-{% section 'vergleichstabelle' %}
-
 {%- comment -%} Weitere Produkte (Cross-Sell) {%- endcomment -%}
 {% assign quelle = product.collections.first %}
 {% if quelle and quelle.products.size > 1 %}
@@ -160,7 +160,7 @@
   "name": {{ product.title | json }},
   "description": {{ product.description | strip_html | truncatewords: 40 | json }},
   {% if product.featured_image %}"image": "https:{{ product.featured_image | image_url: width: 1200 }}",{% endif %}
-  "brand": { "@type": "Brand", "name": {{ shop.name | json }} },
+  "brand": { "@type": "Brand", "name": "Let'sDrink" },
   "offers": {
     "@type": "Offer",
     "price": "{{ product.price | money_without_currency | strip_html }}",
@@ -170,3 +170,10 @@
   }
 }
 </script>
+
+{% schema %}
+{
+  "name": "Produkt-Hauptbereich",
+  "settings": []
+}
+{% endschema %}

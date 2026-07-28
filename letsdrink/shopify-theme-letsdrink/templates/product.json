@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": { "type": "produkt-hauptbereich" },
+    "ueberzeugung": { "type": "produkt-ueberzeugung" },
+    "daten": { "type": "produktdaten" },
+    "vergleich": { "type": "vergleichstabelle" }
+  },
+  "order": ["main", "ueberzeugung", "daten", "vergleich"]
+}

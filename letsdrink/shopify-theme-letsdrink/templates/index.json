@@ -1,0 +1,7 @@
+{
+  "sections": {
+    "hero": { "type": "startseite-brunnen" },
+    "produkte": { "type": "produktraster" }
+  },
+  "order": ["hero", "produkte"]
+}

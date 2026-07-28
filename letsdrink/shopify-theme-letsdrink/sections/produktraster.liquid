@@ -1,0 +1,36 @@
+{%- comment -%}
+  Section: Produktraster
+  Zeigt alle Produkte als Kachel-Raster, gefolgt von der
+  Newsletter-Anmeldung. Für die Startseite (templates/index.json).
+{%- endcomment -%}
+
+{% assign featured = collections.all.products %}
+{% if featured.size > 0 %}
+<section class="home-grid reveal">
+  <div class="wrap">
+    <h2>{{ section.settings.title }}</h2>
+    <div class="grid-prod">
+      {% for p in featured limit: section.settings.limit %}
+        <a class="prod" href="{{ p.url }}">
+          {% if p.featured_image %}<img src="{{ p.featured_image | image_url: width: 500 }}" alt="{{ p.title | escape }}" loading="lazy">{% endif %}
+          <strong>{{ p.title }}</strong>
+          <div class="price">{{ p.price | money }}</div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% render 'newsletter-signup' %}
+
+{% schema %}
+{
+  "name": "Produktraster",
+  "settings": [
+    { "type": "html", "id": "title", "label": "Titel (HTML erlaubt)", "default": "Alle <span class=\"grad\">Produkte</span>" },
+    { "type": "range", "id": "limit", "label": "Maximal angezeigte Produkte", "min": 2, "max": 24, "step": 2, "default": 8 }
+  ],
+  "presets": [{ "name": "Produktraster" }]
+}
+{% endschema %}
