@@ -10,7 +10,6 @@
     initReveal();
     initCountUp();
     initStickyAtc();
-    initAddToCartFeedback();
     initParallax();
     initHeroMotion();
     initNewsletterPopup();
@@ -133,21 +132,25 @@
     }
   }
 
-  /* Kurzes, dezentes Erfolgs-Feedback nach "In den Warenkorb" */
-  function initAddToCartFeedback() {
-    var form = document.getElementById("product-form");
-    var btn = document.getElementById("pdp-add-btn");
-    if (!form || !btn) return;
-
-    form.addEventListener("submit", function () {
-      // Aktion zuerst, Feedback verzögert den Klick nicht.
-      window.setTimeout(function () {
-        btn.classList.add("is-success");
-        if (!reduceMotion) burstConfetti(btn);
-        window.setTimeout(function () { btn.classList.remove("is-success"); }, 1400);
-      }, 50);
-    });
-  }
+  /* Add-to-Cart läuft jetzt als echter AJAX-Flow, siehe rich-interactions.js,
+     initAjaxCart(). Der Konfetti-Effekt bleibt hier, global nutzbar. */
+  window.ldConfetti = function (anchorEl) {
+    if (reduceMotion) return;
+    var rect = anchorEl.getBoundingClientRect();
+    var count = 8;
+    for (var i = 0; i < count; i++) {
+      var dot = document.createElement("span");
+      dot.className = "confetti-dot";
+      var angle = (Math.PI * 2 * i) / count;
+      var dist = 28 + Math.random() * 14;
+      dot.style.setProperty("--dx", Math.cos(angle) * dist + "px");
+      dot.style.setProperty("--dy", Math.sin(angle) * dist + "px");
+      dot.style.left = rect.left + rect.width / 2 + "px";
+      dot.style.top = rect.top + window.scrollY + rect.height / 2 + "px";
+      document.body.appendChild(dot);
+      dot.addEventListener("animationend", function () { this.remove(); });
+    }
+  };
 
   /* Sehr dezenter Parallax auf dem Hero-Bild: nur EIN Element, gedeckelt,
      nur transform (GPU), kein Effekt auf Layout/Scroll-Performance */
@@ -243,22 +246,4 @@
     }, { passive: true });
   }
 
-  /* Sehr dezenter Konfetti-Effekt: wenige Punkte, kurz, kein externes Skript */
-  function burstConfetti(anchorEl) {
-    var rect = anchorEl.getBoundingClientRect();
-    var count = 8;
-    for (var i = 0; i < count; i++) {
-      var dot = document.createElement("span");
-      dot.className = "confetti-dot";
-      var angle = (Math.PI * 2 * i) / count;
-      var dist = 28 + Math.random() * 14;
-      dot.style.setProperty("--dx", Math.cos(angle) * dist + "px");
-      dot.style.setProperty("--dy", Math.sin(angle) * dist + "px");
-      dot.style.left = rect.left + rect.width / 2 + "px";
-      dot.style.top = rect.top + window.scrollY + rect.height / 2 + "px";
-      document.body.appendChild(dot);
-      /* eslint-disable-next-line no-loop-func */
-      dot.addEventListener("animationend", function () { this.remove(); });
-    }
-  }
 })();

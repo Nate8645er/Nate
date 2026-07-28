@@ -42,8 +42,10 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap">
     {{ 'theme.css' | asset_url | stylesheet_tag }}
     {{ 'animations.css' | asset_url | stylesheet_tag }}
+    {{ 'rich-interactions.css' | asset_url | stylesheet_tag }}
     <script src="{{ 'theme.js' | asset_url }}" defer></script>
     <script src="{{ 'animations.js' | asset_url }}" defer></script>
+    <script src="{{ 'rich-interactions.js' | asset_url }}" defer></script>
   </head>
   <body class="tpl-{{ template | replace: '.', '-' | handle }}">
     <header class="hd">
@@ -112,5 +114,7 @@
     {% unless template == 'customers/login' or template == 'customers/register' %}
       {% render 'newsletter-popup' %}
     {% endunless %}
+
+    <div id="toast-wrap" aria-live="polite"></div>
   </body>
 </html>

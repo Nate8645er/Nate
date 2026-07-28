@@ -1,0 +1,9 @@
+{% comment %}
+  Wellen-Übergang zwischen Sektionen, Wasser-Thema statt Weltraum.
+  fill = Farbe der NÄCHSTEN Sektion. {% render 'wellen-teiler', fill: '#173F3C' %}
+{% endcomment %}
+<div class="wellen-teiler" aria-hidden="true">
+  <svg viewBox="0 0 1440 90" preserveAspectRatio="none">
+    <path fill="{{ fill | default: '#173F3C' }}" d="M0,40 C160,70 320,10 480,30 C640,50 720,80 880,58 C1040,36 1140,10 1300,28 C1380,38 1420,50 1440,46 L1440,90 L0,90 Z"/>
+  </svg>
+</div>

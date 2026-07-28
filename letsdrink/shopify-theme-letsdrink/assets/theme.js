@@ -3,7 +3,6 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     initConsent();
-    initGallery();
     initVariantPicker();
     initQtyPicker();
   });
@@ -24,22 +23,7 @@
     }
   }
 
-  /* Bild-Galerie: Klick auf Thumbnail wechselt das Hauptbild */
-  function initGallery() {
-    var hero = document.getElementById("pdp-hero-img");
-    if (!hero) return;
-    var thumbs = document.querySelectorAll(".pdp-thumb");
-    thumbs.forEach(function (thumb) {
-      thumb.addEventListener("click", function () {
-        var full = thumb.getAttribute("data-full");
-        if (!full) return;
-        hero.setAttribute("src", full);
-        hero.setAttribute("alt", thumb.getAttribute("alt") || "");
-        thumbs.forEach(function (t) { t.classList.remove("is-active"); });
-        thumb.classList.add("is-active");
-      });
-    });
-  }
+  /* Bild-Galerie (Crossfade + Skeleton): siehe rich-interactions.js, initGallery() */
 
   /* Varianten-Auswahl: setzt das echte id-Feld und aktualisiert den Preis */
   function initVariantPicker() {
@@ -67,12 +51,18 @@
         var price = parseInt(match.getAttribute("data-price"), 10);
         if (!isNaN(price)) {
           priceEl.textContent = formatMoney(price);
+          priceEl.classList.remove("price-flash");
+          void priceEl.offsetWidth;
+          priceEl.classList.add("price-flash");
+          var stickyPrice = document.querySelector(".sticky-atc-price");
+          if (stickyPrice) stickyPrice.textContent = formatMoney(price);
         }
       }
       var available = match.getAttribute("data-available") === "true";
       if (addBtn) {
         addBtn.disabled = !available;
-        addBtn.textContent = available ? "In den Warenkorb" : "Zurzeit nicht verfügbar";
+        var label = addBtn.querySelector(".pdp-add-label");
+        if (label) label.textContent = available ? "In den Warenkorb" : "Zurzeit nicht verfügbar";
       }
     }
 

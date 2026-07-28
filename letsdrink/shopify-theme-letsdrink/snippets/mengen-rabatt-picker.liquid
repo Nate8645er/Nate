@@ -31,7 +31,11 @@
 
   <div class="qty-picker__manual">
     <label for="qty-input">oder eigene Menge</label>
-    <input type="number" id="qty-input" name="quantity" value="1" min="1" step="1" class="qty-input" data-qty-input inputmode="numeric">
+    <div class="qty-stepper" data-qty-stepper>
+      <button type="button" data-step="-1" aria-label="Menge verringern">&minus;</button>
+      <input type="number" id="qty-input" name="quantity" value="1" min="1" step="1" class="qty-input" data-qty-input inputmode="numeric">
+      <button type="button" data-step="1" aria-label="Menge erhöhen">+</button>
+    </div>
   </div>
 
   <p class="qty-picker__hint" data-qty-hint hidden>

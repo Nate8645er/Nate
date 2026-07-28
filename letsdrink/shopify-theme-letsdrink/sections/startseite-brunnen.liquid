@@ -9,6 +9,8 @@
   {%- comment -%} 1. Hero {%- endcomment -%}
   <section class="st__hero" aria-labelledby="st-hero-{{ section.id }}">
     {% render 'hintergrund-tiere' %}
+    {% render 'hund-trinkt' %}
+    {% render 'katze-trinkt' %}
     <div class="st__hero-media" data-parallax>
       {%- if section.settings.hero_video != blank -%}
         {{
@@ -43,7 +45,7 @@
       <p class="st__lede">{{ section.settings.hero_text }}</p>
 
       {%- if section.settings.hero_cta_link != blank -%}
-        <a class="st__btn" href="{{ section.settings.hero_cta_link }}">
+        <a class="st__btn magnetic" href="{{ section.settings.hero_cta_link }}">
           {{ section.settings.hero_cta_label }}
         </a>
         {%- if section.settings.hero_cta_note != blank -%}
@@ -73,8 +75,11 @@
     </section>
   {%- endif -%}
 
+  {% render 'wellen-teiler', fill: section.settings.color_deep %}
+
   {%- comment -%} 3. Das Set. Hauptangebot. {%- endcomment -%}
-  <section class="st__offer reveal" aria-labelledby="st-offer-{{ section.id }}">
+  <section class="st__offer reveal" aria-labelledby="st-offer-{{ section.id }}" style="position:relative; overflow:hidden;">
+    {% render 'wasserblasen' %}
     <div class="st__offer-inner">
       <div class="st__offer-copy">
         <p class="st__eyebrow st__eyebrow--accent">{{ section.settings.offer_eyebrow }}</p>
@@ -94,7 +99,7 @@
         </div>
 
         {%- if section.settings.offer_cta_link != blank -%}
-          <a class="st__btn st__btn--accent" href="{{ section.settings.offer_cta_link }}">
+          <a class="st__btn st__btn--accent magnetic" href="{{ section.settings.offer_cta_link }}">
             {{ section.settings.offer_cta_label }}
           </a>
         {%- endif -%}
@@ -121,6 +126,8 @@
       {%- endif -%}
     </div>
   </section>
+
+  {% render 'wellen-teiler', fill: section.settings.color_surface %}
 
   {%- comment -%} 4. Wiederkauf, optional {%- endcomment -%}
   {%- if section.settings.recur_title != blank -%}
