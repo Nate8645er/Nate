@@ -535,6 +535,23 @@ body.menu-open .mobile-menu-panel a:nth-child(5) { transition-delay: 0.26s; }
 .toast.in { opacity: 1; transform: translateY(0) rotate(0); }
 .toast-error { background: #ffd3d3; }
 
+/* ---------- Flaschenpost-Popup ---------- */
+#ld-popup { position: fixed; inset: 0; z-index: 9000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+#ld-popup[hidden] { display: none; }
+.ld-popup-backdrop { position: absolute; inset: 0; background: rgba(15, 74, 96, 0.55); }
+.ld-popup-card { position: relative; background: var(--white); border: 3px solid var(--outline); border-radius: var(--r-blob); box-shadow: var(--hard-shadow); max-width: 430px; width: min(92vw, 430px); padding: 34px 28px 26px; text-align: center; transform: rotate(-1deg); animation: popupIn 0.5s var(--ease-boing); }
+@keyframes popupIn { from { opacity: 0; transform: translateY(30px) scale(0.92) rotate(-1deg); } to { opacity: 1; transform: rotate(-1deg); } }
+.ld-popup-card h3 { font-size: 1.5rem; margin: 12px 0 10px; }
+.ld-popup-card p { color: var(--text-dim); font-weight: 600; font-size: 0.95rem; }
+.ld-popup-mascot { width: 74px; margin: 0 auto 6px; animation: hockBob 5s ease-in-out infinite alternate; }
+.ld-popup-x { position: absolute; top: -14px; right: -12px; width: 42px; height: 42px; border-radius: 50%; background: var(--sun-y); border: 3px solid var(--outline); font-size: 1rem; font-weight: 800; color: var(--outline); cursor: pointer; box-shadow: 3px 3px 0 rgba(23, 51, 59, 0.3); transition: transform 0.2s var(--ease-boing); }
+.ld-popup-x:hover { transform: rotate(8deg) scale(1.08); }
+.ld-popup-form { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+.ld-popup-form input { padding: 14px 22px; border-radius: 50px; border: 3px solid var(--outline); background: var(--white); color: var(--text); font-size: 1rem; font-family: inherit; font-weight: 600; box-shadow: inset 3px 3px 0 rgba(23, 51, 59, 0.08); }
+.ld-popup-form input:focus { outline: none; border-color: var(--coral); }
+.ld-popup-nein { background: none; border: 0; margin-top: 12px; color: var(--text-dim); font-family: inherit; font-weight: 700; font-size: 0.85rem; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.ld-popup-nein:hover { color: var(--outline); }
+
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
   .hero-grid { grid-template-columns: 1fr; gap: 36px; padding-bottom: 100px; }
