@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<style>
+  :root{
+    --ind:#6366f1; --ora:#ff8c2a; --or2:#ff5f1f; --tea:#14b8a6; --pin:#ec4899;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1280px;height:720px;overflow:hidden;background:#07070d;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#fff}
+  .stage{position:relative;width:1280px;height:720px;
+    background:radial-gradient(120% 90% at 50% 0%,#141428 0%,#0a0a14 55%,#07070d 100%);overflow:hidden}
+
+  /* Schwebende Lichtpunkte im Hintergrund */
+  .spark{position:absolute;width:4px;height:4px;border-radius:50%;background:#fff;opacity:.0;
+    filter:blur(.3px);animation:spark 6s linear infinite}
+  @keyframes spark{0%{opacity:0;transform:translateY(20px) scale(.6)}
+    20%{opacity:.7}80%{opacity:.5}100%{opacity:0;transform:translateY(-40px) scale(1)}}
+
+  /* Szenen-Layer */
+  .scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;opacity:0;text-align:center}
+  .kicker{font-size:15px;font-weight:800;letter-spacing:.28em;text-transform:uppercase;
+    color:#c9c6ff;opacity:.9;margin-bottom:22px}
+  .head{font-size:64px;font-weight:800;line-height:1.05;letter-spacing:-.02em;max-width:1000px}
+  .grad{background:linear-gradient(100deg,var(--ora),var(--pin) 55%,var(--ind));
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{margin-top:20px;font-size:22px;color:#b9b7d4;font-weight:500}
+
+  /* SZENE 1 – Office/Team */
+  #s1{animation:sfade 5s ease forwards}
+  .team{display:flex;gap:20px;margin-top:44px}
+  .fig{width:46px;height:96px;position:relative;transform:translateY(30px);opacity:0;
+    animation:figin .6s ease forwards}
+  .fig i{position:absolute;left:50%;top:0;width:26px;height:26px;border-radius:50%;
+    transform:translateX(-50%);}
+  .fig b{position:absolute;left:50%;top:26px;width:40px;height:58px;border-radius:16px 16px 8px 8px;
+    transform:translateX(-50%);display:block}
+  .fig::after{content:"";position:absolute;left:50%;bottom:-10px;transform:translateX(-50%);
+    width:44px;height:10px;background:rgba(0,0,0,.5);border-radius:50%;filter:blur(4px)}
+  @keyframes figin{to{transform:translateY(0);opacity:1}}
+
+  /* SZENE 2 – Verbindungen */
+  #s2{animation:sfade2 5.5s ease 5s forwards}
+  .hub{position:relative;width:640px;height:360px;margin-top:30px}
+  .core{position:absolute;left:50%;top:50%;width:120px;height:120px;transform:translate(-50%,-50%) scale(.6);
+    border-radius:26px;background:linear-gradient(135deg,var(--ora),var(--or2));opacity:0;
+    box-shadow:0 0 60px rgba(255,120,40,.6);display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:15px;animation:corein .7s ease 5.15s forwards}
+  .node{position:absolute;width:96px;height:52px;border-radius:12px;background:#141430;
+    border:1px solid rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:700;color:#dcdbf5;opacity:0;transform:scale(.6);animation:nodein .5s ease forwards}
+  .beam{position:absolute;left:50%;top:50%;height:2px;transform-origin:left center;
+    background:linear-gradient(90deg,rgba(255,140,42,.9),rgba(255,140,42,0));opacity:0;
+    animation:beamin .5s ease forwards}
+  @keyframes corein{to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+  @keyframes nodein{to{opacity:1;transform:scale(1)}}
+  @keyframes beamin{to{opacity:1}}
+
+  /* SZENE 3 – Ergebnisse */
+  #s3{animation:sfade3 5.5s ease 10.5s forwards}
+  .cards{display:flex;gap:16px;margin-top:40px;flex-wrap:wrap;justify-content:center;max-width:960px}
+  .card{width:180px;height:112px;border-radius:16px;background:linear-gradient(160deg,#16162e,#101022);
+    border:1px solid rgba(255,255,255,.1);padding:16px;text-align:left;opacity:0;transform:translateY(26px) scale(.96);
+    animation:cardin .6s ease forwards;box-shadow:0 20px 50px -24px rgba(0,0,0,.8)}
+  .card .t{font-size:13px;color:#9d9bc4;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+  .card .v{font-size:22px;font-weight:800;margin-top:8px}
+  .badge{margin-top:34px;display:inline-flex;align-items:center;gap:10px;padding:12px 22px;border-radius:999px;
+    background:linear-gradient(90deg,var(--tea),#0ea5a0);font-weight:800;font-size:18px;opacity:0;transform:scale(.8);
+    animation:badgein .6s ease 13.4s forwards;box-shadow:0 0 40px rgba(20,184,166,.5)}
+  @keyframes cardin{to{opacity:1;transform:translateY(0) scale(1)}}
+  @keyframes badgein{to{opacity:1;transform:scale(1)}}
+
+  /* SZENE 4 – Logo/CTA */
+  #s4{animation:sfade4 3s ease 15.4s forwards}
+  .logo{display:flex;align-items:center;gap:16px}
+  .logo .mk{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--ora),var(--or2));
+    box-shadow:0 0 24px rgba(255,120,40,.7)}
+  .logo .nm{font-size:44px;font-weight:800;letter-spacing:-.02em}
+  .cta{margin-top:22px;font-size:20px;color:#b9b7d4;font-weight:600}
+
+  @keyframes sfade{0%{opacity:0}8%{opacity:1}86%{opacity:1}100%{opacity:0}}
+  @keyframes sfade2{0%{opacity:0}9%{opacity:1}86%{opacity:1}100%{opacity:0}}
+  @keyframes sfade3{0%{opacity:0}9%{opacity:1}88%{opacity:1}100%{opacity:0}}
+  @keyframes sfade4{0%{opacity:0}18%{opacity:1}100%{opacity:1}}
+
+  .vign{position:absolute;inset:0;pointer-events:none;
+    box-shadow:inset 0 0 220px rgba(0,0,0,.7)}
+</style>
+</head>
+<body>
+  <div class="stage" id="stage">
+    <!-- Sparks -->
+    <div class="spark" style="left:12%;top:60%;animation-delay:.2s"></div>
+    <div class="spark" style="left:22%;top:40%;animation-delay:1.4s"></div>
+    <div class="spark" style="left:38%;top:70%;animation-delay:2.6s"></div>
+    <div class="spark" style="left:63%;top:35%;animation-delay:.9s"></div>
+    <div class="spark" style="left:78%;top:62%;animation-delay:2s"></div>
+    <div class="spark" style="left:88%;top:44%;animation-delay:3.1s"></div>
+
+    <!-- SZENE 1 -->
+    <div class="scene" id="s1">
+      <div class="kicker">AI Command Center</div>
+      <div class="head">Ihre ganze <span class="grad">KI-Abteilung</span><br/>— startklar ab Tag&nbsp;1</div>
+      <div class="team" id="team"></div>
+    </div>
+
+    <!-- SZENE 2 -->
+    <div class="scene" id="s2">
+      <div class="kicker">Integrationen</div>
+      <div class="head">Ihre Firma — <span class="grad">mit allem verbunden</span></div>
+      <div class="hub" id="hub">
+        <div class="core">IHRE<br/>FIRMA</div>
+      </div>
+    </div>
+
+    <!-- SZENE 3 -->
+    <div class="scene" id="s3">
+      <div class="kicker">Ergebnisse</div>
+      <div class="head">Echte Ergebnisse — <span class="grad">kein Chatbot</span></div>
+      <div class="cards">
+        <div class="card" style="animation-delay:11s"><div class="t">E-Mail</div><div class="v">Antwort fertig</div></div>
+        <div class="card" style="animation-delay:11.25s"><div class="t">Angebot</div><div class="v">PDF erstellt</div></div>
+        <div class="card" style="animation-delay:11.5s"><div class="t">Bericht</div><div class="v">Analyse fertig</div></div>
+        <div class="card" style="animation-delay:11.75s"><div class="t">Umsatz</div><div class="v" style="color:#34d399">+23 %</div></div>
+      </div>
+      <div class="badge">★ Qualität geprüft · 98/100</div>
+    </div>
+
+    <!-- SZENE 4 -->
+    <div class="scene" id="s4">
+      <div class="logo"><span class="mk"></span><span class="nm">AI Command Center</span></div>
+      <div class="cta">Ihr Team. Ihre Firma. Echte Ergebnisse.</div>
+    </div>
+
+    <div class="vign"></div>
+  </div>
+
+<script>
+  // Team-Figuren (Szene 1)
+  var farben=["#ff8c2a","#6366f1","#14b8a6","#ec4899","#eab308","#22c55e","#a78bfa","#f97316"];
+  var team=document.getElementById("team");
+  for(var i=0;i<8;i++){
+    var f=document.createElement("div");f.className="fig";
+    f.style.animationDelay=(0.6+i*0.18)+"s";
+    var c=farben[i%farben.length];
+    f.innerHTML='<i style="background:'+c+'"></i><b style="background:'+c+'"></b>';
+    team.appendChild(f);
+  }
+  // Verbindungs-Knoten + Strahlen (Szene 2)
+  var hub=document.getElementById("hub");
+  var labels=["Microsoft 365","Google","Slack","Shopify","Stripe","Eigene API"];
+  var cx=320, cy=180, R=250;
+  labels.forEach(function(lb,i){
+    var ang=(-90 + i*(360/labels.length))*Math.PI/180;
+    var x=cx+Math.cos(ang)*R, y=cy+Math.sin(ang)*(R*0.62);
+    var n=document.createElement("div");n.className="node";n.textContent=lb;
+    n.style.left=(x-48)+"px";n.style.top=(y-26)+"px";
+    n.style.animationDelay=(5.5+i*0.18)+"s";
+    hub.appendChild(n);
+    var dx=x-cx, dy=y-cy, len=Math.sqrt(dx*dx+dy*dy);
+    var beam=document.createElement("div");beam.className="beam";
+    beam.style.left=cx+"px";beam.style.top=cy+"px";beam.style.width=len+"px";
+    beam.style.transform="rotate("+Math.atan2(dy,dx)+"rad)";
+    beam.style.animationDelay=(5.4+i*0.18)+"s";
+    hub.appendChild(beam);
+  });
+</script>
+</body>
+</html>

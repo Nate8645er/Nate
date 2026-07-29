@@ -1,0 +1,34 @@
+<section class="page-hero"><h1>Live-<span class="grad">Demo</span> anfragen</h1><p>Sehen Sie Ihre KI-Abteilung an Ihrem echten Anwendungsfall – unverbindlich.</p></section>
+<div class="page">
+  {{ page.content }}
+  <p>Sie möchten vor dem Kauf sehen, wie die KI-Abteilung konkret bei Ihnen arbeitet? Fordern Sie eine kurze, persönliche Demo an. Wir zeigen Ihnen an einem echten Beispiel aus Ihrer Branche, wie ein Auftrag zum fertigen Ergebnis wird.</p>
+
+  <h2>Ihr schnellster Weg</h2>
+  <ul>
+    <li><strong>Gratis-Version testen:</strong> Ohne Zahlungsmittel sofort selbst ausprobieren.</li>
+    <li><strong>Persönliche Demo:</strong> Kurzer Termin, an Ihrem Anwendungsfall.</li>
+    <li><strong>Beratung für Teams:</strong> Für Business/Enterprise inkl. Integrationen.</li>
+  </ul>
+
+  <p style="margin-top:16px"><a class="btn" href="{{ routes.all_products_collection_url }}">Gratis-Version testen</a></p>
+
+  <h2 style="margin-top:36px">Demo direkt anfragen</h2>
+  {% form 'contact' %}
+    {% if form.posted_successfully? %}
+      <div class="form-ok">Danke! Wir melden uns zur Terminvereinbarung bei Ihnen.</div>
+    {% endif %}
+    {% if form.errors %}
+      <div class="form-err">Bitte prüfen Sie Ihre Angaben: {{ form.errors | default_errors }}</div>
+    {% endif %}
+    <label class="f-label" for="d-name">Name</label>
+    <input id="d-name" type="text" name="contact[name]" value="{{ form.name }}" placeholder="Ihr Name" required>
+    <label class="f-label" for="d-email">E-Mail</label>
+    <input id="d-email" type="email" name="contact[email]" value="{{ form.email }}" placeholder="name@firma.ch" required>
+    <label class="f-label" for="d-firma">Firma (optional)</label>
+    <input id="d-firma" type="text" name="contact[Firma]" placeholder="Ihre Firma">
+    <input type="hidden" name="contact[Thema]" value="Live-Demo anfragen">
+    <label class="f-label" for="d-body">Ihr Anwendungsfall</label>
+    <textarea id="d-body" name="contact[body]" rows="5" placeholder="Was soll die KI-Abteilung für Sie erledigen?" required>{{ form.body }}</textarea>
+    <button class="btn" type="submit">Demo anfragen</button>
+  {% endform %}
+</div>

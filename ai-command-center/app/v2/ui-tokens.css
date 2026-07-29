@@ -1,0 +1,79 @@
+/* =====================================================================
+   Design-Tokens (Phase 7) — die EINZIGE Quelle für Farbe, Typografie,
+   Abstand, Radius, Schatten, Motion. Komponenten benutzen ausschliesslich
+   diese Variablen, keine Hex-Werte. Theme-aware: hell/dunkel/System.
+   Scope: nur unter .v2 (additiv, ändert das bestehende UI nicht).
+   ===================================================================== */
+
+.v2 {
+  /* Typografie */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --text-xs: 12px;  --text-sm: 14px;  --text-md: 16px;
+  --text-lg: 20px;  --text-xl: 28px;  --text-2xl: 40px;
+  --weight-normal: 400; --weight-medium: 600; --weight-bold: 800;
+  --leading-tight: 1.1; --leading-normal: 1.5;
+
+  /* Abstand (4px-Raster) */
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-8: 48px; --space-10: 64px;
+
+  /* Radius */
+  --radius-sm: 8px; --radius-md: 14px; --radius-lg: 22px; --radius-full: 999px;
+
+  /* Motion (dezent, performant) */
+  --motion-fast: 120ms; --motion-base: 200ms; --motion-slow: 320ms;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Akzent (eine Farbe, als Verlauf) */
+  --accent: #6d5cff; --accent-2: #ff8c2a;
+  /* Text auf dem Akzent-Verlauf: in beiden Themes gut lesbar (Verlauf ist satt). */
+  --on-accent: #ffffff;
+  --success: #22c55e; --warning: #f59e0b; --danger: #ef4444;
+
+  /* Hell (Default) */
+  --bg: #f7f7fb;
+  --surface: #ffffff;
+  --surface-2: #f0f1f6;
+  --border: rgba(20, 20, 40, 0.10);
+  --text: #14162a;
+  --text-muted: #5b6072;
+  --glass: rgba(255, 255, 255, 0.6);
+  --shadow-1: 0 1px 2px rgba(20, 20, 40, 0.06);
+  --shadow-2: 0 16px 40px -24px rgba(20, 20, 40, 0.35);
+}
+
+/* Dunkel: System-Default … */
+@media (prefers-color-scheme: dark) {
+  .v2 {
+    --bg: #0a0b14;
+    --surface: rgba(255, 255, 255, 0.045);
+    --surface-2: rgba(255, 255, 255, 0.08);
+    --border: rgba(255, 255, 255, 0.10);
+    --text: #eef0f8;
+    --text-muted: #9aa0bd;
+    --glass: rgba(255, 255, 255, 0.06);
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-2: 0 20px 48px -26px rgba(0, 0, 0, 0.7);
+  }
+}
+
+/* … und explizit erzwingbar (Theme-Umschalter). */
+.v2[data-theme="dark"] {
+  --bg: #0a0b14; --surface: rgba(255, 255, 255, 0.045); --surface-2: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.10); --text: #eef0f8; --text-muted: #9aa0bd;
+  --glass: rgba(255, 255, 255, 0.06);
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4); --shadow-2: 0 20px 48px -26px rgba(0, 0, 0, 0.7);
+}
+.v2[data-theme="light"] {
+  --bg: #f7f7fb; --surface: #ffffff; --surface-2: #f0f1f6;
+  --border: rgba(20, 20, 40, 0.10); --text: #14162a; --text-muted: #5b6072;
+  --glass: rgba(255, 255, 255, 0.6);
+  --shadow-1: 0 1px 2px rgba(20, 20, 40, 0.06); --shadow-2: 0 16px 40px -24px rgba(20, 20, 40, 0.35);
+}
+
+.v2 { background: var(--bg); color: var(--text); font-family: var(--font-sans); }
+.v2 * { box-sizing: border-box; }
+
+@media (prefers-reduced-motion: reduce) {
+  .v2 *, .v2 *::before, .v2 *::after { animation: none !important; transition: none !important; }
+}

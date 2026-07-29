@@ -1,0 +1,177 @@
+{% comment %}
+  Stufen-Tabelle: ALLE 6 Abos mit den exakten Zahlen aus dem System –
+  Missionen, Token-Budget, Browser-Quellen, Skills, Belegschaft,
+  Integrationen, Preise (Monat + Jahr), Ultra.
+  Zahlen = lib/license.ts, lib/skills.ts, lib/agents/team.ts.
+{% endcomment %}
+
+<section class="acc-section acc-stab" id="stufen">
+  <div class="acc-wrap">
+    <div class="acc-shead acc-reveal">
+      <span class="acc-micro">ALLE STUFEN, ALLE ZAHLEN</span>
+      <h2>Genau das steckt in jeder Stufe.</h2>
+      <p class="acc-stab__intro">Ein System, sechs Ausbaustufen – hier ohne Marketing-Nebel, mit den exakten Zahlen, die das System serverseitig durchsetzt. Höhere Stufen enthalten immer alles aus den tieferen.</p>
+    </div>
+    <div class="acc-stab__scroll acc-stab__desktop acc-reveal">
+      <table class="acc-stab__tabelle">
+        <thead>
+          <tr>
+            <th></th>
+            <th>FREE</th>
+            <th>PERSONAL</th>
+            <th class="acc-stab__hi">STARTER</th>
+            <th>PROFESSIONAL</th>
+            <th class="acc-stab__hi">BUSINESS</th>
+            <th>ENTERPRISE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Preis pro Monat (CHF)</td><td>0</td><td>19.90</td><td class="acc-stab__hi">199</td><td>799</td><td class="acc-stab__hi">2'499</td><td>ab 8'900</td></tr>
+          <tr><td>Preis pro Jahr (CHF, 2 Monate geschenkt)</td><td>–</td><td>199</td><td class="acc-stab__hi">1'990</td><td>7'990</td><td class="acc-stab__hi">24'990</td><td>ab 89'000</td></tr>
+          <tr><td>Missionen pro Tag</td><td>3</td><td>10</td><td class="acc-stab__hi">25</td><td>100</td><td class="acc-stab__hi">400</td><td>1000</td></tr>
+          <tr><td>Token-Budget pro Antwort</td><td>700</td><td>1'400</td><td class="acc-stab__hi">2'000</td><td>2'800</td><td class="acc-stab__hi">3'600</td><td>4'096 (Maximum)</td></tr>
+          <tr><td>Skills (Schrägstrich-Befehle)</td><td>8</td><td>19</td><td class="acc-stab__hi">39</td><td>58</td><td class="acc-stab__hi">74</td><td>alle 79</td></tr>
+          <tr><td>Benannte Spezialisten-Agenten (Team)</td><td colspan="6" style="text-align:center">37 in 9 Abteilungen – der Commander besetzt jede Mission passend, dynamisch erweiterbar</td></tr>
+          <tr><td>KI-Browser: Web-Quellen pro Mission</td><td>2</td><td>3</td><td class="acc-stab__hi">4</td><td>6</td><td class="acc-stab__hi">8</td><td>10</td></tr>
+          <tr><td>Sichtbare Belegschaft</td><td>4</td><td>6</td><td class="acc-stab__hi">12</td><td>50</td><td class="acc-stab__hi">250</td><td>1000</td></tr>
+          <tr><td>Spezialisten parallel pro Auftrag</td><td>2</td><td>2</td><td class="acc-stab__hi">2</td><td>4</td><td class="acc-stab__hi">bis 12 (dynamisch)</td><td>bis 24 (dynamisch)</td></tr>
+          <tr><td>Dokumenten-Analyse (PDF/Excel/Text)</td><td>✓</td><td>✓</td><td class="acc-stab__hi">✓</td><td>✓ mit Priorität</td><td class="acc-stab__hi">✓ mit Priorität</td><td>✓ mit Priorität</td></tr>
+          <tr><td>E-Mail-Zentrale, Kunden-CRM, WhatsApp, Autopilot</td><td>✓</td><td>✓</td><td class="acc-stab__hi">✓</td><td>✓</td><td class="acc-stab__hi">✓ + Team-Zugänge</td><td>✓ + Team-Zugänge</td></tr>
+          <tr><td>Firmen-Integrationen</td><td>–</td><td>–</td><td class="acc-stab__hi">–</td><td>5 inklusive</td><td class="acc-stab__hi">alle 15</td><td>individuell (ERP/CRM/Maschinen)</td></tr>
+          <tr><td>Exklusive Fähigkeiten der Stufe</td><td>–</td><td>Alltags-Paket</td><td class="acc-stab__hi">Verkauf & Marketing</td><td>Finanzen & Analyse</td><td class="acc-stab__hi">Personal & Recht + /prozess-automatisierung + /abteilungs-bericht</td><td>/ki-strategie + /integrations-plan, private Cloud/On-Premise, SLA</td></tr>
+          <tr><td>⚡ Ultra-Levelup-Code erhältlich</td><td>–</td><td>✓</td><td class="acc-stab__hi">✓</td><td>✓</td><td class="acc-stab__hi">✓</td><td>✓</td></tr>
+          <tr><td>Support</td><td>Community</td><td>E-Mail</td><td class="acc-stab__hi">E-Mail</td><td>innert 24 h</td><td class="acc-stab__hi">Dedizierter Ansprechpartner</td><td>Persönliche Begleitung</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="acc-stab__cards acc-reveal">
+      <article class="acc-stab__card" style="--tier:#6d6355;">
+        <header><h3>FREE</h3><span class="acc-stab__preis">0 CHF</span></header>
+        <p class="acc-stab__was">Zum Kennenlernen – gratis, ohne Kreditkarte.</p>
+        <ul>
+          <li>3 Missionen pro Tag</li>
+          <li>8 Grund-Skills (Website, Offerte, Text, Code …)</li>
+          <li>4 sichtbare Mitarbeitende</li>
+          <li>Dokumenten-Analyse (PDF/Excel/Text)</li>
+          <li>E-Mail, Kunden-CRM, WhatsApp &amp; Autopilot</li>
+        </ul>
+      </article>
+      <article class="acc-stab__card" style="--tier:#0e9488;">
+        <header><h3>PERSONAL</h3><span class="acc-stab__preis">19.90 / Mt · 199 / Jahr</span></header>
+        <p class="acc-stab__was">Ihre KI, jeden Tag an Ihrer Seite.</p>
+        <ul>
+          <li>10 Missionen pro Tag</li>
+          <li>19 Skills (+ Alltag: Rechnung, Social, WhatsApp, FAQ …)</li>
+          <li>6 Mitarbeitende</li>
+          <li>Ultra-Levelup zubuchbar</li>
+        </ul>
+      </article>
+      <article class="acc-stab__card acc-stab__card--best" style="--tier:#2563eb;">
+        <header><h3>STARTER</h3><span class="acc-stab__badge-best">Bestseller</span><span class="acc-stab__preis">199 / Mt · 1'990 / Jahr</span></header>
+        <p class="acc-stab__was">Ihre persönliche KI-Abteilung, täglich einsatzbereit.</p>
+        <ul>
+          <li>25 Missionen pro Tag</li>
+          <li>39 Skills (+ Verkauf, Marketing &amp; Branchen-Pakete)</li>
+          <li>12 Mitarbeitende</li>
+          <li>4 Web-Quellen pro Recherche</li>
+        </ul>
+      </article>
+      <article class="acc-stab__card" style="--tier:#ee7712;">
+        <header><h3>PROFESSIONAL</h3><span class="acc-stab__preis">799 / Mt · 7'990 / Jahr</span></header>
+        <p class="acc-stab__was">Die komplette KI-Arbeitsumgebung für Profis.</p>
+        <ul>
+          <li>100 Missionen pro Tag</li>
+          <li>58 Skills (+ Finanzen, Analyse, Automatisierung)</li>
+          <li>50 Mitarbeitende, 4 parallel pro Auftrag</li>
+          <li>5 Firmen-Integrationen inklusive</li>
+          <li>Support innert 24 h</li>
+        </ul>
+      </article>
+      <article class="acc-stab__card" style="--tier:#7c5cd6;">
+        <header><h3>BUSINESS</h3><span class="acc-stab__preis">2'499 / Mt · 24'990 / Jahr</span></header>
+        <p class="acc-stab__was">Ihre digitale KI-Abteilung fürs Unternehmen.</p>
+        <ul>
+          <li>400 Missionen pro Tag</li>
+          <li>74 Skills (+ Personal, Recht &amp; Daten)</li>
+          <li>250 Mitarbeitende, bis 12 parallel</li>
+          <li>Alle 15 Integrationen + Team-Zugänge</li>
+          <li>Dedizierter Ansprechpartner</li>
+        </ul>
+      </article>
+      <article class="acc-stab__card" style="--tier:#e0447c;">
+        <header><h3>ENTERPRISE</h3><span class="acc-stab__preis">ab 8'900 / Mt · ab 89'000 / Jahr</span></header>
+        <p class="acc-stab__was">Die KI-Belegschaft für grosse Organisationen.</p>
+        <ul>
+          <li>1000 Missionen pro Tag</li>
+          <li>Alle 79 Skills (+ KI-Strategie, Markteintritt)</li>
+          <li>1000 Mitarbeitende, bis 24 parallel</li>
+          <li>Individuelle Integrationen (ERP/CRM/Maschinen)</li>
+          <li>Private Cloud/On-Premise, SLA, persönliche Begleitung</li>
+        </ul>
+      </article>
+    </div>
+
+    <p class="acc-stab__fuss acc-reveal">⚡ Ultra-Levelup (Zusatz-Code für jede Bezahl-Stufe): +50% Missionen pro Tag, +50% Token-Budget, +2 Browser-Quellen und die Skills der nächsthöheren Stufe – serverseitig durchgesetzt, gilt solange die Lizenz aktiv ist.</p>
+  </div>
+</section>
+
+<style>
+  .acc-stab__intro { max-width: 680px; margin: var(--sp-3) auto 0; color: var(--acc-text-dim); }
+  .acc-stab__scroll { margin-top: var(--sp-7); overflow-x: auto; }
+  .acc-stab__tabelle {
+    width: 100%;
+    min-width: 980px;
+    border-collapse: collapse;
+    font-size: var(--fs-sm);
+  }
+  .acc-stab__tabelle th, .acc-stab__tabelle td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid rgba(39,33,26,0.09);
+    vertical-align: top;
+  }
+  .acc-stab__tabelle thead th {
+    font-family: var(--acc-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: var(--acc-amber);
+  }
+  .acc-stab__tabelle td:first-child { color: var(--acc-text-dim); min-width: 220px; }
+  .acc-stab__hi { background: rgba(238, 119, 18, 0.06); }
+  .acc-stab__fuss { margin-top: var(--sp-4); font-size: var(--fs-sm); color: var(--acc-text-dim); max-width: 820px; }
+
+  /* ---- Handy-Karten (statt Tabelle) ---- */
+  .acc-stab__cards { display: none; }
+  .acc-stab__card {
+    margin-top: var(--sp-4); padding: var(--sp-5);
+    border-radius: var(--acc-radius-lg);
+    background: var(--acc-panel);
+    border: 1px solid var(--acc-line-faint);
+    border-left: 4px solid var(--tier, var(--acc-amber));
+    box-shadow: var(--acc-glow);
+  }
+  .acc-stab__card header { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+  .acc-stab__card h3 { margin: 0; font-family: var(--acc-mono); letter-spacing: .06em; color: var(--tier, var(--acc-text)); }
+  .acc-stab__preis { margin-left: auto; font-weight: 700; color: var(--acc-text); font-size: var(--fs-sm); }
+  .acc-stab__badge-best { font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #fff; background: var(--acc-grad); border-radius: 999px; padding: 2px 8px; }
+  .acc-stab__card--best { border-color: var(--tier); box-shadow: 0 10px 30px -14px rgba(37,99,235,.5); }
+  .acc-stab__was { margin: 8px 0 10px; color: var(--acc-text-dim); font-size: var(--fs-sm); }
+  .acc-stab__card ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+  .acc-stab__card li { position: relative; padding-left: 26px; font-size: var(--fs-sm); color: var(--acc-text); line-height: 1.45; }
+  .acc-stab__card li::before {
+    content: "✔"; position: absolute; left: 0; top: -1px;
+    width: 18px; height: 18px; display: grid; place-items: center;
+    font-size: 11px; color: #fff; border-radius: 50%;
+    background: var(--tier, var(--acc-amber));
+  }
+
+  @media (max-width: 860px) {
+    .acc-stab__desktop { display: none; }
+    .acc-stab__cards { display: block; }
+  }
+</style>
+
+{% schema %}
+{ "name": "Stufen-Tabelle (exakt)", "settings": [], "presets": [{ "name": "Stufen-Tabelle (exakt)" }] }
+{% endschema %}

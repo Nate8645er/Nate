@@ -14,3 +14,35 @@ services:
         sync: false
       - key: JAVIER_PASSWORD
         sync: false
+
+  # platform-backend (Enterprise-Schicht) — baut das gehärtete Image aus
+  # platform-backend/Dockerfile (non-root). Du musst nur die `sync: false`-Werte
+  # im Render-Dashboard eintragen (deine eigenen URLs) — siehe DEPLOY-RENDER.md.
+  # Kein GHCR-Zugang nötig, da Render selbst baut. autoDeploy: Push -> Redeploy.
+  - type: web
+    name: platform-backend
+    runtime: docker
+    dockerfilePath: ./platform-backend/Dockerfile
+    dockerContext: ./platform-backend
+    plan: starter
+    region: frankfurt                  # EU (Datenhoheit); anpassbar
+    autoDeploy: true
+    # Render setzt $PORT; uvicorn muss darauf lauschen (überschreibt CMD).
+    dockerCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health/ready     # 200 nur, wenn konfigurierte Dienste ok sind
+    envVars:
+      - key: PLATFORM_ENV
+        value: production
+      # --- DEINE Werte im Dashboard eintragen (sync:false = nie im Git) ---
+      - key: DATABASE_URL              # Postgres-Rolle mit NOBYPASSRLS (kein Superuser!)
+        sync: false
+      - key: REDIS_URL                 # z. B. Upstash
+        sync: false
+      - key: QDRANT_URL                # z. B. Qdrant Cloud (leer = Wissens-API 503)
+        sync: false
+      - key: KEYCLOAK_ISSUER           # optional; leer = Supabase-Login bleibt aktiv
+        sync: false
+      - key: KEYCLOAK_AUDIENCE         # optional; in Prod mit Audience-Mapper setzen
+        sync: false
+      - key: OTEL_EXPORTER_OTLP_ENDPOINT  # optional; leer = Tracing aus
+        sync: false

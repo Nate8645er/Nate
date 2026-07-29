@@ -1,0 +1,105 @@
+{% comment %}
+  Gehirn-Sektion: So denkt das System – die Kopf-Hierarchie.
+  Boss (Claude/Anthropic) -> Worker (GPT/OpenAI + Kimi/Moonshot) ->
+  Milliarden Assistenten (generativer Talent-Pool). Jede Aussage ist
+  technisch wahr: genau diese Modelle arbeiten in genau diesen Rollen.
+{% endcomment %}
+
+<section class="acc-section acc-gehirn">
+  <div class="acc-wrap">
+    <div class="acc-shead acc-reveal">
+      <span class="acc-micro">{{ section.settings.label }}</span>
+      <h2>{{ section.settings.titel }}</h2>
+      <p class="acc-shead__sub">{{ section.settings.untertitel }}</p>
+    </div>
+
+    <div class="acc-gehirn__baum">
+      <!-- Ebene 1: Boss -->
+      <div class="acc-gehirn__ebene">
+        <div class="acc-panel acc-gehirn__karte acc-gehirn__karte--boss acc-reveal">
+          <span class="acc-gehirn__rolle">Der Boss</span>
+          <h3>Claude <small>von Anthropic</small></h3>
+          <p>Plant jede Mission, zerlegt Ihren Auftrag, verteilt die Arbeit –
+          und prüft am Ende jedes Ergebnis mit dem Quality-Score, bevor Sie es sehen.</p>
+        </div>
+      </div>
+      <div class="acc-gehirn__linie" aria-hidden="true"></div>
+      <!-- Ebene 2: Worker -->
+      <div class="acc-gehirn__ebene acc-gehirn__ebene--zwei">
+        <div class="acc-panel acc-gehirn__karte acc-reveal">
+          <span class="acc-gehirn__rolle acc-gehirn__rolle--teal">Worker</span>
+          <h3>GPT <small>von OpenAI</small></h3>
+          <p>Baut und schreibt: Texte, Entwürfe, Strategien, Analysen –
+          schnell und in grosser Menge.</p>
+        </div>
+        <div class="acc-panel acc-gehirn__karte acc-reveal">
+          <span class="acc-gehirn__rolle acc-gehirn__rolle--violet">Worker</span>
+          <h3>Kimi <small>von Moonshot</small></h3>
+          <p>Der Spezialist für Code und Tiefenrecherche – mit eigenem
+          Programmier-Modell für lauffähige Software.</p>
+        </div>
+      </div>
+      <div class="acc-gehirn__linie" aria-hidden="true"></div>
+      <!-- Ebene 3: Assistenten -->
+      <div class="acc-gehirn__ebene">
+        <div class="acc-panel acc-gehirn__karte acc-gehirn__karte--breit acc-reveal">
+          <span class="acc-gehirn__rolle acc-gehirn__rolle--rose">Die Assistenten</span>
+          <h3>1'094'860'800 Spezialisten-Profile</h3>
+          <p>Der generative Talent-Pool: Für jeden Auftrag stellt der Boss daraus
+          in Sekunden die passende virtuelle Abteilung zusammen – vom Marktanalysten
+          für E-Commerce bis zum Angebots-Spezialisten für Ihre Region.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="acc-gehirn__hinweis acc-reveal">
+      Und wenn ein KI-Anbieter einmal ausfällt? Dann übernimmt automatisch der
+      nächste in der Kette – Ihr System bleibt verfügbar.
+    </p>
+  </div>
+</section>
+
+<style>
+  .acc-gehirn__baum { margin-top: var(--sp-7); display: grid; justify-items: center; }
+  .acc-gehirn__ebene { display: grid; gap: var(--sp-5); width: 100%; max-width: 760px; }
+  .acc-gehirn__ebene--zwei { grid-template-columns: 1fr 1fr; }
+  .acc-gehirn__linie {
+    width: 2px; height: 34px;
+    background: linear-gradient(to bottom, var(--acc-line-strong), var(--acc-line-faint));
+  }
+  .acc-gehirn__karte { padding: var(--sp-5); border-radius: var(--acc-radius-lg); text-align: center; }
+  .acc-gehirn__karte--boss { border-color: var(--acc-line-strong); box-shadow: 0 10px 40px rgba(230, 120, 30, 0.16); }
+  .acc-gehirn__karte--breit { width: 100%; }
+  .acc-gehirn__rolle {
+    display: inline-block;
+    font-family: var(--acc-mono);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--acc-amber);
+    border: 1px solid var(--acc-line);
+    background: var(--acc-panel-hi);
+    border-radius: 999px;
+    padding: 4px 12px;
+    margin-bottom: var(--sp-3);
+  }
+  .acc-gehirn__rolle--teal { color: var(--acc-teal); border-color: rgba(14,148,136,.35); background: rgba(14,148,136,.07); }
+  .acc-gehirn__rolle--violet { color: var(--acc-violet); border-color: rgba(124,92,214,.35); background: rgba(124,92,214,.07); }
+  .acc-gehirn__rolle--rose { color: var(--acc-rose); border-color: rgba(224,68,124,.35); background: rgba(224,68,124,.07); }
+  .acc-gehirn__karte h3 { font-size: var(--fs-h3); }
+  .acc-gehirn__karte h3 small { display: block; font-size: 12px; font-weight: 500; color: var(--acc-text-faint); margin-top: 2px; }
+  .acc-gehirn__karte p { margin: var(--sp-3) 0 0; color: var(--acc-text-dim); font-size: var(--fs-sm); line-height: 1.65; }
+  .acc-gehirn__hinweis { margin-top: var(--sp-6); text-align: center; color: var(--acc-text-dim); font-size: var(--fs-sm); }
+  @media (max-width: 620px) { .acc-gehirn__ebene--zwei { grid-template-columns: 1fr; } }
+</style>
+
+{% schema %}
+{
+  "name": "Das Gehirn",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Micro-Label", "default": "So denkt Ihr System" },
+    { "type": "text", "id": "titel", "label": "Überschrift", "default": "Ein Kopf. Zwei Worker. Milliarden Assistenten." },
+    { "type": "text", "id": "untertitel", "label": "Untertitel", "default": "Kein einzelner Chatbot – eine Organisation aus den stärksten KIs der Welt, mit klarer Hierarchie." }
+  ],
+  "presets": [{ "name": "Das Gehirn" }]
+}
+{% endschema %}

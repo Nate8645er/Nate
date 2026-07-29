@@ -1,0 +1,66 @@
+{% comment %}
+  Bereichs-Übersicht: alle Arbeitsbereiche der Plattform als kompaktes
+  Raster – zeigt die volle Grösse des Produkts auf einen Blick.
+{% endcomment %}
+
+<section class="acc-section acc-bereiche">
+  <div class="acc-wrap">
+    <div class="acc-shead acc-reveal">
+      <span class="acc-micro">{{ section.settings.label }}</span>
+      <h2>{{ section.settings.titel }}</h2>
+    </div>
+    <div class="acc-bereiche__grid">
+      {% for block in section.blocks %}
+        <div class="acc-panel acc-bereiche__item acc-reveal" {{ block.shopify_attributes }}>
+          <span class="acc-bereiche__icon">{{ block.settings.symbol }}</span>
+          <div>
+            <h3>{{ block.settings.name }}</h3>
+            <p>{{ block.settings.text }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .acc-bereiche__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-4);
+    margin-top: var(--sp-7);
+  }
+  .acc-bereiche__item {
+    display: flex; gap: var(--sp-3); align-items: flex-start;
+    padding: var(--sp-4);
+    border-radius: var(--acc-radius-lg);
+  }
+  .acc-bereiche__icon { font-size: 22px; line-height: 1.3; }
+  .acc-bereiche__item h3 { font-size: var(--fs-base); }
+  .acc-bereiche__item p { margin: 4px 0 0; color: var(--acc-text-dim); font-size: 13px; line-height: 1.55; }
+  @media (max-width: 1000px) { .acc-bereiche__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .acc-bereiche__grid { grid-template-columns: 1fr; } }
+</style>
+
+{% schema %}
+{
+  "name": "Bereichs-Übersicht",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Micro-Label", "default": "Alles in einem System" },
+    { "type": "text", "id": "titel", "label": "Überschrift", "default": "13 Arbeitsbereiche. Ein Abo." }
+  ],
+  "blocks": [
+    {
+      "type": "bereich",
+      "name": "Bereich",
+      "settings": [
+        { "type": "text", "id": "symbol", "label": "Symbol", "default": "🎛" },
+        { "type": "text", "id": "name", "label": "Name", "default": "Kommandozentrale" },
+        { "type": "text", "id": "text", "label": "Kurztext", "default": "Befehl geben, fertige Datei erhalten." }
+      ]
+    }
+  ],
+  "max_blocks": 15,
+  "presets": [{ "name": "Bereichs-Übersicht" }]
+}
+{% endschema %}

@@ -1,0 +1,6 @@
+<div class="page"><h1>Mein Konto</h1>
+<p>Willkommen, {{ customer.first_name | default: customer.email }}.</p>
+<p><a href="{{ routes.account_addresses_url }}">Adressen</a> · <a href="{{ routes.account_logout_url }}">Abmelden</a></p>
+<h2>Bestellungen</h2>
+{% for order in customer.orders %}<p><a href="{{ order.customer_url }}">{{ order.name }}</a> — {{ order.total_price | money }}</p>{% else %}<p>Noch keine Bestellungen.</p>{% endfor %}
+</div>

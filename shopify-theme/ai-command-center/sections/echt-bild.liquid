@@ -1,0 +1,86 @@
+{% comment %}
+  Realistischer Einblick: ein grosses, fotorealistisches Bild Ihrer
+  KI-Abteilung im Einsatz (mit Higgsfield erstellt), mit Verlaufs-Overlay
+  und kurzer Aussage. Vermittelt sofort: das ist ein echtes, seriöses
+  Arbeitswerkzeug für Firmen.
+{% endcomment %}
+
+<section class="acc-echt">
+  <img
+    src="{{ section.settings.bild | default: 'acc-office-real.jpg' | asset_url }}"
+    alt="{{ section.settings.alt | escape }}"
+    width="1376" height="768"
+    loading="lazy"
+    class="acc-echt__img"
+  >
+  <div class="acc-echt__overlay"></div>
+  <div class="acc-wrap acc-echt__inner">
+    <span class="acc-micro">{{ section.settings.label | escape }}</span>
+    <h2 class="acc-echt__title">{{ section.settings.titel | escape }}</h2>
+    <p class="acc-echt__text">{{ section.settings.text | escape }}</p>
+  </div>
+</section>
+
+<style>
+  .acc-echt {
+    position: relative;
+    min-height: 460px;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    border-top: 1px solid var(--acc-line-faint);
+    border-bottom: 1px solid var(--acc-line-faint);
+  }
+  .acc-echt__img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transform: scale(1.02);
+  }
+  .acc-echt__overlay {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(90deg, rgba(8,7,12,0.86) 0%, rgba(8,7,12,0.55) 42%, rgba(8,7,12,0.15) 100%),
+      linear-gradient(0deg, rgba(8,7,12,0.85) 0%, rgba(8,7,12,0) 55%);
+  }
+  .acc-echt__inner {
+    position: relative;
+    padding-top: var(--sp-8);
+    padding-bottom: var(--sp-8);
+    max-width: 640px;
+  }
+  .acc-echt__title {
+    margin-top: var(--sp-3);
+    font-size: clamp(1.8rem, 3.4vw, 2.9rem);
+    line-height: 1.05;
+    color: #fff;
+    letter-spacing: -0.02em;
+  }
+  .acc-echt__text {
+    margin-top: var(--sp-4);
+    color: #d7d2c8;
+    font-size: var(--fs-lg);
+    line-height: 1.65;
+  }
+  @media (max-width: 860px) {
+    .acc-echt { min-height: 380px; }
+    .acc-echt__overlay {
+      background: linear-gradient(0deg, rgba(8,7,12,0.92) 8%, rgba(8,7,12,0.35) 70%, rgba(8,7,12,0.2) 100%);
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Realistischer Einblick",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Micro-Label", "default": "// IHRE KI-ABTEILUNG IM EINSATZ" },
+    { "type": "text", "id": "titel", "label": "Überschrift", "default": "Ein echtes Arbeitswerkzeug für Ihre Firma" },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Kein Spielzeug, kein Chatbot: Ihre digitale Belegschaft arbeitet an echten Aufgaben und liefert fertige Ergebnisse – zugeschnitten auf Ihre Branche." },
+    { "type": "text", "id": "alt", "label": "Bild-Alt-Text", "default": "Team arbeitet mit dem AI Command Center" },
+    { "type": "text", "id": "bild", "label": "Bild-Datei (asset)", "default": "acc-office-real.jpg" }
+  ],
+  "presets": [{ "name": "Realistischer Einblick" }]
+}
+{% endschema %}

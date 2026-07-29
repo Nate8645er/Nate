@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ki-plattform
+  labels:
+    app.kubernetes.io/part-of: ki-system
+    # Pod Security Standards: "restricted" erzwingt non-root, kein Privileg-Eskalieren.
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/warn: restricted
