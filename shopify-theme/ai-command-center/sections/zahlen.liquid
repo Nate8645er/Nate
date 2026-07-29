@@ -1,0 +1,73 @@
+{% comment %}
+  Zahlen-/Vertrauens-Sektion: vier belegbare Kennzahlen mit Farbakzenten.
+  Inhalte über Schema-Settings pflegbar, Defaults = aktueller Produktstand.
+{% endcomment %}
+
+<section class="acc-section acc-zahlen">
+  <div class="acc-wrap">
+    <div class="acc-shead acc-reveal">
+      <span class="acc-micro">{{ section.settings.label }}</span>
+      <h2>{{ section.settings.titel }}</h2>
+    </div>
+    <div class="acc-zahlen__grid">
+      {% for block in section.blocks %}
+        <div class="acc-panel acc-zahlen__item acc-reveal" {{ block.shopify_attributes }}>
+          <div class="acc-zahlen__wert acc-zahlen__wert--{{ forloop.index }}">{{ block.settings.wert }}</div>
+          <div class="acc-zahlen__name">{{ block.settings.name }}</div>
+          <div class="acc-zahlen__notiz">{{ block.settings.notiz }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .acc-zahlen__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--sp-5);
+    margin-top: var(--sp-7);
+    text-align: center;
+  }
+  .acc-zahlen__item { padding: var(--sp-6) var(--sp-4); border-radius: var(--acc-radius-lg); }
+  .acc-zahlen__wert {
+    font-family: var(--acc-head);
+    font-size: clamp(34px, 4.5vw, 52px);
+    font-weight: 700;
+    background: var(--acc-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .acc-zahlen__wert--2 { background: linear-gradient(135deg, #2fc4b2, #0e9488); -webkit-background-clip: text; background-clip: text; }
+  .acc-zahlen__wert--3 { background: linear-gradient(135deg, #9d7ff0, #7c5cd6); -webkit-background-clip: text; background-clip: text; }
+  .acc-zahlen__wert--4 { background: linear-gradient(135deg, #f473a4, #e0447c); -webkit-background-clip: text; background-clip: text; }
+  .acc-zahlen__name { margin-top: var(--sp-2); font-weight: 700; }
+  .acc-zahlen__notiz { margin-top: var(--sp-1); font-size: var(--fs-sm); color: var(--acc-text-dim); }
+  @media (max-width: 860px) {
+    .acc-zahlen__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Zahlen & Vertrauen",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Micro-Label", "default": "Für Unternehmen gebaut" },
+    { "type": "text", "id": "titel", "label": "Überschrift", "default": "Professionell. Sicher. Sofort einsatzbereit." }
+  ],
+  "blocks": [
+    {
+      "type": "zahl",
+      "name": "Kennzahl",
+      "settings": [
+        { "type": "text", "id": "wert", "label": "Wert", "default": "13" },
+        { "type": "text", "id": "name", "label": "Bezeichnung", "default": "Arbeitsbereiche" },
+        { "type": "text", "id": "notiz", "label": "Notiz", "default": "Vom CRM bis zur Kommandozentrale" }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [{ "name": "Zahlen & Vertrauen" }]
+}
+{% endschema %}

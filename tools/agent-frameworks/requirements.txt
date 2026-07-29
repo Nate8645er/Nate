@@ -1,0 +1,11 @@
+# Agent-Frameworks des Fable-5-Teams (in einer DAUERHAFTEN Umgebung installieren;
+# in der flüchtigen Web-Session verschwinden pip-Pakete beim Container-Neustart).
+# Versionen bewusst offen gelassen (aktuellste stabile) – bei Bedarf pinnen.
+
+langgraph            # Graph-basierte KI-Orchestrierung
+crewai               # Multi-Agent-Team
+open-interpreter     # Computer- & Code-Agent (nur mit Freigabe betreiben)
+openai-agents        # OpenAI Agents SDK
+qwen-agent           # Qwen-Agent (Alibaba)
+llama-stack          # Meta Llama Stack
+mcp                  # Model Context Protocol SDK (Python)

@@ -1,0 +1,55 @@
+<section class="collection-hero">
+  {% render 'wasserblasen' %}
+  <div class="trab-cross" style="top:30%;--sspeed:34s" aria-hidden="true">{% render 'hund-flasche' %}</div>
+  <div class="hock-float" style="top:24%;right:8%" aria-hidden="true">{% render 'tropfen-freund' %}</div>
+  <div class="container">
+    <span class="eyebrow-sticker">Wasserstelle</span>
+    <h1 class="collection-title">{{ collection.title }}</h1>
+    {% if collection.description != blank %}
+      <div class="collection-desc">{{ collection.description }}</div>
+    {% endif %}
+    <p class="collection-count">{{ collection.products_count }} {% if collection.products_count == 1 %}Produkt{% else %}Produkte{% endif %}</p>
+  </div>
+</section>
+
+{% render 'wellen-teiler', fill: '#176a85' %}
+
+<section class="collection-products section-pad">
+  {% render 'wasserblasen' %}
+  <div class="container" style="position:relative;z-index:2">
+    {% if collection.products.size > 0 %}
+      {% paginate collection.products by 24 %}
+      <div class="product-grid reveal-stagger">
+        {% for product in collection.products %}
+        <div class="product-card">
+          <div class="product-img-wrap">
+            <a href="{{ product.url }}">
+              <img src="{{ product.featured_image | img_url: '480x480' }}" alt="{{ product.title | escape }}" loading="lazy" width="480" height="480">
+              <div class="product-overlay"><span class="overlay-btn">Ansehen →</span></div>
+            </a>
+            {% if product.compare_at_price > product.price %}
+              <span class="badge-sale">Sale</span>
+            {% endif %}
+          </div>
+          <div class="product-info">
+            <h3><a href="{{ product.url }}">{{ product.title }}</a></h3>
+            <div class="product-price">
+              <span class="price-main">{{ product.price | money }}</span>
+              {% if product.compare_at_price > product.price %}
+                <span class="price-old">{{ product.compare_at_price | money }}</span>
+              {% endif %}
+            </div>
+            <a href="{{ product.url }}" class="btn btn-sunny btn-sm magnetic">Ansehen</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% if paginate.pages > 1 %}
+        <nav class="pagination" aria-label="Seiten">{{ paginate | default_pagination }}</nav>
+      {% endif %}
+      {% endpaginate %}
+    {% else %}
+      <p class="collection-empty">An dieser Wasserstelle ist noch nichts eingetroffen. Schau bald wieder vorbei! 💧</p>
+    {% endif %}
+  </div>
+</section>

@@ -1,0 +1,5 @@
+{
+  "name": "graphify",
+  "version": "0.9.29-1",
+  "description": "Turn any folder of code, docs, papers, images, or videos into a queryable knowledge graph. Includes setup and query skills plus builder, analyst, and extractor agents so the pipeline runs end to end."
+}

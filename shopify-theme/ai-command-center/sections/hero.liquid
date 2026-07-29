@@ -1,0 +1,65 @@
+{%- comment -%}
+  Hero v2: volle Höhe, zwei langsame Glow-Blobs, Headline mit
+  Wort-für-Wort-Fade-in (rein CSS, Delays inline), zwei CTAs und
+  animiertes HUD-Produktmotiv (Score-Ring + 4 Agenten-Chips).
+{%- endcomment -%}
+<section class="acc-hero">
+  <div class="acc-hero__grid" aria-hidden="true"></div>
+  <div class="acc-blob acc-blob--1" aria-hidden="true"></div>
+  <div class="acc-blob acc-blob--2" aria-hidden="true"></div>
+
+  <div class="acc-wrap acc-hero__inner">
+    <div class="acc-hero__copy">
+      <p class="acc-micro">{{ section.settings.eyebrow | escape }}</p>
+      <h1>
+        {%- assign delay = 0 -%}
+        {%- assign words1 = section.settings.headline_1 | strip | split: ' ' -%}
+        {%- for word in words1 -%}
+          <span class="acc-word" style="animation-delay: {{ delay }}ms;">{{ word | escape }}</span>
+          {%- assign delay = delay | plus: 90 %} {% endfor -%}
+        {%- assign words2 = section.settings.headline_2 | strip | split: ' ' -%}
+        {%- for word in words2 -%}
+          <span class="acc-word acc-hl" style="animation-delay: {{ delay }}ms;">{{ word | escape }}</span>
+          {%- assign delay = delay | plus: 90 %} {% endfor -%}
+      </h1>
+      <p class="acc-hero__sub">{{ section.settings.subheadline | escape }}</p>
+      <div class="acc-hero__cta">
+        {%- if section.settings.cta_label != blank -%}
+          <a class="acc-btn acc-btn--lg" href="{{ section.settings.cta_link | default: routes.all_products_collection_url }}">{{ section.settings.cta_label | escape }}</a>
+        {%- endif -%}
+        {%- if section.settings.cta2_label != blank -%}
+          <a class="acc-btn acc-btn--ghost acc-btn--lg" href="{{ section.settings.cta2_link | default: '#faq' }}">{{ section.settings.cta2_label | escape }}</a>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <div class="acc-hero__shot acc-reveal" aria-hidden="true">
+      <span class="acc-hero__glow"></span>
+      <img
+        src="{{ 'acc-dashboard-bright.jpg' | asset_url }}"
+        alt="AI Command Center – Dashboard auf dem Arbeitsplatz"
+        width="1376" height="768"
+        loading="eager"
+        class="acc-hero__img"
+      >
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Micro-Label", "default": "// SYSTEM ONLINE" },
+    { "type": "text", "id": "headline_1", "label": "Headline (normal)", "default": "Ihre komplette KI-Abteilung" },
+    { "type": "text", "id": "headline_2", "label": "Headline (Amber hervorgehoben)", "default": "im Abo" },
+    { "type": "text", "id": "subheadline", "label": "Subheadline", "default": "37 KI-Spezialisten, 79 Skills und ein KI-Chat mit Browser & Quellen – Texte, Code, Analysen und Dokumente aus einem System. Monatlich kündbar." },
+    { "type": "text", "id": "cta_label", "label": "CTA Text", "default": "Abos ansehen" },
+    { "type": "url", "id": "cta_link", "label": "CTA Link" },
+    { "type": "text", "id": "cta2_label", "label": "Sekundärer CTA Text", "default": "So funktioniert es" },
+    { "type": "url", "id": "cta2_link", "label": "Sekundärer CTA Link" }
+  ],
+  "presets": [{ "name": "Hero" }]
+}
+{% endschema %}

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+<meta charset="UTF-8">
+<script>document.documentElement.classList.add("js");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- ============================================================
+     ANPASSEN (Brand-Bereich)
+     1. Restaurantname:   ueberall "Falkenrain" ersetzen
+     2. Adresse/Kontakt:  Sektion #kontakt, Footer und JSON-LD unten
+     3. Farben/Schriften: style.css, Block :root ganz oben
+     4. Fotos:            alle Elemente mit data-replace="..."
+                          durch echte <img>-Fotos ersetzen
+     5. Domain:           og:url und JSON-LD "url" anpassen
+     ============================================================ -->
+
+<title>Falkenrain | Restaurant &amp; Weinbar in Zürich</title>
+<meta name="description" content="Saisonale Schweizer Küche im Herzen von Zürich. Marktfrische Zutaten, ausgesuchte Weine, ehrliches Handwerk. Jetzt Tisch reservieren.">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Falkenrain | Restaurant &amp; Weinbar in Zürich">
+<meta property="og:description" content="Saisonale Schweizer Küche im Herzen von Zürich. Marktfrische Zutaten, ausgesuchte Weine, ehrliches Handwerk.">
+<meta property="og:url" content="https://www.example.ch/">
+<meta property="og:image" content="https://www.example.ch/og-image.jpg">
+<meta property="og:locale" content="de_CH">
+<meta property="og:site_name" content="Falkenrain">
+
+<link rel="stylesheet" href="style.css">
+
+<!-- JSON-LD: Restaurant-Schema (Adresse, Zeiten, Kueche anpassen) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Restaurant",
+  "name": "Falkenrain",
+  "description": "Saisonale Schweizer Küche im Herzen von Zürich. Marktfrische Zutaten, ausgesuchte Weine, ehrliches Handwerk.",
+  "url": "https://www.example.ch/",
+  "telephone": "+41 44 000 00 00",
+  "email": "willkommen@example.ch",
+  "servesCuisine": ["Schweizerisch", "Saisonal"],
+  "priceRange": "CHF 30-60",
+  "currenciesAccepted": "CHF",
+  "acceptsReservations": "True",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Mustergasse 12",
+    "postalCode": "8001",
+    "addressLocality": "Zürich",
+    "addressCountry": "CH"
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "11:30",
+      "closes": "14:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "18:00",
+      "closes": "23:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": "Saturday",
+      "opens": "18:00",
+      "closes": "24:00"
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+<!-- ================= Header ================= -->
+<header class="site-header" id="top">
+  <div class="container">
+    <nav class="nav" aria-label="Hauptnavigation">
+      <a class="brand" href="#top">Falken<span class="brand-mark">rain</span></a>
+
+      <ul class="nav-list">
+        <li><a href="#karte">Speisekarte</a></li>
+        <li><a href="#ueber-uns">Über uns</a></li>
+        <li><a href="#zeiten">Öffnungszeiten</a></li>
+        <li><a href="#kontakt">Kontakt</a></li>
+        <li><a class="btn btn--primary" href="#kontakt">Tisch reservieren</a></li>
+      </ul>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-panel" aria-label="Menü öffnen">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+    </nav>
+  </div>
+
+  <div class="nav-panel" id="nav-panel">
+    <div class="container">
+      <ul>
+        <li><a href="#karte">Speisekarte</a></li>
+        <li><a href="#ueber-uns">Über uns</a></li>
+        <li><a href="#zeiten">Öffnungszeiten</a></li>
+        <li><a href="#kontakt">Kontakt</a></li>
+        <li><a href="#kontakt">Tisch reservieren</a></li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ================= Hero ================= -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container">
+      <div class="hero-copy">
+        <span class="kicker">Restaurant &amp; Weinbar · Zürich</span>
+        <h1 id="hero-title">Saisonale Küche, ehrlich gekocht.</h1>
+        <p class="lead">Marktfrische Zutaten aus der Region, ein Glas Wein dazu, Zeit am Tisch. Mehr braucht ein guter Abend nicht.</p>
+        <div class="hero-actions">
+          <a class="btn btn--primary" href="#kontakt">Tisch reservieren</a>
+          <a class="btn btn--ghost" href="#karte">Zur Speisekarte</a>
+        </div>
+        <p class="hero-note">Oder direkt anrufen: <a href="tel:+41440000000">+41&nbsp;44&nbsp;000&nbsp;00&nbsp;00</a></p>
+      </div>
+
+      <!-- FOTO-PLATZHALTER: hier echtes Hero-Foto einsetzen -->
+      <figure class="img-placeholder img-placeholder--tall" data-replace="hero-foto" aria-hidden="true">
+        <div class="ph-surface ph-dish"></div>
+        <figcaption class="ph-label">Platzhalter: Signature-Gericht</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================= Speisekarte ================= -->
+  <section id="karte" aria-labelledby="karte-title">
+    <div class="container">
+      <header class="section-head reveal">
+        <span class="kicker">Speisekarte</span>
+        <h2 id="karte-title">Was der Markt hergibt</h2>
+        <p>Die Karte wechselt mit der Saison. Ein Auszug aus dem aktuellen Angebot, alle Preise in CHF inkl. MwSt.</p>
+      </header>
+
+      <div class="menu-grid">
+        <div class="menu-category reveal">
+          <h3>Vorspeisen</h3>
+          <ul class="menu-list">
+            <li class="menu-item">
+              <div class="menu-line">
+                <span class="dish">Geröstete Randen</span>
+                <span class="dots"></span>
+                <span class="price">18.50</span>
+              </div>
+              <p class="desc">Ziegenfrischkäse, Baumnüsse, Honig <span class="tag">Vegi</span></p>
+            </li>
+            <li class="menu-item">
+              <div class="menu-line">
+                <span class="dish">Tatar vom Schweizer Rind</span>
+                <span class="dots"></span>
+                <span class="price">24.00</span>
+              </div>
+              <p class="desc">Eigelb, Senfsaat, geröstetes Sauerteigbrot</p>
+            </li>
+            <li class="menu-item">
+              <div class="menu-line">
+                <span class="dish">Kürbissuppe</span>
+                <span class="dots"></span>
+                <span class="price">14.50</span>
+              </div>
+              <p class="desc">Kürbiskernöl, Rahm, Schnittlauch <span class="tag">Vegi</span></p>
+            </li>
+          </ul>
+        </div>
+
+        <div class="menu-category reveal">
+          <h3>Hauptgänge</h3>
+          <ul class="menu-list">
+            <li class="menu-item">
+              <div class="menu-line">
+                <span class="dish">Zürcher Geschnetzeltes</span>
+                <span class="dots"></span>
+                <span class="price">39.50</span>
+              </div>
+              <p class="desc">Kalbfleisch, Champignons, Rahmsauce, Rösti</p>
+            </li>
+            <li class="menu-item">
+              <div class="menu-line">
+                <span class="dish">Wolfsbarsch aus der Pfanne</span>
+                <span class="dots"></span>
+                <span class="price">44.00</span>
+              </div>
+              <p class="desc">Fenchel, Safranfond, Zitronenöl</p>
+            </li>
+            <li class="menu-item">
+              <div class="menu-line">
+                <span class="dish">Steinpilz-Risotto</span>
+                <span class="dots"></span>
+                <span class="price">32.50</span>
+              </div>
+              <p class="desc">Carnaroli, Sbrinz, brauner Butter <span class="tag">Vegi</span></p>
+            </li>
+          </ul>
+        </div>
+
+        <div class="menu-category reveal">
+          <h3>Desserts</h3>
+          <ul class="menu-list">
+            <li class="menu-item">
+              <div class="menu-line">
+                <span class="dish">Gebrannte Creme</span>
+                <span class="dots"></span>
+                <span class="price">12.50</span>
+              </div>
+              <p class="desc">Karamell, geschlagener Rahm</p>
+            </li>
+            <li class="menu-item">
+              <div class="menu-line">
+                <span class="dish">Schokoladentarte</span>
+                <span class="dots"></span>
+                <span class="price">14.00</span>
+              </div>
+              <p class="desc">Dunkle Schokolade, Fleur de Sel, Rahmglace</p>
+            </li>
+            <li class="menu-item">
+              <div class="menu-line">
+                <span class="dish">Käse aus der Region</span>
+                <span class="dots"></span>
+                <span class="price">16.50</span>
+              </div>
+              <p class="desc">Drei Sorten, Früchtebrot, Birnenchutney</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="menu-footnote reveal">Angaben zu Allergenen und Fleischherkunft geben wir Ihnen gerne am Tisch bekannt.</p>
+    </div>
+  </section>
+
+  <!-- ================= Ueber uns ================= -->
+  <section id="ueber-uns" class="about" aria-labelledby="ueber-title">
+    <div class="container">
+      <!-- FOTO-PLATZHALTER: Team- oder Innenraum-Foto -->
+      <figure class="img-placeholder img-placeholder--tall reveal" data-replace="ueber-uns-foto" aria-hidden="true">
+        <div class="ph-surface ph-room"></div>
+        <figcaption class="ph-label">Platzhalter: Gaststube oder Team</figcaption>
+      </figure>
+
+      <div class="reveal">
+        <header class="section-head">
+          <span class="kicker">Über uns</span>
+          <h2 id="ueber-title">Ein Haus mit Geschichte, eine Küche mit Haltung</h2>
+        </header>
+        <p>Seit 2012 kochen wir im Herzen von Zürich, was uns selbst schmeckt: klare Gerichte aus Zutaten, deren Herkunft wir kennen. Das Gemüse kommt vom Wochenmarkt, das Fleisch von Höfen aus der Umgebung, das Brot aus der eigenen Backstube.</p>
+        <p>Unsere Weinkarte versammelt kleine Produzentinnen und Produzenten aus der Schweiz und dem nahen Ausland. Wer sich nicht entscheiden mag, fragt das Team. Wir schenken gerne glasweise aus.</p>
+        <blockquote>
+          <p>Gastfreundschaft heisst für uns: Man kommt als Gast und geht satt, entspannt und ein wenig neugieriger.</p>
+          <footer>Küchen- und Gastgeberteam Falkenrain</footer>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Oeffnungszeiten ================= -->
+  <section id="zeiten" aria-labelledby="zeiten-title">
+    <div class="container">
+      <header class="section-head reveal">
+        <span class="kicker">Öffnungszeiten</span>
+        <h2 id="zeiten-title">Wann Sie uns finden</h2>
+      </header>
+
+      <div class="hours-wrap">
+        <table class="hours-table reveal" id="hours-table">
+          <caption class="visually-hidden-caption">Öffnungszeiten pro Wochentag</caption>
+          <tbody>
+            <tr data-day="1" class="closed">
+              <th scope="row">Montag</th>
+              <td>Ruhetag</td>
+            </tr>
+            <tr data-day="2">
+              <th scope="row">Dienstag</th>
+              <td>11:30 – 14:00 · 18:00 – 23:00</td>
+            </tr>
+            <tr data-day="3">
+              <th scope="row">Mittwoch</th>
+              <td>11:30 – 14:00 · 18:00 – 23:00</td>
+            </tr>
+            <tr data-day="4">
+              <th scope="row">Donnerstag</th>
+              <td>11:30 – 14:00 · 18:00 – 23:00</td>
+            </tr>
+            <tr data-day="5">
+              <th scope="row">Freitag</th>
+              <td>11:30 – 14:00 · 18:00 – 23:00</td>
+            </tr>
+            <tr data-day="6">
+              <th scope="row">Samstag</th>
+              <td>18:00 – 24:00</td>
+            </tr>
+            <tr data-day="0" class="closed">
+              <th scope="row">Sonntag</th>
+              <td>Ruhetag</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <aside class="hours-aside reveal">
+          <h3>Gut zu wissen</h3>
+          <p>Die Küche nimmt Bestellungen bis eine Stunde vor Schluss entgegen. An Feiertagen gelten gesonderte Zeiten, aktuelle Hinweise finden Sie jeweils hier.</p>
+          <p>Für Gruppen ab acht Personen und private Anlässe beraten wir Sie gerne persönlich unter <a href="tel:+41440000000">+41&nbsp;44&nbsp;000&nbsp;00&nbsp;00</a>.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Kontakt / Standort ================= -->
+  <section id="kontakt" class="contact" aria-labelledby="kontakt-title">
+    <div class="container">
+      <header class="section-head reveal">
+        <span class="kicker">Reservation &amp; Kontakt</span>
+        <h2 id="kontakt-title">Wir freuen uns auf Ihren Besuch</h2>
+        <p>Reservieren Sie über das Formular, telefonisch oder per E-Mail. Wir bestätigen jede Anfrage persönlich.</p>
+      </header>
+
+      <div class="contact-grid">
+        <div class="reveal">
+          <div class="contact-block">
+            <h3>Standort</h3>
+            <address>
+              Restaurant Falkenrain<br>
+              Mustergasse 12<br>
+              8001 Zürich<br>
+              <a href="https://maps.google.com/?q=Mustergasse+12,+8001+Z%C3%BCrich" rel="noopener">Route planen</a>
+            </address>
+          </div>
+          <div class="contact-block">
+            <h3>Direktkontakt</h3>
+            <address>
+              <a href="tel:+41440000000">+41 44 000 00 00</a><br>
+              <a href="mailto:willkommen@example.ch">willkommen@example.ch</a>
+            </address>
+          </div>
+          <div class="contact-block">
+            <h3>Anreise</h3>
+            <p>Drei Gehminuten ab Tramhaltestelle, Parkhaus in der Nähe. Das Lokal ist stufenfrei zugänglich.</p>
+          </div>
+        </div>
+
+        <div class="reveal">
+          <!-- Nur Frontend: Versand muss an ein Backend oder einen
+               Formulardienst angebunden werden (form action anpassen). -->
+          <form id="reservation-form" novalidate>
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="f-name">Name</label>
+                <input type="text" id="f-name" name="name" autocomplete="name" required>
+                <p class="field-error" id="f-name-error">Bitte geben Sie Ihren Namen an.</p>
+              </div>
+              <div class="form-field">
+                <label for="f-email">E-Mail</label>
+                <input type="email" id="f-email" name="email" autocomplete="email" required>
+                <p class="field-error" id="f-email-error">Bitte geben Sie eine gültige E-Mail-Adresse an.</p>
+              </div>
+              <div class="form-field">
+                <label for="f-date">Datum</label>
+                <input type="date" id="f-date" name="datum" required>
+                <p class="field-error" id="f-date-error">Bitte wählen Sie ein Datum.</p>
+              </div>
+              <div class="form-field">
+                <label for="f-time">Uhrzeit</label>
+                <input type="time" id="f-time" name="uhrzeit" required>
+                <p class="field-error" id="f-time-error">Bitte wählen Sie eine Uhrzeit.</p>
+              </div>
+              <div class="form-field">
+                <label for="f-guests">Personen</label>
+                <select id="f-guests" name="personen" required>
+                  <option value="">Bitte wählen</option>
+                  <option value="2">2 Personen</option>
+                  <option value="3">3 Personen</option>
+                  <option value="4">4 Personen</option>
+                  <option value="5">5 Personen</option>
+                  <option value="6">6 Personen</option>
+                  <option value="7+">7 oder mehr</option>
+                </select>
+                <p class="field-error" id="f-guests-error">Bitte wählen Sie die Anzahl Personen.</p>
+              </div>
+              <div class="form-field">
+                <label for="f-phone">Telefon <span class="optional">(optional)</span></label>
+                <input type="tel" id="f-phone" name="telefon" autocomplete="tel">
+              </div>
+              <div class="form-field form-field--full">
+                <label for="f-message">Nachricht <span class="optional">(optional)</span></label>
+                <textarea id="f-message" name="nachricht" placeholder="Anlass, Allergien, Kinderstuhl ..."></textarea>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn btn--primary" type="submit">Reservierung anfragen</button>
+              <p class="form-hint">Kein Versand an einen Server: Demo-Formular dieser Vorlage.</p>
+            </div>
+          </form>
+
+          <div class="form-success" id="form-success" hidden role="status">
+            <h3>Vielen Dank für Ihre Anfrage</h3>
+            <p>Wir melden uns so rasch wie möglich mit einer Bestätigung. Bei kurzfristigen Reservierungen erreichen Sie uns am schnellsten telefonisch.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ================= Footer ================= -->
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <span class="footer-brand">Falkenrain</span>
+    <ul class="footer-nav">
+      <!-- ANPASSEN: echte Impressums- und Datenschutzseiten verlinken -->
+      <li><a href="impressum.html">Impressum</a></li>
+      <li><a href="datenschutz.html">Datenschutz</a></li>
+      <li><a href="#top">Nach oben</a></li>
+    </ul>
+    <span>© <span id="year">2026</span> Restaurant Falkenrain, Zürich</span>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

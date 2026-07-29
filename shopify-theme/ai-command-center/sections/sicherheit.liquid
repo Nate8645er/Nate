@@ -1,0 +1,95 @@
+{% comment %}
+  Sicherheits-Sektion: die Wächter der Plattform als Vertrauens-Beweis im
+  Shop. Sechs Karten (per Blocks pflegbar) + Hinweisleiste zum sicheren
+  Shopify-Checkout. Spiegelt die /sicherheit-Seite der Plattform.
+{% endcomment %}
+
+<section class="acc-section acc-sich">
+  <div class="acc-wrap">
+    <div class="acc-shead acc-reveal">
+      <span class="acc-micro">{{ section.settings.label }}</span>
+      <h2>{{ section.settings.titel }}</h2>
+      <p class="acc-shead__sub">{{ section.settings.untertitel }}</p>
+    </div>
+    <div class="acc-sich__grid">
+      {% for block in section.blocks %}
+        <div class="acc-panel acc-sich__item acc-reveal" {{ block.shopify_attributes }}>
+          <div class="acc-sich__top">
+            <span class="acc-sich__num">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+            <h3>{{ block.settings.name }}</h3>
+            <span class="acc-sich__badge">24/7 aktiv</span>
+          </div>
+          <p>{{ block.settings.text }}</p>
+        </div>
+      {% endfor %}
+    </div>
+    <p class="acc-sich__checkout acc-reveal">
+      🔒 Bezahlung über den zertifizierten Shopify-Checkout (PCI-DSS Level 1) –
+      Ihre Zahlungsdaten erreichen uns nie im Klartext. Monatlich kündbar.
+    </p>
+  </div>
+</section>
+
+<style>
+  .acc-shead__sub { margin-top: var(--sp-3); color: var(--acc-text-dim); max-width: 62ch; margin-left: auto; margin-right: auto; }
+  .acc-sich__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-5);
+    margin-top: var(--sp-7);
+  }
+  .acc-sich__item { padding: var(--sp-5); border-radius: var(--acc-radius-lg); }
+  .acc-sich__top { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+  .acc-sich__num {
+    font-family: var(--acc-mono);
+    font-size: 12px; font-weight: 700;
+    color: var(--acc-amber);
+    border: 1px solid var(--acc-line);
+    border-radius: 8px;
+    padding: 4px 8px;
+    background: var(--acc-panel-hi);
+  }
+  .acc-sich__top h3 { font-size: var(--fs-h3); flex: 1; min-width: 0; }
+  .acc-sich__badge {
+    font-size: 11px; font-weight: 700;
+    color: #177245;
+    background: #e7f6ee;
+    border: 1px solid #c6ecd7;
+    border-radius: 999px;
+    padding: 3px 10px;
+    white-space: nowrap;
+  }
+  .acc-sich__item p { margin: var(--sp-3) 0 0; color: var(--acc-text-dim); font-size: var(--fs-sm); line-height: 1.65; }
+  .acc-sich__checkout {
+    margin-top: var(--sp-6);
+    text-align: center;
+    color: var(--acc-text-dim);
+    font-size: var(--fs-sm);
+  }
+  @media (max-width: 860px) {
+    .acc-sich__grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Sicherheit",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Micro-Label", "default": "Sicherheitssystem" },
+    { "type": "text", "id": "titel", "label": "Überschrift", "default": "10 Wächter schützen Ihre Arbeit." },
+    { "type": "text", "id": "untertitel", "label": "Untertitel", "default": "Jede Schutzschicht ist im Code verankert und greift bei jedem Aufruf – rund um die Uhr." }
+  ],
+  "blocks": [
+    {
+      "type": "waechter",
+      "name": "Wächter",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Name", "default": "Lizenz-Wächter" },
+        { "type": "textarea", "id": "text", "label": "Beschreibung", "default": "Signierte Lizenzschlüssel nach Industriestandard – gefälschte Zugänge prallen ab." }
+      ]
+    }
+  ],
+  "max_blocks": 10,
+  "presets": [{ "name": "Sicherheit" }]
+}
+{% endschema %}

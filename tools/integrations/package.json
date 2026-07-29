@@ -1,0 +1,17 @@
+{
+  "name": "claude-code-integrationen",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Offizielle SDK-Anbindungen für Claude Code (Vercel AI, Runway, v0) – getrennt vom KI-System.",
+  "type": "module",
+  "scripts": {
+    "test": "node test.mjs",
+    "updates": "npm outdated || true"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^4.0.18",
+    "@runwayml/sdk": "^4.11.0",
+    "ai": "^7.0.35",
+    "v0-sdk": "^0.16.4"
+  }
+}

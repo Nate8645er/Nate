@@ -1,0 +1,227 @@
+{%- comment -%}
+  Produktseite v2: 2 Spalten, Galerie mit klickbaren Thumbnails,
+  grosser Preis mit Abo-Hinweis, Nutzen aus product.description,
+  "In den Warenkorb" + "Direkt kaufen", Sticky-Kaufleiste (Mobile),
+  "So starten Sie" und Cross-Sell aus derselben Kollektion.
+{%- endcomment -%}
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+{%- assign form_id = 'acc-product-form-' | append: section.id -%}
+
+<section class="acc-section acc-product-section">
+  <div class="acc-wrap">
+    <div class="acc-product">
+
+      <div class="acc-product__media">
+        <div class="acc-panel acc-corner acc-product__frame" data-gallery-main>
+          <span class="acc-c1" aria-hidden="true"></span>
+          <span class="acc-c2" aria-hidden="true"></span>
+          {%- assign feat = current_variant.featured_media | default: product.featured_media -%}
+          {%- if feat -%}
+            {%- if feat.media_type == 'video' -%}
+              {{ feat | media_tag: image_size: '900x', autoplay: false, loop: false, muted: true, controls: true }}
+            {%- else -%}
+              {{ feat | image_url: width: 1000 | image_tag: alt: product.title | escape }}
+            {%- endif -%}
+          {%- else -%}
+            <div class="acc-product__ph">// KEIN BILD</div>
+          {%- endif -%}
+        </div>
+
+        {%- if product.media.size > 1 -%}
+          <div class="acc-thumbs" role="group" aria-label="Weitere Produktbilder">
+            {%- for media in product.media limit: 8 -%}
+              {%- if media.media_type == 'image' -%}
+                <button
+                  type="button"
+                  class="acc-thumbs__i{% if media.id == feat.id %} is-active{% endif %}"
+                  data-gallery-thumb
+                  data-full="{{ media | image_url: width: 1000 }}"
+                  data-alt="{{ product.title | escape }}"
+                  aria-label="Bild {{ forloop.index }} anzeigen">
+                  {{ media | image_url: width: 160 | image_tag: loading: 'lazy', alt: '' }}
+                </button>
+              {%- elsif media.preview_image -%}
+                <div class="acc-thumbs__i" aria-hidden="true">
+                  {{ media.preview_image | image_url: width: 160 | image_tag: loading: 'lazy', alt: '' }}
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="acc-product__info">
+        <p class="acc-micro">// {{ product.type | default: 'KI-ABO' | escape | upcase }}</p>
+        <h1>{{ product.title | escape }}</h1>
+        <div class="acc-product__price">
+          <strong data-product-price>{{ current_variant.price | money }}</strong>
+          <span class="acc-micro">/ Monat, monatlich kündbar</span>
+        </div>
+        <span class="acc-product__badge">{{ section.settings.badge_text | escape }}</span>
+
+        <div class="acc-product__desc acc-rte">{{ product.description }}</div>
+
+        {%- comment -%}
+          Abo-Video: passend zur Stufe (per plan-Tag). Klick-zum-Abspielen,
+          laedt erst bei Klick. Zeigt, was genau dieses Abo kann.
+        {%- endcomment -%}
+        {%- assign abo_video = '' -%}
+        {%- if product.tags contains 'plan-1-free' -%}{%- assign abo_video = 'acc-abo-free.mp4' -%}
+        {%- elsif product.tags contains 'plan-1b-personal' -%}{%- assign abo_video = 'acc-abo-personal.mp4' -%}
+        {%- elsif product.tags contains 'plan-2-starter' -%}{%- assign abo_video = 'acc-abo-starter.mp4' -%}
+        {%- elsif product.tags contains 'plan-3-professional' -%}{%- assign abo_video = 'acc-abo-professional.mp4' -%}
+        {%- elsif product.tags contains 'plan-4-business' -%}{%- assign abo_video = 'acc-abo-business.mp4' -%}
+        {%- elsif product.tags contains 'plan-5-enterprise' -%}{%- assign abo_video = 'acc-abo-enterprise.mp4' -%}
+        {%- endif -%}
+        {%- if abo_video != '' -%}
+          <div class="acc-abovid" data-abovid>
+            <video class="acc-abovid__v" preload="none" playsinline controls
+              poster="{{ 'acc-trailer-poster.jpg' | asset_url }}">
+              <source src="{{ abo_video | asset_url }}" type="video/mp4">
+            </video>
+            <button class="acc-abovid__play" type="button" aria-label="Abo-Video abspielen">
+              <span class="acc-abovid__pbtn"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span>
+              <span>Dieses Abo im Video ansehen</span>
+            </button>
+          </div>
+        {%- endif -%}
+
+        {%- if product.available -%}
+          {%- form 'product', product, class: 'acc-form', id: form_id -%}
+            {%- if product.variants.size > 1 -%}
+              <label class="acc-micro" for="acc-variant-{{ section.id }}">// VARIANTE</label>
+              <select id="acc-variant-{{ section.id }}" name="id" class="acc-select" data-variant-select>
+                {%- for variant in product.variants -%}
+                  <option
+                    value="{{ variant.id }}"
+                    data-price="{{ variant.price | money }}"
+                    {% if variant.id == current_variant.id %}selected{% endif %}
+                    {% unless variant.available %}disabled{% endunless %}>
+                    {{ variant.title | escape }} &middot; {{ variant.price | money }}
+                  </option>
+                {%- endfor -%}
+              </select>
+            {%- else -%}
+              <input type="hidden" name="id" value="{{ current_variant.id }}">
+            {%- endif -%}
+            {%- comment -%} Shopify-Subscriptions-Widget: zeigt «Abonnieren / Einmalkauf». {%- endcomment -%}
+            <div class="subscriptions_app_embed_block"></div>
+            <div class="acc-form__row">
+              <button type="submit" name="add" class="acc-btn" data-buybar-anchor>In den Warenkorb</button>
+              <button type="button" class="acc-btn acc-btn--ghost" data-buy-now data-variant-id="{{ current_variant.id }}">Direkt kaufen</button>
+            </div>
+          {%- endform -%}
+        {%- else -%}
+          <button class="acc-btn acc-btn--block" disabled>Aktuell nicht verfügbar</button>
+        {%- endif -%}
+
+        <div class="acc-panel acc-corner acc-product__hint">
+          <span class="acc-c1" aria-hidden="true"></span>
+          <span class="acc-c2" aria-hidden="true"></span>
+          {{ section.settings.hint_text }}
+        </div>
+
+        <div class="acc-ministeps">
+          <p class="acc-micro">// SO STARTEN SIE</p>
+          <div class="acc-ministep">
+            <span class="acc-ministep__num" aria-hidden="true">1</span>
+            <div>
+              <h4>Abo kaufen</h4>
+              <p>Sicher bezahlen über den Shopify-Checkout. Monatlich kündbar.</p>
+            </div>
+          </div>
+          <div class="acc-ministep">
+            <span class="acc-ministep__num" aria-hidden="true">2</span>
+            <div>
+              <h4>Schlüssel per E-Mail</h4>
+              <p>Ihr Lizenzschlüssel kommt direkt nach dem Kauf in Ihr Postfach.</p>
+            </div>
+          </div>
+          <div class="acc-ministep">
+            <span class="acc-ministep__num" aria-hidden="true">3</span>
+            <div>
+              <h4>Loslegen</h4>
+              <p>Einloggen, erste Mission starten, Ergebnis mit Quality-Score erhalten.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {%- comment -%} Trailer: das Video dieses Abos, prominent vor dem Kauf. {%- endcomment -%}
+    {%- assign trailer = product.media | where: 'media_type', 'video' | first -%}
+    {%- if trailer -%}
+      <div class="acc-trailer acc-reveal">
+        <div class="acc-trailer__head">
+          <span class="acc-micro">{{ section.settings.trailer_label | default: '▶ TRAILER · 15 SEKUNDEN' }}</span>
+          <h2>{{ section.settings.trailer_titel | default: 'Sehen Sie dieses Abo in Aktion.' }}</h2>
+        </div>
+        <div class="acc-trailer__frame">
+          {{ trailer | media_tag: image_size: '1280x', autoplay: false, loop: true, muted: true, controls: true, preload: 'metadata' }}
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Cross-Sell: andere Stufen aus derselben Kollektion {%- endcomment -%}
+    {%- assign xsell_coll = product.collections.first -%}
+    {%- if xsell_coll and xsell_coll.products.size > 1 -%}
+      <div class="acc-crosssell">
+        <div class="acc-shead acc-reveal">
+          <p class="acc-micro">// ANDERE STUFEN</p>
+          <h2>Passt eine andere Stufe besser?</h2>
+        </div>
+        <div class="acc-products">
+          {%- assign shown = 0 -%}
+          {%- for other in xsell_coll.products -%}
+            {%- if other.id != product.id and shown < 3 -%}
+              {%- assign shown = shown | plus: 1 -%}
+              <article class="acc-panel acc-corner acc-card acc-reveal" style="transition-delay: {{ shown | minus: 1 | times: 90 }}ms;">
+                <span class="acc-c1" aria-hidden="true"></span>
+                <span class="acc-c2" aria-hidden="true"></span>
+                <a class="acc-card__media" href="{{ other.url }}" tabindex="-1" aria-hidden="true">
+                  {%- if other.tags contains 'bestseller' -%}<span class="acc-badge">Bestseller</span>{%- endif -%}
+                  {%- if other.featured_media -%}
+                    {{ other.featured_media | image_url: width: 640 | image_tag: loading: 'lazy', alt: other.title | escape }}
+                  {%- else -%}
+                    <div class="acc-card__ph">// KEIN BILD</div>
+                  {%- endif -%}
+                </a>
+                <div class="acc-card__body">
+                  <h3 class="acc-card__title"><a href="{{ other.url }}">{{ other.title | escape }}</a></h3>
+                  <div class="acc-card__price">{{ other.price | money }} <span>/ Monat</span></div>
+                  <div class="acc-card__cta">
+                    <a class="acc-btn acc-btn--ghost acc-btn--block" href="{{ other.url }}">Ansehen</a>
+                  </div>
+                </div>
+              </article>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{%- comment -%} Sticky-Kaufleiste auf Mobile {%- endcomment -%}
+{%- if product.available -%}
+  <div class="acc-buybar" data-buybar>
+    <div class="acc-buybar__price">
+      <span class="acc-buybar__label">{{ product.title | escape | truncate: 28 }}</span>
+      <span data-product-price>{{ current_variant.price | money }}</span> / Monat
+    </div>
+    <button type="submit" name="add" form="{{ form_id }}" class="acc-btn">In den Warenkorb</button>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Produkt",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "badge_text", "label": "Badge", "default": "Monatsabo, monatlich kündbar" },
+    { "type": "richtext", "id": "hint_text", "label": "Hinweisbox", "default": "<p>Im Zweifel: <strong>STARTER</strong> ist unser Bestseller.</p>" },
+    { "type": "text", "id": "trailer_label", "label": "Trailer-Label", "default": "▶ TRAILER · 15 SEKUNDEN" },
+    { "type": "text", "id": "trailer_titel", "label": "Trailer-Titel", "default": "Sehen Sie dieses Abo in Aktion." }
+  ]
+}
+{% endschema %}

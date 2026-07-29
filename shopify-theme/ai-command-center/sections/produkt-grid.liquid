@@ -1,0 +1,61 @@
+{%- comment -%}
+  Produkt-Grid v2: grosse Karten mit Bild-Hover-Zoom, grossem Preis,
+  Bestseller-Badge via Tag und gestaffeltem Scroll-Reveal.
+{%- endcomment -%}
+{%- assign coll = collections[section.settings.collection] -%}
+<section class="acc-section acc-produkt-grid" id="abos">
+  <div class="acc-wrap">
+    <div class="acc-shead acc-reveal">
+      <p class="acc-micro">{{ section.settings.eyebrow | escape }}</p>
+      <h2>{{ section.settings.heading | escape }}</h2>
+    </div>
+
+    {%- if coll != blank and coll.products.size > 0 -%}
+      <div class="acc-products">
+        {%- for product in coll.products limit: section.settings.limit -%}
+          {%- assign d = forloop.index0 | modulo: 3 | times: 90 -%}
+          <article class="acc-panel acc-corner acc-card acc-reveal" style="transition-delay: {{ d }}ms;">
+            <span class="acc-c1" aria-hidden="true"></span>
+            <span class="acc-c2" aria-hidden="true"></span>
+            <a class="acc-card__media" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
+              {%- if product.tags contains 'bestseller' -%}<span class="acc-badge">Bestseller</span>{%- endif -%}
+              {%- if product.featured_media -%}
+                {{ product.featured_media | image_url: width: 800 | image_tag: loading: 'lazy', alt: product.title | escape }}
+              {%- else -%}
+                <div class="acc-card__ph">// KEIN BILD</div>
+              {%- endif -%}
+            </a>
+            <div class="acc-card__body">
+              <h3 class="acc-card__title"><a href="{{ product.url }}">{{ product.title | escape }}</a></h3>
+              <div class="acc-card__price">{{ product.price | money }} <span>/ Monat</span></div>
+              <div class="acc-card__cta">
+                <a class="acc-btn acc-btn--block" href="{{ product.url }}">Abo ansehen</a>
+              </div>
+            </div>
+          </article>
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      <div class="acc-panel acc-corner acc-empty">
+        <span class="acc-c1" aria-hidden="true"></span>
+        <span class="acc-c2" aria-hidden="true"></span>
+        <p class="acc-micro">// KOLLEKTION WAEHLEN</p>
+        <p>Bitte im Theme-Editor eine Kollektion zuweisen.</p>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Produkt-Grid",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Micro-Label", "default": "// VERFUEGBARE ABOS" },
+    { "type": "text", "id": "heading", "label": "Überschrift", "default": "Wählen Sie Ihre KI-Abteilung" },
+    { "type": "collection", "id": "collection", "label": "Kollektion" },
+    { "type": "range", "id": "limit", "label": "Max. Produkte", "min": 3, "max": 12, "step": 1, "default": 6 }
+  ],
+  "presets": [{ "name": "Produkt-Grid" }]
+}
+{% endschema %}

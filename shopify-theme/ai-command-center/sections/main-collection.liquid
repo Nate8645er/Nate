@@ -1,0 +1,65 @@
+{%- comment -%}
+  Abonnemente-Seite: Hero-Zeile mit Vergleichs-Hinweis, dann grosses
+  Produkt-Grid. Die Vergleichstabelle folgt als eigene Section
+  (abos-vergleich) via templates/collection.json.
+{%- endcomment -%}
+<section class="acc-collection-hero">
+  <div class="acc-wrap">
+    <p class="acc-micro">// ABONNEMENTE</p>
+    <h1>{{ collection.title | escape }}</h1>
+    {%- if collection.description != blank -%}
+      <div class="acc-lead acc-rte">{{ collection.description }}</div>
+    {%- else -%}
+      <p class="acc-lead">Fünf Stufen, ein System. Wählen Sie die KI-Abteilung, die zu Ihrem Bedarf passt. Jede Stufe ist monatlich kündbar.</p>
+    {%- endif -%}
+    <div>
+      <span class="acc-collection-hint"><i aria-hidden="true"></i>Alle Stufen im Vergleich weiter unten</span>
+    </div>
+  </div>
+</section>
+
+<section class="acc-section" style="padding-top: var(--sp-6);">
+  <div class="acc-wrap">
+    {%- if collection.products.size > 0 -%}
+      <div class="acc-products">
+        {%- for product in collection.products -%}
+          {%- assign d = forloop.index0 | modulo: 3 | times: 90 -%}
+          <article class="acc-panel acc-corner acc-card acc-reveal" style="transition-delay: {{ d }}ms;">
+            <span class="acc-c1" aria-hidden="true"></span>
+            <span class="acc-c2" aria-hidden="true"></span>
+            <a class="acc-card__media" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
+              {%- if product.tags contains 'bestseller' -%}<span class="acc-badge">Bestseller</span>{%- endif -%}
+              {%- if product.featured_media -%}
+                {{ product.featured_media | image_url: width: 800 | image_tag: loading: 'lazy', alt: product.title | escape }}
+              {%- else -%}
+                <div class="acc-card__ph">// KEIN BILD</div>
+              {%- endif -%}
+            </a>
+            <div class="acc-card__body">
+              <h3 class="acc-card__title"><a href="{{ product.url }}">{{ product.title | escape }}</a></h3>
+              <div class="acc-card__price">{{ product.price | money }} <span>/ Monat</span></div>
+              <div class="acc-card__cta">
+                <a class="acc-btn acc-btn--block" href="{{ product.url }}">Abo ansehen</a>
+              </div>
+            </div>
+          </article>
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      <div class="acc-panel acc-corner acc-empty">
+        <span class="acc-c1" aria-hidden="true"></span>
+        <span class="acc-c2" aria-hidden="true"></span>
+        <p class="acc-micro">// KEINE PRODUKTE</p>
+        <p>In dieser Kollektion sind aktuell keine Produkte.</p>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Kollektion",
+  "tag": "div",
+  "settings": []
+}
+{% endschema %}

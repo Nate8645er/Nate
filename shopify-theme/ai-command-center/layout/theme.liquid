@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#fdfaf4">
+    <link rel="canonical" href="{{ canonical_url }}">
+    {%- if settings.favicon != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+    {%- endif -%}
+    <title>
+      {{ page_title }}{% if current_tags %} &middot; {{ current_tags | join: ', ' }}{% endif %}{% if current_page != 1 %} &middot; Seite {{ current_page }}{% endif %}
+      {%- unless page_title contains shop.name %} &middot; {{ shop.name }}{% endunless -%}
+    </title>
+    {%- if page_description -%}
+      <meta name="description" content="{{ page_description | escape }}">
+    {%- endif -%}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    {{ 'theme.css' | asset_url | stylesheet_tag }}
+    <script>document.documentElement.classList.add('acc-js');</script>
+    {{ content_for_header }}
+  </head>
+  <body class="acc-body">
+    <header class="acc-header">
+      <div class="acc-header__inner">
+        <a href="{{ routes.root_url }}" class="acc-logo">
+          <span class="acc-logo__dot" aria-hidden="true"></span>
+          AI Command Center
+        </a>
+        <nav class="acc-nav" aria-label="Hauptnavigation">
+          <a href="{{ routes.root_url }}">Start</a>
+          <a href="{{ routes.all_products_collection_url }}">Abos</a>
+          <a href="{{ routes.root_url }}#vorteile">Warum wir</a>
+          <a href="/pages/ueber-uns">Über uns</a>
+          <a href="{{ routes.root_url }}#faq">FAQ</a>
+          <a href="/pages/kontakt">Kontakt</a>
+        </nav>
+        <a href="{{ routes.cart_url }}" class="acc-cartlink" aria-label="Warenkorb, {{ cart.item_count }} Artikel">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 7h16l-1.4 11.2a2 2 0 0 1-2 1.8H7.4a2 2 0 0 1-2-1.8L4 7z"/>
+            <path d="M8.5 10V6a3.5 3.5 0 0 1 7 0v4"/>
+          </svg>
+          <span class="acc-cartcount" data-cart-count {% if cart.item_count == 0 %}hidden{% endif %}>{{ cart.item_count }}</span>
+        </a>
+      </div>
+    </header>
+
+    <main id="MainContent" role="main">
+      {{ content_for_layout }}
+    </main>
+
+    <footer class="acc-footer">
+      <div class="acc-wrap">
+        <div class="acc-footer__grid">
+          <div class="acc-footer__brand">
+            <span class="acc-logo">
+              <span class="acc-logo__dot" aria-hidden="true"></span>
+              AI Command Center
+            </span>
+            <p class="acc-footer__claim">Ihre komplette KI-Abteilung im Abo. Missionen starten, Ergebnisse erhalten, monatlich kündbar. Ein Schweizer Anbieter.</p>
+          </div>
+          <div class="acc-footer__col">
+            <h4>Navigation</h4>
+            <ul>
+              <li><a href="{{ routes.root_url }}">Start</a></li>
+              <li><a href="{{ routes.all_products_collection_url }}">Abonnemente</a></li>
+              <li><a href="/pages/ueber-uns">Über uns</a></li>
+              <li><a href="{{ routes.root_url }}#faq">FAQ</a></li>
+              <li><a href="{{ routes.cart_url }}">Warenkorb</a></li>
+            </ul>
+          </div>
+          <div class="acc-footer__col">
+            <h4>Rechtliches</h4>
+            <ul>
+              {%- if shop.policies.size > 0 -%}
+                {%- for policy in shop.policies -%}
+                  <li><a href="{{ policy.url }}">{{ policy.title | escape }}</a></li>
+                {%- endfor -%}
+              {%- else -%}
+                <li><a href="/pages/agb">AGB</a></li>
+                <li><a href="/pages/datenschutz">Datenschutz</a></li>
+                <li><a href="/pages/impressum">Impressum</a></li>
+                <li><a href="/pages/widerruf">Widerruf</a></li>
+              {%- endif -%}
+            </ul>
+          </div>
+          <div class="acc-footer__col">
+            <h4>Kontakt</h4>
+            <ul>
+              <li><a href="mailto:beamswiss@gmail.com">beamswiss@gmail.com</a></li>
+              <li><a href="/pages/kontakt">Kontaktseite</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="acc-footer__bottom">
+          <span class="acc-micro">AI Command Center &copy; {{ 'now' | date: '%Y' }}</span>
+          <span class="acc-micro">// SYSTEM ONLINE &middot; MONATLICH KÜNDBAR</span>
+        </div>
+      </div>
+    </footer>
+
+    <script src="{{ 'theme.js' | asset_url }}" defer></script>
+  </body>
+</html>

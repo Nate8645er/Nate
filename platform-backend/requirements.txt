@@ -1,0 +1,32 @@
+# platform-backend — Laufzeit-Abhängigkeiten (Phase 1), gepinnt + lizenzgeprüft.
+# Siehe LICENSES.md. Nur kompatible A-Tier-Bibliotheken; GPU/Service-Komponenten
+# stehen NICHT hier (kommen als Container / spätere Phasen).
+
+# Web-Schicht
+fastapi==0.139.2
+uvicorn[standard]==0.51.0
+pydantic-settings==2.14.2
+
+# HTTP / Robustheit
+httpx==0.28.1
+tenacity==9.1.4
+
+# Modell-Router + strukturierte Ausgaben
+litellm==1.93.0
+instructor==1.15.4
+
+# Wissens-/Datenschicht (Clients; Server als Container)
+qdrant-client==1.18.0
+SQLAlchemy==2.0.51
+
+# Observability
+opentelemetry-api==1.44.0
+opentelemetry-sdk==1.44.0
+
+# Auth (Keycloak/OIDC) + Metriken (Phase 2)
+PyJWT[crypto]==2.13.0
+cryptography==49.0.0
+prometheus-client==0.25.0
+
+# Workflow-Engine (Phase 5) — voller Betrieb braucht Temporal-Server
+temporalio==1.30.0

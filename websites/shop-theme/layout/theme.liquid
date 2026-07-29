@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#07070d">
+    <link rel="canonical" href="{{ canonical_url }}">
+    <title>
+      {{ page_title }}{% if current_tags %} &ndash; {{ current_tags | join: ', ' }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}
+    </title>
+    {% if page_description %}<meta name="description" content="{{ page_description | escape }}">{% endif %}
+
+    {%- comment -%} Social-/Open-Graph-Meta für Vorschau in Chat, Social, Suche {%- endcomment -%}
+    {%- assign og_title = page_title | default: shop.name -%}
+    {%- assign og_desc = page_description | default: shop.description | default: 'Ihre komplette KI-Abteilung als SaaS – erledigt Aufträge bis zum fertigen Ergebnis. Ab Tag 1 startklar, ab CHF 0 zum Testen.' -%}
+    <meta property="og:type" content="{% if template contains 'product' %}product{% else %}website{% endif %}">
+    <meta property="og:site_name" content="{{ shop.name | escape }}">
+    <meta property="og:title" content="{{ og_title | escape }}">
+    <meta property="og:description" content="{{ og_desc | escape }}">
+    <meta property="og:url" content="{{ canonical_url }}">
+    {%- if template contains 'product' and product.featured_image -%}
+      <meta property="og:image" content="https:{{ product.featured_image | image_url: width: 1200 }}">
+    {%- elsif template contains 'article' and article.image -%}
+      <meta property="og:image" content="https:{{ article.image | image_url: width: 1200 }}">
+    {%- endif -%}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ og_title | escape }}">
+    <meta name="twitter:description" content="{{ og_desc | escape }}">
+
+    {%- comment -%} Strukturierte Daten: Organisation (einmal, für Startseite) {%- endcomment -%}
+    {%- if template == 'index' -%}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": {{ shop.name | json }},
+      "url": {{ shop.url | default: canonical_url | json }},
+      "description": {{ og_desc | json }}
+    }
+    </script>
+    {%- endif -%}
+
+    {{ content_for_header }}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap">
+    {{ 'theme.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'theme.js' | asset_url }}" defer></script>
+  </head>
+  <body class="tpl-{{ template | replace: '.', '-' | handle }}">
+    <header class="hd">
+      <input type="checkbox" id="nav-toggle" class="nav-toggle" hidden>
+      <div class="wrap hd-in">
+        <a href="{{ routes.root_url }}" class="hd-logo">AI <span>Command Center</span></a>
+        <label for="nav-toggle" class="nav-burger" aria-label="Menü öffnen und schliessen"><span></span><span></span><span></span></label>
+        <nav class="hd-nav">
+          <a href="{{ routes.root_url }}#roi">Rechner</a>
+          <a href="{{ routes.root_url }}#pakete">Preise</a>
+          <a href="{{ routes.root_url }}#so-funktioniert">So funktioniert's</a>
+          <a href="{{ routes.root_url }}#anwendung">Anwendungsfälle</a>
+          <a href="{{ routes.root_url }}#branchen">Branchen</a>
+          <a href="{{ routes.root_url }}#ratgeber">Ratgeber</a>
+          <a href="{{ routes.root_url }}#faq">FAQ</a>
+          {% if shop.customer_accounts_enabled %}<a href="{{ routes.account_url }}">Konto</a>{% endif %}
+        </nav>
+        <a href="{{ routes.all_products_collection_url }}" class="btn btn-sm hd-cta">Gratis starten</a>
+      </div>
+    </header>
+
+    <main id="main">{{ content_for_layout }}</main>
+
+    <footer class="ft">
+      <div class="wrap ft-grid">
+        <div class="ft-brand">
+          <p class="ft-logo">AI <span>Command Center</span></p>
+          <p class="ft-tag">Ihre komplette KI-Abteilung als SaaS – für Einzelunternehmer bis Grosskonzern.</p>
+        </div>
+        <div class="ft-col">
+          <h4>Produkt</h4>
+          <a href="{{ routes.root_url }}#pakete">Preise</a>
+          <a href="{{ routes.root_url }}#so-funktioniert">So funktioniert's</a>
+          <a href="{{ routes.root_url }}#anwendung">Anwendungsfälle</a>
+          <a href="{{ routes.root_url }}#branchen">Branchen</a>
+          <a href="{{ routes.root_url }}#funktionen">Integrationen</a>
+          <a href="{{ routes.root_url }}#vergleich">Agentur-Vergleich</a>
+          <a href="{{ routes.all_products_collection_url }}">Alle Pakete</a>
+        </div>
+        <div class="ft-col">
+          <h4>Unternehmen</h4>
+          <a href="{{ routes.root_url }}#warum">Über uns</a>
+          <a href="{{ routes.root_url }}#ratgeber">Ratgeber</a>
+          <a href="{{ routes.root_url }}#ratgeber">Wissen</a>
+          <a href="{{ routes.root_url }}#warum">Wieso &amp; Warum</a>
+          <a href="{{ routes.root_url }}#sicher">Sicherheit</a>
+          <a href="{{ routes.root_url }}#keine-bewertungen">Keine Bewertungen</a>
+          <a href="{{ routes.root_url }}#faq">Hilfe &amp; Support</a>
+          <a href="{{ routes.root_url }}#demo">Live-Demo</a>
+          <a href="{{ routes.root_url }}pages/contact">Kontakt</a>
+          {% if shop.customer_accounts_enabled %}<a href="{{ routes.account_url }}">Mein Konto</a>{% endif %}
+        </div>
+        <div class="ft-col">
+          <h4>Rechtliches</h4>
+          <a href="{{ routes.root_url }}pages/impressum">Impressum</a>
+          <a href="{{ routes.root_url }}pages/datenschutz">Datenschutz</a>
+          <a href="{{ routes.root_url }}pages/agb">AGB</a>
+          <a href="{{ routes.root_url }}policies/refund-policy">Rückerstattung</a>
+        </div>
+      </div>
+      <div class="wrap ft-bar">
+        <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }} · Ihre KI-Abteilung ab Tag 1.</p>
+        <p class="ft-pay">Sichere Zahlung · Schweizer Anbieter</p>
+      </div>
+    </footer>
+
+    <div id="consent-bar" class="consent" role="dialog" aria-label="Cookie-Hinweis" hidden>
+      <div class="wrap consent-in">
+        <p>Wir verwenden nur technisch notwendige Cookies für den Betrieb des Shops. Mehr in unserer
+          <a href="{{ routes.root_url }}pages/datenschutz">Datenschutzerklärung</a>.</p>
+        <div class="consent-btns">
+          <button type="button" class="btn btn-sm" data-consent="ok">Verstanden</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

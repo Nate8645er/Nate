@@ -1,0 +1,59 @@
+{%- comment -%}
+  FAQ v2: details/summary mit rotierendem SVG-Chevron (rein CSS).
+{%- endcomment -%}
+<section class="acc-section acc-faq-section" id="faq">
+  <div class="acc-wrap">
+    <div class="acc-shead acc-reveal">
+      <p class="acc-micro">{{ section.settings.eyebrow | escape }}</p>
+      <h2>{{ section.settings.heading | escape }}</h2>
+    </div>
+    <div class="acc-faq acc-reveal">
+      {%- for block in section.blocks -%}
+        <details {{ block.shopify_attributes }}{% if forloop.first %} open{% endif %}>
+          <summary>
+            {{ block.settings.question | escape }}
+            <svg class="acc-faq__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </summary>
+          <div class="acc-faq__a">{{ block.settings.answer }}</div>
+        </details>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "FAQ",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Micro-Label", "default": "// HAEUFIGE FRAGEN" },
+    { "type": "text", "id": "heading", "label": "Überschrift", "default": "Fragen und Antworten" }
+  ],
+  "blocks": [
+    {
+      "type": "qa",
+      "name": "Frage",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Frage", "default": "Wie schnell bin ich startklar?" },
+        { "type": "richtext", "id": "answer", "label": "Antwort", "default": "<p>In der Regel innerhalb weniger Tage nach Aboabschluss.</p>" }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "FAQ",
+      "blocks": [
+        { "type": "qa", "settings": { "question": "Wie schnell bin ich startklar?", "answer": "<p>In der Regel innerhalb weniger Tage nach Aboabschluss. Onboarding und erste Prozesse gehen sofort los.</p>" } },
+        { "type": "qa", "settings": { "question": "Kann ich monatlich kündigen?", "answer": "<p>Ja. Alle Abos sind monatlich kündbar, ohne lange Bindung.</p>" } },
+        { "type": "qa", "settings": { "question": "Was ist im Abo enthalten?", "answer": "<p>Strategie, Automatisierung und die laufende Umsetzung Ihrer KI-Prozesse. Details je Abostufe.</p>" } },
+        { "type": "qa", "settings": { "question": "Brauche ich technisches Vorwissen?", "answer": "<p>Nein. Wir übernehmen Einrichtung und Betrieb, Sie geben die Richtung vor.</p>" } },
+        { "type": "qa", "settings": { "question": "Kann ich das Abo wechseln?", "answer": "<p>Jederzeit hoch- oder runterstufen, passend zu Ihrem aktuellen Bedarf.</p>" } },
+        { "type": "qa", "settings": { "question": "Wie funktioniert der Support?", "answer": "<p>Sie erreichen uns über die Kontaktseite. Reaktionszeiten richten sich nach Ihrer Abostufe.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

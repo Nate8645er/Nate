@@ -1,0 +1,63 @@
+<section class="cart-page section-pad">
+  {% render 'wasserblasen' %}
+  <div class="hock-float" style="top:14%;right:6%" aria-hidden="true">{% render 'tropfen-freund' %}</div>
+  <div class="container">
+    <h1 class="cart-title">Dein Rucksack</h1>
+    {% if cart.item_count > 0 %}
+      {% form 'cart', cart %}
+        <div class="cart-table">
+          <div class="cart-table-head">
+            <span>Produkt</span><span>Preis</span><span>Menge</span><span>Gesamt</span><span></span>
+          </div>
+          {% for item in cart.items %}
+          <div class="cart-row">
+            <div class="cart-row-product">
+              <img src="{{ item.image | img_url: '160x160' }}" alt="{{ item.title | escape }}" width="76" height="76">
+              <div>
+                <h3>{{ item.product.title }}</h3>
+                {% unless item.variant.title == "Default Title" %}
+                  <span class="cart-variant">{{ item.variant.title }}</span>
+                {% endunless %}
+                {% if item.original_line_price != item.final_line_price %}
+                  <p class="cart-deal-hint">Rabatt angewendet 🎉</p>
+                {% endif %}
+              </div>
+            </div>
+            <span class="cart-row-price">{{ item.final_price | money }}</span>
+            <div class="qty-stepper">
+              <button type="button" data-step="-1" aria-label="Menge verringern">−</button>
+              <input type="number" name="updates[]" value="{{ item.quantity }}" min="0" inputmode="numeric" aria-label="Menge für {{ item.product.title | escape }}">
+              <button type="button" data-step="1" aria-label="Menge erhöhen">+</button>
+            </div>
+            <span class="cart-row-total">{{ item.final_line_price | money }}</span>
+            <a href="{{ item.url_to_remove }}" class="cart-remove" aria-label="{{ item.product.title | escape }} entfernen">✕</a>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="cart-summary">
+          {% if cart.total_discount > 0 %}
+            <div class="cart-summary-row" style="color:#1d8a5f">
+              <span>Rabatt</span>
+              <span>-{{ cart.total_discount | money }}</span>
+            </div>
+          {% endif %}
+          <div class="cart-summary-row">
+            <span>Zwischensumme</span>
+            <span>{{ cart.total_price | money }}</span>
+          </div>
+          <p class="cart-note">Preise inkl. MwSt. Versand wird an der Kasse berechnet.</p>
+          <div class="cart-actions">
+            <button type="submit" name="update" class="btn btn-white">Rucksack aktualisieren</button>
+            <button type="submit" name="checkout" class="btn btn-coral magnetic">Zur Kasse →</button>
+          </div>
+        </div>
+      {% endform %}
+    {% else %}
+      <div class="cart-empty">
+        <div class="lost-sub">{% render 'hund-flasche' %}</div>
+        <p>Dein Rucksack ist noch leer.</p>
+        <a href="{{ routes.all_products_collection_url }}" class="btn btn-coral magnetic">Flasche ansehen</a>
+      </div>
+    {% endif %}
+  </div>
+</section>

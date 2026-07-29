@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<style>
+  :root{--ind:#6366f1;--ora:#ff8c2a;--or2:#ff5f1f;--tea:#14b8a6;--pin:#ec4899}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1280px;height:720px;overflow:hidden;background:#07070d;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#fff}
+  .stage{position:relative;width:1280px;height:720px;
+    background:radial-gradient(120% 90% at 50% 0%,#141428 0%,#0a0a14 55%,#07070d 100%);overflow:hidden}
+  .grad{background:linear-gradient(100deg,var(--ora),var(--pin) 55%,var(--ind));
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .panel{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;text-align:center;padding:0 90px;opacity:0;transition:opacity .5s ease}
+  .panel.on{opacity:1}
+  .kicker{font-size:14px;font-weight:800;letter-spacing:.28em;text-transform:uppercase;color:#c9c6ff;margin-bottom:20px}
+  .h1{font-size:60px;font-weight:800;letter-spacing:-.02em;line-height:1.05}
+  .sub{margin-top:18px;font-size:22px;color:#b9b7d4;font-weight:500;max-width:820px}
+  /* Enthalten-Liste */
+  .enth{margin-top:30px;display:flex;flex-direction:column;gap:14px;align-items:flex-start}
+  .enth li{display:flex;gap:14px;align-items:center;font-size:24px;font-weight:600;color:#e9e8f6;
+    opacity:0;transform:translateX(-16px);transition:all .5s ease;list-style:none}
+  .enth li.show{opacity:1;transform:none}
+  .enth .chk{width:30px;height:30px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,var(--tea),#0ea5a0);font-size:16px;font-weight:900}
+  /* Schritt-Panel */
+  .stepwrap{width:900px;max-width:100%}
+  .stepno{font-size:15px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--ora)}
+  .steptitle{margin-top:14px;font-size:46px;font-weight:800;line-height:1.08}
+  .steptext{margin-top:18px;font-size:23px;color:#c3c1de;line-height:1.5;font-weight:500}
+  .num{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:20px;
+    background:linear-gradient(135deg,var(--ora),var(--or2));font-size:30px;font-weight:800;margin-bottom:22px;
+    box-shadow:0 0 40px rgba(255,120,40,.5)}
+  /* Fortschrittsbalken */
+  .bar{position:absolute;left:0;bottom:0;height:6px;width:0;background:linear-gradient(90deg,var(--ora),var(--pin));transition:width .4s linear}
+  .brand{position:absolute;left:34px;bottom:26px;display:flex;align-items:center;gap:10px;opacity:.85}
+  .brand .mk{width:16px;height:16px;border-radius:5px;background:linear-gradient(135deg,var(--ora),var(--or2))}
+  .brand .nm{font-size:15px;font-weight:700;letter-spacing:.02em}
+  .logo{display:flex;align-items:center;gap:16px}
+  .logo .mk{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--ora),var(--or2));box-shadow:0 0 24px rgba(255,120,40,.7)}
+  .logo .nm{font-size:42px;font-weight:800}
+  .pop{animation:pop .5s ease}
+  @keyframes pop{0%{opacity:0;transform:translateY(20px) scale(.98)}100%{opacity:1;transform:none}}
+  .vign{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 220px rgba(0,0,0,.7)}
+</style>
+</head>
+<body>
+  <div class="stage" id="stage">
+    <div class="panel" id="pIntro">
+      <div class="kicker">AI Command Center · Tutorial</div>
+      <div class="h1">Ihr <span class="grad" id="tName">Tarif</span>-Tutorial</div>
+      <div class="sub" id="tKurz"></div>
+    </div>
+
+    <div class="panel" id="pEnth">
+      <div class="kicker">In Ihrem Tarif enthalten</div>
+      <ul class="enth" id="enthList"></ul>
+    </div>
+
+    <div class="panel" id="pStep">
+      <div class="stepwrap">
+        <div class="num" id="sNum">1</div>
+        <div class="stepno" id="sNo">Schritt 1</div>
+        <div class="steptitle" id="sTitle"></div>
+        <div class="steptext" id="sText"></div>
+      </div>
+    </div>
+
+    <div class="panel" id="pOutro">
+      <div class="logo"><span class="mk"></span><span class="nm">AI Command Center</span></div>
+      <div class="sub" id="oText" style="margin-top:22px"></div>
+    </div>
+
+    <div class="bar" id="bar"></div>
+    <div class="brand"><span class="mk"></span><span class="nm" id="brandName">Tutorial</span></div>
+    <div class="vign"></div>
+  </div>
+
+<script>
+  var T = window.__TIER || { name:"Starter", kurz:"Ihre kompakte KI-Abteilung.", enthalten:["Beispiel"], schritte:[{titel:"Zugang aktivieren",text:"Beispieltext."}] };
+  var $ = function(id){ return document.getElementById(id); };
+  $("tName").textContent = T.name;
+  $("tKurz").textContent = T.kurz;
+  $("brandName").textContent = "Ihr " + T.name + "-Tutorial";
+  $("oText").textContent = "So richten Sie Ihr " + T.name + "-Abo ein. Ihr Team ist startklar.";
+
+  // Enthalten-Liste aufbauen
+  var el = $("enthList");
+  T.enthalten.forEach(function(e){
+    var li=document.createElement("li");
+    li.innerHTML='<span class="chk">✓</span><span>'+e+'</span>';
+    el.appendChild(li);
+  });
+  var enthItems = Array.prototype.slice.call(el.children);
+
+  var panels = { intro:$("pIntro"), enth:$("pEnth"), step:$("pStep"), outro:$("pOutro") };
+  function show(name){ Object.keys(panels).forEach(function(k){ panels[k].classList.toggle("on", k===name); }); }
+
+  // Timeline
+  var timeline = [];
+  var t = 0;
+  function at(ms, fn){ timeline.push({ ms: ms, fn: fn }); }
+
+  // 1) Intro (3.4s)
+  at(300, function(){ show("intro"); });
+  // 2) Enthalten
+  var enthStart = 3600;
+  at(enthStart, function(){ show("enth"); });
+  enthItems.forEach(function(li,i){ at(enthStart+400+i*650, function(){ li.classList.add("show"); }); });
+  var stepsStart = enthStart + 900 + enthItems.length*650 + 700;
+
+  // 3) Schritte
+  var STEP_MS = 2900;
+  var totalSteps = T.schritte.length;
+  T.schritte.forEach(function(s,i){
+    var when = stepsStart + i*STEP_MS;
+    at(when, function(){
+      if(i===0) show("step");
+      var w=$("pStep").querySelector(".stepwrap");
+      w.classList.remove("pop"); void w.offsetWidth; w.classList.add("pop");
+      $("sNum").textContent = (i+1);
+      $("sNo").textContent = "Schritt " + (i+1) + " von " + totalSteps;
+      $("sTitle").textContent = s.titel;
+      $("sText").textContent = s.text;
+      $("bar").style.width = Math.round(((i+1)/totalSteps)*100) + "%";
+    });
+  });
+
+  // 4) Outro
+  var outroStart = stepsStart + totalSteps*STEP_MS + 200;
+  at(outroStart, function(){ show("outro"); $("bar").style.width="100%"; });
+  var END = outroStart + 3200;
+
+  // Ausführen
+  timeline.forEach(function(item){ setTimeout(item.fn, item.ms); });
+  window.__DURATION_MS = END;
+  setTimeout(function(){ window.__DONE = true; }, END);
+</script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+{
+  "name": "Website-Kontaktformular Lead",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "kontakt",
+        "responseMode": "onReceived",
+        "responseData": "allEntries"
+      },
+      "id": "wh1",
+      "name": "Webhook Kontaktformular",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "kontakt-lead"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "lead",
+              "value": "={{ $json.body.name }} <{{ $json.body.email }}>: {{ $json.body.nachricht }}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "set1",
+      "name": "Lead formatieren",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        460,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Kontaktformular": {
+      "main": [
+        [
+          {
+            "node": "Lead formatieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {}
+}
