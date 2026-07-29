@@ -1,0 +1,64 @@
+{% comment %}
+  Flaschenpost-Popup: Newsletter-Anmeldung mit 10%-Code LETSDRINK10.
+  Zeigt sich einmal pro Besucher (localStorage), 7 Sekunden nach Laden.
+  Ehrlich: kein Countdown, keine Verknappung. Schliessen per X,
+  Backdrop oder Escape. Eigenstaendiges Inline-Script, kein ozean.js noetig.
+{% endcomment %}
+<div id="ld-popup" hidden>
+  <div class="ld-popup-backdrop" data-popup-close></div>
+  <div class="ld-popup-card" role="dialog" aria-modal="true" aria-labelledby="LdPopupTitle">
+    <button type="button" class="ld-popup-x" data-popup-close aria-label="Schliessen">✕</button>
+    <div class="ld-popup-mascot" aria-hidden="true">{% render 'tropfen-freund' %}</div>
+    <span class="eyebrow-sticker">Flaschenpost</span>
+    <h3 id="LdPopupTitle">10% auf deine erste Bestellung</h3>
+    <p>Melde dich an und bekomm den Code <strong>LETSDRINK10</strong> ins Postfach. Kein Spam, Abmeldung jederzeit.</p>
+    {% form 'customer', class: 'ld-popup-form' %}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <input type="email" name="contact[email]" placeholder="Deine E-Mail-Adresse" required aria-label="E-Mail-Adresse">
+      <button type="submit" class="btn btn-coral">Code holen</button>
+    {% endform %}
+    <button type="button" class="ld-popup-nein" data-popup-close>Nein danke</button>
+  </div>
+</div>
+<script>
+(function () {
+  var pop = document.getElementById("ld-popup");
+  if (!pop) return;
+  var KEY = "ld_popup_done";
+  var store;
+  try { store = window.localStorage; } catch (e) { return; }
+
+  /* Nach dem Absenden landet man mit ?customer_posted=true zurueck:
+     nie wieder zeigen, kurz bestaetigen. */
+  if (window.location.search.indexOf("customer_posted=true") !== -1) {
+    try { store.setItem(KEY, "1"); } catch (e) {}
+    setTimeout(function () {
+      if (window.ldToast) window.ldToast("🫧 Fast geschafft: Bestätige die Anmeldung in deinem Postfach.");
+    }, 800);
+    return;
+  }
+  if (store.getItem(KEY)) return;
+
+  function close() {
+    pop.hidden = true;
+    document.removeEventListener("keydown", onKey);
+    try { store.setItem(KEY, "1"); } catch (e) {}
+  }
+  function onKey(e) { if (e.key === "Escape") close(); }
+
+  setTimeout(function () {
+    pop.hidden = false;
+    document.addEventListener("keydown", onKey);
+    var input = pop.querySelector("input[type=email]");
+    if (input && window.matchMedia("(hover: hover) and (pointer: fine)").matches) input.focus();
+  }, 7000);
+
+  pop.addEventListener("click", function (e) {
+    if (e.target.closest("[data-popup-close]")) close();
+  });
+  var form = pop.querySelector("form");
+  if (form) form.addEventListener("submit", function () {
+    try { store.setItem(KEY, "1"); } catch (e) {}
+  });
+})();
+</script>

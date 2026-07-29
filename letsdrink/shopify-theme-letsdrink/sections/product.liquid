@@ -1,0 +1,159 @@
+<section class="product-page section-pad">
+  {% render 'wasserblasen' %}
+  <div class="trab-cross" style="top:6%;--sspeed:50s;animation-delay:-20s" aria-hidden="true">{% render 'hund-flasche' %}</div>
+
+  <div class="container product-page-inner">
+    <div class="product-gallery p-enter-l">
+      <div class="product-gallery-main tilt-media">
+        <img id="ProductMainImage" src="{{ product.featured_image | img_url: '800x800' }}"
+             srcset="{{ product.featured_image | img_url: '800x800' }} 800w, {{ product.featured_image | img_url: '1200x1200' }} 1200w"
+             sizes="(max-width: 900px) 92vw, 540px"
+             alt="{{ product.featured_image.alt | default: product.title | escape }}" width="800" height="800">
+      </div>
+      {% if product.images.size > 1 %}
+      <div class="product-gallery-thumbs">
+        {% for image in product.images %}
+          <button type="button" class="thumb-btn" data-full="{{ image | img_url: '800x800' }}" aria-label="Bild {{ forloop.index }} anzeigen">
+            <img src="{{ image | img_url: '160x160' }}" alt="" loading="lazy" width="68" height="68">
+          </button>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="product-details p-enter-r">
+      <span class="eyebrow-sticker">{{ product.type | default: "Haustierzubehör" }}</span>
+      <h1 class="product-title">{{ product.title }}</h1>
+      {% assign cv = product.selected_or_first_available_variant %}
+      <div class="product-price-row">
+        <span class="price-main-lg">{{ cv.price | money }}</span>
+        <span class="price-old-lg" id="ComparePrice" {% unless cv.compare_at_price > cv.price %}hidden{% endunless %}>{{ cv.compare_at_price | money }}</span>
+        <span class="badge-sale" id="SaleBadge" style="position:static;transform:none" {% unless cv.compare_at_price > cv.price %}hidden{% endunless %}>Sale</span>
+      </div>
+
+      <div class="product-desc">{{ product.description }}</div>
+
+      {% form 'product', product %}
+        {% if product.variants.size > 1 %}
+          <div class="option-row">
+            <label for="ProductSelect">Farbe</label>
+            <select name="id" id="ProductSelect">
+              {% for variant in product.variants %}
+                <option value="{{ variant.id }}" data-price="{{ variant.price | money }}" data-compare="{% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | money }}{% endif %}" {% if variant == product.selected_or_first_available_variant %}selected{% endif %} {% unless variant.available %}disabled{% endunless %}>
+                  {{ variant.title }} — {{ variant.price | money }}{% unless variant.available %} (ausverkauft){% endunless %}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        {% else %}
+          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+        {% endif %}
+
+        <div class="deal-picker">
+          <span class="deal-label">Menge wählen, Gratis-Flaschen zieht die Kasse ab</span>
+          <div class="deal-opts" role="group" aria-label="Menge wählen">
+            <button type="button" class="deal-opt" data-qty="1">1 Flasche</button>
+            <button type="button" class="deal-opt" data-qty="3">2 kaufen <small>+ 1 gratis</small></button>
+            <button type="button" class="deal-opt" data-qty="6">4 kaufen <small>+ 2 gratis</small></button>
+            <button type="button" class="deal-opt" data-qty="9">6 kaufen <small>+ 3 gratis</small></button>
+          </div>
+          <p class="deal-hint" id="DealHint" hidden>Der Rabatt „2 kaufen, 1 gratis“ wird an der Kasse automatisch abgezogen. Farben mischst du über mehrere Warenkorb-Einträge.</p>
+        </div>
+
+        <div class="qty-row">
+          <label for="Quantity">Menge</label>
+          <div class="qty-stepper">
+            <button type="button" data-step="-1" aria-label="Menge verringern">−</button>
+            <input type="number" name="quantity" id="Quantity" value="1" min="1" inputmode="numeric">
+            <button type="button" data-step="1" aria-label="Menge erhöhen">+</button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-coral magnetic add-to-cart-btn" {% unless product.available %}disabled{% endunless %}>
+          {% if product.available %}💧 In den Warenkorb{% else %}Ausverkauft{% endif %}
+        </button>
+      {% endform %}
+
+      <ul class="product-trust">
+        <li style="--td:0.5s">🇨🇭 Versand aus der Schweiz, Preise in CHF inkl. MwSt</li>
+        <li style="--td:0.62s">🔄 14 Tage Rückgabe, ohne Begründung</li>
+        <li style="--td:0.74s">💧 Läuft sie aus: Ersatz oder Geld zurück, ohne Diskussion</li>
+        <li style="--td:0.86s">🔒 Sicher und verschlüsselt bezahlen</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+{% render 'wellen-teiler', fill: '#176a85' %}
+
+<!-- ============ SO LAEUFT ES ============ -->
+<section class="riff section-pad halftone">
+  {% render 'wasserblasen' %}
+  <div class="container" style="position:relative;z-index:2">
+    <div class="section-head centered reveal">
+      <span class="eyebrow-sticker">2 in 1</span>
+      <h2 class="section-title">Wasser und Futter, ein Napf</h2>
+      <p class="section-sub">Für die Pause auf der Wanderung, im Auto oder unterwegs zum Tierarzt.</p>
+    </div>
+    <div class="sticker-grid reveal-stagger">
+      <div class="sticker-card">
+        <span class="sticker-icon">💧</span>
+        <h3>Knopf drücken</h3>
+        <p>Wasser läuft in den angebauten Napf. Eine Hand reicht, die Leine bleibt in der anderen.</p>
+      </div>
+      <div class="sticker-card">
+        <span class="sticker-icon">🐕</span>
+        <h3>Trinken lassen</h3>
+        <p>Der Napf ist flach und breit genug, dass ihn auch kleine Tiere bequem erreichen.</p>
+      </div>
+      <div class="sticker-card">
+        <span class="sticker-icon">🔁</span>
+        <h3>Aufrichten</h3>
+        <p>Was übrig ist, läuft zurück in die Flasche. Nichts wird weggekippt, nichts tropft in den Rucksack.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% render 'wellen-teiler', fill: '#1e7f9e' %}
+
+<!-- ============ MINI-FAQ AM KAUF ============ -->
+<section class="section-pad" style="background:#1e7f9e;position:relative;overflow:hidden">
+  <div class="hock-float" style="top:14%;right:5%" aria-hidden="true">{% render 'tropfen-freund' %}</div>
+  <div class="container" style="position:relative;z-index:2">
+    <div class="section-head centered reveal">
+      <span class="eyebrow-sticker">Vor dem Kauf</span>
+      <h2 class="section-title">Kurz beantwortet</h2>
+    </div>
+    <div class="faq-list reveal">
+      <div class="faq-item">
+        <button type="button" class="faq-q" aria-expanded="false">Wie viel passt rein?<span class="faq-icon">+</span></button>
+        <div class="faq-a"><div><p>550 ml. Für eine normale Runde reicht das mehrfach, weil der Rest nach jedem Trinken zurück in die Flasche läuft.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q" aria-expanded="false">Läuft sie im Rucksack aus?<span class="faq-icon">+</span></button>
+        <div class="faq-a"><div><p>Verschlossen nicht. Wenn sie bei dir doch ausläuft, ist das ein Reklamationsfall und du bekommst Ersatz oder dein Geld zurück.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q" aria-expanded="false">Geht das auch für Katzen?<span class="faq-icon">+</span></button>
+        <div class="faq-a"><div><p>Ja, für Katzen, die mitfahren oder an der Leine laufen. Der Napf ist niedrig genug.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q" aria-expanded="false">Wie reinige ich sie?<span class="faq-icon">+</span></button>
+        <div class="faq-a"><div><p>Von Hand mit warmem Wasser ausspülen, danach offen trocknen lassen.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if product.available %}
+<div id="sticky-atc" aria-hidden="true">
+  <div class="sticky-atc-info">
+    <img src="{{ product.featured_image | img_url: '92x92' }}" alt="" loading="lazy" width="46" height="46">
+    <div>
+      <div class="sticky-atc-title">{{ product.title }}</div>
+      <div class="sticky-atc-price">{{ product.selected_or_first_available_variant.price | money }}</div>
+    </div>
+  </div>
+  <button type="button" class="btn btn-coral btn-sm sticky-atc-btn">In den Warenkorb</button>
+</div>
+{% endif %}

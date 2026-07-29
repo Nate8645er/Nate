@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% if page_title %}{{ page_title }} – {% endif %}Let'sDrink</title>
+  {% if page_description %}<meta name="description" content="{{ page_description | escape }}">{% endif %}
+  <meta name="theme-color" content="#1e7f9e">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+  {{ content_for_header }}
+  <link rel="stylesheet" href="{{ 'ozean.css' | asset_url }}">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="loading">
+<a class="skip-link" href="#MainContent">Zum Inhalt springen</a>
+<div id="scroll-progress" aria-hidden="true"></div>
+
+<div id="loader" aria-hidden="true">
+  <div class="loader-blub">💧</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
+
+<header class="navbar">
+  <div class="nav-inner">
+    <a class="logo" href="{{ routes.root_url }}"><span class="logo-blub">💧</span> Let'sDrink</a>
+    <nav aria-label="Hauptnavigation">
+      {% if linklists.main-menu.links.size > 0 %}
+        {% for link in linklists.main-menu.links %}
+          <a href="{{ link.url }}">{{ link.title }}</a>
+        {% endfor %}
+      {% else %}
+        <a href="{{ routes.root_url }}">Start</a>
+        <a href="{{ routes.all_products_collection_url }}">Shop</a>
+        <a href="{{ routes.root_url }}pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>
+        <a href="{{ routes.root_url }}pages/ueber-letsdrink">Über uns</a>
+      {% endif %}
+    </nav>
+    <div class="nav-icons">
+      <a href="{{ routes.cart_url }}" class="cart-icon" aria-label="Warenkorb">🎒 <span class="cart-count">{{ cart.item_count }}</span></a>
+      <button id="menu-toggle" class="menu-toggle" aria-label="Menü öffnen" aria-expanded="false" aria-controls="mobile-menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div id="mobile-menu" class="mobile-menu" aria-hidden="true">
+  <div class="mobile-menu-backdrop"></div>
+  <nav class="mobile-menu-panel" aria-label="Mobile Navigation">
+    {% if linklists.main-menu.links.size > 0 %}
+      {% for link in linklists.main-menu.links %}
+        <a href="{{ link.url }}">{{ link.title }}</a>
+      {% endfor %}
+    {% else %}
+      <a href="{{ routes.root_url }}">Start</a>
+      <a href="{{ routes.all_products_collection_url }}">Shop</a>
+      <a href="{{ routes.root_url }}pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>
+      <a href="{{ routes.root_url }}pages/ueber-letsdrink">Über uns</a>
+    {% endif %}
+    <a href="{{ routes.cart_url }}">Warenkorb (<span class="cart-count-num">{{ cart.item_count }}</span>)</a>
+  </nav>
+</div>
+
+{% render 'flaschen-regen' %}
+
+<main id="MainContent">{{ content_for_layout }}</main>
+
+<footer class="footer">
+  <span class="grass-blade" style="left:4%" aria-hidden="true"></span>
+  <span class="grass-blade w2" style="left:9%" aria-hidden="true"></span>
+  <span class="grass-blade" style="right:7%;animation-delay:-1.4s" aria-hidden="true"></span>
+  <span class="grass-blade w2" style="right:12%;animation-delay:-3s" aria-hidden="true"></span>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="logo"><span class="logo-blub">💧</span> Let'sDrink</span>
+      <p>Eine Hand, ein Klick, und dein Tier trinkt. Die Trinkflasche mit Napf für Hund und Katze unterwegs.</p>
+    </div>
+    <div class="footer-links">
+      <h4>Navigation</h4>
+      {% if linklists.footer.links.size > 0 %}
+        {% for link in linklists.footer.links %}
+          <a href="{{ link.url }}">{{ link.title }}</a>
+        {% endfor %}
+      {% else %}
+        <a href="{{ routes.all_products_collection_url }}">Alle Produkte</a>
+        <a href="{{ routes.root_url }}pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>
+        <a href="{{ routes.root_url }}pages/haeufige-fragen">Häufige Fragen</a>
+        <a href="{{ routes.root_url }}pages/ueber-letsdrink">Über uns</a>
+        <a href="{{ routes.root_url }}pages/letsdrink-impressum">Impressum</a>
+        <a href="{{ routes.root_url }}pages/letsdrink-datenschutz">Datenschutz</a>
+        <a href="{{ routes.root_url }}pages/letsdrink-agb">AGB</a>
+      {% endif %}
+    </div>
+    <div class="footer-contact">
+      <h4>Schreib uns</h4>
+      <p>{{ shop.email }}</p>
+      <p>Antwort innerhalb eines Werktags. Ein Mensch, kein Callcenter.</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© {{ 'now' | date: "%Y" }} Let'sDrink. Alle Rechte vorbehalten.</p>
+  </div>
+</footer>
+
+<div id="toast-wrap" aria-live="polite"></div>
+
+{% render 'flaschenpost-popup' %}
+
+<script>
+/* Klickbar-Fix: FAQ-Accordion (Event-Delegation) + Loader-Failsafe.
+   Laeuft eigenstaendig, unabhaengig von ozean.js. */
+(function () {
+  document.addEventListener("click", function (e) {
+    var q = e.target.closest(".faq-q");
+    if (!q) return;
+    var item = q.closest(".faq-item");
+    if (!item) return;
+    var open = item.classList.toggle("open");
+    q.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+  setTimeout(function () {
+    document.body.classList.remove("loading");
+    var l = document.getElementById("loader");
+    if (l && l.parentNode) { l.style.opacity = "0"; l.style.pointerEvents = "none"; }
+  }, 2500);
+})();
+</script>
+<script src="{{ 'ozean.js' | asset_url }}" defer></script>
+</body>
+</html>

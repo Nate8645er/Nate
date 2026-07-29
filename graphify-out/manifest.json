@@ -1,0 +1,667 @@
+{
+  ".claude-plugin/marketplace.json": {
+    "mtime": 1785312912.4919727,
+    "ast_hash": "d762ad41aaf876545da263698ace63ac",
+    "semantic_hash": ""
+  },
+  ".claude/settings.json": {
+    "mtime": 1785312951.507975,
+    "ast_hash": "6ff86b933b67ab4f5d04f1b729c66c55",
+    "semantic_hash": ""
+  },
+  "graphify-plugin/.claude-plugin/plugin.json": {
+    "mtime": 1785312886.7858644,
+    "ast_hash": "5fa78c49f94e5db5760c0ded2da70eab",
+    "semantic_hash": ""
+  },
+  "javier-mobile/contacts.json": {
+    "mtime": 1784723413.4383292,
+    "ast_hash": "f0a1fb23f51c66f533955646271d4cf4",
+    "semantic_hash": ""
+  },
+  "javier-mobile/instagram.py": {
+    "mtime": 1784723413.4383292,
+    "ast_hash": "d4f1eb1d5f1464870065b9cd4a181f77",
+    "semantic_hash": ""
+  },
+  "javier-mobile/server.py": {
+    "mtime": 1784723413.4383292,
+    "ast_hash": "e8635116e9cdf5f22e99352213332218",
+    "semantic_hash": ""
+  },
+  "javier-mobile/static/manifest.json": {
+    "mtime": 1784723413.4410818,
+    "ast_hash": "3c94d91b5d995ade36f7145a38a4f061",
+    "semantic_hash": ""
+  },
+  "javier-mobile/static/sw.js": {
+    "mtime": 1784723413.4410818,
+    "ast_hash": "56fd9d2efb3986ccfc5386482bee52db",
+    "semantic_hash": ""
+  },
+  "javier-mobile/tools.py": {
+    "mtime": 1784723413.4410818,
+    "ast_hash": "a6a203ce41c745e3cbe4bc3cc2d35324",
+    "semantic_hash": ""
+  },
+  "letsdrink/shopify-theme-letsdrink/assets/ozean.js": {
+    "mtime": 1785274420.5366464,
+    "ast_hash": "c2398c15779950b05406af196f4c9c7b",
+    "semantic_hash": ""
+  },
+  "letsdrink/shopify-theme-letsdrink/config/settings_data.json": {
+    "mtime": 1785274668.3599348,
+    "ast_hash": "21bc24af0c86f78fade878619c6f4953",
+    "semantic_hash": ""
+  },
+  "letsdrink/shopify-theme-letsdrink/config/settings_schema.json": {
+    "mtime": 1785278449.7286925,
+    "ast_hash": "2df375e16f74d04b16ff31722335e46b",
+    "semantic_hash": ""
+  },
+  "letsdrink/shopify-theme-letsdrink/locales/de.default.json": {
+    "mtime": 1785274668.3599348,
+    "ast_hash": "0ce2904ea28a696a07913d2b6c93c647",
+    "semantic_hash": ""
+  },
+  "letsdrink/skripte/build_2in1.py": {
+    "mtime": 1785267078.7506175,
+    "ast_hash": "acf1f9ccd8c0d0c9b7e1910dc3b61241",
+    "semantic_hash": ""
+  },
+  "letsdrink/skripte/build_ad.py": {
+    "mtime": 1785267078.7491693,
+    "ast_hash": "d81816a2e8987d0ea84e2b34d4edd83c",
+    "semantic_hash": ""
+  },
+  "letsdrink/skripte/build_ad2.py": {
+    "mtime": 1785267078.7501497,
+    "ast_hash": "f9c15f57b5c22f1440e0a5a78a5a2127",
+    "semantic_hash": ""
+  },
+  "letsdrink/skripte/build_ad3.py": {
+    "mtime": 1785267078.7494285,
+    "ast_hash": "8b101e1681aeb1f88e528d4cbc82c410",
+    "semantic_hash": ""
+  },
+  "letsdrink/skripte/build_b.py": {
+    "mtime": 1785267078.7503438,
+    "ast_hash": "8a959eb395af0106ddb8b50916e51a7b",
+    "semantic_hash": ""
+  },
+  "letsdrink/skripte/build_colors.py": {
+    "mtime": 1785267078.7483895,
+    "ast_hash": "3635bf6bc49d2faf0eb225152e1a2754",
+    "semantic_hash": ""
+  },
+  "letsdrink/skripte/build_fun.py": {
+    "mtime": 1785267078.7477436,
+    "ast_hash": "e36e34d8504cacf0878be717dc7b904b",
+    "semantic_hash": ""
+  },
+  "letsdrink/skripte/build_photoad.py": {
+    "mtime": 1785267078.7498305,
+    "ast_hash": "79f015fead428b6f64a5ab2949ecd6cc",
+    "semantic_hash": ""
+  },
+  "letsdrink/skripte/build_product_images.py": {
+    "mtime": 1785267078.7504952,
+    "ast_hash": "25a887a6ff05e19c6bdedf605b6ecb41",
+    "semantic_hash": ""
+  },
+  "letsdrink/skripte/build_scene.py": {
+    "mtime": 1785267078.7487988,
+    "ast_hash": "960716ce1f01b9f7d9d3e13004283bd2",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/.claude-plugin/plugin.json": {
+    "mtime": 1784723413.4443698,
+    "ast_hash": "559375ca2cf2696883087e2f63f6200b",
+    "semantic_hash": ""
+  },
+  ".claude/agents/ultra-architect.md": {
+    "mtime": 1784723413.4290717,
+    "ast_hash": "5dbe64be1e3a556cdb6f3fdf3967aab3",
+    "semantic_hash": ""
+  },
+  ".claude/agents/ultra-business.md": {
+    "mtime": 1784723413.433608,
+    "ast_hash": "a5273408a655ac8383dcb03e0bfed7d2",
+    "semantic_hash": ""
+  },
+  ".claude/agents/ultra-data-ml.md": {
+    "mtime": 1784723413.433608,
+    "ast_hash": "c880f430f9ed03f6e587651034cbc107",
+    "semantic_hash": ""
+  },
+  ".claude/agents/ultra-design.md": {
+    "mtime": 1784723413.433608,
+    "ast_hash": "52dca8f37cc50e8e9f6eb8f103c4218b",
+    "semantic_hash": ""
+  },
+  ".claude/agents/ultra-devops.md": {
+    "mtime": 1784723413.433608,
+    "ast_hash": "595443ad658de75825fc2649d6f70091",
+    "semantic_hash": ""
+  },
+  ".claude/agents/ultra-docs.md": {
+    "mtime": 1784723413.433608,
+    "ast_hash": "72ce514bdd6ee12561237c1e61306d6f",
+    "semantic_hash": ""
+  },
+  ".claude/agents/ultra-fullstack.md": {
+    "mtime": 1784723413.433608,
+    "ast_hash": "86c545e76289911bffa03acfdc8c8a9c",
+    "semantic_hash": ""
+  },
+  ".claude/agents/ultra-orchestrator.md": {
+    "mtime": 1784723413.433608,
+    "ast_hash": "463eb0091e0b1336d051946753ed99de",
+    "semantic_hash": ""
+  },
+  ".claude/agents/ultra-qa.md": {
+    "mtime": 1784723413.433608,
+    "ast_hash": "8364683e63d386b115b427c85e25d48f",
+    "semantic_hash": ""
+  },
+  ".claude/agents/ultra-security.md": {
+    "mtime": 1784723413.433608,
+    "ast_hash": "effaf2769b954c246d3b485096c2f6d3",
+    "semantic_hash": ""
+  },
+  ".claude/commands/ultra-review.md": {
+    "mtime": 1784723413.433608,
+    "ast_hash": "8395f84deef29bec19cc2ea4c2085aca",
+    "semantic_hash": ""
+  },
+  ".claude/commands/ultra-team.md": {
+    "mtime": 1784723413.4358842,
+    "ast_hash": "eae25daf7e91e165285e917f2a6137b4",
+    "semantic_hash": ""
+  },
+  ".claude/commands/ultra.md": {
+    "mtime": 1784723413.4358842,
+    "ast_hash": "39c016c12fa74a1a78aa6a337125b7fe",
+    "semantic_hash": ""
+  },
+  ".claude/skills/ultra-enterprise-os/SKILL.md": {
+    "mtime": 1784723413.436578,
+    "ast_hash": "1d749dd99f735437b5f5b82582283399",
+    "semantic_hash": ""
+  },
+  ".claude/skills/ultra-enterprise-os/references/org-chart.md": {
+    "mtime": 1784723413.4372733,
+    "ast_hash": "318f66e3b10ca1891e7692bf69e60b24",
+    "semantic_hash": ""
+  },
+  ".github/workflows/platform-backend-release.yml": {
+    "mtime": 1785266834.5035455,
+    "ast_hash": "dab3fc99122c8512d90c256d77d3c85f",
+    "semantic_hash": ""
+  },
+  "CLAUDE.md": {
+    "mtime": 1785313040.6839805,
+    "ast_hash": "63d9b5a73d694f7172ec85555168aca8",
+    "semantic_hash": ""
+  },
+  "graphify-plugin/agents/graph-analyst.md": {
+    "mtime": 1785312886.78719,
+    "ast_hash": "b68411b3a8b378d6cbb6c447d44c01a2",
+    "semantic_hash": ""
+  },
+  "graphify-plugin/agents/graph-builder.md": {
+    "mtime": 1785312886.7871583,
+    "ast_hash": "a5885442f74500f7c641261bd6c857aa",
+    "semantic_hash": ""
+  },
+  "graphify-plugin/agents/graph-extractor.md": {
+    "mtime": 1785312886.7872179,
+    "ast_hash": "7b5d88bc0fabda37a70602fc9fe1837a",
+    "semantic_hash": ""
+  },
+  "graphify-plugin/skills/graph-query/SKILL.md": {
+    "mtime": 1785312886.7869751,
+    "ast_hash": "10434ad10836ccd3e3a53763cbfbda8c",
+    "semantic_hash": ""
+  },
+  "graphify-plugin/skills/graphify-setup/SKILL.md": {
+    "mtime": 1785312886.7862446,
+    "ast_hash": "9c3dce2228197d95ca3389fc86ca455d",
+    "semantic_hash": ""
+  },
+  "graphify-plugin/skills/graphify/SKILL.md": {
+    "mtime": 1785312886.7863202,
+    "ast_hash": "dfb0a6554c4af62df6effc61c6c7d245",
+    "semantic_hash": ""
+  },
+  "graphify-plugin/skills/graphify/references/add-watch.md": {
+    "mtime": 1785312886.7865407,
+    "ast_hash": "d59d027fe449f06aa03905a01184e779",
+    "semantic_hash": ""
+  },
+  "graphify-plugin/skills/graphify/references/exports.md": {
+    "mtime": 1785312886.7865748,
+    "ast_hash": "9da2a2152e60a22f07f05fed5158f287",
+    "semantic_hash": ""
+  },
+  "graphify-plugin/skills/graphify/references/extraction-spec.md": {
+    "mtime": 1785312886.786622,
+    "ast_hash": "42fef56a01698118f7fd722acdadea34",
+    "semantic_hash": ""
+  },
+  "graphify-plugin/skills/graphify/references/github-and-merge.md": {
+    "mtime": 1785312886.7866526,
+    "ast_hash": "cde13df085e4c492aeb7ba298a996d0d",
+    "semantic_hash": ""
+  },
+  "graphify-plugin/skills/graphify/references/hooks.md": {
+    "mtime": 1785312886.7867105,
+    "ast_hash": "3f545db6ce646650bb9de588f5512a27",
+    "semantic_hash": ""
+  },
+  "graphify-plugin/skills/graphify/references/query.md": {
+    "mtime": 1785312886.786752,
+    "ast_hash": "3c46f8ad006874260614ed8657d02307",
+    "semantic_hash": ""
+  },
+  "graphify-plugin/skills/graphify/references/transcribe.md": {
+    "mtime": 1785312886.7868385,
+    "ast_hash": "67b6a5fa6c0974e18f60db9f8932fbd8",
+    "semantic_hash": ""
+  },
+  "graphify-plugin/skills/graphify/references/update.md": {
+    "mtime": 1785312886.7868655,
+    "ast_hash": "9378bd03d56baaf78bd738ab3848f142",
+    "semantic_hash": ""
+  },
+  "javier-mobile/README.md": {
+    "mtime": 1784723413.4383292,
+    "ast_hash": "dc1cfac3ce40722aaa424f025a19beba",
+    "semantic_hash": ""
+  },
+  "javier-mobile/requirements.txt": {
+    "mtime": 1784723413.4383292,
+    "ast_hash": "0816623ab789ae9fe589e3c912bcdd69",
+    "semantic_hash": ""
+  },
+  "javier-mobile/static/index.html": {
+    "mtime": 1784723413.4410818,
+    "ast_hash": "ba6675c680067c2e61acecdd79fffb56",
+    "semantic_hash": ""
+  },
+  "letsdrink/HANDOFF.md": {
+    "mtime": 1785267078.675192,
+    "ast_hash": "7b13ba0909b56cac53a995235800696d",
+    "semantic_hash": ""
+  },
+  "letsdrink/STATUS-2026-07-28.md": {
+    "mtime": 1785309418.4065204,
+    "ast_hash": "03caaff38d6e0dc52feea6e9323ef817",
+    "semantic_hash": ""
+  },
+  "letsdrink/skripte/README.md": {
+    "mtime": 1785267078.7495916,
+    "ast_hash": "eede3051476433c699e36f160f173193",
+    "semantic_hash": ""
+  },
+  "letsdrink/texte/anzeigentexte.md": {
+    "mtime": 1785267078.7523654,
+    "ast_hash": "5221e3831469ad20a0448bbbc6b73766",
+    "semantic_hash": ""
+  },
+  "letsdrink/texte/app-empfehlungen.md": {
+    "mtime": 1785271407.7046645,
+    "ast_hash": "bb2913dfccd25d7b563d602b39362abb",
+    "semantic_hash": ""
+  },
+  "letsdrink/texte/branding.md": {
+    "mtime": 1785271940.5126612,
+    "ast_hash": "fd3d54bef71871478027a2f2de16ad1c",
+    "semantic_hash": ""
+  },
+  "letsdrink/texte/email-flows.md": {
+    "mtime": 1785271354.6206646,
+    "ast_hash": "c155388cc784f1e20e8cf15c11466255",
+    "semantic_hash": ""
+  },
+  "letsdrink/texte/google-ads.md": {
+    "mtime": 1785271385.9726646,
+    "ast_hash": "f6fd0ef07f76751dd97f8f53cd391186",
+    "semantic_hash": ""
+  },
+  "letsdrink/texte/hunde-trinkflasche-paket.md": {
+    "mtime": 1785267078.7511094,
+    "ast_hash": "2f0f142de7ef551a78d8593998dde2d7",
+    "semantic_hash": ""
+  },
+  "letsdrink/texte/launch-kit-wandersaison.md": {
+    "mtime": 1785267078.7539835,
+    "ast_hash": "b019ca1e7771ffb91d81e08d5cc7b796",
+    "semantic_hash": ""
+  },
+  "letsdrink/texte/listing-und-content.md": {
+    "mtime": 1785267078.752504,
+    "ast_hash": "f70c7075d5e6184691133ba22f1e9ec0",
+    "semantic_hash": ""
+  },
+  "letsdrink/texte/nachfuell-system-und-lieferantenpruefung.md": {
+    "mtime": 1785267078.7530572,
+    "ast_hash": "44d08e5bff67ead2ed829724d309e0b1",
+    "semantic_hash": ""
+  },
+  "letsdrink/texte/produktdaten-final.md": {
+    "mtime": 1785267078.7534595,
+    "ast_hash": "a8cf7d14d1ddba23db9b72a4dc724a9f",
+    "semantic_hash": ""
+  },
+  "letsdrink/texte/produktentscheid-trinkbrunnen.md": {
+    "mtime": 1785267078.753223,
+    "ast_hash": "331efa46d531c7b68f31cee43210fc90",
+    "semantic_hash": ""
+  },
+  "letsdrink/texte/rechtstexte.md": {
+    "mtime": 1785271775.5966623,
+    "ast_hash": "ffc82ffbb3e2263d3dbadf8896fb5aed",
+    "semantic_hash": ""
+  },
+  "letsdrink/texte/seitentexte.md": {
+    "mtime": 1785267078.7520192,
+    "ast_hash": "a6ea84f1b668d5b5cff917c99c3f3116",
+    "semantic_hash": ""
+  },
+  "letsdrink/texte/shop-aufbau-komplett.md": {
+    "mtime": 1785267078.7536926,
+    "ast_hash": "db7af1c3f58db0f8cb27c485290dec25",
+    "semantic_hash": ""
+  },
+  "letsdrink/texte/shop-texte-trinkflasche.md": {
+    "mtime": 1785267078.7525902,
+    "ast_hash": "2cfc75eb4283a37534dbdfd688f9001e",
+    "semantic_hash": ""
+  },
+  "letsdrink/texte/textpaket-letsdrink.md": {
+    "mtime": 1785267078.7515543,
+    "ast_hash": "0563e74d3ba1432ff36096a3a2a7b204",
+    "semantic_hash": ""
+  },
+  "letsdrink/texte/werbevideo-paket.md": {
+    "mtime": 1785267078.7518196,
+    "ast_hash": "aa5be8c1c34670be10a8944a52d59ac9",
+    "semantic_hash": ""
+  },
+  "render.yaml": {
+    "mtime": 1784723413.4410818,
+    "ast_hash": "0c1b44100076f130bc13c4d3d79c47b5",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/README.md": {
+    "mtime": 1784723413.4443698,
+    "ast_hash": "72159cb9cb173a96970d13a3daccbbed",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/agents/ultra-architect.md": {
+    "mtime": 1784723413.4443698,
+    "ast_hash": "5dbe64be1e3a556cdb6f3fdf3967aab3",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/agents/ultra-business.md": {
+    "mtime": 1784723413.446294,
+    "ast_hash": "a5273408a655ac8383dcb03e0bfed7d2",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/agents/ultra-data-ml.md": {
+    "mtime": 1784723413.446294,
+    "ast_hash": "c880f430f9ed03f6e587651034cbc107",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/agents/ultra-design.md": {
+    "mtime": 1784723413.446294,
+    "ast_hash": "52dca8f37cc50e8e9f6eb8f103c4218b",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/agents/ultra-devops.md": {
+    "mtime": 1784723413.446294,
+    "ast_hash": "595443ad658de75825fc2649d6f70091",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/agents/ultra-docs.md": {
+    "mtime": 1784723413.446294,
+    "ast_hash": "72ce514bdd6ee12561237c1e61306d6f",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/agents/ultra-fullstack.md": {
+    "mtime": 1784723413.446294,
+    "ast_hash": "86c545e76289911bffa03acfdc8c8a9c",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/agents/ultra-orchestrator.md": {
+    "mtime": 1784723413.446294,
+    "ast_hash": "463eb0091e0b1336d051946753ed99de",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/agents/ultra-qa.md": {
+    "mtime": 1784723413.446294,
+    "ast_hash": "8364683e63d386b115b427c85e25d48f",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/agents/ultra-security.md": {
+    "mtime": 1784723413.446294,
+    "ast_hash": "effaf2769b954c246d3b485096c2f6d3",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/commands/ultra-review.md": {
+    "mtime": 1784723413.4490716,
+    "ast_hash": "8395f84deef29bec19cc2ea4c2085aca",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/commands/ultra-team.md": {
+    "mtime": 1784723413.4494956,
+    "ast_hash": "eae25daf7e91e165285e917f2a6137b4",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/commands/ultra.md": {
+    "mtime": 1784723413.4494956,
+    "ast_hash": "39c016c12fa74a1a78aa6a337125b7fe",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/skills/ultra-enterprise-os/SKILL.md": {
+    "mtime": 1784723413.4500499,
+    "ast_hash": "1d749dd99f735437b5f5b82582283399",
+    "semantic_hash": ""
+  },
+  "ultra-enterprise-os/skills/ultra-enterprise-os/references/org-chart.md": {
+    "mtime": 1784723413.4506662,
+    "ast_hash": "318f66e3b10ca1891e7692bf69e60b24",
+    "semantic_hash": ""
+  },
+  "javier-mobile/static/icon-192.png": {
+    "mtime": 1784723413.4383292,
+    "ast_hash": "256a1eac5e21f5f0733adfc9c65080d7",
+    "semantic_hash": ""
+  },
+  "javier-mobile/static/icon-512.png": {
+    "mtime": 1784723413.4410818,
+    "ast_hash": "b34c7be4719ea92ef9d47c11963be445",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-A-wasserblau-4x5.jpg": {
+    "mtime": 1785267078.701933,
+    "ast_hash": "a71cd4dc608426fe21388be8129bf325",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-A-wasserblau-9x16.jpg": {
+    "mtime": 1785267078.71154,
+    "ast_hash": "bdd1f9244dec949444f9bc54d12d8fcd",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-B-studio-4x5.jpg": {
+    "mtime": 1785267078.7008317,
+    "ast_hash": "0ed1024da6e542e32f19b63dc80adf6b",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-B1-schuessel.jpg": {
+    "mtime": 1785267078.7037737,
+    "ast_hash": "589befbd17fc1e882eb2a6e047ae7b35",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-B2-rueckfluss.jpg": {
+    "mtime": 1785267078.704981,
+    "ast_hash": "d7a9fb8d29c0089cbf70a714f1e931ae",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-B3-einehand.jpg": {
+    "mtime": 1785267078.679405,
+    "ast_hash": "15a491d281ffbb936b3ee0ab846b1833",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-B4-dicht.jpg": {
+    "mtime": 1785267078.692142,
+    "ast_hash": "e0c7955edcad7a20d534e98b2481c993",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-B5-langerunde.jpg": {
+    "mtime": 1785267078.6998107,
+    "ast_hash": "0c38381cbe79a94b7a8812423c33a139",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-C-problem-loesung-4x5.jpg": {
+    "mtime": 1785267078.6940734,
+    "ast_hash": "5d59fc8de9786d0a88696814c1746d8c",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-C1-wasser-futter.jpg": {
+    "mtime": 1785267078.6954944,
+    "ast_hash": "59e0eef2fb1d9864c4828fd45947cab3",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-C2-pause.jpg": {
+    "mtime": 1785267078.6861284,
+    "ast_hash": "bf214947458bb6ae291bc691b25ede14",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-C3-zwei-aufgaben.jpg": {
+    "mtime": 1785267078.687066,
+    "ast_hash": "6f1f012f1b40c14ddc4a7d0f72b7b67e",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-D-im-einsatz-9x16.jpg": {
+    "mtime": 1785267078.7079647,
+    "ast_hash": "860fb472929c3d5ec9c91d7eba76d3fd",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-F1-sonnentag.jpg": {
+    "mtime": 1785267078.7058954,
+    "ast_hash": "d2fb184690c939350596aa9db81c1b88",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-F2-wassertag.jpg": {
+    "mtime": 1785267078.6983385,
+    "ast_hash": "fbab21d4113b36b971f95b15c5fe8ee1",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-F3-picknick.jpg": {
+    "mtime": 1785267078.6807566,
+    "ast_hash": "af682b3044f0bc60369b6c75a055a770",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-FOTO-1-farben.jpg": {
+    "mtime": 1785267078.6909604,
+    "ast_hash": "96288843202712857b68666811a2c5f8",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-FOTO-2-wasser-futter.jpg": {
+    "mtime": 1785267078.6896746,
+    "ast_hash": "0de0bd44c997fc9ed1486e7fc85653c9",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-G1-sonnentag.jpg": {
+    "mtime": 1785267078.6822839,
+    "ast_hash": "2e3f12c84a1e000b526244acc29e55a4",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-G2-wassertag.jpg": {
+    "mtime": 1785267078.6761432,
+    "ast_hash": "50d0c8ae821547a663b819fa3e94d515",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-G3-picknick.jpg": {
+    "mtime": 1785267078.6882083,
+    "ast_hash": "9192192badb0ea4e4e51aa662c219c65",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-H1-sonnentag.jpg": {
+    "mtime": 1785267078.6932614,
+    "ast_hash": "7199e21551147cde7c9359cf53524a53",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-H2-wassertag.jpg": {
+    "mtime": 1785267078.707006,
+    "ast_hash": "fc10a32ced68735d7c492aa39997152b",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/ad-H3-picknick.jpg": {
+    "mtime": 1785267078.6778226,
+    "ast_hash": "fe7e79b783c4673463114bde46746138",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/werbebild-feed-4x5.jpg": {
+    "mtime": 1785267078.6965125,
+    "ast_hash": "ad610a7bbd4e79abcd4ff48c830d4473",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/ad/werbebild-story-9x16.jpg": {
+    "mtime": 1785267078.6835399,
+    "ast_hash": "57099b907d6c48f854bbd84b3854e8ac",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/produktbilder/00-alle-sechs-farben.jpg": {
+    "mtime": 1785267078.7224538,
+    "ast_hash": "a818d322e6979a31f4963bd95a84ce74",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/produktbilder/01-tuerkis.jpg": {
+    "mtime": 1785267078.7169378,
+    "ast_hash": "d98e8fd7f47a4efc5bd38981f266afd0",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/produktbilder/02-mint.jpg": {
+    "mtime": 1785267078.7195036,
+    "ast_hash": "96155cffc8c6ba2da250927ecf9508b7",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/produktbilder/03-rosa.jpg": {
+    "mtime": 1785267078.7148752,
+    "ast_hash": "28f4a3f0cfbec883609a30a22de33081",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/produktbilder/04-grau.jpg": {
+    "mtime": 1785267078.7211847,
+    "ast_hash": "1dcb5d6513f0382a5d787a9feec2075a",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/produktbilder/05-schwarz.jpg": {
+    "mtime": 1785267078.7183008,
+    "ast_hash": "24d99d21054839e831d396ae36dcd513",
+    "semantic_hash": ""
+  },
+  "letsdrink/bilder/produktbilder/06-weiss.jpg": {
+    "mtime": 1785267078.7129388,
+    "ast_hash": "2087b6cff50da73c2ea50f91f338a92c",
+    "semantic_hash": ""
+  },
+  "letsdrink/quellen/ki-foto-1.jpg": {
+    "mtime": 1785267078.745596,
+    "ast_hash": "9c66a0bf766eefb35982fdc545fe046e",
+    "semantic_hash": ""
+  },
+  "letsdrink/quellen/ki-foto-2.jpg": {
+    "mtime": 1785267078.7468617,
+    "ast_hash": "30be91f3e5ce5715181efd8bd2d03764",
+    "semantic_hash": ""
+  },
+  "letsdrink/quellen/produktfoto-original.jpg": {
+    "mtime": 1785267078.7463045,
+    "ast_hash": "35f37770daac3a241dfd9ee4c1298c5e",
+    "semantic_hash": ""
+  }
+}

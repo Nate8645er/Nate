@@ -1,0 +1,13 @@
+<section class="page-shell">
+  <div class="container" style="max-width:1160px">
+    <div class="section-head centered">
+      <span class="eyebrow-sticker">Übersicht</span>
+      <h1 class="section-title">Kategorien</h1>
+    </div>
+    <div class="collections-grid">
+      {% for c in collections %}
+        <a class="coll-card" href="{{ c.url }}">{{ c.title }}</a>
+      {% endfor %}
+    </div>
+  </div>
+</section>

@@ -8,6 +8,22 @@
     }
   },
   "enabledPlugins": {
-    "ultra-enterprise-os@nate-marketplace": true
+    "ultra-enterprise-os@nate-marketplace": true,
+    "graphify@nate-marketplace": true
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v graphify >/dev/null 2>&1 || pip install -q graphifyy >/dev/null 2>&1 || true",
+            "async": true,
+            "timeout": 300,
+            "statusMessage": "Installiere graphify-CLI"
+          }
+        ]
+      }
+    ]
   }
 }

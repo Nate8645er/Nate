@@ -1,4 +1,5 @@
 shopify-theme/*.zip
+graphify-out/cache/
 
 # Secrets: NIE committen. API-Keys/Zugänge nur lokal in .env-Dateien.
 .env

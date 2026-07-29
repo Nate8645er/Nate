@@ -1,0 +1,278 @@
+{% comment %}
+  LET'SDRINK — Startseite. Comic-See mit Hund, Katze, Wassertropfen:
+  Blasen steigen, die Flaschen-Karawane zieht vorbei, der Hund trabt
+  mit der Flasche quer durchs Bild, das Produkt schwebt in der Wasserblase.
+{% endcomment %}
+{% assign feat = collections['trinkflaschen-fur-hund-und-katze'] %}
+{% if feat == blank or feat.products_count == 0 %}{% assign feat = collections.all %}{% endif %}
+{% assign hero_product = feat.products.first %}
+{% assign mission_url = hero_product.url | default: routes.all_products_collection_url %}
+
+<!-- ============ HERO: AN DEN SEE ============ -->
+<section class="ocean-hero" id="hero">
+  <span class="light-ray" style="left:12%" aria-hidden="true"></span>
+  <span class="light-ray" style="left:34%;animation-delay:-2s" aria-hidden="true"></span>
+  <span class="light-ray" style="left:70%;animation-delay:-4s" aria-hidden="true"></span>
+  <span class="cstar" style="top:12%;left:8%" aria-hidden="true">✦</span>
+  <span class="cstar green" style="top:24%;left:30%;animation-delay:0.8s" aria-hidden="true">✦</span>
+  <span class="cstar pink" style="top:9%;right:28%;animation-delay:1.5s" aria-hidden="true">✦</span>
+  <span class="cstar" style="top:40%;right:8%;animation-delay:2.2s" aria-hidden="true">✦</span>
+  <span class="cstar green" style="bottom:24%;left:16%;animation-delay:1.1s" aria-hidden="true">✦</span>
+  <span class="cstar pink" style="bottom:30%;right:20%;animation-delay:0.4s" aria-hidden="true">✦</span>
+  {% render 'wasserblasen' %}
+  {% render 'futter-wasser' %}
+  <div class="float-bowl" style="top:16%;right:6%" aria-hidden="true">{% render 'napf-insel' %}</div>
+  {%- comment -%} Negative Delays: Hund und Karawane sind schon beim Laden mitten im Bild, nicht erst nach einer halben Minute. {%- endcomment -%}
+  <div class="trab-cross" style="top:12%;--sspeed:26s;animation-delay:-6s" aria-hidden="true">{% render 'hund-flasche' %}</div>
+  <div class="trab-cross rev" style="top:74%;--sspeed:34s;animation-delay:-22s" aria-hidden="true">{% render 'hund-flasche' %}</div>
+  <div class="parade-cross" style="top:58%;--pspeed:48s;animation-delay:-20s" aria-hidden="true">{% render 'flaschen-parade' %}</div>
+  <div class="hock-float" style="top:48%;left:5%" aria-hidden="true">{% render 'tropfen-freund' %}</div>
+  <div class="hock-float" style="bottom:12%;right:3%" aria-hidden="true">{% render 'katze-flasche' %}</div>
+  <div class="hock-float" style="top:9%;left:36%;animation-delay:-2.4s" aria-hidden="true">{% render 'flasche-maskottchen' %}</div>
+  <div style="position:absolute;bottom:8%;left:10%;right:auto" aria-hidden="true">{% render 'pfoten-spur' %}</div>
+
+  <div class="hero-grid">
+    <div class="hero-pop">
+      <span class="hero-sticker">🐾 Für Hund und Katze unterwegs</span>
+      <h1 class="hero-title">Wasser dabei, aber <span class="splash">keine Schüssel?</span></h1>
+      <p class="hero-sub">Knopf drücken, das Wasser läuft in den angebauten Napf, dein Tier trinkt. Was übrig bleibt, läuft zurück in die Flasche. Und derselbe Napf nimmt auch eine Portion Trockenfutter.</p>
+      <div class="hero-ctas">
+        <a href="{{ mission_url }}" class="btn btn-coral magnetic">Flasche ansehen</a>
+        <a href="#vorteile" class="btn btn-white magnetic">Umschauen</a>
+      </div>
+      <div class="trust-pills" aria-label="Vertrauen">
+        <span>🇨🇭 Schweizer Shop</span>
+        <span>💧 550 ml, 6 Farben</span>
+        <span>🔄 14 Tage Rückgabe</span>
+      </div>
+      <p class="hero-code">🎁 10% auf deine erste Bestellung mit Code <span class="code-chip">LETSDRINK10</span></p>
+    </div>
+    <div class="hero-bubble">
+      <div class="shell" aria-hidden="true"></div>
+      {% if hero_product.featured_image %}
+        <img src="{{ hero_product.featured_image | img_url: '600x600' }}" alt="{{ hero_product.title | escape }}" width="600" height="600" fetchpriority="high">
+      {% endif %}
+    </div>
+  </div>
+  <div class="hero-wave" aria-hidden="true"><svg viewBox="0 0 1440 110" preserveAspectRatio="none"><path fill="#176a85" d="M0,60 C140,100 280,24 430,44 C580,64 700,104 860,76 C1020,48 1160,16 1300,40 C1370,52 1410,64 1440,58 L1440,112 L0,112 Z"/></svg></div>
+</section>
+
+<!-- ============ TICKER ============ -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span>💧 550 ml, reicht mehrfach</span><span class="sep">✦</span>
+    <span>🖐 Einhandbedienung, Leine bleibt in der Hand</span><span class="sep">✦</span>
+    <span>🔁 Der Rest läuft zurück in die Flasche</span><span class="sep">✦</span>
+    <span>🦴 Napf nimmt Wasser und Trockenfutter</span><span class="sep">✦</span>
+    <span>🎨 Sechs Farben</span><span class="sep">✦</span>
+    <span>💧 550 ml, reicht mehrfach</span><span class="sep">✦</span>
+    <span>🖐 Einhandbedienung, Leine bleibt in der Hand</span><span class="sep">✦</span>
+    <span>🔁 Der Rest läuft zurück in die Flasche</span><span class="sep">✦</span>
+    <span>🦴 Napf nimmt Wasser und Trockenfutter</span><span class="sep">✦</span>
+    <span>🎨 Sechs Farben</span><span class="sep">✦</span>
+  </div>
+</div>
+
+<!-- ============ VORTEILE (Sticker-Karten) ============ -->
+<section class="riff section-pad halftone" id="vorteile">
+  {% render 'wasserblasen' %}
+  <div class="trab-cross rev" style="top:10%;--sspeed:46s;animation-delay:-12s" aria-hidden="true">{% render 'hund-flasche' %}</div>
+  <div class="hock-float m-hide" style="bottom:8%;right:4%" aria-hidden="true">{% render 'katze-flasche' %}</div>
+  <div style="position:absolute;top:14%;right:14%" aria-hidden="true">{% render 'pfoten-spur' %}</div>
+  <div class="container" style="position:relative;z-index:2">
+    <div class="section-head reveal">
+      <span class="eyebrow-sticker">So funktioniert sie</span>
+      <h2 class="section-title">Eine Hand, ein Klick, dein Tier trinkt</h2>
+    </div>
+    <div class="sticker-grid reveal-stagger">
+      <div class="sticker-card">
+        <span class="sticker-icon">💧</span>
+        <h3>Knopf drücken</h3>
+        <p>Wasser läuft in den angebauten Napf. Eine Hand reicht, die Leine bleibt in der anderen.</p>
+      </div>
+      <div class="sticker-card">
+        <span class="sticker-icon">🔁</span>
+        <h3>Nichts verschwenden</h3>
+        <p>Flasche aufrichten, der Rest läuft zurück. Aus 550 ml werden mehrere Portionen statt einer.</p>
+      </div>
+      <div class="sticker-card">
+        <span class="sticker-icon">🦴</span>
+        <h3>2 in 1: Wasser und Futter</h3>
+        <p>Derselbe Napf nimmt auch Trockenfutter. Kein zweites Schüsselchen mehr im Rucksack.</p>
+      </div>
+      <div class="sticker-card">
+        <span class="sticker-icon">🎒</span>
+        <h3>Auslaufsicher verschlossen</h3>
+        <p>Verschlossen bleibt der Rucksack trocken, auch quer eingepackt. Und wenn nicht: Ersatz oder Geld zurück.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% render 'wellen-teiler', fill: '#1e7f9e' %}
+
+<!-- ============ MENGEN-DEAL ============ -->
+<section class="section-pad" id="deal" style="background:#1e7f9e;position:relative;overflow:hidden">
+  {% render 'wasserblasen' %}
+  <div class="trab-cross rev" style="top:8%;--sspeed:50s;animation-delay:-18s" aria-hidden="true">{% render 'hund-flasche' %}</div>
+  <div class="hock-float m-hide" style="bottom:10%;left:4%" aria-hidden="true">{% render 'flasche-maskottchen' %}</div>
+  <div class="container" style="position:relative;z-index:2">
+    <div class="section-head centered reveal">
+      <span class="eyebrow-sticker">Rudel-Rabatt</span>
+      <h2 class="section-title">Je mehr Schnauzen, desto besser</h2>
+      <p class="section-sub">Der Rabatt zieht an der Kasse automatisch. Farben frei mischbar.</p>
+    </div>
+    <div class="deal-grid reveal-stagger">
+      <div class="deal-card">
+        <span class="deal-badge">Beliebt</span>
+        <span class="deal-num">2 + 1</span>
+        <p>2 kaufen,<br>1 gratis dazu</p>
+      </div>
+      <div class="deal-card">
+        <span class="deal-badge">Doppelpack</span>
+        <span class="deal-num">4 + 2</span>
+        <p>4 kaufen,<br>2 gratis dazu</p>
+      </div>
+      <div class="deal-card">
+        <span class="deal-badge">Ganzes Rudel</span>
+        <span class="deal-num">6 + 3</span>
+        <p>6 kaufen,<br>3 gratis dazu</p>
+      </div>
+    </div>
+    <p class="deal-note">Einfach die Gesamtmenge in den Warenkorb legen, den Abzug übernimmt die Kasse.</p>
+    <div style="text-align:center;margin-top:30px" class="reveal">
+      <a href="{{ mission_url }}" class="btn btn-sunny magnetic">Zur Flasche</a>
+    </div>
+  </div>
+</section>
+
+{% render 'wellen-teiler', fill: '#176a85' %}
+
+<!-- ============ PRODUKTE ============ -->
+<section class="section-pad" id="shop" style="background:#176a85;position:relative;overflow:hidden">
+  <div class="parade-cross" style="top:8%;--pspeed:70s;animation-delay:-30s" aria-hidden="true">{% render 'flaschen-parade' %}</div>
+  <div class="trab-cross" style="top:70%;--sspeed:56s;animation-delay:-30s" aria-hidden="true">{% render 'hund-flasche' %}</div>
+  <div class="hock-float m-hide" style="top:12%;left:4%" aria-hidden="true">{% render 'tropfen-freund' %}</div>
+  <div class="container" style="position:relative;z-index:2">
+    <div class="section-head centered reveal">
+      <span class="eyebrow-sticker">Frisch abgefüllt</span>
+      <h2 class="section-title">Unsere Flaschen</h2>
+      <p class="section-sub">550 ml, sechs Farben, für Hund und Katze. Einzeln oder im Set.</p>
+    </div>
+    <div class="product-grid reveal-stagger">
+      {% for product in feat.products limit: 4 %}
+      <div class="product-card">
+        <div class="product-img-wrap">
+          <a href="{{ product.url }}">
+            <img src="{{ product.featured_image | img_url: '480x480' }}" alt="{{ product.title | escape }}" loading="lazy" width="480" height="480">
+            <div class="product-overlay"><span class="overlay-btn">Ansehen →</span></div>
+          </a>
+          {% if product.compare_at_price > product.price %}
+            <span class="badge-sale">Sale</span>
+          {% endif %}
+        </div>
+        <div class="product-info">
+          <h3>{{ product.title }}</h3>
+          <div class="product-price">
+            <span class="price-main">{{ product.price | money }}</span>
+            {% if product.compare_at_price > product.price %}
+              <span class="price-old">{{ product.compare_at_price | money }}</span>
+            {% endif %}
+          </div>
+          <a href="{{ product.url }}" class="btn btn-sunny btn-sm magnetic">Ansehen</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% render 'wellen-teiler', fill: '#0f4a60' %}
+
+<!-- ============ DIE SZENE AM SEE (Story) ============ -->
+<section class="aquarium section-pad" id="unterwegs">
+  {% render 'wasserblasen' %}
+  <div class="container aqua-grid">
+    <div class="aqua-scene reveal" aria-hidden="true">
+      {% render 'wasserblasen' %}
+      <span class="light-ray" style="left:30%" aria-hidden="true"></span>
+      <div class="scene-dog">{% render 'hund-flasche' %}</div>
+      <div class="scene-cat">{% render 'katze-flasche' %}</div>
+      <div class="hock-float" style="top:10%;right:10%" aria-hidden="true">{% render 'tropfen-freund' %}</div>
+      <span class="grass-blade" style="left:8%" aria-hidden="true"></span>
+      <span class="grass-blade w2" style="left:16%" aria-hidden="true"></span>
+      <span class="grass-blade w2" style="right:10%;animation-delay:-2.4s" aria-hidden="true"></span>
+    </div>
+    <div class="reveal">
+      <span class="eyebrow-sticker">Die Geschichte</span>
+      <h2 class="section-title">Angefangen hat es mit einer nassen Rucksacktasche.</h2>
+      <p style="margin-top:16px">Und mit einem Hund, der auf halber Strecke nicht richtig trinken konnte, weil das Wasser aus der hohlen Hand daneben lief. Das Problem war nie das Wasser. Es war immer das Gefäss. Deshalb gibt es diese Flasche: Napf angebaut, Rest läuft zurück, eine Hand reicht.</p>
+      <div class="aqua-stats">
+        <div class="astat"><span class="num"><span class="counter" data-target="550">550</span></span><small>Milliliter</small></div>
+        <div class="astat"><span class="num"><span class="counter" data-target="6">6</span></span><small>Farben</small></div>
+        <div class="astat"><span class="num"><span class="counter" data-target="14">14</span></span><small>Tage Rückgabe</small></div>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="{{ mission_url }}" class="btn btn-sunny magnetic">Zur Flasche</a>
+        <a href="{{ routes.root_url }}pages/ueber-letsdrink" class="btn btn-white magnetic">Über uns</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% render 'wellen-teiler', fill: '#1e7f9e' %}
+
+<!-- ============ FAQ ============ -->
+<section class="section-pad" id="faq" style="background:#1e7f9e;position:relative;overflow:hidden">
+  <div class="hock-float" style="top:16%;right:5%" aria-hidden="true">{% render 'tropfen-freund' %}</div>
+  <div class="trab-cross" style="top:78%;--sspeed:52s;animation-delay:-10s" aria-hidden="true">{% render 'hund-flasche' %}</div>
+  <div class="hock-float m-hide" style="bottom:12%;left:4%" aria-hidden="true">{% render 'katze-flasche' %}</div>
+  <div class="container" style="position:relative;z-index:2">
+    <div class="section-head centered reveal">
+      <span class="eyebrow-sticker">Gut zu wissen</span>
+      <h2 class="section-title">Kurz beantwortet</h2>
+    </div>
+    <div class="faq-list reveal">
+      <div class="faq-item">
+        <button type="button" class="faq-q" aria-expanded="false">Läuft sie im Rucksack aus?<span class="faq-icon">+</span></button>
+        <div class="faq-a"><div><p>Verschlossen nicht. Genau dafür ist der Verschluss da. Wenn sie bei dir doch ausläuft, ist das ein Reklamationsfall: Du bekommst Ersatz oder dein Geld zurück, ohne Diskussion.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q" aria-expanded="false">Funktioniert das auch bei kleinen Hunden und Katzen?<span class="faq-icon">+</span></button>
+        <div class="faq-a"><div><p>Ja. Der Napf ist flach genug, auch ein Chihuahua oder eine Katze kommt bequem heran. Für sehr grosse Hunde auf langen Touren empfehlen wir zwei Flaschen.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q" aria-expanded="false">Wie lange dauert der Versand?<span class="faq-icon">+</span></button>
+        <div class="faq-a"><div><p>Die aktuelle Lieferzeit steht ehrlich auf unserer Versandseite und im Checkout. Dauert eine Bestellung länger, schreiben wir dir, bevor du nachfragen musst.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q" aria-expanded="false">Kann ich zurückgeben?<span class="faq-icon">+</span></button>
+        <div class="faq-a"><div><p>Ja, 14 Tage, ohne Begründung. Aus hygienischen Gründen bitten wir dich, die Flasche vorher auszuspülen. Gebrauchsspuren sind in Ordnung.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% render 'wellen-teiler', fill: '#1e7f9e' %}
+
+<!-- ============ NEWSLETTER: FLASCHENPOST ============ -->
+<section class="flaschenpost section-pad">
+  {% render 'wasserblasen' %}
+  <div class="hock-float m-hide" style="top:18%;left:6%" aria-hidden="true">{% render 'flasche-maskottchen' %}</div>
+  <div class="hock-float m-hide" style="bottom:12%;right:5%;animation-delay:-2s" aria-hidden="true">{% render 'katze-flasche' %}</div>
+  <div class="container reveal">
+    <span class="eyebrow-sticker">Flaschenpost</span>
+    <h2 class="section-title">10% auf deine erste Bestellung</h2>
+    <p class="section-sub">Melde dich an und bekomm den Code LETSDRINK10 ins Postfach. Kein Spam, Abmeldung jederzeit.</p>
+    {% form 'customer', class: 'newsletter-form' %}
+      {% if form.posted_successfully? %}
+        <p class="form-status form-ok">🫧 Fast geschafft: Schau in dein Postfach und bestätige die Anmeldung.</p>
+      {% elsif form.errors %}
+        <p class="form-status form-err">Das hat nicht geklappt: {{ form.errors.messages.email }}</p>
+      {% endif %}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <input type="email" name="contact[email]" placeholder="Deine E-Mail-Adresse" required aria-label="E-Mail-Adresse">
+      <button type="submit" class="btn btn-coral magnetic">Anmelden</button>
+    {% endform %}
+  </div>
+</section>
