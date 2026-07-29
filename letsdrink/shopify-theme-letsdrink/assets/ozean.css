@@ -240,6 +240,7 @@ body.menu-open .mobile-menu-panel a:nth-child(5) { transition-delay: 0.26s; }
 .cstar.pink { color: var(--pink); text-shadow: 0 0 10px rgba(255, 164, 189, 0.8); }
 @keyframes cstarPop { 0%, 100% { opacity: 0.2; transform: scale(0.6) rotate(0deg); } 50% { opacity: 1; transform: scale(1.15) rotate(20deg); } }
 .hero-grid { position: relative; z-index: 3; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 40px; align-items: center; max-width: 1160px; margin: 0 auto; padding: 40px 24px 120px; }
+.hero-grid > * { min-width: 0; }
 .hero-pop > * { opacity: 0; transform: translateY(30px) scale(0.96); animation: popIn 0.65s var(--ease-boing) forwards; }
 .hero-pop > *:nth-child(1) { animation-delay: 0.1s; }
 .hero-pop > *:nth-child(2) { animation-delay: 0.22s; }
@@ -376,6 +377,10 @@ body.menu-open .mobile-menu-panel a:nth-child(5) { transition-delay: 0.26s; }
 .product-page { background: linear-gradient(180deg, var(--surface) 0%, var(--water) 60%); padding-top: 140px; position: relative; overflow: hidden; }
 .product-page > .container { position: relative; z-index: 2; }
 .product-page-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 54px; align-items: start; }
+/* min-width:0 zwingend: sonst zwingt die Thumbnail-Leiste (6 x 68px,
+   flex-shrink:0) die 1fr-Spalte auf Mobile ueber die Viewport-Breite
+   und Galerie + Beschreibung werden rechts abgeschnitten. */
+.product-page-inner > * { min-width: 0; }
 .p-enter-l { opacity: 0; animation: enterL 0.7s var(--ease-boing) 0.1s forwards; }
 @keyframes enterL { from { opacity: 0; transform: translateX(-40px) rotate(-2deg); } to { opacity: 1; transform: none; } }
 .p-enter-r > * { opacity: 0; animation: enterR 0.6s var(--ease-out) forwards; }
