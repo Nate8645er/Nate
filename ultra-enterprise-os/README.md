@@ -14,10 +14,11 @@ produktionsreife Endergebnis wird ausgeliefert.
 |---|---|
 | `ultra-enterprise-os` | Betriebsprotokoll in 5 Phasen: Intake → Team-Komposition → Ausfuehrung → Cross-Review → konsolidierte Delivery. Enthaelt einen **generativen Rollenkatalog** (`references/org-chart.md`): aus einem Rollen-Template lassen sich unbegrenzt viele Spezialisierungen ableiten — instanziiert wird pro Aufgabe nur, was gebraucht wird. |
 
-### 10 Agenten (echte, spawnbare Team-Leads)
+### 11 Agenten (echte, spawnbare Team-Leads)
 
 | Agent | Deckt ab |
 |---|---|
+| `ultra-prime` | Flaggschiff-Generalist — Engineering + Business + Design + CH-Recht-Bewusstsein + Security-Grundcheck in einer Rolle, fuer Aufgaben quer durch mehrere Disziplinen |
 | `ultra-orchestrator` | Chief of Staff — Zerlegung, Ownership, Ausfuehrungsplan |
 | `ultra-architect` | CTO — Architektur, Tech-Entscheidungen, Trade-offs |
 | `ultra-fullstack` | Frontend, Backend, Mobile, APIs, Datenbanken |
@@ -94,7 +95,7 @@ ultra-enterprise-os/
 ├── skills/ultra-enterprise-os/
 │   ├── SKILL.md                    # Betriebsprotokoll (5 Phasen)
 │   └── references/org-chart.md     # Generativer Rollenkatalog
-├── agents/                         # 10 spawnbare Team-Leads
+├── agents/                         # 11 spawnbare Team-Leads
 └── commands/                       # /ultra, /ultra-team, /ultra-review
 ```
 
