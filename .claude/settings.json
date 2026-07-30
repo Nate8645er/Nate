@@ -9,5 +9,17 @@
   },
   "enabledPlugins": {
     "ultra-enterprise-os@nate-marketplace": true
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "nohup bash \"$CLAUDE_PROJECT_DIR/scripts/omniroute-autostart.sh\" >/dev/null 2>&1 & exit 0"
+          }
+        ]
+      }
+    ]
   }
 }
