@@ -1,0 +1,6398 @@
+[
+ {
+  "name": "🔍🛠️Perplexity Researcher to HTML Web Page",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/#L01f50d Perplexity Research to HTML_ AI-Powered Content Creation.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 47,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "agent",
+   "chainLlm",
+   "lmChatOpenAi",
+   "outputParserStructured",
+   "telegram",
+   "toolWorkflow"
+  ],
+  "credentials": [
+   "httpCustomAuth",
+   "httpHeaderAuth",
+   "openAiApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "chrome extension backend with AI",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Analyze tradingview.com charts with Chrome extension, N8N and OpenAI.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 5,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "openAi"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "[3/3] Anomaly detection tool (crops dataset)",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Automated Hugging Face Paper Summary Fetching & Categorization Workflow.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 17,
+  "trigger": [
+   "executeWorkflowTrigger"
+  ],
+  "integrations": [],
+  "credentials": [
+   "httpHeaderAuth",
+   "qdrantApi"
+  ]
+ },
+ {
+  "name": "Autonomous AI crawler",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Autonomous AI crawler.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 38,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "outputParserStructured",
+   "supabase",
+   "toolWorkflow"
+  ],
+  "credentials": [
+   "openAiApi",
+   "supabaseApi"
+  ]
+ },
+ {
+  "name": "Bilig WorkPaper MCP formula engine for n8n agents",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Bilig WorkPaper MCP formula engine for n8n agents.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 4,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [],
+  "credentials": []
+ },
+ {
+  "name": "Build Your Own Image Search Using AI Object Detection, CDN and ElasticSearch",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Build Your Own Image Search Using AI Object Detection, CDN and ElasticSearch.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 17,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "editImage",
+   "elasticsearch"
+  ],
+  "credentials": [
+   "cloudflareApi",
+   "elasticsearchApi",
+   "httpQueryAuth"
+  ]
+ },
+ {
+  "name": "Build a Financial Documents Assistant using Qdrant and Mistral.ai",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Build a Financial Documents Assistant using Qdrant and Mistral.ai.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 29,
+  "trigger": [
+   "chatTrigger",
+   "localFileTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "chainRetrievalQa",
+   "documentDefaultDataLoader",
+   "embeddingsMistralCloud",
+   "lmChatMistralCloud",
+   "localFileTrigger",
+   "retrieverVectorStore",
+   "textSplitterRecursiveCharacterTextSplitter",
+   "vectorStoreQdrant"
+  ],
+  "credentials": [
+   "mistralCloudApi",
+   "qdrantApi"
+  ]
+ },
+ {
+  "name": "Build a Tax Code Assistant with Qdrant, Mistral.ai and OpenAI",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Build a Tax Code Assistant with Qdrant, Mistral.ai and OpenAI.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 38,
+  "trigger": [
+   "chatTrigger",
+   "executeWorkflowTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "compression",
+   "documentDefaultDataLoader",
+   "embeddingsMistralCloud",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "textSplitterRecursiveCharacterTextSplitter",
+   "toolWorkflow",
+   "vectorStoreQdrant"
+  ],
+  "credentials": [
+   "mistralCloudApi",
+   "openAiApi",
+   "qdrantApi"
+  ]
+ },
+ {
+  "name": "Building RAG Chatbot for Movie Recommendations with Qdrant and Open AI",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Building RAG Chatbot for Movie Recommendations with Qdrant and Open AI.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 27,
+  "trigger": [
+   "chatTrigger",
+   "executeWorkflowTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "documentDefaultDataLoader",
+   "embeddingsOpenAi",
+   "github",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "textSplitterTokenSplitter",
+   "toolWorkflow",
+   "vectorStoreQdrant"
+  ],
+  "credentials": [
+   "githubApi",
+   "openAiApi",
+   "qdrantApi"
+  ]
+ },
+ {
+  "name": "Chat with GitHub OpenAPI Specification using RAG (Pinecone and OpenAI)",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Chat with GitHub API Documentation_ RAG-Powered Chatbot with Pinecone & OpenAI.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 17,
+  "trigger": [
+   "chatTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "documentDefaultDataLoader",
+   "embeddingsOpenAi",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "textSplitterRecursiveCharacterTextSplitter",
+   "toolVectorStore",
+   "vectorStorePinecone"
+  ],
+  "credentials": [
+   "openAiApi",
+   "pineconeApi"
+  ]
+ },
+ {
+  "name": "Google Analytics: Weekly Report",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Create a Google Analytics Data Report with AI and sent it to E-Mail and Telegram.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 14,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "googleAnalytics",
+   "openAi",
+   "summarize",
+   "telegram",
+   "toolCalculator"
+  ],
+  "credentials": [
+   "googleAnalyticsOAuth2",
+   "openAiApi",
+   "smtp",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "Customer Insights with Qdrant, Python and Information Extractor",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Customer Insights with Qdrant, Python and Information Extractor.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 37,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "documentDefaultDataLoader",
+   "embeddingsOpenAi",
+   "googleSheets",
+   "informationExtractor",
+   "lmChatOpenAi",
+   "textSplitterRecursiveCharacterTextSplitter",
+   "vectorStoreQdrant"
+  ],
+  "credentials": [
+   "googleSheetsOAuth2Api",
+   "openAiApi",
+   "qdrantApi"
+  ]
+ },
+ {
+  "name": "DataForge Lite — Single URL AI Scraper",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/DataForge Lite - AI URL Data Extractor.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 7,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "openAi"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Deduplicate Scraping AI Grants for Eligibility using AI",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Deduplicate Scraping AI Grants for Eligibility using AI.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 24,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "airtable",
+   "gmail",
+   "informationExtractor",
+   "lmChatOpenAi"
+  ],
+  "credentials": [
+   "airtableTokenApi",
+   "gmailOAuth2",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Enrich Property Inventory Survey with Image Recognition and AI Agent",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Enrich Property Inventory Survey with Image Recognition and AI Agent.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 29,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "airtable",
+   "lmChatOpenAi",
+   "openAi",
+   "outputParserStructured",
+   "toolWorkflow"
+  ],
+  "credentials": [
+   "airtableTokenApi",
+   "httpHeaderAuth",
+   "openAiApi",
+   "serpApi"
+  ]
+ },
+ {
+  "name": "Extract insights & analyse YouTube comments via AI Agent chat",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Extract insights & analyse YouTube comments via AI Agent chat.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 29,
+  "trigger": [
+   "chatTrigger",
+   "executeWorkflowTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "memoryPostgresChat",
+   "openAi",
+   "toolWorkflow"
+  ],
+  "credentials": [
+   "httpQueryAuth",
+   "openAiApi",
+   "postgres"
+  ]
+ },
+ {
+  "name": "Generate SEO Seed Keywords Using AI",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Generate SEO Seed Keywords Using AI.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 15,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatAnthropic"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "HN Who is Hiring Scrape",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Hacker News Job Listing Scraper and Parser.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 20,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "airtable",
+   "chainLlm",
+   "lmChatOpenAi",
+   "outputParserStructured"
+  ],
+  "credentials": [
+   "airtableTokenApi",
+   "httpHeaderAuth",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Hacker News to Video Template - AlexK1919",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Hacker News to Video Content.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 48,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "dropbox",
+   "googleDrive",
+   "hackerNews",
+   "linkedIn",
+   "lmChatOpenAi",
+   "microsoftOneDrive",
+   "openAi",
+   "outputParserStructured",
+   "s3",
+   "toolHttpRequest",
+   "twitter"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "httpCustomAuth",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Host Your Own AI Deep Research Agent with n8n, Apify and OpenAI o3",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Host Your Own AI Deep Research Agent with n8n, Apify and OpenAI o3.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 87,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "formTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "executionData",
+   "form",
+   "lmChatGoogleGemini",
+   "lmChatOpenAi",
+   "notion",
+   "outputParserStructured"
+  ],
+  "credentials": [
+   "googlePalmApi",
+   "httpHeaderAuth",
+   "httpQueryAuth",
+   "notionApi",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Intelligent Web Query and Semantic Re-Ranking Flow",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Intelligent Web Query and Semantic Re-Ranking Flow using Brave and Google Gemini.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 20,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "chainLlm",
+   "lmChatAnthropic",
+   "lmChatGoogleGemini",
+   "lmChatOpenAi",
+   "outputParserAutofixing",
+   "outputParserStructured"
+  ],
+  "credentials": [
+   "anthropicApi",
+   "googlePalmApi",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Learn Anything from HN - Get Top Resource Recommendations from Hacker News",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Learn Anything from HN - Get Top Resource Recommendations from Hacker News.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 10,
+  "trigger": [
+   "formTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "hackerNews",
+   "lmChatGoogleGemini"
+  ],
+  "credentials": [
+   "googlePalmApi",
+   "smtp"
+  ]
+ },
+ {
+  "name": "Live Web Research Agent with Superhighway",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Live Web Research Agent with Superhighway.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 7,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [],
+  "credentials": []
+ },
+ {
+  "name": "Make OpenAI Citation for File Retrieval RAG",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Make OpenAI Citation for File Retrieval RAG.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 19,
+  "trigger": [
+   "chatTrigger"
+  ],
+  "integrations": [
+   "memoryBufferWindow",
+   "openAi"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Open Deep Research - AI-Powered Autonomous Research Workflow",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Open Deep Research - AI-Powered Autonomous Research Workflow.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 17,
+  "trigger": [
+   "chatTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "chainLlm",
+   "lmChatOpenRouter",
+   "memoryBufferWindow",
+   "toolWikipedia"
+  ],
+  "credentials": [
+   "httpHeaderAuth",
+   "openRouterApi"
+  ]
+ },
+ {
+  "name": "Query Perplexity AI from your n8n workflows",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Query Perplexity AI from your n8n workflows.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 6,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [],
+  "credentials": [
+   "httpBasicAuth",
+   "httpHeaderAuth"
+  ]
+ },
+ {
+  "name": "Recipe Recommendations with Qdrant and Mistral",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Recipe Recommendations with Qdrant and Mistral.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 33,
+  "trigger": [
+   "chatTrigger",
+   "executeWorkflowTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "documentDefaultDataLoader",
+   "embeddingsMistralCloud",
+   "lmChatMistralCloud",
+   "textSplitterRecursiveCharacterTextSplitter",
+   "toolWorkflow",
+   "vectorStoreQdrant"
+  ],
+  "credentials": [
+   "mistralCloudApi",
+   "qdrantApi"
+  ]
+ },
+ {
+  "name": "Reconcile Rent Payments with Local Excel Spreadsheet and OpenAI",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Reconcile Rent Payments with Local Excel Spreadsheet and OpenAI.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 17,
+  "trigger": [
+   "localFileTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "localFileTrigger",
+   "outputParserStructured",
+   "toolCode"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Scrape Trustpilot Reviews with DeepSeek, Analyze Sentiment with OpenAI",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Scrape Trustpilot Reviews with DeepSeek, Analyze Sentiment with OpenAI.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 20,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "googleSheets",
+   "informationExtractor",
+   "lmChatOpenAi",
+   "sentimentAnalysis"
+  ],
+  "credentials": [
+   "googleSheetsOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "News Extraction",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Scrape and summarize posts of a news site without RSS feed using AI and save them to a NocoDB.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 36,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "nocoDb",
+   "openAi"
+  ],
+  "credentials": [
+   "nocoDbApiToken",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Scrape and summarize webpages with AI",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Scrape and summarize webpages with AI.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 15,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "chainSummarization",
+   "documentDefaultDataLoader",
+   "lmChatOpenAi",
+   "textSplitterRecursiveCharacterTextSplitter"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Google analytics template",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Send Google analytics data to A.I. to analyze then save results in Baserow.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 22,
+  "trigger": [
+   "manualTrigger",
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "baserow",
+   "googleAnalytics"
+  ],
+  "credentials": [
+   "googleAnalyticsOAuth2"
+  ]
+ },
+ {
+  "name": "Google analytics template",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Send Google analytics data to A.I. to analyze then save results in BaserowSend Google analytics data to A.I. to analyze then save results in Baserow.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 22,
+  "trigger": [
+   "manualTrigger",
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "baserow",
+   "googleAnalytics"
+  ],
+  "credentials": [
+   "googleAnalyticsOAuth2"
+  ]
+ },
+ {
+  "name": "SocialPulse Lite — Single Source Monitor (Reddit Only)",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/SocialPulse Lite - Reddit Trend Monitor.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 7,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "googleSheets",
+   "openAi"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Spot Workplace Discrimination Patterns with AI",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Spot Workplace Discrimination Patterns with AI.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 38,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "informationExtractor",
+   "lmChatOpenAi",
+   "quickChart"
+  ],
+  "credentials": [
+   "httpQueryAuth",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "SERPBear analytics template",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Summarize SERPBear data with AI (via Openrouter) and save it to Baserow.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 10,
+  "trigger": [
+   "manualTrigger",
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "baserow"
+  ],
+  "credentials": [
+   "baserowApi",
+   "httpHeaderAuth"
+  ]
+ },
+ {
+  "name": "Umami analytics template",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Summarize Umami data with AI (via Openrouter) and save it to Baserow.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 17,
+  "trigger": [
+   "manualTrigger",
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "baserow"
+  ],
+  "credentials": [
+   "baserowApi",
+   "httpHeaderAuth"
+  ]
+ },
+ {
+  "name": "Survey Insights with Qdrant, Python and Information Extractor",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Survey Insights with Qdrant, Python and Information Extractor.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 42,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "documentDefaultDataLoader",
+   "embeddingsOpenAi",
+   "googleSheets",
+   "informationExtractor",
+   "lmChatOpenAi",
+   "textSplitterRecursiveCharacterTextSplitter",
+   "vectorStoreQdrant"
+  ],
+  "credentials": [
+   "googleSheetsOAuth2Api",
+   "openAiApi",
+   "qdrantApi"
+  ]
+ },
+ {
+  "name": "Selenium Ultimate Scraper Workflow",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Ultimate Scraper Workflow for n8n.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 63,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "informationExtractor",
+   "lmChatOpenAi",
+   "openAi"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "[1/3 - anomaly detection] [1/2 - KNN classification] Batch upload dataset to Qdrant (crops dataset)",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Vector Database as a Big Data Analysis Tool for AI Agents [1_3 anomaly][1_2 KNN].json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 25,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "googleCloudStorage"
+  ],
+  "credentials": [
+   "googleCloudStorageOAuth2Api",
+   "httpHeaderAuth",
+   "qdrantApi"
+  ]
+ },
+ {
+  "name": "[2/2] KNN classifier (lands dataset)",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Vector Database as a Big Data Analysis Tool for AI Agents [2_2 KNN].json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 18,
+  "trigger": [
+   "executeWorkflowTrigger"
+  ],
+  "integrations": [],
+  "credentials": [
+   "httpHeaderAuth",
+   "qdrantApi"
+  ]
+ },
+ {
+  "name": "[2/3] Set up medoids (2 types) for anomaly detection (crops dataset)",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Vector Database as a Big Data Analysis Tool for AI Agents [2_3 - anomaly].json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 48,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [],
+  "credentials": [
+   "httpHeaderAuth",
+   "qdrantApi"
+  ]
+ },
+ {
+  "name": "[3/3] Anomaly detection tool (crops dataset)",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Vector Database as a Big Data Analysis Tool for AI Agents [3_3 - anomaly].json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 17,
+  "trigger": [
+   "executeWorkflowTrigger"
+  ],
+  "integrations": [],
+  "credentials": [
+   "httpHeaderAuth",
+   "qdrantApi"
+  ]
+ },
+ {
+  "name": "Visual Regression Testing with Apify and AI Vision Model",
+  "file": "workflows/AI_Research_RAG_and_Data_Analysis/Visual Regression Testing with Apify and AI Vision Model.json",
+  "category": "AI_Research_RAG_and_Data_Analysis",
+  "nodes": 34,
+  "trigger": [
+   "manualTrigger",
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "googleDrive",
+   "googleSheets",
+   "linear",
+   "lmChatGoogleGemini",
+   "outputParserStructured"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "googlePalmApi",
+   "googleSheetsOAuth2Api",
+   "httpQueryAuth",
+   "linearApi"
+  ]
+ },
+ {
+  "name": "AI Agent for project management and meetings with Airtable and Fireflies",
+  "file": "workflows/Airtable/AI Agent for project management and meetings with Airtable and Fireflies.json",
+  "category": "Airtable",
+  "nodes": 18,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "webhook"
+  ],
+  "integrations": [
+   "agent",
+   "airtable",
+   "gmailTool",
+   "googleCalendarTool",
+   "lmChatOpenAi",
+   "toolWorkflow"
+  ],
+  "credentials": [
+   "airtableTokenApi",
+   "gmailOAuth2",
+   "googleCalendarOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "AI Agent to chat with Airtable and analyze data",
+  "file": "workflows/Airtable/AI Agent to chat with Airtable and analyze data.json",
+  "category": "Airtable",
+  "nodes": 41,
+  "trigger": [
+   "chatTrigger",
+   "executeWorkflowTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "airtable",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "toolCode",
+   "toolWorkflow"
+  ],
+  "credentials": [
+   "airtableTokenApi",
+   "httpQueryAuth",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Get Airtable data in Obsidian Notes",
+  "file": "workflows/Airtable/Get Airtable data via AI and Obsidian Notes.json",
+  "category": "Airtable",
+  "nodes": 7,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "agent",
+   "airtableTool",
+   "lmChatOpenAi"
+  ],
+  "credentials": [
+   "airtableTokenApi",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Handling Job Application Submissions with AI and n8n Forms",
+  "file": "workflows/Airtable/Handling Job Application Submissions with AI and n8n Forms.json",
+  "category": "Airtable",
+  "nodes": 23,
+  "trigger": [
+   "formTrigger"
+  ],
+  "integrations": [
+   "airtable",
+   "chainLlm",
+   "form",
+   "lmChatOpenAi",
+   "outputParserStructured",
+   "textClassifier"
+  ],
+  "credentials": [
+   "airtableTokenApi",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "OpenAI Assistant for Hubspot Chat",
+  "file": "workflows/Airtable/vAssistant for Hubspot Chat using OpenAi and Airtable.json",
+  "category": "Airtable",
+  "nodes": 34,
+  "trigger": [
+   "webhook"
+  ],
+  "integrations": [
+   "airtable",
+   "openAi"
+  ],
+  "credentials": [
+   "airtableTokenApi",
+   "hubspotAppToken",
+   "hubspotDeveloperApi",
+   "hubspotOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Chat with Postgresql Database",
+  "file": "workflows/Database_and_Storage/Chat with Postgresql Database.json",
+  "category": "Database_and_Storage",
+  "nodes": 11,
+  "trigger": [
+   "chatTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "postgresTool"
+  ],
+  "credentials": [
+   "openAiApi",
+   "postgres"
+  ]
+ },
+ {
+  "name": "Generate SQL queries from schema only - AI-powered",
+  "file": "workflows/Database_and_Storage/Generate SQL queries from schema only - AI-powered.json",
+  "category": "Database_and_Storage",
+  "nodes": 29,
+  "trigger": [
+   "chatTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "mySql"
+  ],
+  "credentials": [
+   "mySql",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "MongoDB Agent",
+  "file": "workflows/Database_and_Storage/MongoDB AI Agent - Intelligent Movie Recommendations.json",
+  "category": "Database_and_Storage",
+  "nodes": 8,
+  "trigger": [
+   "chatTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "mongoDbTool",
+   "toolWorkflow"
+  ],
+  "credentials": [
+   "mongoDb",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Supabase Insertion & Upsertion & Retrieval",
+  "file": "workflows/Database_and_Storage/Supabase Insertion & Upsertion & Retrieval.json",
+  "category": "Database_and_Storage",
+  "nodes": 21,
+  "trigger": [
+   "chatTrigger"
+  ],
+  "integrations": [
+   "chainRetrievalQa",
+   "documentDefaultDataLoader",
+   "embeddingsOpenAi",
+   "googleDrive",
+   "lmChatOpenAi",
+   "retrieverVectorStore",
+   "supabase",
+   "textSplitterRecursiveCharacterTextSplitter",
+   "vectorStoreSupabase"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "SQL agent with memory",
+  "file": "workflows/Database_and_Storage/Talk to your SQLite database with a LangChain AI Agent.json",
+  "category": "Database_and_Storage",
+  "nodes": 13,
+  "trigger": [
+   "chatTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "compression",
+   "lmChatOpenAi",
+   "memoryBufferWindow"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Discord AI bot",
+  "file": "workflows/Discord/Discord AI-powered bot.json",
+  "category": "Discord",
+  "nodes": 9,
+  "trigger": [
+   "manualTrigger",
+   "webhook"
+  ],
+  "integrations": [
+   "discord",
+   "openAi"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Send daily translated Calvin and Hobbes Comics to Discord",
+  "file": "workflows/Discord/Send daily translated Calvin and Hobbes Comics to Discord.json",
+  "category": "Discord",
+  "nodes": 8,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "discord",
+   "informationExtractor",
+   "lmChatOpenAi",
+   "openAi"
+  ],
+  "credentials": [
+   "discordWebhookApi",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "YouTube Videos with AI Summaries on Discord",
+  "file": "workflows/Discord/Share YouTube Videos with AI Summaries on Discord.json",
+  "category": "Discord",
+  "nodes": 8,
+  "trigger": [
+   "rssFeedReadTrigger"
+  ],
+  "integrations": [
+   "discord",
+   "openAi",
+   "rssFeedReadTrigger"
+  ],
+  "credentials": [
+   "discordWebhookApi",
+   "openAiApi",
+   "youTubeOAuth2Api"
+  ]
+ },
+ {
+  "name": "Conversational Interviews with AI Agents and n8n Forms",
+  "file": "workflows/Forms_and_Surveys/Conversational Interviews with AI Agents and n8n Forms.json",
+  "category": "Forms_and_Surveys",
+  "nodes": 40,
+  "trigger": [
+   "formTrigger",
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "agent",
+   "form",
+   "googleSheets",
+   "lmChatGroq",
+   "memoryBufferWindow",
+   "memoryManager",
+   "redis"
+  ],
+  "credentials": [
+   "googleSheetsOAuth2Api",
+   "groqApi",
+   "redis"
+  ]
+ },
+ {
+  "name": "Email Subscription Service with n8n Forms, Airtable and AI",
+  "file": "workflows/Forms_and_Surveys/Email Subscription Service with n8n Forms, Airtable and AI.json",
+  "category": "Forms_and_Surveys",
+  "nodes": 32,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "formTrigger",
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "airtable",
+   "editImage",
+   "executionData",
+   "gmail",
+   "lmChatGroq",
+   "memoryBufferWindow",
+   "openAi",
+   "toolWikipedia"
+  ],
+  "credentials": [
+   "airtableTokenApi",
+   "gmailOAuth2",
+   "groqApi",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Qualifying Appointment Requests with AI & n8n Forms",
+  "file": "workflows/Forms_and_Surveys/Qualifying Appointment Requests with AI & n8n Forms.json",
+  "category": "Forms_and_Surveys",
+  "nodes": 25,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "formTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "form",
+   "gmail",
+   "googleCalendar",
+   "lmChatOpenAi",
+   "textClassifier"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "googleCalendarOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Tunova — Generate a song from a form",
+  "file": "workflows/Forms_and_Surveys/Tunova - Generate a song from a form.json",
+  "category": "Forms_and_Surveys",
+  "nodes": 5,
+  "trigger": [
+   "formTrigger"
+  ],
+  "integrations": [],
+  "credentials": [
+   "httpHeaderAuth"
+  ]
+ },
+ {
+  "name": "#L01f4c8 Receive Daily Market News from FT.com to your Microsoft outlook inbox",
+  "file": "workflows/Gmail_and_Email_Automation/#L01f4c8 Receive Daily Market News from FT.com to your Microsoft outlook inbox.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 8,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatGoogleGemini",
+   "microsoftOutlook"
+  ],
+  "credentials": [
+   "googlePalmApi",
+   "microsoftOutlookOAuth2Api"
+  ]
+ },
+ {
+  "name": "Very simple Human in the loop system email with AI e IMAP",
+  "file": "workflows/Gmail_and_Email_Automation/A Very Simple _Human in the Loop_ Email Response System Using AI and IMAP.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 16,
+  "trigger": [],
+  "integrations": [
+   "agent",
+   "chainSummarization",
+   "emailReadImap",
+   "lmChatOpenAi"
+  ],
+  "credentials": [
+   "imap",
+   "openAiApi",
+   "smtp"
+  ]
+ },
+ {
+  "name": "AI Email Auto-Responder (Ollama)",
+  "file": "workflows/Gmail_and_Email_Automation/AI Email Auto-Responder with Ollama.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 6,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "emailReadImap"
+  ],
+  "credentials": [
+   "imap"
+  ]
+ },
+ {
+  "name": "AI Email processing autoresponder with approval (Yes/No)",
+  "file": "workflows/Gmail_and_Email_Automation/AI-powered email processing autoresponder and response approval (Yes_No).json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 17,
+  "trigger": [],
+  "integrations": [
+   "agent",
+   "chainSummarization",
+   "emailReadImap",
+   "embeddingsOpenAi",
+   "gmail",
+   "lmChatOpenAi",
+   "vectorStoreQdrant"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "imap",
+   "openAiApi",
+   "qdrantApi",
+   "smtp"
+  ]
+ },
+ {
+  "name": "Analyze & Sort Suspicious Email Contents with ChatGPT",
+  "file": "workflows/Gmail_and_Email_Automation/Analyze & Sort Suspicious Email Contents with ChatGPT.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 25,
+  "trigger": [
+   "gmailTrigger",
+   "microsoftOutlookTrigger"
+  ],
+  "integrations": [
+   "gmailTrigger",
+   "jira",
+   "microsoftOutlookTrigger",
+   "openAi"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "httpBasicAuth",
+   "jiraSoftwareCloudApi",
+   "microsoftOutlookOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Analyze Suspicious Email Contents with ChatGPT Vision",
+  "file": "workflows/Gmail_and_Email_Automation/Analyze Suspicious Email Contents with ChatGPT Vision.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 18,
+  "trigger": [
+   "gmailTrigger",
+   "microsoftOutlookTrigger"
+  ],
+  "integrations": [
+   "gmailTrigger",
+   "jira",
+   "microsoftOutlookTrigger",
+   "openAi"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "httpBasicAuth",
+   "jiraSoftwareCloudApi",
+   "microsoftOutlookOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Auto Categorise Outlook Emails with AI",
+  "file": "workflows/Gmail_and_Email_Automation/Auto Categorise Outlook Emails with AI.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 36,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOllama",
+   "microsoftOutlook"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Auto-label incoming Gmail messages with AI nodes",
+  "file": "workflows/Gmail_and_Email_Automation/Auto-label incoming Gmail messages with AI nodes.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 19,
+  "trigger": [
+   "gmailTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "gmail",
+   "gmailTrigger",
+   "lmChatOpenAi",
+   "outputParserStructured"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Basic Automatic Gmail Email Labelling with OpenAI and Gmail API",
+  "file": "workflows/Gmail_and_Email_Automation/Basic Automatic Gmail Email Labelling with OpenAI and Gmail API.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 13,
+  "trigger": [
+   "gmailTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "gmailTool",
+   "gmailTrigger",
+   "lmChatOpenAi",
+   "memoryBufferWindow"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Classify lemlist replies using OpenAI and automate reply handling",
+  "file": "workflows/Gmail_and_Email_Automation/Classify lemlist replies using OpenAI and automate reply handling.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 18,
+  "trigger": [
+   "lemlistTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "lemlist",
+   "lemlistTrigger",
+   "lmChatOpenAi",
+   "outputParserStructured",
+   "slack"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Compose reply draft in Gmail with OpenAI Assistant",
+  "file": "workflows/Gmail_and_Email_Automation/Compose reply draft in Gmail with OpenAI Assistant.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 23,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "gmail",
+   "openAi"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "03 - Rassegna email mattutina con AI",
+  "file": "workflows/Gmail_and_Email_Automation/Daily AI digest of unread emails to Telegram (Italian).json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 7,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "gmail",
+   "openAi",
+   "telegram"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Daily IMAP Email Summary to Telegram (Local Ollama)",
+  "file": "workflows/Gmail_and_Email_Automation/Daily Email Notification.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 14,
+  "trigger": [
+   "manualTrigger",
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "executeCommand",
+   "telegram"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Effortless Email Management with AI",
+  "file": "workflows/Gmail_and_Email_Automation/Effortless Email Management with AI-Powered Summarization & Review.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 31,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "chainSummarization",
+   "documentDefaultDataLoader",
+   "emailReadImap",
+   "embeddingsOpenAi",
+   "gmail",
+   "googleDrive",
+   "lmChatDeepSeek",
+   "lmChatOpenAi",
+   "textClassifier",
+   "textSplitterTokenSplitter",
+   "vectorStoreQdrant"
+  ],
+  "credentials": [
+   "deepSeekApi",
+   "gmailOAuth2",
+   "googleDriveOAuth2Api",
+   "httpHeaderAuth",
+   "imap",
+   "openAiApi",
+   "qdrantApi",
+   "smtp"
+  ]
+ },
+ {
+  "name": "Email Summary Agent",
+  "file": "workflows/Gmail_and_Email_Automation/Email Summary Agent.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 9,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "gmail",
+   "openAi"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Extract spend details (template)",
+  "file": "workflows/Gmail_and_Email_Automation/Extract spending history from gmail to google sheet.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 24,
+  "trigger": [
+   "gmailTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "gmailTrigger",
+   "googleSheets",
+   "lmChatGoogleGemini",
+   "lmChatGroq",
+   "outputParserStructured"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "googlePalmApi",
+   "googleSheetsOAuth2Api",
+   "groqApi"
+  ]
+ },
+ {
+  "name": "Gmail AI auto-responder: create draft replies to incoming emails",
+  "file": "workflows/Gmail_and_Email_Automation/Gmail AI Auto-Responder_ Create Draft Replies to incoming emails.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 12,
+  "trigger": [
+   "gmailTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "gmail",
+   "gmailTrigger",
+   "lmChatOpenAi",
+   "outputParserStructured"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "InboxZero Lite — Simple Email Classifier (Log Only)",
+  "file": "workflows/Gmail_and_Email_Automation/InboxZero Lite - AI Email Classifier.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 6,
+  "trigger": [
+   "gmailTrigger"
+  ],
+  "integrations": [
+   "gmailTrigger",
+   "googleSheets",
+   "openAi"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "LeadPilot Lite — Manual Lead Email Writer",
+  "file": "workflows/Gmail_and_Email_Automation/LeadPilot Lite - AI Cold Email Writer.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 7,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "googleSheets",
+   "openAi"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Microsoft Outlook AI Email Assistant",
+  "file": "workflows/Gmail_and_Email_Automation/Microsoft Outlook AI Email Assistant with contact support from Monday and Airtable.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 28,
+  "trigger": [
+   "manualTrigger",
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "airtable",
+   "lmChatOpenAi",
+   "microsoftOutlook",
+   "mondayCom",
+   "outputParserStructured"
+  ],
+  "credentials": [
+   "airtableTokenApi",
+   "microsoftOutlookOAuth2Api",
+   "mondayComApi",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Contact Form Text Classifier for eCommerce",
+  "file": "workflows/Gmail_and_Email_Automation/Modular & Customizable AI-Powered Email Routing_ Text Classifier for eCommerce.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 14,
+  "trigger": [
+   "formTrigger"
+  ],
+  "integrations": [
+   "googleSheets",
+   "lmChatOpenAi",
+   "textClassifier"
+  ],
+  "credentials": [
+   "googleSheetsOAuth2Api",
+   "openAiApi",
+   "smtp"
+  ]
+ },
+ {
+  "name": "Send a ChatGPT email reply and save responses to Google Sheets",
+  "file": "workflows/Gmail_and_Email_Automation/Send a ChatGPT email reply and save responses to Google Sheets.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 49,
+  "trigger": [
+   "gmailTrigger",
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "gmail",
+   "gmailTrigger",
+   "googleSheets",
+   "openAi"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "googleSheetsOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Send specific PDF attachments from Gmail to Google Drive using OpenAI",
+  "file": "workflows/Gmail_and_Email_Automation/Send specific PDF attachments from Gmail to Google Drive using OpenAI.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 18,
+  "trigger": [
+   "gmailTrigger"
+  ],
+  "integrations": [
+   "gmailTrigger",
+   "googleDrive",
+   "openAi",
+   "readPDF"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "googleDriveOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Summarize emails with A.I. then send to messenger",
+  "file": "workflows/Gmail_and_Email_Automation/Summarize your emails with A.I. (via Openrouter) and send to Line messenger.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 7,
+  "trigger": [],
+  "integrations": [
+   "emailReadImap"
+  ],
+  "credentials": [
+   "httpHeaderAuth",
+   "imap"
+  ]
+ },
+ {
+  "name": "Personalized Cold Email Writer (Lite)",
+  "file": "workflows/Gmail_and_Email_Automation/Website-Grounded Cold Email Writer.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 6,
+  "trigger": [
+   "formTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "form",
+   "lmChatOpenAi"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "create e-mail responses with fastmail and OpenAI",
+  "file": "workflows/Gmail_and_Email_Automation/create e-mail responses with fastmail and OpenAI.json",
+  "category": "Gmail_and_Email_Automation",
+  "nodes": 11,
+  "trigger": [],
+  "integrations": [
+   "emailReadImap",
+   "openAi"
+  ],
+  "credentials": [
+   "httpHeaderAuth",
+   "imap",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Vision-Based AI Agent Scraper - with Google Sheets, ScrapingBee, and Gemini",
+  "file": "workflows/Google_Drive_and_Google_Sheets/#U2728 Vision-Based AI Agent Scraper - with Google Sheets, ScrapingBee, and Gemini.json",
+  "category": "Google_Drive_and_Google_Sheets",
+  "nodes": 29,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "googleSheets",
+   "lmChatGoogleGemini",
+   "outputParserStructured",
+   "toolWorkflow"
+  ],
+  "credentials": [
+   "googleApi",
+   "googlePalmApi"
+  ]
+ },
+ {
+  "name": "Airtable to Google Sheets Auto-Sync",
+  "file": "workflows/Google_Drive_and_Google_Sheets/Airtable to Google Sheets Auto-Sync.json",
+  "category": "Google_Drive_and_Google_Sheets",
+  "nodes": 3,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "airtable",
+   "googleSheets"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Blog Automation TEMPLATE",
+  "file": "workflows/Google_Drive_and_Google_Sheets/Author and Publish Blog Posts From Google Sheets.json",
+  "category": "Google_Drive_and_Google_Sheets",
+  "nodes": 35,
+  "trigger": [
+   "manualTrigger",
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "googleSheets",
+   "lmChatOpenAi"
+  ],
+  "credentials": [
+   "googleSheetsOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Fine-tuning with OpenAI models",
+  "file": "workflows/Google_Drive_and_Google_Sheets/Automated End-to-End Fine-Tuning of OpenAI Models with Google Drive Integration.json",
+  "category": "Google_Drive_and_Google_Sheets",
+  "nodes": 9,
+  "trigger": [
+   "chatTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "googleDrive",
+   "lmChatOpenAi",
+   "openAi"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "httpHeaderAuth",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Remove Advanced Background from Google Drive Images",
+  "file": "workflows/Google_Drive_and_Google_Sheets/Automatic Background Removal for Images in Google Drive.json",
+  "category": "Google_Drive_and_Google_Sheets",
+  "nodes": 16,
+  "trigger": [
+   "googleDriveTrigger"
+  ],
+  "integrations": [
+   "editImage",
+   "googleDrive",
+   "googleDriveTrigger"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api"
+  ]
+ },
+ {
+  "name": "02 - Promemoria scadenze pagamenti",
+  "file": "workflows/Google_Drive_and_Google_Sheets/Automatic payment reminders from Google Sheets (Italian).json",
+  "category": "Google_Drive_and_Google_Sheets",
+  "nodes": 5,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "gmail",
+   "googleSheets"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Build an OpenAI Assistant with Google Drive Integration",
+  "file": "workflows/Google_Drive_and_Google_Sheets/Build an OpenAI Assistant with Google Drive Integration.json",
+  "category": "Google_Drive_and_Google_Sheets",
+  "nodes": 12,
+  "trigger": [
+   "chatTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "googleDrive",
+   "memoryBufferWindow",
+   "openAi"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Chat with Google Sheet",
+  "file": "workflows/Google_Drive_and_Google_Sheets/Chat with a Google Sheet using AI.json",
+  "category": "Google_Drive_and_Google_Sheets",
+  "nodes": 19,
+  "trigger": [
+   "chatTrigger",
+   "executeWorkflowTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "googleSheets",
+   "lmChatOpenAi",
+   "toolWorkflow"
+  ],
+  "credentials": [
+   "googleSheetsOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Telegram-bot AI Da Nang",
+  "file": "workflows/Google_Drive_and_Google_Sheets/Chat with your event schedule from Google Sheets in Telegram.json",
+  "category": "Google_Drive_and_Google_Sheets",
+  "nodes": 23,
+  "trigger": [
+   "chatTrigger",
+   "telegramTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "googleSheets",
+   "lmChatOpenRouter",
+   "memoryBufferWindow",
+   "telegram",
+   "telegramTrigger"
+  ],
+  "credentials": [
+   "googleSheetsOAuth2Api",
+   "openRouterApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "AI Logo Sheet Extractor to Airtable",
+  "file": "workflows/Google_Drive_and_Google_Sheets/Extract Information from a Logo Sheet using forms, AI, Google Sheet and Airtable.json",
+  "category": "Google_Drive_and_Google_Sheets",
+  "nodes": 44,
+  "trigger": [
+   "formTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "airtable",
+   "lmChatOpenAi",
+   "outputParserStructured"
+  ],
+  "credentials": [
+   "airtableTokenApi",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Flux Dev Image Generation Fal.ai",
+  "file": "workflows/Google_Drive_and_Google_Sheets/Flux Dev Image Generation (Fal.ai) to Google Drive.json",
+  "category": "Google_Drive_and_Google_Sheets",
+  "nodes": 12,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "googleDrive"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "httpHeaderAuth"
+  ]
+ },
+ {
+  "name": "Qualify new leads in Google Sheets via OpenAI's GPT-4",
+  "file": "workflows/Google_Drive_and_Google_Sheets/Qualify new leads in Google Sheets via OpenAI_s GPT-4.json",
+  "category": "Google_Drive_and_Google_Sheets",
+  "nodes": 9,
+  "trigger": [
+   "googleSheetsTrigger"
+  ],
+  "integrations": [
+   "googleSheets",
+   "googleSheetsTrigger",
+   "openAi"
+  ],
+  "credentials": [
+   "googleSheetsOAuth2Api",
+   "googleSheetsTriggerOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "RAG Workflow For Company Documents stored in Google Drive",
+  "file": "workflows/Google_Drive_and_Google_Sheets/RAG Chatbot for Company Documents using Google Drive and Gemini.json",
+  "category": "Google_Drive_and_Google_Sheets",
+  "nodes": 18,
+  "trigger": [
+   "chatTrigger",
+   "googleDriveTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "documentDefaultDataLoader",
+   "embeddingsGoogleGemini",
+   "googleDrive",
+   "googleDriveTrigger",
+   "lmChatGoogleGemini",
+   "memoryBufferWindow",
+   "textSplitterRecursiveCharacterTextSplitter",
+   "toolVectorStore",
+   "vectorStorePinecone"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "googlePalmApi",
+   "pineconeApi"
+  ]
+ },
+ {
+  "name": "RAG:Context-Aware Chunking | Google Drive to Pinecone via OpenRouter & Gemini",
+  "file": "workflows/Google_Drive_and_Google_Sheets/RAG_Context-Aware Chunking _ Google Drive to Pinecone via OpenRouter & Gemini.json",
+  "category": "Google_Drive_and_Google_Sheets",
+  "nodes": 17,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "documentDefaultDataLoader",
+   "embeddingsGoogleGemini",
+   "googleDrive",
+   "lmChatOpenRouter",
+   "textSplitterRecursiveCharacterTextSplitter",
+   "vectorStorePinecone"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "googlePalmApi",
+   "openRouterApi",
+   "pineconeApi"
+  ]
+ },
+ {
+  "name": "AI CV Screening Workflow",
+  "file": "workflows/Google_Drive_and_Google_Sheets/Screen Applicants With AI, notify HR and save them in a Google Sheet.json",
+  "category": "Google_Drive_and_Google_Sheets",
+  "nodes": 7,
+  "trigger": [
+   "formTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "gmail",
+   "googleSheets",
+   "lmChatGoogleGemini"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "googlePalmApi",
+   "googleSheetsOAuth2Api"
+  ]
+ },
+ {
+  "name": "AI agent: expense tracker in Google Sheets and n8n chat",
+  "file": "workflows/Google_Drive_and_Google_Sheets/Simple Expense Tracker with n8n Chat, AI Agent and Google Sheets.json",
+  "category": "Google_Drive_and_Google_Sheets",
+  "nodes": 10,
+  "trigger": [
+   "chatTrigger",
+   "executeWorkflowTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "googleSheets",
+   "informationExtractor",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "toolWorkflow"
+  ],
+  "credentials": [
+   "googleSheetsOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Summarize Google Sheets form feedback via OpenAI's GPT-4",
+  "file": "workflows/Google_Drive_and_Google_Sheets/Summarize Google Sheets form feedback via OpenAI_s GPT-4.json",
+  "category": "Google_Drive_and_Google_Sheets",
+  "nodes": 10,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "gmail",
+   "googleSheets",
+   "openAi"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "googleSheetsOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Google Doc Summarizer to Google Sheets",
+  "file": "workflows/Google_Drive_and_Google_Sheets/Summarize the New Documents from Google Drive and Save Summary in Google Sheet.json",
+  "category": "Google_Drive_and_Google_Sheets",
+  "nodes": 12,
+  "trigger": [
+   "googleDriveTrigger"
+  ],
+  "integrations": [
+   "googleDocs",
+   "googleDriveTrigger",
+   "googleSheets",
+   "openAi",
+   "toolCalculator",
+   "toolWikipedia"
+  ],
+  "credentials": [
+   "googleApi",
+   "googleSheetsOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "template in store",
+  "file": "workflows/Google_Drive_and_Google_Sheets/Upload to Instagram and Tiktok from Google Drive.json",
+  "category": "Google_Drive_and_Google_Sheets",
+  "nodes": 13,
+  "trigger": [
+   "errorTrigger",
+   "googleDriveTrigger"
+  ],
+  "integrations": [
+   "googleDrive",
+   "googleDriveTrigger",
+   "openAi",
+   "readBinaryFile",
+   "telegram",
+   "writeBinaryFile"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "httpHeaderAuth",
+   "openAiApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "01 - Lead dal sito → Registro + Notifiche",
+  "file": "workflows/Google_Drive_and_Google_Sheets/Website leads to Google Sheets with Telegram alert and auto-reply (Italian).json",
+  "category": "Google_Drive_and_Google_Sheets",
+  "nodes": 6,
+  "trigger": [
+   "webhook"
+  ],
+  "integrations": [
+   "gmail",
+   "googleSheets",
+   "telegram"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "BambooHR AI-Powered Company Policies and Benefits Chatbot",
+  "file": "workflows/HR_and_Recruitment/BambooHR AI-Powered Company Policies and Benefits Chatbot.json",
+  "category": "HR_and_Recruitment",
+  "nodes": 50,
+  "trigger": [
+   "chatTrigger",
+   "executeWorkflowTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "bambooHr",
+   "chainLlm",
+   "documentDefaultDataLoader",
+   "embeddingsOpenAi",
+   "informationExtractor",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "outputParserAutofixing",
+   "outputParserStructured",
+   "textClassifier",
+   "textSplitterRecursiveCharacterTextSplitter"
+  ],
+  "credentials": [
+   "bambooHrApi",
+   "openAiApi",
+   "supabaseApi"
+  ]
+ },
+ {
+  "name": "CV Screening with OpenAI",
+  "file": "workflows/HR_and_Recruitment/CV Screening with OpenAI.json",
+  "category": "HR_and_Recruitment",
+  "nodes": 11,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "HR & IT Helpdesk Chatbot with Audio Transcription",
+  "file": "workflows/HR_and_Recruitment/HR & IT Helpdesk Chatbot with Audio Transcription.json",
+  "category": "HR_and_Recruitment",
+  "nodes": 27,
+  "trigger": [
+   "manualTrigger",
+   "telegramTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "documentDefaultDataLoader",
+   "embeddingsOpenAi",
+   "lmChatOpenAi",
+   "memoryPostgresChat",
+   "openAi",
+   "telegram",
+   "telegramTrigger",
+   "textSplitterRecursiveCharacterTextSplitter",
+   "toolVectorStore",
+   "vectorStorePGVector"
+  ],
+  "credentials": [
+   "openAiApi",
+   "postgres",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "HR Job Posting and Evaluation with AI",
+  "file": "workflows/HR_and_Recruitment/HR Job Posting and Evaluation with AI.json",
+  "category": "HR_and_Recruitment",
+  "nodes": 36,
+  "trigger": [
+   "formTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "airtable",
+   "airtableTool",
+   "form",
+   "googleCalendarTool",
+   "googleDrive",
+   "lmChatOpenAi",
+   "openAi",
+   "outputParserStructured"
+  ],
+  "credentials": [
+   "airtableTokenApi",
+   "googleCalendarOAuth2Api",
+   "googleDriveOAuth2Api",
+   "openAiApi",
+   "smtp"
+  ]
+ },
+ {
+  "name": "AI Social Media Content Generator (Ollama)",
+  "file": "workflows/Instagram_Twitter_Social_Media/AI Social Media Content Generator with Ollama.json",
+  "category": "Instagram_Twitter_Social_Media",
+  "nodes": 6,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [],
+  "credentials": []
+ },
+ {
+  "name": "InstaTest",
+  "file": "workflows/Instagram_Twitter_Social_Media/AI agent for Instagram DM_inbox. Manychat + Open AI integration.json",
+  "category": "Instagram_Twitter_Social_Media",
+  "nodes": 11,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "memoryBufferWindow"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Create dynamic Twitter profile banner",
+  "file": "workflows/Instagram_Twitter_Social_Media/Create dynamic Twitter profile banner.json",
+  "category": "Instagram_Twitter_Social_Media",
+  "nodes": 12,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "editImage"
+  ],
+  "credentials": [
+   "httpHeaderAuth",
+   "oAuth1Api"
+  ]
+ },
+ {
+  "name": "FlowScribe Lite — Quick 4-Platform Repurpose",
+  "file": "workflows/Instagram_Twitter_Social_Media/FlowScribe Lite - AI Content Repurposing 4 Platforms.json",
+  "category": "Instagram_Twitter_Social_Media",
+  "nodes": 12,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "googleSheets",
+   "openAi"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Generate Instagram Content from Top Trends with AI Image Generation",
+  "file": "workflows/Instagram_Twitter_Social_Media/Generate Instagram Content from Top Trends with AI Image Generation.json",
+  "category": "Instagram_Twitter_Social_Media",
+  "nodes": 44,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "facebookGraphApi",
+   "openAi",
+   "postgres",
+   "telegram"
+  ],
+  "credentials": [
+   "facebookGraphApi",
+   "openAiApi",
+   "postgres",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "Article to Thread + LinkedIn Post (Lite)",
+  "file": "workflows/Instagram_Twitter_Social_Media/Grounded Article to Thread and LinkedIn Post.json",
+  "category": "Instagram_Twitter_Social_Media",
+  "nodes": 4,
+  "trigger": [
+   "formTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "form",
+   "lmChatOpenAi"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Monitor X Search with Xquik",
+  "file": "workflows/Instagram_Twitter_Social_Media/Monitor X Search with Xquik.json",
+  "category": "Instagram_Twitter_Social_Media",
+  "nodes": 5,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [],
+  "credentials": []
+ },
+ {
+  "name": "OpenAI-powered tweet generator",
+  "file": "workflows/Instagram_Twitter_Social_Media/OpenAI-powered tweet generator.json",
+  "category": "Instagram_Twitter_Social_Media",
+  "nodes": 5,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "airtable"
+  ],
+  "credentials": [
+   "airtableApi",
+   "httpHeaderAuth"
+  ]
+ },
+ {
+  "name": "Post New YouTube Videos to X",
+  "file": "workflows/Instagram_Twitter_Social_Media/Post New YouTube Videos to X.json",
+  "category": "Instagram_Twitter_Social_Media",
+  "nodes": 6,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "openAi",
+   "twitter",
+   "youTube"
+  ],
+  "credentials": [
+   "openAiApi",
+   "twitterOAuth2Api",
+   "youTubeOAuth2Api"
+  ]
+ },
+ {
+  "name": "Reddit AI digest",
+  "file": "workflows/Instagram_Twitter_Social_Media/Reddit AI digest.json",
+  "category": "Instagram_Twitter_Social_Media",
+  "nodes": 15,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "openAi",
+   "reddit"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Social Media Analysis and Automated Email Generation",
+  "file": "workflows/Instagram_Twitter_Social_Media/Social Media Analysis and Automated Email Generation.json",
+  "category": "Instagram_Twitter_Social_Media",
+  "nodes": 19,
+  "trigger": [
+   "googleSheetsTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "googleSheets",
+   "googleSheetsTrigger",
+   "lmChatOpenAi",
+   "outputParserStructured"
+  ],
+  "credentials": [
+   "googleSheetsOAuth2Api",
+   "googleSheetsTriggerOAuth2Api",
+   "httpHeaderAuth",
+   "openAiApi",
+   "smtp"
+  ]
+ },
+ {
+  "name": "Speed Up Social Media Banners With BannerBear.com",
+  "file": "workflows/Instagram_Twitter_Social_Media/Speed Up Social Media Banners With BannerBear.com.json",
+  "category": "Instagram_Twitter_Social_Media",
+  "nodes": 16,
+  "trigger": [
+   "formTrigger"
+  ],
+  "integrations": [
+   "bannerbear",
+   "discord",
+   "openAi"
+  ],
+  "credentials": [
+   "bannerbearApi",
+   "discordBotApi",
+   "httpQueryAuth",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Twitter Virtual AI Influencer",
+  "file": "workflows/Instagram_Twitter_Social_Media/Twitter Virtual AI Influencer.json",
+  "category": "Instagram_Twitter_Social_Media",
+  "nodes": 12,
+  "trigger": [
+   "manualTrigger",
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "openAi",
+   "twitter"
+  ],
+  "credentials": [
+   "openAiApi",
+   "twitterOAuth2Api"
+  ]
+ },
+ {
+  "name": "Update Twitter banner using HTTP request",
+  "file": "workflows/Instagram_Twitter_Social_Media/Update Twitter banner using HTTP request.json",
+  "category": "Instagram_Twitter_Social_Media",
+  "nodes": 4,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "start"
+  ],
+  "credentials": [
+   "oAuth1Api"
+  ]
+ },
+ {
+  "name": "Add positive feedback messages to a table in Notion",
+  "file": "workflows/Notion/Add positive feedback messages to a table in Notion.json",
+  "category": "Notion",
+  "nodes": 6,
+  "trigger": [
+   "typeformTrigger"
+  ],
+  "integrations": [
+   "googleCloudNaturalLanguage",
+   "notion",
+   "slack",
+   "trello",
+   "typeformTrigger"
+  ],
+  "credentials": [
+   "googleCloudNaturalLanguageOAuth2Api",
+   "notionApi",
+   "slackApi",
+   "trelloApi",
+   "typeformApi"
+  ]
+ },
+ {
+  "name": "Hugging Face to Notion",
+  "file": "workflows/Notion/Analyse papers from Hugging Face with AI and store them in Notion.json",
+  "category": "Notion",
+  "nodes": 11,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "notion",
+   "openAi"
+  ],
+  "credentials": [
+   "notionApi",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Automate Competitor Research with Exa.ai, Notion and AI Agents",
+  "file": "workflows/Notion/Automate Competitor Research with Exa.ai, Notion and AI Agents.json",
+  "category": "Notion",
+  "nodes": 39,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "notion",
+   "outputParserStructured",
+   "toolHttpRequest"
+  ],
+  "credentials": [
+   "httpHeaderAuth",
+   "notionApi",
+   "openAiApi",
+   "serpApi"
+  ]
+ },
+ {
+  "name": "Automate LinkedIn Posts with AI",
+  "file": "workflows/Notion/Automate LinkedIn Outreach with Notion and OpenAI.json",
+  "category": "Notion",
+  "nodes": 11,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "linkedIn",
+   "notion",
+   "openAi"
+  ],
+  "credentials": [
+   "linkedInOAuth2Api",
+   "notionApi",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Notion AI Assistant Generator",
+  "file": "workflows/Notion/Notion AI Assistant Generator.json",
+  "category": "Notion",
+  "nodes": 24,
+  "trigger": [
+   "chatTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatAnthropic",
+   "notion",
+   "outputParserAutofixing",
+   "outputParserStructured",
+   "textClassifier"
+  ],
+  "credentials": [
+   "notionApi"
+  ]
+ },
+ {
+  "name": "Notion knowledge base AI assistant",
+  "file": "workflows/Notion/Notion knowledge base AI assistant.json",
+  "category": "Notion",
+  "nodes": 12,
+  "trigger": [
+   "chatTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "notion",
+   "toolHttpRequest"
+  ],
+  "credentials": [
+   "notionApi",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Prod: Notion to Vector Store - Dimension 768",
+  "file": "workflows/Notion/Notion to Pinecone Vector Store Integration.json",
+  "category": "Notion",
+  "nodes": 8,
+  "trigger": [
+   "notionTrigger"
+  ],
+  "integrations": [
+   "documentDefaultDataLoader",
+   "embeddingsGoogleGemini",
+   "notion",
+   "notionTrigger",
+   "summarize",
+   "textSplitterTokenSplitter",
+   "vectorStorePinecone"
+  ],
+  "credentials": [
+   "googlePalmApi",
+   "notionApi",
+   "pineconeApi"
+  ]
+ },
+ {
+  "name": "Store Notion's Pages as Vector Documents into Supabase with OpenAI",
+  "file": "workflows/Notion/Store Notion_s Pages as Vector Documents into Supabase with OpenAI.json",
+  "category": "Notion",
+  "nodes": 9,
+  "trigger": [
+   "notionTrigger"
+  ],
+  "integrations": [
+   "documentDefaultDataLoader",
+   "embeddingsOpenAi",
+   "notion",
+   "notionTrigger",
+   "summarize",
+   "textSplitterTokenSplitter",
+   "vectorStoreSupabase"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "mails2notion V2",
+  "file": "workflows/Notion/Turn Emails into AI-Enhanced Tasks in Notion (Multi-User Support) with Gmail, Airtable and Softr.json",
+  "category": "Notion",
+  "nodes": 38,
+  "trigger": [
+   "gmailTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "airtable",
+   "gmail",
+   "gmailTrigger",
+   "lmChatOpenAi",
+   "outputParserStructured",
+   "toolCalculator"
+  ],
+  "credentials": [
+   "airtableTokenApi",
+   "gmailOAuth2",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "RAG on living data",
+  "file": "workflows/Notion/Upsert huge documents in a vector store with Supabase and Notion.json",
+  "category": "Notion",
+  "nodes": 34,
+  "trigger": [
+   "chatTrigger",
+   "notionTrigger",
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "chainRetrievalQa",
+   "documentDefaultDataLoader",
+   "embeddingsOpenAi",
+   "lmChatOpenAi",
+   "notion",
+   "notionTrigger",
+   "retrieverVectorStore",
+   "summarize",
+   "supabase",
+   "textSplitterTokenSplitter",
+   "vectorStoreSupabase"
+  ],
+  "credentials": [
+   "notionApi",
+   "openAiApi",
+   "supabaseApi"
+  ]
+ },
+ {
+  "name": "FLUX-fill standalone",
+  "file": "workflows/OpenAI_and_LLMs/#L01f3a8 Interactive Image Editor with FLUX.1 Fill Tool for Inpainting.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 18,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [],
+  "credentials": [
+   "httpHeaderAuth"
+  ]
+ },
+ {
+  "name": "🐋DeepSeek V3 Chat & R1 Reasoning Quick Start",
+  "file": "workflows/OpenAI_and_LLMs/#L01f40bDeepSeek V3 Chat & R1 Reasoning Quick Start.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 15,
+  "trigger": [
+   "chatTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "chainLlm",
+   "lmChatOllama",
+   "lmChatOpenAi",
+   "memoryBufferWindow"
+  ],
+  "credentials": [
+   "httpHeaderAuth",
+   "ollamaApi",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Docsify example",
+  "file": "workflows/OpenAI_and_LLMs/#L01f4da Auto-generate documentation for n8n workflows with GPT and Docsify.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 60,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "chainLlm",
+   "executeCommand",
+   "lmChatOpenAi",
+   "n8n",
+   "outputParserAutofixing",
+   "outputParserStructured",
+   "sort"
+  ],
+  "credentials": [
+   "n8nApi",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "🗨️Ollama Chat",
+  "file": "workflows/OpenAI_and_LLMs/#L01f510#L01f999#L01f916 Private & Local Ollama Self-Hosted AI Assistant.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 14,
+  "trigger": [
+   "chatTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "lmOllama"
+  ],
+  "credentials": [
+   "ollamaApi"
+  ]
+ },
+ {
+  "name": "🔥📈🤖 AI Agent for n8n Creators Leaderboard - Find Popular Workflows",
+  "file": "workflows/OpenAI_and_LLMs/#L01f525#L01f4c8#L01f916 AI Agent for n8n Creators Leaderboard - Find Popular Workflows.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 43,
+  "trigger": [
+   "chatTrigger",
+   "executeWorkflowTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOllama",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "sort",
+   "toolWorkflow"
+  ],
+  "credentials": [
+   "ollamaApi",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Testing Mulitple Local LLM with LM Studio",
+  "file": "workflows/OpenAI_and_LLMs/#L01f680 Local Multi-LLM Testing & Performance Tracker.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 21,
+  "trigger": [
+   "chatTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "googleSheets",
+   "lmChatOpenAi"
+  ],
+  "credentials": [
+   "googleSheetsOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "🤖🧑‍💻 AI Agent for Top n8n Creators Leaderboard Reporting",
+  "file": "workflows/OpenAI_and_LLMs/#L01f916#L01f9d1_#L01f4bb AI Agent for Top n8n Creators Leaderboard Reporting.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 49,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "chainLlm",
+   "gmail",
+   "googleDrive",
+   "lmChatGoogleGemini",
+   "lmChatOpenAi",
+   "sort",
+   "telegram",
+   "toolWorkflow"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "googleDriveOAuth2Api",
+   "googlePalmApi",
+   "openAiApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "#U26a1AI-Powered YouTube Video Summarization & Analysis",
+  "file": "workflows/OpenAI_and_LLMs/#U26a1AI-Powered YouTube Video Summarization & Analysis.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 12,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "chainLlm",
+   "lmChatOpenAi",
+   "summarize",
+   "telegram",
+   "youTube",
+   "youtubeTranscripter"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "AI Agent To Chat With Files In Supabase Storage",
+  "file": "workflows/OpenAI_and_LLMs/AI Agent To Chat With Files In Supabase Storage.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 33,
+  "trigger": [
+   "chatTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "documentDefaultDataLoader",
+   "embeddingsOpenAi",
+   "lmChatOpenAi",
+   "supabase",
+   "textSplitterRecursiveCharacterTextSplitter",
+   "toolVectorStore",
+   "vectorStoreSupabase"
+  ],
+  "credentials": [
+   "openAiApi",
+   "supabaseApi"
+  ]
+ },
+ {
+  "name": "AI Agent : Google calendar assistant using OpenAI",
+  "file": "workflows/OpenAI_and_LLMs/AI Agent _ Google calendar assistant using OpenAI.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 13,
+  "trigger": [
+   "chatTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "googleCalendarTool",
+   "lmChatOpenAi",
+   "memoryBufferWindow"
+  ],
+  "credentials": [
+   "googleCalendarOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "AI Agent for realtime insights on meetings",
+  "file": "workflows/OpenAI_and_LLMs/AI Agent for realtime insights on meetings.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 19,
+  "trigger": [
+   "webhook"
+  ],
+  "integrations": [
+   "openAi",
+   "postgres",
+   "postgresTool",
+   "supabase"
+  ],
+  "credentials": [
+   "httpHeaderAuth",
+   "openAiApi",
+   "postgres",
+   "supabaseApi"
+  ]
+ },
+ {
+  "name": "AI Agent to chat with Supabase_PostgreSQL DB",
+  "file": "workflows/OpenAI_and_LLMs/AI Agent to chat with Supabase_PostgreSQL DB.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 11,
+  "trigger": [
+   "chatTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "postgresTool"
+  ],
+  "credentials": [
+   "openAiApi",
+   "postgres"
+  ]
+ },
+ {
+  "name": "AI Agent to chat with you Search Console Data, using OpenAI and Postgres",
+  "file": "workflows/OpenAI_and_LLMs/AI Agent to chat with you Search Console Data, using OpenAI and Postgres.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 30,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "memoryPostgresChat",
+   "toolWorkflow"
+  ],
+  "credentials": [
+   "httpBasicAuth",
+   "oAuth2Api",
+   "openAiApi",
+   "postgres"
+  ]
+ },
+ {
+  "name": "AI Agent with Ollama for current weather and wiki",
+  "file": "workflows/OpenAI_and_LLMs/AI Agent with Ollama for current weather and wiki.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 10,
+  "trigger": [
+   "manualChatTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOllama",
+   "manualChatTrigger",
+   "memoryBufferWindow",
+   "toolHttpRequest",
+   "toolWikipedia"
+  ],
+  "credentials": [
+   "ollamaApi"
+  ]
+ },
+ {
+  "name": "HR-focused automation pipeline with AI",
+  "file": "workflows/OpenAI_and_LLMs/AI Automated HR Workflow for CV Analysis and Candidate Evaluation.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 18,
+  "trigger": [
+   "formTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "chainSummarization",
+   "googleDrive",
+   "googleSheets",
+   "informationExtractor",
+   "lmChatOpenAi",
+   "outputParserStructured"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "googleSheetsOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "AI Blog Writer Pipeline (Ollama)",
+  "file": "workflows/OpenAI_and_LLMs/AI Blog Writer Pipeline with Ollama.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 7,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [],
+  "credentials": []
+ },
+ {
+  "name": "Stock Q&A Workflow",
+  "file": "workflows/OpenAI_and_LLMs/AI Crew to Automate Fundamental Stock Analysis - Q&A Workflow.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 17,
+  "trigger": [
+   "manualChatTrigger",
+   "manualTrigger",
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "chainRetrievalQa",
+   "documentBinaryInputLoader",
+   "embeddingsOpenAi",
+   "googleDrive",
+   "lmChatOpenAi",
+   "manualChatTrigger",
+   "retrieverVectorStore",
+   "textSplitterRecursiveCharacterTextSplitter",
+   "vectorStoreQdrant"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "openAiApi",
+   "qdrantApi"
+  ]
+ },
+ {
+  "name": "AI Customer feedback sentiment analysis",
+  "file": "workflows/OpenAI_and_LLMs/AI Customer feedback sentiment analysis.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 9,
+  "trigger": [
+   "formTrigger"
+  ],
+  "integrations": [
+   "googleSheets",
+   "openAi"
+  ],
+  "credentials": [
+   "googleSheetsOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "AI Data Extraction with Dynamic Prompts and Airtable",
+  "file": "workflows/OpenAI_and_LLMs/AI Data Extraction with Dynamic Prompts and Airtable.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 51,
+  "trigger": [
+   "manualTrigger",
+   "webhook"
+  ],
+  "integrations": [
+   "airtable",
+   "chainLlm",
+   "lmChatOpenAi"
+  ],
+  "credentials": [
+   "airtableTokenApi",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "AI Data Extraction with Dynamic Prompts and Baserow",
+  "file": "workflows/OpenAI_and_LLMs/AI Data Extraction with Dynamic Prompts and Baserow.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 45,
+  "trigger": [
+   "webhook"
+  ],
+  "integrations": [
+   "chainLlm",
+   "lmChatOpenAi"
+  ],
+  "credentials": [
+   "httpHeaderAuth",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "AI Fitness Coach Strava Data Analysis and Personalized Training Insights",
+  "file": "workflows/OpenAI_and_LLMs/AI Fitness Coach Strava Data Analysis and Personalized Training Insights.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 15,
+  "trigger": [
+   "stravaTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "gmail",
+   "lmChatGoogleGemini",
+   "stravaTrigger",
+   "whatsApp"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "googlePalmApi",
+   "smtp",
+   "stravaOAuth2Api",
+   "whatsAppApi"
+  ]
+ },
+ {
+  "name": "AI Powered Web Scraping with Jina, Google Sheets and OpenAI _ the EASY way",
+  "file": "workflows/OpenAI_and_LLMs/AI Powered Web Scraping with Jina, Google Sheets and OpenAI _ the EASY way.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 7,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "googleSheets",
+   "informationExtractor",
+   "lmChatOpenAi"
+  ],
+  "credentials": [
+   "googleSheetsOAuth2Api",
+   "httpHeaderAuth",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "AI Social Media Caption Creator",
+  "file": "workflows/OpenAI_and_LLMs/AI Social Media Caption Creator creates social media post captions in Airtable.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 10,
+  "trigger": [
+   "airtableTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "airtable",
+   "airtableTool",
+   "airtableTrigger",
+   "lmChatOpenAi",
+   "memoryBufferWindow"
+  ],
+  "credentials": [
+   "airtableTokenApi",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "AI Voice Chat using Webhook, Memory Manager, OpenAI, Google Gemini & ElevenLabs",
+  "file": "workflows/OpenAI_and_LLMs/AI Voice Chat using Webhook, Memory Manager, OpenAI, Google Gemini & ElevenLabs.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 15,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "chainLlm",
+   "lmChatGoogleGemini",
+   "memoryBufferWindow",
+   "memoryManager",
+   "openAi"
+  ],
+  "credentials": [
+   "googlePalmApi",
+   "httpCustomAuth",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Voice RAG Chatbot with ElevenLabs and OpenAI",
+  "file": "workflows/OpenAI_and_LLMs/AI Voice Chatbot with ElevenLabs & OpenAI for Customer Service and Restaurants.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 23,
+  "trigger": [
+   "manualTrigger",
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "agent",
+   "documentDefaultDataLoader",
+   "embeddingsOpenAi",
+   "googleDrive",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "textSplitterTokenSplitter",
+   "toolVectorStore",
+   "vectorStoreQdrant"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "httpHeaderAuth",
+   "openAiApi",
+   "qdrantApi"
+  ]
+ },
+ {
+  "name": "Complete Youtube",
+  "file": "workflows/OpenAI_and_LLMs/AI Youtube Trend Finder Based On Niche.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 15,
+  "trigger": [
+   "chatTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "toolWorkflow",
+   "youTube"
+  ],
+  "credentials": [
+   "youTubeOAuth2Api"
+  ]
+ },
+ {
+  "name": "AI agent chat",
+  "file": "workflows/OpenAI_and_LLMs/AI agent chat.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 5,
+  "trigger": [
+   "chatTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "toolSerpApi"
+  ],
+  "credentials": [
+   "openAiApi",
+   "serpApi"
+  ]
+ },
+ {
+  "name": "Agent with custom HTTP Request",
+  "file": "workflows/OpenAI_and_LLMs/AI agent that can scrape webpages.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 20,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "manualChatTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "manualChatTrigger",
+   "toolWorkflow"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "AI chat with any data source (using the n8n workflow tool)",
+  "file": "workflows/OpenAI_and_LLMs/AI chat with any data source (using the n8n workflow tool).json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 12,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "manualChatTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "hackerNews",
+   "lmChatOpenAi",
+   "manualChatTrigger",
+   "toolWorkflow"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "AI chatbot that can search the web",
+  "file": "workflows/OpenAI_and_LLMs/AI chatbot that can search the web.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 9,
+  "trigger": [
+   "manualChatTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "manualChatTrigger",
+   "memoryBufferWindow",
+   "toolSerpApi",
+   "toolWikipedia"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "AI web researcher for sales",
+  "file": "workflows/OpenAI_and_LLMs/AI web researcher for sales.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 22,
+  "trigger": [
+   "manualTrigger",
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "googleSheets",
+   "lmChatOpenAi",
+   "outputParserStructured",
+   "toolSerpApi",
+   "toolWorkflow"
+  ],
+  "credentials": [
+   "googleSheetsOAuth2Api",
+   "openAiApi",
+   "serpApi"
+  ]
+ },
+ {
+  "name": "AI-Driven Lead Management and Inquiry Automation with ERPNext & n8n",
+  "file": "workflows/OpenAI_and_LLMs/AI-Driven Lead Management and Inquiry Automation with ERPNext & n8n.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 27,
+  "trigger": [
+   "webhook"
+  ],
+  "integrations": [
+   "agent",
+   "googleDocsTool",
+   "googleSheetsTool",
+   "lmChatOpenAi",
+   "microsoftOutlook"
+  ],
+  "credentials": [
+   "erpNextApi",
+   "googleDocsOAuth2Api",
+   "googleSheetsOAuth2Api",
+   "microsoftOutlookOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "AI-Generated Summary Block for WordPress Posts - with OpenAI, WordPress, Google Sheets & Slack",
+  "file": "workflows/OpenAI_and_LLMs/AI-Generated Summary Block for WordPress Posts.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 32,
+  "trigger": [
+   "manualTrigger",
+   "scheduleTrigger",
+   "webhook"
+  ],
+  "integrations": [
+   "googleSheets",
+   "lmChatOpenAi",
+   "openAi",
+   "slack",
+   "textClassifier",
+   "wordpress"
+  ],
+  "credentials": [
+   "googleApi",
+   "httpHeaderAuth",
+   "openAiApi",
+   "slackOAuth2Api",
+   "wordpressApi"
+  ]
+ },
+ {
+  "name": "AI-Powered Candidate Shortlisting Automation for ERPNext",
+  "file": "workflows/OpenAI_and_LLMs/AI-Powered Candidate Shortlisting Automation for ERPNext.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 39,
+  "trigger": [
+   "webhook"
+  ],
+  "integrations": [
+   "agent",
+   "erpNext",
+   "lmChatGoogleGemini",
+   "microsoftOutlook",
+   "whatsApp"
+  ],
+  "credentials": [
+   "erpNextApi",
+   "googlePalmApi",
+   "microsoftOutlookOAuth2Api",
+   "whatsAppApi"
+  ]
+ },
+ {
+  "name": "Email AI Auto-responder. Summerize and send email",
+  "file": "workflows/OpenAI_and_LLMs/AI-Powered Email Automation for Business_ Summarize & Respond with RAG.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 26,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "chainLlm",
+   "chainSummarization",
+   "documentDefaultDataLoader",
+   "emailReadImap",
+   "embeddingsOpenAi",
+   "googleDrive",
+   "lmChatOpenAi",
+   "textClassifier",
+   "textSplitterTokenSplitter",
+   "vectorStoreQdrant"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "httpHeaderAuth",
+   "imap",
+   "openAiApi",
+   "qdrantApi",
+   "smtp"
+  ]
+ },
+ {
+  "name": "RAG Workflow For Stock Earnings Report Analysis",
+  "file": "workflows/OpenAI_and_LLMs/AI-Powered RAG Workflow For Stock Earnings Report Analysis.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 18,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "documentDefaultDataLoader",
+   "embeddingsGoogleGemini",
+   "googleDocs",
+   "googleDrive",
+   "googleSheets",
+   "lmChatGoogleGemini",
+   "lmChatOpenAi",
+   "textSplitterRecursiveCharacterTextSplitter",
+   "toolVectorStore",
+   "vectorStorePinecone"
+  ],
+  "credentials": [
+   "googleDocsOAuth2Api",
+   "googleDriveOAuth2Api",
+   "googlePalmApi",
+   "googleSheetsOAuth2Api",
+   "openAiApi",
+   "pineconeApi"
+  ]
+ },
+ {
+  "name": "Social Media AI Agent - Telegram",
+  "file": "workflows/OpenAI_and_LLMs/AI-Powered Social Media Amplifier.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 26,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "airtable",
+   "linkedIn",
+   "openAi",
+   "telegram",
+   "twitter"
+  ],
+  "credentials": [
+   "airtableTokenApi",
+   "linkedInOAuth2Api",
+   "openAiApi",
+   "telegramApi",
+   "twitterOAuth2Api"
+  ]
+ },
+ {
+  "name": "AI-powered WooCommerce Support-Agent",
+  "file": "workflows/OpenAI_and_LLMs/AI-powered WooCommerce Support-Agent.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 40,
+  "trigger": [
+   "chatTrigger",
+   "executeWorkflowTrigger",
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "agent",
+   "dhl",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "toolWorkflow",
+   "wooCommerce"
+  ],
+  "credentials": [
+   "dhlApi",
+   "openAiApi",
+   "wooCommerceApi"
+  ]
+ },
+ {
+  "name": "LangChain - Example - Workflow Retriever",
+  "file": "workflows/OpenAI_and_LLMs/AI_ Ask questions about any data source (using the n8n workflow retriever).json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 7,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "chainRetrievalQa",
+   "lmChatOpenAi",
+   "retrieverWorkflow"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Podcast Digest",
+  "file": "workflows/OpenAI_and_LLMs/AI_ Summarize podcast episode and enhance using Wikipedia.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 19,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "chainLlm",
+   "chainSummarization",
+   "documentJsonInputLoader",
+   "gmail",
+   "lmChatOpenAi",
+   "outputParserStructured",
+   "textSplitterRecursiveCharacterTextSplitter",
+   "toolWikipedia"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Actioning Your Meeting Next Steps using Transcripts and AI",
+  "file": "workflows/OpenAI_and_LLMs/Actioning Your Meeting Next Steps using Transcripts and AI.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 28,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "googleCalendar",
+   "googleDrive",
+   "lmChatOpenAi",
+   "outputParserStructured",
+   "toolWorkflow"
+  ],
+  "credentials": [
+   "googleCalendarOAuth2Api",
+   "googleDriveOAuth2Api",
+   "googleOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Advanced AI Demo (Presented at AI Developers #14 meetup)",
+  "file": "workflows/OpenAI_and_LLMs/Advanced AI Demo (Presented at AI Developers #14 meetup).json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 39,
+  "trigger": [
+   "chatTrigger",
+   "gmailTrigger",
+   "webhook"
+  ],
+  "integrations": [
+   "agent",
+   "chainRetrievalQa",
+   "documentDefaultDataLoader",
+   "embeddingsOpenAi",
+   "gmail",
+   "gmailTrigger",
+   "lmChatAnthropic",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "retrieverVectorStore",
+   "slack",
+   "textClassifier"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Ask a human",
+  "file": "workflows/OpenAI_and_LLMs/Ask a human for help when the AI doesn_t know the answer.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 17,
+  "trigger": [
+   "chatTrigger",
+   "executeWorkflowTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "slack",
+   "toolWorkflow"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Automate Customer Support Issue Resolution using AI Text Classifier",
+  "file": "workflows/OpenAI_and_LLMs/Automate Customer Support Issue Resolution using AI Text Classifier.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 36,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "chainLlm",
+   "jira",
+   "jiraTool",
+   "lmChatOpenAi",
+   "notionTool",
+   "outputParserStructured",
+   "sentimentAnalysis",
+   "slack",
+   "textClassifier"
+  ],
+  "credentials": [
+   "jiraSoftwareCloudApi",
+   "notionApi",
+   "openAiApi",
+   "slackApi"
+  ]
+ },
+ {
+  "name": "Automate Image Validation Tasks using AI Vision",
+  "file": "workflows/OpenAI_and_LLMs/Automate Image Validation Tasks using AI Vision.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 11,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "editImage",
+   "googleDrive",
+   "lmChatGoogleGemini",
+   "outputParserStructured"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "googlePalmApi"
+  ]
+ },
+ {
+  "name": "Automate Your RFP Process with OpenAI Assistants",
+  "file": "workflows/OpenAI_and_LLMs/Automate Your RFP Process with OpenAI Assistants.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 23,
+  "trigger": [
+   "webhook"
+  ],
+  "integrations": [
+   "chainLlm",
+   "gmail",
+   "googleDocs",
+   "lmChatOpenAi",
+   "openAi",
+   "outputParserItemList",
+   "slack"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "googleDocsOAuth2Api",
+   "openAiApi",
+   "slackApi"
+  ]
+ },
+ {
+  "name": "modelo do chatbot",
+  "file": "workflows/OpenAI_and_LLMs/Chat Assistant (OpenAI assistant) with Postgres Memory And API Calling Capabalities.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 12,
+  "trigger": [
+   "chatTrigger"
+  ],
+  "integrations": [
+   "memoryPostgresChat",
+   "mySqlTool",
+   "openAi",
+   "toolHttpRequest"
+  ],
+  "credentials": [
+   "mySql",
+   "openAiApi",
+   "postgres"
+  ]
+ },
+ {
+  "name": "Chat with OpenAI Assistant (by adding a memory)",
+  "file": "workflows/OpenAI_and_LLMs/Chat with OpenAI Assistant (by adding a memory).json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 14,
+  "trigger": [
+   "chatTrigger"
+  ],
+  "integrations": [
+   "memoryBufferWindow",
+   "memoryManager",
+   "openAiAssistant",
+   "toolCalculator"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Chat with local LLMs using n8n and Ollama",
+  "file": "workflows/OpenAI_and_LLMs/Chat with local LLMs using n8n and Ollama.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 5,
+  "trigger": [
+   "chatTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "lmChatOllama"
+  ],
+  "credentials": [
+   "ollamaApi"
+  ]
+ },
+ {
+  "name": "[n8n Template] AI Content Generator",
+  "file": "workflows/OpenAI_and_LLMs/Claude AI Content Generator.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 5,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [],
+  "credentials": []
+ },
+ {
+  "name": "[n8n Template] Claude AI LINE Chatbot",
+  "file": "workflows/OpenAI_and_LLMs/Claude AI LINE Chatbot.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 5,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [],
+  "credentials": []
+ },
+ {
+  "name": "[n8n Template] AI Morning Brief",
+  "file": "workflows/OpenAI_and_LLMs/Claude AI Morning Brief.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 4,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [],
+  "credentials": []
+ },
+ {
+  "name": "[n8n Template] Smart Webhook AI Router",
+  "file": "workflows/OpenAI_and_LLMs/Claude Smart Webhook AI Router.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 5,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [],
+  "credentials": []
+ },
+ {
+  "name": "Image Generation API",
+  "file": "workflows/OpenAI_and_LLMs/Configure your own Image Creation API Using OpenAI DALLE-3.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 7,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "openAi"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Text to Speech (OpenAI)",
+  "file": "workflows/OpenAI_and_LLMs/Convert text to speech with OpenAI.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 8,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Create a Branded AI-Powered Website Chatbot",
+  "file": "workflows/OpenAI_and_LLMs/Create a Branded AI-Powered Website Chatbot.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 24,
+  "trigger": [
+   "chatTrigger",
+   "executeWorkflowTrigger",
+   "respondToWebhook"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "microsoftOutlook",
+   "toolHttpRequest",
+   "toolWorkflow"
+  ],
+  "credentials": [
+   "microsoftOutlookOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "LangChain - Example - Code Node Example",
+  "file": "workflows/OpenAI_and_LLMs/Custom LangChain agent written in JavaScript.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 10,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "lmOpenAi"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Daily Podcast Summary",
+  "file": "workflows/OpenAI_and_LLMs/Daily Podcast Summary.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 21,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "gmail",
+   "openAi"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Daily meetings summarization with Gemini AI",
+  "file": "workflows/OpenAI_and_LLMs/Daily meetings summarization with Gemini AI.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 9,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "googleCalendarTool",
+   "lmChatGoogleGemini",
+   "slack"
+  ],
+  "credentials": [
+   "googleCalendarOAuth2Api",
+   "googlePalmApi",
+   "slackApi"
+  ]
+ },
+ {
+  "name": "DaoXE Multi-Model Chat with Automatic Fallback",
+  "file": "workflows/OpenAI_and_LLMs/DaoXE Multi-Model Chat with Automatic Fallback.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 7,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [],
+  "credentials": [
+   "httpHeaderAuth"
+  ]
+ },
+ {
+  "name": "Detect hallucinations using specialised Ollama model bespoke-minicheck",
+  "file": "workflows/OpenAI_and_LLMs/Detect hallucinations using specialised Ollama model bespoke-minicheck.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 18,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "lmChatOllama",
+   "lmOllama"
+  ],
+  "credentials": [
+   "ollamaApi"
+  ]
+ },
+ {
+  "name": "Dynamically generate HTML page from user request using OpenAI Structured Output",
+  "file": "workflows/OpenAI_and_LLMs/Dynamically generate a webpage from user request using OpenAI Structured Output.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 7,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "openAi"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Easy Image Captioning with Gemini 1.5 Pro",
+  "file": "workflows/OpenAI_and_LLMs/Easy Image Captioning with Gemini 1.5 Pro.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 16,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "editImage",
+   "lmChatGoogleGemini",
+   "outputParserStructured"
+  ],
+  "credentials": [
+   "googlePalmApi"
+  ]
+ },
+ {
+  "name": "Enrich FAQ sections on your website pages at scale with AI",
+  "file": "workflows/OpenAI_and_LLMs/Enrich FAQ sections on your website pages at scale with AI.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 36,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "googleDrive",
+   "googleSheets",
+   "lmChatOpenAi",
+   "strapi",
+   "webflow",
+   "wordpress"
+  ],
+  "credentials": [
+   "wordpressApi"
+  ]
+ },
+ {
+  "name": "Extract personal data with a self-hosted LLM Mistral NeMo",
+  "file": "workflows/OpenAI_and_LLMs/Extract personal data with self-hosted LLM Mistral NeMo.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 13,
+  "trigger": [
+   "chatTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "lmChatOllama",
+   "outputParserAutofixing",
+   "outputParserStructured"
+  ],
+  "credentials": [
+   "ollamaApi"
+  ]
+ },
+ {
+  "name": "Load Prompts from Github Repo and auto populate n8n expressions",
+  "file": "workflows/OpenAI_and_LLMs/Fetch Dynamic Prompts from GitHub and Auto-Populate n8n Expressions in Prompt.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 17,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "github",
+   "lmChatOllama"
+  ],
+  "credentials": [
+   "githubApi",
+   "ollamaApi"
+  ]
+ },
+ {
+  "name": "Flux AI Image Generator",
+  "file": "workflows/OpenAI_and_LLMs/Flux AI Image Generator.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 19,
+  "trigger": [
+   "formTrigger",
+   "respondToWebhook"
+  ],
+  "integrations": [
+   "s3"
+  ],
+  "credentials": [
+   "httpHeaderAuth",
+   "s3"
+  ]
+ },
+ {
+  "name": "[AI/LangChain] Output Parser 4",
+  "file": "workflows/OpenAI_and_LLMs/Force AI to use a specific output format.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 11,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "lmChatOpenAi",
+   "outputParserAutofixing",
+   "outputParserStructured"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "GCF Token Optimization — Encode API Data, Decode Losslessly",
+  "file": "workflows/OpenAI_and_LLMs/GCF Token Optimization for LLM Tool Responses.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 5,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "gcf"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Content to 9:16 Aspect Image Generator v1",
+  "file": "workflows/OpenAI_and_LLMs/Generate 9_16 Images from Content and Brand Guidelines.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 39,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "airtable",
+   "openAi",
+   "toolWikipedia"
+  ],
+  "credentials": [
+   "airtableTokenApi",
+   "httpCustomAuth",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Generate Text-to-Speech Using Elevenlabs via API",
+  "file": "workflows/OpenAI_and_LLMs/Generate Text-to-Speech Using Elevenlabs via API.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 6,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [],
+  "credentials": [
+   "httpCustomAuth"
+  ]
+ },
+ {
+  "name": "Generate audio from text using OpenAI - text-to-speech Workflow",
+  "file": "workflows/OpenAI_and_LLMs/Generate audio from text using OpenAI and Webhook _ Text to Speech Workflow.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 5,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "openAi"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Generating Image Embeddings via Textual Summarisation",
+  "file": "workflows/OpenAI_and_LLMs/Generating Image Embeddings via Textual Summarisation.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 22,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "documentDefaultDataLoader",
+   "editImage",
+   "embeddingsOpenAi",
+   "googleDrive",
+   "openAi",
+   "textSplitterRecursiveCharacterTextSplitter",
+   "vectorStoreInMemory"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Narrating over a Video using Multimodal AI",
+  "file": "workflows/OpenAI_and_LLMs/Narrating over a Video using Multimodal AI.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 21,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "editImage",
+   "googleDrive",
+   "lmChatOpenAi",
+   "openAi"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Ollama Basic Workflow",
+  "file": "workflows/OpenAI_and_LLMs/Ollama_Basic_Workflow.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 2,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [],
+  "credentials": []
+ },
+ {
+  "name": "OpenAI Assistant workflow: uploa file, create an Assistant, chat with it!",
+  "file": "workflows/OpenAI_and_LLMs/OpenAI Assistant workflow_ upload file, create an Assistant, chat with it!.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 10,
+  "trigger": [
+   "chatTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "googleDrive",
+   "openAi"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "OpenAI Assistant with custom n8n tools",
+  "file": "workflows/OpenAI_and_LLMs/OpenAI assistant with custom tools.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 14,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "manualChatTrigger"
+  ],
+  "integrations": [
+   "manualChatTrigger",
+   "openAiAssistant",
+   "summarize",
+   "toolCode",
+   "toolWorkflow"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "OpenAI-model-examples",
+  "file": "workflows/OpenAI_and_LLMs/OpenAI examples_ ChatGPT, DALLE-2, Whisper-1 #U2013 5-in-1.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 27,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "openAi",
+   "readBinaryFiles"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Organise Your Local File Directories With AI",
+  "file": "workflows/OpenAI_and_LLMs/Organise Your Local File Directories With AI.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 16,
+  "trigger": [
+   "localFileTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "executeCommand",
+   "lmChatMistralCloud",
+   "localFileTrigger",
+   "outputParserStructured"
+  ],
+  "credentials": [
+   "mistralCloudApi"
+  ]
+ },
+ {
+  "name": "OpenAI Personal Shopper with RAG and WooCommerce",
+  "file": "workflows/OpenAI_and_LLMs/Personal Shopper Chatbot for WooCommerce with RAG using Google Drive and openAI.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 25,
+  "trigger": [
+   "chatTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "documentDefaultDataLoader",
+   "embeddingsOpenAi",
+   "googleDrive",
+   "informationExtractor",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "textSplitterTokenSplitter",
+   "toolCalculator",
+   "toolVectorStore",
+   "vectorStoreQdrant",
+   "wooCommerceTool"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "httpHeaderAuth",
+   "openAiApi",
+   "qdrantApi",
+   "wooCommerceApi"
+  ]
+ },
+ {
+  "name": "Prompt-based Object Detection with Gemini 2.0",
+  "file": "workflows/OpenAI_and_LLMs/Prompt-based Object Detection with Gemini 2.0.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 14,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "editImage"
+  ],
+  "credentials": [
+   "googlePalmApi"
+  ]
+ },
+ {
+  "name": "Proxmox AI Agent with n8n and Generative AI Integration",
+  "file": "workflows/OpenAI_and_LLMs/Proxmox AI Agent with n8n and Generative AI Integration.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 35,
+  "trigger": [
+   "chatTrigger",
+   "gmailTrigger",
+   "telegramTrigger",
+   "webhook"
+  ],
+  "integrations": [
+   "agent",
+   "gmailTrigger",
+   "lmChatGoogleGemini",
+   "outputParserAutofixing",
+   "outputParserStructured",
+   "telegramTrigger",
+   "toolHttpRequest"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "googlePalmApi",
+   "httpHeaderAuth",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "Query n8n Credentials with AI SQL Agent",
+  "file": "workflows/OpenAI_and_LLMs/Query n8n Credentials with AI SQL Agent.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 13,
+  "trigger": [
+   "chatTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "n8n",
+   "toolCode"
+  ],
+  "credentials": [
+   "n8nApi",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Calendar_scheduling",
+  "file": "workflows/OpenAI_and_LLMs/Suggest meeting slots using AI.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 21,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "gmailTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "chainLlm",
+   "gmail",
+   "gmailTrigger",
+   "googleCalendar",
+   "lmChatOpenAi",
+   "outputParserStructured",
+   "toolWorkflow"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "googleCalendarOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Summarize YouTube Videos from Transcript",
+  "file": "workflows/OpenAI_and_LLMs/Summarize YouTube Videos from Transcript.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 10,
+  "trigger": [
+   "formTrigger"
+  ],
+  "integrations": [
+   "chainSummarization",
+   "lmChatOpenAi"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "SupportFlow Lite — Simple AI Support Bot (No RAG)",
+  "file": "workflows/OpenAI_and_LLMs/SupportFlow Lite - Simple AI Customer Support Chatbot.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 7,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "googleSheets",
+   "openAi"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Transform Image to Lego Style Using Line and Dall-E",
+  "file": "workflows/OpenAI_and_LLMs/Transform Image to Lego Style Using Line and Dall-E.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 5,
+  "trigger": [
+   "webhook"
+  ],
+  "integrations": [
+   "openAi"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Translate audio using AI",
+  "file": "workflows/OpenAI_and_LLMs/Translate audio using AI.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 12,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "lmChatOpenAi"
+  ],
+  "credentials": [
+   "httpHeaderAuth",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Use any LLM-Model via OpenRouter",
+  "file": "workflows/OpenAI_and_LLMs/Use OpenRouter in n8n versions _1.78.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 8,
+  "trigger": [
+   "chatTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "memoryBufferWindow"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "lemlist __ GPT-3_ Supercharge your sales workflows",
+  "file": "workflows/OpenAI_and_LLMs/lemlist __ GPT-3_ Supercharge your sales workflows.json",
+  "category": "OpenAI_and_LLMs",
+  "nodes": 12,
+  "trigger": [
+   "lemlistTrigger"
+  ],
+  "integrations": [
+   "hubspot",
+   "lemlist",
+   "lemlistTrigger",
+   "openAi",
+   "slack"
+  ],
+  "credentials": [
+   "hubspotOAuth2Api",
+   "lemlistApi",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "API Schema Extractor",
+  "file": "workflows/Other_Integrations_and_Use_Cases/API Schema Extractor.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 88,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "documentDefaultDataLoader",
+   "embeddingsGoogleGemini",
+   "executionData",
+   "googleDrive",
+   "googleSheets",
+   "informationExtractor",
+   "lmChatGoogleGemini",
+   "textClassifier",
+   "textSplitterRecursiveCharacterTextSplitter",
+   "vectorStoreQdrant"
+  ],
+  "credentials": [
+   "googleSheetsOAuth2Api"
+  ]
+ },
+ {
+  "name": "Analyze the sentiment of feedback and send a message on Mattermost",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Analyze feedback and send a message on Mattermost.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 5,
+  "trigger": [
+   "typeformTrigger"
+  ],
+  "integrations": [
+   "googleCloudNaturalLanguage",
+   "mattermost",
+   "typeformTrigger"
+  ],
+  "credentials": [
+   "googleCloudNaturalLanguageOAuth2Api",
+   "mattermostApi",
+   "typeformApi"
+  ]
+ },
+ {
+  "name": "Analyze feedback using AWS Comprehend and send it to a Mattermost channel",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Analyze feedback using AWS Comprehend and send it to a Mattermost channel.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 5,
+  "trigger": [
+   "typeformTrigger"
+  ],
+  "integrations": [
+   "awsComprehend",
+   "mattermost",
+   "typeformTrigger"
+  ],
+  "credentials": [
+   "aws",
+   "mattermostApi",
+   "typeformApi"
+  ]
+ },
+ {
+  "name": "Automate Pinterest Analysis & AI-Powered Content Suggestions With Pinterest API",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Automate Pinterest Analysis & AI-Powered Content Suggestions With Pinterest API.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 13,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "airtable",
+   "airtableTool",
+   "chainSummarization",
+   "gmail",
+   "lmChatOpenAi"
+  ],
+  "credentials": [
+   "airtableTokenApi",
+   "gmailOAuth2",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Automate SIEM Alert Enrichment with MITRE ATT&CK, Qdrant & Zendesk in n8n",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Automate SIEM Alert Enrichment with MITRE ATT&CK, Qdrant & Zendesk in n8n.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 26,
+  "trigger": [
+   "chatTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "documentDefaultDataLoader",
+   "embeddingsOpenAi",
+   "googleDrive",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "outputParserStructured",
+   "textSplitterTokenSplitter",
+   "vectorStoreQdrant",
+   "zendesk"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "openAiApi",
+   "qdrantApi",
+   "zendeskApi"
+  ]
+ },
+ {
+  "name": "Analyze Screenshots with AI",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Automate Screenshots with URLbox & Analyze them with AI.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 9,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "openAi"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Automate testimonials in Strapi with n8n",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Automate testimonials in Strapi with n8n.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 14,
+  "trigger": [
+   "webhook"
+  ],
+  "integrations": [
+   "googleCloudNaturalLanguage",
+   "interval",
+   "strapi",
+   "twitter"
+  ],
+  "credentials": [
+   "googleCloudNaturalLanguageOAuth2Api",
+   "strapiApi",
+   "twitterOAuth1Api"
+  ]
+ },
+ {
+  "name": "Bitrix24 Chatbot Application Workflow example with Webhook Integration",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Bitrix24 Chatbot Application Workflow example with Webhook Integration.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 13,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [],
+  "credentials": []
+ },
+ {
+  "name": "ChatGPT Automatic Code Review in Gitlab MR",
+  "file": "workflows/Other_Integrations_and_Use_Cases/ChatGPT Automatic Code Review in Gitlab MR.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 14,
+  "trigger": [
+   "webhook"
+  ],
+  "integrations": [
+   "chainLlm",
+   "lmChatOpenAi"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Classify new bugs in Linear with OpenAI_s GPT-4 and move them to the right team",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Classify new bugs in Linear with OpenAI_s GPT-4 and move them to the right team.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 12,
+  "trigger": [
+   "linearTrigger"
+  ],
+  "integrations": [
+   "linear",
+   "linearTrigger",
+   "openAi",
+   "slack"
+  ],
+  "credentials": [
+   "linearApi",
+   "linearOAuth2Api",
+   "openAiApi",
+   "slackApi"
+  ]
+ },
+ {
+  "name": "ClientFlow Lite — Simple Onboarding (Email + Log)",
+  "file": "workflows/Other_Integrations_and_Use_Cases/ClientFlow Lite - Client Onboarding Automation.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 6,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "gmail",
+   "googleSheets"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Create and send Pennylane invoices from webhook data",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Create and send Pennylane invoices from webhook data.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 25,
+  "trigger": [
+   "webhook"
+  ],
+  "integrations": [],
+  "credentials": []
+ },
+ {
+  "name": "Create, update, and get a profile in Humantic AI",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Create, update, and get a profile in Humantic AI.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 5,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "humanticAi"
+  ],
+  "credentials": [
+   "humanticAiApi"
+  ]
+ },
+ {
+  "name": "Enhance Customer Chat by Buffering Messages with Twilio and Redis",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Enhance Customer Chat by Buffering Messages with Twilio and Redis.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 18,
+  "trigger": [
+   "twilioTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "memoryManager",
+   "redis",
+   "twilio",
+   "twilioTrigger"
+  ],
+  "credentials": [
+   "openAiApi",
+   "redis",
+   "twilioApi"
+  ]
+ },
+ {
+  "name": "Generate Seedance videos with Vancine API and bounded polling",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Generate Seedance videos with Vancine API and bounded polling.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 24,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [],
+  "credentials": []
+ },
+ {
+  "name": "Hacker News Throwback Machine - See What Was Hot on This Day, Every Year!",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Hacker News Throwback Machine - See What Was Hot on This Day, Every Year!.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 13,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "lmChatGoogleGemini",
+   "telegram"
+  ],
+  "credentials": [
+   "googlePalmApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "Handling Appointment Leads and Follow-up With Twilio, Cal.com and AI",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Handling Appointment Leads and Follow-up With Twilio, Cal.com and AI.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 36,
+  "trigger": [
+   "scheduleTrigger",
+   "twilioTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "airtable",
+   "chainLlm",
+   "lmChatOpenAi",
+   "outputParserAutofixing",
+   "outputParserStructured",
+   "toolHttpRequest",
+   "twilio",
+   "twilioTrigger"
+  ],
+  "credentials": [
+   "airtableTokenApi",
+   "calApi",
+   "httpHeaderAuth",
+   "openAiApi",
+   "twilioApi"
+  ]
+ },
+ {
+  "name": "Integrating AI with Open-Meteo API for Enhanced Weather Forecasting",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Integrating AI with Open-Meteo API for Enhanced Weather Forecasting.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 12,
+  "trigger": [
+   "chatTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "toolHttpRequest"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Introduction to the HTTP Tool",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Introduction to the HTTP Tool.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 12,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "toolHttpRequest"
+  ],
+  "credentials": [
+   "httpHeaderAuth",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "KB Tool - Confluence Knowledge Base",
+  "file": "workflows/Other_Integrations_and_Use_Cases/KB Tool - Confluence Knowledge Base.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 7,
+  "trigger": [
+   "executeWorkflowTrigger"
+  ],
+  "integrations": [],
+  "credentials": [
+   "httpBasicAuth"
+  ]
+ },
+ {
+  "name": "Komos Regulated Browser Ops Task Queue",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Komos Regulated Browser Ops Task Queue.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 5,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [],
+  "credentials": []
+ },
+ {
+  "name": "LINE Assistant with Google Calendar and Gmail Integration",
+  "file": "workflows/Other_Integrations_and_Use_Cases/LINE Assistant with Google Calendar and Gmail Integration.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 14,
+  "trigger": [
+   "webhook"
+  ],
+  "integrations": [
+   "agent",
+   "gmailTool",
+   "googleCalendarTool",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "openAi",
+   "toolWikipedia"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "googleCalendarOAuth2Api"
+  ]
+ },
+ {
+  "name": "Latchshot — capture a public webpage",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Latchshot #U2014 capture a public webpage.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 4,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [],
+  "credentials": []
+ },
+ {
+  "name": "Monthly Spotify Track Archiving and Playlist Classification",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Monthly Spotify Track Archiving and Playlist Classification.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 37,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "googleSheets",
+   "lmChatAnthropic",
+   "outputParserStructured",
+   "spotify"
+  ],
+  "credentials": [
+   "anthropicApi",
+   "googleSheetsOAuth2Api",
+   "spotifyOAuth2Api"
+  ]
+ },
+ {
+  "name": "Obsidian Notes Read Aloud: Available as a Podcast Feed",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Obsidian Notes Read Aloud using AI_ Available as a Podcast Feed.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 23,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "googleSheets",
+   "openAi"
+  ],
+  "credentials": [
+   "googleSheetsOAuth2Api",
+   "httpCustomAuth",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Printify Automation - Update Title and Description - AlexK1919",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Optimize & Update Printify Title and Description Workflow.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 26,
+  "trigger": [
+   "googleSheetsTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "googleSheets",
+   "googleSheetsTrigger",
+   "openAi",
+   "toolCalculator",
+   "toolWikipedia"
+  ],
+  "credentials": [
+   "googleSheetsOAuth2Api",
+   "googleSheetsTriggerOAuth2Api",
+   "httpHeaderAuth",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Qualify replies from Pipedrive persons with AI",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Qualify replies from Pipedrive persons with AI.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 11,
+  "trigger": [
+   "gmailTrigger"
+  ],
+  "integrations": [
+   "gmailTrigger",
+   "openAi",
+   "pipedrive"
+  ],
+  "credentials": [
+   "openAiApi",
+   "pipedriveApi"
+  ]
+ },
+ {
+  "name": "Siri AI Agent_ Apple Shortcuts powered voice template",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Siri AI Agent_ Apple Shortcuts powered voice template.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 7,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Synthetic Candidate Intake Reliability Harness",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Synthetic Candidate Intake Reliability Harness.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 3,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [],
+  "credentials": []
+ },
+ {
+  "name": "Text automations using Apple Shortcuts",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Text automations using Apple Shortcuts.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 10,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "openAi"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Tunova — Generate a song via webhook (drop-in API)",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Tunova - Generate a song via webhook.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 5,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [],
+  "credentials": [
+   "httpHeaderAuth"
+  ]
+ },
+ {
+  "name": "UTM Link Creator & QR Code Generator with Scheduled Google Analytics Reports",
+  "file": "workflows/Other_Integrations_and_Use_Cases/UTM Link Creator & QR Code Generator with Scheduled Google Analytics Reports.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 14,
+  "trigger": [
+   "manualTrigger",
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "airtable",
+   "gmail",
+   "googleAnalyticsTool",
+   "lmChatOpenAi",
+   "memoryBufferWindow"
+  ],
+  "credentials": [
+   "airtableTokenApi",
+   "gmailOAuth2",
+   "googleAnalyticsOAuth2",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Use AI to organize your Todoist Inbox",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Use AI to organize your Todoist Inbox.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 12,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "openAi",
+   "todoist"
+  ],
+  "credentials": [
+   "openAiApi",
+   "todoistApi"
+  ]
+ },
+ {
+  "name": "get_a_web_page",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Using External Workflows as Tools in n8n.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 4,
+  "trigger": [
+   "executeWorkflowTrigger"
+  ],
+  "integrations": [],
+  "credentials": [
+   "httpHeaderAuth"
+  ]
+ },
+ {
+  "name": "Visualize your SQL Agent queries with OpenAI and Quickchart.io",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Visualize your SQL Agent queries with OpenAI and Quickchart.io.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 19,
+  "trigger": [
+   "chatTrigger",
+   "executeWorkflowTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "informationExtractor",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "textClassifier"
+  ],
+  "credentials": [
+   "openAiApi",
+   "postgres"
+  ]
+ },
+ {
+  "name": "VoiceAgent Lite — Simple Call Logger",
+  "file": "workflows/Other_Integrations_and_Use_Cases/VoiceAgent Lite - Phone Call Logger.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 5,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "googleSheets"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Zoom AI Meeting Assistant",
+  "file": "workflows/Other_Integrations_and_Use_Cases/Zoom AI Meeting Assistant creates mail summary, ClickUp tasks and follow-up call.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 24,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "clickUp",
+   "lmChatOpenAi",
+   "microsoftOutlookTool",
+   "openAi",
+   "toolWorkflow",
+   "zoom"
+  ],
+  "credentials": [
+   "clickUpOAuth2Api",
+   "microsoftOutlookOAuth2Api",
+   "openAiApi",
+   "smtp",
+   "zoomOAuth2Api"
+  ]
+ },
+ {
+  "name": "Glasp Highlights Auto Export",
+  "file": "workflows/Other_Integrations_and_Use_Cases/glasp-highlights-export-workflow.json",
+  "category": "Other_Integrations_and_Use_Cases",
+  "nodes": 7,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [],
+  "credentials": [
+   "httpHeaderAuth"
+  ]
+ },
+ {
+  "name": "Ask questions about a PDF using AI",
+  "file": "workflows/PDF_and_Document_Processing/Ask questions about a PDF using AI.json",
+  "category": "PDF_and_Document_Processing",
+  "nodes": 16,
+  "trigger": [
+   "chatTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "chainRetrievalQa",
+   "documentDefaultDataLoader",
+   "embeddingsOpenAi",
+   "googleDrive",
+   "lmChatOpenAi",
+   "retrieverVectorStore",
+   "textSplitterRecursiveCharacterTextSplitter",
+   "vectorStorePinecone"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "openAiApi",
+   "pineconeApi"
+  ]
+ },
+ {
+  "name": "Breakdown Documents into Study Notes using Templating MistralAI and Qdrant",
+  "file": "workflows/PDF_and_Document_Processing/Breakdown Documents into Study Notes using Templating MistralAI and Qdrant.json",
+  "category": "PDF_and_Document_Processing",
+  "nodes": 42,
+  "trigger": [
+   "localFileTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "chainRetrievalQa",
+   "chainSummarization",
+   "documentDefaultDataLoader",
+   "embeddingsMistralCloud",
+   "lmChatMistralCloud",
+   "localFileTrigger",
+   "outputParserItemList",
+   "retrieverVectorStore",
+   "textSplitterRecursiveCharacterTextSplitter",
+   "vectorStoreQdrant"
+  ],
+  "credentials": [
+   "mistralCloudApi",
+   "qdrantApi"
+  ]
+ },
+ {
+  "name": "CV Resume PDF Parsing with Multimodal Vision AI",
+  "file": "workflows/PDF_and_Document_Processing/CV Resume PDF Parsing with Multimodal Vision AI.json",
+  "category": "PDF_and_Document_Processing",
+  "nodes": 13,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "editImage",
+   "googleDrive",
+   "lmChatGoogleGemini",
+   "outputParserStructured"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "googlePalmApi"
+  ]
+ },
+ {
+  "name": "Chat with PDF docs using AI (quoting sources)",
+  "file": "workflows/PDF_and_Document_Processing/Chat with PDF docs using AI (quoting sources).json",
+  "category": "PDF_and_Document_Processing",
+  "nodes": 22,
+  "trigger": [
+   "chatTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "documentDefaultDataLoader",
+   "embeddingsOpenAi",
+   "googleDrive",
+   "lmChatOpenAi",
+   "outputParserStructured",
+   "textSplitterRecursiveCharacterTextSplitter",
+   "vectorStorePinecone"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "openAiApi",
+   "pineconeApi"
+  ]
+ },
+ {
+  "name": "Convert URL HTML to Markdown Format and Get Page Links",
+  "file": "workflows/PDF_and_Document_Processing/Convert URL HTML to Markdown Format and Get Page Links.json",
+  "category": "PDF_and_Document_Processing",
+  "nodes": 17,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [],
+  "credentials": [
+   "httpHeaderAuth"
+  ]
+ },
+ {
+  "name": "ETL pipeline",
+  "file": "workflows/PDF_and_Document_Processing/ETL pipeline for text processing.json",
+  "category": "PDF_and_Document_Processing",
+  "nodes": 9,
+  "trigger": [
+   "cron"
+  ],
+  "integrations": [
+   "googleCloudNaturalLanguage",
+   "mongoDb",
+   "postgres",
+   "slack",
+   "twitter"
+  ],
+  "credentials": [
+   "googleCloudNaturalLanguageOAuth2Api",
+   "mongoDb",
+   "postgres",
+   "slackApi",
+   "twitterOAuth1Api"
+  ]
+ },
+ {
+  "name": "Extract and process information directly from PDF using Claude and Gemini",
+  "file": "workflows/PDF_and_Document_Processing/Extract and process information directly from PDF using Claude and Gemini.json",
+  "category": "PDF_and_Document_Processing",
+  "nodes": 11,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "googleDrive"
+  ],
+  "credentials": [
+   "anthropicApi",
+   "googleDriveOAuth2Api",
+   "googlePalmApi"
+  ]
+ },
+ {
+  "name": "Extract data from resume and create PDF with Gotenberg",
+  "file": "workflows/PDF_and_Document_Processing/Extract data from resume and create PDF with Gotenberg.json",
+  "category": "PDF_and_Document_Processing",
+  "nodes": 43,
+  "trigger": [
+   "telegramTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "lmChatOpenAi",
+   "outputParserAutofixing",
+   "outputParserStructured",
+   "telegram",
+   "telegramTrigger"
+  ],
+  "credentials": [
+   "openAiApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "Image to license plate number",
+  "file": "workflows/PDF_and_Document_Processing/Extract license plate number from image uploaded via an n8n form.json",
+  "category": "PDF_and_Document_Processing",
+  "nodes": 5,
+  "trigger": [
+   "formTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "form",
+   "lmChatOpenRouter"
+  ],
+  "credentials": [
+   "openRouterApi"
+  ]
+ },
+ {
+  "name": "Extract text from PDF and image using Vertex AI (Gemini) into CSV",
+  "file": "workflows/PDF_and_Document_Processing/Extract text from PDF and image using Vertex AI (Gemini) into CSV.json",
+  "category": "PDF_and_Document_Processing",
+  "nodes": 16,
+  "trigger": [
+   "googleDriveTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "googleDrive",
+   "googleDriveTrigger",
+   "lmChatGoogleGemini"
+  ],
+  "credentials": [
+   "googleApi",
+   "googlePalmApi",
+   "httpHeaderAuth"
+  ]
+ },
+ {
+  "name": "Invoice data extraction with LlamaParse and OpenAI",
+  "file": "workflows/PDF_and_Document_Processing/Invoice data extraction with LlamaParse and OpenAI.json",
+  "category": "PDF_and_Document_Processing",
+  "nodes": 26,
+  "trigger": [
+   "gmailTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "gmail",
+   "gmailTrigger",
+   "googleSheets",
+   "lmOpenAi",
+   "outputParserStructured"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "googleSheetsOAuth2Api",
+   "httpHeaderAuth",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "PDF invoice data extraction with human-in-the-loop from GMail to Google Sheets",
+  "file": "workflows/PDF_and_Document_Processing/Invoice data extraction with human-in-the-loop validation and auto-training using Cradl AI.json",
+  "category": "PDF_and_Document_Processing",
+  "nodes": 10,
+  "trigger": [
+   "gmailTrigger"
+  ],
+  "integrations": [
+   "cradlAi",
+   "gmail",
+   "gmailTrigger",
+   "googleSheets"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Manipulate PDF with Adobe developer API",
+  "file": "workflows/PDF_and_Document_Processing/Manipulate PDF with Adobe developer API.json",
+  "category": "PDF_and_Document_Processing",
+  "nodes": 20,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "manualTrigger"
+  ],
+  "integrations": [
+   "dropbox"
+  ],
+  "credentials": [
+   "dropboxOAuth2Api",
+   "httpCustomAuth",
+   "httpHeaderAuth"
+  ]
+ },
+ {
+  "name": "Parse PDF with LlamaParse and save to Airtable",
+  "file": "workflows/PDF_and_Document_Processing/Parse PDF with LlamaParse and save to Airtable.json",
+  "category": "PDF_and_Document_Processing",
+  "nodes": 18,
+  "trigger": [
+   "googleDriveTrigger",
+   "webhook"
+  ],
+  "integrations": [
+   "airtable",
+   "googleDrive",
+   "googleDriveTrigger"
+  ],
+  "credentials": [
+   "airtableTokenApi",
+   "googleDriveOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Prepare CSV files with GPT-4",
+  "file": "workflows/PDF_and_Document_Processing/Prepare CSV files with GPT-4.json",
+  "category": "PDF_and_Document_Processing",
+  "nodes": 11,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "moveBinaryData",
+   "openAi",
+   "spreadsheetFile",
+   "writeBinaryFile"
+  ],
+  "credentials": [
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Remove Personally Identifiable Information (PII) from CSV Files with OpenAI",
+  "file": "workflows/PDF_and_Document_Processing/Remove Personally Identifiable Information (PII) from CSV Files with OpenAI.json",
+  "category": "PDF_and_Document_Processing",
+  "nodes": 10,
+  "trigger": [
+   "googleDriveTrigger"
+  ],
+  "integrations": [
+   "googleDrive",
+   "googleDriveTrigger",
+   "openAi"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Whisper Transkription copy",
+  "file": "workflows/PDF_and_Document_Processing/Transcribe Audio Files, Summarize with GPT-4, and Store in Notion.json",
+  "category": "PDF_and_Document_Processing",
+  "nodes": 8,
+  "trigger": [
+   "googleDriveTrigger"
+  ],
+  "integrations": [
+   "googleDrive",
+   "googleDriveTrigger",
+   "notion",
+   "openAi"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "notionApi",
+   "openAiApi"
+  ]
+ },
+ {
+  "name": "Transcribing Bank Statements To Markdown Using Gemini Vision AI",
+  "file": "workflows/PDF_and_Document_Processing/Transcribing Bank Statements To Markdown Using Gemini Vision AI.json",
+  "category": "PDF_and_Document_Processing",
+  "nodes": 20,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "compression",
+   "editImage",
+   "googleDrive",
+   "informationExtractor",
+   "lmChatGoogleGemini",
+   "sort"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "googlePalmApi"
+  ]
+ },
+ {
+  "name": "AI-Powered Information Monitoring with OpenAI, Google Sheets, Jina AI and Slack",
+  "file": "workflows/Slack/AI-Powered Information Monitoring with OpenAI, Google Sheets, Jina AI and Slack.json",
+  "category": "Slack",
+  "nodes": 31,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "googleSheets",
+   "lmChatOpenAi",
+   "rssFeedRead",
+   "slack",
+   "textClassifier"
+  ],
+  "credentials": [
+   "googleApi",
+   "openAiApi",
+   "slackOAuth2Api"
+  ]
+ },
+ {
+  "name": "Creating a AI Slack Bot with Google Gemini",
+  "file": "workflows/Slack/Creating a AI Slack Bot with Google Gemini.json",
+  "category": "Slack",
+  "nodes": 10,
+  "trigger": [
+   "webhook"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatGoogleGemini",
+   "memoryBufferWindow",
+   "slack"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Customer Support Channel and Ticketing System with Slack and Linear",
+  "file": "workflows/Slack/Customer Support Channel and Ticketing System with Slack and Linear.json",
+  "category": "Slack",
+  "nodes": 19,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "linear",
+   "lmChatOpenAi",
+   "outputParserStructured",
+   "slack"
+  ],
+  "credentials": [
+   "linearApi",
+   "openAiApi",
+   "slackApi"
+  ]
+ },
+ {
+  "name": "Enhance Security Operations with the Qualys Slack Shortcut Bot!",
+  "file": "workflows/Slack/Enhance Security Operations with the Qualys Slack Shortcut Bot!.json",
+  "category": "Slack",
+  "nodes": 23,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [],
+  "credentials": [
+   "slackApi"
+  ]
+ },
+ {
+  "name": "piepdrive-test",
+  "file": "workflows/Slack/Enrich Pipedrive_s Organization Data with OpenAI GPT-4o & Notify it in Slack.json",
+  "category": "Slack",
+  "nodes": 8,
+  "trigger": [
+   "pipedriveTrigger"
+  ],
+  "integrations": [
+   "openAi",
+   "pipedrive",
+   "pipedriveTrigger",
+   "slack"
+  ],
+  "credentials": [
+   "openAiApi",
+   "pipedriveApi",
+   "slackOAuth2Api"
+  ]
+ },
+ {
+  "name": "IT Ops AI SlackBot Workflow - Chat with your knowledge base",
+  "file": "workflows/Slack/IT Ops AI SlackBot Workflow - Chat with your knowledge base.json",
+  "category": "Slack",
+  "nodes": 20,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "slack",
+   "toolWorkflow"
+  ],
+  "credentials": [
+   "openAiApi",
+   "slackApi"
+  ]
+ },
+ {
+  "name": "Sentiment Analysis Tracking on Support Issues with Linear and Slack",
+  "file": "workflows/Slack/Sentiment Analysis Tracking on Support Issues with Linear and Slack.json",
+  "category": "Slack",
+  "nodes": 19,
+  "trigger": [
+   "airtableTrigger",
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "airtable",
+   "airtableTrigger",
+   "graphql",
+   "informationExtractor",
+   "lmChatOpenAi",
+   "slack"
+  ],
+  "credentials": [
+   "airtableTokenApi",
+   "httpHeaderAuth",
+   "openAiApi",
+   "slackApi"
+  ]
+ },
+ {
+  "name": "My workflow 6",
+  "file": "workflows/Slack/Slack slash commands AI Chat Bot.json",
+  "category": "Slack",
+  "nodes": 11,
+  "trigger": [
+   "webhook"
+  ],
+  "integrations": [
+   "chainLlm",
+   "lmChatOpenAi",
+   "slack"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Venafi Cloud Slack Cert Bot",
+  "file": "workflows/Slack/Venafi Cloud Slack Cert Bot.json",
+  "category": "Slack",
+  "nodes": 38,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "openAi",
+   "slack",
+   "venafiTlsProtectCloud"
+  ],
+  "credentials": [
+   "openAiApi",
+   "slackApi",
+   "venafiTlsProtectCloudApi",
+   "virusTotalApi"
+  ]
+ },
+ {
+  "name": "🐋🤖 DeepSeek AI Agent + Telegram + LONG TERM Memory 🧠",
+  "file": "workflows/Telegram/#L01f40b#L01f916 DeepSeek AI Agent + Telegram + LONG TERM Memory #L01f9e0.json",
+  "category": "Telegram",
+  "nodes": 23,
+  "trigger": [
+   "chatTrigger",
+   "webhook"
+  ],
+  "integrations": [
+   "agent",
+   "googleDocs",
+   "googleDocsTool",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "telegram"
+  ],
+  "credentials": [
+   "googleDocsOAuth2Api",
+   "openAiApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "🤖 Telegram Messaging Agent for Text/Audio/Images",
+  "file": "workflows/Telegram/#L01f916 Telegram Messaging Agent for Text_Audio_Images.json",
+  "category": "Telegram",
+  "nodes": 39,
+  "trigger": [
+   "webhook"
+  ],
+  "integrations": [
+   "lmChatOpenAi",
+   "openAi",
+   "telegram",
+   "textClassifier"
+  ],
+  "credentials": [
+   "openAiApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "🤖🧠 AI Agent Chatbot + LONG TERM Memory + Note Storage + Telegram",
+  "file": "workflows/Telegram/#L01f916#L01f9e0 AI Agent Chatbot + LONG TERM Memory + Note Storage + Telegram.json",
+  "category": "Telegram",
+  "nodes": 21,
+  "trigger": [
+   "chatTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "googleDocs",
+   "googleDocsTool",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "telegram"
+  ],
+  "credentials": [
+   "googleDocsOAuth2Api",
+   "openAiApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "AI-Powered Children_s Arabic Storytelling on Telegram",
+  "file": "workflows/Telegram/AI-Powered Children_s Arabic Storytelling on Telegram.json",
+  "category": "Telegram",
+  "nodes": 15,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "chainSummarization",
+   "lmChatOpenAi",
+   "openAi",
+   "telegram",
+   "textSplitterRecursiveCharacterTextSplitter"
+  ],
+  "credentials": [
+   "openAiApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "AI-Powered Children_s English Storytelling on Telegram with OpenAI",
+  "file": "workflows/Telegram/AI-Powered Children_s English Storytelling on Telegram with OpenAI.json",
+  "category": "Telegram",
+  "nodes": 14,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "chainSummarization",
+   "lmChatOpenAi",
+   "openAi",
+   "telegram",
+   "textSplitterRecursiveCharacterTextSplitter"
+  ],
+  "credentials": [
+   "openAiApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "Agentic Telegram AI bot with LangChain nodes and new tools",
+  "file": "workflows/Telegram/Agentic Telegram AI bot with with LangChain nodes and new tools.json",
+  "category": "Telegram",
+  "nodes": 8,
+  "trigger": [
+   "telegramTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "telegram",
+   "telegramTool",
+   "telegramTrigger",
+   "toolHttpRequest"
+  ],
+  "credentials": [
+   "openAiApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "Angie, Personal AI Assistant with Telegram Voice and Text",
+  "file": "workflows/Telegram/Angie, Personal AI Assistant with Telegram Voice and Text.json",
+  "category": "Telegram",
+  "nodes": 15,
+  "trigger": [
+   "telegramTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "baserowTool",
+   "gmailTool",
+   "googleCalendarTool",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "openAi",
+   "telegram",
+   "telegramTrigger"
+  ],
+  "credentials": [
+   "baserowApi",
+   "gmailOAuth2",
+   "googleCalendarOAuth2Api",
+   "openAiApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "Automated AI image analysis and response via Telegram",
+  "file": "workflows/Telegram/Automated AI image analysis and response via Telegram.json",
+  "category": "Telegram",
+  "nodes": 8,
+  "trigger": [
+   "telegramTrigger"
+  ],
+  "integrations": [
+   "openAi",
+   "telegram",
+   "telegramTrigger"
+  ],
+  "credentials": [
+   "openAiApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "Bitcoin price alert to Telegram with CoinPaprika",
+  "file": "workflows/Telegram/Bitcoin price alert to Telegram with CoinPaprika.json",
+  "category": "Telegram",
+  "nodes": 5,
+  "trigger": [
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "telegram"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Chat with OpenAIs GPT via a simple Telegram Bot",
+  "file": "workflows/Telegram/Chat with OpenAIs GPT via a simple Telegram Bot.json",
+  "category": "Telegram",
+  "nodes": 4,
+  "trigger": [
+   "telegramTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "telegram",
+   "telegramTrigger"
+  ],
+  "credentials": [
+   "openAiApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "Detect toxic language in Telegram messages",
+  "file": "workflows/Telegram/Detect toxic language in Telegram messages.json",
+  "category": "Telegram",
+  "nodes": 5,
+  "trigger": [
+   "telegramTrigger"
+  ],
+  "integrations": [
+   "googlePerspective",
+   "telegram",
+   "telegramTrigger"
+  ],
+  "credentials": [
+   "googlePerspectiveOAuth2Api",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "Image Creation with OpenAI and Telegram",
+  "file": "workflows/Telegram/Image Creation with OpenAI and Telegram.json",
+  "category": "Telegram",
+  "nodes": 12,
+  "trigger": [
+   "telegramTrigger"
+  ],
+  "integrations": [
+   "openAi",
+   "telegram",
+   "telegramTrigger"
+  ],
+  "credentials": [
+   "openAiApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "Internship Informer",
+  "file": "workflows/Telegram/Internship Informer.json",
+  "category": "Telegram",
+  "nodes": 30,
+  "trigger": [
+   "telegramTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "dataTable",
+   "dataTableTool",
+   "googleCalendar",
+   "googleSheets",
+   "httpRequestTool",
+   "lmChatGroq",
+   "lmChatOpenAi",
+   "telegram",
+   "telegramTrigger"
+  ],
+  "credentials": [
+   "googleCalendarOAuth2Api",
+   "googleSheetsOAuth2Api",
+   "groqApi",
+   "openAiApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "ResumeBot",
+  "file": "workflows/Telegram/ResumeBot.json",
+  "category": "Telegram",
+  "nodes": 98,
+  "trigger": [
+   "telegramTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "ssh",
+   "supabase",
+   "telegram",
+   "telegramTrigger"
+  ],
+  "credentials": [
+   "openAiApi",
+   "sshPassword",
+   "supabaseApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "Send a random recipe once a day to Telegram",
+  "file": "workflows/Telegram/Send a random recipe once a day to Telegram.json",
+  "category": "Telegram",
+  "nodes": 15,
+  "trigger": [
+   "cron",
+   "telegramTrigger"
+  ],
+  "integrations": [
+   "airtable",
+   "telegram",
+   "telegramTrigger"
+  ],
+  "credentials": [
+   "airtableApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "TeleBot_KnowledgeHub",
+  "file": "workflows/Telegram/TeleBot_KnowledgeHub.json",
+  "category": "Telegram",
+  "nodes": 15,
+  "trigger": [
+   "formTrigger",
+   "telegramTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "documentDefaultDataLoader",
+   "embeddingsHuggingFaceInference",
+   "lmChatGroq",
+   "memoryBufferWindow",
+   "telegram",
+   "telegramTrigger",
+   "textSplitterRecursiveCharacterTextSplitter",
+   "vectorStoreInMemory"
+  ],
+  "credentials": [
+   "groqApi",
+   "huggingFaceApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "NeurochainAI Basic API Integration",
+  "file": "workflows/Telegram/Telegram AI Bot_ NeurochainAI Text & Image - NeurochainAI Basic API Integration.json",
+  "category": "Telegram",
+  "nodes": 29,
+  "trigger": [
+   "telegramTrigger"
+  ],
+  "integrations": [
+   "telegram",
+   "telegramTrigger"
+  ],
+  "credentials": [
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "Telegram AI-bot",
+  "file": "workflows/Telegram/Telegram AI Chatbot.json",
+  "category": "Telegram",
+  "nodes": 16,
+  "trigger": [
+   "telegramTrigger"
+  ],
+  "integrations": [
+   "openAi",
+   "telegram",
+   "telegramTrigger"
+  ],
+  "credentials": [
+   "openAiApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "Simple Telegram AI Bot (Lite)",
+  "file": "workflows/Telegram/Telegram AI Support Bot with Conversation Memory.json",
+  "category": "Telegram",
+  "nodes": 5,
+  "trigger": [
+   "telegramTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "telegram",
+   "telegramTrigger"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Telegram AI multi-format chatbot",
+  "file": "workflows/Telegram/Telegram AI bot assistant_ ready-made template for voice & text messages.json",
+  "category": "Telegram",
+  "nodes": 15,
+  "trigger": [
+   "telegramTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "openAi",
+   "telegram",
+   "telegramTrigger"
+  ],
+  "credentials": [
+   "openAiApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "Telegram AI Langchain bot",
+  "file": "workflows/Telegram/Telegram AI bot with LangChain nodes.json",
+  "category": "Telegram",
+  "nodes": 12,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "telegramTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "telegram",
+   "telegramTrigger",
+   "toolWorkflow"
+  ],
+  "credentials": [
+   "openAiApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "Telegram Bot with Supabase memory and OpenAI assistant integration",
+  "file": "workflows/Telegram/Telegram Bot with Supabase memory and OpenAI assistant integration.json",
+  "category": "Telegram",
+  "nodes": 17,
+  "trigger": [
+   "telegramTrigger"
+  ],
+  "integrations": [
+   "supabase",
+   "telegram",
+   "telegramTrigger"
+  ],
+  "credentials": [
+   "openAiApi",
+   "supabaseApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "Telegram RAG pdf",
+  "file": "workflows/Telegram/Telegram chat with PDF.json",
+  "category": "Telegram",
+  "nodes": 20,
+  "trigger": [
+   "telegramTrigger"
+  ],
+  "integrations": [
+   "chainRetrievalQa",
+   "documentDefaultDataLoader",
+   "embeddingsOpenAi",
+   "lmChatGroq",
+   "retrieverVectorStore",
+   "telegram",
+   "telegramTrigger",
+   "textSplitterRecursiveCharacterTextSplitter",
+   "vectorStorePinecone"
+  ],
+  "credentials": [
+   "groqApi",
+   "openAiApi",
+   "pineconeApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "Play with Spotify from Telegram",
+  "file": "workflows/Telegram/Telegram to Spotify with OpenAI.json",
+  "category": "Telegram",
+  "nodes": 14,
+  "trigger": [
+   "telegramTrigger"
+  ],
+  "integrations": [
+   "openAi",
+   "spotify",
+   "telegram",
+   "telegramTrigger"
+  ],
+  "credentials": [
+   "openAiApi",
+   "spotifyOAuth2Api",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "Translate Telegram audio messages with AI (55 supported languages) v1",
+  "file": "workflows/Telegram/Translate Telegram audio messages with AI (55 supported languages).json",
+  "category": "Telegram",
+  "nodes": 13,
+  "trigger": [
+   "telegramTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "lmChatOpenAi",
+   "openAi",
+   "telegram",
+   "telegramTrigger"
+  ],
+  "credentials": [
+   "openAiApi",
+   "telegramApi"
+  ]
+ },
+ {
+  "name": "Automate Sales Meeting Prep with AI & APIFY Sent To WhatsApp",
+  "file": "workflows/WhatsApp/Automate Sales Meeting Prep with AI & APIFY Sent To WhatsApp.json",
+  "category": "WhatsApp",
+  "nodes": 61,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "gmail",
+   "googleCalendar",
+   "informationExtractor",
+   "lmChatOpenAi",
+   "whatsApp"
+  ],
+  "credentials": [
+   "gmailOAuth2",
+   "googleCalendarOAuth2Api",
+   "httpQueryAuth",
+   "openAiApi",
+   "whatsAppApi"
+  ]
+ },
+ {
+  "name": "Building Your First WhatsApp Chatbot",
+  "file": "workflows/WhatsApp/Building Your First WhatsApp Chatbot.json",
+  "category": "WhatsApp",
+  "nodes": 28,
+  "trigger": [
+   "manualTrigger",
+   "whatsAppTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "documentDefaultDataLoader",
+   "embeddingsOpenAi",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "textSplitterRecursiveCharacterTextSplitter",
+   "toolVectorStore",
+   "vectorStoreInMemory",
+   "whatsApp",
+   "whatsAppTrigger"
+  ],
+  "credentials": [
+   "openAiApi",
+   "whatsAppApi",
+   "whatsAppTriggerApi"
+  ]
+ },
+ {
+  "name": "Business WhatsApp AI RAG Chatbot",
+  "file": "workflows/WhatsApp/Complete business WhatsApp AI-Powered RAG Chatbot using OpenAI.json",
+  "category": "WhatsApp",
+  "nodes": 24,
+  "trigger": [
+   "manualTrigger",
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "agent",
+   "documentDefaultDataLoader",
+   "embeddingsOpenAi",
+   "googleDrive",
+   "lmChatOpenAi",
+   "memoryBufferWindow",
+   "textSplitterTokenSplitter",
+   "vectorStoreQdrant",
+   "whatsApp"
+  ],
+  "credentials": [
+   "googleDriveOAuth2Api",
+   "httpHeaderAuth",
+   "openAiApi",
+   "qdrantApi",
+   "whatsAppApi"
+  ]
+ },
+ {
+  "name": "Receive and Send Messages Across WhatsApp, Instagram and Facebook Messenger with Fiwano",
+  "file": "workflows/WhatsApp/Receive and Send Messages Across WhatsApp, Instagram and Facebook Messenger with Fiwano.json",
+  "category": "WhatsApp",
+  "nodes": 6,
+  "trigger": [
+   "fiwanoTrigger"
+  ],
+  "integrations": [
+   "fiwano",
+   "fiwanoTrigger"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Respond to WhatsApp Messages with AI Like a Pro!",
+  "file": "workflows/WhatsApp/Respond to WhatsApp Messages with AI Like a Pro!.json",
+  "category": "WhatsApp",
+  "nodes": 35,
+  "trigger": [
+   "whatsAppTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "chainLlm",
+   "lmChatGoogleGemini",
+   "memoryBufferWindow",
+   "toolWikipedia",
+   "whatsApp",
+   "whatsAppTrigger"
+  ],
+  "credentials": [
+   "googlePalmApi",
+   "whatsAppApi",
+   "whatsAppTriggerApi"
+  ]
+ },
+ {
+  "name": "Auto categorize wordpress template",
+  "file": "workflows/WordPress/Auto-Categorize blog posts in wordpress using A.I..json",
+  "category": "WordPress",
+  "nodes": 9,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "lmChatOpenAi",
+   "wordpress"
+  ],
+  "credentials": [
+   "openAiApi",
+   "wordpressApi"
+  ]
+ },
+ {
+  "name": "Auto-Tag Blog Posts in WordPress with AI",
+  "file": "workflows/WordPress/Auto-Tag Blog Posts in WordPress with AI.json",
+  "category": "WordPress",
+  "nodes": 32,
+  "trigger": [
+   "executeWorkflowTrigger",
+   "rssFeedReadTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "lmChatOpenAi",
+   "outputParserAutofixing",
+   "outputParserStructured",
+   "rssFeedReadTrigger",
+   "wordpress"
+  ],
+  "credentials": [
+   "openAiApi",
+   "wordpressApi"
+  ]
+ },
+ {
+  "name": "Automate Blog Creation in Brand Voice with AI",
+  "file": "workflows/WordPress/Automate Blog Creation in Brand Voice with AI.json",
+  "category": "WordPress",
+  "nodes": 27,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "chainLlm",
+   "informationExtractor",
+   "lmChatOpenAi",
+   "wordpress"
+  ],
+  "credentials": [
+   "openAiApi",
+   "wordpressApi"
+  ]
+ },
+ {
+  "name": "Automate Content Generator for WordPress with DeepSeek R1",
+  "file": "workflows/WordPress/Automate Content Generator for WordPress with DeepSeek R1.json",
+  "category": "WordPress",
+  "nodes": 17,
+  "trigger": [
+   "manualTrigger"
+  ],
+  "integrations": [
+   "googleSheets",
+   "openAi",
+   "wordpress"
+  ],
+  "credentials": [
+   "googleSheetsOAuth2Api",
+   "openAiApi",
+   "wooCommerceApi",
+   "wordpressApi"
+  ]
+ },
+ {
+  "name": "RAG & GenAI App With WordPress Content",
+  "file": "workflows/WordPress/WordPress - AI Chatbot to enhance user experience - with Supabase and OpenAI.json",
+  "category": "WordPress",
+  "nodes": 53,
+  "trigger": [
+   "chatTrigger",
+   "manualTrigger",
+   "respondToWebhook",
+   "scheduleTrigger"
+  ],
+  "integrations": [
+   "agent",
+   "documentDefaultDataLoader",
+   "embeddingsOpenAi",
+   "lmChatOpenAi",
+   "memoryPostgresChat",
+   "postgres",
+   "supabase",
+   "textSplitterTokenSplitter",
+   "vectorStoreSupabase",
+   "wordpress"
+  ],
+  "credentials": []
+ },
+ {
+  "name": "Write a WordPress post with AI (starting from a few keywords)",
+  "file": "workflows/WordPress/Write a WordPress post with AI (starting from a few keywords).json",
+  "category": "WordPress",
+  "nodes": 37,
+  "trigger": [
+   "formTrigger",
+   "respondToWebhook"
+  ],
+  "integrations": [
+   "openAi",
+   "toolWikipedia",
+   "wordpress"
+  ],
+  "credentials": [
+   "openAiApi",
+   "wordpressApi"
+  ]
+ },
+ {
+  "name": "Start/Stop a Docker service",
+  "file": "workflows/devops/docker-compose-controller.json",
+  "category": "devops",
+  "nodes": 13,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "ssh"
+  ],
+  "credentials": [
+   "httpBasicAuth",
+   "sshPassword"
+  ]
+ },
+ {
+  "name": "Update Server",
+  "file": "workflows/devops/linux-update-via-webhook.json",
+  "category": "devops",
+  "nodes": 4,
+  "trigger": [
+   "respondToWebhook",
+   "webhook"
+  ],
+  "integrations": [
+   "ssh"
+  ],
+  "credentials": [
+   "httpBasicAuth",
+   "sshPassword"
+  ]
+ }
+]
