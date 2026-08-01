@@ -8,7 +8,9 @@
     }
   },
   "enabledPlugins": {
-    "ultra-enterprise-os@nate-marketplace": true
+    "ultra-enterprise-os@nate-marketplace": true,
+    "design-skillstack@nate-marketplace": true,
+    "threejs-skills@nate-marketplace": true
   },
   "hooks": {
     "SessionStart": [

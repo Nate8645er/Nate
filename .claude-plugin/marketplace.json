@@ -26,6 +26,40 @@
         "quality"
       ],
       "category": "productivity"
+    },
+    {
+      "name": "design-skillstack",
+      "source": "./design-skillstack",
+      "description": "Web-Design-, 3D- und Animations-Skillstack: Three.js, GSAP ScrollTrigger, React Three Fiber, Framer Motion, Babylon.js, PixiJS, A-Frame WebXR, Lottie, Rive, Spline, Blender-Pipeline und moderne Web-Design-Muster.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Claude Design Skillstack"
+      },
+      "keywords": [
+        "design",
+        "3d",
+        "animation",
+        "webgl",
+        "motion",
+        "scroll"
+      ],
+      "category": "design"
+    },
+    {
+      "name": "threejs-skills",
+      "source": "./threejs-skills",
+      "description": "Three.js-Wissensbasis: Fundamentals, Geometry, Materials, Textures, Lighting, Animation, Shaders, Loaders, Interaction und Post-Processing.",
+      "version": "1.0.0",
+      "author": {
+        "name": "pinkforest"
+      },
+      "keywords": [
+        "threejs",
+        "3d",
+        "webgl",
+        "shaders"
+      ],
+      "category": "design"
     }
   ]
 }

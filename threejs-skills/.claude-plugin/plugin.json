@@ -1,0 +1,9 @@
+{
+  "name": "threejs-skills",
+  "version": "1.0.0",
+  "description": "Curated Three.js skill collection: fundamentals, geometry, materials, textures, lighting, animation, shaders, loaders, interaction and post-processing.",
+  "license": "MIT",
+  "homepage": "https://github.com/pinkforest/threejs-playground",
+  "keywords": ["threejs", "3d", "webgl", "graphics", "shaders"],
+  "skills": "./skills/"
+}
