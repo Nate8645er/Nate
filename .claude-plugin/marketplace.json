@@ -60,6 +60,24 @@
         "shaders"
       ],
       "category": "design"
+    },
+    {
+      "name": "security-guidance",
+      "source": "./security-guidance",
+      "description": "Sicherheitspruefung fuer Claude-generierten Code: Muster-Warnungen bei Edit/Write, LLM-Diff-Review am Zugende, agentische Commit-Pruefung (Injection, XSS, SSRF, hartkodierte Geheimnisse, IDOR, Auth-Bypass, unsichere Deserialisierung, Path-Traversal).",
+      "version": "2.0.0",
+      "author": {
+        "name": "David Dworken",
+        "email": "dworken@anthropic.com"
+      },
+      "keywords": [
+        "security",
+        "review",
+        "hooks",
+        "vulnerabilities",
+        "static-analysis"
+      ],
+      "category": "security"
     }
   ]
 }

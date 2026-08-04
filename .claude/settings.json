@@ -10,7 +10,8 @@
   "enabledPlugins": {
     "ultra-enterprise-os@nate-marketplace": true,
     "design-skillstack@nate-marketplace": true,
-    "threejs-skills@nate-marketplace": true
+    "threejs-skills@nate-marketplace": true,
+    "security-guidance@nate-marketplace": true
   },
   "hooks": {
     "SessionStart": [
