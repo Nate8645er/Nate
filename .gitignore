@@ -1,0 +1,7 @@
+# Arbeitsverzeichnisse der Agenten.
+# Agenten legen hier Zwischenstaende ab: heruntergeladene Theme-Dateien,
+# gespiegelte Seiten, Bildschirmfotos, Messprotokolle. Nichts davon ist
+# Quellcode, und einiges davon ist gross. Der eigentliche Ablageort liegt
+# ausserhalb des Repositoriums; landet trotzdem etwas hier, bleibt es
+# unversioniert.
+scratchpad/
