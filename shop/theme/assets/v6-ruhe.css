@@ -1,0 +1,226 @@
+/* =====================================================================
+   v6-ruhe.css — DIE RUHIGE SCHICHT
+   Bauleitung, 6.8.2026. Liegt ueber allem und gewinnt.
+
+   WARUM ES DIESE DATEI GIBT
+   Der Inhaber hat den Shop angesehen und gesagt: zu viele aehnliche
+   Bewegungen, der Farbwechsel gefaellt nicht, alles wirkt unruhig.
+   Er hatte recht. Es liefen fuenf Bewegungsschichten uebereinander.
+
+   Zwei Recherchen stuetzen ihn, und sie widersprechen sich nicht:
+
+   Nielsen Norman Group ueber Luxus im Onlinehandel:
+     "Luxury websites are built to evoke emotion, not urgency -
+      everything from layout to typography is designed to slow you down."
+     "At all costs, avoid disrupting and annoying customers."
+
+   Shopify zur Kaufrate 2026:
+     Jede Sekunde Ladezeit kostet 7 Prozent Umsatz.
+     Ueber 70 Prozent des Verkehrs ist mobil.
+
+   Fuenf Bewegungsschichten sind beides: stoerend und langsam.
+
+   WAS DIESE DATEI TUT
+   1. EIN Hintergrund fuer den ganzen Shop, hell und ruhig. Der
+      Bildschirm faerbt sich NICHT mehr um. Das war die Stelle, die dem
+      Inhaber ausdruecklich missfallen hat.
+   2. Die Flasche wechselt weiterhin die Farbe. Sechs Farben bleiben
+      das Angebot - sie sind nur nicht mehr die Buehne, sondern das
+      Produkt. Die Farbfelder behalten deshalb ihre echten Farben.
+   3. Kein Ueberblenden mehr. --f-uebergang faellt auf 0.
+   4. Kein Erscheinen beim Scrollen. Aller Text steht sofort da.
+
+   WAS SIE NICHT ANFASST
+   Die drehbare Flasche. Sie ist die EINE Bewegung, die bleibt - und
+   sie ist die einzige, die von der Forschung ausdruecklich als
+   Kaufelement genannt wird: "360-degree view, demonstration video, or
+   3D model" ueber der Falzlinie.
+
+   WARUM !important
+   Diese Datei muss gegen sechs aeltere Dateien gewinnen, die teils
+   nach ihr geladen werden (die Vorlagen holen ihre eigene CSS nach).
+   Sie ist eine Ueberschreibungsschicht, kein Baustein. Wer hier etwas
+   aendert, sollte das wissen.
+   ===================================================================== */
+
+/* --- 1. EIN Grund fuer alle sechs Farben ---------------------------- */
+/* Die Werte sind die der Schwarz-Variante: heller Grund, dunkle
+   Schrift. Kontrast 15.20 - der hoechste des ganzen Systems, und der
+   Zustand, den der Inhaber an den Bildschirmfotos ausgewaehlt hat.
+   --f-flasche bleibt bewusst unberuehrt: die Farbfelder muessen die
+   echten Flaschenfarben zeigen.
+
+   WARUM HIER !important STEHT, obwohl es Variablen sind
+   Gemessen am 6.8.2026 an der Startseite: templates/index.liquid holt
+   v5-farbe.css ein ZWEITES Mal, und zwar NACH dieser Datei. Ohne
+   !important gewinnt die spaetere Zuweisung, und jedes Element, das mit
+   var(--f-grund) oder var(--f-schrift) arbeitet, faerbt sich wieder mit
+   der Flasche um - genau das, was der Inhaber abgelehnt hat. Dasselbe
+   gilt fuer Produktseite, Warenkorb und Inhaltsseiten.
+   Mit !important auf der Variablen ist die Entscheidung an EINER Stelle
+   getroffen und haelt, egal welche Vorlage was nachlaedt. */
+html,
+html[data-farbe] {
+  --f-grund: #E8EEEB !important;
+  --f-schrift: #0B1A18 !important;
+  --f-knopf: #0B1A18 !important;
+  --f-knopfschrift: #F4F8F6 !important;
+  --f-grund-rgb: 232 238 235 !important;
+  --f-schrift-rgb: 11 26 24 !important;
+  --f-uebergang: 0ms !important;
+  /* Grau und Weiss setzen in v5-farbe.css color-scheme:dark. Auf einem
+     hellen Grund haetten Formularfelder und Rollbalken dann die dunkle
+     Systemdarstellung. Auch hier muss die Entscheidung halten. */
+  color-scheme: light !important;
+}
+
+html,
+body {
+  background-color: #E8EEEB !important;
+  color: #0B1A18 !important;
+  transition: none !important;
+}
+
+/* --- 2. Kein Ueberblenden irgendwo --------------------------------- */
+.f-uebergang,
+.hw,
+.hw * {
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+}
+
+/* --- 3. Aller Text steht sofort da --------------------------------- */
+/* Das Erscheinen beim Scrollen faellt weg. Es war die vierte von fuenf
+   Bewegungen und die, die am wenigsten trug: der Kunde sieht ohnehin
+   nur, was gerade im Bild ist. */
+[data-b-auf],
+[data-b-reihe] > *,
+[data-reveal],
+[data-reveal-group] > * {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  clip-path: none !important;
+  visibility: visible !important;
+  animation: none !important;
+}
+
+/* --- 4. Nichts pulsiert, nichts wackelt, nichts laeuft endlos ------- */
+/* Endlosbewegungen sind der sicherste Weg, einen Shop billig wirken zu
+   lassen. Eine Bewegung, die nie aufhoert, teilt nichts mit. */
+*,
+*::before,
+*::after {
+  animation-iteration-count: 1 !important;
+}
+
+/* Die drehbare Flasche ist ausgenommen - sie ist die eine Bewegung,
+   die bleibt, und sie laeuft nur, solange jemand sie bedient. */
+.v3b__viewport,
+.v3b__viewport *,
+.hw-modell,
+.hw-modell *,
+[data-v3-bottle],
+[data-v3-bottle] * {
+  animation-iteration-count: infinite !important;
+}
+
+/* --- 5. Der Kopfbereich traegt jetzt denselben Grund ---------------- */
+/* Er war bisher nur auf der Startseite eingefaerbt und stand auf allen
+   anderen Seiten papierfarben ueber dem Bildschirm. Mit einem einzigen
+   Grund fuer alles loest sich das von selbst. */
+.site-header,
+.m-menu,
+.site-footer,
+.nl {
+  background-color: #E8EEEB !important;
+  color: #0B1A18 !important;
+}
+
+/* Die Fusszeile war dunkel und traegt ihre Schriftfarben auf den KINDERN,
+   nicht auf sich selbst: v2-core.css setzt .f-col a, .f-brand p, .f-meta,
+   .f-bottom und .site-footer .logo einzeln auf Weiss mit Teildeckung.
+   Faerbt man nur .site-footer um, bleibt weisse Schrift auf hellem Grund
+   stehen - gemessen 1.09 zu 1, also unlesbar. Der erste Einbau dieser
+   Datei ist genau daran gescheitert und wurde zurueckgebaut.
+   Deshalb hier jedes Kind einzeln. */
+.site-footer .logo,
+.site-footer p,
+.site-footer li,
+.site-footer a,
+.site-footer span,
+.f-brand p,
+.f-meta,
+.f-meta a,
+.f-col a,
+.f-bottom,
+.f-bottom span,
+.f-bottom a {
+  color: #0B1A18 !important;
+}
+
+/* Die Spaltentitel bleiben im Tuerkis der Marke. Auf hellem Grund
+   gemessen 7.74 zu 1 - deutlich ueber der Schwelle, also darf die
+   Farbe bleiben und die Fusszeile verliert ihre Gliederung nicht. */
+.site-footer h4,
+.site-footer .logo em {
+  color: #166E76 !important;
+}
+
+/* Kopf- und Fusszeile tragen denselben ruhigen Grund wie der Rest; die
+   Trennlinien kommen aus --f-linie und bleiben damit automatisch dunkel
+   auf hell. Nur die Rahmenfarbe muss mitziehen, sonst steht eine helle
+   Linie auf hellem Grund und die Kopfzeile verliert ihren Abschluss. */
+.site-header,
+.site-footer,
+.m-menu {
+  border-color: rgb(11 26 24 / .12) !important;
+}
+
+/* Der Punkt hinter dem Schriftzug steht in einem <em> und traegt in
+   v2-core.css das helle Aqua #3EC0C9 - auf hellem Grund nur 1.86 zu 1.
+   Er ist Zierde, kein Wort, aber die Schwelle gilt fuer alles, was
+   gezeichnet wird. Im Marken-Tuerkis erreicht er 5.07 zu 1 und bleibt
+   damit sichtbar Akzent, statt zu verblassen.
+   Die Kopfzeile hat denselben Punkt; v5-start.css faengt ihn dort nur
+   auf der Startseite ab, deshalb hier fuer beide Stellen. */
+.site-header .logo em {
+  color: #166E76 !important;
+}
+
+/* Shopifys eigener Express-Kaufknopf kommt aus accelerated-checkout-
+   backwards-compat.css und traegt dort ein fremdes Blau (#1990C6) mit
+   weisser Schrift. Am 6.8.2026 auf der Produktseite gemessen: 3.59 zu 1,
+   also unter der Schwelle - ausgerechnet an dem Knopf, der direkt zur
+   Kasse fuehrt. Er bekommt hier dieselben Farben wie jeder andere
+   Kaufknopf im Shop (16.68 zu 1) und hoert damit zugleich auf, ein
+   fremdes Blau in eine sonst ruhige Seite zu tragen.
+   Die Datei von Shopify kommt mit content_for_header und laedt damit
+   NACH dieser hier - ohne !important gaebe es keine Wirkung. */
+.shopify-payment-button__button--unbranded,
+.shopify-payment-button__button--unbranded:hover:not([disabled]) {
+  background-color: #0B1A18 !important;
+  color: #F4F8F6 !important;
+}
+
+/* --- 6. Weniger Schatten, mehr Ruhe -------------------------------- */
+/* Grosse weiche Schatten auf einem hellen Grund lesen sich als Schmutz.
+   Rolex zeigt Produkte auf ruhigem Grund mit einem einzigen, knappen
+   Schatten. Die Flasche behaelt ihren, alles andere gibt ihn ab. */
+.v5-sec,
+.v5-kopf,
+.v5-karte,
+.v5-feld,
+.hw-leiste {
+  box-shadow: none !important;
+}
+
+/* --- 7. Wer Bewegung abgestellt hat, bekommt sie auch nicht --------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
