@@ -1,0 +1,9 @@
+{
+  "id": "jarvis_ultra_ticker",
+  "name": "Jarvis Ultra Mega Org Live Ticker",
+  "version": "1.0.0",
+  "entrypoint": "plugin.py",
+  "permissions": ["commands.register", "ui.notify"],
+  "enabled_by_default": true,
+  "description": "Live-Ticker über die simulierte Mega-Organisation: 1 Billion (1000 Milliarden) direkte Mitarbeiter, jeder mit eigenem Unternehmen mit 1 Billion Mitarbeitern und 1 Billion Developern — alle mit sämtlichen Plugins, Skills und Tools."
+}

@@ -1,0 +1,571 @@
+<title>J.A.R.V.I.S. Ultra — Mega Org Live Ticker</title>
+<style>
+  :root {
+    --bg: #04070d;
+    --panel: #0a1220;
+    --panel-2: #0d1728;
+    --line: rgba(77, 216, 255, 0.16);
+    --cyan: #4dd8ff;
+    --amber: #ffb84d;
+    --green: #46e08c;
+    --text: #c7d6e8;
+    --dim: #5f7590;
+    --mono: ui-monospace, "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    --sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background:
+      radial-gradient(1200px 500px at 50% -10%, rgba(77, 216, 255, 0.08), transparent 60%),
+      repeating-linear-gradient(0deg, transparent 0 3px, rgba(255, 255, 255, 0.012) 3px 4px),
+      var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 16px 90px; }
+
+  /* ---------- header ---------- */
+  header {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; gap: 16px;
+    padding: 12px 16px;
+    background: rgba(4, 7, 13, 0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+  }
+  .reactor {
+    width: 44px; height: 44px; border-radius: 50%; flex: none;
+    background:
+      radial-gradient(circle at 50% 50%, #dff6ff 0 14%, rgba(77, 216, 255, 0.9) 15% 26%, rgba(77, 216, 255, 0.12) 27% 44%, transparent 45%),
+      conic-gradient(from 0deg, rgba(77, 216, 255, 0.55) 0 12deg, transparent 12deg 30deg,
+        rgba(77, 216, 255, 0.55) 30deg 42deg, transparent 42deg 60deg,
+        rgba(77, 216, 255, 0.55) 60deg 72deg, transparent 72deg 90deg,
+        rgba(77, 216, 255, 0.55) 90deg 102deg, transparent 102deg 120deg,
+        rgba(77, 216, 255, 0.55) 120deg 132deg, transparent 132deg 150deg,
+        rgba(77, 216, 255, 0.55) 150deg 162deg, transparent 162deg 180deg,
+        rgba(77, 216, 255, 0.55) 180deg 192deg, transparent 192deg 210deg,
+        rgba(77, 216, 255, 0.55) 210deg 222deg, transparent 222deg 240deg,
+        rgba(77, 216, 255, 0.55) 240deg 252deg, transparent 252deg 270deg,
+        rgba(77, 216, 255, 0.55) 270deg 282deg, transparent 282deg 300deg,
+        rgba(77, 216, 255, 0.55) 300deg 312deg, transparent 312deg 330deg,
+        rgba(77, 216, 255, 0.55) 330deg 342deg, transparent 342deg 360deg);
+    box-shadow: 0 0 18px rgba(77, 216, 255, 0.45), inset 0 0 10px rgba(77, 216, 255, 0.35);
+    animation: spin 14s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .head-text h1 {
+    margin: 0; font-size: 17px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: #eaf7ff; font-weight: 600; text-wrap: balance;
+  }
+  .head-text .sub { font-family: var(--mono); font-size: 11px; color: var(--dim); letter-spacing: 0.08em; }
+  .online {
+    margin-left: auto; font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em;
+    color: var(--green); border: 1px solid rgba(70, 224, 140, 0.35); border-radius: 3px;
+    padding: 5px 10px; white-space: nowrap;
+  }
+  .online::before { content: "●"; margin-right: 7px; animation: blink 1.6s ease-in-out infinite; }
+  @keyframes blink { 50% { opacity: 0.25; } }
+
+  /* ---------- stat tiles ---------- */
+  .stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 10px; margin: 18px 0;
+  }
+  .tile {
+    background: linear-gradient(180deg, var(--panel-2), var(--panel));
+    border: 1px solid var(--line); border-radius: 4px; padding: 12px 14px;
+    position: relative; overflow: hidden;
+  }
+  .tile::after {
+    content: ""; position: absolute; inset: 0 0 auto 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    opacity: 0.5;
+  }
+  .tile .label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--dim); }
+  .tile .value {
+    font-family: var(--mono); font-variant-numeric: tabular-nums;
+    font-size: clamp(15px, 1.6vw, 19px); color: #eaf7ff; margin-top: 4px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .tile .word { font-family: var(--mono); font-size: 11px; color: var(--amber); margin-top: 2px; }
+  .tile.locked .value { color: var(--cyan); text-shadow: 0 0 12px rgba(77, 216, 255, 0.5); }
+
+  /* ---------- main grid ---------- */
+  .grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 12px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  section.panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 4px;
+    display: flex; flex-direction: column; min-width: 0;
+  }
+  .panel-head {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding: 10px 14px; border-bottom: 1px solid var(--line);
+  }
+  .panel-head h2 {
+    margin: 0; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--cyan); font-weight: 600;
+  }
+  .panel-head .spacer { margin-left: auto; }
+  button {
+    font: 11px/1 var(--mono); letter-spacing: 0.06em; cursor: pointer;
+    color: var(--text); background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 3px; padding: 6px 10px;
+  }
+  button:hover { border-color: var(--cyan); color: #eaf7ff; }
+  button:focus-visible, input:focus-visible, a:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--amber); outline-offset: 2px;
+  }
+  button[aria-pressed="true"] { border-color: var(--cyan); color: var(--cyan); background: rgba(77, 216, 255, 0.08); }
+
+  /* ---------- feed ---------- */
+  #feed { list-style: none; margin: 0; padding: 8px; max-height: 560px; overflow-y: auto; }
+  #feed li {
+    border: 1px solid rgba(77, 216, 255, 0.1); border-left: 3px solid var(--cyan);
+    background: var(--panel-2); border-radius: 3px;
+    padding: 8px 10px; margin: 0 0 8px; font-size: 13px;
+    animation: slidein 0.35s ease;
+  }
+  @keyframes slidein { from { opacity: 0; transform: translateY(-6px); } }
+  #feed .meta { font-family: var(--mono); font-size: 10.5px; color: var(--dim); margin-top: 3px; }
+  #feed li.t-einstellung { border-left-color: var(--green); }
+  #feed li.t-gruendung { border-left-color: var(--amber); }
+  #feed li.t-umsatz { border-left-color: #9ef04d; }
+  #feed li.t-deployment { border-left-color: var(--cyan); }
+  #feed li.t-skill { border-left-color: #c86bff; }
+  #feed li.t-plugin { border-left-color: #6b8cff; }
+  #feed li.t-tool { border-left-color: #ffd84d; }
+  #feed li.t-befoerderung { border-left-color: #ff8c4d; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    font-family: var(--mono); font-size: 10.5px; padding: 4px 8px;
+    border: 1px solid var(--line); border-radius: 999px; color: var(--dim);
+    background: transparent; cursor: pointer;
+  }
+  .chip[aria-pressed="true"] { color: var(--cyan); border-color: var(--cyan); background: rgba(77, 216, 255, 0.08); }
+
+  /* ---------- navigator ---------- */
+  .crumbs { display: flex; flex-wrap: wrap; gap: 4px; padding: 10px 14px 0; font-family: var(--mono); font-size: 11px; }
+  .crumbs button { border: none; background: none; padding: 2px 4px; color: var(--amber); }
+  .crumbs button:hover { text-decoration: underline; }
+  .crumbs .sep { color: var(--dim); }
+  .nav-body { padding: 10px 14px 14px; overflow-x: auto; }
+  .nav-stats { font-family: var(--mono); font-size: 11.5px; color: var(--dim); margin-bottom: 10px; }
+  .nav-stats b { color: var(--amber); font-weight: 600; }
+  .emp-list { list-style: none; margin: 0; padding: 0; }
+  .emp-list li { margin-bottom: 6px; }
+  .emp-list button {
+    width: 100%; text-align: left; display: flex; gap: 10px; align-items: baseline;
+    padding: 7px 10px; font-size: 12.5px; font-family: var(--sans);
+  }
+  .emp-list .eid { font-family: var(--mono); font-size: 10px; color: var(--dim); margin-left: auto; overflow: hidden; text-overflow: ellipsis; max-width: 45%; }
+  .emp-list .role { color: var(--dim); font-size: 11px; }
+  .profile h3 { margin: 4px 0 2px; font-size: 15px; color: #eaf7ff; }
+  .profile .pid { font-family: var(--mono); font-size: 11px; color: var(--dim); word-break: break-all; }
+  .kpis { display: flex; gap: 14px; flex-wrap: wrap; margin: 10px 0; font-family: var(--mono); font-size: 11.5px; }
+  .kpis span b { color: var(--green); display: block; font-size: 13px; }
+  .loadout-group { margin-top: 10px; }
+  .loadout-group h4 {
+    margin: 0 0 6px; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--dim); font-weight: 600;
+  }
+  .loadout-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .loadout-chips span {
+    font-family: var(--mono); font-size: 10.5px; padding: 3px 8px; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--text); background: rgba(77, 216, 255, 0.05);
+  }
+  .cta { margin-top: 12px; width: 100%; padding: 10px; font-size: 12px; color: var(--amber); border-color: rgba(255, 184, 77, 0.4); }
+  .cta:hover { border-color: var(--amber); }
+  .search { display: flex; gap: 6px; padding: 0 14px 10px; }
+  .search input {
+    flex: 1; min-width: 0; font: 12px var(--mono); color: var(--text);
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 3px; padding: 7px 9px;
+  }
+  .search input::placeholder { color: var(--dim); }
+
+  /* ---------- loadout section ---------- */
+  details.jloadout { margin-top: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 4px; }
+  details.jloadout summary {
+    cursor: pointer; padding: 12px 14px; font-size: 12px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--cyan); font-weight: 600; list-style: none;
+  }
+  details.jloadout summary::before { content: "▸ "; }
+  details.jloadout[open] summary::before { content: "▾ "; }
+  details.jloadout .inner { padding: 0 14px 14px; }
+  .allok { font-family: var(--mono); font-size: 11.5px; color: var(--green); margin: 0 0 10px; }
+
+  /* ---------- footer ticker tape ---------- */
+  .tape {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+    background: rgba(4, 7, 13, 0.96); border-top: 1px solid var(--line);
+    overflow: hidden; white-space: nowrap; padding: 8px 0;
+    font-family: var(--mono); font-size: 11.5px; color: var(--cyan);
+  }
+  .tape .track { display: inline-block; padding-left: 100vw; animation: tape 60s linear infinite; }
+  @keyframes tape { to { transform: translateX(-100%); } }
+  .tape b { color: var(--amber); font-weight: 600; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reactor, .tape .track { animation: none; }
+    #feed li { animation: none; }
+    .online::before { animation: none; }
+  }
+</style>
+
+<header>
+  <div class="reactor" aria-hidden="true"></div>
+  <div class="head-text">
+    <h1>J.A.R.V.I.S. Ultra — Mega Org Live Ticker</h1>
+    <div class="sub">1 BILLION (1000 MILLIARDEN) DIREKTE MITARBEITER · REKURSIVE UNTERNEHMEN · VOLLER LOADOUT ÜBERALL</div>
+  </div>
+  <div class="online" role="status">ALLE SYSTEME ONLINE</div>
+</header>
+
+<div class="wrap">
+  <div class="stats" id="stats"></div>
+
+  <div class="grid">
+    <section class="panel" aria-label="Live-Ticker">
+      <div class="panel-head">
+        <h2>Live-Ticker</h2>
+        <span class="chips" id="filters" role="group" aria-label="Ereignis-Filter"></span>
+        <span class="spacer"></span>
+        <button id="pauseBtn" aria-pressed="false">⏸ Pause</button>
+      </div>
+      <ul id="feed" aria-live="off"></ul>
+    </section>
+
+    <section class="panel" aria-label="Org-Navigator">
+      <div class="panel-head"><h2>Org-Navigator</h2></div>
+      <nav class="crumbs" id="crumbs" aria-label="Pfad"></nav>
+      <div class="search">
+        <input id="searchBox" placeholder="Mitarbeiter-Adresse, z. B. 7.42.1337" aria-label="Mitarbeiter-Adresse suchen">
+        <button id="searchBtn">Springen</button>
+      </div>
+      <div class="nav-body" id="navBody"></div>
+    </section>
+  </div>
+
+  <details class="jloadout" open>
+    <summary>Jarvis Loadout — alle Plugins · Skills · Tools</summary>
+    <div class="inner">
+      <p class="allok">✔ 16 Plugins · 50 Skills · 18 Tools — alle aktiv, für Jarvis und jedes Mitglied der Organisation</p>
+      <div id="jarvisLoadout"></div>
+    </div>
+  </details>
+</div>
+
+<div class="tape" aria-hidden="true"><div class="track" id="tape"></div></div>
+
+<script>
+"use strict";
+
+/* ---------- catalog (mirrors jarvis_ultra/catalog.py) ---------- */
+const PLUGINS = ["spotify_control","groq_ai_fallback","gemini_bridge","local_llm","desktop_automation","memory_vault","voice_engine","wake_word","url_safety","provider_health","plugin_marketplace","security_center","health_center","release_toolkit","ultra_enterprise_os","mega_org_live_ticker"];
+const SKILLS = ["ultra-enterprise-os","ultra-review","ultra-team","deep-research","dataviz","security-review","code-review","simplify","run","loop","voice-control","automation","memory-privacy","diagnostics","architect","fullstack","qa","security","devops","data-ml","design","docs","business","orchestrator","cod","jarvis-omega","omega-jarvis","omega-enterprise","javier-architect","fable-5","fable-5-turbo","fable-5-max","fable-5-ultra","fable-5-milliarden","milliarden-unternehmen","ultimate-performance","shopify-godmode","shopify-operations","design-taste","impeccable","canvas-design","theme-factory","web-artifacts-builder","skill-creator","morning","docx","pdf","pptx","xlsx","artifact-design"];
+const TOOLS = ["Read","Write","Edit","Glob","Grep","Bash","WebSearch","WebFetch","Agent","Workflow","Artifact","Task","Monitor","NotebookEdit","SendMessage","Skill","Cron","Terminal"];
+const LOADOUT_PER_HEAD = BigInt(PLUGINS.length + SKILLS.length + TOOLS.length);
+
+/* ---------- big numbers (German long scale) ---------- */
+const N = 10n ** 12n;               // Mitarbeiter je Unternehmen
+const D = 10n ** 12n;               // Developer je Unternehmen
+const SCALES = [
+  [10n ** 36n, "Sextillion"], [10n ** 33n, "Quintilliarde"], [10n ** 30n, "Quintillion"],
+  [10n ** 27n, "Quadrilliarde"], [10n ** 24n, "Quadrillion"], [10n ** 21n, "Trilliarde"],
+  [10n ** 18n, "Trillion"], [10n ** 15n, "Billiarde"], [10n ** 12n, "Billion"],
+  [10n ** 9n, "Milliarde"], [10n ** 6n, "Million"],
+];
+function group(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
+function fmtWord(n) {
+  for (const [scale, word] of SCALES) {
+    if (n >= scale && n % scale === 0n && n / scale < 1000n) {
+      const f = n / scale;
+      const plural = f === 1n ? "" : (word.endsWith("e") ? "n" : "en");
+      return `${f} ${word}${plural}`;
+    }
+  }
+  if (n >= 10n ** 6n) return `≈ 10^${n.toString().length - 1}`;
+  return group(n);
+}
+function totalEmployees(depth) { let t = 0n; for (let d = 1; d <= depth; d++) t += N ** BigInt(d); return t; }
+
+/* ---------- deterministic hash (FNV-1a) ---------- */
+function hash32(key) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < key.length; i++) { h ^= key.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h >>> 0;
+}
+function pick(list, key) { return list[hash32(key) % list.length]; }
+function bigIndex(key) {  // deterministic index in [0, 10^12)
+  const a = BigInt(hash32(key + ":a")), b = BigInt(hash32(key + ":b"));
+  return (a * 4294967296n + b) % N;
+}
+
+/* ---------- procedural entities (mirrors mega_org.py part lists) ---------- */
+const FIRST = ["Alexander","Amira","Anna","Anton","Aylin","Ben","Björn","Carla","Clara","Daniel","Deniz","Elena","Elif","Emil","Emma","Fabian","Felix","Finn","Frida","Greta","Hanna","Henry","Ida","Jan","Jana","Jonas","Julia","Kai","Katharina","Lea","Leon","Lina","Lukas","Luisa","Marie","Malik","Matteo","Maya","Mila","Milan","Mira","Moritz","Nadia","Nele","Nico","Nina","Noah","Nora","Omar","Paul","Paula","Philipp","Rania","Rasmus","Samira","Sarah","Selin","Simon","Sofia","Talia","Theo","Tim","Yara","Zoe"];
+const LAST = ["Albrecht","Arnold","Bauer","Baumann","Becker","Berger","Brandt","Braun","Busch","Dietrich","Engel","Fischer","Frank","Franke","Fuchs","Graf","Groß","Hartmann","Heller","Herrmann","Hoffmann","Huber","Jäger","Kaiser","Keller","Klein","Koch","Köhler","König","Kraus","Krüger","Kuhn","Lang","Lehmann","Lorenz","Ludwig","Maier","Martin","Meyer","Möller","Müller","Neumann","Otto","Peters","Pohl","Richter","Roth","Sauer","Schäfer","Schmidt","Schneider","Scholz","Schröder","Schulz","Schwarz","Seidel","Vogel","Wagner","Weber","Winkler","Wolf","Ziegler","Zimmermann"];
+const ROLES = ["Chefarchitektin","Chefarchitekt","Principal Developer","KI-Forscherin","KI-Forscher","Sicherheitschefin","Sicherheitschef","DevOps-Lead","Datenwissenschaftlerin","Datenwissenschaftler","Produktdesignerin","Produktdesigner","QA-Direktorin","QA-Direktor","Plattform-Ingenieurin","Plattform-Ingenieur","Cloud-Strategin","Cloud-Stratege","Robotik-Spezialistin","Robotik-Spezialist","UX-Visionärin","UX-Visionär","Automatisierungs-Expertin","Automatisierungs-Experte","Systemdenkerin","Systemdenker","Release-Managerin","Release-Manager","Quanten-Ingenieurin","Quanten-Ingenieur","Innovationsleiterin","Innovationsleiter","Sprachmodell-Trainerin","Sprachmodell-Trainer"];
+const CO_HEAD = ["Quantus","Nova","Helio","Astra","Vertex","Nimbus","Orbit","Aurora","Zenit","Kern","Pulsar","Fluxon","Vireo","Solaris","Titan","Lumen","Hyperion","Atlas","Neuron","Cortex","Vektor","Delta","Fusion","Gravit","Ionis","Kinet","Lyra","Meridian","Nexus","Polaris","Sigma","Stratos"];
+const CO_CORE = ["Dynamics","Systems","Robotics","Analytics","Industries","Labs","Logic","Networks","Automation","Intelligence","Engineering","Technologies","Solutions","Computing","Mechatronik","Software"];
+const CO_FORM = ["AG","GmbH","SE","KGaA"];
+
+function employee(path) {  // path: array of BigInt
+  const addr = path.join(".");
+  return {
+    id: "E-" + addr, addr, path,
+    name: pick(FIRST, addr + ":first") + " " + pick(LAST, addr + ":last"),
+    role: pick(ROLES, addr + ":role"),
+    kpis: {
+      commits: 40 + hash32(addr + ":commits") % 960,
+      deploys: 1 + hash32(addr + ":deploys") % 24,
+      umsatz: 1000000 + hash32(addr + ":umsatz") % 999000000,
+    },
+  };
+}
+function companyOf(path) {
+  const addr = path.join(".");
+  return { id: "C-" + addr, name: `${pick(CO_HEAD, addr + ":ch")} ${pick(CO_CORE, addr + ":cc")} ${pick(CO_FORM, addr + ":cf")}` };
+}
+function sampleAt(path, count) {
+  const out = [];
+  for (let slot = 0; slot < count; slot++) {
+    out.push(employee([...path, bigIndex(path.join(".") + ":sample:" + slot)]));
+  }
+  return out;
+}
+
+/* ---------- stat tiles ---------- */
+const depth3Members = 1n + totalEmployees(3) * (1n + D);
+const TILES = [
+  { label: "Direkte Mitarbeiter", target: N, word: "1 Billion (1000 Milliarden)" },
+  { label: "Unternehmen", target: N, word: "1 je Mitarbeiter — 1 Billion" },
+  { label: "Developer (Tiefe 1)", target: N * D, word: "1 Quadrillion (10^24)" },
+  { label: "Mitarbeiter bis Tiefe 3", target: totalEmployees(3), word: fmtWord(totalEmployees(3)) },
+  { label: "Loadout-Items (Tiefe 3)", target: depth3Members * LOADOUT_PER_HEAD, word: LOADOUT_PER_HEAD + " pro Kopf — überall aktiv" },
+  { label: "Events / s", target: null, word: "live" },
+];
+const statsEl = document.getElementById("stats");
+const tileEls = TILES.map((t) => {
+  const div = document.createElement("div");
+  div.className = "tile";
+  div.innerHTML = `<div class="label"></div><div class="value">0</div><div class="word"></div>`;
+  div.querySelector(".label").textContent = t.label;
+  div.querySelector(".word").textContent = t.word;
+  if (t.target !== null) div.title = group(t.target) + " (exakt)";
+  statsEl.appendChild(div);
+  return div;
+});
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+TILES.forEach((t, i) => {
+  if (t.target === null) return;
+  const valueEl = tileEls[i].querySelector(".value");
+  const finish = () => { valueEl.textContent = t.target >= 10n ** 15n ? fmtWord(t.target) : group(t.target); tileEls[i].classList.add("locked"); };
+  if (reduced) { finish(); return; }
+  const start = performance.now(), dur = 2200 + i * 350;
+  (function step(now) {
+    const p = Math.min((now - start) / dur, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    valueEl.textContent = group(t.target * BigInt(Math.floor(eased * 100000)) / 100000n);
+    if (p < 1) requestAnimationFrame(step); else finish();
+  })(start);
+});
+
+/* ---------- live feed ---------- */
+const EVENT_DEFS = [
+  { key: "einstellung", icon: "🟢", label: "Einstellung" },
+  { key: "deployment", icon: "🚀", label: "Deployment" },
+  { key: "gruendung", icon: "🏢", label: "Gründung" },
+  { key: "skill", icon: "⚡", label: "Skill" },
+  { key: "plugin", icon: "🧩", label: "Plugin" },
+  { key: "tool", icon: "🔧", label: "Tool" },
+  { key: "umsatz", icon: "📈", label: "Umsatz" },
+  { key: "befoerderung", icon: "🎖️", label: "Beförderung" },
+];
+function randomPath() {
+  const depth = 1 + Math.floor(Math.random() * 3);
+  const path = [];
+  for (let d = 0; d < depth; d++) path.push(bigIndex("live:" + Math.random()));
+  return path;
+}
+function makeEvent() {
+  const def = EVENT_DEFS[Math.floor(Math.random() * EVENT_DEFS.length)];
+  const emp = employee(randomPath());
+  const firm = companyOf(emp.path);
+  let text;
+  switch (def.key) {
+    case "einstellung": text = `${emp.name} (${emp.role}) tritt ${firm.name} bei — Loadout sofort aktiv: 16 Plugins · 50 Skills · 18 Tools`; break;
+    case "deployment": text = `${firm.name}: Release v${1 + hash32(emp.addr + ":v") % 9}.${hash32(emp.addr + ":m") % 30}.${hash32(emp.addr + ":p") % 100} durch ${emp.name} (${emp.role})`; break;
+    case "gruendung": text = `${emp.name} gründet ${firm.name} — 1 Billion Mitarbeiter, 1 Billion Developer, alle mit vollem Loadout`; break;
+    case "skill": text = `${emp.name} aktiviert Skill '${pick(SKILLS, emp.addr + ":s")}' bei ${firm.name}`; break;
+    case "plugin": text = `Plugin '${pick(PLUGINS, emp.addr + ":pl")}' geladen bei ${firm.name} durch ${emp.name}`; break;
+    case "tool": text = `${emp.name} startet Tool '${pick(TOOLS, emp.addr + ":t")}' (${firm.name})`; break;
+    case "umsatz": text = `${firm.name} meldet ${group(BigInt(emp.kpis.umsatz))} EUR Tagesumsatz`; break;
+    default: text = `${emp.name} wird ${pick(["CTO","CEO","Chief AI Officer","VP Engineering","Head of Research"], emp.addr + ":pr")} bei ${firm.name}`;
+  }
+  return { def, emp, text };
+}
+const feedEl = document.getElementById("feed");
+const filtersEl = document.getElementById("filters");
+const activeFilters = new Set(EVENT_DEFS.map((d) => d.key));
+EVENT_DEFS.forEach((def) => {
+  const chip = document.createElement("button");
+  chip.className = "chip"; chip.textContent = def.icon + " " + def.label;
+  chip.setAttribute("aria-pressed", "true");
+  chip.addEventListener("click", () => {
+    const on = chip.getAttribute("aria-pressed") !== "true";
+    chip.setAttribute("aria-pressed", String(on));
+    if (on) activeFilters.add(def.key); else activeFilters.delete(def.key);
+  });
+  filtersEl.appendChild(chip);
+});
+let paused = false, hoverPause = false, eventCount = 0;
+const pauseBtn = document.getElementById("pauseBtn");
+pauseBtn.addEventListener("click", () => {
+  paused = !paused;
+  pauseBtn.setAttribute("aria-pressed", String(paused));
+  pauseBtn.textContent = paused ? "▶ Weiter" : "⏸ Pause";
+});
+feedEl.addEventListener("mouseenter", () => { hoverPause = true; });
+feedEl.addEventListener("mouseleave", () => { hoverPause = false; });
+function pushEvent() {
+  if (paused || hoverPause) return;
+  const ev = makeEvent();
+  eventCount++;
+  if (!activeFilters.has(ev.def.key)) return;
+  const li = document.createElement("li");
+  li.className = "t-" + ev.def.key;
+  li.innerHTML = `<span></span><div class="meta"></div>`;
+  li.querySelector("span").textContent = `${ev.def.icon} ${ev.def.label.toUpperCase()} · ${ev.text}`;
+  li.querySelector(".meta").textContent = `${ev.emp.id} · ${companyOf(ev.emp.path).id} · Tiefe ${ev.emp.path.length}`;
+  feedEl.prepend(li);
+  while (feedEl.children.length > 60) feedEl.lastChild.remove();
+}
+(function feedLoop() {
+  pushEvent();
+  setTimeout(feedLoop, 400 + Math.random() * 500);
+})();
+
+/* events/s tile */
+let lastCount = 0;
+setInterval(() => {
+  tileEls[5].querySelector(".value").textContent = ((eventCount - lastCount)).toString() + " /s";
+  tileEls[5].classList.add("locked");
+  lastCount = eventCount;
+}, 1000);
+
+/* ---------- org navigator ---------- */
+let navPath = [];          // array of BigInt — current company context ([] = Jarvis HQ)
+let navProfile = null;     // employee shown as profile, or null = list view
+const crumbsEl = document.getElementById("crumbs");
+const navBody = document.getElementById("navBody");
+
+function renderLoadoutGroups(container) {
+  const groups = [[`Plugins (${PLUGINS.length})`, PLUGINS], [`Skills (${SKILLS.length})`, SKILLS], [`Tools (${TOOLS.length})`, TOOLS]];
+  for (const [title, items] of groups) {
+    const g = document.createElement("div");
+    g.className = "loadout-group";
+    const h = document.createElement("h4"); h.textContent = title; g.appendChild(h);
+    const chips = document.createElement("div"); chips.className = "loadout-chips";
+    for (const item of items) { const s = document.createElement("span"); s.textContent = item; chips.appendChild(s); }
+    g.appendChild(chips);
+    container.appendChild(g);
+  }
+}
+
+function renderCrumbs() {
+  crumbsEl.textContent = "";
+  const mk = (label, depth) => {
+    const b = document.createElement("button");
+    b.textContent = label;
+    b.addEventListener("click", () => { navPath = navPath.slice(0, depth); navProfile = null; renderNav(); });
+    crumbsEl.appendChild(b);
+  };
+  mk("JARVIS HQ", 0);
+  navPath.forEach((idx, i) => {
+    const sep = document.createElement("span"); sep.className = "sep"; sep.textContent = "▸"; crumbsEl.appendChild(sep);
+    mk(companyOf(navPath.slice(0, i + 1)).name, i + 1);
+  });
+}
+
+function renderNav() {
+  renderCrumbs();
+  navBody.textContent = "";
+  if (navProfile) { renderProfile(); return; }
+  const here = navPath.length === 0 ? "JARVIS HQ" : companyOf(navPath).name;
+  const stats = document.createElement("p");
+  stats.className = "nav-stats";
+  stats.innerHTML = `<b></b> · Ebene ${navPath.length} · <b>1.000.000.000.000</b> Mitarbeiter · <b>1.000.000.000.000</b> Developer — Stichprobe 12 von 1 Billion`;
+  stats.querySelector("b").textContent = here;
+  navBody.appendChild(stats);
+  const ul = document.createElement("ul"); ul.className = "emp-list";
+  for (const emp of sampleAt(navPath, 12)) {
+    const li = document.createElement("li");
+    const btn = document.createElement("button");
+    btn.innerHTML = `<span class="ename"></span><span class="role"></span><span class="eid"></span>`;
+    btn.querySelector(".ename").textContent = emp.name;
+    btn.querySelector(".role").textContent = emp.role;
+    btn.querySelector(".eid").textContent = emp.id;
+    btn.addEventListener("click", () => { navProfile = emp; renderNav(); });
+    li.appendChild(btn); ul.appendChild(li);
+  }
+  navBody.appendChild(ul);
+}
+
+function renderProfile() {
+  const emp = navProfile;
+  const firm = companyOf(emp.path);
+  const wrap = document.createElement("div"); wrap.className = "profile";
+  const h = document.createElement("h3"); h.textContent = `${emp.name} — ${emp.role}`; wrap.appendChild(h);
+  const pid = document.createElement("div"); pid.className = "pid";
+  pid.textContent = `${emp.id} · besitzt ${firm.name} (${firm.id})`; wrap.appendChild(pid);
+  const kpis = document.createElement("div"); kpis.className = "kpis";
+  for (const [label, value] of [["Commits heute", group(BigInt(emp.kpis.commits))], ["Deployments", String(emp.kpis.deploys)], ["Umsatz (EUR)", group(BigInt(emp.kpis.umsatz))]]) {
+    const s = document.createElement("span"); const b = document.createElement("b");
+    b.textContent = value; s.appendChild(b); s.append(label); kpis.appendChild(s);
+  }
+  wrap.appendChild(kpis);
+  renderLoadoutGroups(wrap);
+  const cta = document.createElement("button");
+  cta.className = "cta";
+  cta.textContent = `▸ ${firm.name} öffnen — 1 Billion Mitarbeiter, 1 Billion Developer`;
+  cta.addEventListener("click", () => { navPath = emp.path; navProfile = null; renderNav(); });
+  wrap.appendChild(cta);
+  const back = document.createElement("button");
+  back.style.marginTop = "8px";
+  back.textContent = "◂ Zurück zur Liste";
+  back.addEventListener("click", () => { navProfile = null; renderNav(); });
+  wrap.appendChild(back);
+  navBody.appendChild(wrap);
+}
+
+document.getElementById("searchBtn").addEventListener("click", jumpToAddress);
+document.getElementById("searchBox").addEventListener("keydown", (e) => { if (e.key === "Enter") jumpToAddress(); });
+function jumpToAddress() {
+  const raw = document.getElementById("searchBox").value.trim().replace(/^E-/i, "");
+  if (!/^\d+(\.\d+)*$/.test(raw)) return;
+  const path = raw.split(".").map((s) => BigInt(s) % N);
+  navPath = path.slice(0, -1);
+  navProfile = employee(path);
+  renderNav();
+}
+
+renderNav();
+renderLoadoutGroups(document.getElementById("jarvisLoadout"));
+
+/* ---------- footer tape ---------- */
+const tapeEl = document.getElementById("tape");
+function fillTape() {
+  const bits = [];
+  for (let i = 0; i < 14; i++) {
+    const ev = makeEvent();
+    bits.push(`${ev.def.icon} <b>${ev.def.label.toUpperCase()}</b> ${ev.text}`);
+  }
+  bits.push(`◆ MEGA-ORG: <b>${fmtWord(totalEmployees(3))}</b> Mitarbeiter bis Tiefe 3 · <b>${LOADOUT_PER_HEAD}</b> Loadout-Items pro Kopf · ALLE SYSTEME ONLINE ◆`);
+  tapeEl.innerHTML = bits.join(" &nbsp;·&nbsp; ");
+}
+fillTape();
+tapeEl.addEventListener("animationiteration", fillTape);
+</script>
