@@ -338,7 +338,7 @@
         {%- assign s = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
         <li data-auf="skalier">
           <a class="a-karte" href="{{ lp.url }}?variant={{ var.id }}">
-            <div class="a-karte__bild">
+            <div class="a-karte__bild{% if dunkle_flaschen contains s %} n-hell{% endif %}">
               <img src="{{ 'a-flasche-' | append: s | append: '.webp' | asset_url }}"
                    alt="Trinkflasche in {{ var.option1 | escape }}"
                    width="650" height="2212" loading="lazy" decoding="async">
@@ -469,54 +469,32 @@
     </div>
 
     {%- comment -%}
-      Die drei Karten sind der fertige Aufbau. Jede zeigt, wohin
-      spaeter Name, Sterne, Text und Kundenfoto kommen. Die gelbe
-      Kennzeichnung verschwindet, sobald echte Bewertungen da sind -
-      das Aussehen bleibt identisch.
+      EINE Platzhalterkarte, nicht drei.
+      Gemessen auf 390x844 war dieser Abschnitt 2359 px hoch - fast
+      drei Bildschirme, um zu sagen, dass hier noch nichts steht. Drei
+      leere Karten mit Fragezeichen-Bildchen sehen nicht nach Marke
+      aus, sie sehen nach unfertig aus. Eine einzige, sauber
+      gekennzeichnete Karte sagt dasselbe und nimmt ein Sechstel des
+      Platzes. Der Aufbau bleibt derselbe: sobald echte Bewertungen da
+      sind, wird daraus wieder ein Dreierraster.
     {%- endcomment -%}
-    <div class="n-raster n-raster--3" data-staffel>
-      <article class="n-glas n-platz" data-auf>
-        <span class="n-platz__marke">Platz für Bewertung 1</span>
-        <div class="n-bew__kopf">
-          <span class="n-avatar" aria-hidden="true">?</span>
-          <span>
-            <span class="n-bew__name" style="color:var(--n-sanft)">Name der Käuferin</span>
-            <span class="n-bew__wann">Datum des Kaufs</span>
-          </span>
-        </div>
-        <span class="n-sterne" aria-hidden="true" style="opacity:.35">{{ stern }}{{ stern }}{{ stern }}{{ stern }}{{ stern }}</span>
-        <p style="margin-top:.6rem">Hierhin kommt der Text einer echten Bewertung, unverändert übernommen.</p>
-        <div class="n-bew__foto">Platz für ein echtes Kundenfoto</div>
-      </article>
-
-      <article class="n-glas n-platz" data-auf>
-        <span class="n-platz__marke">Platz für Bewertung 2</span>
-        <div class="n-bew__kopf">
-          <span class="n-avatar" aria-hidden="true">?</span>
-          <span>
-            <span class="n-bew__name" style="color:var(--n-sanft)">Name des Käufers</span>
-            <span class="n-bew__wann">Datum des Kaufs</span>
-          </span>
-        </div>
-        <span class="n-sterne" aria-hidden="true" style="opacity:.35">{{ stern }}{{ stern }}{{ stern }}{{ stern }}{{ stern }}</span>
-        <p style="margin-top:.6rem">Auch kritische Rückmeldungen kommen hierhin – ungefiltert.</p>
-        <div class="n-bew__foto">Platz für ein echtes Kundenfoto</div>
-      </article>
-
-      <article class="n-glas n-platz" data-auf>
-        <span class="n-platz__marke">Platz für Bewertung 3</span>
-        <div class="n-bew__kopf">
-          <span class="n-avatar" aria-hidden="true">?</span>
-          <span>
-            <span class="n-bew__name" style="color:var(--n-sanft)">Name der Käuferin</span>
-            <span class="n-bew__wann">Datum des Kaufs</span>
-          </span>
-        </div>
-        <span class="n-sterne" aria-hidden="true" style="opacity:.35">{{ stern }}{{ stern }}{{ stern }}{{ stern }}{{ stern }}</span>
-        <p style="margin-top:.6rem">Die Bewertungen werden nach Auslieferung per E-Mail angefragt.</p>
-        <div class="n-bew__foto">Platz für ein echtes Kundenfoto</div>
-      </article>
-    </div>
+    <article class="n-glas n-platz n-platz--eine" data-auf>
+      <span class="n-platz__marke">Platz für die erste Bewertung</span>
+      <div class="n-bew__kopf">
+        <span class="n-avatar" aria-hidden="true">?</span>
+        <span>
+          <span class="n-bew__name" style="color:var(--n-sanft)">Name der Käuferin</span>
+          <span class="n-bew__wann">Datum des Kaufs</span>
+        </span>
+      </div>
+      <span class="n-sterne" aria-hidden="true" style="opacity:.3">{{ stern }}{{ stern }}{{ stern }}{{ stern }}{{ stern }}</span>
+      <p style="margin-top:.6rem">
+        Hierhin kommt der Text einer echten Bewertung, unverändert
+        übernommen – auch die kritische. Angefragt wird nach der
+        Auslieferung per E-Mail.
+      </p>
+      <div class="n-bew__foto">Platz für ein echtes Kundenfoto</div>
+    </article>
 
     <div class="n-glas" data-auf style="margin-top:1.4rem;max-width:62ch">
       <h3 class="n-karte-t">Was wir über diese Flasche nicht wissen</h3>
