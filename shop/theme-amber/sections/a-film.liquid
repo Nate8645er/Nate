@@ -1,0 +1,194 @@
+{%- comment -%}
+  templates/index.liquid — LET'SDRINK AMBER
+  8.8.2026. Bauleitung.
+
+  Aufbau nach dem Vorbild aus dem Video: warmer Grund, Produkt riesig
+  und diagonal angeschnitten, kleine Serifenschrift oben links, beim
+  Scrollen richtet sich das Produkt auf und bekommt Beschriftungen.
+
+  ROTE LINIEN, sichtbar in dieser Datei:
+  - Keine Bewertung, kein Stern, keine Verkaufszahl. Null Bestellungen.
+  - Keine Dringlichkeit, keine Verknappung.
+  - Keine Produktangabe ausser 550 ml und sechs Farben. Nichts ueber
+    Material, Dichtigkeit, Masse, Gewicht oder Spuelmaschine.
+    Das Vorbild wirbt an dieser Stelle mit "Stainless Steel" und
+    "5000 mAh" - beides koennen wir nicht belegen, also steht es hier
+    auch nicht.
+  - Preise immer aus Liquid.
+{%- endcomment -%}
+
+{%- liquid
+  assign lp = all_products['trinkflasche-napf-hund-katze']
+  assign v = lp.selected_or_first_available_variant
+  assign farben = 'tuerkis,gruen,rosa,grau,schwarz,weiss' | split: ','
+-%}
+
+<section class="a-film" data-film>
+  <div class="a-buehne" data-buehne>
+
+    {%- comment -%}
+      Der geteilte Grund. Hell an den Raendern fuer den Text, tief in
+      der Mitte fuer das Produkt - gemessen ist das der einzige Weg,
+      auf dem beide bestehen: heller Grund traegt Text mit 12.27,
+      der vertiefte Kern traegt den weissen Flaschenkoerper mit 3.88.
+    {%- endcomment -%}
+    <div class="a-grund" aria-hidden="true"></div>
+    <div class="a-tiefe" data-tiefe aria-hidden="true"></div>
+    <div class="a-nacht" data-nacht aria-hidden="true"></div>
+
+    <div class="a-kamera" data-kamera>
+      <div class="a-atem" data-atem>
+        {%- comment -%}
+          Gebackene Unschaerfe statt gerechnetem filter:blur() - vier
+          von fuenf Modellen im Bauteam nannten das gerechnete Blur als
+          gefaehrlichste Stelle unter scrub.
+        {%- endcomment -%}
+        <img class="a-fl a-fl--unscharf" data-fl-unscharf alt=""
+             src="{{ 'a-flasche-tuerkis-unscharf.webp' | asset_url }}"
+             width="650" height="2212" fetchpriority="high" decoding="async">
+        {%- for f in farben -%}
+          <img class="a-fl" data-fl="{{ f }}"
+               src="{{ 'a-flasche-' | append: f | append: '.webp' | asset_url }}"
+               alt="{% if forloop.first %}Trinkflasche mit fest angebautem Napf für Hund und Katze, 550 ml{% endif %}"
+               width="650" height="2212"
+               {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %}
+               decoding="async">
+        {%- endfor -%}
+      </div>
+    </div>
+
+    {%- comment -%}
+      Die Nahaufnahme des Knopfs. Eigenes Bild aus dem 1600px-Original:
+      der Freisteller haette bei 2-fachem Zoom nur rund 150 scharfe
+      CSS-Pixel gehabt.
+    {%- endcomment -%}
+    <div class="a-lupe" data-lupe aria-hidden="true">
+      <img src="{{ 'a-detail-knopf.webp' | asset_url }}" alt=""
+           width="900" height="900" loading="lazy" decoding="async">
+    </div>
+    <div class="a-strich" data-strich aria-hidden="true"></div>
+
+    <div class="a-marken">
+      <div class="a-mark a-mark--l" data-mark="l">
+        <b>Der Napf</b>
+        <span>Fest angebaut.<br>Kein zweites Teil.</span>
+      </div>
+      <div class="a-mark a-mark--r" data-mark="r">
+        <b>Fassung</b>
+        <span>550 ml<br>Sechs Farben</span>
+      </div>
+      <div class="a-mark a-mark--l" data-mark="knopf" style="top:60%">
+        <b>Ein Knopf</b>
+        <span>Drücken,<br>und er füllt sich.</span>
+      </div>
+    </div>
+
+    <p class="a-farbname" data-farbname>Türkis</p>
+
+    <div class="a-typo">
+      <div class="a-szene a-szene--hero" data-szene="hero">
+        <h1 class="a-hero-gross">Wasser<br>für unterwegs.</h1>
+        <p class="a-hero-klein">
+          Knopf drücken, der Napf füllt sich. Aufrichten, und das übrige
+          Wasser läuft zurück.
+        </p>
+      </div>
+
+      <div class="a-szene a-szene--mitte" data-szene="ende">
+        <p class="a-gross">Bereit für den nächsten Weg?</p>
+        <p class="a-unter">
+          {{ v.price | money }} · Gratisversand in der Schweiz · 14 Tage Rückgabe
+        </p>
+      </div>
+    </div>
+
+    <p class="a-scroll" data-scroll aria-hidden="true">
+      Scrollen
+      <svg width="16" height="22" viewBox="0 0 16 22" fill="none"
+           stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+        <path d="M8 3v14M3 12l5 5 5-5"/>
+      </svg>
+    </p>
+  </div>
+</section>
+
+{%- comment -%} ================================================ KAUFEN {%- endcomment -%}
+<section class="a-kauf" id="kaufen">
+  <div class="a-huelle">
+    <div class="a-kauf__raster">
+      <img class="a-vorschau" data-vorschau
+           src="{{ 'a-flasche-tuerkis.webp' | asset_url }}"
+           alt="Trinkflasche mit Napf, 550 ml" width="650" height="2212"
+           loading="lazy" decoding="async">
+
+      <form method="post" action="{{ routes.cart_add_url }}">
+        <input type="hidden" name="form_type" value="product">
+        <input type="hidden" name="utf8" value="✓">
+        <input type="hidden" name="id" value="{{ v.id }}" data-variante>
+
+        <p class="a-preis">{{ v.price | money }}</p>
+        <p>550 ml · Farbe <b data-kaufname>{{ v.option1 }}</b></p>
+
+        <div class="a-wahl">
+          {%- for var in lp.variants -%}
+            {%- assign s = var.option1 | downcase | replace: 'ü','ue' | replace: 'ä','ae' | replace: 'ö','oe' -%}
+            {%- comment -%}
+              Echter Verweis auf ?variant= - ohne JavaScript funktioniert
+              die Farbwahl genauso, nur mit einem Neuladen.
+            {%- endcomment -%}
+            <a class="a-pkt a-pkt--{{ s }}" href="{{ lp.url }}?variant={{ var.id }}"
+               data-wahl data-variante="{{ var.id }}" data-name="{{ var.option1 | escape }}"
+               data-bild="{{ 'a-flasche-' | append: s | append: '.webp' | asset_url }}"
+               role="button" aria-pressed="{% if var.id == v.id %}true{% else %}false{% endif %}">
+              <span class="a-sr">{{ var.option1 }}</span>
+            </a>
+          {%- endfor -%}
+        </div>
+
+        <button class="a-knopf" type="submit" {% unless v.available %}disabled{% endunless %}>
+          {%- if v.available -%}In den Warenkorb{%- else -%}Zurzeit nicht lieferbar{%- endif -%}
+        </button>
+
+        <ul class="a-sicher">
+          <li>Gratisversand Schweiz</li><li>14 Tage Rückgabe</li><li>7–14 Werktage</li>
+        </ul>
+
+        {%- comment -%}
+          Die Auslauffrage steht am Kaufknopf, nicht versteckt weiter
+          unten. Wortlaut unveraenderlich.
+        {%- endcomment -%}
+        <details class="a-offen">
+          <summary>Was wir über diese Flasche nicht wissen</summary>
+          <p>
+            Wir haben keine schriftliche Zusicherung des Lieferanten, dass
+            sie unter allen Umständen dicht ist – deshalb behaupten wir es
+            auch nicht. Transportiere sie am besten aufrecht. Läuft deine
+            Flasche trotzdem aus, ist das ein Reklamationsfall: Du bekommst
+            Ersatz oder dein Geld zurück.
+          </p>
+          <p>
+            Nur Wasser einfüllen. Andere Flüssigkeiten hinterlassen
+            Rückstände, die den Mechanismus verkleben.
+          </p>
+          <p>
+            Ich bin Nate und betreibe diesen Shop allein in Rapperswil-Jona.
+            Es gibt kein Lager – deshalb dauert es 7 bis 14 Werktage.
+          </p>
+        </details>
+      </form>
+    </div>
+  </div>
+</section>
+
+{%- comment -%}
+  Der Fuss steht jetzt in layout/theme.liquid, damit ihn auch die
+  Produkt-, Korb- und Inhaltsseiten haben.
+{%- endcomment -%}
+
+{% schema %}
+{
+  "name": "Amber Film",
+  "settings": [],
+  "presets": [{ "name": "Amber Film" }]
+}
+{% endschema %}

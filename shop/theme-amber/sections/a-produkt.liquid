@@ -1,0 +1,271 @@
+{%- comment -%}
+  sections/a-produkt.liquid — LET'SDRINK AMBER, Produktseite
+  9.8.2026. Bauleitung.
+
+  ROTE LINIEN, sichtbar in dieser Datei:
+  - Keine Bewertung, kein Stern, keine Verkaufszahl. Null Bestellungen.
+    Der Bewertungsblock ist ein ehrlicher Leerzustand.
+  - Keine Dringlichkeit, kein Zaehler, keine Verknappung.
+  - Keine Produktangabe ausser 550 ml und sechs Farben. Nichts ueber
+    Material, Dichtigkeit, Masse, Gewicht oder Spuelmaschine.
+  - Nur Wasser.
+  - Preis und Verfuegbarkeit immer aus Liquid, nie hier hineingeschrieben.
+  - Die Versandangaben stammen aus dem Versandprofil des Shops:
+    Schweiz gratis, uebrige Laender CHF 1.50. Nicht geraten.
+
+  Die Farbwahl ist ein echter Verweis auf ?variant= - ohne JavaScript
+  funktioniert sie genauso, nur mit einem Neuladen. Diese Seite braucht
+  ueberhaupt kein JavaScript.
+{%- endcomment -%}
+
+{%- liquid
+  assign v = product.selected_or_first_available_variant
+  assign slug = v.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase
+  assign bild = 'a-flasche-' | append: slug | append: '.webp'
+-%}
+
+<div class="a-seite">
+  <div class="a-huelle">
+    <div class="a-pr">
+
+      <div class="a-pr__spalte">
+        <div class="a-pr__bild">
+          <img src="{{ bild | asset_url }}" width="650" height="2212"
+               alt="{{ product.title | escape }} in {{ v.option1 | escape }}"
+               fetchpriority="high" decoding="async">
+        </div>
+      </div>
+
+      <div>
+        <p class="a-auge">Let'sDrink</p>
+        <h1 class="a-titel">{{ product.title }}</h1>
+
+        <p class="a-pr__preis">{{ v.price | money }}</p>
+        <p class="a-pr__zeile">
+          550 ml · Farbe {{ v.option1 }} · Preise inkl. MwSt
+        </p>
+
+        <form method="post" action="{{ routes.cart_add_url }}" id="kaufen">
+          <input type="hidden" name="form_type" value="product">
+          <input type="hidden" name="utf8" value="✓">
+          <input type="hidden" name="id" value="{{ v.id }}">
+
+          <span class="a-pr__label" id="a-farblabel">Farbe</span>
+          <div class="a-wahl" role="group" aria-labelledby="a-farblabel">
+            {%- for var in product.variants -%}
+              {%- assign s = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
+              <a class="a-pkt a-pkt--{{ s }}" href="{{ product.url }}?variant={{ var.id }}"
+                 role="button" aria-pressed="{% if var.id == v.id %}true{% else %}false{% endif %}">
+                <span class="a-sr">{{ var.option1 }}{% unless var.available %} – zurzeit nicht lieferbar{% endunless %}</span>
+              </a>
+            {%- endfor -%}
+          </div>
+
+          <label class="a-pr__menge">
+            <span class="a-pr__label">Menge</span>
+            <input type="number" name="quantity" value="1" min="1" step="1" inputmode="numeric">
+          </label>
+
+          <button class="a-knopf" type="submit" {% unless v.available %}disabled{% endunless %}>
+            {%- if v.available -%}In den Warenkorb{%- else -%}Zurzeit nicht lieferbar{%- endif -%}
+          </button>
+
+          <ul class="a-sicher">
+            <li>Gratisversand Schweiz</li>
+            <li>14 Tage Rückgabe</li>
+            <li>7–14 Werktage</li>
+          </ul>
+
+          {%- comment -%}
+            Die Auslauffrage steht am Kaufknopf, nicht versteckt weiter
+            unten. Wortlaut unveraenderlich.
+          {%- endcomment -%}
+          <details class="a-offen">
+            <summary>Was wir über diese Flasche nicht wissen</summary>
+            <p>
+              Wir haben keine schriftliche Zusicherung des Lieferanten, dass
+              sie unter allen Umständen dicht ist – deshalb behaupten wir es
+              auch nicht. Transportiere sie am besten aufrecht. Läuft deine
+              Flasche trotzdem aus, ist das ein Reklamationsfall: Du bekommst
+              Ersatz oder dein Geld zurück.
+            </p>
+            <p>
+              Nur Wasser einfüllen. Andere Flüssigkeiten hinterlassen
+              Rückstände, die den Mechanismus verkleben.
+            </p>
+            <p>
+              Ich bin Nate und betreibe diesen Shop allein in Rapperswil-Jona.
+              Es gibt kein Lager – deshalb dauert es 7 bis 14 Werktage.
+            </p>
+          </details>
+        </form>
+
+        <ul class="a-fakten">
+          <li><b>550 ml</b><span>Eine Füllung</span></li>
+          <li><b>Sechs Farben</b><span>Alle zum gleichen Preis</span></li>
+          <li><b>Ein Teil</b><span>Napf fest angebaut</span></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{%- comment -%} ============================================== NAHAUFNAHME {%- endcomment -%}
+<div class="a-seite a-seite--creme">
+  <div class="a-huelle">
+    <div class="a-nah">
+      <img src="{{ 'a-detail-knopf.webp' | asset_url }}" alt="Nahaufnahme des Knopfs an der Flasche"
+           width="900" height="900" loading="lazy" decoding="async">
+      <div>
+        <h2>Ein Knopf, eine Hand.</h2>
+        <p>
+          Knopf drücken, der Napf füllt sich. Loslassen und die Flasche
+          aufrichten, dann läuft das übrige Wasser zurück hinein. Die Leine
+          bleibt in der anderen Hand.
+        </p>
+        <p>
+          Der Napf ist fest angebaut. Es gibt kein zweites Teil, das man
+          mitnehmen, abschrauben oder verlieren kann.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{%- comment -%} =================================================== FRAGEN {%- endcomment -%}
+<div class="a-seite">
+  <div class="a-huelle">
+    <div class="a-kopfzeile">
+      <p class="a-auge">Bevor du bestellst</p>
+      <h2 class="a-titel">Fragen</h2>
+    </div>
+
+    <div class="a-fragen">
+      <details class="a-frage" open>
+        <summary>Wie funktioniert sie?</summary>
+        <div class="a-frage__inhalt">
+          <p>
+            Du drückst den Knopf, dann läuft Wasser aus der Flasche in den
+            Napf. Wenn dein Tier fertig ist, richtest du die Flasche auf und
+            das übrige Wasser läuft zurück. Nichts bleibt im Napf stehen.
+          </p>
+        </div>
+      </details>
+
+      <details class="a-frage">
+        <summary>Wie viel passt hinein?</summary>
+        <div class="a-frage__inhalt">
+          <p>
+            550 ml. Weil der Rest nach jedem Trinken zurückläuft, reicht eine
+            Füllung für mehrere Pausen.
+          </p>
+        </div>
+      </details>
+
+      <details class="a-frage">
+        <summary>Läuft sie im Rucksack aus?</summary>
+        <div class="a-frage__inhalt">
+          <p>
+            Wir haben keine schriftliche Zusicherung des Lieferanten, dass
+            sie unter allen Umständen dicht ist – deshalb behaupten wir es
+            auch nicht. Transportiere sie am besten aufrecht. Läuft deine
+            Flasche trotzdem aus, ist das ein Reklamationsfall: Du bekommst
+            Ersatz oder dein Geld zurück.
+          </p>
+        </div>
+      </details>
+
+      <details class="a-frage">
+        <summary>Was darf ich einfüllen?</summary>
+        <div class="a-frage__inhalt">
+          <p>
+            Nur Wasser. Andere Flüssigkeiten hinterlassen Rückstände, die den
+            Mechanismus verkleben.
+          </p>
+        </div>
+      </details>
+
+      <details class="a-frage">
+        <summary>Geht das auch für Katzen?</summary>
+        <div class="a-frage__inhalt">
+          <p>
+            Ja – für Katzen, die mitfahren oder an der Leine laufen. Der Napf
+            ist niedrig genug.
+          </p>
+        </div>
+      </details>
+
+      <details class="a-frage">
+        <summary>Wie reinige ich sie?</summary>
+        <div class="a-frage__inhalt">
+          <p>
+            Von Hand mit warmem Wasser ausspülen, danach offen trocknen
+            lassen. Ob sie in die Spülmaschine darf, wissen wir nicht – also
+            sagen wir es auch nicht.
+          </p>
+        </div>
+      </details>
+
+      <details class="a-frage">
+        <summary>Was kostet der Versand, und wie lange dauert er?</summary>
+        <div class="a-frage__inhalt">
+          <p>
+            Innerhalb der Schweiz ist der Versand gratis. In die übrigen
+            Länder kostet er CHF 1.50. Die Lieferzeit beträgt 7 bis 14
+            Werktage, mit Sendungsverfolgung per E-Mail.
+          </p>
+          <p>
+            Es gibt kein eigenes Lager – deshalb dauert es so lange. Der
+            genaue Betrag steht im Bestellabschluss, bevor du bezahlst.
+          </p>
+        </div>
+      </details>
+
+      <details class="a-frage">
+        <summary>Und wenn sie mir nicht gefällt?</summary>
+        <div class="a-frage__inhalt">
+          <p>
+            Du hast 14 Tage Rückgaberecht. Schreib mir über das
+            <a href="/pages/contact">Kontaktformular</a>, dann klären wir die
+            Rücksendung. Die Einzelheiten stehen unter
+            <a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>.
+          </p>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+{%- comment -%} ============================================== BEWERTUNGEN {%- endcomment -%}
+<div class="a-seite a-seite--creme">
+  <div class="a-huelle">
+    <div class="a-leerbewertung">
+      <h2>Noch keine Bewertungen</h2>
+      <p>
+        Dieser Shop ist neu und hat bisher keine Bestellung ausgeliefert.
+        Deshalb steht hier auch keine einzige Bewertung – weder eine echte
+        noch eine erfundene.
+      </p>
+      <p>
+        Sobald die ersten Flaschen unterwegs waren, frage ich die Käuferinnen
+        und Käufer nach ihrer Meinung und stelle sie hierhin. Auch die
+        kritischen.
+      </p>
+    </div>
+
+    <div class="a-weiter">
+      <a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>
+      <a href="/pages/haeufige-fragen">Häufige Fragen</a>
+      <a href="/pages/contact">Kontakt</a>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Amber Produkt",
+  "settings": [],
+  "presets": [{ "name": "Amber Produkt" }]
+}
+{% endschema %}

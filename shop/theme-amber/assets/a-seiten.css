@@ -1,0 +1,316 @@
+/* =====================================================================
+   a-seiten.css — LET'SDRINK AMBER, alle Seiten ausser der Startseite
+   9.8.2026. Bauleitung.
+
+   Die Startseite ist ein Film: eine feste Buehne, eine Kamera, kein
+   Fliesstext. Die uebrigen Seiten sind das Gegenteil - sie muessen
+   gelesen werden. Deshalb erben sie die Farben und die Schrift von
+   a-amber.css, aber nicht die Kinoregeln.
+
+   DIE FARBEN SIND DIESELBEN, DIE AUF DER STARTSEITE GEMESSEN WURDEN
+     Text     #1B1512 auf hell  #EFCFB6 ......... 12.27
+     Gedaempft #5C4A3D auf hell  ................  5.70
+     Text     #1B1512 auf creme #F7E7DA ......... 15.26
+     Gedaempft #5C4A3D auf creme ................  7.09
+     Knopf    #124F4C auf hell / creme .......... 6.35 / 7.90
+     Creme    #F7E7DA auf Knopf #124F4C ......... 7.90
+     Fuss     #C9B5A6 auf daemmer #2A2320 ....... 8.34
+   Alle ueber 4.5:1, auch der gedaempfte Ton in Kleinschrift.
+
+   Der Kopf ist position:fixed - jede Seite braucht oben Luft, sonst
+   liegt die Wortmarke auf der Ueberschrift.
+   ===================================================================== */
+
+/* --- Grundgeruest jeder Unterseite --------------------------------- */
+.a-seite {
+  padding-top: clamp(6rem, 12vh, 8.5rem);
+  padding-bottom: clamp(3rem, 8vh, 5.5rem);
+  background: var(--a-hell);
+}
+.a-seite--creme { background: var(--a-creme); }
+
+.a-kopfzeile { max-width: 46ch; margin-bottom: clamp(2rem, 5vh, 3.25rem); }
+.a-auge {
+  margin: 0 0 .7rem; font-size: .6875rem; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--a-tinte-2);
+}
+.a-titel {
+  margin: 0; font-family: "AmberSerif", Georgia, serif; font-weight: 400;
+  font-size: clamp(2rem, 5.2vw, 3.25rem); line-height: 1.06;
+  letter-spacing: -.01em;
+}
+.a-vorspann { margin: 1rem 0 0; color: var(--a-tinte-2); font-size: 1.0625rem; }
+
+/* --- Fliesstext aus dem Shopify-Seiteninhalt ------------------------ */
+/* Der Inhalt kommt aus page.content und ist nicht von hier aus
+   formatierbar - deshalb greifen die Regeln auf Elementebene. */
+.a-text { max-width: 68ch; }
+.a-text > :first-child { margin-top: 0; }
+.a-text h2 {
+  margin: 2.6rem 0 .8rem; font-family: "AmberSerif", Georgia, serif;
+  font-weight: 400; font-size: clamp(1.5rem, 3.4vw, 2rem); line-height: 1.15;
+}
+.a-text h3 {
+  margin: 2.1rem 0 .6rem; font-size: 1.0625rem; font-weight: 700;
+  letter-spacing: .01em;
+}
+.a-text h2:first-child, .a-text h3:first-child { margin-top: 0; }
+.a-text p, .a-text li { color: var(--a-tinte-2); }
+.a-text p { margin: 0 0 1rem; }
+.a-text ul, .a-text ol { margin: 0 0 1.2rem; padding-left: 1.2rem; }
+.a-text li { margin-bottom: .4rem; }
+.a-text a { color: var(--a-gruen); text-underline-offset: .18em; }
+.a-text strong { color: var(--a-tinte); }
+.a-text hr { margin: 2.4rem 0; border: 0; border-top: 1px solid var(--a-linie); }
+.a-text table { width: 100%; border-collapse: collapse; margin: 0 0 1.4rem; }
+.a-text th, .a-text td {
+  padding: .6rem .8rem; text-align: left; font-size: .9375rem;
+  border-bottom: 1px solid var(--a-linie);
+}
+
+/* =====================================================================
+   PRODUKTSEITE
+   ===================================================================== */
+.a-pr { display: grid; gap: clamp(2rem, 5vw, 4rem); grid-template-columns: 1fr; }
+@media (min-width: 900px) { .a-pr { grid-template-columns: 1.05fr .95fr; } }
+
+/* Die Bildseite bekommt denselben tiefen Kern wie die Startseite -
+   der weisse Flaschenkoerper erreicht auf hellem Apricot nur 1.35 und
+   verschwindet. Auf dem vertieften Grund sind es 3.88. */
+.a-pr__bild {
+  position: relative; display: grid; place-items: center;
+  border-radius: 22px; overflow: hidden;
+  background: var(--a-hell);
+  min-height: clamp(340px, 56vh, 620px);
+  padding: clamp(1.5rem, 4vw, 3rem);
+}
+.a-pr__bild::before {
+  content: ""; position: absolute; z-index: 0;
+  top: 50%; left: 50%; translate: -50% -50%;
+  width: 128%; aspect-ratio: 1.3;
+  background: radial-gradient(ellipse at center,
+              rgb(120 66 34 / .74) 0%,
+              rgb(150 92 58 / .40) 36%,
+              rgb(165 107 69 / .10) 60%,
+              transparent 74%);
+  filter: blur(26px);
+}
+.a-pr__bild img {
+  position: relative; z-index: 1;
+  height: clamp(280px, 46vh, 520px); width: auto;
+  filter: drop-shadow(0 26px 34px rgb(60 30 12 / .38));
+}
+@media (min-width: 900px) {
+  .a-pr__spalte { position: sticky; top: clamp(5.5rem, 11vh, 7rem); }
+}
+
+.a-pr__preis {
+  margin: 0; font-family: "AmberSerif", Georgia, serif;
+  font-size: clamp(2.2rem, 4.6vw, 3rem); line-height: 1;
+}
+.a-pr__zeile { margin: .5rem 0 1.8rem; color: var(--a-tinte-2); font-size: .9375rem; }
+.a-pr__label {
+  display: block; margin-bottom: .6rem;
+  font-size: .6875rem; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--a-tinte-2);
+}
+.a-pr__menge {
+  display: inline-flex; align-items: center; gap: .5rem; margin-bottom: 1.4rem;
+}
+.a-pr__menge input {
+  width: 5rem; min-height: 48px; padding: .5rem .7rem;
+  border: 1px solid var(--a-linie); border-radius: 12px;
+  background: var(--a-creme); color: var(--a-tinte); font: inherit;
+}
+
+/* --- Die drei Angaben, die wir belegen koennen ---------------------- */
+.a-fakten {
+  display: grid; gap: 1px; margin: 2.2rem 0 0; padding: 0; list-style: none;
+  background: var(--a-linie); border: 1px solid var(--a-linie); border-radius: 16px;
+  overflow: hidden;
+}
+@media (min-width: 620px) { .a-fakten { grid-template-columns: repeat(3, 1fr); } }
+.a-fakten li { padding: 1.1rem 1.2rem; background: var(--a-creme); }
+.a-fakten b { display: block; font-size: .9375rem; }
+.a-fakten span { display: block; margin-top: .2rem; color: var(--a-tinte-2); font-size: .8125rem; }
+
+/* --- Nahaufnahme ---------------------------------------------------- */
+.a-nah { display: grid; gap: clamp(1.5rem, 4vw, 3rem); align-items: center; grid-template-columns: 1fr; }
+@media (min-width: 800px) { .a-nah { grid-template-columns: 1fr 1fr; } }
+.a-nah img { border-radius: 18px; width: 100%; height: auto; }
+.a-nah h2 {
+  margin: 0 0 .8rem; font-family: "AmberSerif", Georgia, serif; font-weight: 400;
+  font-size: clamp(1.6rem, 3.6vw, 2.3rem); line-height: 1.12;
+}
+.a-nah p { margin: 0 0 .9rem; color: var(--a-tinte-2); max-width: 46ch; }
+
+/* --- Fragen als Aufklapper (kein JavaScript noetig) ----------------- */
+.a-fragen { max-width: 68ch; }
+.a-frage { border-bottom: 1px solid var(--a-linie); }
+.a-frage summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 1.15rem 0; cursor: pointer; font-weight: 700; font-size: 1rem;
+  list-style: none;
+}
+.a-frage summary::-webkit-details-marker { display: none; }
+.a-frage summary::after {
+  content: "+"; flex: none; font-weight: 400; font-size: 1.4rem;
+  line-height: 1; color: var(--a-tinte-2);
+}
+.a-frage[open] summary::after { content: "\2013"; }
+.a-frage__inhalt { padding: 0 0 1.2rem; color: var(--a-tinte-2); max-width: 60ch; }
+.a-frage__inhalt p { margin: 0 0 .8rem; }
+.a-frage__inhalt p:last-child { margin-bottom: 0; }
+
+/* --- Leerer Bewertungsblock ---------------------------------------- */
+/* Es gibt null Bestellungen. Ein erfundener Stern waere nach UWG
+   Art. 3 unlauter - also steht hier, was tatsaechlich zutrifft. */
+.a-leerbewertung {
+  max-width: 56ch; padding: clamp(1.5rem, 4vw, 2.4rem);
+  border: 1px dashed var(--a-linie); border-radius: 18px;
+  background: var(--a-creme);
+}
+.a-leerbewertung h2 {
+  margin: 0 0 .7rem; font-family: "AmberSerif", Georgia, serif; font-weight: 400;
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+}
+.a-leerbewertung p { margin: 0 0 .8rem; color: var(--a-tinte-2); font-size: .9375rem; }
+.a-leerbewertung p:last-child { margin-bottom: 0; }
+
+/* =====================================================================
+   WARENKORB
+   ===================================================================== */
+.a-korb { display: grid; gap: clamp(2rem, 5vw, 3.5rem); grid-template-columns: 1fr; }
+@media (min-width: 900px) { .a-korb { grid-template-columns: 1.4fr .6fr; align-items: start; } }
+
+.a-pos { display: grid; grid-template-columns: 84px 1fr; gap: 1.1rem;
+         padding: 1.4rem 0; border-bottom: 1px solid var(--a-linie); }
+.a-pos:first-child { border-top: 1px solid var(--a-linie); }
+.a-pos__bild {
+  display: grid; place-items: center; height: 104px; border-radius: 14px;
+  background: radial-gradient(ellipse at center, rgb(150 92 58 / .40), transparent 72%), var(--a-hell);
+}
+.a-pos__bild img { height: 86px; width: auto; }
+.a-pos__name { margin: 0; font-weight: 700; font-size: .9375rem; }
+.a-pos__var { margin: .2rem 0 .7rem; color: var(--a-tinte-2); font-size: .8125rem; }
+.a-pos__fuss { display: flex; flex-wrap: wrap; align-items: center; gap: .7rem 1.1rem; }
+.a-pos__fuss input {
+  width: 4.5rem; min-height: 44px; padding: .4rem .6rem;
+  border: 1px solid var(--a-linie); border-radius: 10px;
+  background: var(--a-creme); color: var(--a-tinte); font: inherit;
+}
+.a-pos__preis { margin-left: auto; font-weight: 700; }
+.a-weg { border: 0; background: none; padding: 0; font: inherit; font-size: .8125rem;
+         color: var(--a-tinte-2); text-decoration: underline; cursor: pointer; }
+
+.a-summe {
+  padding: clamp(1.4rem, 3vw, 2rem); border-radius: 18px; background: var(--a-creme);
+}
+.a-summe__zeile { display: flex; justify-content: space-between; gap: 1rem; margin-bottom: .6rem;
+                  color: var(--a-tinte-2); font-size: .9375rem; }
+.a-summe__gesamt { display: flex; justify-content: space-between; gap: 1rem;
+                   margin: 1rem 0 .4rem; padding-top: 1rem;
+                   border-top: 1px solid var(--a-linie);
+                   font-family: "AmberSerif", Georgia, serif; font-size: 1.5rem; }
+.a-summe__hinweis { margin: 0 0 1.4rem; color: var(--a-tinte-2); font-size: .8125rem; }
+.a-notiz { width: 100%; min-height: 84px; margin: 1.2rem 0 0; padding: .7rem .8rem;
+           border: 1px solid var(--a-linie); border-radius: 12px;
+           background: var(--a-creme); color: var(--a-tinte); font: inherit; resize: vertical; }
+
+/* --- Leerzustaende (Korb, Suche, 404) ------------------------------- */
+.a-leer { max-width: 48ch; padding-block: clamp(2rem, 6vh, 4rem); }
+.a-leer p { color: var(--a-tinte-2); }
+.a-knopf--schmal { width: auto; padding-inline: 2.2rem; }
+.a-knopf--leise {
+  background: transparent; color: var(--a-tinte);
+  box-shadow: inset 0 0 0 1px var(--a-linie); background-image: none;
+}
+
+/* =====================================================================
+   LISTEN, SUCHE, BLOG
+   ===================================================================== */
+.a-gitter { display: grid; gap: clamp(1.2rem, 3vw, 2rem); grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            margin: 0; padding: 0; list-style: none; }
+.a-karte { display: block; text-decoration: none; }
+.a-karte__bild {
+  display: grid; place-items: center; border-radius: 18px; overflow: hidden;
+  aspect-ratio: 4 / 5; margin-bottom: .9rem;
+  background: radial-gradient(ellipse at center, rgb(150 92 58 / .42), transparent 70%), var(--a-hell);
+}
+.a-karte__bild img { height: 76%; width: auto; filter: drop-shadow(0 16px 22px rgb(60 30 12 / .32)); }
+.a-karte h2, .a-karte h3 { margin: 0; font-size: .9375rem; font-weight: 700; }
+.a-karte p { margin: .25rem 0 0; color: var(--a-tinte-2); font-size: .875rem; }
+
+.a-suchfeld { display: flex; flex-wrap: wrap; gap: .6rem; max-width: 40rem; margin-bottom: 2.5rem; }
+.a-suchfeld input[type="search"] {
+  flex: 1 1 14rem; min-height: 52px; padding: .7rem 1rem;
+  border: 1px solid var(--a-linie); border-radius: 999px;
+  background: var(--a-creme); color: var(--a-tinte); font: inherit;
+}
+
+.a-blatt { padding-block: 1.6rem; border-bottom: 1px solid var(--a-linie); }
+.a-blatt:first-child { border-top: 1px solid var(--a-linie); }
+.a-blatt h2 { margin: 0 0 .3rem; font-family: "AmberSerif", Georgia, serif;
+              font-weight: 400; font-size: clamp(1.3rem, 2.8vw, 1.7rem); }
+.a-blatt a { text-decoration: none; }
+.a-blatt time { color: var(--a-tinte-2); font-size: .8125rem; }
+
+.a-blaettern { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 2.5rem;
+               padding: 0; list-style: none; }
+.a-blaettern a, .a-blaettern span {
+  display: grid; place-items: center; min-width: 44px; min-height: 44px;
+  padding: 0 .6rem; border-radius: 12px; text-decoration: none; font-size: .9375rem;
+  box-shadow: inset 0 0 0 1px var(--a-linie);
+}
+.a-blaettern [aria-current="page"] { background: var(--a-gruen); color: var(--a-creme); box-shadow: none; }
+
+/* =====================================================================
+   FORMULAR (Kontakt)
+   ===================================================================== */
+.a-form { display: grid; gap: 1.1rem; max-width: 34rem; }
+.a-feld { display: grid; gap: .4rem; }
+.a-feld > span { font-size: .8125rem; color: var(--a-tinte-2); }
+.a-feld input, .a-feld textarea {
+  min-height: 52px; padding: .7rem .9rem;
+  border: 1px solid var(--a-linie); border-radius: 12px;
+  background: var(--a-creme); color: var(--a-tinte); font: inherit;
+}
+.a-feld textarea { min-height: 150px; resize: vertical; }
+.a-meldung { padding: 1rem 1.2rem; border-radius: 14px; background: var(--a-creme);
+             border-left: 3px solid var(--a-gruen); margin-bottom: 1.6rem; }
+.a-meldung p { margin: 0; font-size: .9375rem; }
+.a-fehler { border-left-color: #8C2F1E; }
+.a-fehler ul { margin: .5rem 0 0; padding-left: 1.1rem; font-size: .875rem; }
+
+/* --- Sprungleiste am Fuss jeder Unterseite -------------------------- */
+.a-weiter { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: clamp(2.5rem, 6vh, 4rem);
+            padding-top: 2rem; border-top: 1px solid var(--a-linie); }
+.a-weiter a {
+  padding: .6rem 1.2rem; border-radius: 999px; text-decoration: none;
+  font-size: .875rem; box-shadow: inset 0 0 0 1px var(--a-linie);
+}
+
+/* Auf Unterseiten ist der Kopf nicht ueber einem Film - er braucht
+   einen eigenen Grund, sonst laeuft Text darunter durch. */
+body.a-unterseite .a-kopf {
+  background: var(--a-hell);
+  border-bottom: 1px solid var(--a-linie);
+}
+
+/* --- Kopfzeile auf sehr schmalen Geraeten --------------------------- */
+/* Gemessen bei 320 CSS-Pixeln (iPhone SE 1. Generation, das schmalste
+   Geraet, das noch vorkommt): die Kopfzeile war 329 Pixel breit, also
+   9 zu viel, und schob die ganze Seite quer. Schuld war die rechte
+   Gruppe - "Korb" plus der Kaufknopf plus 20 Pixel Abstand plus 20
+   Pixel Aussenrand.
+   Drei kleine Abzuege statt eines grossen: Aussenrand, Abstand und die
+   Sperrung der Wortmarke. Zusammen rund 33 Pixel Luft, und der Knopf
+   bleibt mit 44 Pixeln Hoehe weiterhin gut treffbar.
+   Diese Datei wird nach a-amber.css geladen, die Regel gilt deshalb
+   auch auf der Startseite. */
+@media (max-width: 420px) {
+  .a-kopf { padding-inline: .9rem; gap: .5rem; }
+  .a-kopf__rechts { gap: .8rem; }
+  .a-marke { font-size: .875rem; letter-spacing: .2em; }
+  .a-kaufjetzt { padding: .5rem .85rem; }
+}

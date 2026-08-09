@@ -1,0 +1,86 @@
+{%- comment -%}
+  sections/a-kontakt.liquid — LET'SDRINK AMBER, Kontaktseite
+  9.8.2026. Bauleitung.
+
+  Shopifys eigenes Kontaktformular (form 'contact'). Es laeuft ohne
+  JavaScript und landet in der Mailbox, die unter Einstellungen
+  hinterlegt ist.
+
+  Keine erfundene Reaktionszeit. "Antwort innerhalb von 24 Stunden",
+  wie es in der alten Vorlage stand, ist eine Zusage, die ein
+  Einzelunternehmen nicht garantieren kann.
+{%- endcomment -%}
+
+<div class="a-seite">
+  <div class="a-huelle">
+
+    <div class="a-kopfzeile">
+      <p class="a-auge">Let'sDrink</p>
+      <h1 class="a-titel">{{ page.title | default: 'Kontakt' }}</h1>
+      <p class="a-vorspann">
+        Hinter diesem Shop steht eine Person. Schreib mir, ich antworte
+        selbst – meist innerhalb von ein bis zwei Tagen.
+      </p>
+    </div>
+
+    {%- if page.content != blank -%}
+      <div class="a-text" style="margin-bottom:2.5rem">{{ page.content }}</div>
+    {%- endif -%}
+
+    {%- form 'contact', class: 'a-form' -%}
+      {%- if form.posted_successfully? -%}
+        <div class="a-meldung">
+          <p>Danke – deine Nachricht ist angekommen. Ich melde mich.</p>
+        </div>
+      {%- elsif form.errors -%}
+        <div class="a-meldung a-fehler">
+          <p>Das hat nicht geklappt:</p>
+          <ul>
+            {%- for f in form.errors -%}
+              <li>{{ form.errors.translated_fields[f] }} – {{ form.errors.messages[f] }}</li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+
+      <label class="a-feld">
+        <span>Name</span>
+        <input type="text" name="contact[name]" autocomplete="name"
+               value="{{ form.name }}">
+      </label>
+
+      <label class="a-feld">
+        <span>E-Mail (damit ich antworten kann)</span>
+        <input type="email" name="contact[email]" autocomplete="email"
+               required value="{{ form.email }}">
+      </label>
+
+      <label class="a-feld">
+        <span>Bestellnummer, falls vorhanden</span>
+        <input type="text" name="contact[Bestellnummer]">
+      </label>
+
+      <label class="a-feld">
+        <span>Deine Nachricht</span>
+        <textarea name="contact[body]" required>{{ form.body }}</textarea>
+      </label>
+
+      <button class="a-knopf a-knopf--schmal" type="submit">Nachricht senden</button>
+    {%- endform -%}
+
+    <div class="a-weiter">
+      <a href="/pages/haeufige-fragen">Häufige Fragen</a>
+      <a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>
+      <a href="/pages/letsdrink-impressum">Impressum</a>
+    </div>
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Amber Kontakt",
+  "settings": [],
+  "presets": [{ "name": "Amber Kontakt" }]
+}
+{% endschema %}

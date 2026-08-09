@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "film": {
+      "type": "a-film",
+      "settings": {}
+    }
+  },
+  "order": [
+    "film"
+  ]
+}

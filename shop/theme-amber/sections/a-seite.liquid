@@ -1,0 +1,39 @@
+{%- comment -%}
+  sections/a-seite.liquid — LET'SDRINK AMBER, Inhaltsseiten
+  9.8.2026. Bauleitung.
+
+  Gilt fuer Impressum, AGB, Datenschutz, Versand & Rueckgabe, FAQ,
+  Ueber uns und alle weiteren Seiten. Der Text kommt aus dem
+  Shopify-Seiteninhalt (page.content) und wird hier nur gesetzt, nicht
+  umgeschrieben - rechtliche Texte gehoeren dem Inhaber, nicht dem Theme.
+{%- endcomment -%}
+
+<div class="a-seite">
+  <div class="a-huelle">
+
+    <div class="a-kopfzeile">
+      <p class="a-auge">Let'sDrink</p>
+      <h1 class="a-titel">{{ page.title }}</h1>
+    </div>
+
+    <div class="a-text">
+      {{ page.content }}
+    </div>
+
+    <div class="a-weiter">
+      <a href="{{ routes.root_url }}">Zur Flasche</a>
+      <a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>
+      <a href="/pages/haeufige-fragen">Häufige Fragen</a>
+      <a href="/pages/contact">Kontakt</a>
+    </div>
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Amber Seite",
+  "settings": [],
+  "presets": [{ "name": "Amber Seite" }]
+}
+{% endschema %}

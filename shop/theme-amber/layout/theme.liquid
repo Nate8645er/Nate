@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#EFCFB6">
+
+  {%- liquid
+    assign ist_start = false
+    if template.name == 'index'
+      assign ist_start = true
+    endif
+    assign lp = all_products['trinkflasche-napf-hund-katze']
+    assign kaufziel = routes.root_url
+    if lp != empty
+      assign kaufziel = lp.url
+    endif
+    if ist_start or template.name == 'product'
+      assign kaufziel = '#kaufen'
+    endif
+  -%}
+
+  {%- comment -%}
+    html.a-js schaltet den Film ein. Ohne die Klasse - kein JavaScript,
+    Skriptblocker, Netzabbruch - klappt die Startseite in lesbare
+    Abschnitte auseinander und bleibt vollstaendig kaufbar. Die uebrigen
+    Seiten brauchen ueberhaupt kein JavaScript.
+  {%- endcomment -%}
+  {%- if ist_start -%}
+  <script>
+    (function(){var d=document.documentElement;d.className+=" a-js";
+    setTimeout(function(){if(!window.__aAmber)d.classList.remove("a-js");},2500);})();
+  </script>
+  {%- endif -%}
+
+  {%- capture t -%}{% if ist_start %}Let'sDrink – Wasser für unterwegs{% else %}{{ page_title }} – Let'sDrink{% endif %}{%- endcapture -%}
+  {%- capture b -%}{% if page_description %}{{ page_description }}{% else %}Trinkflasche mit fest angebautem Napf für Hund und Katze. Knopf drücken, der Napf füllt sich, beim Aufrichten läuft das übrige Wasser zurück. 550 ml in sechs Farben.{% endif %}{%- endcapture -%}
+  <title>{{ t | strip }}</title>
+  <meta name="description" content="{{ b | strip_html | strip | escape }}">
+  <link rel="canonical" href="{{ canonical_url }}">
+  <meta name="robots" content="{% if template.name == 'cart' or template.name == 'search' or template.name == '404' %}noindex,follow{% else %}index,follow,max-image-preview:large{% endif %}">
+
+  {%- comment -%}
+    Ohne aggregateRating und ohne review: der Shop hat null
+    Bestellungen. Eine erfundene Bewertung ist nach UWG Art. 3 unlauter.
+  {%- endcomment -%}
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Organization","name":"Let'sDrink",
+   "url":"{{ shop.url }}/","address":{"@type":"PostalAddress",
+   "addressLocality":"Rapperswil-Jona","addressRegion":"SG","addressCountry":"CH"}}
+  </script>
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5.5' fill='%23EFCFB6'/%3E%3Cpath d='M12 4.5C9.3 8.1 6.6 10.8 6.6 14.4a5.4 5.4 0 0 0 10.8 0c0-3.6-2.7-6.3-5.4-9.9Z' fill='%23124F4C'/%3E%3C/svg%3E">
+
+  <link rel="preload" as="font" type="font/woff2" href="{{ 'a-serif.woff2' | asset_url }}" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="{{ 'a-sans.woff2' | asset_url }}" crossorigin>
+  {%- if ist_start -%}
+    <link rel="preload" as="image" href="{{ 'a-flasche-tuerkis-unscharf.webp' | asset_url }}" fetchpriority="high">
+    <link rel="preload" as="image" href="{{ 'a-flasche-tuerkis.webp' | asset_url }}" fetchpriority="high">
+  {%- endif -%}
+
+  {{ 'a-amber.css' | asset_url | stylesheet_tag }}
+  {{ 'a-seiten.css' | asset_url | stylesheet_tag }}
+
+  {%- comment -%}
+    GSAP liegt als Theme-Asset, nicht auf einem fremden CDN. Ein
+    Fremd-CDN gibt die IP jeder Besucherin an einen Dritten weiter,
+    bevor sie etwas angeklickt hat - genau der Fehler, der in diesem
+    Shop schon einmal mit Google Fonts passiert ist.
+
+    Geladen wird es nur auf der Startseite. Die uebrigen Seiten haben
+    keinen Film und sparen dadurch rund 116 KB.
+  {%- endcomment -%}
+  {%- if ist_start -%}
+  <script src="{{ 'a-gsap.js' | asset_url }}" defer></script>
+  <script src="{{ 'a-scrolltrigger.js' | asset_url }}" defer></script>
+  <script src="{{ 'a-amber.js' | asset_url }}" defer
+          onerror="document.documentElement.classList.remove('a-js')"></script>
+  {%- endif -%}
+
+  {{ content_for_header }}
+</head>
+<body{% unless ist_start %} class="a-unterseite"{% endunless %}>
+  <a class="a-sr" href="#kaufen">Direkt zum Kauf springen</a>
+
+  <header class="a-kopf">
+    <nav class="a-kopf__nav" aria-label="Hauptnavigation">
+      <a href="{{ routes.root_url }}">Start</a>
+      <a href="/pages/haeufige-fragen">Fragen</a>
+      <a href="/pages/versand-und-rueckgabe">Versand</a>
+    </nav>
+    <a class="a-marke" href="{{ routes.root_url }}">Let'sDrink</a>
+    <div class="a-kopf__rechts">
+      <a href="{{ routes.cart_url }}">Korb{% if cart.item_count > 0 %} ({{ cart.item_count }}){% endif %}</a>
+      <a class="a-kaufjetzt" href="{{ kaufziel }}">Kaufen</a>
+    </div>
+  </header>
+
+  {{ content_for_layout }}
+
+  {%- comment -%}
+    Der Fuss steht im Layout, nicht in einem Abschnitt - sonst haetten
+    Produkt-, Korb- und Inhaltsseiten keinen.
+
+    Die Verweise zeigen auf die JEWEILS AKTUELLE Seite, nicht auf die
+    kurze Fassung. Im Shop liegen zu jedem Rechtstext zwei Datensaetze:
+    eine alte Fassung (impressum, agb, datenschutz, faq,
+    versand-rueckgabe) und die gepflegte (letsdrink-*, haeufige-fragen,
+    versand-und-rueckgabe). Von der alten auf die neue fuehrt jeweils
+    eine Weiterleitung. Der Fuss verweist direkt auf die neue - das
+    spart den Umweg und trifft den Text, der wirklich stimmt. Geprueft:
+    die alte Versandseite nennt CHF 7.00 und Gratisversand ab CHF 65,
+    die neue nennt gratis in der Schweiz und CHF 1.50 ins Ausland -
+    nur die neue deckt sich mit dem Versandprofil des Shops.
+  {%- endcomment -%}
+  <footer class="a-fuss">
+    <div class="a-huelle">
+      <ul>
+        <li><a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a></li>
+        <li><a href="/pages/haeufige-fragen">Häufige Fragen</a></li>
+        <li><a href="/pages/contact">Kontakt</a></li>
+        <li><a href="/pages/letsdrink-impressum">Impressum</a></li>
+        <li><a href="/pages/letsdrink-agb">AGB</a></li>
+        <li><a href="/pages/letsdrink-datenschutz">Datenschutz</a></li>
+        <li><a href="/pages/data-sharing-opt-out">Cookies &amp; Datenweitergabe</a></li>
+      </ul>
+      <p>© {{ 'now' | date: '%Y' }} Let'sDrink · Rapperswil-Jona SG · Preise inkl. MwSt</p>
+    </div>
+  </footer>
+</body>
+</html>
