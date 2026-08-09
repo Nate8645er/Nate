@@ -2,30 +2,39 @@
    n-nova.css — LET'SDRINK NOVA
    9.8.2026. Bauleitung.
 
-   MARKENIDENTITAET, ABGELEITET AUS DEM PRODUKT
-   Das Produkt ist eine weisse Flasche mit tuerkiser Kappe fuer Wasser.
-   Daraus folgt alles Weitere: tiefe, fast schwarze Nacht als Buehne,
-   ein einziger Akzent in Aqua, Glas statt Farbe fuer Flaechen. Das
-   ist die Sprache moderner Geraetemarken - und zufaellig auch die,
-   in der Wasser am besten aussieht.
+   FARBWELT: CREME & WALD
+   Vom Inhaber aus sechs Vorschlaegen gewaehlt. Kein Blau, kein
+   Tuerkis als Grundfarbe - die frueheren Entwuerfe leiteten die
+   Farbe aus der tuerkisen Kappe ab und landeten deshalb immer
+   wieder dort. Hier gibt der Anlass die Farbe vor: draussen mit
+   dem Hund. Creme wie Papier, Gruen wie Wald.
 
-   DIE MESSUNG, DIE DEN DUNKLEN GRUND RECHTFERTIGT
-   Der weisse Flaschenkoerper #E9F3F2 gegen moegliche Untergruende:
+   DAS PROBLEM, DAS EIN HELLER GRUND SCHAFFT - UND SEINE LOESUNG
+   Auf dem Cremegrund #F2F0E8 gemessen:
 
-     auf Weiss   #FFFFFF ....  1.13   verschwindet
-     auf Apricot #EFCFB6 ....  1.35   verwaschen
-     auf Grund   #070E12 .... 17.18   maximal
-     auf Karte   #111F26 .... 14.88
+     weisse Flasche   .... 1.01   verschwindet
+     gruene           .... 1.15   verschwindet
+     tuerkise         .... 1.39   verschwindet
+     rosa             .... 1.83   verschwindet
+     graue            .... 2.70   verschwindet
+     schwarze         .... 7.58   sichtbar
 
-   Kein anderer Grund bringt dieses Produkt so heraus. Die frueheren
-   Entwuerfe mussten das Produkt auf eigene dunkle Kacheln setzen -
-   hier IST der Shop die Kachel.
+   Es gibt KEINE einzelne Flaeche, die alle sechs traegt: wegen der
+   weissen Flasche duerfte sie hoechstens L=0.259 hell sein, wegen
+   der schwarzen muesste sie mindestens L=0.314 haben. Das schliesst
+   sich aus.
 
-   SCHRIFT- UND KNOPFKONTRASTE (alle weit ueber 4.5:1)
-     Text   #F2F6F7 auf Grund ......... 17.86
-     Sanft  #9FB0B6 auf Grund .........  8.66
-     Aqua   #4FD8D0 auf Grund ......... 11.17
-     Knopftext #04231F auf Aqua .......  9.54
+   Deshalb hat die Produktflaeche ZWEI Toene und wechselt mit der
+   gewaehlten Farbe:
+     Waldgruen #22402E  fuer weiss, gruen, tuerkis, rosa, grau
+                        (Kontrast 10.09 / 8.72 / 7.21 / 5.45 / 3.70)
+     Creme     #FAF9F4  fuer schwarz (8.20)
+
+   SCHRIFT- UND KNOPFKONTRASTE (alle ueber 4.5:1)
+     Text   #1B241C auf Creme  ........ 13.99
+     Sanft  #5A6355 auf Creme  .........  5.49
+     Wald   #2F5D3A auf Creme  .........  6.95
+     Weiss  auf Knopf #2F5D3A  .........  7.64
 
    LEISTUNG
    Keine Bibliothek. Bewegung laeuft ueber CSS-Transitions und einen
@@ -39,18 +48,24 @@
              font-weight:700; font-display:swap; }
 
 :root {
-  --n-grund:  #070E12;
-  --n-tief:   #0C1A20;
-  --n-karte:  #111F26;
-  --n-text:   #F2F6F7;
-  --n-sanft:  #9FB0B6;
-  --n-akzent: #4FD8D0;
-  --n-akzent2:#7FE9C4;
-  --n-knopftext: #04231F;
+  --n-grund:  #F2F0E8;   /* Seite */
+  --n-tief:   #EAE7DC;   /* abgesetzter Abschnitt */
+  --n-karte:  #FAF9F4;   /* Karte */
+  --n-text:   #1B241C;
+  --n-sanft:  #5A6355;
+  --n-akzent: #2F5D3A;   /* Wald - Knoepfe, Verweise */
+  --n-akzent2:#3E7A4C;   /* heller Partner im Verlauf */
+  --n-knopftext: #FFFFFF;
 
-  --n-glas:      rgb(255 255 255 / .055);
-  --n-glas-rand: rgb(255 255 255 / .10);
-  --n-glas-hell: rgb(255 255 255 / .09);
+  /* Die Produktflaeche in zwei Toenen, siehe Kopf dieser Datei. */
+  --n-panel:      #22402E;
+  --n-panel-hell: #FAF9F4;
+
+  /* Auf hellem Grund traegt kein weisses Glas mehr - die Flaechen
+     werden mit einem Hauch Tinte abgesetzt statt mit Licht. */
+  --n-glas:      rgb(27 36 28 / .035);
+  --n-glas-rand: rgb(27 36 28 / .12);
+  --n-glas-hell: rgb(27 36 28 / .06);
 
   --n-max: 1180px;
   --n-rund: 22px;
@@ -62,7 +77,7 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
-  scrollbar-color: #24343B var(--n-grund);
+  scrollbar-color: #B9BDB2 var(--n-grund);
 }
 body {
   margin: 0;
@@ -114,12 +129,12 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
    KOPF, NAVIGATION
    ===================================================================== */
 .n-balken {
-  background: linear-gradient(90deg, #0B2A2C, #0C1A20 55%);
+  background: var(--n-akzent);
   border-bottom: 1px solid var(--n-glas-rand);
-  color: var(--n-sanft);
+  color: rgb(255 255 255 / .85);
   font-size: .78125rem; text-align: center; padding: .55rem 1rem;
 }
-.n-balken b { color: var(--n-text); font-weight: 700; }
+.n-balken b { color: #FFFFFF; font-weight: 700; }
 .n-balken span + span::before { content: "·"; margin: 0 .55rem; opacity: .5; }
 
 .n-kopf {
@@ -128,9 +143,9 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
   border-bottom: 1px solid transparent;
 }
 .n-kopf.n-fest {
-  background: rgb(7 14 18 / .72);
-  backdrop-filter: saturate(180%) blur(18px);
-  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  background: rgb(242 240 232 / .82);
+  backdrop-filter: saturate(160%) blur(16px);
+  -webkit-backdrop-filter: saturate(160%) blur(16px);
   border-bottom-color: var(--n-glas-rand);
 }
 .n-kopf__innen { display: flex; align-items: center; gap: 1rem; min-height: 66px; }
@@ -172,7 +187,7 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 /* Mobile Navigation als Glasflaeche */
 .n-mnav {
   position: fixed; inset: 0; z-index: 90;
-  background: rgb(7 14 18 / .86);
+  background: rgb(242 240 232 / .94);
   backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
   display: grid; align-content: start; gap: .25rem;
   padding: 5.5rem 1.5rem 2rem;
@@ -195,17 +210,17 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
   color: var(--n-knopftext);
   font: inherit; font-weight: 700; font-size: 1.0625rem; line-height: 1;
   text-decoration: none; cursor: pointer; position: relative; overflow: hidden;
-  box-shadow: 0 8px 30px rgb(79 216 208 / .22);
+  box-shadow: 0 8px 24px rgb(47 93 58 / .28);
   transition: transform .2s var(--n-weich), box-shadow .25s ease;
 }
-.n-knopf:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgb(79 216 208 / .32); }
+.n-knopf:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgb(47 93 58 / .36); }
 .n-knopf:active { transform: translateY(0) scale(.99); }
 .n-knopf[disabled] { opacity: .4; cursor: not-allowed; box-shadow: none; transform: none; }
 /* Der Lichtstrich, der einmal ueber den Knopf laeuft */
 .n-knopf::after {
   content: ""; position: absolute; top: 0; bottom: 0; width: 42%;
   left: -60%; transform: skewX(-18deg);
-  background: linear-gradient(90deg, transparent, rgb(255 255 255 / .38), transparent);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / .32), transparent);
   transition: left .55s var(--n-weich);
 }
 .n-knopf:hover::after { left: 120%; }
@@ -215,7 +230,7 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
   box-shadow: inset 0 0 0 1px var(--n-glas-rand);
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
 }
-.n-knopf--geist:hover { background: var(--n-glas-hell); box-shadow: inset 0 0 0 1px rgb(255 255 255 / .2); }
+.n-knopf--geist:hover { background: var(--n-glas-hell); box-shadow: inset 0 0 0 1px rgb(27 36 28 / .22); }
 .n-knopf--klein { min-height: 46px; padding: .7rem 1.4rem; font-size: .9375rem; }
 
 /* =====================================================================
@@ -230,20 +245,24 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .n-hero::before {
   width: min(760px, 120vw); aspect-ratio: 1.1;
   top: -14%; left: 50%; translate: -50% 0;
-  background: radial-gradient(circle, rgb(79 216 208 / .22), transparent 68%);
+  background: radial-gradient(circle, rgb(47 93 58 / .12), transparent 68%);
 }
 .n-hero::after {
   width: min(520px, 90vw); aspect-ratio: 1.3;
   bottom: -22%; right: -12%;
-  background: radial-gradient(circle, rgb(127 233 196 / .12), transparent 70%);
+  background: radial-gradient(circle, rgb(62 122 76 / .10), transparent 70%);
 }
 .n-hero__raster { position: relative; z-index: 1; display: grid; gap: clamp(1.75rem, 4vw, 3.5rem); }
 @media (min-width: 940px) { .n-hero__raster { grid-template-columns: 1.02fr .98fr; align-items: center; } }
 
 .n-riese {
   margin: 0 0 1rem;
-  font-size: clamp(2.5rem, 7vw, 4.4rem); font-weight: 700;
-  line-height: 1.02; letter-spacing: -.035em;
+  /* Gemessen bei 1440: mit 4.4rem brach "Hydration, die dein Haustier
+     liebt." in drei Zeilen und liess "dein" allein stehen. Die
+     Textspalte ist rund 555 Pixel breit - bei 3.5rem passen
+     "Hydration, die dein" und "Haustier liebt." auf je eine Zeile. */
+  font-size: clamp(2.5rem, 5.4vw, 3.5rem); font-weight: 700;
+  line-height: 1.04; letter-spacing: -.035em;
 }
 .n-riese em {
   font-style: normal;
@@ -254,9 +273,15 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .n-cta { display: flex; flex-wrap: wrap; gap: .75rem; }
 
 /* --- Die Produktbuehne mit Tiefe ------------------------------------ */
+/* Die Produktflaeche. Ton wechselt mit der gewaehlten Farbe -
+   siehe Rechnung im Kopf dieser Datei. */
 .n-buehne {
   position: relative; order: -1;
   display: grid; place-items: center;
+  border-radius: var(--n-rund-gross);
+  background: var(--n-panel);
+  padding: clamp(1rem, 3vw, 2rem);
+  overflow: hidden;
   /* Gemessen auf einem 390x844-Handy: mit 52vh Buehne und 44vh Flasche
      endete der erste Bildschirm mitten in der Ueberschrift - Preis,
      Farbwahl und Kaufknopf lagen darunter. Man sah nur die Flasche.
@@ -270,15 +295,14 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .n-ring {
   position: absolute; z-index: 0;
   width: min(78%, 420px); aspect-ratio: 1; border-radius: 50%;
-  border: 1px solid var(--n-glas-rand);
-  background: radial-gradient(circle at 50% 42%, rgb(79 216 208 / .10), transparent 62%);
+  border: 1px solid rgb(255 255 255 / .14);
+  background: radial-gradient(circle at 50% 42%, rgb(255 255 255 / .07), transparent 62%);
 }
 .n-ring--2 { width: min(96%, 540px); opacity: .55; }
 .n-flasche {
   position: relative; z-index: 2;
   height: clamp(185px, 29vh, 340px); width: auto;
-  filter: drop-shadow(0 40px 60px rgb(0 0 0 / .65))
-          drop-shadow(0 0 40px rgb(79 216 208 / .18));
+  filter: drop-shadow(0 30px 44px rgb(0 0 0 / .45));
   transition: transform .18s linear;
 }
 @media (min-width: 940px) { .n-flasche { height: clamp(380px, 58vh, 560px); } }
@@ -309,6 +333,14 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
   .n-etikett { margin-bottom: .45rem; }
   .n-wahl    { margin-bottom: 1rem; }
 }
+/* Ab 940px ist die Textspalte rund 551 Pixel breit. Gemessen:
+   bei 56px brach "Hydration, die dein Haustier liebt." in drei Zeilen
+   und liess "liebt." allein stehen. Bei 48px sind es zwei Zeilen -
+   von 940 bis 1920 durchgehend geprueft. */
+@media (min-width: 940px) {
+  .n-riese { font-size: clamp(2.6rem, 3.9vw, 3rem); }
+}
+
 @media (max-width: 389px) {
   .n-buehne  { min-height: clamp(150px, 19vh, 240px); }
   .n-flasche { height: clamp(140px, 17vh, 220px); }
@@ -322,7 +354,7 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
   position: absolute; display: block;
   width: var(--d, 8px); height: var(--d, 8px); border-radius: 50% 50% 50% 0;
   transform: rotate(45deg);
-  background: linear-gradient(140deg, rgb(255 255 255 / .55), rgb(79 216 208 / .25));
+  background: linear-gradient(140deg, rgb(255 255 255 / .6), rgb(201 220 207 / .3));
   box-shadow: inset 0 0 4px rgb(255 255 255 / .5);
   opacity: 0; animation: n-fall var(--t, 7s) var(--v, 0s) infinite ease-in;
 }
@@ -372,12 +404,12 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .n-glas--hebt:hover {
   transform: translateY(-5px);
   background: var(--n-glas-hell);
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / .18), 0 22px 50px rgb(0 0 0 / .45);
+  box-shadow: inset 0 0 0 1px rgb(27 36 28 / .18), 0 18px 40px rgb(27 36 28 / .10);
 }
 /* Der Lichtrand oben - macht aus der Flaeche echtes Glas */
 .n-glas::before {
   content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-  background: linear-gradient(160deg, rgb(255 255 255 / .07), transparent 42%);
+  background: linear-gradient(160deg, rgb(255 255 255 / .5), transparent 46%);
 }
 
 .n-raster { display: grid; gap: 1.1rem; grid-template-columns: 1fr; }
@@ -399,14 +431,14 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .n-gegen { display: grid; gap: 1.1rem; }
 @media (min-width: 820px) { .n-gegen { grid-template-columns: 1fr 1fr; } }
 .n-spalte { padding: clamp(1.4rem, 3vw, 2rem); border-radius: var(--n-rund); }
-.n-spalte--alt { background: rgb(255 255 255 / .03); box-shadow: inset 0 0 0 1px rgb(255 255 255 / .07); }
-.n-spalte--neu { background: linear-gradient(160deg, rgb(79 216 208 / .10), rgb(79 216 208 / .03));
-                 box-shadow: inset 0 0 0 1px rgb(79 216 208 / .28); }
+.n-spalte--alt { background: rgb(27 36 28 / .035); box-shadow: inset 0 0 0 1px rgb(27 36 28 / .10); }
+.n-spalte--neu { background: linear-gradient(160deg, rgb(47 93 58 / .10), rgb(47 93 58 / .03));
+                 box-shadow: inset 0 0 0 1px rgb(47 93 58 / .30); }
 .n-spalte h3 { margin: 0 0 1.1rem; font-size: 1.0625rem; font-weight: 700; }
 .n-liste { margin: 0; padding: 0; list-style: none; display: grid; gap: .8rem; }
 .n-liste li { display: flex; gap: .7rem; font-size: .9375rem; color: var(--n-sanft); }
 .n-liste svg { flex: none; margin-top: .2em; }
-.n-spalte--alt .n-liste svg { color: #FF8A80; }
+.n-spalte--alt .n-liste svg { color: #A33228; }
 .n-spalte--neu .n-liste svg { color: var(--n-akzent); }
 
 /* --- Ablauf in drei Schritten --------------------------------------- */
@@ -425,7 +457,7 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .n-bew__kopf { display: flex; align-items: center; gap: .7rem; margin-bottom: .9rem; }
 .n-avatar {
   width: 40px; height: 40px; border-radius: 999px; flex: none;
-  background: linear-gradient(135deg, #1C3238, #0E1D24);
+  background: linear-gradient(135deg, #DCE4DA, #C9D4C6);
   box-shadow: inset 0 0 0 1px var(--n-glas-rand);
   display: grid; place-items: center; color: var(--n-sanft); font-size: .8125rem; font-weight: 700;
 }
@@ -434,7 +466,7 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .n-bew p { margin: 0; color: var(--n-sanft); font-size: .9375rem; }
 .n-bew__foto {
   margin-top: 1rem; aspect-ratio: 4/3; border-radius: 14px;
-  background: repeating-linear-gradient(45deg, rgb(255 255 255 / .03) 0 10px, transparent 10px 20px), var(--n-karte);
+  background: repeating-linear-gradient(45deg, rgb(27 36 28 / .05) 0 10px, transparent 10px 20px), var(--n-karte);
   box-shadow: inset 0 0 0 1px var(--n-glas-rand);
   display: grid; place-items: center; text-align: center; padding: 1rem;
   color: var(--n-sanft); font-size: .75rem; line-height: 1.4;
@@ -443,11 +475,11 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
    getarnt. Erfundene Bewertungen waeren nach UWG Art. 3 unlauter. */
 .n-platz {
   border-style: dashed; box-shadow: none;
-  border: 1px dashed rgb(255 255 255 / .22);
+  border: 1px dashed rgb(27 36 28 / .28);
 }
 .n-platz__marke {
   display: inline-block; margin-bottom: .8rem; padding: .3rem .7rem; border-radius: 999px;
-  background: rgb(255 200 87 / .14); color: #FFC857;
+  background: rgb(140 90 10 / .10); color: #7A5310;
   font-size: .6875rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
 }
 
@@ -458,7 +490,7 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .n-tab td:first-child { color: var(--n-text); }
 .n-tab td:not(:first-child) { color: var(--n-sanft); text-align: center; width: 22%; }
 .n-tab .n-ja  { color: var(--n-akzent); }
-.n-tab .n-nein{ color: #FF8A80; }
+.n-tab .n-nein{ color: #A33228; }
 .n-tabhuelle { overflow-x: auto; border-radius: var(--n-rund); }
 
 /* --- Fragen ---------------------------------------------------------- */
@@ -482,7 +514,7 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 /* --- Schlussaufruf --------------------------------------------------- */
 .n-schluss { position: relative; overflow: hidden; text-align: center;
              border-radius: var(--n-rund-gross); padding: clamp(2.5rem, 7vw, 4.5rem) 1.5rem;
-             background: linear-gradient(160deg, rgb(79 216 208 / .12), rgb(12 26 32 0) 60%), var(--n-tief);
+             background: linear-gradient(160deg, rgb(47 93 58 / .12), transparent 60%), var(--n-tief);
              box-shadow: inset 0 0 0 1px var(--n-glas-rand); }
 .n-schluss .n-titel { margin-bottom: .8rem; }
 .n-schluss .n-cta { justify-content: center; margin-top: 1.8rem; }
@@ -503,13 +535,13 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .n-pkt {
   display: block; width: 44px; height: 44px; border: 0; padding: 0; border-radius: 999px;
   cursor: pointer; text-decoration: none;
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / .22);
+  box-shadow: inset 0 0 0 1px rgb(27 36 28 / .25);
   transition: transform .2s var(--n-weich), box-shadow .2s ease;
 }
 .n-pkt:hover { transform: scale(1.1); }
 .n-pkt[aria-pressed="true"] {
   transform: scale(1.1);
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / .22), 0 0 0 3px var(--n-grund), 0 0 0 5px var(--n-akzent);
+  box-shadow: inset 0 0 0 1px rgb(27 36 28 / .25), 0 0 0 3px var(--n-grund), 0 0 0 5px var(--n-akzent);
 }
 .n-pkt--tuerkis{background:#5DE1DC} .n-pkt--gruen{background:#9BF4BC}
 .n-pkt--rosa{background:#F09BB2}    .n-pkt--grau{background:#8E9495}
@@ -535,7 +567,7 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
    WARENKORB-SCHUBLADE
    ===================================================================== */
 .n-schleier {
-  position: fixed; inset: 0; z-index: 95; background: rgb(3 7 9 / .6);
+  position: fixed; inset: 0; z-index: 95; background: rgb(27 36 28 / .45);
   backdrop-filter: blur(3px); opacity: 0; visibility: hidden;
   transition: opacity .3s ease, visibility .3s;
 }
@@ -543,8 +575,8 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .n-lade {
   position: fixed; top: 0; right: 0; bottom: 0; z-index: 96;
   width: min(420px, 100%);
-  background: var(--n-tief);
-  box-shadow: -20px 0 60px rgb(0 0 0 / .5);
+  background: var(--n-karte);
+  box-shadow: -20px 0 60px rgb(27 36 28 / .22);
   display: flex; flex-direction: column;
   transform: translateX(100%);
   transition: transform .38s var(--n-weich);
@@ -560,7 +592,7 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
            padding-bottom: 1.1rem; margin-bottom: 1.1rem;
            border-bottom: 1px solid var(--n-glas-rand); }
 .n-zeile:last-child { border-bottom: 0; margin-bottom: 0; }
-.n-zeile__bild { height: 84px; border-radius: 12px; background: var(--n-karte);
+.n-zeile__bild { height: 84px; border-radius: 12px; background: var(--n-panel);
                  display: grid; place-items: center; overflow: hidden; }
 .n-zeile__bild img { height: 72px; width: auto; }
 .n-zeile__name { margin: 0; font-size: .875rem; font-weight: 700; }
@@ -586,16 +618,17 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
    ===================================================================== */
 .n-leiste {
   position: fixed; inset-inline: 0; bottom: 0; z-index: 80;
-  background: rgb(7 14 18 / .9);
-  backdrop-filter: saturate(180%) blur(18px); -webkit-backdrop-filter: saturate(180%) blur(18px);
+  background: rgb(250 249 244 / .95);
+  backdrop-filter: saturate(160%) blur(16px); -webkit-backdrop-filter: saturate(160%) blur(16px);
   border-top: 1px solid var(--n-glas-rand);
+  box-shadow: 0 -8px 30px rgb(27 36 28 / .10);
   padding: .7rem 0 max(.7rem, env(safe-area-inset-bottom));
   transform: translateY(115%); transition: transform .32s var(--n-weich);
 }
 .n-leiste.n-an { transform: none; }
 .n-leiste__innen { display: flex; align-items: center; gap: .85rem; }
 .n-leiste__bild { flex: none; width: 42px; height: 42px; border-radius: 11px;
-                  background: var(--n-karte); display: grid; place-items: center; overflow: hidden; }
+                  background: var(--n-panel); display: grid; place-items: center; overflow: hidden; }
 .n-leiste__bild img { height: 36px; width: auto; }
 .n-leiste__text { min-width: 0; }
 .n-leiste__text b { display: block; font-size: .8125rem; line-height: 1.2;
@@ -611,17 +644,17 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 @media (min-width: 940px) { .n-pr { grid-template-columns: 1.05fr .95fr; align-items: start; } }
 .n-pr__bild {
   position: relative; display: grid; place-items: center; overflow: hidden;
-  border-radius: var(--n-rund-gross); background: var(--n-tief);
+  border-radius: var(--n-rund-gross); background: var(--n-panel);
   box-shadow: inset 0 0 0 1px var(--n-glas-rand);
   min-height: clamp(340px, 56vh, 620px); padding: clamp(1.5rem, 4vw, 3rem);
 }
 .n-pr__bild::before {
   content: ""; position: absolute; width: 90%; aspect-ratio: 1; border-radius: 50%;
-  background: radial-gradient(circle, rgb(79 216 208 / .16), transparent 66%);
+  background: radial-gradient(circle, rgb(255 255 255 / .12), transparent 66%);
   filter: blur(40px);
 }
 .n-pr__bild img { position: relative; z-index: 1; height: clamp(260px, 44vh, 500px); width: auto;
-                  filter: drop-shadow(0 34px 50px rgb(0 0 0 / .6)); }
+                  filter: drop-shadow(0 26px 38px rgb(0 0 0 / .42)); }
 @media (min-width: 940px) { .n-pr__spalte { position: sticky; top: 90px; } }
 /* Sechs Vorschauen zu je 62 Pixeln plus Abstaende ergeben 420 Pixel.
    Auf einem 320er Handy stehen im Textkasten aber nur 284 zur
@@ -630,7 +663,7 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
    ersten und zwei in der zweiten Reihe, alle bleiben erreichbar. */
 .n-pr__mini { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .9rem; }
 .n-pr__mini a {
-  width: 62px; height: 62px; border-radius: 14px; background: var(--n-karte);
+  width: 62px; height: 62px; border-radius: 14px; background: var(--n-panel);
   display: grid; place-items: center; overflow: hidden; text-decoration: none;
   box-shadow: inset 0 0 0 1px var(--n-glas-rand); transition: box-shadow .2s ease;
 }
@@ -682,7 +715,7 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
   background: linear-gradient(135deg, var(--n-akzent2), var(--n-akzent));
   color: var(--n-knopftext); font:inherit; font-weight:700; font-size:1.0625rem;
   line-height:1; text-decoration:none; cursor:pointer;
-  box-shadow: 0 8px 30px rgb(79 216 208 / .22);
+  box-shadow: 0 8px 24px rgb(47 93 58 / .28);
   transition: transform .2s var(--n-weich), box-shadow .25s ease; }
 .a-knopf:hover { transform: translateY(-2px); }
 .a-knopf[disabled] { opacity:.4; cursor:not-allowed; box-shadow:none; transform:none; }
@@ -692,11 +725,11 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 
 .a-wahl { display:flex; flex-wrap:wrap; gap:.6rem; margin-bottom:1.4rem; }
 .a-pkt { display:block; width:44px; height:44px; border:0; padding:0; border-radius:999px;
-         cursor:pointer; text-decoration:none; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .22);
+         cursor:pointer; text-decoration:none; box-shadow: inset 0 0 0 1px rgb(27 36 28 / .25);
          transition: transform .2s var(--n-weich), box-shadow .2s ease; }
 .a-pkt:hover { transform: scale(1.1); }
 .a-pkt[aria-pressed="true"] { transform: scale(1.1);
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / .22), 0 0 0 3px var(--n-grund), 0 0 0 5px var(--n-akzent); }
+  box-shadow: inset 0 0 0 1px rgb(27 36 28 / .25), 0 0 0 3px var(--n-grund), 0 0 0 5px var(--n-akzent); }
 .a-pkt--tuerkis{background:#5DE1DC} .a-pkt--gruen{background:#9BF4BC}
 .a-pkt--rosa{background:#F09BB2}    .a-pkt--grau{background:#8E9495}
 .a-pkt--schwarz{background:#4A4C4C} .a-pkt--weiss{background:#E9F3F2}
@@ -704,13 +737,13 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .a-pr { display:grid; gap:clamp(1.75rem,4vw,3.5rem); }
 @media (min-width: 940px) { .a-pr { grid-template-columns: 1.05fr .95fr; align-items:start; } }
 .a-pr__bild { position:relative; display:grid; place-items:center; overflow:hidden;
-  border-radius: var(--n-rund-gross); background: var(--n-tief);
+  border-radius: var(--n-rund-gross); background: var(--n-panel);
   box-shadow: inset 0 0 0 1px var(--n-glas-rand);
   min-height: clamp(340px,56vh,620px); padding: clamp(1.5rem,4vw,3rem); }
 .a-pr__bild::before { content:""; position:absolute; width:90%; aspect-ratio:1; border-radius:50%;
-  background: radial-gradient(circle, rgb(79 216 208 / .16), transparent 66%); filter: blur(40px); }
+  background: radial-gradient(circle, rgb(255 255 255 / .12), transparent 66%); filter: blur(40px); }
 .a-pr__bild img { position:relative; z-index:1; height:clamp(260px,44vh,500px); width:auto;
-  filter: drop-shadow(0 34px 50px rgb(0 0 0 / .6)); }
+  filter: drop-shadow(0 26px 38px rgb(0 0 0 / .42)); }
 @media (min-width: 940px) { .a-pr__spalte { position: sticky; top: 90px; } }
 .a-pr__preis { margin:0; font-size:clamp(1.8rem,4vw,2.3rem); font-weight:700; letter-spacing:-.02em; }
 .a-pr__zeile { margin:.35rem 0 1.5rem; color:var(--n-sanft); font-size:.875rem; }
@@ -731,13 +764,13 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .a-fakten { display:grid; gap:1px; margin:2rem 0 0; padding:0; list-style:none;
             border-radius:18px; overflow:hidden; background: var(--n-glas-rand); }
 @media (min-width: 620px) { .a-fakten { grid-template-columns: repeat(3,1fr); } }
-.a-fakten li { padding:1.2rem; background: var(--n-tief); }
+.a-fakten li { padding:1.2rem; background: var(--n-karte); }
 .a-fakten b { display:block; font-size:.9375rem; }
 .a-fakten span { display:block; margin-top:.2rem; color:var(--n-sanft); font-size:.8125rem; }
 
 .a-nah { display:grid; gap:clamp(1.75rem,4vw,3rem); align-items:center; }
 @media (min-width: 820px) { .a-nah { grid-template-columns: 1fr 1fr; } }
-.a-nah img { border-radius: var(--n-rund); width:100%; height:auto; background: var(--n-tief); }
+.a-nah img { border-radius: var(--n-rund); width:100%; height:auto; background: var(--n-panel); }
 .a-nah h2 { margin:0 0 .8rem; font-size:clamp(1.6rem,3.6vw,2.3rem); font-weight:700; letter-spacing:-.025em; }
 .a-nah p { margin:0 0 .9rem; color:var(--n-sanft); max-width:46ch; }
 
@@ -766,7 +799,7 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
          padding:1.4rem 0; border-bottom:1px solid var(--n-glas-rand); }
 .a-pos:first-child { border-top:1px solid var(--n-glas-rand); }
 .a-pos__bild { display:grid; place-items:center; height:104px; border-radius:14px;
-               background: var(--n-tief); overflow:hidden; }
+               background: var(--n-panel); overflow:hidden; }
 .a-pos__bild img { height:88px; width:auto; }
 .a-pos__name { margin:0; font-weight:700; font-size:.9375rem; }
 .a-pos__var { margin:.2rem 0 .7rem; color:var(--n-sanft); font-size:.8125rem; }
@@ -793,11 +826,11 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
             margin:0; padding:0; list-style:none; }
 .a-karte { display:block; text-decoration:none; }
 .a-karte__bild { display:grid; place-items:center; border-radius: var(--n-rund); overflow:hidden;
-                 aspect-ratio:4/5; margin-bottom:.9rem; background: var(--n-tief);
+                 aspect-ratio:4/5; margin-bottom:.9rem; background: var(--n-panel);
                  box-shadow: inset 0 0 0 1px var(--n-glas-rand);
                  transition: box-shadow .3s ease, transform .3s var(--n-weich); }
-.a-karte:hover .a-karte__bild { transform: translateY(-4px); box-shadow: inset 0 0 0 1px rgb(79 216 208 / .4); }
-.a-karte__bild img { height:76%; width:auto; filter: drop-shadow(0 18px 26px rgb(0 0 0 / .55)); }
+.a-karte:hover .a-karte__bild { transform: translateY(-4px); box-shadow: inset 0 0 0 1px rgb(47 93 58 / .45); }
+.a-karte__bild img { height:76%; width:auto; filter: drop-shadow(0 16px 22px rgb(0 0 0 / .40)); }
 .a-karte h2, .a-karte h3 { margin:0; font-size:.9375rem; font-weight:700; }
 .a-karte p { margin:.2rem 0 0; color:var(--n-sanft); font-size:.875rem; }
 
@@ -827,7 +860,7 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
              box-shadow: inset 0 0 0 1px var(--n-glas-rand);
              border-left:3px solid var(--n-akzent); margin-bottom:1.6rem; }
 .a-meldung p { margin:0; font-size:.9375rem; }
-.a-fehler { border-left-color:#FF8A80; }
+.a-fehler { border-left-color:#A33228; }
 .a-fehler ul { margin:.5rem 0 0; padding-left:1.1rem; font-size:.875rem; }
 
 .a-weiter { display:flex; flex-wrap:wrap; gap:.6rem; margin-top:clamp(2rem,5vw,3rem);
@@ -841,7 +874,7 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
    FUSS
    ===================================================================== */
 .n-fuss { border-top: 1px solid var(--n-glas-rand); padding-block: 3rem 6rem;
-          color: var(--n-sanft); font-size: .875rem; }
+          background: var(--n-tief); color: var(--n-sanft); font-size: .875rem; }
 @media (min-width: 940px) { .n-fuss { padding-bottom: 3rem; } }
 .n-fuss__raster { display: grid; gap: 2rem; margin-bottom: 2.2rem; }
 @media (min-width: 760px) { .n-fuss__raster { grid-template-columns: 1.4fr 1fr 1fr; } }
@@ -852,3 +885,43 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .n-fuss a:hover { color: var(--n-text); }
 .n-fuss__unten { padding-top: 1.6rem; border-top: 1px solid var(--n-glas-rand);
                  font-size: .8125rem; }
+
+/* =====================================================================
+   PRODUKTFLAECHE, ZWEITER TON
+   Nur die schwarze Flasche braucht die helle Flaeche; alle anderen
+   fuenf brauchen die tiefe. Die Klasse setzt Liquid beim Rendern und
+   n-nova.js beim Farbwechsel.
+   ===================================================================== */
+.n-buehne.n-hell, .n-pr__bild.n-hell,
+.a-pr__bild.n-hell { background: var(--n-panel-hell); }
+.n-buehne.n-hell::after, .n-pr__bild.n-hell::before,
+.a-pr__bild.n-hell::before { opacity: .35; }
+.n-buehne.n-hell .n-ring { border-color: rgb(27 36 28 / .12);
+  background: radial-gradient(circle at 50% 42%, rgb(27 36 28 / .04), transparent 62%); }
+.n-buehne.n-hell .n-flasche, .n-pr__bild.n-hell img, .a-pr__bild.n-hell img {
+  filter: drop-shadow(0 22px 32px rgb(27 36 28 / .28)); }
+.n-buehne.n-hell .n-tropfen i {
+  background: linear-gradient(140deg, rgb(47 93 58 / .35), rgb(47 93 58 / .12)); }
+
+/* --- Vorschauen tragen ihren eigenen Ton ---------------------------
+   Gemessen: die schwarze Flasche auf dem Waldgruen erreicht nur
+   1.32:1 - sie verschwand in der zweiten Vorschau. Jede Vorschau
+   bekommt deshalb den Ton, den ihre eigene Farbe braucht. */
+.n-pr__mini a[data-panel="hell"] { background: var(--n-panel-hell); }
+.n-pr__mini a[data-panel="hell"] img { filter: drop-shadow(0 6px 10px rgb(27 36 28 / .22)); }
+
+/* --- Produktfeld auf dem Handy -------------------------------------
+   Dieselbe Rechnung wie beim Hero: mit 56vh lagen Preis und Kaufknopf
+   weit unter der Falz. */
+@media (max-width: 939px) {
+  .n-pr__bild, .a-pr__bild { min-height: clamp(200px, 30vh, 340px);
+                             padding: clamp(.9rem, 3vw, 1.6rem); }
+  .n-pr__bild img, .a-pr__bild img { height: clamp(175px, 26vh, 300px); }
+  .n-pr__mini a { width: 52px; height: 52px; }
+  .n-pr__mini img { height: 42px; }
+}
+
+/* Auf dem Handy sind die Vorschauen ueberfluessig: die Farbpunkte
+   direkt ueber dem Kaufknopf leisten dasselbe und stehen naeher am
+   Ziel. Weglassen spart rund 120 Pixel bis zum Knopf. */
+@media (max-width: 939px) { .n-pr__mini { display: none; } }

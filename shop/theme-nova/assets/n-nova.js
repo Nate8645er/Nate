@@ -126,6 +126,12 @@
           haupt.style.opacity = "1";
         }, 180);
       }
+      // Ton der Produktflaeche mitfuehren - sonst verschwindet die
+      // schwarze Flasche auf der tiefen bzw. die weisse auf der hellen.
+      var ton = p.getAttribute("data-panel");
+      if (ton) $$("[data-buehne]").forEach(function (fl) {
+        fl.classList.toggle("n-hell", ton === "hell");
+      });
       if (lbild) lbild.src = bild;
       if (fname) fname.textContent = name;
       if (feld)  feld.value = id;

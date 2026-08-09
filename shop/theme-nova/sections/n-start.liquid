@@ -35,6 +35,15 @@
   assign slug = v.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase
 -%}
 
+{%- comment -%}
+  Der Ton der Produktflaeche haengt an der gewaehlten Farbe: nur die
+  schwarze Flasche braucht die helle Flaeche, die uebrigen fuenf die
+  tiefe. Die Rechnung dazu steht im Kopf von n-nova.css.
+{%- endcomment -%}
+{%- assign dunkle_flaschen = 'schwarz' | split: ',' -%}
+{%- assign panel = 'tief' -%}
+{%- if dunkle_flaschen contains slug -%}{%- assign panel = 'hell' -%}{%- endif -%}
+
 {%- capture haken -%}<svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>{%- endcapture -%}
 {%- capture kreuz -%}<svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5.5 5.5l9 9M14.5 5.5l-9 9"/></svg>{%- endcapture -%}
 {%- capture stern -%}<svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 1.6l2.5 5.2 5.7.8-4.1 4 1 5.7-5.1-2.7-5.1 2.7 1-5.7-4.1-4 5.7-.8Z"/></svg>{%- endcapture -%}
@@ -43,7 +52,7 @@
 <section class="n-hero">
   <div class="n-huelle n-hero__raster">
 
-    <div class="n-buehne">
+    <div class="n-buehne{% if panel == 'hell' %} n-hell{% endif %}" data-buehne>
       <span class="n-ring n-ring--2" aria-hidden="true"></span>
       <span class="n-ring" aria-hidden="true"></span>
 
@@ -69,7 +78,7 @@
     </div>
 
     <div>
-      <h1 class="n-riese" data-auf>Hydration, die dein <em>Haustier&nbsp;liebt.</em></h1>
+      <h1 class="n-riese" data-auf>Hydration, die dein <em>Haustier liebt.</em></h1>
       <p class="n-lead" data-auf="klein">
         Knopf drücken, der Napf füllt sich. Aufrichten, und das übrige
         Wasser läuft zurück in die Flasche. Eine Hand reicht – die Leine
@@ -95,6 +104,7 @@
                  role="button" data-farbe data-variante="{{ var.id }}"
                  data-name="{{ var.option1 | escape }}"
                  data-bild="{{ 'a-flasche-' | append: s | append: '.webp' | asset_url }}"
+                 data-panel="{% if dunkle_flaschen contains s %}hell{% else %}tief{% endif %}"
                  aria-pressed="{% if var.id == v.id %}true{% else %}false{% endif %}">
                 <span class="n-sr">{{ var.option1 }}{% unless var.available %} – zurzeit nicht lieferbar{% endunless %}</span>
               </a>
