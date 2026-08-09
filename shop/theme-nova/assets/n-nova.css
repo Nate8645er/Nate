@@ -74,8 +74,13 @@
   --n-knopftext: #FFFFFF;
 
   /* Die Produktflaeche in zwei Toenen, siehe Kopf dieser Datei. */
-  --n-panel:      #111111;
-  --n-panel-hell: #EDEBE7;
+  /* Die Buehne ist hell - fuer alle sechs Farben derselbe Ton.
+     Dass die weisse Flasche darauf flach gemessen nur 2.77:1
+     erreicht, wird nicht mit Farbe geloest, sondern mit Licht:
+     Schlagschatten und Bodenschatten trennen die Silhouette vom
+     Grund. Siehe Kopf dieser Datei. */
+  --n-panel:      #F1EFEB;
+  --n-panel-hell: #F1EFEB;
 
   /* Auf hellem Grund traegt kein weisses Glas mehr - die Flaechen
      werden mit einem Hauch Tinte abgesetzt statt mit Licht. */
@@ -295,7 +300,13 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
   position: relative; order: -1;
   display: grid; place-items: center;
   border-radius: var(--n-rund-gross);
-  background: var(--n-panel);
+  /* Kein flaches Rechteck, sondern eine Studioflaeche: hell in der
+     Mitte, nach unten und aussen abfallend. Der dunklere Boden gibt
+     der Flasche etwas, worauf sie stehen kann. */
+  background:
+    radial-gradient(120% 78% at 50% 116%, rgb(17 17 17 / .13), transparent 62%),
+    radial-gradient(90% 70% at 50% 22%, #FFFFFF, transparent 70%),
+    var(--n-panel);
   padding: clamp(1rem, 3vw, 2rem);
   overflow: hidden;
   /* Gemessen auf einem 390x844-Handy: mit 52vh Buehne und 44vh Flasche
@@ -311,14 +322,18 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .n-ring {
   position: absolute; z-index: 0;
   width: min(78%, 420px); aspect-ratio: 1; border-radius: 50%;
-  border: 1px solid rgb(255 255 255 / .14);
-  background: radial-gradient(circle at 50% 42%, rgb(255 255 255 / .07), transparent 62%);
+  border: 1px solid rgb(17 17 17 / .07);
+  background: radial-gradient(circle at 50% 42%, rgb(17 17 17 / .025), transparent 62%);
 }
 .n-ring--2 { width: min(96%, 540px); opacity: .55; }
 .n-flasche {
   position: relative; z-index: 2;
   height: clamp(185px, 29vh, 340px); width: auto;
-  filter: drop-shadow(0 30px 44px rgb(0 0 0 / .45));
+  /* Zwei Schatten uebereinander: ein enger, der die Kante zeichnet,
+     und ein weiter, der die Flasche auf den Boden stellt. Genau das
+     traegt die weisse Flasche auf hellem Grund. */
+  filter: drop-shadow(0 6px 8px rgb(17 17 17 / .16))
+          drop-shadow(0 26px 34px rgb(17 17 17 / .26));
   transition: transform .18s linear;
 }
 @media (min-width: 940px) { .n-flasche { height: clamp(380px, 58vh, 560px); } }
@@ -370,8 +385,8 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
   position: absolute; display: block;
   width: var(--d, 8px); height: var(--d, 8px); border-radius: 50% 50% 50% 0;
   transform: rotate(45deg);
-  background: linear-gradient(140deg, rgb(255 255 255 / .65), rgb(255 255 255 / .25));
-  box-shadow: inset 0 0 4px rgb(255 255 255 / .5);
+  background: linear-gradient(140deg, rgb(17 17 17 / .16), rgb(17 17 17 / .05));
+  box-shadow: inset 0 0 4px rgb(255 255 255 / .85);
   opacity: 0; animation: n-fall var(--t, 7s) var(--v, 0s) infinite ease-in;
 }
 @keyframes n-fall {
@@ -666,11 +681,12 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 }
 .n-pr__bild::before {
   content: ""; position: absolute; width: 90%; aspect-ratio: 1; border-radius: 50%;
-  background: radial-gradient(circle, rgb(255 255 255 / .12), transparent 66%);
+  background: radial-gradient(circle, rgb(17 17 17 / .07), transparent 66%);
   filter: blur(40px);
 }
 .n-pr__bild img { position: relative; z-index: 1; height: clamp(260px, 44vh, 500px); width: auto;
-                  filter: drop-shadow(0 26px 38px rgb(0 0 0 / .42)); }
+                  filter: drop-shadow(0 6px 8px rgb(17 17 17 / .16))
+          drop-shadow(0 26px 34px rgb(17 17 17 / .26)); }
 @media (min-width: 940px) { .n-pr__spalte { position: sticky; top: 90px; } }
 /* Sechs Vorschauen zu je 62 Pixeln plus Abstaende ergeben 420 Pixel.
    Auf einem 320er Handy stehen im Textkasten aber nur 284 zur
@@ -757,9 +773,10 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
   box-shadow: inset 0 0 0 1px var(--n-glas-rand);
   min-height: clamp(340px,56vh,620px); padding: clamp(1.5rem,4vw,3rem); }
 .a-pr__bild::before { content:""; position:absolute; width:90%; aspect-ratio:1; border-radius:50%;
-  background: radial-gradient(circle, rgb(255 255 255 / .12), transparent 66%); filter: blur(40px); }
+  background: radial-gradient(circle, rgb(17 17 17 / .07), transparent 66%); filter: blur(40px); }
 .a-pr__bild img { position:relative; z-index:1; height:clamp(260px,44vh,500px); width:auto;
-  filter: drop-shadow(0 26px 38px rgb(0 0 0 / .42)); }
+  filter: drop-shadow(0 6px 8px rgb(17 17 17 / .16))
+          drop-shadow(0 26px 34px rgb(17 17 17 / .26)); }
 @media (min-width: 940px) { .a-pr__spalte { position: sticky; top: 90px; } }
 .a-pr__preis { margin:0; font-size:clamp(1.8rem,4vw,2.3rem); font-weight:700; letter-spacing:-.02em; }
 .a-pr__zeile { margin:.35rem 0 1.5rem; color:var(--n-sanft); font-size:.875rem; }
@@ -860,7 +877,8 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
                  transition: box-shadow .3s ease, transform .3s var(--n-weich); }
 .a-karte:hover .a-karte__bild { transform: translateY(-4px); box-shadow: inset 0 0 0 1px rgb(17 17 17 / .45); }
 .a-karte__bild img { height:76%; width:auto; max-width:82%; object-fit:contain;
-                     filter: drop-shadow(0 16px 22px rgb(0 0 0 / .40)); }
+                     filter: drop-shadow(0 4px 6px rgb(17 17 17 / .14))
+                             drop-shadow(0 18px 24px rgb(17 17 17 / .22)); }
 /* Dieselbe Rechnung wie beim Hero: die schwarze Flasche erreicht auf der
    schwarzen Karte 1.33:1 und verschwindet. Sie bekommt die helle Karte
    (13.30:1), die uebrigen fuenf behalten die schwarze (3.65 bis 6.82). */
@@ -932,12 +950,13 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .a-pr__bild.n-hell { background: var(--n-panel-hell); }
 .n-buehne.n-hell::after, .n-pr__bild.n-hell::before,
 .a-pr__bild.n-hell::before { opacity: .35; }
-.n-buehne.n-hell .n-ring { border-color: rgb(17 17 17 / .12);
-  background: radial-gradient(circle at 50% 42%, rgb(17 17 17 / .04), transparent 62%); }
-.n-buehne.n-hell .n-flasche, .n-pr__bild.n-hell img, .a-pr__bild.n-hell img {
-  filter: drop-shadow(0 22px 32px rgb(17 17 17 / .28)); }
-.n-buehne.n-hell .n-tropfen i {
-  background: linear-gradient(140deg, rgb(17 17 17 / .35), rgb(17 17 17 / .12)); }
+/* Seit die Buehne fuer alle sechs Farben hell ist, darf .n-hell nichts
+   mehr umstellen - sonst zuckt die Flaeche beim Farbwechsel. Die Regel
+   bleibt als Haken stehen, falls eine Farbe je wieder eine eigene
+   Flaeche braucht. */
+.n-pr__bild.n-hell img, .a-pr__bild.n-hell img {
+  filter: drop-shadow(0 6px 8px rgb(17 17 17 / .16))
+          drop-shadow(0 26px 34px rgb(17 17 17 / .26)); }
 
 /* --- Vorschauen tragen ihren eigenen Ton ---------------------------
    Gemessen: die schwarze Flasche auf dem Waldgruen erreicht nur
@@ -1164,7 +1183,7 @@ html.n-intro .n-vorhang.n-hebt { transform: translate3d(0, -101%, 0); }
 }
 .n-gal::-webkit-scrollbar { width: 0; height: 0; }
 .n-gal:focus-visible {
-  outline: 2px solid rgb(255 255 255 / .85); outline-offset: -4px;
+  outline: 2px solid var(--n-text); outline-offset: -4px;
   border-radius: 16px;
 }
 .n-buehne.n-hell .n-gal:focus-visible { outline-color: var(--n-akzent); }
@@ -1207,17 +1226,17 @@ html.n-intro .n-vorhang.n-hebt { transform: translate3d(0, -101%, 0); }
   transform: translateY(-50%);
   width: 40px; height: 40px; padding: 0;
   display: grid; place-items: center;
-  border: 1px solid rgb(255 255 255 / .24);
+  border: 1px solid rgb(17 17 17 / .16);
   border-radius: 50%;
-  background: rgb(255 255 255 / .13);
-  color: #FFFFFF; cursor: pointer;
+  background: rgb(255 255 255 / .72);
+  color: var(--n-text); cursor: pointer;
   -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
   transition: background .2s ease, opacity .2s ease;
 }
 .n-gal__pfeil--links  { left:  clamp(.35rem, 1.4vw, 1rem); }
 .n-gal__pfeil--rechts { right: clamp(.35rem, 1.4vw, 1rem); }
-.n-gal__pfeil:hover   { background: rgb(255 255 255 / .24); }
-.n-gal__pfeil:focus-visible { outline: 2px solid #FFFFFF; outline-offset: 3px; }
+.n-gal__pfeil:hover   { background: #FFFFFF; }
+.n-gal__pfeil:focus-visible { outline: 2px solid var(--n-text); outline-offset: 3px; }
 .n-gal__pfeil[disabled] { opacity: .28; cursor: default; }
 /* Auf der hellen Flaeche kehrt sich alles um.
    Gemessen: weiss auf der dunklen Flaeche 5.97, Text auf der hellen 14.2. */
@@ -1237,8 +1256,8 @@ html.n-intro .n-vorhang.n-hebt { transform: translate3d(0, -101%, 0); }
   bottom: clamp(.45rem, 2vw, 1rem); transform: translateX(-50%);
   display: inline-flex; align-items: center; gap: .45rem;
   padding: .48rem .95rem; border-radius: 999px;
-  border: 1px solid rgb(255 255 255 / .24);
-  background: rgb(255 255 255 / .13); color: #FFFFFF;
+  border: 1px solid rgb(17 17 17 / .16);
+  background: rgb(255 255 255 / .72); color: var(--n-text);
   font: inherit; font-size: .8125rem; cursor: pointer;
   -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
 }

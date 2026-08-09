@@ -363,10 +363,25 @@
     // Nur die Anzeige: Zaehler, Ton der Flaeche, Pfeilzustand. Das
     // laeuft auch beim ersten Aufbau - sonst bliebe der linke Pfeil
     // beim ersten Feld anklickbar, weil sich der Index nie AENDERT.
+    // Die Galerie ist gedreht, damit die gewaehlte Farbe in der Mitte
+    // liegt (siehe n-start.liquid). Der Zaehler darf deshalb NICHT die
+    // Galerieposition zeigen - sonst stuende bei der ersten Farbe
+    // "3 von 6". Er zaehlt die Farbpunkte unter dem Preis, und die
+    // behalten die urspruengliche Reihenfolge.
+    var punktNummer = function (f) {
+      var id = f.getAttribute("data-variante");
+      for (var k = 0; k < punkte.length; k++) {
+        if (punkte[k].getAttribute("data-variante") === id) return k + 1;
+      }
+      return 0;
+    };
+
     var anzeigen = function (i) {
       var f = felder[i];
       if (!f) return;
-      if (zaehler) zaehler.textContent = (i + 1) + " von " + felder.length + " · 550 ml";
+      var nr = punktNummer(f) || (i + 1);
+      var von = punkte.length || felder.length;
+      if (zaehler) zaehler.textContent = nr + " von " + von + " · 550 ml";
       if (buehne && buehne.classList.contains("n-buehne")) {
         buehne.classList.toggle("n-hell", f.getAttribute("data-panel") === "hell");
       }

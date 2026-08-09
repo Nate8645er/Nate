@@ -110,14 +110,36 @@
       <div class="n-gal" data-gal tabindex="0" role="group"
            aria-roledescription="Farbgalerie"
            aria-label="{{ lp.variants.size }} Farben – wischen oder Pfeiltasten benutzen">
+        {%- comment -%}
+          DIE GALERIE IST GEDREHT, NICHT UMSORTIERT.
+
+          Gemessen: in der Mitte der Reihe sieht man drei Flaschen, am
+          Anfang nur zwei - links von der ersten Farbe ist nichts. Statt
+          die Vorauswahl zu aendern (das waere eine Entscheidung ueber
+          das Sortiment, nicht ueber das Aussehen), drehen wir die
+          Reihenfolge der ANZEIGE so, dass die gewaehlte Farbe auf
+          Position 3 von 6 liegt. Damit stehen immer zwei Nachbarn
+          bereit. Die Farbpunkte unter dem Preis behalten die
+          urspruengliche Reihenfolge, und welche Variante im
+          Kaufformular steht, aendert sich nicht.
+        {%- endcomment -%}
+        {%- assign anzahl = lp.variants.size -%}
+        {%- assign gewaehlt = 0 -%}
+        {%- for var in lp.variants -%}
+          {%- if var.id == v.id -%}{%- assign gewaehlt = forloop.index0 -%}{%- endif -%}
+        {%- endfor -%}
+        {%- assign start = gewaehlt | plus: anzahl | minus: 2 | modulo: anzahl -%}
+
         <ul class="n-gal__spur" data-gal-spur>
-          {%- for var in lp.variants -%}
+          {%- for i in (1..anzahl) -%}
+            {%- assign j = forloop.index0 | plus: start | modulo: anzahl -%}
+            {%- assign var = lp.variants[j] -%}
             {%- assign fs = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
             <li class="n-gal__feld" data-gal-feld
                 data-variante="{{ var.id }}"
                 data-slug="{{ fs }}"
                 data-panel="{% if dunkle_flaschen contains fs %}hell{% else %}tief{% endif %}"
-                aria-label="Farbe {{ forloop.index }} von {{ lp.variants.size }}: {{ var.option1 | escape }}">
+                aria-label="Farbe {{ forloop.index }} von {{ anzahl }}: {{ var.option1 | escape }}">
               <img class="n-flasche"
                    src="{{ 'a-flasche-' | append: fs | append: '.webp' | asset_url }}"
                    alt="Trinkflasche mit fest angebautem Napf für Hund und Katze, 550 ml, in {{ var.option1 | escape }}"
@@ -172,7 +194,7 @@
           <span>inkl. MwSt · ein Preis für alle Farben</span>
         </p>
 
-        <span class="n-etikett" id="n-farblabel">Farbe · <span data-farbname>{{ v.option1 }}</span><em class="n-zaehler" data-gal-zaehler>1 von {{ lp.variants.size }} · 550 ml</em></span>
+        <span class="n-etikett" id="n-farblabel">Farbe · <span data-farbname>{{ v.option1 }}</span><em class="n-zaehler" data-gal-zaehler>{% assign nr = 0 %}{% for var in lp.variants %}{% if var.id == v.id %}{% assign nr = forloop.index %}{% endif %}{% endfor %}{{ nr | default: 1 }} von {{ lp.variants.size }} · 550 ml</em></span>
         <ul class="n-wahl" role="group" aria-labelledby="n-farblabel">
           {%- for var in lp.variants -%}
             {%- assign s = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
