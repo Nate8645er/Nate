@@ -85,10 +85,93 @@
   {%- endcomment -%}
   <script src="{{ 'n-nova.js' | asset_url }}" defer></script>
 
+  {%- if ist_start -%}
+  {%- comment -%}
+    Der Intro-Vorhang muss VOR dem ersten Bild entschieden werden -
+    sonst blitzt der Laden kurz auf, bevor der Vorhang faellt. Darum
+    steht das hier inline und synchron und nicht im aufgeschobenen
+    Skript. Drei Bedingungen, sonst laeuft er nicht: Startseite,
+    keine Bewegungsreduktion, noch nicht in dieser Sitzung gesehen.
+  {%- endcomment -%}
+  <script>
+    (function () {
+      var w = window, d = document;
+      try {
+        if (w.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        if (sessionStorage.getItem("n-vorhang")) return;
+      } catch (e) { return; }
+      d.documentElement.classList.add("n-intro");
+      /* Notausstieg: faellt n-nova.js aus, raeumt dieser Zeitgeber den
+         Vorhang weg. Niemand steht vor einem toten schwarzen Bild. */
+      w.setTimeout(function () {
+        d.documentElement.classList.remove("n-intro");
+      }, 4000);
+    })();
+  </script>
+  {%- endif -%}
+
   {{ content_for_header }}
 </head>
 <body>
   <a class="n-sr" href="#inhalt">Zum Inhalt springen</a>
+
+  {%- if ist_start -%}
+  {%- comment -%}
+    Intro-Vorhang. Er liegt UEBER dem Laden, nicht davor: der gesamte
+    Inhalt steht bereits im HTML darunter. Suchmaschinen, Vorleseprogramme
+    und Besucher ohne JavaScript sehen den Laden - der Vorhang bleibt fuer
+    sie auf display:none. aria-hidden, weil er nichts zu lesen gibt, was
+    nicht auch im Laden steht.
+  {%- endcomment -%}
+  <div class="n-vorhang" data-vorhang aria-hidden="true">
+    <div class="n-vorhang__regen">
+      <i style="--x:82.2%;--h:22px;--w:2px;--d:1.94s;--v:1.42s;--o:0.74"></i>
+      <i style="--x:53.0%;--h:34px;--w:2.5px;--d:1.13s;--v:0.69s;--o:0.67"></i>
+      <i style="--x:46.3%;--h:34px;--w:1.5px;--d:1.78s;--v:2.09s;--o:0.54"></i>
+      <i style="--x:31.1%;--h:40px;--w:2px;--d:2.29s;--v:0.56s;--o:0.61"></i>
+      <i style="--x:3.5%;--h:34px;--w:1.5px;--d:1.76s;--v:1.55s;--o:0.41"></i>
+      <i style="--x:28.1%;--h:30px;--w:1.5px;--d:1.16s;--v:1.61s;--o:0.78"></i>
+      <i style="--x:47.8%;--h:18px;--w:2px;--d:2.09s;--v:1.07s;--o:0.71"></i>
+      <i style="--x:56.8%;--h:26px;--w:2px;--d:1.25s;--v:1.28s;--o:0.55"></i>
+      <i style="--x:58.1%;--h:26px;--w:1.5px;--d:1.14s;--v:0.87s;--o:0.48"></i>
+      <i style="--x:83.5%;--h:14px;--w:2px;--d:1.65s;--v:1.49s;--o:0.42"></i>
+      <i style="--x:23.9%;--h:14px;--w:2px;--d:1.89s;--v:1.93s;--o:0.52"></i>
+      <i style="--x:76.4%;--h:40px;--w:2px;--d:1.48s;--v:1.95s;--o:0.68"></i>
+      <i style="--x:43.7%;--h:34px;--w:2px;--d:1.91s;--v:1.99s;--o:0.39"></i>
+      <i style="--x:67.5%;--h:26px;--w:1.5px;--d:2.17s;--v:1.46s;--o:0.52"></i>
+      <i style="--x:66.2%;--h:30px;--w:2.5px;--d:1.4s;--v:1.92s;--o:0.8"></i>
+      <i style="--x:59.2%;--h:22px;--w:1.5px;--d:1.3s;--v:0.96s;--o:0.69"></i>
+      <i style="--x:26.2%;--h:18px;--w:1.5px;--d:1.49s;--v:0.4s;--o:0.75"></i>
+      <i style="--x:16.6%;--h:18px;--w:2px;--d:1.27s;--v:0.84s;--o:0.39"></i>
+      <i style="--x:20.4%;--h:22px;--w:2.5px;--d:1.58s;--v:0.5s;--o:0.54"></i>
+      <i style="--x:40.1%;--h:18px;--w:2.5px;--d:2.07s;--v:0.95s;--o:0.59"></i>
+      <i style="--x:43.8%;--h:26px;--w:2.5px;--d:1.55s;--v:1.65s;--o:0.49"></i>
+      <i style="--x:21.0%;--h:40px;--w:2px;--d:1.52s;--v:0.15s;--o:0.36"></i>
+      <i style="--x:98.3%;--h:14px;--w:2px;--d:1.71s;--v:0.16s;--o:0.76"></i>
+      <i style="--x:39.1%;--h:14px;--w:1.5px;--d:2.06s;--v:1.4s;--o:0.35"></i>
+      <i style="--x:14.3%;--h:22px;--w:2.5px;--d:1.48s;--v:1.27s;--o:0.64"></i>
+      <i style="--x:22.8%;--h:18px;--w:2px;--d:1.37s;--v:0.34s;--o:0.56"></i>
+      <i style="--x:40.6%;--h:22px;--w:2px;--d:2.14s;--v:2.01s;--o:0.32"></i>
+      <i style="--x:14.4%;--h:22px;--w:1.5px;--d:1.98s;--v:1.44s;--o:0.69"></i>
+      <i style="--x:16.7%;--h:14px;--w:1.5px;--d:2.04s;--v:0.32s;--o:0.49"></i>
+      <i style="--x:37.3%;--h:18px;--w:1.5px;--d:1.79s;--v:1.01s;--o:0.78"></i>
+      <i style="--x:75.3%;--h:26px;--w:1.5px;--d:1.63s;--v:1.52s;--o:0.64"></i>
+      <i style="--x:58.5%;--h:30px;--w:2px;--d:1.46s;--v:1.44s;--o:0.54"></i>
+      <i style="--x:69.8%;--h:26px;--w:1.5px;--d:2.07s;--v:0.55s;--o:0.44"></i>
+      <i style="--x:13.3%;--h:30px;--w:1.5px;--d:1.19s;--v:0.06s;--o:0.54"></i>
+      <i style="--x:94.5%;--h:18px;--w:2.5px;--d:1.09s;--v:0.2s;--o:0.71"></i>
+      <i style="--x:82.7%;--h:22px;--w:2.5px;--d:1.39s;--v:1.27s;--o:0.57"></i>
+      <i style="--x:62.4%;--h:18px;--w:2px;--d:1.93s;--v:0.25s;--o:0.59"></i>
+      <i style="--x:13.4%;--h:30px;--w:2px;--d:1.31s;--v:1.07s;--o:0.58"></i>
+    </div>
+    <div class="n-vorhang__mitte">
+      <p class="n-vorhang__marke">Let&rsquo;s&thinsp;Drink</p>
+      <p class="n-vorhang__claim">Hydration, die dein Haustier liebt</p>
+      <div class="n-vorhang__strich"></div>
+    </div>
+    <button class="n-vorhang__weg" type="button" data-vorhang-weg tabindex="-1">Überspringen</button>
+  </div>
+  {%- endif -%}
 
   {%- comment -%}
     Der Balken nennt nur Belegbares. Das Versandprofil dieses Shops

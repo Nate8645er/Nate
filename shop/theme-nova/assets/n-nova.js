@@ -334,3 +334,99 @@
 
   W.__nNova = true;
 })();
+
+/* =====================================================================
+   Intro-Vorhang — Zeitplan und Notausgang
+   9.8.2026.
+
+   Der Vorhang selbst ist reines CSS: der Regen faellt, die Wortmarke
+   zieht sich aus der Unschaerfe scharf, der Claim steigt auf. Dieses
+   Stueck macht nur zweierlei: es hebt ihn zum richtigen Zeitpunkt, und
+   es sorgt dafuer, dass er sich immer heben laesst.
+
+   Gehoben wird, wenn die Wortmarke fertig aufgezogen ist - nicht nach
+   einer festen Zahl Millisekunden ab Skriptstart. Gemessen lag der
+   Abstand zwischen Kopf-Skript und erstem Bildaufbau zwischen 0.15 s
+   und 0.8 s; mit einer festen Wartezeit haette der Vorhang genau dort
+   die Marke mitten in der Bewegung abgeschnitten.
+   ===================================================================== */
+(function () {
+  "use strict";
+
+  var W = window, D = document;
+  var wurzel = D.documentElement;
+  if (!wurzel.classList.contains("n-intro")) return;
+
+  var vorhang = D.querySelector("[data-vorhang]");
+  if (!vorhang) { wurzel.classList.remove("n-intro"); return; }
+
+  var NACHLAUF = 800;               // Atempause, nachdem die Marke steht
+  var MINDEST  = 1700;              // Standzeit ab dem ersten gezeichneten Bild
+  var DECKEL   = 3000;              // spaetestens dann hebt er, egal was war
+  var LIFT     = 1000;              // Hebe-Bewegung, siehe CSS
+  var weg      = false;
+
+  function heben() {
+    if (weg) return;
+    weg = true;
+
+    // Einmal pro Sitzung. Wer weiterklickt, sieht ihn nicht noch mal.
+    try { sessionStorage.setItem("n-vorhang", "1"); } catch (e) {}
+
+    var hero = D.querySelector(".n-hero");
+    if (hero) hero.classList.add("n-eintritt");
+
+    vorhang.classList.add("n-hebt");
+    W.setTimeout(function () {
+      wurzel.classList.remove("n-intro");        // gibt das Scrollen frei
+      if (vorhang.parentNode) vorhang.parentNode.removeChild(vorhang);
+    }, LIFT);
+  }
+
+  /* Der Vorhang haengt an der Animation, nicht an einer Stoppuhr.
+     Eine feste Wartezeit ab Skriptstart schneidet die Wortmarke auf
+     langsamen Geraeten ab - gemessen lag der Abstand zwischen Kopf-
+     Skript und erstem Bildaufbau zwischen 0.15 s und 0.8 s. Darum:
+     abwarten, bis die Wortmarke wirklich scharf steht, dann noch
+     einen Atemzug, dann heben. */
+  /* Zwei Uhren, und es gilt die spaetere.
+
+     Die eine haengt an der Wortmarke: ist sie scharf, noch ein
+     Atemzug, dann heben. Die andere ist eine Mindeststandzeit ab dem
+     ersten gezeichneten Bild. Beide allein sind falsch: kommt das
+     Ereignis nie (weil die Marke schon fertig war, als wir zuhoerten),
+     haengt die erste; und die zweite allein wuerde eine langsam
+     nachziehende Marke abschneiden. */
+  var raf0 = Date.now();
+  W.requestAnimationFrame(function () { raf0 = Date.now(); });
+
+  var geplant = false;
+  function planen(verzug) {
+    if (geplant || weg) return;
+    geplant = true;
+    var mindestens = raf0 + MINDEST - Date.now();
+    W.setTimeout(heben, Math.max(verzug, mindestens, 0));
+  }
+
+  var marke = vorhang.querySelector(".n-vorhang__marke");
+  if (marke) {
+    marke.addEventListener("animationend", function () { planen(NACHLAUF); });
+    /* Kein laufender Ablauf heisst entweder "schon fertig" oder "noch
+       nicht gestartet" - das laesst sich nicht unterscheiden. Also
+       planen und die Mindeststandzeit den Rest machen lassen. */
+    if (marke.getAnimations && marke.getAnimations().length === 0) planen(NACHLAUF);
+  }
+  W.setTimeout(function () { planen(0); }, DECKEL);   // harte Obergrenze
+
+  // Drei Wege hinaus: Taste, Klick irgendwohin, Escape.
+  var knopf = D.querySelector("[data-vorhang-weg]");
+  if (knopf) knopf.addEventListener("click", heben);
+  vorhang.addEventListener("click", heben);
+  D.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" || e.key === "Enter" || e.key === " ") heben();
+  });
+
+  // Wer sofort scrollt, will den Laden sehen, nicht den Vorhang.
+  W.addEventListener("wheel", heben, { passive: true, once: true });
+  W.addEventListener("touchmove", heben, { passive: true, once: true });
+})();
