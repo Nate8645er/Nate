@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="de-CH" data-geldform="{{ shop.money_format | strip_html | escape }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#070E12">
+  <meta name="color-scheme" content="dark">
+
+  {%- liquid
+    assign ist_start = false
+    if template.name == 'index'
+      assign ist_start = true
+    endif
+    assign lp = all_products['trinkflasche-napf-hund-katze']
+    assign lv = lp.selected_or_first_available_variant
+    assign kauf_hier = false
+    if ist_start or template.name == 'product'
+      assign kauf_hier = true
+    endif
+    assign kaufziel = routes.root_url
+    if lp != empty
+      assign kaufziel = lp.url
+    endif
+    if kauf_hier
+      assign kaufziel = '#kaufen'
+    endif
+  -%}
+
+  {%- capture t -%}{% if ist_start %}Trinkflasche mit Napf für Hund & Katze – 550 ml | Let'sDrink{% else %}{{ page_title }} – Let'sDrink{% endif %}{%- endcapture -%}
+  {%- capture b -%}{% if page_description %}{{ page_description }}{% else %}Knopf drücken, der Napf füllt sich. Aufrichten, und das übrige Wasser läuft zurück. 550 ml, sechs Farben. Gratisversand in der Schweiz.{% endif %}{%- endcapture -%}
+  <title>{{ t | strip }}</title>
+  <meta name="description" content="{{ b | strip_html | strip | escape }}">
+  <link rel="canonical" href="{{ canonical_url }}">
+  <meta name="robots" content="{% if template.name == 'cart' or template.name == 'search' or template.name == '404' %}noindex,follow{% else %}index,follow,max-image-preview:large{% endif %}">
+
+  <meta property="og:type" content="{% if template.name == 'product' %}product{% else %}website{% endif %}">
+  <meta property="og:title" content="{{ t | strip | escape }}">
+  <meta property="og:description" content="{{ b | strip_html | strip | escape }}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  {%- if lp != empty -%}
+    <meta property="og:image" content="https:{{ 'a-flasche-tuerkis.webp' | asset_url | remove: 'https:' }}">
+  {%- endif -%}
+  <meta name="twitter:card" content="summary_large_image">
+
+  {%- comment -%}
+    Organisation ohne aggregateRating und ohne review: der Shop hat
+    null Bestellungen. Eine erfundene Bewertung ist nach UWG Art. 3
+    unlauter - und Shopify sperrt Stores dafuer.
+    Das Produkt bekommt Angebotsdaten, aber keine Bewertungsdaten.
+  {%- endcomment -%}
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Organization","name":"Let'sDrink",
+   "url":"{{ shop.url }}/","email":"beamswiss@gmail.com",
+   "address":{"@type":"PostalAddress","addressLocality":"Rapperswil-Jona",
+   "addressRegion":"SG","addressCountry":"CH"}}
+  </script>
+  {%- if template.name == 'product' and product != empty -%}
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Product",
+   "name":{{ product.title | json }},
+   "description":{{ product.description | strip_html | truncate: 300 | json }},
+   "brand":{"@type":"Brand","name":"Let'sDrink"},
+   "offers":{"@type":"Offer","priceCurrency":{{ cart.currency.iso_code | json }},
+     "price":"{{ product.selected_or_first_available_variant.price | divided_by: 100.0 }}",
+     "availability":"https://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}",
+     "url":"{{ shop.url }}{{ product.url }}"}}
+  </script>
+  {%- endif -%}
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23070E12'/%3E%3Cpath d='M12 4.5C9.3 8.1 6.6 10.8 6.6 14.4a5.4 5.4 0 0 0 10.8 0c0-3.6-2.7-6.3-5.4-9.9Z' fill='%234FD8D0'/%3E%3C/svg%3E">
+
+  <link rel="preload" as="font" type="font/woff2" href="{{ 'a-sans.woff2' | asset_url }}" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="{{ 'a-sans-bold.woff2' | asset_url }}" crossorigin>
+  {%- if kauf_hier -%}
+    <link rel="preload" as="image" href="{{ 'a-flasche-tuerkis.webp' | asset_url }}" fetchpriority="high">
+  {%- endif -%}
+
+  {{ 'n-nova.css' | asset_url | stylesheet_tag }}
+
+  {%- comment -%}
+    Rund 6 KB eigenes Skript, keine Bibliothek von aussen. Kein GSAP,
+    kein Lenis, kein Framer Motion - die Bewegung laeuft ueber
+    CSS-Transitions, einen IntersectionObserver und genau eine
+    rAF-Schleife fuer die Parallaxe.
+  {%- endcomment -%}
+  <script src="{{ 'n-nova.js' | asset_url }}" defer></script>
+
+  {{ content_for_header }}
+</head>
+<body>
+  <a class="n-sr" href="#inhalt">Zum Inhalt springen</a>
+
+  {%- comment -%}
+    Der Balken nennt nur Belegbares. Das Versandprofil dieses Shops
+    sagt: Schweiz gratis, uebrige Laender CHF 1.50. Kein Countdown,
+    kein "nur heute", keine Verknappung.
+  {%- endcomment -%}
+  <div class="n-balken">
+    <span><b>Gratisversand</b> in der Schweiz</span><span>14 Tage Rückgabe</span><span>Versand in 7–14 Werktagen</span>
+  </div>
+
+  <header class="n-kopf" data-kopf>
+    <div class="n-huelle n-kopf__innen">
+      <a class="n-marke" href="{{ routes.root_url }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 3.2C9 7.4 6.2 10.2 6.2 13.8a5.8 5.8 0 0 0 11.6 0c0-3.6-2.8-6.4-5.8-10.6Z"/>
+        </svg>
+        Let'sDrink
+      </a>
+
+      <nav class="n-nav" aria-label="Hauptnavigation">
+        <a href="{{ kaufziel }}">Shop</a>
+        <a href="{{ routes.root_url }}#warum">Warum wir</a>
+        <a href="{{ routes.root_url }}#fragen">FAQ</a>
+        <a href="/pages/contact">Kontakt</a>
+      </nav>
+
+      <div class="n-kopf__rechts">
+        <a class="n-icon" href="{{ routes.cart_url }}" data-lade-auf aria-label="Warenkorb öffnen">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5.5 7h13l-1.1 11.1a2 2 0 0 1-2 1.9H8.6a2 2 0 0 1-2-1.9Z"/>
+            <path d="M9 7V5.6a3 3 0 0 1 6 0V7"/>
+          </svg>
+          <span class="n-zahl" data-korbzahl {% if cart.item_count == 0 %}hidden{% endif %}>{{ cart.item_count }}</span>
+        </a>
+        <button class="n-icon n-burger" type="button" data-mnav-auf aria-expanded="false" aria-label="Menü öffnen">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="n-mnav" data-mnav aria-label="Menü">
+    <button class="n-icon n-mzu" type="button" data-mnav-zu aria-label="Menü schliessen">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18"/>
+      </svg>
+    </button>
+    <a href="{{ kaufziel }}">Shop</a>
+    <a href="{{ routes.root_url }}#warum">Warum wir</a>
+    <a href="{{ routes.root_url }}#fragen">FAQ</a>
+    <a href="/pages/contact">Kontakt</a>
+    <a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>
+  </nav>
+
+  <main id="inhalt">
+    {{ content_for_layout }}
+  </main>
+
+  {%- comment -%} ==================================== WARENKORB-SCHUBLADE {%- endcomment -%}
+  <div class="n-schleier" data-schleier></div>
+  <aside class="n-lade" data-lade aria-hidden="true" aria-label="Warenkorb">
+    <div class="n-lade__kopf">
+      <b>Warenkorb</b>
+      <button class="n-icon" type="button" data-lade-zu aria-label="Warenkorb schliessen">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="n-lade__leib" data-lade-leib>
+      <div class="n-lade__leer"><p>Dein Warenkorb ist leer.</p></div>
+    </div>
+
+    <div class="n-lade__fuss" data-lade-fuss {% if cart.item_count == 0 %}hidden{% endif %}>
+      <div class="n-summe"><span>Zwischensumme</span><span data-lade-summe>{{ cart.items_subtotal_price | money }}</span></div>
+      <div class="n-summe"><span>Versand Schweiz</span><span>gratis</span></div>
+      <p class="n-summe n-summe--gross"><span>Total</span><span data-lade-summe>{{ cart.items_subtotal_price | money }}</span></p>
+      <a class="n-knopf n-knopf--voll" href="{{ routes.cart_url }}/checkout">Zur Kasse</a>
+      <ul class="n-lade__sicher">
+        <li>
+          <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>
+          Gratisversand CH
+        </li>
+        <li>
+          <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>
+          14 Tage Rückgabe
+        </li>
+        <li>
+          <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>
+          Sichere Zahlung
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  {%- comment -%}
+    Mitlaufende Kaufleiste, nur auf dem Handy und nur dort, wo es etwas
+    zu kaufen gibt. Sie erscheint erst, wenn der Kaufknopf oben aus dem
+    Bild ist - vorher waere sie doppelt.
+  {%- endcomment -%}
+  {%- if kauf_hier and lp != empty -%}
+    <div class="n-leiste" data-leiste>
+      <div class="n-huelle n-leiste__innen">
+        <div class="n-leiste__bild">
+          <img src="{{ 'a-flasche-tuerkis.webp' | asset_url }}" alt=""
+               width="650" height="2212" data-leistenbild loading="lazy" decoding="async">
+        </div>
+        <div class="n-leiste__text">
+          <b>Trinkflasche mit Napf</b>
+          <span>{{ lv.price | money }} · 550 ml</span>
+        </div>
+        <a class="n-knopf n-knopf--klein" href="#kaufen">Kaufen</a>
+      </div>
+    </div>
+  {%- endif -%}
+
+  <footer class="n-fuss">
+    <div class="n-huelle">
+      <div class="n-fuss__raster">
+        <div>
+          <a class="n-marke" href="{{ routes.root_url }}" style="margin:0 0 .8rem">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 3.2C9 7.4 6.2 10.2 6.2 13.8a5.8 5.8 0 0 0 11.6 0c0-3.6-2.8-6.4-5.8-10.6Z"/>
+            </svg>
+            Let'sDrink
+          </a>
+          <p style="margin:0;max-width:34ch">
+            Ein Produkt, sorgfältig ausgesucht. Betrieben von einer Person
+            in Rapperswil-Jona.
+          </p>
+        </div>
+        <div>
+          <h4>Shop</h4>
+          <ul>
+            <li><a href="{{ kaufziel }}">Trinkflasche</a></li>
+            <li><a href="{{ routes.root_url }}#warum">Warum wir</a></li>
+            <li><a href="{{ routes.root_url }}#fragen">Häufige Fragen</a></li>
+            <li><a href="{{ routes.cart_url }}">Warenkorb</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Rechtliches</h4>
+          <ul>
+            <li><a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a></li>
+            <li><a href="/pages/contact">Kontakt</a></li>
+            <li><a href="/pages/letsdrink-impressum">Impressum</a></li>
+            <li><a href="/pages/letsdrink-agb">AGB</a></li>
+            <li><a href="/pages/letsdrink-datenschutz">Datenschutz</a></li>
+            <li><a href="/pages/data-sharing-opt-out">Cookies &amp; Datenweitergabe</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="n-fuss__unten">
+        © {{ 'now' | date: '%Y' }} Let'sDrink · Nate Murseli · Rapperswil-Jona SG · Preise inkl. MwSt
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

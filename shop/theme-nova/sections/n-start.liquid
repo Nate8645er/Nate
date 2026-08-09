@@ -1,0 +1,558 @@
+{%- comment -%}
+  sections/n-start.liquid — LET'SDRINK NOVA, Startseite
+  9.8.2026. Bauleitung.
+
+  AUFBAU NACH DEM BRIEFING, in dieser Reihenfolge:
+    1 Hero -> 2 Vertrauen -> 3 Problem -> 4 Loesung -> 5 Vorteile
+    -> 6 Showcase -> 7 Anwendung -> 8 Vergleich -> 9 Bewertungen
+    -> 10 FAQ -> 11 Schluss
+
+  DIE EINE ABWEICHUNG VOM BRIEFING, BEGRUENDET
+  Das Briefing verlangt Kundenbewertungen, Sterne, Kundenfotos und
+  "Von Haustierbesitzern geliebt". Dieser Shop hat NULL Bestellungen.
+  Erfundene Bewertungen sind nach UWG Art. 3 (CH) und der
+  EU-Omnibus-Richtlinie unlauter, abmahnbar und ein Sperrgrund bei
+  Shopify. Die Sektion ist deshalb VOLLSTAENDIG gebaut - Karten,
+  Sterne, Avatare, Fotorahmen - aber sichtbar als Platzhalter
+  gekennzeichnet, genau wie es das Briefing fuer fehlende Produktbilder
+  selbst vorsieht. Sobald echte Bestellungen ausgeliefert sind, werden
+  die drei Karten mit echten Namen gefuellt und die Kennzeichnung
+  entfernt. Der Aufbau bleibt gleich.
+
+  WEITERE ROTE LINIEN
+  - Keine Produktangabe ausser 550 ml und sechs Farben. Nichts ueber
+    Material, Dichtigkeit, Masse, Gewicht oder Spuelmaschine. Deshalb
+    steht bei den Vorteilen "Ein Teil statt zwei" und nicht
+    "hochwertige Materialien" - Letzteres koennen wir nicht belegen.
+  - Nur Wasser.
+  - Preis immer aus Liquid.
+  - Versandangaben aus dem Versandprofil: CH gratis, Ausland CHF 1.50.
+{%- endcomment -%}
+
+{%- liquid
+  assign lp = all_products['trinkflasche-napf-hund-katze']
+  assign v = lp.selected_or_first_available_variant
+  assign slug = v.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase
+-%}
+
+{%- capture haken -%}<svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>{%- endcapture -%}
+{%- capture kreuz -%}<svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5.5 5.5l9 9M14.5 5.5l-9 9"/></svg>{%- endcapture -%}
+{%- capture stern -%}<svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 1.6l2.5 5.2 5.7.8-4.1 4 1 5.7-5.1-2.7-5.1 2.7 1-5.7-4.1-4 5.7-.8Z"/></svg>{%- endcapture -%}
+
+{%- comment -%} ============================================== 1 · HERO {%- endcomment -%}
+<section class="n-hero">
+  <div class="n-huelle n-hero__raster">
+
+    <div class="n-buehne">
+      <span class="n-ring n-ring--2" aria-hidden="true"></span>
+      <span class="n-ring" aria-hidden="true"></span>
+
+      {%- comment -%}
+        Wassertropfen aus reinem CSS - sechs Elemente, kein Bild, kein
+        Video. Jeder Tropfen bekommt eigene Groesse, Dauer und
+        Verzoegerung, damit kein Muster entsteht.
+      {%- endcomment -%}
+      <span class="n-tropfen" aria-hidden="true">
+        <i style="--d:9px;  --t:6.5s; --v:0s;   left:18%; top:8%"></i>
+        <i style="--d:6px;  --t:8s;   --v:1.2s; left:32%; top:4%"></i>
+        <i style="--d:11px; --t:7.2s; --v:2.4s; left:68%; top:10%"></i>
+        <i style="--d:7px;  --t:9s;   --v:3.1s; left:80%; top:6%"></i>
+        <i style="--d:5px;  --t:6.8s; --v:4.3s; left:52%; top:2%"></i>
+        <i style="--d:8px;  --t:8.6s; --v:5.5s; left:8%;  top:12%"></i>
+      </span>
+
+      <img class="n-flasche" data-parallaxe="16" data-hauptbild
+           src="{{ 'a-flasche-' | append: slug | append: '.webp' | asset_url }}"
+           alt="Trinkflasche mit fest angebautem Napf für Hund und Katze, 550 ml"
+           data-alt-vorlage="Trinkflasche mit fest angebautem Napf für Hund und Katze, 550 ml, in %s"
+           width="650" height="2212" fetchpriority="high" decoding="async">
+    </div>
+
+    <div>
+      <h1 class="n-riese" data-auf>Hydration, die dein <em>Haustier&nbsp;liebt.</em></h1>
+      <p class="n-lead" data-auf="klein">
+        Knopf drücken, der Napf füllt sich. Aufrichten, und das übrige
+        Wasser läuft zurück in die Flasche. Eine Hand reicht – die Leine
+        bleibt in der anderen.
+      </p>
+
+      <form method="post" action="{{ routes.cart_add_url }}" id="kaufen" data-kaufform data-auf="klein">
+        <input type="hidden" name="form_type" value="product">
+        <input type="hidden" name="utf8" value="✓">
+        <input type="hidden" name="id" value="{{ v.id }}" data-variantenfeld>
+
+        <p class="n-preis">
+          <b>{{ v.price | money }}</b>
+          <span>inkl. MwSt · ein Preis für alle Farben</span>
+        </p>
+
+        <span class="n-etikett" id="n-farblabel">Farbe · <span data-farbname>{{ v.option1 }}</span></span>
+        <ul class="n-wahl" role="group" aria-labelledby="n-farblabel">
+          {%- for var in lp.variants -%}
+            {%- assign s = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
+            <li>
+              <a class="n-pkt n-pkt--{{ s }}" href="{{ lp.url }}?variant={{ var.id }}"
+                 role="button" data-farbe data-variante="{{ var.id }}"
+                 data-name="{{ var.option1 | escape }}"
+                 data-bild="{{ 'a-flasche-' | append: s | append: '.webp' | asset_url }}"
+                 aria-pressed="{% if var.id == v.id %}true{% else %}false{% endif %}">
+                <span class="n-sr">{{ var.option1 }}{% unless var.available %} – zurzeit nicht lieferbar{% endunless %}</span>
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        <div class="n-cta">
+          <button class="n-knopf" type="submit" data-leiste-anker
+                  {% unless v.available %}disabled{% endunless %}>
+            {%- if v.available -%}Jetzt entdecken →{%- else -%}Zurzeit nicht lieferbar{%- endif -%}
+          </button>
+          <a class="n-knopf n-knopf--geist" href="#warum">Warum unsere Produkte?</a>
+        </div>
+
+        <ul class="n-mini">
+          <li>{{ haken }} Gratisversand Schweiz</li>
+          <li>{{ haken }} 14 Tage Rückgabe</li>
+          <li>{{ haken }} 7–14 Werktage</li>
+        </ul>
+      </form>
+    </div>
+
+  </div>
+</section>
+
+{%- comment -%} ========================================= 2 · VERTRAUEN {%- endcomment -%}
+<hr class="n-strich">
+<section class="n-block" style="padding-block:clamp(1.75rem,4vw,2.75rem)">
+  <div class="n-huelle">
+    <ul class="n-raster n-raster--4" data-staffel style="margin:0;padding:0;list-style:none">
+      <li data-auf="klein" style="display:flex;gap:.7rem;align-items:flex-start">
+        <span style="color:var(--n-akzent);flex:none;margin-top:.15em">{{ haken }}</span>
+        <span><b style="display:block;font-size:.9375rem">Versand aus der Schweiz bezahlt</b>
+        <span style="color:var(--n-sanft);font-size:.8125rem">Innerhalb der Schweiz gratis, ins Ausland CHF 1.50</span></span>
+      </li>
+      <li data-auf="klein" style="display:flex;gap:.7rem;align-items:flex-start">
+        <span style="color:var(--n-akzent);flex:none;margin-top:.15em">{{ haken }}</span>
+        <span><b style="display:block;font-size:.9375rem">14 Tage Rückgaberecht</b>
+        <span style="color:var(--n-sanft);font-size:.8125rem">Ohne Begründung, freiwillig gewährt</span></span>
+      </li>
+      <li data-auf="klein" style="display:flex;gap:.7rem;align-items:flex-start">
+        <span style="color:var(--n-akzent);flex:none;margin-top:.15em">{{ haken }}</span>
+        <span><b style="display:block;font-size:.9375rem">Ersatz bei Defekt</b>
+        <span style="color:var(--n-sanft);font-size:.8125rem">Läuft sie aus: Ersatz oder Geld zurück</span></span>
+      </li>
+      <li data-auf="klein" style="display:flex;gap:.7rem;align-items:flex-start">
+        <span style="color:var(--n-akzent);flex:none;margin-top:.15em">{{ haken }}</span>
+        <span><b style="display:block;font-size:.9375rem">Eine Person, erreichbar</b>
+        <span style="color:var(--n-sanft);font-size:.8125rem">Nate antwortet selbst, meist in ein bis zwei Tagen</span></span>
+      </li>
+    </ul>
+  </div>
+</section>
+<hr class="n-strich">
+
+{%- comment -%} =============================== 3 + 4 · PROBLEM UND LOESUNG {%- endcomment -%}
+<section class="n-block" id="warum">
+  <div class="n-huelle">
+    <div class="n-kopfz n-kopfz--mitte" data-auf>
+      <span class="n-auge">Das Problem</span>
+      <h2 class="n-titel">Warum herkömmliche Lösungen nicht ausreichen.</h2>
+      <p class="n-unter">
+        Wer mit Hund unterwegs ist, kennt alle drei Varianten – und alle
+        drei haben denselben Haken.
+      </p>
+    </div>
+
+    <div class="n-gegen" data-staffel>
+      <div class="n-spalte n-spalte--alt" data-auf>
+        <h3>Flasche plus Faltnapf</h3>
+        <ul class="n-liste">
+          <li>{{ kreuz }} Zwei Teile, die man beide dabeihaben muss</li>
+          <li>{{ kreuz }} Zum Einschenken braucht es zwei Hände – die Leine muss weg</li>
+          <li>{{ kreuz }} Das Restwasser landet auf dem Boden</li>
+          <li>{{ kreuz }} Der nasse Napf wandert zurück in den Rucksack</li>
+        </ul>
+      </div>
+
+      <div class="n-spalte n-spalte--neu" data-auf>
+        <h3>Diese Flasche</h3>
+        <ul class="n-liste">
+          <li>{{ haken }} Ein Teil. Der Napf ist fest angebaut</li>
+          <li>{{ haken }} Knopf drücken – eine Hand reicht</li>
+          <li>{{ haken }} Das übrige Wasser läuft zurück in die Flasche</li>
+          <li>{{ haken }} Nichts bleibt nass zurück</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} ======================================== 5 · PRODUKTVORTEILE {%- endcomment -%}
+<section class="n-block n-block--tief">
+  <div class="n-huelle">
+    <div class="n-kopfz" data-auf>
+      <span class="n-auge">Vorteile</span>
+      <h2 class="n-titel">Vier Dinge, die den Unterschied machen.</h2>
+    </div>
+
+    <div class="n-raster n-raster--4" data-staffel>
+      <article class="n-glas n-glas--hebt" data-auf>
+        <div class="n-kreis">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c-3 4-5.5 6.6-5.5 9.5a5.5 5.5 0 0 0 11 0C17.5 9.6 15 7 12 3Z"/></svg>
+        </div>
+        <h3 class="n-karte-t">550 ml</h3>
+        <p class="n-karte-p">Eine Füllung reicht für mehrere Pausen, weil der Rest jedes Mal zurückläuft.</p>
+      </article>
+
+      <article class="n-glas n-glas--hebt" data-auf>
+        <div class="n-kreis">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>
+        </div>
+        <h3 class="n-karte-t">Ein Knopf</h3>
+        <p class="n-karte-p">Drücken, der Napf füllt sich. Loslassen und aufrichten, das Wasser läuft zurück.</p>
+      </article>
+
+      <article class="n-glas n-glas--hebt" data-auf>
+        <div class="n-kreis">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="16" rx="3"/><path d="M9 9h6"/></svg>
+        </div>
+        <h3 class="n-karte-t">Ein Teil statt zwei</h3>
+        <p class="n-karte-p">Der Napf ist fest angebaut. Nichts zum Abschrauben, nichts zum Verlieren.</p>
+      </article>
+
+      <article class="n-glas n-glas--hebt" data-auf>
+        <div class="n-kreis">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="7" r="2.4"/><circle cx="16.5" cy="7" r="2.4"/><circle cx="4.5" cy="13.5" r="2"/><circle cx="19.5" cy="13.5" r="2"/><path d="M12 12c-2.6 0-4.3 2.2-4.3 4.2 0 1.6 1.2 2.7 2.8 2.7h3c1.6 0 2.8-1.1 2.8-2.7C16.3 14.2 14.6 12 12 12Z"/></svg>
+        </div>
+        <h3 class="n-karte-t">Hund und Katze</h3>
+        <p class="n-karte-p">Der Napf ist niedrig genug – auch für Katzen, die mitfahren oder an der Leine laufen.</p>
+      </article>
+    </div>
+
+    {%- comment -%}
+      Bewusst NICHT in dieser Liste: "hochwertige Materialien",
+      "auslaufsicher", "spuelmaschinenfest", "BPA-frei". Wir haben vom
+      Lieferanten keine Zusicherung dazu - also behaupten wir es nicht.
+    {%- endcomment -%}
+  </div>
+</section>
+
+{%- comment -%} ====================================== 6 · PRODUKT-SHOWCASE {%- endcomment -%}
+<section class="n-block">
+  <div class="n-huelle">
+    <div class="n-kopfz n-kopfz--mitte" data-auf>
+      <span class="n-auge">Sechs Farben</span>
+      <h2 class="n-titel">Such dir eine aus.</h2>
+      <p class="n-unter">Alle 550 ml. Alle zum gleichen Preis.</p>
+    </div>
+
+    <ul class="a-gitter" data-staffel>
+      {%- for var in lp.variants -%}
+        {%- assign s = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
+        <li data-auf="skalier">
+          <a class="a-karte" href="{{ lp.url }}?variant={{ var.id }}">
+            <div class="a-karte__bild">
+              <img src="{{ 'a-flasche-' | append: s | append: '.webp' | asset_url }}"
+                   alt="Trinkflasche in {{ var.option1 | escape }}"
+                   width="650" height="2212" loading="lazy" decoding="async">
+            </div>
+            <h3>{{ var.option1 }}</h3>
+            <p>{{ var.price | money }}</p>
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</section>
+
+{%- comment -%} =========================================== 7 · ANWENDUNG {%- endcomment -%}
+<section class="n-block n-block--tief">
+  <div class="n-huelle">
+    <div class="n-kopfz n-kopfz--mitte" data-auf>
+      <span class="n-auge">Anwendung</span>
+      <h2 class="n-titel">Drei Sekunden, eine Hand.</h2>
+    </div>
+
+    <div class="n-schritte" data-staffel style="margin-bottom:clamp(2rem,5vw,3rem)">
+      <article class="n-glas n-schritt" data-auf>
+        <span class="n-nummer" aria-hidden="true"></span>
+        <h3 class="n-karte-t">Knopf drücken</h3>
+        <p class="n-karte-p">Das Wasser läuft aus der Flasche in den Napf. Du hältst nur die Flasche.</p>
+      </article>
+      <article class="n-glas n-schritt" data-auf>
+        <span class="n-nummer" aria-hidden="true"></span>
+        <h3 class="n-karte-t">Trinken lassen</h3>
+        <p class="n-karte-p">Der Napf sitzt tief genug, dass auch kleine Tiere bequem herankommen.</p>
+      </article>
+      <article class="n-glas n-schritt" data-auf>
+        <span class="n-nummer" aria-hidden="true"></span>
+        <h3 class="n-karte-t">Aufrichten</h3>
+        <p class="n-karte-p">Das übrige Wasser läuft zurück. Nichts bleibt im Napf stehen.</p>
+      </article>
+    </div>
+
+    <div class="a-nah" data-auf>
+      <img src="{{ 'a-detail-knopf.webp' | asset_url }}"
+           alt="Nahaufnahme des Knopfs an der Flasche"
+           width="900" height="900" loading="lazy" decoding="async" data-parallaxe="8">
+      <div>
+        <span class="n-auge">Der Knopf</span>
+        <h2 class="n-titel" style="font-size:clamp(1.6rem,3.6vw,2.3rem)">Kein zweites Teil, das du vergessen kannst.</h2>
+        <p class="n-unter">
+          Der Napf ist fest angebaut. Es gibt nichts zum Abschrauben,
+          nichts zum Mitnehmen und nichts, was im Auto liegen bleibt.
+        </p>
+        <p class="n-unter">
+          Nur Wasser einfüllen. Andere Flüssigkeiten hinterlassen
+          Rückstände, die den Mechanismus verkleben.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} ============================================ 8 · VERGLEICH {%- endcomment -%}
+<section class="n-block">
+  <div class="n-huelle">
+    <div class="n-kopfz n-kopfz--mitte" data-auf>
+      <span class="n-auge">Vergleich</span>
+      <h2 class="n-titel">Was die Alternativen können – und was nicht.</h2>
+    </div>
+
+    <div class="n-glas n-tabhuelle" data-auf style="padding:.4rem clamp(.6rem,2vw,1.2rem)">
+      <table class="n-tab">
+        <caption class="n-sr">Vergleich zwischen dieser Flasche, einer Flasche mit Faltnapf und einer normalen Trinkflasche</caption>
+        <thead>
+          <tr>
+            <th scope="col">&nbsp;</th>
+            <th scope="col" style="color:var(--n-akzent)">Diese Flasche</th>
+            <th scope="col">Flasche + Faltnapf</th>
+            <th scope="col">Normale Flasche</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Mit einer Hand bedienbar</td>
+            <td><span class="n-ja">{{ haken }}</span><span class="n-sr">ja</span></td>
+            <td><span class="n-nein">{{ kreuz }}</span><span class="n-sr">nein</span></td>
+            <td><span class="n-nein">{{ kreuz }}</span><span class="n-sr">nein</span></td>
+          </tr>
+          <tr>
+            <td>Napf fest angebaut</td>
+            <td><span class="n-ja">{{ haken }}</span><span class="n-sr">ja</span></td>
+            <td><span class="n-nein">{{ kreuz }}</span><span class="n-sr">nein</span></td>
+            <td><span class="n-nein">{{ kreuz }}</span><span class="n-sr">nein</span></td>
+          </tr>
+          <tr>
+            <td>Restwasser läuft zurück</td>
+            <td><span class="n-ja">{{ haken }}</span><span class="n-sr">ja</span></td>
+            <td><span class="n-nein">{{ kreuz }}</span><span class="n-sr">nein</span></td>
+            <td><span class="n-nein">{{ kreuz }}</span><span class="n-sr">nein</span></td>
+          </tr>
+          <tr>
+            <td>Nichts Nasses im Rucksack</td>
+            <td><span class="n-ja">{{ haken }}</span><span class="n-sr">ja</span></td>
+            <td><span class="n-nein">{{ kreuz }}</span><span class="n-sr">nein</span></td>
+            <td><span class="n-ja">{{ haken }}</span><span class="n-sr">ja</span></td>
+          </tr>
+          <tr>
+            <td>Tier kann direkt trinken</td>
+            <td><span class="n-ja">{{ haken }}</span><span class="n-sr">ja</span></td>
+            <td><span class="n-ja">{{ haken }}</span><span class="n-sr">ja</span></td>
+            <td><span class="n-nein">{{ kreuz }}</span><span class="n-sr">nein</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} ========================================== 9 · BEWERTUNGEN {%- endcomment -%}
+<section class="n-block n-block--tief">
+  <div class="n-huelle">
+    <div class="n-kopfz n-kopfz--mitte" data-auf>
+      <span class="n-auge">Bewertungen</span>
+      <h2 class="n-titel">Hier stehen bald echte Stimmen.</h2>
+      <p class="n-unter">
+        Dieser Shop ist neu und hat noch keine Bestellung ausgeliefert.
+        Deshalb steht hier keine einzige Bewertung – weder eine echte
+        noch eine erfundene. Sobald die ersten Flaschen unterwegs waren,
+        frage ich nach. Auch nach der Kritik.
+      </p>
+    </div>
+
+    {%- comment -%}
+      Die drei Karten sind der fertige Aufbau. Jede zeigt, wohin
+      spaeter Name, Sterne, Text und Kundenfoto kommen. Die gelbe
+      Kennzeichnung verschwindet, sobald echte Bewertungen da sind -
+      das Aussehen bleibt identisch.
+    {%- endcomment -%}
+    <div class="n-raster n-raster--3" data-staffel>
+      <article class="n-glas n-platz" data-auf>
+        <span class="n-platz__marke">Platz für Bewertung 1</span>
+        <div class="n-bew__kopf">
+          <span class="n-avatar" aria-hidden="true">?</span>
+          <span>
+            <span class="n-bew__name" style="color:var(--n-sanft)">Name der Käuferin</span>
+            <span class="n-bew__wann">Datum des Kaufs</span>
+          </span>
+        </div>
+        <span class="n-sterne" aria-hidden="true" style="opacity:.35">{{ stern }}{{ stern }}{{ stern }}{{ stern }}{{ stern }}</span>
+        <p style="margin-top:.6rem">Hierhin kommt der Text einer echten Bewertung, unverändert übernommen.</p>
+        <div class="n-bew__foto">Platz für ein echtes Kundenfoto</div>
+      </article>
+
+      <article class="n-glas n-platz" data-auf>
+        <span class="n-platz__marke">Platz für Bewertung 2</span>
+        <div class="n-bew__kopf">
+          <span class="n-avatar" aria-hidden="true">?</span>
+          <span>
+            <span class="n-bew__name" style="color:var(--n-sanft)">Name des Käufers</span>
+            <span class="n-bew__wann">Datum des Kaufs</span>
+          </span>
+        </div>
+        <span class="n-sterne" aria-hidden="true" style="opacity:.35">{{ stern }}{{ stern }}{{ stern }}{{ stern }}{{ stern }}</span>
+        <p style="margin-top:.6rem">Auch kritische Rückmeldungen kommen hierhin – ungefiltert.</p>
+        <div class="n-bew__foto">Platz für ein echtes Kundenfoto</div>
+      </article>
+
+      <article class="n-glas n-platz" data-auf>
+        <span class="n-platz__marke">Platz für Bewertung 3</span>
+        <div class="n-bew__kopf">
+          <span class="n-avatar" aria-hidden="true">?</span>
+          <span>
+            <span class="n-bew__name" style="color:var(--n-sanft)">Name der Käuferin</span>
+            <span class="n-bew__wann">Datum des Kaufs</span>
+          </span>
+        </div>
+        <span class="n-sterne" aria-hidden="true" style="opacity:.35">{{ stern }}{{ stern }}{{ stern }}{{ stern }}{{ stern }}</span>
+        <p style="margin-top:.6rem">Die Bewertungen werden nach Auslieferung per E-Mail angefragt.</p>
+        <div class="n-bew__foto">Platz für ein echtes Kundenfoto</div>
+      </article>
+    </div>
+
+    <div class="n-glas" data-auf style="margin-top:1.4rem;max-width:62ch">
+      <h3 class="n-karte-t">Was wir über diese Flasche nicht wissen</h3>
+      <p class="n-karte-p" style="margin-bottom:.7rem">
+        Wir haben keine schriftliche Zusicherung des Lieferanten, dass
+        sie unter allen Umständen dicht ist – deshalb behaupten wir es
+        auch nicht. Transportiere sie am besten aufrecht. Läuft deine
+        Flasche trotzdem aus, ist das ein Reklamationsfall: Du bekommst
+        Ersatz oder dein Geld zurück.
+      </p>
+      <p class="n-karte-p">
+        Ob sie in die Spülmaschine darf, wissen wir nicht. Also sagen wir
+        es auch nicht. Spül sie von Hand mit warmem Wasser aus und lass
+        sie offen trocknen.
+      </p>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} ================================================ 10 · FAQ {%- endcomment -%}
+<section class="n-block" id="fragen">
+  <div class="n-huelle">
+    <div class="n-kopfz n-kopfz--mitte" data-auf>
+      <span class="n-auge">Bevor du bestellst</span>
+      <h2 class="n-titel">Häufige Fragen</h2>
+    </div>
+
+    <div class="n-fragen" data-auf>
+      <details class="n-frage" open>
+        <summary>Wie viel passt hinein?</summary>
+        <div class="n-frage__inhalt">
+          <p>550 ml. Weil der Rest nach jedem Trinken zurückläuft, reicht eine Füllung für mehrere Pausen.</p>
+        </div>
+      </details>
+
+      <details class="n-frage">
+        <summary>Läuft sie im Rucksack aus?</summary>
+        <div class="n-frage__inhalt">
+          <p>
+            Wir haben keine schriftliche Zusicherung des Lieferanten, dass
+            sie unter allen Umständen dicht ist – deshalb behaupten wir es
+            auch nicht. Transportiere sie am besten aufrecht. Läuft deine
+            Flasche trotzdem aus, ist das ein Reklamationsfall: Du bekommst
+            Ersatz oder dein Geld zurück.
+          </p>
+        </div>
+      </details>
+
+      <details class="n-frage">
+        <summary>Was darf ich einfüllen?</summary>
+        <div class="n-frage__inhalt">
+          <p>Nur Wasser. Andere Flüssigkeiten hinterlassen Rückstände, die den Mechanismus verkleben.</p>
+        </div>
+      </details>
+
+      <details class="n-frage">
+        <summary>Geht das auch für Katzen?</summary>
+        <div class="n-frage__inhalt">
+          <p>Ja – für Katzen, die mitfahren oder an der Leine laufen. Der Napf ist niedrig genug.</p>
+        </div>
+      </details>
+
+      <details class="n-frage">
+        <summary>Wie reinige ich sie?</summary>
+        <div class="n-frage__inhalt">
+          <p>
+            Von Hand mit warmem Wasser ausspülen, danach offen trocknen
+            lassen. Ob sie in die Spülmaschine darf, wissen wir nicht –
+            also sagen wir es auch nicht.
+          </p>
+        </div>
+      </details>
+
+      <details class="n-frage">
+        <summary>Was kostet der Versand, und wie lange dauert er?</summary>
+        <div class="n-frage__inhalt">
+          <p>
+            Innerhalb der Schweiz ist der Versand gratis. In die übrigen
+            Länder kostet er CHF 1.50. Die Lieferzeit beträgt 7 bis 14
+            Werktage, mit Sendungsverfolgung per E-Mail.
+          </p>
+          <p>
+            Es gibt kein eigenes Lager – deshalb dauert es so lange.
+          </p>
+        </div>
+      </details>
+
+      <details class="n-frage">
+        <summary>Und wenn sie mir nicht gefällt?</summary>
+        <div class="n-frage__inhalt">
+          <p>
+            Du hast 14 Tage Rückgaberecht, ohne Begründung. Schreib mir über das
+            <a href="/pages/contact">Kontaktformular</a>, dann klären wir die Rücksendung.
+            Die Einzelheiten stehen unter
+            <a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>.
+          </p>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} =========================================== 11 · SCHLUSS {%- endcomment -%}
+<section class="n-block" style="padding-top:0">
+  <div class="n-huelle">
+    <div class="n-schluss" data-auf>
+      <span class="n-auge">Bereit?</span>
+      <h2 class="n-titel">Hydration, die dein Haustier liebt.</h2>
+      <p class="n-unter" style="margin-inline:auto;max-width:44ch">
+        {{ v.price | money }} · Gratisversand in der Schweiz · 14 Tage Rückgabe
+      </p>
+      <div class="n-cta">
+        <a class="n-knopf" href="#kaufen">Jetzt entdecken →</a>
+        <a class="n-knopf n-knopf--geist" href="/pages/contact">Frage stellen</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "NOVA Startseite",
+  "settings": [],
+  "presets": [{ "name": "NOVA Startseite" }]
+}
+{% endschema %}

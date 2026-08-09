@@ -1,0 +1,93 @@
+{%- comment -%}
+  sections/a-suche.liquid — LET'SDRINK AMBER, Suche
+  9.8.2026. Bauleitung.
+{%- endcomment -%}
+
+<div class="a-seite">
+  <div class="a-huelle">
+
+    <div class="a-kopfzeile">
+      <p class="a-auge">Let'sDrink</p>
+      <h1 class="a-titel">Suche</h1>
+    </div>
+
+    <form class="a-suchfeld" action="{{ routes.search_url }}" method="get" role="search">
+      <label class="a-sr" for="a-q">Suchbegriff</label>
+      <input type="search" id="a-q" name="q" value="{{ search.terms | escape }}"
+             placeholder="Wonach suchst du?" autocomplete="off">
+      <button class="a-knopf a-knopf--schmal" type="submit">Suchen</button>
+    </form>
+
+    {%- if search.performed -%}
+      {%- paginate search.results by 24 -%}
+        {%- if search.results_count == 0 -%}
+          <div class="a-leer">
+            <p>Zu „{{ search.terms }}“ gibt es keinen Treffer.</p>
+            <p style="margin-bottom:1.8rem">
+              Dieser Shop führt genau ein Produkt: die Trinkflasche mit fest
+              angebautem Napf, 550 ml, in sechs Farben.
+            </p>
+            <a class="a-knopf a-knopf--schmal" href="{{ routes.root_url }}">Zur Flasche</a>
+          </div>
+        {%- else -%}
+          <p style="margin:0 0 1.6rem;color:var(--a-tinte-2);font-size:.9375rem">
+            {{ search.results_count }} Treffer für „{{ search.terms }}“
+          </p>
+          <ul class="a-gitter">
+            {%- for treffer in search.results -%}
+              <li>
+                <a class="a-karte" href="{{ treffer.url }}">
+                  {%- if treffer.object_type == 'product' -%}
+                    <div class="a-karte__bild">
+                      {%- if treffer.handle == 'trinkflasche-napf-hund-katze' -%}
+                        <img src="{{ 'a-flasche-tuerkis.webp' | asset_url }}" alt=""
+                             width="650" height="2212" loading="lazy" decoding="async">
+                      {%- elsif treffer.featured_image -%}
+                        <img src="{{ treffer.featured_image | image_url: width: 520 }}" alt=""
+                             width="520" height="520" loading="lazy" decoding="async">
+                      {%- endif -%}
+                    </div>
+                    <h2>{{ treffer.title }}</h2>
+                    <p>{{ treffer.price | money }}</p>
+                  {%- else -%}
+                    <h2>{{ treffer.title }}</h2>
+                    <p>{{ treffer.content | strip_html | truncatewords: 22 }}</p>
+                  {%- endif -%}
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+
+          {%- if paginate.pages > 1 -%}
+            <ul class="a-blaettern">
+              {%- for teil in paginate.parts -%}
+                <li>
+                  {%- if teil.is_link -%}
+                    <a href="{{ teil.url }}">{{ teil.title }}</a>
+                  {%- else -%}
+                    <span {% if teil.title == paginate.current_page %}aria-current="page"{% endif %}>{{ teil.title }}</span>
+                  {%- endif -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endpaginate -%}
+    {%- endif -%}
+
+    <div class="a-weiter">
+      <a href="{{ routes.root_url }}">Zur Flasche</a>
+      <a href="/pages/haeufige-fragen">Häufige Fragen</a>
+      <a href="/pages/contact">Kontakt</a>
+    </div>
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Amber Suche",
+  "settings": [],
+  "presets": [{ "name": "Amber Suche" }]
+}
+{% endschema %}

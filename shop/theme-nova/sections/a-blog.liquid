@@ -1,0 +1,69 @@
+{%- comment -%}
+  sections/a-blog.liquid — LET'SDRINK AMBER, Blogliste
+  9.8.2026. Bauleitung.
+
+  Es gibt zurzeit keine Beitraege. Die Seite muss trotzdem existieren
+  und aussehen wie der Rest - Shopify legt den Blog automatisch an.
+{%- endcomment -%}
+
+<div class="a-seite">
+  <div class="a-huelle">
+
+    <div class="a-kopfzeile">
+      <p class="a-auge">Let'sDrink</p>
+      <h1 class="a-titel">{{ blog.title }}</h1>
+    </div>
+
+    {%- paginate blog.articles by 12 -%}
+      {%- if blog.articles.size == 0 -%}
+        <div class="a-leer">
+          <p style="margin-bottom:1.8rem">Hier steht noch nichts.</p>
+          <a class="a-knopf a-knopf--schmal" href="{{ routes.root_url }}">Zur Flasche</a>
+        </div>
+      {%- else -%}
+        {%- for a in blog.articles -%}
+          <article class="a-blatt">
+            <h2><a href="{{ a.url }}">{{ a.title }}</a></h2>
+            <time datetime="{{ a.published_at | date: '%Y-%m-%d' }}">
+              {{ a.published_at | date: '%d.%m.%Y' }}
+            </time>
+            {%- if a.excerpt_or_content != blank -%}
+              <p style="margin:.6rem 0 0;color:var(--a-tinte-2)">
+                {{ a.excerpt_or_content | strip_html | truncatewords: 32 }}
+              </p>
+            {%- endif -%}
+          </article>
+        {%- endfor -%}
+
+        {%- if paginate.pages > 1 -%}
+          <ul class="a-blaettern">
+            {%- for teil in paginate.parts -%}
+              <li>
+                {%- if teil.is_link -%}
+                  <a href="{{ teil.url }}">{{ teil.title }}</a>
+                {%- else -%}
+                  <span {% if teil.title == paginate.current_page %}aria-current="page"{% endif %}>{{ teil.title }}</span>
+                {%- endif -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      {%- endif -%}
+    {%- endpaginate -%}
+
+    <div class="a-weiter">
+      <a href="{{ routes.root_url }}">Zur Flasche</a>
+      <a href="/pages/haeufige-fragen">Häufige Fragen</a>
+      <a href="/pages/contact">Kontakt</a>
+    </div>
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Amber Blog",
+  "settings": [],
+  "presets": [{ "name": "Amber Blog" }]
+}
+{% endschema %}

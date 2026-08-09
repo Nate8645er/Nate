@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "n-start",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

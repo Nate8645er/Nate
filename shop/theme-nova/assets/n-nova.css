@@ -1,0 +1,854 @@
+/* =====================================================================
+   n-nova.css — LET'SDRINK NOVA
+   9.8.2026. Bauleitung.
+
+   MARKENIDENTITAET, ABGELEITET AUS DEM PRODUKT
+   Das Produkt ist eine weisse Flasche mit tuerkiser Kappe fuer Wasser.
+   Daraus folgt alles Weitere: tiefe, fast schwarze Nacht als Buehne,
+   ein einziger Akzent in Aqua, Glas statt Farbe fuer Flaechen. Das
+   ist die Sprache moderner Geraetemarken - und zufaellig auch die,
+   in der Wasser am besten aussieht.
+
+   DIE MESSUNG, DIE DEN DUNKLEN GRUND RECHTFERTIGT
+   Der weisse Flaschenkoerper #E9F3F2 gegen moegliche Untergruende:
+
+     auf Weiss   #FFFFFF ....  1.13   verschwindet
+     auf Apricot #EFCFB6 ....  1.35   verwaschen
+     auf Grund   #070E12 .... 17.18   maximal
+     auf Karte   #111F26 .... 14.88
+
+   Kein anderer Grund bringt dieses Produkt so heraus. Die frueheren
+   Entwuerfe mussten das Produkt auf eigene dunkle Kacheln setzen -
+   hier IST der Shop die Kachel.
+
+   SCHRIFT- UND KNOPFKONTRASTE (alle weit ueber 4.5:1)
+     Text   #F2F6F7 auf Grund ......... 17.86
+     Sanft  #9FB0B6 auf Grund .........  8.66
+     Aqua   #4FD8D0 auf Grund ......... 11.17
+     Knopftext #04231F auf Aqua .......  9.54
+
+   LEISTUNG
+   Keine Bibliothek. Bewegung laeuft ueber CSS-Transitions und einen
+   IntersectionObserver; die Parallaxe ueber genau eine
+   rAF-gedrosselte Schleife. Alles respektiert prefers-reduced-motion.
+   ===================================================================== */
+
+@font-face { font-family:"Nova"; src:url("a-sans.woff2") format("woff2");
+             font-weight:400; font-display:swap; }
+@font-face { font-family:"Nova"; src:url("a-sans-bold.woff2") format("woff2");
+             font-weight:700; font-display:swap; }
+
+:root {
+  --n-grund:  #070E12;
+  --n-tief:   #0C1A20;
+  --n-karte:  #111F26;
+  --n-text:   #F2F6F7;
+  --n-sanft:  #9FB0B6;
+  --n-akzent: #4FD8D0;
+  --n-akzent2:#7FE9C4;
+  --n-knopftext: #04231F;
+
+  --n-glas:      rgb(255 255 255 / .055);
+  --n-glas-rand: rgb(255 255 255 / .10);
+  --n-glas-hell: rgb(255 255 255 / .09);
+
+  --n-max: 1180px;
+  --n-rund: 22px;
+  --n-rund-gross: 28px;
+  --n-weich: cubic-bezier(.16,1,.3,1);
+}
+
+*,*::before,*::after { box-sizing: border-box; }
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scrollbar-color: #24343B var(--n-grund);
+}
+body {
+  margin: 0;
+  background: var(--n-grund);
+  color: var(--n-text);
+  font-family: "Nova", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 1rem; line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+img,svg,video { display:block; max-width:100%; }
+a { color: inherit; }
+:where(a,button,input,select,textarea,summary):focus-visible {
+  outline: 2px solid var(--n-akzent); outline-offset: 3px; border-radius: 10px;
+}
+.n-sr { position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+        overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+.n-huelle { width: min(100% - 2.25rem, var(--n-max)); margin-inline: auto; }
+
+/* Deutsche Komposita brechen sonst aus schmalen Kaesten heraus -
+   gemessen an "Datenschutzerklaerung": 346 Pixel Wort in 288 Pixel
+   Kasten, ohne dass ein Element Ueberstand meldet. */
+h1,h2,h3,.n-riese,.n-titel { overflow-wrap: break-word; hyphens: auto; }
+
+/* =====================================================================
+   BEWEGUNG — Scroll-Reveal, Parallaxe, Ruhe-Modus
+   ===================================================================== */
+[data-auf] {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  transition: opacity .7s var(--n-weich), transform .7s var(--n-weich);
+  will-change: opacity, transform;
+}
+[data-auf][data-auf="klein"]  { transform: translate3d(0, 12px, 0); }
+[data-auf][data-auf="skalier"]{ transform: scale(.965); }
+[data-auf].n-da { opacity: 1; transform: none; will-change: auto; }
+/* Gestaffelt: jede Karte kommt 70 ms nach der vorigen. */
+[data-staffel] > * { transition-delay: calc(var(--i, 0) * 70ms); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  [data-auf] { opacity:1 !important; transform:none !important; transition:none !important; }
+  *,*::before,*::after { animation-duration:1ms !important; transition-duration:1ms !important; }
+}
+/* Ohne JavaScript bleibt nichts unsichtbar. */
+html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
+
+/* =====================================================================
+   KOPF, NAVIGATION
+   ===================================================================== */
+.n-balken {
+  background: linear-gradient(90deg, #0B2A2C, #0C1A20 55%);
+  border-bottom: 1px solid var(--n-glas-rand);
+  color: var(--n-sanft);
+  font-size: .78125rem; text-align: center; padding: .55rem 1rem;
+}
+.n-balken b { color: var(--n-text); font-weight: 700; }
+.n-balken span + span::before { content: "·"; margin: 0 .55rem; opacity: .5; }
+
+.n-kopf {
+  position: sticky; top: 0; z-index: 70;
+  transition: background-color .3s ease, backdrop-filter .3s ease, border-color .3s ease;
+  border-bottom: 1px solid transparent;
+}
+.n-kopf.n-fest {
+  background: rgb(7 14 18 / .72);
+  backdrop-filter: saturate(180%) blur(18px);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  border-bottom-color: var(--n-glas-rand);
+}
+.n-kopf__innen { display: flex; align-items: center; gap: 1rem; min-height: 66px; }
+.n-marke {
+  font-weight: 700; font-size: 1.0625rem; letter-spacing: -.01em;
+  text-decoration: none; margin-right: auto; display: flex; align-items: center; gap: .55rem;
+}
+.n-marke svg { color: var(--n-akzent); }
+.n-nav { display: none; gap: 1.75rem; }
+@media (min-width: 900px) { .n-nav { display: flex; } }
+.n-nav a {
+  position: relative; font-size: .875rem; text-decoration: none;
+  color: var(--n-sanft); padding-block: .25rem; transition: color .2s ease;
+}
+.n-nav a::after {
+  content: ""; position: absolute; left: 0; right: 100%; bottom: 0; height: 1px;
+  background: var(--n-akzent); transition: right .3s var(--n-weich);
+}
+.n-nav a:hover { color: var(--n-text); }
+.n-nav a:hover::after { right: 0; }
+
+.n-kopf__rechts { display: flex; align-items: center; gap: .5rem; }
+.n-icon {
+  display: grid; place-items: center; width: 44px; height: 44px;
+  border: 0; border-radius: 999px; background: transparent; color: var(--n-text);
+  cursor: pointer; position: relative; text-decoration: none;
+  transition: background-color .2s ease;
+}
+.n-icon:hover { background: var(--n-glas); }
+.n-zahl {
+  position: absolute; top: 6px; right: 5px; min-width: 18px; height: 18px;
+  padding: 0 4px; border-radius: 999px;
+  background: var(--n-akzent); color: var(--n-knopftext);
+  font-size: .6875rem; font-weight: 700; line-height: 18px; text-align: center;
+}
+.n-burger { display: grid; }
+@media (min-width: 900px) { .n-burger { display: none; } }
+
+/* Mobile Navigation als Glasflaeche */
+.n-mnav {
+  position: fixed; inset: 0; z-index: 90;
+  background: rgb(7 14 18 / .86);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  display: grid; align-content: start; gap: .25rem;
+  padding: 5.5rem 1.5rem 2rem;
+  opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility .3s;
+}
+.n-mnav.n-offen { opacity: 1; visibility: visible; }
+.n-mnav a {
+  padding: 1rem 0; font-size: 1.375rem; font-weight: 700; text-decoration: none;
+  border-bottom: 1px solid var(--n-glas-rand);
+}
+.n-mzu { position: fixed; top: 1rem; right: 1rem; z-index: 91; }
+
+/* =====================================================================
+   KNOEPFE
+   ===================================================================== */
+.n-knopf {
+  display: inline-flex; align-items: center; justify-content: center; gap: .6rem;
+  min-height: 56px; padding: 1rem 2rem; border: 0; border-radius: 999px;
+  background: linear-gradient(135deg, var(--n-akzent2), var(--n-akzent));
+  color: var(--n-knopftext);
+  font: inherit; font-weight: 700; font-size: 1.0625rem; line-height: 1;
+  text-decoration: none; cursor: pointer; position: relative; overflow: hidden;
+  box-shadow: 0 8px 30px rgb(79 216 208 / .22);
+  transition: transform .2s var(--n-weich), box-shadow .25s ease;
+}
+.n-knopf:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgb(79 216 208 / .32); }
+.n-knopf:active { transform: translateY(0) scale(.99); }
+.n-knopf[disabled] { opacity: .4; cursor: not-allowed; box-shadow: none; transform: none; }
+/* Der Lichtstrich, der einmal ueber den Knopf laeuft */
+.n-knopf::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 42%;
+  left: -60%; transform: skewX(-18deg);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / .38), transparent);
+  transition: left .55s var(--n-weich);
+}
+.n-knopf:hover::after { left: 120%; }
+.n-knopf--voll { width: 100%; }
+.n-knopf--geist {
+  background: var(--n-glas); color: var(--n-text);
+  box-shadow: inset 0 0 0 1px var(--n-glas-rand);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.n-knopf--geist:hover { background: var(--n-glas-hell); box-shadow: inset 0 0 0 1px rgb(255 255 255 / .2); }
+.n-knopf--klein { min-height: 46px; padding: .7rem 1.4rem; font-size: .9375rem; }
+
+/* =====================================================================
+   HERO
+   ===================================================================== */
+.n-hero { position: relative; overflow: hidden; padding-block: clamp(.75rem, 3vw, 4.5rem) clamp(2.5rem, 8vw, 6rem); }
+/* Das Licht hinter dem Produkt. Zwei weiche Ellipsen, keine Bilder. */
+.n-hero::before, .n-hero::after {
+  content: ""; position: absolute; z-index: 0; pointer-events: none;
+  border-radius: 50%; filter: blur(80px);
+}
+.n-hero::before {
+  width: min(760px, 120vw); aspect-ratio: 1.1;
+  top: -14%; left: 50%; translate: -50% 0;
+  background: radial-gradient(circle, rgb(79 216 208 / .22), transparent 68%);
+}
+.n-hero::after {
+  width: min(520px, 90vw); aspect-ratio: 1.3;
+  bottom: -22%; right: -12%;
+  background: radial-gradient(circle, rgb(127 233 196 / .12), transparent 70%);
+}
+.n-hero__raster { position: relative; z-index: 1; display: grid; gap: clamp(1.75rem, 4vw, 3.5rem); }
+@media (min-width: 940px) { .n-hero__raster { grid-template-columns: 1.02fr .98fr; align-items: center; } }
+
+.n-riese {
+  margin: 0 0 1rem;
+  font-size: clamp(2.5rem, 7vw, 4.4rem); font-weight: 700;
+  line-height: 1.02; letter-spacing: -.035em;
+}
+.n-riese em {
+  font-style: normal;
+  background: linear-gradient(120deg, var(--n-akzent2), var(--n-akzent));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.n-lead { margin: 0 0 2rem; font-size: 1.0625rem; color: var(--n-sanft); max-width: 46ch; }
+.n-cta { display: flex; flex-wrap: wrap; gap: .75rem; }
+
+/* --- Die Produktbuehne mit Tiefe ------------------------------------ */
+.n-buehne {
+  position: relative; order: -1;
+  display: grid; place-items: center;
+  /* Gemessen auf einem 390x844-Handy: mit 52vh Buehne und 44vh Flasche
+     endete der erste Bildschirm mitten in der Ueberschrift - Preis,
+     Farbwahl und Kaufknopf lagen darunter. Man sah nur die Flasche.
+     34vh/29vh bringen alle vier ueber die Falz, ohne dass das Produkt
+     klein wirkt. Ab 940px gelten wieder die grossen Werte. */
+  min-height: clamp(200px, 34vh, 380px);
+  perspective: 1200px;
+}
+@media (min-width: 940px) { .n-buehne { order: 0; min-height: clamp(460px, 68vh, 680px); } }
+/* Der Ring hinter dem Produkt - gibt Tiefe ohne 3D-Modell */
+.n-ring {
+  position: absolute; z-index: 0;
+  width: min(78%, 420px); aspect-ratio: 1; border-radius: 50%;
+  border: 1px solid var(--n-glas-rand);
+  background: radial-gradient(circle at 50% 42%, rgb(79 216 208 / .10), transparent 62%);
+}
+.n-ring--2 { width: min(96%, 540px); opacity: .55; }
+.n-flasche {
+  position: relative; z-index: 2;
+  height: clamp(185px, 29vh, 340px); width: auto;
+  filter: drop-shadow(0 40px 60px rgb(0 0 0 / .65))
+          drop-shadow(0 0 40px rgb(79 216 208 / .18));
+  transition: transform .18s linear;
+}
+@media (min-width: 940px) { .n-flasche { height: clamp(380px, 58vh, 560px); } }
+
+/* --- Der Hero auf dem Handy ----------------------------------------
+   Gemessen an der Frage: steht der Kaufknopf im ersten Bild?
+   Ausgangslage (Buehne 52vh, Flasche 44vh): auf 390x844 endete der
+   erste Bildschirm mitten in der Ueberschrift - Preis, Farbwahl und
+   Knopf lagen darunter, man sah nur die Flasche.
+
+   Nach dieser Staffelung endet der Kaufknopf bei:
+     360x780 ....  737 von 780   sichtbar
+     390x844 ....  809 von 844   sichtbar
+     414x896 ....  822 von 896   sichtbar
+     768x1024 ...  799 von 1024  sichtbar
+     1440x900 ...  709 von 900   sichtbar
+     320x568 ....  858 von 568   NICHT - auf dem alten iPhone SE passt
+                   nichts mehr; dort faengt ihn die Kaufleiste unten.
+   ------------------------------------------------------------------ */
+@media (max-width: 939px) {
+  .n-buehne  { min-height: clamp(180px, 25vh, 300px); }
+  .n-flasche { height: clamp(165px, 22vh, 270px); }
+  .n-hero    { padding-block: .5rem clamp(2.5rem, 8vw, 6rem); }
+  .n-riese   { font-size: clamp(2.05rem, 6.4vw, 3rem); }
+  .n-lead    { margin-bottom: 1rem; font-size: 1rem; }
+  .n-preis   { margin-bottom: .15rem; }
+  .n-preis span { flex: 1 0 100%; }
+  .n-etikett { margin-bottom: .45rem; }
+  .n-wahl    { margin-bottom: 1rem; }
+}
+@media (max-width: 389px) {
+  .n-buehne  { min-height: clamp(150px, 19vh, 240px); }
+  .n-flasche { height: clamp(140px, 17vh, 220px); }
+  .n-riese   { font-size: 1.95rem; }
+  .n-lead    { font-size: .9375rem; margin-bottom: .9rem; }
+}
+
+/* --- Wassertropfen: reines CSS, sechs Stueck, kein Bild ------------- */
+.n-tropfen { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+.n-tropfen i {
+  position: absolute; display: block;
+  width: var(--d, 8px); height: var(--d, 8px); border-radius: 50% 50% 50% 0;
+  transform: rotate(45deg);
+  background: linear-gradient(140deg, rgb(255 255 255 / .55), rgb(79 216 208 / .25));
+  box-shadow: inset 0 0 4px rgb(255 255 255 / .5);
+  opacity: 0; animation: n-fall var(--t, 7s) var(--v, 0s) infinite ease-in;
+}
+@keyframes n-fall {
+  0%   { opacity: 0; transform: rotate(45deg) translate3d(0, -30px, 0) scale(.6); }
+  12%  { opacity: .9; }
+  70%  { opacity: .55; }
+  100% { opacity: 0; transform: rotate(45deg) translate3d(0, 220px, 0) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) { .n-tropfen { display: none; } }
+
+/* --- Vertrauenszeile direkt unter dem CTA --------------------------- */
+.n-mini { display: flex; flex-wrap: wrap; gap: .5rem 1.4rem; margin: 1.6rem 0 0;
+          padding: 0; list-style: none; color: var(--n-sanft); font-size: .8125rem; }
+.n-mini li { display: flex; align-items: center; gap: .4rem; }
+.n-mini svg { color: var(--n-akzent); flex: none; }
+
+/* =====================================================================
+   ABSCHNITTE
+   ===================================================================== */
+.n-block { position: relative; padding-block: clamp(3rem, 9vw, 6.5rem); }
+.n-block--tief { background: var(--n-tief); }
+.n-strich { border: 0; height: 1px; background: var(--n-glas-rand); margin: 0; }
+
+.n-kopfz { max-width: 46ch; margin-bottom: clamp(2rem, 5vw, 3.25rem); }
+.n-kopfz--mitte { margin-inline: auto; text-align: center; }
+.n-auge {
+  display: inline-flex; align-items: center; gap: .45rem;
+  margin: 0 0 .85rem; padding: .35rem .85rem; border-radius: 999px;
+  background: var(--n-glas); box-shadow: inset 0 0 0 1px var(--n-glas-rand);
+  font-size: .6875rem; font-weight: 700; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--n-akzent);
+}
+.n-titel { margin: 0; font-size: clamp(1.9rem, 4.6vw, 3rem); font-weight: 700;
+           line-height: 1.06; letter-spacing: -.03em; }
+.n-unter { margin: .9rem 0 0; color: var(--n-sanft); font-size: 1.0625rem; }
+
+/* --- Glaskarte, die Grundform des ganzen Shops ---------------------- */
+.n-glas {
+  position: relative; border-radius: var(--n-rund);
+  background: var(--n-glas);
+  box-shadow: inset 0 0 0 1px var(--n-glas-rand);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  padding: clamp(1.4rem, 3vw, 2rem);
+  transition: transform .35s var(--n-weich), box-shadow .35s ease, background-color .35s ease;
+}
+.n-glas--hebt:hover {
+  transform: translateY(-5px);
+  background: var(--n-glas-hell);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / .18), 0 22px 50px rgb(0 0 0 / .45);
+}
+/* Der Lichtrand oben - macht aus der Flaeche echtes Glas */
+.n-glas::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(160deg, rgb(255 255 255 / .07), transparent 42%);
+}
+
+.n-raster { display: grid; gap: 1.1rem; grid-template-columns: 1fr; }
+@media (min-width: 700px)  { .n-raster--2 { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 700px)  { .n-raster--3 { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .n-raster--3 { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 620px)  { .n-raster--4 { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .n-raster--4 { grid-template-columns: repeat(4, 1fr); } }
+
+.n-kreis {
+  width: 46px; height: 46px; margin-bottom: 1rem; border-radius: 14px;
+  display: grid; place-items: center; color: var(--n-knopftext);
+  background: linear-gradient(135deg, var(--n-akzent2), var(--n-akzent));
+}
+.n-karte-t { margin: 0 0 .35rem; font-size: 1.0625rem; font-weight: 700; letter-spacing: -.01em; }
+.n-karte-p { margin: 0; color: var(--n-sanft); font-size: .9375rem; }
+
+/* --- Problem gegen Loesung ------------------------------------------ */
+.n-gegen { display: grid; gap: 1.1rem; }
+@media (min-width: 820px) { .n-gegen { grid-template-columns: 1fr 1fr; } }
+.n-spalte { padding: clamp(1.4rem, 3vw, 2rem); border-radius: var(--n-rund); }
+.n-spalte--alt { background: rgb(255 255 255 / .03); box-shadow: inset 0 0 0 1px rgb(255 255 255 / .07); }
+.n-spalte--neu { background: linear-gradient(160deg, rgb(79 216 208 / .10), rgb(79 216 208 / .03));
+                 box-shadow: inset 0 0 0 1px rgb(79 216 208 / .28); }
+.n-spalte h3 { margin: 0 0 1.1rem; font-size: 1.0625rem; font-weight: 700; }
+.n-liste { margin: 0; padding: 0; list-style: none; display: grid; gap: .8rem; }
+.n-liste li { display: flex; gap: .7rem; font-size: .9375rem; color: var(--n-sanft); }
+.n-liste svg { flex: none; margin-top: .2em; }
+.n-spalte--alt .n-liste svg { color: #FF8A80; }
+.n-spalte--neu .n-liste svg { color: var(--n-akzent); }
+
+/* --- Ablauf in drei Schritten --------------------------------------- */
+.n-schritte { counter-reset: n; display: grid; gap: 1.1rem; }
+@media (min-width: 820px) { .n-schritte { grid-template-columns: repeat(3, 1fr); } }
+.n-schritt { counter-increment: n; }
+.n-schritt .n-nummer {
+  display: inline-grid; place-items: center; width: 40px; height: 40px; margin-bottom: 1rem;
+  border-radius: 999px; box-shadow: inset 0 0 0 1px var(--n-glas-rand);
+  color: var(--n-akzent); font-weight: 700; font-size: .9375rem;
+}
+.n-schritt .n-nummer::before { content: "0" counter(n); }
+
+/* --- Bewertungen ---------------------------------------------------- */
+.n-sterne { display: inline-flex; gap: 2px; color: var(--n-akzent); }
+.n-bew__kopf { display: flex; align-items: center; gap: .7rem; margin-bottom: .9rem; }
+.n-avatar {
+  width: 40px; height: 40px; border-radius: 999px; flex: none;
+  background: linear-gradient(135deg, #1C3238, #0E1D24);
+  box-shadow: inset 0 0 0 1px var(--n-glas-rand);
+  display: grid; place-items: center; color: var(--n-sanft); font-size: .8125rem; font-weight: 700;
+}
+.n-bew__name { font-size: .9375rem; font-weight: 700; }
+.n-bew__wann { font-size: .75rem; color: var(--n-sanft); }
+.n-bew p { margin: 0; color: var(--n-sanft); font-size: .9375rem; }
+.n-bew__foto {
+  margin-top: 1rem; aspect-ratio: 4/3; border-radius: 14px;
+  background: repeating-linear-gradient(45deg, rgb(255 255 255 / .03) 0 10px, transparent 10px 20px), var(--n-karte);
+  box-shadow: inset 0 0 0 1px var(--n-glas-rand);
+  display: grid; place-items: center; text-align: center; padding: 1rem;
+  color: var(--n-sanft); font-size: .75rem; line-height: 1.4;
+}
+/* Platzhalter sind als solche gekennzeichnet - nicht als echte Inhalte
+   getarnt. Erfundene Bewertungen waeren nach UWG Art. 3 unlauter. */
+.n-platz {
+  border-style: dashed; box-shadow: none;
+  border: 1px dashed rgb(255 255 255 / .22);
+}
+.n-platz__marke {
+  display: inline-block; margin-bottom: .8rem; padding: .3rem .7rem; border-radius: 999px;
+  background: rgb(255 200 87 / .14); color: #FFC857;
+  font-size: .6875rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+}
+
+/* --- Vergleichstabelle ---------------------------------------------- */
+.n-tab { width: 100%; border-collapse: collapse; font-size: .9375rem; }
+.n-tab th, .n-tab td { padding: .95rem .8rem; text-align: left; border-bottom: 1px solid var(--n-glas-rand); }
+.n-tab th { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--n-sanft); font-weight: 700; }
+.n-tab td:first-child { color: var(--n-text); }
+.n-tab td:not(:first-child) { color: var(--n-sanft); text-align: center; width: 22%; }
+.n-tab .n-ja  { color: var(--n-akzent); }
+.n-tab .n-nein{ color: #FF8A80; }
+.n-tabhuelle { overflow-x: auto; border-radius: var(--n-rund); }
+
+/* --- Fragen ---------------------------------------------------------- */
+.n-fragen { max-width: 64ch; margin-inline: auto; }
+.n-frage { border-bottom: 1px solid var(--n-glas-rand); }
+.n-frage summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 1.25rem 0; cursor: pointer; font-weight: 700; list-style: none;
+}
+.n-frage summary::-webkit-details-marker { display: none; }
+.n-frage summary::after {
+  content: ""; flex: none; width: 12px; height: 12px;
+  border-right: 2px solid var(--n-akzent); border-bottom: 2px solid var(--n-akzent);
+  transform: rotate(45deg) translateY(-3px); transition: transform .3s var(--n-weich);
+}
+.n-frage[open] summary::after { transform: rotate(-135deg) translateY(-3px); }
+.n-frage__inhalt { padding: 0 0 1.3rem; color: var(--n-sanft); }
+.n-frage__inhalt p { margin: 0 0 .8rem; }
+.n-frage__inhalt p:last-child { margin-bottom: 0; }
+
+/* --- Schlussaufruf --------------------------------------------------- */
+.n-schluss { position: relative; overflow: hidden; text-align: center;
+             border-radius: var(--n-rund-gross); padding: clamp(2.5rem, 7vw, 4.5rem) 1.5rem;
+             background: linear-gradient(160deg, rgb(79 216 208 / .12), rgb(12 26 32 0) 60%), var(--n-tief);
+             box-shadow: inset 0 0 0 1px var(--n-glas-rand); }
+.n-schluss .n-titel { margin-bottom: .8rem; }
+.n-schluss .n-cta { justify-content: center; margin-top: 1.8rem; }
+
+/* =====================================================================
+   FARBWAHL, PREIS, KAUFEN
+   ===================================================================== */
+/* Der Betrag darf nie umbrechen. Ohne nowrap zerlegte der Flex-Kasten
+   auf dem Handy "CHF 39.90" in zwei Zeilen - ausgerechnet beim Preis.
+   Der Zusatz rutscht stattdessen komplett unter den Betrag. */
+.n-preis { display: flex; align-items: baseline; flex-wrap: wrap; gap: .15rem .7rem; margin: 0 0 .3rem; }
+.n-preis b { white-space: nowrap; }
+.n-preis b { font-size: clamp(1.8rem, 4vw, 2.3rem); font-weight: 700; letter-spacing: -.02em; }
+.n-preis span { font-size: .875rem; color: var(--n-sanft); }
+.n-etikett { display: block; margin-bottom: .65rem; font-size: .6875rem; font-weight: 700;
+             letter-spacing: .12em; text-transform: uppercase; color: var(--n-sanft); }
+.n-wahl { display: flex; flex-wrap: wrap; gap: .6rem; margin: 0 0 1.5rem; padding: 0; list-style: none; }
+.n-pkt {
+  display: block; width: 44px; height: 44px; border: 0; padding: 0; border-radius: 999px;
+  cursor: pointer; text-decoration: none;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / .22);
+  transition: transform .2s var(--n-weich), box-shadow .2s ease;
+}
+.n-pkt:hover { transform: scale(1.1); }
+.n-pkt[aria-pressed="true"] {
+  transform: scale(1.1);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / .22), 0 0 0 3px var(--n-grund), 0 0 0 5px var(--n-akzent);
+}
+.n-pkt--tuerkis{background:#5DE1DC} .n-pkt--gruen{background:#9BF4BC}
+.n-pkt--rosa{background:#F09BB2}    .n-pkt--grau{background:#8E9495}
+.n-pkt--schwarz{background:#4A4C4C} .n-pkt--weiss{background:#E9F3F2}
+
+.n-menge { display: inline-flex; align-items: center; gap: .2rem; margin-bottom: 1.4rem;
+           border-radius: 999px; box-shadow: inset 0 0 0 1px var(--n-glas-rand); padding: .25rem; }
+.n-menge button {
+  width: 40px; height: 40px; border: 0; border-radius: 999px; background: transparent;
+  color: var(--n-text); font-size: 1.25rem; line-height: 1; cursor: pointer;
+  transition: background-color .2s ease;
+}
+.n-menge button:hover { background: var(--n-glas); }
+.n-menge input {
+  width: 48px; border: 0; background: transparent; color: var(--n-text);
+  font: inherit; font-weight: 700; text-align: center;
+  -moz-appearance: textfield;
+}
+.n-menge input::-webkit-outer-spin-button,
+.n-menge input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* =====================================================================
+   WARENKORB-SCHUBLADE
+   ===================================================================== */
+.n-schleier {
+  position: fixed; inset: 0; z-index: 95; background: rgb(3 7 9 / .6);
+  backdrop-filter: blur(3px); opacity: 0; visibility: hidden;
+  transition: opacity .3s ease, visibility .3s;
+}
+.n-schleier.n-offen { opacity: 1; visibility: visible; }
+.n-lade {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 96;
+  width: min(420px, 100%);
+  background: var(--n-tief);
+  box-shadow: -20px 0 60px rgb(0 0 0 / .5);
+  display: flex; flex-direction: column;
+  transform: translateX(100%);
+  transition: transform .38s var(--n-weich);
+}
+.n-lade.n-offen { transform: none; }
+.n-lade__kopf { display: flex; align-items: center; gap: 1rem;
+                padding: 1.2rem 1.3rem; border-bottom: 1px solid var(--n-glas-rand); }
+.n-lade__kopf b { font-size: 1.0625rem; margin-right: auto; }
+.n-lade__leib { flex: 1; overflow-y: auto; padding: 1.3rem; }
+.n-lade__fuss { padding: 1.3rem; border-top: 1px solid var(--n-glas-rand);
+                padding-bottom: max(1.3rem, env(safe-area-inset-bottom)); }
+.n-zeile { display: grid; grid-template-columns: 68px 1fr; gap: .9rem;
+           padding-bottom: 1.1rem; margin-bottom: 1.1rem;
+           border-bottom: 1px solid var(--n-glas-rand); }
+.n-zeile:last-child { border-bottom: 0; margin-bottom: 0; }
+.n-zeile__bild { height: 84px; border-radius: 12px; background: var(--n-karte);
+                 display: grid; place-items: center; overflow: hidden; }
+.n-zeile__bild img { height: 72px; width: auto; }
+.n-zeile__name { margin: 0; font-size: .875rem; font-weight: 700; }
+.n-zeile__var  { margin: .15rem 0 .6rem; font-size: .75rem; color: var(--n-sanft); }
+.n-zeile__fuss { display: flex; align-items: center; gap: .8rem; }
+.n-zeile__fuss .n-menge { margin: 0; }
+.n-zeile__fuss .n-menge button { width: 32px; height: 32px; font-size: 1rem; }
+.n-zeile__fuss .n-menge input { width: 34px; font-size: .875rem; }
+.n-zeile__preis { margin-left: auto; font-weight: 700; font-size: .9375rem; }
+.n-summe { display: flex; justify-content: space-between; margin-bottom: .3rem;
+           color: var(--n-sanft); font-size: .875rem; }
+.n-summe--gross { color: var(--n-text); font-size: 1.25rem; font-weight: 700;
+                  margin: .7rem 0 1rem; letter-spacing: -.02em; }
+.n-lade__sicher { display: flex; flex-wrap: wrap; justify-content: center; gap: .4rem 1.1rem;
+                  margin: 1rem 0 0; padding: 0; list-style: none;
+                  color: var(--n-sanft); font-size: .75rem; }
+.n-lade__sicher li { display: flex; align-items: center; gap: .35rem; }
+.n-lade__sicher svg { color: var(--n-akzent); }
+.n-lade__leer { text-align: center; padding: 3rem 1rem; color: var(--n-sanft); }
+
+/* =====================================================================
+   MITLAUFENDE KAUFLEISTE (Handy)
+   ===================================================================== */
+.n-leiste {
+  position: fixed; inset-inline: 0; bottom: 0; z-index: 80;
+  background: rgb(7 14 18 / .9);
+  backdrop-filter: saturate(180%) blur(18px); -webkit-backdrop-filter: saturate(180%) blur(18px);
+  border-top: 1px solid var(--n-glas-rand);
+  padding: .7rem 0 max(.7rem, env(safe-area-inset-bottom));
+  transform: translateY(115%); transition: transform .32s var(--n-weich);
+}
+.n-leiste.n-an { transform: none; }
+.n-leiste__innen { display: flex; align-items: center; gap: .85rem; }
+.n-leiste__bild { flex: none; width: 42px; height: 42px; border-radius: 11px;
+                  background: var(--n-karte); display: grid; place-items: center; overflow: hidden; }
+.n-leiste__bild img { height: 36px; width: auto; }
+.n-leiste__text { min-width: 0; }
+.n-leiste__text b { display: block; font-size: .8125rem; line-height: 1.2;
+                    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.n-leiste__text span { font-size: .8125rem; color: var(--n-sanft); }
+.n-leiste .n-knopf { margin-left: auto; flex: none; }
+@media (min-width: 940px) { .n-leiste { display: none; } }
+
+/* =====================================================================
+   PRODUKTSEITE
+   ===================================================================== */
+.n-pr { display: grid; gap: clamp(1.75rem, 4vw, 3.5rem); }
+@media (min-width: 940px) { .n-pr { grid-template-columns: 1.05fr .95fr; align-items: start; } }
+.n-pr__bild {
+  position: relative; display: grid; place-items: center; overflow: hidden;
+  border-radius: var(--n-rund-gross); background: var(--n-tief);
+  box-shadow: inset 0 0 0 1px var(--n-glas-rand);
+  min-height: clamp(340px, 56vh, 620px); padding: clamp(1.5rem, 4vw, 3rem);
+}
+.n-pr__bild::before {
+  content: ""; position: absolute; width: 90%; aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle, rgb(79 216 208 / .16), transparent 66%);
+  filter: blur(40px);
+}
+.n-pr__bild img { position: relative; z-index: 1; height: clamp(260px, 44vh, 500px); width: auto;
+                  filter: drop-shadow(0 34px 50px rgb(0 0 0 / .6)); }
+@media (min-width: 940px) { .n-pr__spalte { position: sticky; top: 90px; } }
+/* Sechs Vorschauen zu je 62 Pixeln plus Abstaende ergeben 420 Pixel.
+   Auf einem 320er Handy stehen im Textkasten aber nur 284 zur
+   Verfuegung - gemessen lief die Produktseite dadurch 118 Pixel
+   quer. Umbrechen statt abschneiden: bei 320 stehen vier in der
+   ersten und zwei in der zweiten Reihe, alle bleiben erreichbar. */
+.n-pr__mini { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .9rem; }
+.n-pr__mini a {
+  width: 62px; height: 62px; border-radius: 14px; background: var(--n-karte);
+  display: grid; place-items: center; overflow: hidden; text-decoration: none;
+  box-shadow: inset 0 0 0 1px var(--n-glas-rand); transition: box-shadow .2s ease;
+}
+.n-pr__mini a[aria-current="true"] { box-shadow: inset 0 0 0 2px var(--n-akzent); }
+.n-pr__mini img { height: 50px; width: auto; }
+
+.n-abzeichen { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.4rem 0 0; padding: 0; list-style: none; }
+.n-abzeichen li {
+  display: flex; align-items: center; gap: .4rem;
+  padding: .5rem .85rem; border-radius: 999px;
+  background: var(--n-glas); box-shadow: inset 0 0 0 1px var(--n-glas-rand);
+  font-size: .78125rem; color: var(--n-sanft);
+}
+.n-abzeichen svg { color: var(--n-akzent); flex: none; }
+
+.n-offen { margin-top: 1.4rem; }
+.n-offen summary { cursor: pointer; font-size: .875rem; font-weight: 700; color: var(--n-sanft); }
+.n-offen p { margin: .8rem 0 0; font-size: .875rem; color: var(--n-sanft); }
+
+/* =====================================================================
+   INHALTSSEITEN (erben die a-Klassen des vorherigen Aufbaus)
+   ===================================================================== */
+.a-huelle { width: min(100% - 2.25rem, var(--n-max)); margin-inline: auto; }
+.a-sr { position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+        overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+.a-seite { padding-block: clamp(3rem, 7vw, 5rem); }
+.a-seite--creme { background: var(--n-tief); }
+.a-kopfzeile { max-width: 44ch; margin-bottom: clamp(1.75rem, 4vw, 2.75rem); }
+.a-auge { margin: 0 0 .6rem; font-size: .6875rem; font-weight: 700; letter-spacing: .12em;
+          text-transform: uppercase; color: var(--n-akzent); }
+.a-titel { margin: 0; font-size: clamp(1.9rem, 4.6vw, 3rem); font-weight: 700;
+           line-height: 1.05; letter-spacing: -.03em; }
+.a-vorspann { margin: .9rem 0 0; color: var(--n-sanft); font-size: 1.0625rem; }
+.a-text { max-width: 68ch; }
+.a-text > :first-child { margin-top: 0; }
+.a-text h2 { margin: 2.5rem 0 .8rem; font-size: clamp(1.3rem,3vw,1.75rem); font-weight: 700; letter-spacing: -.02em; }
+.a-text h3 { margin: 2rem 0 .5rem; font-size: 1.0625rem; font-weight: 700; }
+.a-text h2:first-child, .a-text h3:first-child { margin-top: 0; }
+.a-text p, .a-text li { color: var(--n-sanft); }
+.a-text p { margin: 0 0 1rem; }
+.a-text ul, .a-text ol { margin: 0 0 1.2rem; padding-left: 1.2rem; }
+.a-text li { margin-bottom: .4rem; }
+.a-text a { color: var(--n-akzent); }
+.a-text strong { color: var(--n-text); }
+.a-text hr { margin: 2.2rem 0; border: 0; border-top: 1px solid var(--n-glas-rand); }
+
+.a-knopf { display:inline-flex; align-items:center; justify-content:center; gap:.6rem;
+  width:100%; min-height:56px; padding:1rem 2rem; border:0; border-radius:999px;
+  background: linear-gradient(135deg, var(--n-akzent2), var(--n-akzent));
+  color: var(--n-knopftext); font:inherit; font-weight:700; font-size:1.0625rem;
+  line-height:1; text-decoration:none; cursor:pointer;
+  box-shadow: 0 8px 30px rgb(79 216 208 / .22);
+  transition: transform .2s var(--n-weich), box-shadow .25s ease; }
+.a-knopf:hover { transform: translateY(-2px); }
+.a-knopf[disabled] { opacity:.4; cursor:not-allowed; box-shadow:none; transform:none; }
+.a-knopf--schmal { width:auto; }
+.a-knopf--leise { background: var(--n-glas); color: var(--n-text);
+                  box-shadow: inset 0 0 0 1px var(--n-glas-rand); }
+
+.a-wahl { display:flex; flex-wrap:wrap; gap:.6rem; margin-bottom:1.4rem; }
+.a-pkt { display:block; width:44px; height:44px; border:0; padding:0; border-radius:999px;
+         cursor:pointer; text-decoration:none; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .22);
+         transition: transform .2s var(--n-weich), box-shadow .2s ease; }
+.a-pkt:hover { transform: scale(1.1); }
+.a-pkt[aria-pressed="true"] { transform: scale(1.1);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / .22), 0 0 0 3px var(--n-grund), 0 0 0 5px var(--n-akzent); }
+.a-pkt--tuerkis{background:#5DE1DC} .a-pkt--gruen{background:#9BF4BC}
+.a-pkt--rosa{background:#F09BB2}    .a-pkt--grau{background:#8E9495}
+.a-pkt--schwarz{background:#4A4C4C} .a-pkt--weiss{background:#E9F3F2}
+
+.a-pr { display:grid; gap:clamp(1.75rem,4vw,3.5rem); }
+@media (min-width: 940px) { .a-pr { grid-template-columns: 1.05fr .95fr; align-items:start; } }
+.a-pr__bild { position:relative; display:grid; place-items:center; overflow:hidden;
+  border-radius: var(--n-rund-gross); background: var(--n-tief);
+  box-shadow: inset 0 0 0 1px var(--n-glas-rand);
+  min-height: clamp(340px,56vh,620px); padding: clamp(1.5rem,4vw,3rem); }
+.a-pr__bild::before { content:""; position:absolute; width:90%; aspect-ratio:1; border-radius:50%;
+  background: radial-gradient(circle, rgb(79 216 208 / .16), transparent 66%); filter: blur(40px); }
+.a-pr__bild img { position:relative; z-index:1; height:clamp(260px,44vh,500px); width:auto;
+  filter: drop-shadow(0 34px 50px rgb(0 0 0 / .6)); }
+@media (min-width: 940px) { .a-pr__spalte { position: sticky; top: 90px; } }
+.a-pr__preis { margin:0; font-size:clamp(1.8rem,4vw,2.3rem); font-weight:700; letter-spacing:-.02em; }
+.a-pr__zeile { margin:.35rem 0 1.5rem; color:var(--n-sanft); font-size:.875rem; }
+.a-pr__label { display:block; margin-bottom:.65rem; font-size:.6875rem; font-weight:700;
+               letter-spacing:.12em; text-transform:uppercase; color:var(--n-sanft); }
+.a-pr__menge { display:inline-flex; align-items:center; gap:.6rem; margin-bottom:1.4rem; }
+.a-pr__menge input, .a-pos__fuss input { min-height:48px; width:5rem; padding:.5rem .8rem;
+  border:0; border-radius:12px; box-shadow: inset 0 0 0 1px var(--n-glas-rand);
+  background: var(--n-glas); color: var(--n-text); font:inherit; font-weight:700; }
+
+.a-sicher { display:flex; flex-wrap:wrap; gap:.4rem 1.2rem; margin:1.2rem 0 0;
+            padding:0; list-style:none; color:var(--n-sanft); font-size:.8125rem; }
+.a-offen { margin-top:1.4rem; padding:1.1rem; border-radius:14px;
+           background: var(--n-glas); box-shadow: inset 0 0 0 1px var(--n-glas-rand); }
+.a-offen summary { cursor:pointer; font-size:.875rem; font-weight:700; }
+.a-offen p { margin:.8rem 0 0; font-size:.875rem; color:var(--n-sanft); }
+
+.a-fakten { display:grid; gap:1px; margin:2rem 0 0; padding:0; list-style:none;
+            border-radius:18px; overflow:hidden; background: var(--n-glas-rand); }
+@media (min-width: 620px) { .a-fakten { grid-template-columns: repeat(3,1fr); } }
+.a-fakten li { padding:1.2rem; background: var(--n-tief); }
+.a-fakten b { display:block; font-size:.9375rem; }
+.a-fakten span { display:block; margin-top:.2rem; color:var(--n-sanft); font-size:.8125rem; }
+
+.a-nah { display:grid; gap:clamp(1.75rem,4vw,3rem); align-items:center; }
+@media (min-width: 820px) { .a-nah { grid-template-columns: 1fr 1fr; } }
+.a-nah img { border-radius: var(--n-rund); width:100%; height:auto; background: var(--n-tief); }
+.a-nah h2 { margin:0 0 .8rem; font-size:clamp(1.6rem,3.6vw,2.3rem); font-weight:700; letter-spacing:-.025em; }
+.a-nah p { margin:0 0 .9rem; color:var(--n-sanft); max-width:46ch; }
+
+.a-fragen { max-width:64ch; }
+.a-frage { border-bottom: 1px solid var(--n-glas-rand); }
+.a-frage summary { display:flex; align-items:center; justify-content:space-between; gap:1rem;
+                   padding:1.25rem 0; cursor:pointer; font-weight:700; list-style:none; }
+.a-frage summary::-webkit-details-marker { display:none; }
+.a-frage summary::after { content:""; flex:none; width:12px; height:12px;
+  border-right:2px solid var(--n-akzent); border-bottom:2px solid var(--n-akzent);
+  transform: rotate(45deg) translateY(-3px); transition: transform .3s var(--n-weich); }
+.a-frage[open] summary::after { transform: rotate(-135deg) translateY(-3px); }
+.a-frage__inhalt { padding:0 0 1.3rem; color:var(--n-sanft); }
+.a-frage__inhalt p { margin:0 0 .8rem; }
+.a-frage__inhalt p:last-child { margin-bottom:0; }
+
+.a-leerbewertung { max-width:58ch; padding:clamp(1.5rem,4vw,2.4rem); border-radius: var(--n-rund);
+                   background: var(--n-glas); box-shadow: inset 0 0 0 1px var(--n-glas-rand); }
+.a-leerbewertung h2 { margin:0 0 .7rem; font-size:clamp(1.3rem,3vw,1.75rem); font-weight:700; }
+.a-leerbewertung p { margin:0 0 .8rem; color:var(--n-sanft); font-size:.9375rem; }
+.a-leerbewertung p:last-child { margin-bottom:0; }
+
+.a-korb { display:grid; gap:clamp(1.75rem,4vw,3rem); }
+@media (min-width: 940px) { .a-korb { grid-template-columns: 1.4fr .6fr; align-items:start; } }
+.a-pos { display:grid; grid-template-columns:84px 1fr; gap:1.1rem;
+         padding:1.4rem 0; border-bottom:1px solid var(--n-glas-rand); }
+.a-pos:first-child { border-top:1px solid var(--n-glas-rand); }
+.a-pos__bild { display:grid; place-items:center; height:104px; border-radius:14px;
+               background: var(--n-tief); overflow:hidden; }
+.a-pos__bild img { height:88px; width:auto; }
+.a-pos__name { margin:0; font-weight:700; font-size:.9375rem; }
+.a-pos__var { margin:.2rem 0 .7rem; color:var(--n-sanft); font-size:.8125rem; }
+.a-pos__fuss { display:flex; flex-wrap:wrap; align-items:center; gap:.7rem 1.1rem; }
+.a-pos__preis { margin-left:auto; font-weight:700; }
+.a-weg { border:0; background:none; padding:0; font:inherit; font-size:.8125rem;
+         color:var(--n-sanft); text-decoration:underline; cursor:pointer; }
+.a-summe { padding:clamp(1.4rem,3vw,1.9rem); border-radius: var(--n-rund);
+           background: var(--n-glas); box-shadow: inset 0 0 0 1px var(--n-glas-rand); }
+.a-summe__zeile { display:flex; justify-content:space-between; gap:1rem; margin-bottom:.5rem;
+                  color:var(--n-sanft); font-size:.9375rem; }
+.a-summe__gesamt { display:flex; justify-content:space-between; gap:1rem; margin:1rem 0 .4rem;
+                   padding-top:1rem; border-top:1px solid var(--n-glas-rand);
+                   font-size:1.4rem; font-weight:700; letter-spacing:-.02em; }
+.a-summe__hinweis { margin:0 0 1.3rem; color:var(--n-sanft); font-size:.8125rem; }
+.a-notiz { width:100%; min-height:84px; margin:1.2rem 0 0; padding:.8rem .9rem; border:0;
+           border-radius:12px; box-shadow: inset 0 0 0 1px var(--n-glas-rand);
+           background: var(--n-glas); color: var(--n-text); font:inherit; resize:vertical; }
+.a-leer { max-width:48ch; padding-block:clamp(1.5rem,5vh,3rem); }
+.a-leer p { color:var(--n-sanft); }
+
+.a-gitter { display:grid; gap:clamp(1.2rem,3vw,2rem);
+            grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+            margin:0; padding:0; list-style:none; }
+.a-karte { display:block; text-decoration:none; }
+.a-karte__bild { display:grid; place-items:center; border-radius: var(--n-rund); overflow:hidden;
+                 aspect-ratio:4/5; margin-bottom:.9rem; background: var(--n-tief);
+                 box-shadow: inset 0 0 0 1px var(--n-glas-rand);
+                 transition: box-shadow .3s ease, transform .3s var(--n-weich); }
+.a-karte:hover .a-karte__bild { transform: translateY(-4px); box-shadow: inset 0 0 0 1px rgb(79 216 208 / .4); }
+.a-karte__bild img { height:76%; width:auto; filter: drop-shadow(0 18px 26px rgb(0 0 0 / .55)); }
+.a-karte h2, .a-karte h3 { margin:0; font-size:.9375rem; font-weight:700; }
+.a-karte p { margin:.2rem 0 0; color:var(--n-sanft); font-size:.875rem; }
+
+.a-suchfeld { display:flex; flex-wrap:wrap; gap:.6rem; max-width:40rem; margin-bottom:2.2rem; }
+.a-suchfeld input[type="search"] { flex:1 1 14rem; min-height:52px; padding:.8rem 1.2rem; border:0;
+  border-radius:999px; box-shadow: inset 0 0 0 1px var(--n-glas-rand);
+  background: var(--n-glas); color: var(--n-text); font:inherit; }
+.a-blatt { padding-block:1.6rem; border-bottom:1px solid var(--n-glas-rand); }
+.a-blatt:first-child { border-top:1px solid var(--n-glas-rand); }
+.a-blatt h2 { margin:0 0 .3rem; font-size:clamp(1.2rem,2.8vw,1.6rem); font-weight:700; letter-spacing:-.02em; }
+.a-blatt a { text-decoration:none; }
+.a-blatt time { color:var(--n-sanft); font-size:.8125rem; }
+.a-blaettern { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:2.2rem; padding:0; list-style:none; }
+.a-blaettern a, .a-blaettern span { display:grid; place-items:center; min-width:44px; min-height:44px;
+  padding:0 .6rem; border-radius:12px; text-decoration:none; font-size:.9375rem; font-weight:700;
+  box-shadow: inset 0 0 0 1px var(--n-glas-rand); }
+.a-blaettern [aria-current="page"] { background: var(--n-akzent); color: var(--n-knopftext); box-shadow:none; }
+
+.a-form { display:grid; gap:1.1rem; max-width:34rem; }
+.a-feld { display:grid; gap:.4rem; }
+.a-feld > span { font-size:.8125rem; font-weight:700; color:var(--n-sanft); }
+.a-feld input, .a-feld textarea { min-height:52px; padding:.8rem 1rem; border:0; border-radius:12px;
+  box-shadow: inset 0 0 0 1px var(--n-glas-rand);
+  background: var(--n-glas); color: var(--n-text); font:inherit; }
+.a-feld textarea { min-height:150px; resize:vertical; }
+.a-meldung { padding:1rem 1.2rem; border-radius:14px; background: var(--n-glas);
+             box-shadow: inset 0 0 0 1px var(--n-glas-rand);
+             border-left:3px solid var(--n-akzent); margin-bottom:1.6rem; }
+.a-meldung p { margin:0; font-size:.9375rem; }
+.a-fehler { border-left-color:#FF8A80; }
+.a-fehler ul { margin:.5rem 0 0; padding-left:1.1rem; font-size:.875rem; }
+
+.a-weiter { display:flex; flex-wrap:wrap; gap:.6rem; margin-top:clamp(2rem,5vw,3rem);
+            padding-top:1.8rem; border-top:1px solid var(--n-glas-rand); }
+.a-weiter a { padding:.65rem 1.3rem; border-radius:999px; text-decoration:none; font-size:.875rem;
+              box-shadow: inset 0 0 0 1px var(--n-glas-rand); transition: background-color .2s ease; }
+.a-weiter a:hover { background: var(--n-glas); }
+@media (max-width: 939px) { .a-weiter { margin-bottom: 4.5rem; } }
+
+/* =====================================================================
+   FUSS
+   ===================================================================== */
+.n-fuss { border-top: 1px solid var(--n-glas-rand); padding-block: 3rem 6rem;
+          color: var(--n-sanft); font-size: .875rem; }
+@media (min-width: 940px) { .n-fuss { padding-bottom: 3rem; } }
+.n-fuss__raster { display: grid; gap: 2rem; margin-bottom: 2.2rem; }
+@media (min-width: 760px) { .n-fuss__raster { grid-template-columns: 1.4fr 1fr 1fr; } }
+.n-fuss h4 { margin: 0 0 .9rem; font-size: .75rem; letter-spacing: .12em;
+             text-transform: uppercase; color: var(--n-text); }
+.n-fuss ul { margin: 0; padding: 0; list-style: none; display: grid; gap: .55rem; }
+.n-fuss a { text-decoration: none; }
+.n-fuss a:hover { color: var(--n-text); }
+.n-fuss__unten { padding-top: 1.6rem; border-top: 1px solid var(--n-glas-rand);
+                 font-size: .8125rem; }

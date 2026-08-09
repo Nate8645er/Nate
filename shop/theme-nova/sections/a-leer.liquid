@@ -1,0 +1,43 @@
+{%- comment -%}
+  sections/a-leer.liquid — LET'SDRINK AMBER, Seite nicht gefunden
+  9.8.2026. Bauleitung.
+{%- endcomment -%}
+
+<div class="a-seite">
+  <div class="a-huelle">
+
+    <div class="a-kopfzeile">
+      <p class="a-auge">404</p>
+      <h1 class="a-titel">Diese Seite gibt es nicht.</h1>
+      <p class="a-vorspann">
+        Entweder ist der Link alt, oder ich habe die Seite entfernt.
+        Beides passiert in einem Shop, den eine Person allein betreibt.
+      </p>
+    </div>
+
+    <div class="a-leer">
+      <a class="a-knopf a-knopf--schmal" href="{{ routes.root_url }}">Zur Flasche</a>
+    </div>
+
+    <form class="a-suchfeld" action="{{ routes.search_url }}" method="get" role="search">
+      <label class="a-sr" for="a-q404">Suchbegriff</label>
+      <input type="search" id="a-q404" name="q" placeholder="Oder suchen" autocomplete="off">
+      <button class="a-knopf a-knopf--schmal a-knopf--leise" type="submit">Suchen</button>
+    </form>
+
+    <div class="a-weiter">
+      <a href="/pages/haeufige-fragen">Häufige Fragen</a>
+      <a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>
+      <a href="/pages/contact">Kontakt</a>
+    </div>
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Amber 404",
+  "settings": [],
+  "presets": [{ "name": "Amber 404" }]
+}
+{% endschema %}
