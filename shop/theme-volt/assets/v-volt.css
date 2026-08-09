@@ -1,0 +1,556 @@
+/* =====================================================================
+   v-volt.css — LET'SDRINK VOLT
+   9.8.2026. Bauleitung.
+
+   WARUM DIESER SHOP ANDERS AUSSIEHT ALS ALLE VORHERIGEN
+   Die bisherigen Entwuerfe (AMBER, OBSIDIAN, KINO) waren Kino: ein
+   Scroll-Film, duenne Serifenschrift, viel Ruhe, das Produkt schwebte
+   im Nebel. Schoen - aber der Inhaber vergleicht sich mit grossen
+   Dropshipping-Shops, und die sind das Gegenteil davon:
+
+     Produkt sofort da, ohne Scrollen. Preis und Kaufknopf in der
+     ersten Sekunde. Fette Schrift statt duenner. Nutzen als Reihe.
+     Eine Kaufleiste, die immer mitlaeuft.
+
+   VOLT ist genau das. Kein Film, keine Kamerafahrt, keine Serife.
+
+   DIE EINE MESSUNG, DIE ALLES BESTIMMT
+   Unser Produkt ist eine WEISSE Flasche mit tuerkiser Kappe. Gemessen
+   gegen moegliche Untergruende:
+
+     Flaschenkoerper #E9F3F2 auf Weiss  ....  1.13   verschwindet
+     Flaschenkoerper auf Mint #E6F7F4   ....  1.02   verschwindet
+     Flaschenkoerper auf Linie #E4E7EB  ....  1.10   verschwindet
+     Flaschenkoerper auf Tief #083C42   .... 10.70   sichtbar
+     Kappe #5DE1DC auf Tief             ....  7.65
+
+   Daraus folgt die Grundregel des ganzen Shops:
+     TEXT lebt auf Weiss. PRODUKT lebt auf der tiefen Kachel.
+   Nie umgekehrt. Jede Produktabbildung sitzt deshalb auf #083C42.
+
+   SCHRIFTKONTRASTE (alle ueber 4.5:1)
+     Tinte  #0A0A0B auf Weiss  ......... 19.79
+     Grau   #5A5F66 auf Weiss  .........  6.43
+     Grau   auf Mint           .........  5.81
+     Weiss  auf Tief  #083C42  ......... 12.10
+     Weiss  auf Signal #0F766E .........  5.47
+   ===================================================================== */
+
+@font-face { font-family:"Volt"; src:url("a-sans.woff2") format("woff2");
+             font-weight:400; font-display:swap; }
+@font-face { font-family:"Volt"; src:url("a-sans-bold.woff2") format("woff2");
+             font-weight:700; font-display:swap; }
+
+:root {
+  --v-weiss:  #FFFFFF;
+  --v-tinte:  #0A0A0B;
+  --v-grau:   #5A5F66;
+  --v-linie:  #E4E7EB;
+  --v-tief:   #083C42;   /* traegt das Produkt */
+  --v-mint:   #E6F7F4;
+  --v-signal: #0F766E;   /* Kaufknopf */
+  --v-signal-tief: #0B5A54;
+
+  --v-max: 1200px;
+  --v-rund: 20px;
+  --v-schatten: 0 1px 2px rgb(10 10 11 / .06), 0 8px 24px rgb(10 10 11 / .07);
+}
+
+*,*::before,*::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,*::before,*::after { animation-duration:1ms !important; transition-duration:1ms !important; }
+}
+
+body {
+  margin: 0;
+  background: var(--v-weiss);
+  color: var(--v-tinte);
+  font-family: "Volt", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 1rem; line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+img,svg,video { display:block; max-width:100%; }
+a { color: inherit; }
+:where(a,button,input,select,textarea,summary):focus-visible {
+  outline: 3px solid var(--v-signal); outline-offset: 2px; border-radius: 8px;
+}
+.v-sr { position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+        overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+.v-huelle { width: min(100% - 2rem, var(--v-max)); margin-inline: auto; }
+
+/* --- Deutsche Komposita in grossen Ueberschriften ------------------- */
+/* Gemessen bei 320 CSS-Pixeln: die Ueberschrift "Datenschutzerklaerung"
+   ist ein einziges Wort und wurde 346 Pixel breit, der Textkasten war
+   288 - die Seite lief 42 Pixel quer. Auffaellig war, dass KEIN
+   Element einen Ueberstand meldete: der Kasten blieb 288 breit, nur
+   der Text malte darueber hinaus.
+   hyphens:auto trennt sauber nach deutschen Regeln (html hat
+   lang="de-CH"). overflow-wrap ist die Rueckfallebene fuer Browser
+   ohne deutsche Trennmuster - dort bricht das Wort hart um, was
+   haesslicher, aber immer noch besser als eine querlaufende Seite ist. */
+.v-schlag, .v-titel, .a-titel, .v-schritt b, .a-nah h2,
+.a-blatt h2, .a-text h2, .a-text h3, .v-ehrlich h3 {
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+/* =====================================================================
+   BALKEN, KOPF, KAUFLEISTE
+   ===================================================================== */
+.v-balken {
+  background: var(--v-tief); color: #FFFFFF;
+  font-size: .8125rem; font-weight: 700; letter-spacing: .01em;
+  text-align: center; padding: .6rem 1rem;
+}
+.v-balken span + span::before { content: "·"; margin: 0 .6rem; opacity: .6; }
+
+.v-kopf {
+  position: sticky; top: 0; z-index: 50;
+  background: rgb(255 255 255 / .92);
+  backdrop-filter: saturate(160%) blur(12px);
+  border-bottom: 1px solid var(--v-linie);
+}
+.v-kopf__innen {
+  display: flex; align-items: center; gap: 1rem;
+  min-height: 62px;
+}
+.v-marke {
+  font-weight: 700; font-size: 1.125rem; letter-spacing: -.02em;
+  text-decoration: none; margin-right: auto;
+}
+.v-kopf__nav { display: none; gap: 1.4rem; }
+@media (min-width: 860px) { .v-kopf__nav { display: flex; } }
+.v-kopf__nav a { font-size: .875rem; font-weight: 700; text-decoration: none; color: var(--v-grau); }
+.v-kopf__nav a:hover { color: var(--v-tinte); }
+.v-korblink { font-size: .875rem; font-weight: 700; text-decoration: none; white-space: nowrap; }
+
+/* Die Kaufleiste. Auf dem Handy immer unten, auf dem Rechner erst,
+   wenn der Kaufknopf im Hero aus dem Bild gescrollt ist. */
+.v-leiste {
+  position: fixed; inset-inline: 0; bottom: 0; z-index: 60;
+  background: rgb(255 255 255 / .96);
+  backdrop-filter: saturate(160%) blur(12px);
+  border-top: 1px solid var(--v-linie);
+  padding: .7rem 0 max(.7rem, env(safe-area-inset-bottom));
+  transform: translateY(110%);
+  transition: transform .28s cubic-bezier(.16,1,.3,1);
+}
+.v-leiste.v-an { transform: none; }
+.v-leiste__innen { display: flex; align-items: center; gap: .9rem; }
+.v-leiste__bild {
+  flex: none; width: 44px; height: 44px; border-radius: 12px;
+  background: var(--v-tief); display: grid; place-items: center; overflow: hidden;
+}
+.v-leiste__bild img { height: 38px; width: auto; }
+.v-leiste__text { min-width: 0; }
+.v-leiste__text b { display: block; font-size: .8125rem; line-height: 1.2;
+                    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.v-leiste__text span { font-size: .8125rem; color: var(--v-grau); }
+.v-leiste .v-knopf { margin-left: auto; width: auto; flex: none; }
+
+/* =====================================================================
+   KNOEPFE
+   ===================================================================== */
+.v-knopf {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  min-height: 56px; padding: 1rem 1.8rem; width: 100%;
+  border: 0; border-radius: 999px;
+  background: var(--v-signal); color: #FFFFFF;
+  font: inherit; font-weight: 700; font-size: 1.0625rem; line-height: 1;
+  text-decoration: none; cursor: pointer;
+  box-shadow: 0 6px 18px rgb(15 118 110 / .28);
+  transition: transform .16s cubic-bezier(.16,1,.3,1), background-color .16s ease;
+}
+.v-knopf:hover { background: var(--v-signal-tief); }
+.v-knopf:active { transform: scale(.985); }
+.v-knopf[disabled] { opacity: .45; cursor: not-allowed; box-shadow: none; }
+.v-knopf--klein { min-height: 46px; padding: .7rem 1.3rem; font-size: .9375rem; width: auto; }
+.v-knopf--leise {
+  background: var(--v-weiss); color: var(--v-tinte);
+  box-shadow: inset 0 0 0 2px var(--v-linie);
+}
+.v-knopf--leise:hover { background: var(--v-mint); }
+
+/* =====================================================================
+   HERO — Produkt und Kaufknopf ohne Scrollen sichtbar
+   ===================================================================== */
+.v-hero { padding-block: clamp(1.5rem, 4vw, 3rem) clamp(2rem, 6vw, 4rem); }
+.v-hero__raster { display: grid; gap: clamp(1.5rem, 4vw, 3rem); grid-template-columns: 1fr; }
+@media (min-width: 900px) {
+  .v-hero__raster { grid-template-columns: 1fr 1fr; align-items: center; }
+  /* Auf dem Rechner zuerst der Text, rechts das Bild. Auf dem Handy
+     zuerst das Bild - man will sehen, was man kauft, bevor man liest. */
+}
+
+.v-buehne {
+  position: relative; order: -1;
+  border-radius: var(--v-rund); background: var(--v-tief);
+  display: grid; place-items: center;
+  padding: clamp(1.2rem, 4vw, 2.5rem);
+  min-height: clamp(280px, 46vh, 520px);
+  overflow: hidden;
+}
+@media (min-width: 900px) { .v-buehne { order: 0; min-height: clamp(420px, 62vh, 620px); } }
+.v-buehne::after {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(60% 55% at 50% 42%, rgb(93 225 220 / .22), transparent 70%);
+  pointer-events: none;
+}
+.v-buehne img {
+  position: relative; z-index: 1;
+  height: clamp(230px, 38vh, 460px); width: auto;
+  filter: drop-shadow(0 24px 40px rgb(0 0 0 / .45));
+}
+@media (min-width: 900px) { .v-buehne img { height: clamp(340px, 52vh, 540px); } }
+
+.v-schild {
+  position: absolute; z-index: 2; top: 1rem; left: 1rem;
+  background: var(--v-mint); color: var(--v-tief);
+  font-size: .75rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+  padding: .4rem .8rem; border-radius: 999px;
+}
+
+.v-schlag {
+  margin: 0 0 .8rem;
+  font-size: clamp(2.1rem, 6vw, 3.6rem); font-weight: 700;
+  line-height: 1.03; letter-spacing: -.03em;
+}
+.v-vor { margin: 0 0 1.4rem; font-size: 1.0625rem; color: var(--v-grau); max-width: 42ch; }
+
+.v-preis { display: flex; align-items: baseline; gap: .6rem; margin: 0 0 .3rem; }
+.v-preis b { font-size: clamp(1.9rem, 4.4vw, 2.5rem); font-weight: 700; letter-spacing: -.02em; }
+.v-preis span { font-size: .875rem; color: var(--v-grau); }
+.v-zeile { margin: 0 0 1.4rem; font-size: .875rem; color: var(--v-grau); }
+
+/* --- Farbwahl: gross, nicht als Nebensache ------------------------- */
+.v-farben { margin: 0 0 1.4rem; }
+.v-farben__kopf { display: flex; align-items: baseline; gap: .5rem; margin-bottom: .6rem; }
+.v-farben__kopf b { font-size: .8125rem; letter-spacing: .06em; text-transform: uppercase; }
+.v-farben__kopf span { font-size: .875rem; color: var(--v-grau); }
+.v-wahl { display: flex; flex-wrap: wrap; gap: .6rem; margin: 0; padding: 0; list-style: none; }
+.v-pkt {
+  display: block; width: 46px; height: 46px; border-radius: 999px;
+  border: 0; padding: 0; cursor: pointer; text-decoration: none;
+  box-shadow: inset 0 0 0 1px rgb(10 10 11 / .16);
+  transition: transform .16s cubic-bezier(.16,1,.3,1), box-shadow .16s ease;
+}
+.v-pkt:hover { transform: scale(1.08); }
+.v-pkt[aria-pressed="true"] {
+  transform: scale(1.08);
+  box-shadow: inset 0 0 0 1px rgb(10 10 11 / .16), 0 0 0 3px var(--v-weiss), 0 0 0 6px var(--v-signal);
+}
+.v-pkt--tuerkis{background:#5DE1DC} .v-pkt--gruen{background:#9BF4BC}
+.v-pkt--rosa{background:#F09BB2}    .v-pkt--grau{background:#8E9495}
+.v-pkt--schwarz{background:#4A4C4C} .v-pkt--weiss{background:#E9F3F2}
+
+/* --- Drei Haken direkt unter dem Kaufknopf -------------------------- */
+.v-haken { display: grid; gap: .45rem; margin: 1.1rem 0 0; padding: 0; list-style: none; }
+.v-haken li { display: flex; gap: .55rem; align-items: flex-start;
+              font-size: .9375rem; color: var(--v-grau); }
+.v-haken svg { flex: none; margin-top: .22em; color: var(--v-signal); }
+
+/* =====================================================================
+   NUTZENREIHE
+   ===================================================================== */
+.v-reihe { background: var(--v-mint); padding-block: clamp(2rem, 5vw, 3rem); }
+.v-reihe__raster {
+  display: grid; gap: 1.2rem; grid-template-columns: repeat(2, 1fr);
+  margin: 0; padding: 0; list-style: none;
+}
+@media (min-width: 800px) { .v-reihe__raster { grid-template-columns: repeat(4, 1fr); } }
+.v-reihe li { text-align: center; }
+.v-reihe .v-kreis {
+  width: 52px; height: 52px; margin: 0 auto .7rem; border-radius: 999px;
+  background: var(--v-weiss); display: grid; place-items: center; color: var(--v-signal);
+}
+.v-reihe b { display: block; font-size: .9375rem; }
+.v-reihe span { display: block; font-size: .8125rem; color: var(--v-grau); margin-top: .15rem; }
+
+/* =====================================================================
+   ABSCHNITTE ALLGEMEIN
+   ===================================================================== */
+.v-block { padding-block: clamp(2.5rem, 7vw, 4.5rem); }
+.v-block--mint { background: var(--v-mint); }
+.v-block--tief { background: var(--v-tief); color: #FFFFFF; }
+.v-block--tief .v-uber { color: rgb(255 255 255 / .72); }
+
+.v-kopfz { max-width: 40ch; margin-bottom: clamp(1.5rem, 4vw, 2.5rem); }
+.v-kopfz--mitte { margin-inline: auto; text-align: center; }
+.v-auge { margin: 0 0 .5rem; font-size: .75rem; font-weight: 700;
+          letter-spacing: .1em; text-transform: uppercase; color: var(--v-signal); }
+.v-titel { margin: 0; font-size: clamp(1.7rem, 4.4vw, 2.6rem); font-weight: 700;
+           line-height: 1.08; letter-spacing: -.025em; }
+.v-uber { margin: .7rem 0 0; color: var(--v-grau); font-size: 1.0625rem; }
+
+/* --- Drei Schritte -------------------------------------------------- */
+.v-schritte { display: grid; gap: 1.2rem; grid-template-columns: 1fr;
+              margin: 0; padding: 0; list-style: none; counter-reset: s; }
+@media (min-width: 780px) { .v-schritte { grid-template-columns: repeat(3, 1fr); } }
+.v-schritt { background: var(--v-weiss); border: 1px solid var(--v-linie);
+             border-radius: var(--v-rund); padding: 1.5rem; counter-increment: s; }
+.v-schritt::before {
+  content: counter(s); display: grid; place-items: center;
+  width: 36px; height: 36px; margin-bottom: .9rem; border-radius: 999px;
+  background: var(--v-tief); color: #FFFFFF; font-weight: 700; font-size: .9375rem;
+}
+.v-schritt b { display: block; font-size: 1.0625rem; margin-bottom: .3rem; }
+.v-schritt p { margin: 0; color: var(--v-grau); font-size: .9375rem; }
+
+/* --- Bild-und-Text -------------------------------------------------- */
+.v-duo { display: grid; gap: clamp(1.5rem, 4vw, 3rem); align-items: center; grid-template-columns: 1fr; }
+@media (min-width: 820px) { .v-duo { grid-template-columns: 1fr 1fr; } }
+.v-duo__bild { border-radius: var(--v-rund); overflow: hidden; background: var(--v-tief); }
+.v-duo__bild img { width: 100%; height: auto; }
+
+/* --- Ehrlichkeitsblock (steht da, wo sonst erfundene Sterne stehen) - */
+.v-ehrlich {
+  border: 2px solid var(--v-tief); border-radius: var(--v-rund);
+  padding: clamp(1.5rem, 4vw, 2.5rem); background: var(--v-weiss);
+}
+.v-ehrlich h3 { margin: 0 0 .6rem; font-size: 1.125rem; }
+.v-ehrlich p { margin: 0 0 .8rem; color: var(--v-grau); }
+.v-ehrlich p:last-child { margin-bottom: 0; }
+.v-ehrlich__liste { margin: 1.2rem 0 0; padding: 0; list-style: none; display: grid; gap: .6rem; }
+.v-ehrlich__liste li { display: flex; gap: .6rem; font-size: .9375rem; }
+.v-ehrlich__liste svg { flex: none; margin-top: .22em; color: var(--v-signal); }
+
+/* --- Fragen ---------------------------------------------------------- */
+.v-fragen { max-width: 62ch; margin-inline: auto; }
+.v-frage { border-bottom: 1px solid var(--v-linie); }
+.v-frage summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 1.15rem 0; cursor: pointer; font-weight: 700; list-style: none;
+}
+.v-frage summary::-webkit-details-marker { display: none; }
+.v-frage summary::after { content: "+"; flex: none; font-size: 1.5rem; font-weight: 400;
+                          line-height: 1; color: var(--v-grau); }
+.v-frage[open] summary::after { content: "\2013"; }
+.v-frage__inhalt { padding: 0 0 1.2rem; color: var(--v-grau); }
+.v-frage__inhalt p { margin: 0 0 .8rem; }
+.v-frage__inhalt p:last-child { margin-bottom: 0; }
+
+/* --- Schlussaufruf --------------------------------------------------- */
+.v-schluss { display: grid; gap: 1.5rem; place-items: center; text-align: center; }
+.v-schluss .v-knopf { width: auto; padding-inline: 3rem; }
+
+/* =====================================================================
+   FUSS
+   ===================================================================== */
+.v-fuss { background: var(--v-tinte); color: #B7BDC4; padding-block: 2.5rem 6rem; font-size: .875rem; }
+.v-fuss a { color: #B7BDC4; }
+.v-fuss ul { display: flex; flex-wrap: wrap; gap: .5rem 1.4rem;
+             margin: 0 0 1.2rem; padding: 0; list-style: none; }
+.v-fuss p { margin: 0; color: #8B9299; font-size: .8125rem; }
+@media (min-width: 900px) { .v-fuss { padding-bottom: 2.5rem; } }
+
+/* =====================================================================
+   UNTERSEITEN
+   Produkt-, Korb- und Inhaltsseiten benutzen weiterhin die a-Klassen
+   aus dem vorherigen Aufbau. Sie bekommen hier das VOLT-Aussehen -
+   deshalb steht kein einziges a-amber.css mehr im Layout.
+   ===================================================================== */
+.a-huelle { width: min(100% - 2rem, var(--v-max)); margin-inline: auto; }
+.a-sr { position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+        overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+
+.a-seite { padding-block: clamp(2.5rem, 6vw, 4rem); background: var(--v-weiss); }
+.a-seite--creme { background: var(--v-mint); }
+.a-kopfzeile { max-width: 42ch; margin-bottom: clamp(1.5rem, 4vw, 2.5rem); }
+.a-auge { margin: 0 0 .5rem; font-size: .75rem; font-weight: 700; letter-spacing: .1em;
+          text-transform: uppercase; color: var(--v-signal); }
+.a-titel { margin: 0; font-size: clamp(1.8rem, 4.6vw, 2.8rem); font-weight: 700;
+           line-height: 1.06; letter-spacing: -.025em; }
+.a-vorspann { margin: .8rem 0 0; color: var(--v-grau); font-size: 1.0625rem; }
+
+.a-text { max-width: 68ch; }
+.a-text > :first-child { margin-top: 0; }
+.a-text h2 { margin: 2.4rem 0 .7rem; font-size: clamp(1.3rem, 3vw, 1.7rem);
+             font-weight: 700; letter-spacing: -.02em; }
+.a-text h3 { margin: 1.9rem 0 .5rem; font-size: 1.0625rem; font-weight: 700; }
+.a-text h2:first-child, .a-text h3:first-child { margin-top: 0; }
+.a-text p, .a-text li { color: var(--v-grau); }
+.a-text p { margin: 0 0 1rem; }
+.a-text ul, .a-text ol { margin: 0 0 1.2rem; padding-left: 1.2rem; }
+.a-text li { margin-bottom: .4rem; }
+.a-text a { color: var(--v-signal); }
+.a-text strong { color: var(--v-tinte); }
+.a-text hr { margin: 2.2rem 0; border: 0; border-top: 1px solid var(--v-linie); }
+
+/* Produktseite */
+.a-pr { display: grid; gap: clamp(1.5rem, 4vw, 3rem); grid-template-columns: 1fr; }
+@media (min-width: 900px) { .a-pr { grid-template-columns: 1fr 1fr; } }
+.a-pr__bild {
+  position: relative; display: grid; place-items: center; overflow: hidden;
+  border-radius: var(--v-rund); background: var(--v-tief);
+  min-height: clamp(300px, 50vh, 560px); padding: clamp(1.2rem, 4vw, 2.5rem);
+}
+.a-pr__bild::before {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(60% 55% at 50% 42%, rgb(93 225 220 / .22), transparent 70%);
+}
+.a-pr__bild img { position: relative; z-index: 1; height: clamp(240px, 42vh, 480px); width: auto;
+                  filter: drop-shadow(0 24px 40px rgb(0 0 0 / .45)); }
+@media (min-width: 900px) { .a-pr__spalte { position: sticky; top: 82px; } }
+.a-pr__preis { margin: 0; font-size: clamp(1.9rem, 4.4vw, 2.5rem); font-weight: 700; letter-spacing: -.02em; }
+.a-pr__zeile { margin: .35rem 0 1.5rem; color: var(--v-grau); font-size: .875rem; }
+.a-pr__label { display: block; margin-bottom: .6rem; font-size: .75rem; font-weight: 700;
+               letter-spacing: .1em; text-transform: uppercase; color: var(--v-grau); }
+.a-pr__menge { display: inline-flex; align-items: center; gap: .6rem; margin-bottom: 1.3rem; }
+.a-pr__menge input, .a-pos__fuss input {
+  min-height: 48px; padding: .5rem .8rem; width: 5rem;
+  border: 2px solid var(--v-linie); border-radius: 12px;
+  background: var(--v-weiss); color: var(--v-tinte); font: inherit; font-weight: 700;
+}
+
+.a-wahl { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1.4rem; }
+.a-pkt { display:block; width:46px; height:46px; border:0; padding:0; border-radius:999px;
+         cursor:pointer; text-decoration:none;
+         box-shadow: inset 0 0 0 1px rgb(10 10 11 / .16);
+         transition: transform .16s cubic-bezier(.16,1,.3,1), box-shadow .16s ease; }
+.a-pkt:hover { transform: scale(1.08); }
+.a-pkt[aria-pressed="true"] { transform: scale(1.08);
+  box-shadow: inset 0 0 0 1px rgb(10 10 11 / .16), 0 0 0 3px var(--v-weiss), 0 0 0 6px var(--v-signal); }
+.a-pkt--tuerkis{background:#5DE1DC} .a-pkt--gruen{background:#9BF4BC}
+.a-pkt--rosa{background:#F09BB2}    .a-pkt--grau{background:#8E9495}
+.a-pkt--schwarz{background:#4A4C4C} .a-pkt--weiss{background:#E9F3F2}
+
+.a-knopf {
+  display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+  width:100%; min-height:56px; padding:1rem 1.8rem; border:0; border-radius:999px;
+  background: var(--v-signal); color:#FFFFFF; font:inherit; font-weight:700;
+  font-size:1.0625rem; line-height:1; text-decoration:none; cursor:pointer;
+  box-shadow: 0 6px 18px rgb(15 118 110 / .28);
+  transition: transform .16s cubic-bezier(.16,1,.3,1), background-color .16s ease;
+}
+.a-knopf:hover { background: var(--v-signal-tief); }
+.a-knopf:active { transform: scale(.985); }
+.a-knopf[disabled] { opacity:.45; cursor:not-allowed; box-shadow:none; }
+.a-knopf--schmal { width:auto; padding-inline:2.2rem; }
+.a-knopf--leise { background: var(--v-weiss); color: var(--v-tinte);
+                  box-shadow: inset 0 0 0 2px var(--v-linie); }
+
+.a-sicher { display:flex; flex-wrap:wrap; gap:.4rem 1.2rem; margin:1.1rem 0 0;
+            padding:0; list-style:none; color:var(--v-grau); font-size:.8125rem; }
+.a-offen { margin-top:1.3rem; padding:1.1rem; border:1px solid var(--v-linie);
+           border-radius:14px; background: var(--v-mint); }
+.a-offen summary { cursor:pointer; font-size:.875rem; font-weight:700; }
+.a-offen p { margin:.7rem 0 0; font-size:.875rem; color:var(--v-grau); }
+
+.a-fakten { display:grid; gap:1px; margin:2rem 0 0; padding:0; list-style:none;
+            background: var(--v-linie); border:1px solid var(--v-linie);
+            border-radius:16px; overflow:hidden; }
+@media (min-width: 620px) { .a-fakten { grid-template-columns: repeat(3, 1fr); } }
+.a-fakten li { padding:1.1rem 1.2rem; background: var(--v-weiss); }
+.a-fakten b { display:block; font-size:.9375rem; }
+.a-fakten span { display:block; margin-top:.15rem; color:var(--v-grau); font-size:.8125rem; }
+
+.a-nah { display:grid; gap:clamp(1.5rem,4vw,3rem); align-items:center; grid-template-columns:1fr; }
+@media (min-width: 800px) { .a-nah { grid-template-columns: 1fr 1fr; } }
+.a-nah img { border-radius: var(--v-rund); width:100%; height:auto; background: var(--v-tief); }
+.a-nah h2 { margin:0 0 .7rem; font-size:clamp(1.5rem,3.6vw,2.2rem); font-weight:700; letter-spacing:-.02em; }
+.a-nah p { margin:0 0 .8rem; color:var(--v-grau); max-width:46ch; }
+
+.a-fragen { max-width: 62ch; }
+.a-frage { border-bottom: 1px solid var(--v-linie); }
+.a-frage summary { display:flex; align-items:center; justify-content:space-between; gap:1rem;
+                   padding:1.15rem 0; cursor:pointer; font-weight:700; list-style:none; }
+.a-frage summary::-webkit-details-marker { display:none; }
+.a-frage summary::after { content:"+"; flex:none; font-size:1.5rem; font-weight:400;
+                          line-height:1; color:var(--v-grau); }
+.a-frage[open] summary::after { content:"\2013"; }
+.a-frage__inhalt { padding:0 0 1.2rem; color:var(--v-grau); }
+.a-frage__inhalt p { margin:0 0 .8rem; }
+.a-frage__inhalt p:last-child { margin-bottom:0; }
+
+.a-leerbewertung { max-width:56ch; padding:clamp(1.5rem,4vw,2.4rem);
+                   border:2px solid var(--v-tief); border-radius: var(--v-rund);
+                   background: var(--v-weiss); }
+.a-leerbewertung h2 { margin:0 0 .6rem; font-size:clamp(1.3rem,3vw,1.7rem); font-weight:700; }
+.a-leerbewertung p { margin:0 0 .8rem; color:var(--v-grau); font-size:.9375rem; }
+.a-leerbewertung p:last-child { margin-bottom:0; }
+
+/* Warenkorb */
+.a-korb { display:grid; gap:clamp(1.5rem,4vw,3rem); grid-template-columns:1fr; }
+@media (min-width: 900px) { .a-korb { grid-template-columns: 1.4fr .6fr; align-items:start; } }
+.a-pos { display:grid; grid-template-columns:84px 1fr; gap:1.1rem;
+         padding:1.3rem 0; border-bottom:1px solid var(--v-linie); }
+.a-pos:first-child { border-top:1px solid var(--v-linie); }
+.a-pos__bild { display:grid; place-items:center; height:100px; border-radius:14px;
+               background: var(--v-tief); overflow:hidden; }
+.a-pos__bild img { height:84px; width:auto; }
+.a-pos__name { margin:0; font-weight:700; font-size:.9375rem; }
+.a-pos__var { margin:.2rem 0 .7rem; color:var(--v-grau); font-size:.8125rem; }
+.a-pos__fuss { display:flex; flex-wrap:wrap; align-items:center; gap:.7rem 1.1rem; }
+.a-pos__preis { margin-left:auto; font-weight:700; }
+.a-weg { border:0; background:none; padding:0; font:inherit; font-size:.8125rem;
+         color:var(--v-grau); text-decoration:underline; cursor:pointer; }
+.a-summe { padding:clamp(1.3rem,3vw,1.8rem); border-radius: var(--v-rund);
+           background: var(--v-mint); }
+.a-summe__zeile { display:flex; justify-content:space-between; gap:1rem;
+                  margin-bottom:.5rem; color:var(--v-grau); font-size:.9375rem; }
+.a-summe__gesamt { display:flex; justify-content:space-between; gap:1rem;
+                   margin:.9rem 0 .4rem; padding-top:.9rem;
+                   border-top:1px solid rgb(10 10 11 / .12);
+                   font-size:1.4rem; font-weight:700; letter-spacing:-.02em; }
+.a-summe__hinweis { margin:0 0 1.3rem; color:var(--v-grau); font-size:.8125rem; }
+.a-notiz { width:100%; min-height:84px; margin:1.2rem 0 0; padding:.7rem .8rem;
+           border:2px solid var(--v-linie); border-radius:12px;
+           background:var(--v-weiss); color:var(--v-tinte); font:inherit; resize:vertical; }
+
+.a-leer { max-width:48ch; padding-block:clamp(1.5rem,5vh,3rem); }
+.a-leer p { color:var(--v-grau); }
+
+/* Listen, Suche, Blog, Formular */
+.a-gitter { display:grid; gap:clamp(1.2rem,3vw,2rem);
+            grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+            margin:0; padding:0; list-style:none; }
+.a-karte { display:block; text-decoration:none; }
+.a-karte__bild { display:grid; place-items:center; border-radius: var(--v-rund);
+                 overflow:hidden; aspect-ratio:4/5; margin-bottom:.8rem;
+                 background: var(--v-tief); }
+.a-karte__bild img { height:76%; width:auto; filter:drop-shadow(0 16px 22px rgb(0 0 0 / .4)); }
+.a-karte h2, .a-karte h3 { margin:0; font-size:.9375rem; font-weight:700; }
+.a-karte p { margin:.2rem 0 0; color:var(--v-grau); font-size:.875rem; }
+
+.a-suchfeld { display:flex; flex-wrap:wrap; gap:.6rem; max-width:40rem; margin-bottom:2.2rem; }
+.a-suchfeld input[type="search"] { flex:1 1 14rem; min-height:52px; padding:.7rem 1.1rem;
+  border:2px solid var(--v-linie); border-radius:999px;
+  background:var(--v-weiss); color:var(--v-tinte); font:inherit; }
+
+.a-blatt { padding-block:1.5rem; border-bottom:1px solid var(--v-linie); }
+.a-blatt:first-child { border-top:1px solid var(--v-linie); }
+.a-blatt h2 { margin:0 0 .3rem; font-size:clamp(1.2rem,2.8vw,1.6rem); font-weight:700; letter-spacing:-.02em; }
+.a-blatt a { text-decoration:none; }
+.a-blatt time { color:var(--v-grau); font-size:.8125rem; }
+
+.a-blaettern { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:2.2rem; padding:0; list-style:none; }
+.a-blaettern a, .a-blaettern span { display:grid; place-items:center; min-width:44px; min-height:44px;
+  padding:0 .6rem; border-radius:12px; text-decoration:none; font-size:.9375rem; font-weight:700;
+  box-shadow: inset 0 0 0 2px var(--v-linie); }
+.a-blaettern [aria-current="page"] { background:var(--v-signal); color:#FFFFFF; box-shadow:none; }
+
+.a-form { display:grid; gap:1rem; max-width:34rem; }
+.a-feld { display:grid; gap:.35rem; }
+.a-feld > span { font-size:.8125rem; font-weight:700; color:var(--v-grau); }
+.a-feld input, .a-feld textarea { min-height:52px; padding:.7rem .9rem;
+  border:2px solid var(--v-linie); border-radius:12px;
+  background:var(--v-weiss); color:var(--v-tinte); font:inherit; }
+.a-feld textarea { min-height:150px; resize:vertical; }
+.a-meldung { padding:1rem 1.2rem; border-radius:14px; background:var(--v-mint);
+             border-left:4px solid var(--v-signal); margin-bottom:1.5rem; }
+.a-meldung p { margin:0; font-size:.9375rem; }
+.a-fehler { border-left-color:#B42318; }
+.a-fehler ul { margin:.5rem 0 0; padding-left:1.1rem; font-size:.875rem; }
+
+.a-weiter { display:flex; flex-wrap:wrap; gap:.6rem; margin-top:clamp(2rem,5vw,3rem);
+            padding-top:1.8rem; border-top:1px solid var(--v-linie); }
+.a-weiter a { padding:.6rem 1.2rem; border-radius:999px; text-decoration:none;
+              font-size:.875rem; font-weight:700; box-shadow: inset 0 0 0 2px var(--v-linie); }
+.a-weiter a:hover { background: var(--v-mint); }
+
+/* Auf dem Handy laeuft die Kaufleiste unten mit - der Fuss braucht
+   Platz darunter, sonst verdeckt sie die letzten Links. */
+@media (max-width: 899px) { .a-weiter { margin-bottom: 4rem; } }

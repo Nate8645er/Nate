@@ -1,0 +1,355 @@
+{%- comment -%}
+  sections/v-start.liquid — LET'SDRINK VOLT, Startseite
+  9.8.2026. Bauleitung.
+
+  AUFBAU NACH DEM MUSTER DER GROSSEN DROPSHIPPING-SHOPS
+  Produkt und Kaufknopf ohne Scrollen. Dann Nutzen, dann Ablauf, dann
+  Farben, dann Vertrauen, dann Fragen, dann letzter Aufruf. Genau die
+  Reihenfolge, die dort ueberall steht.
+
+  WAS ICH AN DIESEM MUSTER NICHT UEBERNOMMEN HABE UND WARUM
+  Diese Shops fuellen den Vertrauensteil mit erfundenen Sternen,
+  "15.000 zufriedene Kunden", Countdown und "nur noch 3 auf Lager".
+  Dieser Shop hat NULL Bestellungen. Solche Angaben waeren nach UWG
+  Art. 3 unlauter und ein Sperrgrund bei Shopify. An der Stelle steht
+  deshalb ein Block, der sagt, was wir nicht wissen - das ist der
+  einzige Vertrauensbeweis, den wir zum Start ehrlich fuehren koennen.
+
+  WEITERE ROTE LINIEN
+  - Keine Produktangabe ausser 550 ml und sechs Farben. Nichts ueber
+    Material, Dichtigkeit, Masse, Gewicht oder Spuelmaschine.
+  - Nur Wasser.
+  - Preis immer aus Liquid.
+  - Versandangaben aus dem Versandprofil des Shops: Schweiz gratis,
+    uebrige Laender CHF 1.50.
+{%- endcomment -%}
+
+{%- liquid
+  assign lp = all_products['trinkflasche-napf-hund-katze']
+  assign v = lp.selected_or_first_available_variant
+  assign slug = v.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase
+-%}
+
+{%- comment -%} ==================================================== HERO {%- endcomment -%}
+<section class="v-hero">
+  <div class="v-huelle v-hero__raster">
+
+    <div class="v-buehne">
+      <p class="v-schild">550 ml · 6 Farben</p>
+      <img src="{{ 'a-flasche-' | append: slug | append: '.webp' | asset_url }}"
+           alt="Trinkflasche mit fest angebautem Napf für Hund und Katze, 550 ml"
+           data-alt-vorlage="Trinkflasche mit fest angebautem Napf für Hund und Katze, 550 ml, in %s"
+           width="650" height="2212" fetchpriority="high" decoding="async" data-hauptbild>
+    </div>
+
+    <div>
+      <h1 class="v-schlag">Wasser für deinen Hund.<br>Überall.</h1>
+      <p class="v-vor">
+        Knopf drücken, der Napf füllt sich. Aufrichten, und das übrige
+        Wasser läuft zurück in die Flasche. Eine Hand reicht – die Leine
+        bleibt in der anderen.
+      </p>
+
+      <form method="post" action="{{ routes.cart_add_url }}" id="kaufen">
+        <input type="hidden" name="form_type" value="product">
+        <input type="hidden" name="utf8" value="✓">
+        <input type="hidden" name="id" value="{{ v.id }}" data-variantenfeld>
+
+        <p class="v-preis">
+          <b>{{ v.price | money }}</b>
+          <span>inkl. MwSt · Gratisversand Schweiz</span>
+        </p>
+        <p class="v-zeile">Ein Preis für alle sechs Farben.</p>
+
+        <div class="v-farben">
+          <div class="v-farben__kopf">
+            <b id="v-farblabel">Farbe</b>
+            <span data-farbname>{{ v.option1 }}</span>
+          </div>
+          {%- comment -%}
+            Echte Verweise auf ?variant=. Ohne JavaScript waehlt man die
+            Farbe mit einem Neuladen - der Shop bleibt vollstaendig
+            benutzbar. Mit JavaScript tauscht v-volt.js nur das Bild.
+          {%- endcomment -%}
+          <ul class="v-wahl" role="group" aria-labelledby="v-farblabel">
+            {%- for var in lp.variants -%}
+              {%- assign s = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
+              <li>
+                <a class="v-pkt v-pkt--{{ s }}" href="{{ lp.url }}?variant={{ var.id }}"
+                   role="button" data-farbe
+                   data-variante="{{ var.id }}"
+                   data-name="{{ var.option1 | escape }}"
+                   data-bild="{{ 'a-flasche-' | append: s | append: '.webp' | asset_url }}"
+                   aria-pressed="{% if var.id == v.id %}true{% else %}false{% endif %}">
+                  <span class="v-sr">{{ var.option1 }}{% unless var.available %} – zurzeit nicht lieferbar{% endunless %}</span>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+
+        <button class="v-knopf" type="submit" data-leiste-anker
+                {% unless v.available %}disabled{% endunless %}>
+          {%- if v.available -%}In den Warenkorb{%- else -%}Zurzeit nicht lieferbar{%- endif -%}
+        </button>
+
+        <ul class="v-haken">
+          <li>
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>
+            Gratisversand in der Schweiz, ins Ausland CHF 1.50
+          </li>
+          <li>
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>
+            14 Tage Rückgaberecht, ohne Begründung
+          </li>
+          <li>
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>
+            Läuft sie aus, bekommst du Ersatz oder dein Geld zurück
+          </li>
+        </ul>
+      </form>
+    </div>
+
+  </div>
+</section>
+
+{%- comment -%} =============================================== NUTZENREIHE {%- endcomment -%}
+<section class="v-reihe">
+  <div class="v-huelle">
+    <ul class="v-reihe__raster">
+      <li>
+        <div class="v-kreis"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c-3 4-5.5 6.6-5.5 9.5a5.5 5.5 0 0 0 11 0C17.5 9.6 15 7 12 3Z"/></svg></div>
+        <b>550 ml</b><span>Eine Füllung, mehrere Pausen</span>
+      </li>
+      <li>
+        <div class="v-kreis"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 2.5"/></svg></div>
+        <b>Eine Hand</b><span>Knopf drücken, fertig</span>
+      </li>
+      <li>
+        <div class="v-kreis"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></div>
+        <b>Ein Teil</b><span>Napf fest angebaut</span>
+      </li>
+      <li>
+        <div class="v-kreis"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="2.6"/><circle cx="17" cy="7" r="2.6"/><circle cx="4.5" cy="14" r="2.2"/><circle cx="19.5" cy="14" r="2.2"/><path d="M12 12c-2.8 0-4.6 2.3-4.6 4.4 0 1.7 1.3 2.8 3 2.8h3.2c1.7 0 3-1.1 3-2.8C16.6 14.3 14.8 12 12 12Z"/></svg></div>
+        <b>Sechs Farben</b><span>Alle zum gleichen Preis</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+{%- comment -%} ================================================= SO GEHT'S {%- endcomment -%}
+<section class="v-block" id="so">
+  <div class="v-huelle">
+    <div class="v-kopfz v-kopfz--mitte">
+      <p class="v-auge">So funktioniert's</p>
+      <h2 class="v-titel">Drei Sekunden, eine Hand.</h2>
+    </div>
+
+    <ol class="v-schritte">
+      <li class="v-schritt">
+        <b>Knopf drücken</b>
+        <p>Das Wasser läuft aus der Flasche in den Napf. Du hältst nur die Flasche.</p>
+      </li>
+      <li class="v-schritt">
+        <b>Trinken lassen</b>
+        <p>Der Napf ist niedrig genug für kleine Hunde und für Katzen an der Leine.</p>
+      </li>
+      <li class="v-schritt">
+        <b>Aufrichten</b>
+        <p>Das übrige Wasser läuft zurück in die Flasche. Nichts bleibt im Napf stehen.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+{%- comment -%} =============================================== NAHAUFNAHME {%- endcomment -%}
+<section class="v-block v-block--mint">
+  <div class="v-huelle">
+    <div class="v-duo">
+      <div class="v-duo__bild">
+        <img src="{{ 'a-detail-knopf.webp' | asset_url }}"
+             alt="Nahaufnahme des Knopfs an der Flasche"
+             width="900" height="900" loading="lazy" decoding="async">
+      </div>
+      <div>
+        <p class="v-auge">Der Knopf</p>
+        <h2 class="v-titel">Kein zweites Teil, das du vergessen kannst.</h2>
+        <p class="v-uber">
+          Der Napf ist fest angebaut. Es gibt nichts zum Abschrauben,
+          nichts zum Mitnehmen und nichts, was im Auto liegen bleibt.
+        </p>
+        <p class="v-uber">
+          Nur Wasser einfüllen. Andere Flüssigkeiten hinterlassen
+          Rückstände, die den Mechanismus verkleben.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} =================================================== FARBEN {%- endcomment -%}
+<section class="v-block v-block--tief">
+  <div class="v-huelle">
+    <div class="v-kopfz v-kopfz--mitte">
+      <p class="v-auge" style="color:#5DE1DC">Sechs Farben</p>
+      <h2 class="v-titel">Such dir eine aus.</h2>
+      <p class="v-uber">Alle 550 ml, alle zum gleichen Preis.</p>
+    </div>
+
+    {%- comment -%}
+      Direkt ueber die Varianten des Produkts, nicht ueber eine fest
+      geschriebene Farbliste: faellt eine Variante weg oder kommt eine
+      dazu, stimmt diese Kachelreihe weiterhin.
+    {%- endcomment -%}
+    <ul class="a-gitter">
+      {%- for var in lp.variants -%}
+        {%- assign s = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
+        <li>
+          <a class="a-karte" href="{{ lp.url }}?variant={{ var.id }}">
+            <div class="a-karte__bild" style="background:#0B4A52">
+              <img src="{{ 'a-flasche-' | append: s | append: '.webp' | asset_url }}"
+                   alt="Trinkflasche in {{ var.option1 | escape }}"
+                   width="650" height="2212" loading="lazy" decoding="async">
+            </div>
+            <h3 style="color:#FFFFFF">{{ var.option1 }}</h3>
+            <p style="color:rgb(255 255 255 / .72)">{{ var.price | money }}</p>
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</section>
+
+{%- comment -%} ================================================ EHRLICHKEIT {%- endcomment -%}
+<section class="v-block">
+  <div class="v-huelle">
+    <div class="v-kopfz">
+      <p class="v-auge">Statt Bewertungen</p>
+      <h2 class="v-titel">Wir sind neu. Und sagen das auch.</h2>
+    </div>
+
+    <div class="v-ehrlich">
+      <h3>Was wir über diese Flasche nicht wissen</h3>
+      <p>
+        Wir haben keine schriftliche Zusicherung des Lieferanten, dass
+        sie unter allen Umständen dicht ist – deshalb behaupten wir es
+        auch nicht. Transportiere sie am besten aufrecht. Läuft deine
+        Flasche trotzdem aus, ist das ein Reklamationsfall: Du bekommst
+        Ersatz oder dein Geld zurück.
+      </p>
+      <p>
+        Ob sie in die Spülmaschine darf, wissen wir nicht. Also sagen wir
+        es auch nicht. Spül sie von Hand mit warmem Wasser aus und lass
+        sie offen trocknen.
+      </p>
+      <p>
+        Ich bin Nate und betreibe diesen Shop allein in Rapperswil-Jona.
+        Es gibt kein eigenes Lager – deshalb dauert der Versand 7 bis 14
+        Werktage.
+      </p>
+
+      <ul class="v-ehrlich__liste">
+        <li>
+          <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>
+          Keine erfundenen Bewertungen. Der Shop hat noch keine Bestellung ausgeliefert.
+        </li>
+        <li>
+          <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>
+          Kein Countdown und kein „nur noch 3 auf Lager“.
+        </li>
+        <li>
+          <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>
+          Sobald die ersten Flaschen unterwegs waren, frage ich nach – auch nach der Kritik.
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} =================================================== FRAGEN {%- endcomment -%}
+<section class="v-block v-block--mint" id="fragen">
+  <div class="v-huelle">
+    <div class="v-kopfz v-kopfz--mitte">
+      <p class="v-auge">Bevor du bestellst</p>
+      <h2 class="v-titel">Häufige Fragen</h2>
+    </div>
+
+    <div class="v-fragen">
+      <details class="v-frage" open>
+        <summary>Wie viel passt hinein?</summary>
+        <div class="v-frage__inhalt">
+          <p>550 ml. Weil der Rest nach jedem Trinken zurückläuft, reicht eine Füllung für mehrere Pausen.</p>
+        </div>
+      </details>
+
+      <details class="v-frage">
+        <summary>Läuft sie im Rucksack aus?</summary>
+        <div class="v-frage__inhalt">
+          <p>
+            Wir haben keine schriftliche Zusicherung des Lieferanten, dass
+            sie unter allen Umständen dicht ist – deshalb behaupten wir es
+            auch nicht. Transportiere sie am besten aufrecht. Läuft deine
+            Flasche trotzdem aus, ist das ein Reklamationsfall: Du bekommst
+            Ersatz oder dein Geld zurück.
+          </p>
+        </div>
+      </details>
+
+      <details class="v-frage">
+        <summary>Was darf ich einfüllen?</summary>
+        <div class="v-frage__inhalt">
+          <p>Nur Wasser. Andere Flüssigkeiten hinterlassen Rückstände, die den Mechanismus verkleben.</p>
+        </div>
+      </details>
+
+      <details class="v-frage">
+        <summary>Geht das auch für Katzen?</summary>
+        <div class="v-frage__inhalt">
+          <p>Ja – für Katzen, die mitfahren oder an der Leine laufen. Der Napf ist niedrig genug.</p>
+        </div>
+      </details>
+
+      <details class="v-frage">
+        <summary>Was kostet der Versand, und wie lange dauert er?</summary>
+        <div class="v-frage__inhalt">
+          <p>
+            Innerhalb der Schweiz ist der Versand gratis. In die übrigen
+            Länder kostet er CHF 1.50. Die Lieferzeit beträgt 7 bis 14
+            Werktage, mit Sendungsverfolgung per E-Mail.
+          </p>
+        </div>
+      </details>
+
+      <details class="v-frage">
+        <summary>Und wenn sie mir nicht gefällt?</summary>
+        <div class="v-frage__inhalt">
+          <p>
+            Du hast 14 Tage Rückgaberecht, ohne Begründung. Schreib mir über das
+            <a href="/pages/contact">Kontaktformular</a>, dann klären wir die Rücksendung.
+            Die Einzelheiten stehen unter
+            <a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>.
+          </p>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+{%- comment -%} ================================================== SCHLUSS {%- endcomment -%}
+<section class="v-block v-block--tief">
+  <div class="v-huelle v-schluss">
+    <h2 class="v-titel">Bereit für den nächsten Weg?</h2>
+    <p class="v-uber" style="margin:0">
+      {{ v.price | money }} · Gratisversand in der Schweiz · 14 Tage Rückgabe
+    </p>
+    <a class="v-knopf" href="#kaufen">Flasche aussuchen</a>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "VOLT Startseite",
+  "settings": [],
+  "presets": [{ "name": "VOLT Startseite" }]
+}
+{% endschema %}

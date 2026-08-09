@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#083C42">
+
+  {%- liquid
+    assign ist_start = false
+    if template.name == 'index'
+      assign ist_start = true
+    endif
+    assign lp = all_products['trinkflasche-napf-hund-katze']
+    assign lv = lp.selected_or_first_available_variant
+    assign zeig_leiste = false
+    if ist_start or template.name == 'product'
+      assign zeig_leiste = true
+    endif
+    assign kaufziel = routes.root_url
+    if lp != empty
+      assign kaufziel = lp.url
+    endif
+    if zeig_leiste
+      assign kaufziel = '#kaufen'
+    endif
+  -%}
+
+  {%- capture t -%}{% if ist_start %}Trinkflasche mit Napf für Hund & Katze – 550 ml | Let'sDrink{% else %}{{ page_title }} – Let'sDrink{% endif %}{%- endcapture -%}
+  {%- capture b -%}{% if page_description %}{{ page_description }}{% else %}Knopf drücken, der Napf füllt sich. Aufrichten, und das übrige Wasser läuft zurück. 550 ml, sechs Farben. Gratisversand in der Schweiz.{% endif %}{%- endcapture -%}
+  <title>{{ t | strip }}</title>
+  <meta name="description" content="{{ b | strip_html | strip | escape }}">
+  <link rel="canonical" href="{{ canonical_url }}">
+  <meta name="robots" content="{% if template.name == 'cart' or template.name == 'search' or template.name == '404' %}noindex,follow{% else %}index,follow,max-image-preview:large{% endif %}">
+
+  {%- comment -%}
+    Ohne aggregateRating und ohne review: der Shop hat null
+    Bestellungen. Eine erfundene Bewertung ist nach UWG Art. 3 unlauter
+    - und Shopify sperrt Stores dafuer.
+  {%- endcomment -%}
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Organization","name":"Let'sDrink",
+   "url":"{{ shop.url }}/","address":{"@type":"PostalAddress",
+   "addressLocality":"Rapperswil-Jona","addressRegion":"SG","addressCountry":"CH"}}
+  </script>
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23083C42'/%3E%3Cpath d='M12 4.5C9.3 8.1 6.6 10.8 6.6 14.4a5.4 5.4 0 0 0 10.8 0c0-3.6-2.7-6.3-5.4-9.9Z' fill='%235DE1DC'/%3E%3C/svg%3E">
+
+  <link rel="preload" as="font" type="font/woff2" href="{{ 'a-sans.woff2' | asset_url }}" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="{{ 'a-sans-bold.woff2' | asset_url }}" crossorigin>
+  {%- if zeig_leiste -%}
+    <link rel="preload" as="image" href="{{ 'a-flasche-tuerkis.webp' | asset_url }}" fetchpriority="high">
+  {%- endif -%}
+
+  {{ 'v-volt.css' | asset_url | stylesheet_tag }}
+
+  {%- comment -%}
+    Rund 2 KB eigenes Skript, keine Bibliothek von aussen. Der
+    vorherige Aufbau lud GSAP und ScrollTrigger (116 KB) fuer eine
+    Kamerafahrt, die es hier nicht gibt.
+  {%- endcomment -%}
+  <script src="{{ 'v-volt.js' | asset_url }}" defer></script>
+
+  {{ content_for_header }}
+</head>
+<body>
+  <a class="v-sr" href="#inhalt">Zum Inhalt springen</a>
+
+  {%- comment -%}
+    Der Balken nennt nur, was nachweislich stimmt: das Versandprofil
+    dieses Shops sagt Schweiz gratis, uebrige Laender CHF 1.50.
+    Kein Countdown, keine "nur heute"-Zeile.
+  {%- endcomment -%}
+  <div class="v-balken">
+    <span>Gratisversand in der Schweiz</span><span>14 Tage Rückgabe</span><span>Versand in 7–14 Werktagen</span>
+  </div>
+
+  <header class="v-kopf">
+    <div class="v-huelle v-kopf__innen">
+      <a class="v-marke" href="{{ routes.root_url }}">Let'sDrink</a>
+      <nav class="v-kopf__nav" aria-label="Hauptnavigation">
+        <a href="{{ routes.root_url }}#so">So funktioniert's</a>
+        <a href="{{ routes.root_url }}#fragen">Fragen</a>
+        <a href="/pages/versand-und-rueckgabe">Versand</a>
+      </nav>
+      <a class="v-korblink" href="{{ routes.cart_url }}">
+        Korb{% if cart.item_count > 0 %} ({{ cart.item_count }}){% endif %}
+      </a>
+      <a class="v-knopf v-knopf--klein" href="{{ kaufziel }}">Kaufen</a>
+    </div>
+  </header>
+
+  <main id="inhalt">
+    {{ content_for_layout }}
+  </main>
+
+  {%- comment -%}
+    Die mitlaufende Kaufleiste. Sie erscheint erst, wenn der Kaufknopf
+    im Hero aus dem Bild gescrollt ist - vorher waere sie doppelt.
+    Ohne JavaScript bleibt sie unsichtbar; gekauft werden kann dann
+    ueber das Formular weiter oben.
+  {%- endcomment -%}
+  {%- if zeig_leiste and lp != empty -%}
+    <div class="v-leiste" data-leiste>
+      <div class="v-huelle v-leiste__innen">
+        <div class="v-leiste__bild">
+          <img src="{{ 'a-flasche-tuerkis.webp' | asset_url }}" alt=""
+               width="650" height="2212" data-leistenbild loading="lazy" decoding="async">
+        </div>
+        <div class="v-leiste__text">
+          <b>Trinkflasche mit Napf, 550 ml</b>
+          <span>{{ lv.price | money }} · Gratisversand</span>
+        </div>
+        <a class="v-knopf v-knopf--klein" href="#kaufen">In den Warenkorb</a>
+      </div>
+    </div>
+  {%- endif -%}
+
+  <footer class="v-fuss">
+    <div class="v-huelle">
+      <ul>
+        <li><a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a></li>
+        <li><a href="/pages/haeufige-fragen">Häufige Fragen</a></li>
+        <li><a href="/pages/contact">Kontakt</a></li>
+        <li><a href="/pages/letsdrink-impressum">Impressum</a></li>
+        <li><a href="/pages/letsdrink-agb">AGB</a></li>
+        <li><a href="/pages/letsdrink-datenschutz">Datenschutz</a></li>
+        <li><a href="/pages/data-sharing-opt-out">Cookies &amp; Datenweitergabe</a></li>
+      </ul>
+      <p>© {{ 'now' | date: '%Y' }} Let'sDrink · Nate Murseli · Rapperswil-Jona SG · Preise inkl. MwSt</p>
+    </div>
+  </footer>
+</body>
+</html>

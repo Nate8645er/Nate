@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "v-start",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
