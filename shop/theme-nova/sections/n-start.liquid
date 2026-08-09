@@ -44,6 +44,29 @@
 {%- assign panel = 'tief' -%}
 {%- if dunkle_flaschen contains slug -%}{%- assign panel = 'hell' -%}{%- endif -%}
 
+{%- comment -%}
+  RUNDUMBLICK (360 GRAD) — AUSGESCHALTET, WEIL DIE AUFNAHMEN FEHLEN
+
+  Es gibt von jeder Farbe genau EIN Foto, die Frontansicht. Die
+  Rueckseite der Flasche liegt uns nicht vor. Eine gedrehte Ansicht
+  aus einem Frontfoto zu erzeugen hiesse, dem Kunden eine Produkt-
+  ansicht als echt zu zeigen, die niemand geprueft hat - dieselbe
+  Kategorie wie eine erfundene Bewertung.
+
+  Der Betrachter ist vollstaendig gebaut und wartet nur auf Bilder.
+  So schaltest du ihn ein:
+    1. Von JEDER Farbe 36 Aufnahmen im Abstand von 10 Grad,
+       gleiche Kamera, gleiches Licht, Flasche AUFRECHT.
+    2. Als Theme-Dateien hochladen, benannt nach diesem Muster:
+       v360-tuerkis-01.webp ... v360-tuerkis-36.webp
+       v360-gruen-01.webp   ... und so weiter fuer alle sechs.
+    3. Hier unten 0 durch 36 ersetzen. Sonst nichts.
+
+  Solange hier 0 steht, erscheint der Knopf gar nicht - lieber keine
+  Funktion als eine, die etwas vortaeuscht.
+{%- endcomment -%}
+{%- assign rundum_bilder = 0 -%}
+
 {%- capture haken -%}<svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>{%- endcapture -%}
 {%- capture kreuz -%}<svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5.5 5.5l9 9M14.5 5.5l-9 9"/></svg>{%- endcapture -%}
 {%- capture stern -%}<svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 1.6l2.5 5.2 5.7.8-4.1 4 1 5.7-5.1-2.7-5.1 2.7 1-5.7-4.1-4 5.7-.8Z"/></svg>{%- endcapture -%}
@@ -52,6 +75,20 @@
 <section class="n-hero">
   <div class="n-huelle n-hero__raster">
 
+    {%- comment -%}
+      DIE BUEHNE IST EINE GALERIE
+      Alle sechs Farben liegen nebeneinander, die gewaehlte in der
+      Mitte, die Nachbarn angeschnitten und in den Raum gedreht. Man
+      wischt mit dem Finger, klickt die Pfeile oder nimmt die
+      Pfeiltasten.
+
+      Gescrollt wird NATIV (overflow-x + scroll-snap), nicht mit
+      JavaScript. Damit bekommt man den Schwung und das Abbremsen von
+      iOS und Android geschenkt, statt sie nachzubauen - und ohne
+      JavaScript bleibt es ein waagrecht scrollbarer Streifen, in dem
+      alle sechs Farben erreichbar sind. Das Skript legt nur die
+      Drehung, die Groesse und die Deckkraft darueber.
+    {%- endcomment -%}
     <div class="n-buehne{% if panel == 'hell' %} n-hell{% endif %}" data-buehne>
       <span class="n-ring n-ring--2" aria-hidden="true"></span>
       <span class="n-ring" aria-hidden="true"></span>
@@ -70,11 +107,51 @@
         <i style="--d:8px;  --t:8.6s; --v:5.5s; left:8%;  top:12%"></i>
       </span>
 
-      <img class="n-flasche" data-parallaxe="16" data-hauptbild
-           src="{{ 'a-flasche-' | append: slug | append: '.webp' | asset_url }}"
-           alt="Trinkflasche mit fest angebautem Napf für Hund und Katze, 550 ml"
-           data-alt-vorlage="Trinkflasche mit fest angebautem Napf für Hund und Katze, 550 ml, in %s"
-           width="650" height="2212" fetchpriority="high" decoding="async">
+      <div class="n-gal" data-gal tabindex="0" role="group"
+           aria-roledescription="Farbgalerie"
+           aria-label="{{ lp.variants.size }} Farben – wischen oder Pfeiltasten benutzen">
+        <ul class="n-gal__spur" data-gal-spur>
+          {%- for var in lp.variants -%}
+            {%- assign fs = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
+            <li class="n-gal__feld" data-gal-feld
+                data-variante="{{ var.id }}"
+                data-slug="{{ fs }}"
+                data-panel="{% if dunkle_flaschen contains fs %}hell{% else %}tief{% endif %}"
+                aria-label="Farbe {{ forloop.index }} von {{ lp.variants.size }}: {{ var.option1 | escape }}">
+              <img class="n-flasche"
+                   src="{{ 'a-flasche-' | append: fs | append: '.webp' | asset_url }}"
+                   alt="Trinkflasche mit fest angebautem Napf für Hund und Katze, 550 ml, in {{ var.option1 | escape }}"
+                   width="650" height="2212" draggable="false"
+                   {% if var.id == v.id %}fetchpriority="high"{% else %}loading="lazy"{% endif %}
+                   decoding="async">
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+
+      {%- comment -%}
+        Die Pfeile liegen UEBER der Buehne, nicht darunter. Gemessen:
+        eine eigene Zeile darunter kostet 56 px und schiebt den
+        Kaufknopf auf dem 390x844-Handy unter die Falz.
+      {%- endcomment -%}
+      <button class="n-gal__pfeil n-gal__pfeil--links" type="button"
+              data-gal-schritt="-1" aria-label="Vorherige Farbe">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <button class="n-gal__pfeil n-gal__pfeil--rechts" type="button"
+              data-gal-schritt="1" aria-label="Nächste Farbe">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+      </button>
+
+      {%- if rundum_bilder > 0 -%}
+        <button class="n-gal__rundum" type="button" data-rundum
+                data-bilder="{{ rundum_bilder }}"
+                data-vorlage="{{ 'v360-FARBE-NN.webp' | asset_url }}"
+                aria-label="Flasche rundum ansehen">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v4h-4"/></svg>
+          360° drehen
+        </button>
+      {%- endif -%}
     </div>
 
     <div>
@@ -95,7 +172,7 @@
           <span>inkl. MwSt · ein Preis für alle Farben</span>
         </p>
 
-        <span class="n-etikett" id="n-farblabel">Farbe · <span data-farbname>{{ v.option1 }}</span></span>
+        <span class="n-etikett" id="n-farblabel">Farbe · <span data-farbname>{{ v.option1 }}</span><em class="n-zaehler" data-gal-zaehler>1 von {{ lp.variants.size }} · 550 ml</em></span>
         <ul class="n-wahl" role="group" aria-labelledby="n-farblabel">
           {%- for var in lp.variants -%}
             {%- assign s = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}

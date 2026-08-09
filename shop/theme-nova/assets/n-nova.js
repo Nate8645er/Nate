@@ -2,14 +2,16 @@
    n-nova.js — LET'SDRINK NOVA
    9.8.2026. Bauleitung.
 
-   Rund 6 KB, keine Bibliothek. Sieben Aufgaben:
+   Keine Bibliothek. Neun Aufgaben:
      1. Kopfzeile verglasen, sobald gescrollt wird
      2. Scroll-Reveal (IntersectionObserver, kein Scroll-Listener)
-     3. Parallaxe der Flasche - EINE rAF-Schleife, sonst nichts
+     3. Parallaxe - EINE rAF-Schleife, sonst nichts
      4. Mobile Navigation
      5. Farbwechsel ohne Neuladen
      6. Warenkorb-Schublade ueber die Shopify-Cart-API
      7. Mitlaufende Kaufleiste
+     8. Farbgalerie - Drehung, Groesse, Deckkraft ueber nativem Scrollen
+     9. Rundumblick, sobald echte 360-Grad-Aufnahmen vorliegen
 
    GRUNDSATZ: alles ist Zugabe. Ohne JavaScript bleibt der Shop
    vollstaendig kaufbar - die Farbpunkte sind echte ?variant=-Verweise,
@@ -101,6 +103,9 @@
   }
 
   /* ---------- 5. Farbwechsel ---------------------------------------- */
+  // Die Galerie weiter unten waehlt ueber dieselbe Funktion aus, statt
+  // die Zustandspflege ein zweites Mal zu schreiben.
+  var waehleFarbe = null;
   var punkte = $$("[data-farbe]");
   if (punkte.length) {
     var haupt  = $("[data-hauptbild]");
@@ -146,6 +151,7 @@
         } catch (x) {}
       }
     };
+    waehleFarbe = waehle;
     punkte.forEach(function (p) {
       p.addEventListener("click", function (e) { waehle(p, e); });
       p.addEventListener("keydown", function (e) {
@@ -331,6 +337,264 @@
 
   // Korbzahl beim Laden angleichen (Zurueck-Taste, Cache)
   if (zahl) holeKorb(false);
+
+  /* ---------- 8. Farbgalerie ----------------------------------------
+     Die Buehne ist wischbar. Gescrollt wird nativ (overflow-x +
+     scroll-snap, siehe CSS); dieses Stueck legt nur Drehung, Groesse
+     und Deckkraft darueber und meldet die Farbe an Abschnitt 5.
+
+     Auf dem Handy und auf dem Trackpad genuegt das. Fuer die Maus
+     kommt weiter unten ein Ziehen dazu - ohne das waere die Galerie
+     am Rechner nur ueber die Pfeile bedienbar. */
+  var gal = $("[data-gal]");
+  if (gal) {
+    var felder  = $$("[data-gal-feld]", gal);
+    var zaehler = $("[data-gal-zaehler]");
+    var pfeile  = $$("[data-gal-schritt]");
+    var buehne  = gal.parentNode;
+    var aktiv   = -1;
+    var malt    = false;
+
+    var mittePunkt = function (e) {
+      var r = e.getBoundingClientRect();
+      return r.left + r.width / 2;
+    };
+
+    // Nur die Anzeige: Zaehler, Ton der Flaeche, Pfeilzustand. Das
+    // laeuft auch beim ersten Aufbau - sonst bliebe der linke Pfeil
+    // beim ersten Feld anklickbar, weil sich der Index nie AENDERT.
+    var anzeigen = function (i) {
+      var f = felder[i];
+      if (!f) return;
+      if (zaehler) zaehler.textContent = (i + 1) + " von " + felder.length + " · 550 ml";
+      if (buehne && buehne.classList.contains("n-buehne")) {
+        buehne.classList.toggle("n-hell", f.getAttribute("data-panel") === "hell");
+      }
+      pfeile.forEach(function (b) {
+        var sch = parseInt(b.getAttribute("data-gal-schritt"), 10);
+        b.disabled = (i + sch < 0) || (i + sch > felder.length - 1);
+      });
+    };
+
+    var uebernehmen = function (i) {
+      var f = felder[i];
+      if (!f) return;
+      anzeigen(i);
+      // Preis, Kaufknopf und Farbname laufen ueber Abschnitt 5 mit.
+      // Beim ersten Aufbau bewusst NICHT - das wuerde nur die Adresse
+      // um ein ?variant= ergaenzen, das niemand gewaehlt hat.
+      if (waehleFarbe) {
+        var id = f.getAttribute("data-variante");
+        for (var k = 0; k < punkte.length; k++) {
+          if (punkte[k].getAttribute("data-variante") === id) { waehleFarbe(punkte[k]); break; }
+        }
+      }
+    };
+
+    var malen = function () {
+      malt = false;
+      var r = gal.getBoundingClientRect();
+      var m = r.left + r.width / 2;
+      var halb = (r.width / 2) || 1;
+      var nah = 0, nd = Infinity;
+      felder.forEach(function (f, i) {
+        var d = (mittePunkt(f) - m) / halb;          // -1 .. 1 vom Zentrum
+        var a = Math.min(Math.abs(d), 1);
+        // Begrenzen, sonst drehen die weit aussen liegenden Felder ueber
+        // 90 Grad hinaus und stehen spiegelverkehrt.
+        var dk = Math.max(-1, Math.min(1, d));
+        if (!ruhig) {
+          f.style.setProperty("--r", (-dk * 34).toFixed(2) + "deg");
+          f.style.setProperty("--s", (1 - a * 0.28).toFixed(3));
+          f.style.setProperty("--o", (1 - a * 0.55).toFixed(3));
+        }
+        if (a < nd) { nd = a; nah = i; }
+      });
+      if (nah !== aktiv) { aktiv = nah; uebernehmen(nah); }
+    };
+    var anstoss = function () {
+      if (malt) return;
+      malt = true;
+      W.requestAnimationFrame(malen);
+    };
+
+    var zu = function (i, hart) {
+      i = Math.max(0, Math.min(felder.length - 1, i));
+      var f = felder[i];
+      var ziel = f.offsetLeft - (gal.clientWidth - f.offsetWidth) / 2;
+      if (gal.scrollTo) gal.scrollTo({ left: ziel, behavior: (hart || ruhig) ? "auto" : "smooth" });
+      else gal.scrollLeft = ziel;
+    };
+
+    gal.addEventListener("scroll", anstoss, { passive: true });
+    W.addEventListener("resize", function () { zu(aktiv < 0 ? 0 : aktiv, true); anstoss(); });
+
+    pfeile.forEach(function (b) {
+      b.addEventListener("click", function () {
+        zu(aktiv + parseInt(b.getAttribute("data-gal-schritt"), 10));
+      });
+    });
+
+    gal.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowLeft")  { e.preventDefault(); zu(aktiv - 1); }
+      if (e.key === "ArrowRight") { e.preventDefault(); zu(aktiv + 1); }
+    });
+
+    // Farbpunkte unter dem Preis fuehren die Galerie mit.
+    punkte.forEach(function (p) {
+      p.addEventListener("click", function () {
+        var id = p.getAttribute("data-variante");
+        for (var i = 0; i < felder.length; i++) {
+          if (felder[i].getAttribute("data-variante") === id) { zu(i); return; }
+        }
+      });
+    });
+
+    /* Ziehen mit der Maus. Nur fuer die Maus - Finger und Stift
+       scrollen bereits nativ, und beides gleichzeitig gaebe doppelte
+       Bewegung. */
+    if (W.PointerEvent) {
+      var zieht = false, startX = 0, startL = 0, bewegt = 0;
+      gal.addEventListener("pointerdown", function (e) {
+        if (e.pointerType !== "mouse" || e.button !== 0) return;
+        zieht = true; bewegt = 0;
+        startX = e.clientX; startL = gal.scrollLeft;
+        gal.style.scrollSnapType = "none";
+        gal.style.cursor = "grabbing";
+      });
+      gal.addEventListener("pointermove", function (e) {
+        if (!zieht) return;
+        var dx = e.clientX - startX;
+        bewegt = Math.max(bewegt, Math.abs(dx));
+        gal.scrollLeft = startL - dx;
+      });
+      var loslassen = function () {
+        if (!zieht) return;
+        zieht = false;
+        gal.style.cursor = "";
+        gal.style.scrollSnapType = "";
+        // Einrasten nachholen: ohne das bleibt die Spur zwischen zwei
+        // Feldern stehen, weil scroll-snap waehrend des Zugs aus war.
+        zu(aktiv);
+      };
+      gal.addEventListener("pointerup", loslassen);
+      gal.addEventListener("pointerleave", loslassen);
+      gal.addEventListener("pointercancel", loslassen);
+      gal.style.cursor = "grab";
+    }
+
+    // Startstellung: die bereits gewaehlte Farbe in die Mitte.
+    var start = 0;
+    for (var i0 = 0; i0 < punkte.length; i0++) {
+      if (punkte[i0].getAttribute("aria-pressed") === "true") {
+        var sid = punkte[i0].getAttribute("data-variante");
+        for (var j0 = 0; j0 < felder.length; j0++) {
+          if (felder[j0].getAttribute("data-variante") === sid) { start = j0; break; }
+        }
+        break;
+      }
+    }
+    aktiv = start;
+    zu(start, true);
+    anzeigen(start);
+    anstoss();
+    // Schriften kommen nach und koennen die Buehne noch um ein paar
+    // Pixel verschieben. Danach einmal nachzentrieren.
+    W.addEventListener("load", function () { zu(aktiv, true); anstoss(); });
+  }
+
+  /* ---------- 9. Rundumblick ----------------------------------------
+     Der Knopf steht nur im HTML, wenn echte 360-Grad-Aufnahmen als
+     Theme-Dateien liegen; die Begruendung steht im Kopf von
+     n-start.liquid. Faellt auch nur ein Einzelbild aus, geht der
+     Betrachter gar nicht erst auf - eine Drehung mit Luecken ist
+     schlechter als keine. */
+  var rundKnopf = $("[data-rundum]");
+  if (rundKnopf && gal) {
+    var anzahl  = parseInt(rundKnopf.getAttribute("data-bilder"), 10) || 0;
+    var vorlage = rundKnopf.getAttribute("data-vorlage") || "";
+
+    var pfad = function (slug, n) {
+      return vorlage.replace("FARBE", slug)
+                    .replace("NN", n < 10 ? "0" + n : "" + n);
+    };
+
+    var laden = function (slug) {
+      var auftraege = [];
+      for (var n = 1; n <= anzahl; n++) {
+        auftraege.push(new Promise(function (fertig, daneben) {
+          var b = new Image();
+          b.onload = function () { fertig(b); };
+          b.onerror = daneben;
+          b.src = pfad(slug, this);
+        }.bind(n)));
+      }
+      return Promise.all(auftraege);
+    };
+
+    var oeffnen = function (bilder, name) {
+      var stand = 0;
+      var bild = el("img", { klasse: "n-rund__bild", alt:
+        "Trinkflasche in " + name + ", rundum gedreht", draggable: "false" });
+      bild.src = bilder[0].src;
+      var hinweis = el("p", { klasse: "n-rund__hinweis",
+        text: "Ziehen zum Drehen · Escape schliesst" });
+      var zu2 = el("button", { klasse: "n-rund__zu", type: "button",
+        "aria-label": "Rundumblick schliessen", text: "✕" });
+      var kasten = el("div", { klasse: "n-rund", role: "dialog",
+        "aria-modal": "true", "aria-label": "Rundumblick" }, [bild, hinweis, zu2]);
+
+      var zeigen = function (i) {
+        stand = ((i % bilder.length) + bilder.length) % bilder.length;
+        bild.src = bilder[stand].src;
+      };
+      var aktivX = 0, haelt = false;
+      kasten.addEventListener("pointerdown", function (e) {
+        haelt = true; aktivX = e.clientX; kasten.setPointerCapture(e.pointerId);
+      });
+      kasten.addEventListener("pointermove", function (e) {
+        if (!haelt) return;
+        var dx = e.clientX - aktivX;
+        var schritt = Math.round(dx / 12);
+        if (schritt) { zeigen(stand - schritt); aktivX = e.clientX; }
+      });
+      kasten.addEventListener("pointerup",     function () { haelt = false; });
+      kasten.addEventListener("pointercancel", function () { haelt = false; });
+
+      var schliessen = function () {
+        D.removeEventListener("keydown", taste);
+        if (kasten.parentNode) kasten.parentNode.removeChild(kasten);
+        D.body.style.overflow = "";
+        rundKnopf.focus();
+      };
+      var taste = function (e) {
+        if (e.key === "Escape") schliessen();
+        if (e.key === "ArrowLeft")  zeigen(stand - 1);
+        if (e.key === "ArrowRight") zeigen(stand + 1);
+      };
+      zu2.addEventListener("click", schliessen);
+      D.addEventListener("keydown", taste);
+      D.body.style.overflow = "hidden";
+      D.body.appendChild(kasten);
+      zu2.focus();
+    };
+
+    rundKnopf.addEventListener("click", function () {
+      var f = felder[aktiv] || felder[0];
+      if (!f) return;
+      var slug = f.getAttribute("data-slug");
+      var name = f.getAttribute("aria-label") || "";
+      rundKnopf.disabled = true;
+      laden(slug).then(function (bilder) {
+        rundKnopf.disabled = false;
+        oeffnen(bilder, name.split(": ").pop());
+      }).catch(function () {
+        // Fehlt auch nur ein Bild, passiert nichts weiter, als dass der
+        // Knopf verschwindet. Kein halber Rundumblick.
+        rundKnopf.parentNode && rundKnopf.parentNode.removeChild(rundKnopf);
+      });
+    });
+  }
 
   W.__nNova = true;
 })();
