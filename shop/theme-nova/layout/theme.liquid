@@ -98,7 +98,26 @@
   {%- endcomment -%}
   <script src="{{ 'n-nova.js' | asset_url }}" defer></script>
 
-  {%- if ist_start -%}
+  {%- comment -%}
+    INTRO-VORHANG: AUSGESCHALTET.
+
+    Er legte sich beim ersten Aufruf der Startseite ueber die ganze
+    Seite und verschwand erst nach 1,7 bis hoechstens 4 Sekunden. In
+    dieser Zeit erreicht KEINE Beruehrung den Laden darunter: die erste
+    Bewegung hebt nur den Vorhang, weil die Ausstiege auf click,
+    wheel und touchmove mit capture liegen. Von aussen sieht das aus,
+    als reagiere die Seite nicht - wischen tut nichts, tippen tut
+    nichts. Genau diese Rueckmeldung kam zweimal.
+
+    Dazu kommt: er kostet die ersten Sekunden auf einer Seite, deren
+    einzige Aufgabe der Verkauf ist, und traegt dazu nichts bei.
+
+    Wieder einschalten: unten true auf false setzen. Der Vorhang
+    selbst, seine Gestaltung und alle Ausstiege bleiben im Code.
+  {%- endcomment -%}
+  {%- assign vorhang_aus = true -%}
+
+  {%- if ist_start and vorhang_aus == false -%}
   {%- comment -%}
     Der Intro-Vorhang muss VOR dem ersten Bild entschieden werden -
     sonst blitzt der Laden kurz auf, bevor der Vorhang faellt. Darum
@@ -148,13 +167,15 @@
 <body>
   <a class="n-sr" href="#inhalt">Zum Inhalt springen</a>
 
-  {%- if ist_start -%}
+  {%- if ist_start and vorhang_aus == false -%}
   {%- comment -%}
     Intro-Vorhang. Er liegt UEBER dem Laden, nicht davor: der gesamte
     Inhalt steht bereits im HTML darunter. Suchmaschinen, Vorleseprogramme
     und Besucher ohne JavaScript sehen den Laden - der Vorhang bleibt fuer
     sie auf display:none. aria-hidden, weil er nichts zu lesen gibt, was
     nicht auch im Laden steht.
+
+    Steht derzeit auf aus - die Begruendung im Kopf der Datei.
   {%- endcomment -%}
   <div class="n-vorhang" data-vorhang aria-hidden="true">
     <div class="n-vorhang__regen">

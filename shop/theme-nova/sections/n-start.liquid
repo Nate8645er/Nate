@@ -383,64 +383,18 @@
       <h2 class="n-titel">Drei Sekunden, eine Hand.</h2>
     </div>
 
-    <div class="n-ablauf__raster">
-      <div class="n-ablauf" data-auf="klein" role="img"
-           aria-label="Zeichnung des Ablaufs: Knopf drücken, der Napf füllt sich, danach läuft das übrige Wasser zurück in die Flasche.">
-        <svg class="n-ab" viewBox="0 0 200 320" width="200" height="320"
-             fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
-             focusable="false">
-          <defs>
-            {%- comment -%}
-              EIN durchgehender Umriss, keine gestapelten Kaesten:
-              breiter Napf oben, schmale Taille mit dem Knopf, hoher
-              Koerper - die Verhaeltnisse stammen aus dem echten Foto
-              (Napf knapp ein Drittel der Hoehe). Die beiden Masken
-              liegen genau innerhalb dieses Umrisses, sonst schwimmt
-              das Wasser sichtbar daneben.
-            {%- endcomment -%}
-            <clipPath id="nAbNapf">
-              <path d="M34 30 L38 98 Q40 114 60 118 L140 118 Q160 114 162 98 L166 30 Z"/>
-            </clipPath>
-            <clipPath id="nAbKoerper">
-              <path d="M34 172 L166 172 L166 286 Q166 298 154 298 L46 298 Q34 298 34 286 Z"/>
-            </clipPath>
-          </defs>
-
-          <g clip-path="url(#nAbNapf)">
-            <rect class="n-ab__napfwasser" x="26" y="24" width="148" height="104"/>
-          </g>
-          <g clip-path="url(#nAbKoerper)">
-            <rect class="n-ab__pegel" x="26" y="192" width="148" height="140"/>
-          </g>
-
-          <path class="n-ab__strich"
-                d="M26 28 L30 96 Q32 116 56 120 L56 150 Q56 158 40 161
-                   L32 164 Q28 167 28 179 L28 286 Q28 300 42 300
-                   L158 300 Q172 300 172 286 L172 179 Q172 167 168 164
-                   L160 161 Q144 158 144 150 L144 120 Q168 116 170 96 L174 28"/>
-          <ellipse class="n-ab__strich" cx="100" cy="28" rx="74" ry="13"/>
-
-          <rect class="n-ab__knopf" x="84" y="126" width="32" height="22" rx="8"/>
-
-          {%- comment -%}
-            Der Strahl steht in der Taille, nicht im Napf: dort liegt er
-            vor weissem Grund und ist sichtbar. Im Napf verschwand er
-            hinter dem Wasser, das er gerade erst hinbringt. Zwei Bahnen
-            NEBEN dem Knopf, nicht durch ihn hindurch - der Knopf ist
-            die Bedienung, kein Rohr.
-          {%- endcomment -%}
-          <path class="n-ab__strahl" d="M74 170 L74 124 M126 170 L126 124"/>
-        </svg>
-      </div>
-
-      <ol class="n-ablauf__liste" data-staffel>
-        <li data-auf="klein"><b>Knopf drücken.</b> Das Wasser läuft in den Napf. Du hältst nur die Flasche.</li>
-        <li data-auf="klein"><b>Trinken lassen.</b> Die Leine bleibt in der anderen Hand.</li>
-        <li data-auf="klein"><b>Aufrichten.</b> Das übrige Wasser läuft zurück. Nichts bleibt im Napf stehen.</li>
-      </ol>
-    </div>
-
-    <p class="n-ablauf__hinweis">Schematische Darstellung, kein Produktfoto.</p>
+    {%- comment -%}
+      Die Ablauf-Zeichnung ist auf Wunsch wieder entfernt.
+      Der Mechanismus steht jetzt nur noch in den drei Schritten hier
+      darunter und in den Fragen. Gezeigt wird er nirgends - das bleibt
+      die groesste Luecke der Seite, und sie schliesst nur ein echtes
+      Foto oder Video vom Produkt in Benutzung.
+    {%- endcomment -%}
+    <ol class="n-ablauf__liste n-ablauf__liste--breit" data-staffel>
+      <li data-auf="klein"><b>Knopf drücken.</b> Das Wasser läuft in den Napf. Du hältst nur die Flasche.</li>
+      <li data-auf="klein"><b>Trinken lassen.</b> Die Leine bleibt in der anderen Hand.</li>
+      <li data-auf="klein"><b>Aufrichten.</b> Das übrige Wasser läuft zurück. Nichts bleibt im Napf stehen.</li>
+    </ol>
   </div>
 </section>
 
