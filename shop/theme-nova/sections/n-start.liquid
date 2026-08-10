@@ -137,7 +137,7 @@
             {%- assign fs = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
             <li class="n-gal__feld" data-gal-feld
                 data-variante="{{ var.id }}"
-                data-slug="{{ fs }}"
+                data-slug="{{ fs | escape }}"
                 data-panel="{% if dunkle_flaschen contains fs %}hell{% else %}tief{% endif %}"
                 aria-label="Farbe {{ forloop.index }} von {{ anzahl }}: {{ var.option1 | escape }}">
               <img class="n-flasche"
@@ -199,7 +199,7 @@
           {%- for var in lp.variants -%}
             {%- assign s = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
             <li>
-              <a class="n-pkt n-pkt--{{ s }}" href="{{ lp.url }}?variant={{ var.id }}"
+              <a class="n-pkt n-pkt--{{ s | escape }}" href="{{ lp.url }}?variant={{ var.id }}"
                  role="button" data-farbe data-variante="{{ var.id }}"
                  data-name="{{ var.option1 | escape }}"
                  data-bild="{{ 'a-flasche-' | append: s | append: '.webp' | asset_url }}"
@@ -214,14 +214,14 @@
         <div class="n-cta">
           <button class="n-knopf" type="submit" data-leiste-anker
                   {% unless v.available %}disabled{% endunless %}>
-            {%- if v.available -%}Jetzt entdecken →{%- else -%}Zurzeit nicht lieferbar{%- endif -%}
+            {%- if v.available -%}In den Warenkorb · {{ v.price | money }}{%- else -%}Zurzeit nicht lieferbar{%- endif -%}
           </button>
           <a class="n-knopf n-knopf--geist" href="#warum">Warum unsere Produkte?</a>
         </div>
 
         <ul class="n-mini">
           <li>{{ haken }} Gratisversand Schweiz</li>
-          <li>{{ haken }} 14 Tage Rückgabe</li>
+          <li>{{ haken }} 14 Tage Rückgabe · Rücksendung zahlst du</li>
           <li>{{ haken }} 7–14 Werktage</li>
         </ul>
       </form>
@@ -237,7 +237,7 @@
     <ul class="n-raster n-raster--4" data-staffel style="margin:0;padding:0;list-style:none">
       <li data-auf="klein" style="display:flex;gap:.7rem;align-items:flex-start">
         <span style="color:var(--n-akzent);flex:none;margin-top:.15em">{{ haken }}</span>
-        <span><b style="display:block;font-size:.9375rem">Versand aus der Schweiz bezahlt</b>
+        <span><b style="display:block;font-size:.9375rem">Versand in die Schweiz gratis</b>
         <span style="color:var(--n-sanft);font-size:.8125rem">Innerhalb der Schweiz gratis, ins Ausland CHF 1.50</span></span>
       </li>
       <li data-auf="klein" style="display:flex;gap:.7rem;align-items:flex-start">
@@ -253,7 +253,7 @@
       <li data-auf="klein" style="display:flex;gap:.7rem;align-items:flex-start">
         <span style="color:var(--n-akzent);flex:none;margin-top:.15em">{{ haken }}</span>
         <span><b style="display:block;font-size:.9375rem">Eine Person, erreichbar</b>
-        <span style="color:var(--n-sanft);font-size:.8125rem">Nate antwortet selbst, meist in ein bis zwei Tagen</span></span>
+        <span style="color:var(--n-sanft);font-size:.8125rem">Nate antwortet selbst, innerhalb eines Werktags</span></span>
       </li>
     </ul>
   </div>
@@ -629,7 +629,7 @@
         {{ v.price | money }} · Gratisversand in der Schweiz · 14 Tage Rückgabe
       </p>
       <div class="n-cta">
-        <a class="n-knopf" href="#kaufen">Jetzt entdecken →</a>
+        <a class="n-knopf" href="#kaufen">In den Warenkorb · {{ v.price | money }}</a>
         <a class="n-knopf n-knopf--geist" href="/pages/contact">Frage stellen</a>
       </div>
     </div>

@@ -28,7 +28,7 @@
 
   {%- capture t -%}{% if ist_start %}Trinkflasche mit Napf für Hund & Katze – 550 ml | Let'sDrink{% else %}{{ page_title }} – Let'sDrink{% endif %}{%- endcapture -%}
   {%- capture b -%}{% if page_description %}{{ page_description }}{% else %}Knopf drücken, der Napf füllt sich. Aufrichten, und das übrige Wasser läuft zurück. 550 ml, sechs Farben. Gratisversand in der Schweiz.{% endif %}{%- endcapture -%}
-  <title>{{ t | strip }}</title>
+  <title>{{ t | strip | escape }}</title>
   <meta name="description" content="{{ b | strip_html | strip | escape }}">
   <link rel="canonical" href="{{ canonical_url }}">
   <meta name="robots" content="{% if template.name == 'cart' or template.name == 'search' or template.name == '404' %}noindex,follow{% else %}index,follow,max-image-preview:large{% endif %}">
@@ -63,7 +63,20 @@
    "offers":{"@type":"Offer","priceCurrency":{{ cart.currency.iso_code | json }},
      "price":"{{ product.selected_or_first_available_variant.price | divided_by: 100.0 }}",
      "availability":"https://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}",
-     "url":"{{ shop.url }}{{ product.url }}"}}
+     "url":"{{ shop.url }}{{ product.url }}",
+     "shippingDetails":{"@type":"OfferShippingDetails",
+       "shippingRate":{"@type":"MonetaryAmount","value":"0","currency":"CHF"},
+       "shippingDestination":{"@type":"DefinedRegion","addressCountry":"CH"},
+       "deliveryTime":{"@type":"ShippingDeliveryTime",
+         "handlingTime":{"@type":"QuantitativeValue","minValue":1,"maxValue":2,"unitCode":"DAY"},
+         "transitTime":{"@type":"QuantitativeValue","minValue":7,"maxValue":14,"unitCode":"DAY"}}},
+     "hasMerchantReturnPolicy":{"@type":"MerchantReturnPolicy",
+       "applicableCountry":"CH",
+       "returnPolicyCategory":"https://schema.org/MerchantReturnFiniteReturnWindow",
+       "merchantReturnDays":14,
+       "returnMethod":"https://schema.org/ReturnByMail",
+       "returnFees":"https://schema.org/ReturnShippingFees",
+       "returnShippingFeesAmount":{"@type":"MonetaryAmount","value":"0","currency":"CHF"}}}}
   </script>
   {%- endif -%}
 
@@ -250,8 +263,13 @@
 
     <div class="n-lade__fuss" data-lade-fuss {% if cart.item_count == 0 %}hidden{% endif %}>
       <div class="n-summe"><span>Zwischensumme</span><span data-lade-summe>{{ cart.items_subtotal_price | money }}</span></div>
-      <div class="n-summe"><span>Versand Schweiz</span><span>gratis</span></div>
-      <p class="n-summe n-summe--gross"><span>Total</span><span data-lade-summe>{{ cart.items_subtotal_price | money }}</span></p>
+      <div class="n-summe"><span>Versand</span><span>Schweiz gratis · Ausland CHF 1.50</span></div>
+      {%- comment -%}
+        Kein "Total" in der Schublade. Es waere nur fuer die Schweiz
+        richtig - bei jeder Auslandsbestellung stuende hier ein Betrag,
+        der an der Kasse nicht haelt.
+      {%- endcomment -%}
+      <p class="n-summe n-summe--klein">Den Endbetrag siehst du an der Kasse, sobald deine Adresse steht.</p>
       <a class="n-knopf n-knopf--voll" href="{{ routes.cart_url }}/checkout">Zur Kasse</a>
       <ul class="n-lade__sicher">
         <li>
@@ -279,7 +297,13 @@
     <div class="n-leiste" data-leiste>
       <div class="n-huelle n-leiste__innen">
         <div class="n-leiste__bild">
-          <img src="{{ 'a-flasche-tuerkis.webp' | asset_url }}" alt=""
+          {%- comment -%}
+            Das Bild folgt der gewaehlten Farbe. Vorher stand hier fest
+            die tuerkise Flasche - bei gewaehltem Rosa zeigte die Leiste
+            also ein anderes Produkt als der Hero. Gemessen und belegt.
+          {%- endcomment -%}
+          {%- assign ls = lv.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
+          <img src="{{ 'a-flasche-' | append: ls | append: '.webp' | asset_url }}" alt=""
                width="650" height="2212" data-leistenbild loading="lazy" decoding="async">
         </div>
         <div class="n-leiste__text">

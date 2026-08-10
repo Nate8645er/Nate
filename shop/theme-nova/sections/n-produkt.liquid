@@ -93,7 +93,7 @@
             {%- for var in product.variants -%}
               {%- assign s = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
               <li>
-                <a class="n-pkt n-pkt--{{ s }}" href="{{ product.url }}?variant={{ var.id }}"
+                <a class="n-pkt n-pkt--{{ s | escape }}" href="{{ product.url }}?variant={{ var.id }}"
                    role="button" data-farbe data-variante="{{ var.id }}"
                    data-name="{{ var.option1 | escape }}"
                    data-bild="{{ 'a-flasche-' | append: s | append: '.webp' | asset_url }}"

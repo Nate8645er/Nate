@@ -168,12 +168,51 @@
   var zahl    = $("[data-korbzahl]");
   var geld    = D.documentElement.getAttribute("data-geldform") || "CHF {{amount}}";
 
+  /* Shopifys Betraege kommen in der kleinsten Einheit (Rappen).
+     Dieser Shop steht heute auf "CHF {{amount}}", aber das ist EIN
+     Klick im Admin von etwas anderem entfernt - Schweizer Laeden
+     nehmen oft {{amount_with_apostrophe_separator}}. Stand der
+     frueheren Fassung: sie kannte drei der acht Platzhalter und
+     haette den Rest als Rohtext in die Warenkorb-Schublade
+     geschrieben. Ausserdem fehlte die Tausendertrennung ganz - ab
+     CHF 1000 stand dort "1039.90" statt "1'039.90".
+
+     Darum: einmal richtig gruppieren, dann alle acht Platzhalter
+     bedienen. */
+  function gruppiert(betrag, stellen, tausender, komma) {
+    var fest = betrag.toFixed(stellen);
+    var teile = fest.split(".");
+    var ganz = teile[0].replace(/\B(?=(\d{3})+(?!\d))/g, tausender);
+    return stellen ? ganz + komma + teile[1] : ganz;
+  }
+  /* Alle Korb-Aufrufe gehen ueber dieselbe Wurzel. Zwei der drei
+     Aufrufe standen fest auf "/cart/..." - das bricht, sobald ein
+     zweiter Markt mit Sprachpraefix dazukommt (/de-ch/cart/add.js). */
+  function wurzel() {
+    return (W.Shopify && W.Shopify.routes && W.Shopify.routes.root) || "/";
+  }
+
   function franken(rappen) {
-    // Shopifys Betraege kommen in der kleinsten Einheit.
-    var s = (rappen / 100).toFixed(2).replace(".", ".");
-    return geld.replace(/\{\{\s*amount\s*\}\}/, s)
-               .replace(/\{\{\s*amount_no_decimals\s*\}\}/, Math.round(rappen / 100))
-               .replace(/\{\{\s*amount_with_comma_separator\s*\}\}/, s.replace(".", ","));
+    var b = rappen / 100;
+    var muster = [
+      ["amount",                                  2, ",",      "."],
+      ["amount_no_decimals",                      0, ",",      "."],
+      ["amount_with_comma_separator",             2, ".",      ","],
+      ["amount_no_decimals_with_comma_separator", 0, ".",      ","],
+      ["amount_with_apostrophe_separator",        2, "\u2019", "."],
+      ["amount_with_space_separator",             2, "\u202F", ","],
+      ["amount_no_decimals_with_space_separator", 0, "\u202F", ","],
+      ["amount_with_period_and_space_separator",  2, "\u202F", "."]
+    ];
+    var aus = geld;
+    // Die laengeren Namen zuerst, sonst frisst "amount" den Anfang
+    // von "amount_with_comma_separator".
+    muster.sort(function (a, c) { return c[0].length - a[0].length; });
+    muster.forEach(function (m) {
+      aus = aus.replace(new RegExp("\\{\\{\\s*" + m[0] + "\\s*\\}\\}", "g"),
+                        gruppiert(b, m[1], m[2], m[3]));
+    });
+    return aus;
   }
   /* Bauhilfe: Element mit Eigenschaften und Kindern.
      Bewusst KEIN innerHTML - Produkt- und Variantennamen kommen zwar
@@ -255,7 +294,7 @@
   }
 
   function holeKorb(dannOeffnen) {
-    return fetch(W.Shopify && W.Shopify.routes ? W.Shopify.routes.root + "cart.js" : "/cart.js",
+    return fetch(wurzel() + "cart.js",
                  { headers: { "Accept": "application/json" } })
       .then(function (r) { return r.json(); })
       .then(function (k) { zeichneKorb(k); if (dannOeffnen) ladeAuf(true); return k; })
@@ -271,7 +310,7 @@
       var eingabe = $("input", b.parentNode);
       var neu = Math.max(0, parseInt(eingabe.value, 10) + parseInt(b.getAttribute("data-schritt"), 10));
       b.disabled = true;
-      fetch("/cart/change.js", {
+      fetch(wurzel() + "cart/change.js", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
         body: JSON.stringify({ line: parseInt(zeile, 10), quantity: neu })
@@ -300,7 +339,7 @@
       var knopf = $("[type=submit]", f);
       var alt = knopf ? knopf.textContent : "";
       if (knopf) { knopf.disabled = true; knopf.textContent = "Wird hinzugefügt …"; }
-      fetch("/cart/add.js", { method: "POST", body: new FormData(f) })
+      fetch(wurzel() + "cart/add.js", { method: "POST", body: new FormData(f) })
         .then(function (r) {
           if (!r.ok) throw new Error("abgelehnt");
           return r.json();

@@ -1337,3 +1337,64 @@ html.n-intro .n-vorhang.n-hebt { transform: translate3d(0, -101%, 0); }
    gemessen wurde der Abschnitt auf 1440 px sonst 96 px hoeher als mit
    den frueheren drei Karten. */
 .n-platz--eine .n-bew__foto { aspect-ratio: 16/9; max-height: 170px; }
+
+/* Der Hinweis unter der Warenkorb-Summe: kein Betrag, sondern der
+   ehrliche Verweis auf die Kasse. Siehe theme.liquid. */
+.n-summe--klein {
+  display: block; margin: .1rem 0 .9rem;
+  color: var(--n-sanft); font-size: .8125rem; line-height: 1.45;
+}
+
+/* ====================================================================
+   NACHZUG AUS DEM DESIGN-AUDIT
+   9.8.2026. Vier Punkte, jeder mit Grund.
+   ==================================================================== */
+
+/* 1 · KEINE SILBENTRENNUNG IN DISPLAY-TYPO
+   hyphens:auto zerlegte 48-px-Ueberschriften: "Warum herkoemm-/liche",
+   "Was die Alternati-/ven". Keine ernsthafte Marke trennt eine
+   Headline. Die Regel kam urspruenglich gegen ein einziges Wort -
+   "Datenschutzerklaerung", 346 px in einem 288 px breiten Kasten.
+   Deshalb bleibt die Trennung fuer h1 auf schmalen Schirmen erhalten,
+   ueberall sonst raeumt text-wrap: balance die Zeilen auf. */
+h1, h2, h3, .n-riese, .n-titel, .a-titel {
+  hyphens: manual; overflow-wrap: break-word; text-wrap: balance;
+}
+@media (max-width: 420px) { h1, .a-titel { hyphens: auto; } }
+
+/* 2 · SECHS FARBEN GEHOEREN IN 3x2, NICHT IN 4+2
+   auto-fill mit minmax(220px) ergab bei 1180 px Innenbreite vier
+   Spalten - die zweite Reihe endete nach zwei Karten, rechts daneben
+   ein Loch von 740x320 px. Sechs ist die Produktzahl; sie muss als
+   Rechteck lesbar sein. */
+@media (min-width: 620px)  { .a-gitter { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .a-gitter { grid-template-columns: repeat(3, 1fr); } }
+
+/* 3 · RECHTSSEITEN WAREN VOLLSTAENDIG GEDAEMPFT GESETZT
+   Auf Impressum, AGB, Datenschutz und Versand war jedes Zeichen ausser
+   der Ueberschrift #6E6E73. Das besteht zwar AA (5.07:1), sieht aber
+   aus wie ein deaktiviertes Formular. Der Fliesstext bekommt eine
+   eigene Stufe: #2A2A2E auf Weiss = 14.75:1.
+   Dazu die Zeilenlaenge: 68ch rechneten sich am 16-px-Elternelement zu
+   690 px, also rund 85 Zeichen je Zeile. 33 rem ergeben 528 px und
+   damit die lesbaren 66. */
+.a-text { max-width: 33rem; font-size: 1.0625rem; line-height: 1.65; }
+.a-text p, .a-text li { color: #2A2A2E; }
+.a-text h2 { font-size: 1.375rem; margin-top: 3.25rem; padding-top: 1.1rem;
+             border-top: 1px solid var(--n-glas-rand); }
+.a-text h2:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+
+/* 4 · DER KAUFKNOPF TRUG DREI BAUKASTEN-MERKMALE
+   Diagonaler Verlauf, farbiger Schlagschatten und ein Glanzstreifen,
+   der bei Hover ueber die Flaeche wischt - genau die drei Signale, an
+   denen man ein Vorlagen-Theme erkennt. Bei Apple, On und Aesop ist
+   der Kaufknopf eine flache Flaeche. */
+.n-knopf, .a-knopf {
+  background: var(--n-akzent);
+  box-shadow: none;
+  transition: background .15s ease, transform .15s ease;
+}
+.n-knopf::after, .a-knopf::after { content: none; }
+.n-knopf:hover, .a-knopf:hover { background: #2A2A2E; transform: none; box-shadow: none; }
+.n-knopf:active, .a-knopf:active { transform: scale(.985); }
+.n-knopf[disabled] { box-shadow: none; transform: none; }
