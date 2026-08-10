@@ -112,13 +112,33 @@
       try {
         if (w.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
         if (sessionStorage.getItem("n-vorhang")) return;
+        /* SOFORT merken, nicht erst wenn sich der Vorhang hebt.
+           Gemessen: faellt n-nova.js aus, wurde der Schluessel nie
+           gesetzt - die schwarze Flaeche erschien bei JEDEM Aufruf der
+           Startseite neu. */
+        sessionStorage.setItem("n-vorhang", "1");
       } catch (e) { return; }
       d.documentElement.classList.add("n-intro");
-      /* Notausstieg: faellt n-nova.js aus, raeumt dieser Zeitgeber den
-         Vorhang weg. Niemand steht vor einem toten schwarzen Bild. */
-      w.setTimeout(function () {
+
+      /* Die Notausgaenge gehoeren hierher, nicht ins aufgeschobene
+         Skript. Gemessen: ohne n-nova.js wirkte weder Escape noch
+         Klick noch Mausrad noch der Ueberspringen-Knopf - man sass
+         volle vier Sekunden vor Schwarz. */
+      var weg = function () {
         d.documentElement.classList.remove("n-intro");
-      }, 4000);
+        d.removeEventListener("keydown", taste, true);
+        d.removeEventListener("click", weg, true);
+        w.removeEventListener("wheel", weg, true);
+        w.removeEventListener("touchmove", weg, true);
+      };
+      var taste = function (e) {
+        if (e.key === "Escape" || e.key === "Enter" || e.key === " ") weg();
+      };
+      d.addEventListener("keydown", taste, true);
+      d.addEventListener("click", weg, true);
+      w.addEventListener("wheel", weg, { capture: true, passive: true });
+      w.addEventListener("touchmove", weg, { capture: true, passive: true });
+      w.setTimeout(weg, 4000);   // harte Obergrenze
     })();
   </script>
   {%- endif -%}
@@ -207,7 +227,7 @@
       <nav class="n-nav" aria-label="Hauptnavigation">
         <a href="{{ kaufziel }}">Shop</a>
         <a href="{{ routes.root_url }}#warum">Warum wir</a>
-        <a href="{{ routes.root_url }}#fragen">FAQ</a>
+        <a href="/pages/haeufige-fragen">FAQ</a>
         <a href="/pages/contact">Kontakt</a>
       </nav>
 
@@ -228,20 +248,48 @@
     </div>
   </header>
 
-  <nav class="n-mnav" data-mnav aria-label="Menü">
-    <button class="n-icon n-mzu" type="button" data-mnav-zu aria-label="Menü schliessen">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
-        <path d="M6 6l12 12M18 6L6 18"/>
-      </svg>
-    </button>
-    <a href="{{ kaufziel }}">Shop</a>
-    <a href="{{ routes.root_url }}#warum">Warum wir</a>
-    <a href="{{ routes.root_url }}#fragen">FAQ</a>
-    <a href="/pages/contact">Kontakt</a>
-    <a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>
+  {%- comment -%}
+    Mobiles Menue. Vorher war es ein Stapel aus fuenf fetten Zeilen auf
+    halbdurchsichtigem Weiss - es sah unfertig aus. Jetzt: Wortmarke
+    oben (man hat den Laden nicht verlassen), Zielangabe neben jedem
+    Verweis, und unten der Weg zum Produkt, weil genau den die meisten
+    suchen, die das Menue oeffnen.
+  {%- endcomment -%}
+  <nav class="n-mnav" data-mnav aria-label="Menü" aria-hidden="true">
+    <div class="n-mnav__kopf">
+      <a class="n-marke" href="{{ routes.root_url }}">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 3.2C9 7.4 6.2 10.2 6.2 13.8a5.8 5.8 0 0 0 11.6 0c0-3.6-2.8-6.4-5.8-10.6Z"/>
+        </svg>
+        Let&rsquo;sDrink
+      </a>
+      <button class="n-icon n-mzu" type="button" data-mnav-zu aria-label="Menü schliessen">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="n-mnav__liste">
+      <a class="n-mnav__z" style="--i:0" href="{{ kaufziel }}">Shop<span class="n-mnav__was">550 ml · sechs Farben</span></a>
+      <a class="n-mnav__z" style="--i:1" href="{{ routes.root_url }}#warum">Warum wir<span class="n-mnav__was">Was sie kann</span></a>
+      <a class="n-mnav__z" style="--i:2" href="/pages/haeufige-fragen">Häufige Fragen<span class="n-mnav__was">Auch das Offene</span></a>
+      <a class="n-mnav__z" style="--i:3" href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe<span class="n-mnav__was">CH gratis · 14 Tage</span></a>
+      <a class="n-mnav__z" style="--i:4" href="/pages/contact">Kontakt<span class="n-mnav__was">Antwort in 1 Werktag</span></a>
+    </div>
+
+    <div class="n-mnav__fuss">
+      {%- if lp != empty and lv.available -%}
+        <a class="n-knopf" href="{{ lp.url }}">In den Warenkorb · {{ lv.price | money }}</a>
+      {%- endif -%}
+      <p class="n-mnav__hinweis">
+        Gratisversand in der Schweiz · 14 Tage Rückgabe<br>
+        Fragen? <a href="mailto:beamswiss@gmail.com">beamswiss@gmail.com</a>
+      </p>
+    </div>
   </nav>
 
-  <main id="inhalt">
+  <main id="inhalt" tabindex="-1">
     {{ content_for_layout }}
   </main>
 

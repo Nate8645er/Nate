@@ -139,7 +139,17 @@
                 data-variante="{{ var.id }}"
                 data-slug="{{ fs | escape }}"
                 data-panel="{% if dunkle_flaschen contains fs %}hell{% else %}tief{% endif %}"
-                aria-label="Farbe {{ forloop.index }} von {{ anzahl }}: {{ var.option1 | escape }}">
+                {%- comment -%}
+                  Die Nummer kommt aus der URSPRUENGLICHEN Reihenfolge,
+                  nicht aus der gedrehten Anzeige - sonst hoert ein
+                  Vorleseprogramm "Farbe 1 von 6", waehrend daneben
+                  "5 von 6" steht. Gemessen bei allen sechs Farben.
+                {%- endcomment -%}
+                {%- assign nr = 0 -%}
+                {%- for pv in lp.variants -%}
+                  {%- if pv.id == var.id -%}{%- assign nr = forloop.index -%}{%- endif -%}
+                {%- endfor -%}
+                aria-label="Farbe {{ nr }} von {{ anzahl }}: {{ var.option1 | escape }}">
               <img class="n-flasche"
                    src="{{ 'a-flasche-' | append: fs | append: '.webp' | asset_url }}"
                    alt="Trinkflasche mit fest angebautem Napf für Hund und Katze, 550 ml, in {{ var.option1 | escape }}"
@@ -401,9 +411,19 @@
     </div>
 
     <div class="a-nah" data-auf>
-      <img src="{{ 'a-detail-knopf.webp' | asset_url }}"
-           alt="Nahaufnahme des Knopfs an der Flasche"
-           width="900" height="900" loading="lazy" decoding="async" data-parallaxe="8">
+      {%- comment -%}
+        Die Aufnahme ist 900x900 gross. Auf 100 Prozent Breite gezogen
+        landet sie auf einem 2x-Schirm bei 1132 Geraetepixeln - also 26
+        Prozent hochskaliert, und genau so sah sie auch aus. Sie wird
+        deshalb nie breiter als 450 CSS-Pixel gezeigt; das entspricht
+        auf 2x exakt ihrer echten Aufloesung.
+      {%- endcomment -%}
+      <figure class="a-nah__bild">
+        <img src="{{ 'a-detail-knopf.webp' | asset_url }}"
+             alt="Nahaufnahme des Knopfs an der Flasche"
+             width="900" height="900" loading="lazy" decoding="async" data-parallaxe="8">
+        <figcaption>Detailaufnahme, Farbe Türkis. Der Knopf sitzt bei allen sechs Farben gleich.</figcaption>
+      </figure>
       <div>
         <span class="n-auge">Der Knopf</span>
         <h2 class="n-titel" style="font-size:clamp(1.6rem,3.6vw,2.3rem)">Kein zweites Teil, das du vergessen kannst.</h2>

@@ -215,11 +215,11 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
   opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility .3s;
 }
 .n-mnav.n-offen { opacity: 1; visibility: visible; }
-.n-mnav a {
-  padding: 1rem 0; font-size: 1.375rem; font-weight: 700; text-decoration: none;
-  border-bottom: 1px solid var(--n-glas-rand);
-}
-.n-mzu { position: fixed; top: 1rem; right: 1rem; z-index: 91; }
+.n-mnav a { text-decoration: none; }
+/* Der Schliessknopf sitzt jetzt IN der Kopfzeile des Menues, nicht
+   mehr frei schwebend oben rechts - sonst haengt er ueber der
+   Wortmarke statt neben ihr. */
+.n-mzu { position: static; z-index: 91; flex: none; }
 
 /* =====================================================================
    KNOEPFE
@@ -711,9 +711,26 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 }
 .n-abzeichen svg { color: var(--n-akzent); flex: none; }
 
-.n-offen { margin-top: 1.4rem; }
-.n-offen summary { cursor: pointer; font-size: .875rem; font-weight: 700; color: var(--n-sanft); }
-.n-offen p { margin: .8rem 0 0; font-size: .875rem; color: var(--n-sanft); }
+/* NAMENSKOLLISION BEHOBEN.
+   Diese drei Regeln gehoeren zum aufklappbaren Absatz "Was wir ueber
+   diese Flasche nicht wissen" - .n-offen war dafuer aber ein viel zu
+   allgemeiner Name: dieselbe Klasse schaltet Menue, Schleier und
+   Warenkorb-Schublade auf. Gemessen: das offene Menue erbte dadurch
+   margin-top 22.4 px, sass um genau diesen Betrag zu tief und liess
+   den Ankuendigungsbalken darueber stehen. Jetzt .n-offenlegung. */
+/* Der aufklappbare Absatz "Was wir ueber diese Flasche nicht wissen"
+   traegt im Markup .a-offen. Die Regeln standen frueher auf .n-offen -
+   ein viel zu allgemeiner Name, denn dieselbe Klasse schaltet Menue,
+   Schleier und Warenkorb-Schublade auf. Sie trafen also nie den
+   Absatz, dafuer das offene Menue: gemessen 22.4 px margin-top, um
+   genau die es zu tief sass und den Ankuendigungsbalken stehen liess. */
+/* Hier standen drei Regeln auf .n-offen - einem viel zu allgemeinen
+   Namen, denn dieselbe Klasse schaltet Menue, Schleier und
+   Warenkorb-Schublade auf. Gemeint war der aufklappbare Absatz, der im
+   Markup .a-offen heisst und weiter unten ohnehin vollstaendig
+   gestaltet wird. Getroffen haben sie stattdessen das offene Menue:
+   gemessen 22.4 px margin-top, um genau die es zu tief sass und den
+   Ankuendigungsbalken darueber stehen liess. Ersatzlos gestrichen. */
 
 /* =====================================================================
    INHALTSSEITEN (erben die a-Klassen des vorherigen Aufbaus)
@@ -1398,3 +1415,118 @@ h1, h2, h3, .n-riese, .n-titel, .a-titel {
 .n-knopf:hover, .a-knopf:hover { background: #2A2A2E; transform: none; box-shadow: none; }
 .n-knopf:active, .a-knopf:active { transform: scale(.985); }
 .n-knopf[disabled] { box-shadow: none; transform: none; }
+
+/* ====================================================================
+   NACHZUG AUS DER FUNKTIONSPRUEFUNG
+   9.8.2026. Alles gemessen, nichts vermutet.
+   ==================================================================== */
+
+/* QA 5 · Geschlossene Schublade und eingefahrene Kaufleiste lagen im
+   Tab-Lauf. Gemessen auf 390x844: Tab 32 landete auf "Warenkorb
+   schliessen" bei x=715 (ausserhalb des Bildes) und in einem
+   aria-hidden-Teilbaum, Tab 33 auf "Kaufen" bei y=867. transform
+   schiebt nur weg, es entfernt nichts aus dem Fokusbaum. */
+.n-lade:not(.n-offen), .n-leiste:not(.n-an) { visibility: hidden; }
+.n-lade, .n-leiste { transition: transform .35s var(--n-weich), visibility .35s; }
+
+/* QA 12 · Das aufklappbare "Was wir nicht wissen" war 22.4 px hoch,
+   also unter der Mindestgroesse fuer einen Beruehrpunkt. */
+.a-frage > summary, .n-frage > summary,
+details > summary { min-height: 44px; display: flex; align-items: center; }
+
+/* Das Knopf-Detailbild nie ueber seine echte Aufloesung hinaus zeigen.
+   900x900 auf 566 CSS-Pixel bedeutet auf einem 2x-Schirm 1132
+   Geraetepixel - 26 Prozent hochskaliert, und genau so sah es aus. */
+.a-nah__bild { margin: 0; }
+.a-nah__bild img { display: block; width: 100%; max-width: 450px; height: auto;
+                   border-radius: var(--n-rund); }
+.a-nah__bild figcaption {
+  margin-top: .6rem; max-width: 450px;
+  color: var(--n-sanft); font-size: .8125rem; line-height: 1.45;
+}
+
+/* ====================================================================
+   MOBILES MENUE — vom Linkstapel zur Markenseite
+   Vorher: fuenf fette Zeilen mit duennen Trennstrichen auf
+   halbdurchsichtigem Weiss, sonst nichts. Es sah aus, als haette
+   jemand vergessen, es fertig zu machen.
+   ==================================================================== */
+.n-mnav {
+  position: fixed; inset: 0; z-index: 90;
+  background: var(--n-grund);
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  display: grid; grid-template-rows: auto 1fr auto;
+  align-content: stretch; gap: 0;
+  padding: 1.1rem 1.35rem max(1.35rem, env(safe-area-inset-bottom));
+  opacity: 0; visibility: hidden;
+  transition: opacity .28s ease, visibility .28s;
+  overflow-y: auto; overscroll-behavior: contain;
+}
+.n-mnav.n-offen { opacity: 1; visibility: visible; }
+
+/* Kopf: die Wortmarke bleibt stehen, damit das Menue nicht wirkt, als
+   haette man den Laden verlassen. */
+.n-mnav__kopf {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 1.4rem;
+}
+.n-mnav__kopf .n-marke { font-size: 1.125rem; }
+
+.n-mnav__liste { display: grid; align-content: center; gap: 0; }
+.n-mnav a.n-mnav__z {
+  display: flex; align-items: baseline; gap: .7rem;
+  padding: 1.05rem 0;
+  font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em;
+  text-decoration: none; color: var(--n-text);
+  border-bottom: 1px solid var(--n-glas-rand);
+  opacity: 0; transform: translate3d(0, 10px, 0);
+}
+.n-mnav.n-offen a.n-mnav__z {
+  opacity: 1; transform: none;
+  transition: opacity .4s var(--n-weich) calc(var(--i, 0) * 45ms + 80ms),
+              transform .4s var(--n-weich) calc(var(--i, 0) * 45ms + 80ms);
+}
+/* Die kleine Zeile daneben sagt, was einen erwartet - sie ist der
+   Unterschied zwischen einer Linkliste und einer Navigation. */
+.n-mnav__was {
+  margin-left: auto; font-size: .8125rem; font-weight: 400;
+  color: var(--n-sanft); letter-spacing: 0;
+}
+
+/* Fuss: Preis und Kaufknopf. Wer das Menue oeffnet, sucht meistens den
+   Weg zum Produkt - er soll nicht erst zurueckklicken muessen. */
+.n-mnav__fuss { padding-top: 1.4rem; border-top: 1px solid var(--n-glas-rand); }
+.n-mnav__fuss .n-knopf { width: 100%; }
+.n-mnav__hinweis {
+  margin: .85rem 0 0; text-align: center;
+  color: var(--n-sanft); font-size: .8125rem; line-height: 1.5;
+}
+.n-mnav__hinweis a { color: var(--n-text); }
+
+@media (prefers-reduced-motion: reduce) {
+  .n-mnav a.n-mnav__z { opacity: 1; transform: none; transition: none; }
+}
+
+/* --- Nachzug am mobilen Menue, drei gemessene Fehler ---------------- */
+
+/* Der Ankuendigungsbalken lag ueber dem offenen Menue. */
+.n-mnav { z-index: 97; }
+.n-mzu  { z-index: 98; }
+
+/* Der Kaufknopf im Menuefuss schnitt seinen eigenen Text ab: die Zeile
+   "In den Warenkorb · CHF 39.90" ist breiter als die Pille, und
+   overflow:hidden (Rest des geloeschten Glanzstreifens) hat sie links
+   und rechts abgeschnitten. */
+.n-knopf, .a-knopf { overflow: visible; flex-wrap: wrap; text-align: center; }
+.n-mnav__fuss .n-knopf {
+  padding-inline: 1.1rem; font-size: 1rem; line-height: 1.3;
+  min-height: 54px;
+}
+
+/* Die Zielangabe darf nicht umbrechen und die Zeile aufblaehen. */
+.n-mnav__was { text-align: right; white-space: nowrap; }
+@media (max-width: 360px) { .n-mnav__was { display: none; } }
+
+/* Scroll-Sperre, wenn Menue oder Warenkorb offen sind. Auf html UND
+   body - siehe Begruendung in n-nova.js. */
+html.n-sperre, html.n-sperre body { overflow: hidden; }

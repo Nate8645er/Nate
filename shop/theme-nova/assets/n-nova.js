@@ -24,6 +24,16 @@
 
   var W = window, D = document;
   var ruhig = W.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* Scroll-Sperre fuer Menue und Warenkorb-Schublade. Sie MUSS auf
+     <html> liegen, nicht nur auf <body>: mit overflow:hidden allein am
+     body sass das fixierte Menue gemessen 22 px zu tief und der
+     Ankuendigungsbalken blieb darueber stehen. */
+  var gesperrt = 0;
+  function sperren(an) {
+    gesperrt = Math.max(0, gesperrt + (an ? 1 : -1));
+    D.documentElement.classList.toggle("n-sperre", gesperrt > 0);
+  }
   var $  = function (s, k) { return (k || D).querySelector(s); };
   var $$ = function (s, k) { return [].slice.call((k || D).querySelectorAll(s)); };
 
@@ -93,10 +103,26 @@
   if (mnav) {
     var navAuf = function (auf) {
       mnav.classList.toggle("n-offen", auf);
-      D.body.style.overflow = auf ? "hidden" : "";
+      sperren(auf);
       var k = $("[data-mnav-auf]");
       if (k) k.setAttribute("aria-expanded", auf ? "true" : "false");
+      mnav.setAttribute("aria-hidden", auf ? "false" : "true");
+      // Gemessen: der Fokus blieb beim Oeffnen auf dem Burger hinter der
+      // Glasflaeche stehen und kehrte beim Schliessen nicht zurueck.
+      // Der Griff ins naechste Bild ist noetig, weil das Menue im
+      // Moment des Umschaltens noch visibility:hidden traegt - focus()
+      // greift dann nicht.
+      if (auf) W.setTimeout(function () {
+        var z = $("[data-mnav-zu]", mnav);
+        // preventScroll: sonst zieht der Browser das Menue, das selbst
+        // ein Scrollbehaelter ist, um die Kopfzeilenhoehe nach oben -
+        // gemessen 22 px, wodurch der Ankuendigungsbalken darueber
+        // wieder sichtbar wurde.
+        if (z) { try { z.focus({ preventScroll: true }); } catch (e) { z.focus(); } }
+      }, 60);
+      else if (k) k.focus();
     };
+    W.__nNavZu = function () { if (mnav.classList.contains("n-offen")) navAuf(false); };
     var kA = $("[data-mnav-auf]"); if (kA) kA.addEventListener("click", function () { navAuf(true); });
     var kZ = $("[data-mnav-zu]");  if (kZ) kZ.addEventListener("click", function () { navAuf(false); });
     $$("a", mnav).forEach(function (a) { a.addEventListener("click", function () { navAuf(false); }); });
@@ -234,7 +260,7 @@
     if (!lade) return;
     lade.classList.toggle("n-offen", auf);
     if (schleier) schleier.classList.toggle("n-offen", auf);
-    D.body.style.overflow = auf ? "hidden" : "";
+    sperren(auf);
     lade.setAttribute("aria-hidden", auf ? "false" : "true");
     if (auf) { var z = $("[data-lade-zu]", lade); if (z) z.focus(); }
   }
@@ -321,14 +347,29 @@
   }
 
   $$("[data-lade-auf]").forEach(function (k) {
-    k.addEventListener("click", function (e) { e.preventDefault(); holeKorb(true); });
+    k.addEventListener("click", function (e) {
+      /* Erst abfangen, dann laden - aber wenn das Laden scheitert, den
+         Besucher NICHT im Nichts stehen lassen. Vorher verschluckte ein
+         leeres catch den Fehler, und weil preventDefault schon gelaufen
+         war, fuehrte auch der Verweis auf /cart nicht mehr weiter: der
+         Warenkorb war unerreichbar. Gemessen mit abgewiesenem fetch. */
+      e.preventDefault();
+      holeKorb(true).catch(function () {
+        W.location.href = k.getAttribute("href") || (wurzel() + "cart");
+      });
+    });
   });
   $$("[data-lade-zu]").forEach(function (k) {
     k.addEventListener("click", function () { ladeAuf(false); });
   });
   if (schleier) schleier.addEventListener("click", function () { ladeAuf(false); });
   D.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") { ladeAuf(false); if (mnav) mnav.classList.remove("n-offen"), D.body.style.overflow = ""; }
+    if (e.key !== "Escape") return;
+    ladeAuf(false);
+    // Ueber dieselbe Funktion schliessen wie der Knopf, sonst bleibt
+    // aria-expanded auf "true" und Vorleseprogramme melden das Menue
+    // weiterhin als geoeffnet.
+    if (W.__nNavZu) W.__nNavZu();
   });
 
   // Kaufformulare abfangen und in die Schublade legen
@@ -525,7 +566,7 @@
       var loslassen = function () {
         if (!zieht) return;
         zieht = false;
-        gal.style.cursor = "";
+        gal.style.cursor = "grab";
         gal.style.scrollSnapType = "";
         // Einrasten nachholen: ohne das bleibt die Spur zwischen zwei
         // Feldern stehen, weil scroll-snap waehrend des Zugs aus war.
