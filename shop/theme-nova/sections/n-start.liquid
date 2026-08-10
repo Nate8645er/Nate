@@ -2,22 +2,24 @@
   sections/n-start.liquid — LET'SDRINK NOVA, Startseite
   9.8.2026. Bauleitung.
 
-  AUFBAU NACH DEM BRIEFING, in dieser Reihenfolge:
-    1 Hero -> 2 Vertrauen -> 3 Problem -> 4 Loesung -> 5 Vorteile
-    -> 6 Showcase -> 7 Anwendung -> 8 Vergleich -> 9 Bewertungen
+  AUFBAU (Stand 10.8.2026, nach dem Kuerzungsdurchgang):
+    1 Hero -> 3+4 Problem/Loesung -> 5 Vorteile -> 7 Anwendung
     -> 10 FAQ -> 11 Schluss
+  Die Nummern 2, 6, 8 und 9 sind bewusst leer und als Kommentar an
+  ihrer Stelle begruendet. Nicht kommentarlos wieder einfuegen.
+  Gemessen auf einem 390er Handy: 8975 px vorher, danach deutlich
+  kuerzer. Vier Abschnitte sagten dieselben vier Dinge.
 
-  DIE EINE ABWEICHUNG VOM BRIEFING, BEGRUENDET
-  Das Briefing verlangt Kundenbewertungen, Sterne, Kundenfotos und
-  "Von Haustierbesitzern geliebt". Dieser Shop hat NULL Bestellungen.
-  Erfundene Bewertungen sind nach UWG Art. 3 (CH) und der
-  EU-Omnibus-Richtlinie unlauter, abmahnbar und ein Sperrgrund bei
-  Shopify. Die Sektion ist deshalb VOLLSTAENDIG gebaut - Karten,
-  Sterne, Avatare, Fotorahmen - aber sichtbar als Platzhalter
-  gekennzeichnet, genau wie es das Briefing fuer fehlende Produktbilder
-  selbst vorsieht. Sobald echte Bestellungen ausgeliefert sind, werden
-  die drei Karten mit echten Namen gefuellt und die Kennzeichnung
-  entfernt. Der Aufbau bleibt gleich.
+  WARUM HIER KEINE BEWERTUNGEN STEHEN
+  Das urspruengliche Briefing verlangte Kundenbewertungen, Sterne und
+  Kundenfotos. Dieser Shop hat NULL Bestellungen. Erfundene
+  Bewertungen sind nach UWG Art. 3 (CH) und der EU-Omnibus-Richtlinie
+  unlauter, abmahnbar und ein Sperrgrund bei Shopify.
+  Zuerst stand hier eine sichtbar gekennzeichnete Platzhalter-Sektion.
+  Gemessen war sie 1342 px hoch - der groesste Block der Seite - und
+  sagte dem Kunden vor allem eines: hier hat noch nie jemand gekauft.
+  Sie ist entfernt. Die Aussage steht jetzt als eine Frage in der FAQ.
+  Sobald echte Bewertungen vorliegen, wird daraus wieder ein Block.
 
   WEITERE ROTE LINIEN
   - Keine Produktangabe ausser 550 ml und sechs Farben. Nichts ueber
@@ -226,13 +228,27 @@
                   {% unless v.available %}disabled{% endunless %}>
             {%- if v.available -%}In den Warenkorb · {{ v.price | money }}{%- else -%}Zurzeit nicht lieferbar{%- endif -%}
           </button>
-          <a class="n-knopf n-knopf--geist" href="#warum">Warum unsere Produkte?</a>
+          {%- comment -%}
+            Hier stand ein zweiter, gleich grosser Knopf. Zwei schwarze
+            Pillen nebeneinander streiten um denselben Blick, und einer
+            davon fuehrt nicht zum Kauf. Jetzt ein Textlink: sichtbar
+            fuer den, der ihn sucht, ohne dem Kaufknopf Gewicht zu
+            nehmen.
+          {%- endcomment -%}
+          <a class="n-textlink" href="#fragen">Erst die häufigen Fragen lesen</a>
         </div>
 
+        {%- comment -%}
+          Vier Punkte, nicht drei: "Ersatz bei Defekt" und die
+          erreichbare Person kommen aus dem geloeschten
+          Vertrauensstreifen. Sie stehen jetzt am Kaufknopf statt in
+          einem eigenen Abschnitt darunter.
+        {%- endcomment -%}
         <ul class="n-mini">
-          <li>{{ haken }} Gratisversand Schweiz</li>
+          <li>{{ haken }} Gratisversand Schweiz · 7–14 Werktage</li>
           <li>{{ haken }} 14 Tage Rückgabe · Rücksendung zahlst du</li>
-          <li>{{ haken }} 7–14 Werktage</li>
+          <li>{{ haken }} Läuft sie aus: Ersatz oder Geld zurück</li>
+          <li>{{ haken }} Nate antwortet selbst, innerhalb eines Werktags</li>
         </ul>
       </form>
     </div>
@@ -240,46 +256,27 @@
   </div>
 </section>
 
-{%- comment -%} ========================================= 2 · VERTRAUEN {%- endcomment -%}
-<hr class="n-strich">
-<section class="n-block" style="padding-block:clamp(1.75rem,4vw,2.75rem)">
-  <div class="n-huelle">
-    <ul class="n-raster n-raster--4" data-staffel style="margin:0;padding:0;list-style:none">
-      <li data-auf="klein" style="display:flex;gap:.7rem;align-items:flex-start">
-        <span style="color:var(--n-akzent);flex:none;margin-top:.15em">{{ haken }}</span>
-        <span><b style="display:block;font-size:.9375rem">Versand in die Schweiz gratis</b>
-        <span style="color:var(--n-sanft);font-size:.8125rem">Innerhalb der Schweiz gratis, ins Ausland CHF 1.50</span></span>
-      </li>
-      <li data-auf="klein" style="display:flex;gap:.7rem;align-items:flex-start">
-        <span style="color:var(--n-akzent);flex:none;margin-top:.15em">{{ haken }}</span>
-        <span><b style="display:block;font-size:.9375rem">14 Tage Rückgaberecht</b>
-        <span style="color:var(--n-sanft);font-size:.8125rem">Ohne Begründung, freiwillig gewährt</span></span>
-      </li>
-      <li data-auf="klein" style="display:flex;gap:.7rem;align-items:flex-start">
-        <span style="color:var(--n-akzent);flex:none;margin-top:.15em">{{ haken }}</span>
-        <span><b style="display:block;font-size:.9375rem">Ersatz bei Defekt</b>
-        <span style="color:var(--n-sanft);font-size:.8125rem">Läuft sie aus: Ersatz oder Geld zurück</span></span>
-      </li>
-      <li data-auf="klein" style="display:flex;gap:.7rem;align-items:flex-start">
-        <span style="color:var(--n-akzent);flex:none;margin-top:.15em">{{ haken }}</span>
-        <span><b style="display:block;font-size:.9375rem">Eine Person, erreichbar</b>
-        <span style="color:var(--n-sanft);font-size:.8125rem">Nate antwortet selbst, innerhalb eines Werktags</span></span>
-      </li>
-    </ul>
-  </div>
-</section>
-<hr class="n-strich">
+{%- comment -%}
+  ABSCHNITT 2 (VERTRAUENSSTREIFEN) IST ENTFERNT.
+  Gemessen 334 px fuer vier Kacheln. Zwei davon - Gratisversand und
+  14 Tage Rueckgabe - standen 190 px darueber schon in der Mini-Liste
+  unter dem Kaufknopf. Die beiden anderen (Ersatz bei Defekt, eine
+  erreichbare Person) sind in die Mini-Liste gewandert, damit sie
+  dort stehen, wo ueber den Kauf entschieden wird, statt in einem
+  eigenen Streifen darunter.
+{%- endcomment -%}
 
 {%- comment -%} =============================== 3 + 4 · PROBLEM UND LOESUNG {%- endcomment -%}
 <section class="n-block" id="warum">
   <div class="n-huelle">
     <div class="n-kopfz n-kopfz--mitte" data-auf>
       <span class="n-auge">Das Problem</span>
+      {%- comment -%}
+        Der Untertitel sprach von "alle drei Varianten", gezeigt werden
+        zwei. Er sagte ausserdem nichts, was die Ueberschrift nicht
+        schon sagt. Ersatzlos gestrichen.
+      {%- endcomment -%}
       <h2 class="n-titel">Warum herkömmliche Lösungen nicht ausreichen.</h2>
-      <p class="n-unter">
-        Wer mit Hund unterwegs ist, kennt alle drei Varianten – und alle
-        drei haben denselben Haken.
-      </p>
     </div>
 
     <div class="n-gegen" data-staffel>
@@ -311,24 +308,21 @@
   <div class="n-huelle">
     <div class="n-kopfz" data-auf>
       <span class="n-auge">Vorteile</span>
-      <h2 class="n-titel">Vier Dinge, die den Unterschied machen.</h2>
+      <h2 class="n-titel">Drei Dinge, die den Unterschied machen.</h2>
     </div>
 
-    <div class="n-raster n-raster--4" data-staffel>
+    {%- comment -%}
+      Die vierte Karte hiess "Ein Knopf" und beschrieb genau den
+      Vorgang, den der Anwendungsblock darunter in drei Schritten
+      zeigt. Sie ist entfernt; das Raster steht jetzt auf drei.
+    {%- endcomment -%}
+    <div class="n-raster n-raster--3" data-staffel>
       <article class="n-glas n-glas--hebt" data-auf>
         <div class="n-kreis">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c-3 4-5.5 6.6-5.5 9.5a5.5 5.5 0 0 0 11 0C17.5 9.6 15 7 12 3Z"/></svg>
         </div>
         <h3 class="n-karte-t">550 ml</h3>
         <p class="n-karte-p">Eine Füllung reicht für mehrere Pausen, weil der Rest jedes Mal zurückläuft.</p>
-      </article>
-
-      <article class="n-glas n-glas--hebt" data-auf>
-        <div class="n-kreis">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>
-        </div>
-        <h3 class="n-karte-t">Ein Knopf</h3>
-        <p class="n-karte-p">Drücken, der Napf füllt sich. Loslassen und aufrichten, das Wasser läuft zurück.</p>
       </article>
 
       <article class="n-glas n-glas--hebt" data-auf>
@@ -356,50 +350,14 @@
   </div>
 </section>
 
-{%- comment -%} ====================================== 6 · PRODUKT-SHOWCASE {%- endcomment -%}
-<section class="n-block">
-  <div class="n-huelle">
-    <div class="n-kopfz n-kopfz--mitte" data-auf>
-      <span class="n-auge">Sechs Farben</span>
-      <h2 class="n-titel">Such dir eine aus.</h2>
-      <p class="n-unter">Alle 550 ml. Alle zum gleichen Preis.</p>
-    </div>
-
-    {%- comment -%}
-      Der Streifen bekommt dieselben Pfeile wie der Hero. Grund: Wischen
-      ist nicht ueberall verlaesslich - im Shopify-Theme-Editor zum
-      Beispiel faengt die Vorschau Zeigerereignisse ab, und dort kommt
-      man ohne Pfeile an die hinteren Farben nicht heran. Ein Klick geht
-      immer.
-    {%- endcomment -%}
-    <div class="a-streifen" data-streifen>
-    <button class="n-gal__pfeil n-gal__pfeil--links a-streifen__pfeil" type="button"
-            data-streifen-schritt="-1" aria-label="Farben zurück" hidden>
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
-    </button>
-    <button class="n-gal__pfeil n-gal__pfeil--rechts a-streifen__pfeil" type="button"
-            data-streifen-schritt="1" aria-label="Weitere Farben" hidden>
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
-    </button>
-    <ul class="a-gitter" data-staffel data-streifen-spur>
-      {%- for var in lp.variants -%}
-        {%- assign s = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
-        <li data-auf="skalier">
-          <a class="a-karte" href="{{ lp.url }}?variant={{ var.id }}">
-            <div class="a-karte__bild{% if dunkle_flaschen contains s %} n-hell{% endif %}">
-              <img src="{{ 'a-flasche-' | append: s | append: '.webp' | asset_url }}"
-                   alt="Trinkflasche in {{ var.option1 | escape }}"
-                   width="650" height="2212" loading="lazy" decoding="async">
-            </div>
-            <h3>{{ var.option1 }}</h3>
-            <p>{{ var.price | money }}</p>
-          </a>
-        </li>
-      {%- endfor -%}
-    </ul>
-    </div>
-  </div>
-</section>
+{%- comment -%}
+  ABSCHNITT 6 (FARB-SHOWCASE) IST ENTFERNT.
+  Gemessen 485 px. Alle sechs Farben liegen bereits im Hero: in der
+  wischbaren Galerie und als Farbpunkte direkt ueber dem Kaufknopf -
+  dort sogar auswaehlbar, hier nur zum Anschauen. Wer die Farbe
+  waehlen will, tut das oben; ein zweiter Farbteppich weiter unten
+  wiederholt nur, was schon entschieden ist.
+{%- endcomment -%}
 
 {%- comment -%} =========================================== 7 · ANWENDUNG {%- endcomment -%}
 <section class="n-block n-block--tief">
@@ -436,121 +394,29 @@
   </div>
 </section>
 
-{%- comment -%} ============================================ 8 · VERGLEICH {%- endcomment -%}
-<section class="n-block">
-  <div class="n-huelle">
-    <div class="n-kopfz n-kopfz--mitte" data-auf>
-      <span class="n-auge">Vergleich</span>
-      <h2 class="n-titel">Was die Alternativen können – und was nicht.</h2>
-    </div>
+{%- comment -%}
+  ABSCHNITT 8 (VERGLEICHSTABELLE) IST ENTFERNT.
+  Gemessen 862 px. Die vier Zeilen der Tabelle waren wortgleich die
+  vier Aussagen der Gegenueberstellung in Abschnitt 3+4:
+  einhaendig / Napf fest angebaut / Restwasser laeuft zurueck /
+  nichts Nasses im Rucksack. Zwei Vergleiche hintereinander wirken
+  nicht gruendlich, sondern unsicher. Eine Vierspaltentabelle auf
+  390 px ist ausserdem kein Zwei-Sekunden-Scan.
+{%- endcomment -%}
 
-    <div class="n-glas n-tabhuelle" data-auf style="padding:.4rem clamp(.6rem,2vw,1.2rem)">
-      <table class="n-tab">
-        <caption class="n-sr">Vergleich zwischen dieser Flasche, einer Flasche mit Faltnapf und einer normalen Trinkflasche</caption>
-        <thead>
-          <tr>
-            <th scope="col">&nbsp;</th>
-            <th scope="col" style="color:var(--n-akzent)">Diese Flasche</th>
-            <th scope="col">Flasche + Faltnapf</th>
-            <th scope="col">Normale Flasche</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Mit einer Hand bedienbar</td>
-            <td><span class="n-ja">{{ haken }}</span><span class="n-sr">ja</span></td>
-            <td><span class="n-nein">{{ kreuz }}</span><span class="n-sr">nein</span></td>
-            <td><span class="n-nein">{{ kreuz }}</span><span class="n-sr">nein</span></td>
-          </tr>
-          <tr>
-            <td>Napf fest angebaut</td>
-            <td><span class="n-ja">{{ haken }}</span><span class="n-sr">ja</span></td>
-            <td><span class="n-nein">{{ kreuz }}</span><span class="n-sr">nein</span></td>
-            <td><span class="n-nein">{{ kreuz }}</span><span class="n-sr">nein</span></td>
-          </tr>
-          <tr>
-            <td>Restwasser läuft zurück</td>
-            <td><span class="n-ja">{{ haken }}</span><span class="n-sr">ja</span></td>
-            <td><span class="n-nein">{{ kreuz }}</span><span class="n-sr">nein</span></td>
-            <td><span class="n-nein">{{ kreuz }}</span><span class="n-sr">nein</span></td>
-          </tr>
-          <tr>
-            <td>Nichts Nasses im Rucksack</td>
-            <td><span class="n-ja">{{ haken }}</span><span class="n-sr">ja</span></td>
-            <td><span class="n-nein">{{ kreuz }}</span><span class="n-sr">nein</span></td>
-            <td><span class="n-ja">{{ haken }}</span><span class="n-sr">ja</span></td>
-          </tr>
-          <tr>
-            <td>Tier kann direkt trinken</td>
-            <td><span class="n-ja">{{ haken }}</span><span class="n-sr">ja</span></td>
-            <td><span class="n-ja">{{ haken }}</span><span class="n-sr">ja</span></td>
-            <td><span class="n-nein">{{ kreuz }}</span><span class="n-sr">nein</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-{%- comment -%} ========================================== 9 · BEWERTUNGEN {%- endcomment -%}
-<section class="n-block n-block--tief">
-  <div class="n-huelle">
-    <div class="n-kopfz n-kopfz--mitte" data-auf>
-      <span class="n-auge">Bewertungen</span>
-      <h2 class="n-titel">Hier stehen bald echte Stimmen.</h2>
-      <p class="n-unter">
-        Dieser Shop ist neu und hat noch keine Bestellung ausgeliefert.
-        Deshalb steht hier keine einzige Bewertung – weder eine echte
-        noch eine erfundene. Sobald die ersten Flaschen unterwegs waren,
-        frage ich nach. Auch nach der Kritik.
-      </p>
-    </div>
-
-    {%- comment -%}
-      EINE Platzhalterkarte, nicht drei.
-      Gemessen auf 390x844 war dieser Abschnitt 2359 px hoch - fast
-      drei Bildschirme, um zu sagen, dass hier noch nichts steht. Drei
-      leere Karten mit Fragezeichen-Bildchen sehen nicht nach Marke
-      aus, sie sehen nach unfertig aus. Eine einzige, sauber
-      gekennzeichnete Karte sagt dasselbe und nimmt ein Sechstel des
-      Platzes. Der Aufbau bleibt derselbe: sobald echte Bewertungen da
-      sind, wird daraus wieder ein Dreierraster.
-    {%- endcomment -%}
-    <article class="n-glas n-platz n-platz--eine" data-auf>
-      <span class="n-platz__marke">Platz für die erste Bewertung</span>
-      <div class="n-bew__kopf">
-        <span class="n-avatar" aria-hidden="true">?</span>
-        <span>
-          <span class="n-bew__name" style="color:var(--n-sanft)">Name der Käuferin</span>
-          <span class="n-bew__wann">Datum des Kaufs</span>
-        </span>
-      </div>
-      <span class="n-sterne" aria-hidden="true" style="opacity:.3">{{ stern }}{{ stern }}{{ stern }}{{ stern }}{{ stern }}</span>
-      <p style="margin-top:.6rem">
-        Hierhin kommt der Text einer echten Bewertung, unverändert
-        übernommen – auch die kritische. Angefragt wird nach der
-        Auslieferung per E-Mail.
-      </p>
-      <div class="n-bew__foto">Platz für ein echtes Kundenfoto</div>
-    </article>
-
-    <div class="n-glas" data-auf style="margin-top:1.4rem;max-width:62ch">
-      <h3 class="n-karte-t">Was wir über diese Flasche nicht wissen</h3>
-      <p class="n-karte-p" style="margin-bottom:.7rem">
-        Wir haben keine schriftliche Zusicherung des Lieferanten, dass
-        sie unter allen Umständen dicht ist – deshalb behaupten wir es
-        auch nicht. Transportiere sie am besten aufrecht. Läuft deine
-        Flasche trotzdem aus, ist das ein Reklamationsfall: Du bekommst
-        Ersatz oder dein Geld zurück.
-      </p>
-      <p class="n-karte-p">
-        Ob sie in die Spülmaschine darf, wissen wir nicht. Also sagen wir
-        es auch nicht. Spül sie von Hand mit warmem Wasser aus und lass
-        sie offen trocknen.
-      </p>
-    </div>
-  </div>
-</section>
+{%- comment -%}
+  ABSCHNITT 9 (BEWERTUNGEN) IST ENTFERNT.
+  Gemessen: 1342 px auf einem 390er Handy, der groesste Block der
+  Seite, 152 Woerter - um zu sagen, dass hier noch nie jemand gekauft
+  hat. Ein leerer Rahmen mit Fragezeichen-Avatar und ausgegrauten
+  Sternen liest sich nicht als Ehrlichkeit, sondern als leerer Laden.
+  Der Kasten "Was wir nicht wissen" stand darin und war wortgleich
+  mit zwei Antworten in der FAQ direkt darunter.
+  Die Ehrlichkeit bleibt: die Frage "Warum stehen hier keine
+  Bewertungen?" steht jetzt in der FAQ und kostet eine Zeile statt
+  eineinhalb Bildschirme. Erfundene Bewertungen kommen nicht rein -
+  auch nicht, wenn hier Platz frei wird.
+{%- endcomment -%}
 
 {%- comment -%} ================================================ 10 · FAQ {%- endcomment -%}
 <section class="n-block" id="fragen">
@@ -621,6 +487,19 @@
       </details>
 
       <details class="n-frage">
+        <summary>Warum stehen hier keine Bewertungen?</summary>
+        <div class="n-frage__inhalt">
+          <p>
+            Weil es noch keine gibt. Der Shop ist neu. Erfundene
+            Bewertungen kommen nicht rein – auch keine gekauften.
+            Sobald die ersten Flaschen ausgeliefert sind, frage ich
+            nach und stelle die Antworten unverändert hierhin, auch
+            die kritischen.
+          </p>
+        </div>
+      </details>
+
+      <details class="n-frage">
         <summary>Und wenn sie mir nicht gefällt?</summary>
         <div class="n-frage__inhalt">
           <p>
@@ -644,9 +523,17 @@
       <p class="n-unter" style="margin-inline:auto;max-width:44ch">
         {{ v.price | money }} · Gratisversand in der Schweiz · 14 Tage Rückgabe
       </p>
-      <div class="n-cta">
-        <a class="n-knopf" href="#kaufen">In den Warenkorb · {{ v.price | money }}</a>
-        <a class="n-knopf n-knopf--geist" href="/pages/contact">Frage stellen</a>
+      {%- comment -%}
+        Dieser Knopf hiess "In den Warenkorb", legte aber nichts in den
+        Warenkorb - er sprang nur nach oben zum Formular. Am untersten
+        Kaufpunkt der Seite. Jetzt sagt die Aufschrift, was er tut:
+        hier unten ist keine Farbe gewaehlt, also fuehrt der Weg zur
+        Farbwahl. Der echte Kaufknopf ist der im Formular oben und der
+        in der mitlaufenden Leiste.
+      {%- endcomment -%}
+      <div class="n-cta" style="justify-content:center">
+        <a class="n-knopf" href="#kaufen">Farbe wählen und kaufen · {{ v.price | money }}</a>
+        <a class="n-textlink" href="/pages/contact">Frage stellen</a>
       </div>
     </div>
   </div>

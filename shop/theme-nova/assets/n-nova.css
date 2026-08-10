@@ -291,7 +291,35 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .n-lead { margin: 0 0 2rem; font-size: 1.0625rem; color: var(--n-sanft); max-width: 46ch; }
-.n-cta { display: flex; flex-wrap: wrap; gap: .75rem; }
+.n-cta { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; }
+
+/* Zweitweg als Textlink statt als zweiter Knopf. Trefferflaeche bleibt
+   bei 44 px, das Gewicht liegt beim Kaufknopf. */
+.n-textlink {
+  display: inline-flex; align-items: center; min-height: 44px;
+  color: var(--n-sanft); font-size: .9375rem; font-weight: 600;
+  text-decoration: underline; text-underline-offset: 3px;
+  text-decoration-color: var(--n-glas-rand);
+}
+.n-textlink:hover { color: var(--n-text); text-decoration-color: currentColor; }
+
+/* ZAHLUNGSARTEN
+   Die Symbole kommen von Shopify und zeigen genau die freigeschalteten
+   Methoden. Feste Hoehe, damit unterschiedlich breite Logos eine ruhige
+   Reihe ergeben. */
+.n-bez {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .55rem .7rem;
+  margin-top: 1.1rem;
+}
+.n-bez--fuss { justify-content: center; margin-top: 1.6rem; }
+.n-bez__wort { color: var(--n-sanft); font-size: .75rem; letter-spacing: .04em; }
+.n-bez__liste { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0; padding: 0; list-style: none; }
+.n-bez__liste li { display: flex; }
+.n-bez__sym {
+  height: 24px; width: auto; display: block; object-fit: contain;
+  border-radius: 4px; background: #FFFFFF;
+  box-shadow: 0 0 0 1px var(--n-glas-rand);
+}
 
 /* --- Die Produktbuehne mit Tiefe ------------------------------------ */
 /* Die Produktflaeche. Ton wechselt mit der gewaehlten Farbe -
@@ -1401,14 +1429,21 @@ h1, h2, h3, .n-riese, .n-titel, .a-titel {
    Diagonaler Verlauf, farbiger Schlagschatten und ein Glanzstreifen,
    der bei Hover ueber die Flaeche wischt - genau die drei Signale, an
    denen man ein Vorlagen-Theme erkennt. Bei Apple, On und Aesop ist
-   der Kaufknopf eine flache Flaeche. */
-.n-knopf, .a-knopf {
+   der Kaufknopf eine flache Flaeche.
+
+   NACHTRAG - diese Regel hat den Geist-Knopf erschlagen. Sie steht
+   1150 Zeilen nach .n-knopf--geist und hat dieselbe Spezifitaet, also
+   gewinnt sie: Hintergrund wurde schwarz, die Schrift blieb schwarz.
+   Gemessener Kontrast 1.0:1 - ein leerer schwarzer Balken direkt neben
+   dem echten Kaufknopf. Deshalb sind die Zweitknoepfe jetzt
+   ausgenommen. */
+.n-knopf:not(.n-knopf--geist), .a-knopf {
   background: var(--n-akzent);
   box-shadow: none;
   transition: background .15s ease, transform .15s ease;
 }
 .n-knopf::after, .a-knopf::after { content: none; }
-.n-knopf:hover, .a-knopf:hover { background: #2A2A2E; transform: none; box-shadow: none; }
+.n-knopf:not(.n-knopf--geist):hover, .a-knopf:hover { background: #2A2A2E; transform: none; box-shadow: none; }
 .n-knopf:active, .a-knopf:active { transform: scale(.985); }
 .n-knopf[disabled] { box-shadow: none; transform: none; }
 

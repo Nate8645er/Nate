@@ -147,10 +147,15 @@
               Flasche trotzdem aus, ist das ein Reklamationsfall: Du bekommst
               Ersatz oder dein Geld zurück.
             </p>
-            <p>
-              Nur Wasser einfüllen. Andere Flüssigkeiten hinterlassen
-              Rückstände, die den Mechanismus verkleben.
-            </p>
+            {%- comment -%}
+              "Nur Wasser einfuellen" stand hier und noch zweimal weiter
+              unten in den Fragen. Hier gestrichen, in den Fragen bleibt
+              es - dort wird danach gesucht.
+              Die Dichtigkeitsfrage bleibt bewusst an BEIDEN Stellen:
+              am Kaufknopf, weil dort entschieden wird, und in den
+              Fragen, weil dort danach gesucht wird. Das ist die eine
+              Wiederholung, die dem Kunden nuetzt.
+            {%- endcomment -%}
             <p>
               Ich bin Nate und betreibe diesen Shop allein in Rapperswil-Jona.
               Es gibt kein Lager – deshalb dauert es 7 bis 14 Werktage.
@@ -169,25 +174,14 @@
   </div>
 </div>
 
-{%- comment -%} ============================================== NAHAUFNAHME {%- endcomment -%}
-<section class="n-block n-block--tief">
-  <div class="n-huelle">
-    {%- comment -%} Die Nahaufnahme ist auf Wunsch entfernt, der Text bleibt. {%- endcomment -%}
-    <div class="n-kopfz n-kopfz--mitte" style="margin-bottom:0" data-auf>
-      <span class="n-auge">Der Knopf</span>
-      <h2 class="n-titel" style="font-size:clamp(1.6rem,3.6vw,2.3rem)">Eine Hand reicht.</h2>
-      <p class="n-unter">
-        Knopf drücken, der Napf füllt sich. Loslassen und die Flasche
-        aufrichten, dann läuft das übrige Wasser zurück hinein. Die
-        Leine bleibt in der anderen Hand.
-      </p>
-      <p class="n-unter">
-        Der Napf ist fest angebaut. Es gibt kein zweites Teil, das man
-        mitnehmen, abschrauben oder verlieren kann.
-      </p>
-    </div>
-  </div>
-</section>
+{%- comment -%}
+  DER ABSCHNITT "DER KNOPF / EINE HAND REICHT" IST ENTFERNT.
+  Erst fiel die Nahaufnahme weg, dann blieb reiner Text uebrig - und
+  der stand fast wortgleich 40 px weiter unten in der Produkt-
+  beschreibung und ein drittes Mal in den Fragen. Gemessen 412 px fuer
+  null neue Information. Der Mechanismus wird im ganzen Shop siebenmal
+  beschrieben; einmal reicht, gezeigt waere besser.
+{%- endcomment -%}
 
 {%- comment -%} ============================================ BESCHREIBUNG {%- endcomment -%}
 {%- if product.description != blank -%}

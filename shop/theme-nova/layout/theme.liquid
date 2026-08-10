@@ -356,11 +356,36 @@
           <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>
           14 Tage Rückgabe
         </li>
-        <li>
-          <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>
-          Sichere Zahlung
-        </li>
       </ul>
+
+      {%- comment -%}
+        Hier stand "Sichere Zahlung" - eine Behauptung ohne Beleg. Statt
+        dessen laesst Shopify die tatsaechlich freigeschalteten
+        Zahlungsarten selbst zeichnen. Was hier erscheint, ist genau
+        das, was im Checkout wirklich angeboten wird; wir behaupten
+        nichts, was nicht stimmt. Ist keine einzige Zahlungsart aktiv,
+        erscheint die Zeile gar nicht.
+      {%- endcomment -%}
+      {%- if shop.enabled_payment_types.size > 0 -%}
+        <div class="n-bez">
+          <span class="n-bez__wort">Bezahlen mit</span>
+          <ul class="n-bez__liste">
+            {%- comment -%}
+              Bild statt Inline-SVG. Gemessen: payment_type_svg_tag hat
+              zehn Symbole als rohes SVG in JEDE Seite geschrieben -
+              25 KB pro Block, zwei Bloecke, 50 KB auf einer 124-KB-
+              Seite. Ueber payment_type_img_url kommen dieselben Logos
+              vom Shopify-CDN, werden einmal geladen und danach vom
+              Browser zwischengespeichert.
+            {%- endcomment -%}
+            {%- for art in shop.enabled_payment_types -%}
+              <li><img class="n-bez__sym" src="{{ art | payment_type_img_url }}"
+                       alt="{{ art | replace: '_', ' ' }}"
+                       width="38" height="24" loading="lazy" decoding="async"></li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
     </div>
   </aside>
 
@@ -386,7 +411,19 @@
           <b>Trinkflasche mit Napf</b>
           <span>{{ lv.price | money }} · 550 ml</span>
         </div>
-        <a class="n-knopf n-knopf--klein" href="#kaufen">Kaufen</a>
+        {%- comment -%}
+          Der Knopf war ein Anker auf #kaufen. Gemessen: ein Klick nach
+          sechs Bildschirmen Argumenten warf den Kunden zurueck an den
+          Seitenanfang, der Warenkorb blieb leer. Jetzt schickt er das
+          Kaufformular wirklich ab - ueber das form-Attribut, das auch
+          ohne JavaScript funktioniert. Die gewaehlte Farbe steht im
+          versteckten Feld des Formulars, die Leiste braucht sie nicht
+          selbst zu kennen.
+        {%- endcomment -%}
+        <button class="n-knopf n-knopf--klein" type="submit" form="kaufen"
+                {% unless lv.available %}disabled{% endunless %}>
+          {%- if lv.available -%}Kaufen{%- else -%}Nicht lieferbar{%- endif -%}
+        </button>
       </div>
     </div>
   {%- endif -%}
@@ -427,7 +464,35 @@
           </ul>
         </div>
       </div>
+      {%- if shop.enabled_payment_types.size > 0 -%}
+        <div class="n-bez n-bez--fuss">
+          <span class="n-bez__wort">Bezahlen mit</span>
+          <ul class="n-bez__liste">
+            {%- comment -%}
+              Bild statt Inline-SVG. Gemessen: payment_type_svg_tag hat
+              zehn Symbole als rohes SVG in JEDE Seite geschrieben -
+              25 KB pro Block, zwei Bloecke, 50 KB auf einer 124-KB-
+              Seite. Ueber payment_type_img_url kommen dieselben Logos
+              vom Shopify-CDN, werden einmal geladen und danach vom
+              Browser zwischengespeichert.
+            {%- endcomment -%}
+            {%- for art in shop.enabled_payment_types -%}
+              <li><img class="n-bez__sym" src="{{ art | payment_type_img_url }}"
+                       alt="{{ art | replace: '_', ' ' }}"
+                       width="38" height="24" loading="lazy" decoding="async"></li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+
       <div class="n-fuss__unten">
+        {%- comment -%}
+          "Preise inkl. MwSt" steht bewusst NUR hier und nirgends
+          zusaetzlich. Offener Punkt fuer den Inhaber: wer nicht im
+          MWST-Register eingetragen ist (Grenze CHF 100'000 Umsatz),
+          darf keine MWST ausweisen. Ist keine UID vorhanden, muss
+          dieser Zusatz auf "Endpreise in CHF" wechseln.
+        {%- endcomment -%}
         © {{ 'now' | date: '%Y' }} Let'sDrink · Nate Murseli · Rapperswil-Jona SG · Preise inkl. MwSt
       </div>
     </div>
