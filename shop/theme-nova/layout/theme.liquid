@@ -249,12 +249,21 @@
   </header>
 
   {%- comment -%}
-    Mobiles Menue. Vorher war es ein Stapel aus fuenf fetten Zeilen auf
-    halbdurchsichtigem Weiss - es sah unfertig aus. Jetzt: Wortmarke
-    oben (man hat den Laden nicht verlassen), Zielangabe neben jedem
-    Verweis, und unten der Weg zum Produkt, weil genau den die meisten
-    suchen, die das Menue oeffnen.
+    Mobiles Menue, zweiter Anlauf.
+
+    Der erste war ein Stapel aus fuenf sehr fetten Zeilen mit zwei
+    grossen Loechern darin: oben und unten stand das Gitter auf 1fr und
+    schob alles auseinander. "Versand & Rueckgabe" brach um und machte
+    die Zeilen ungleich hoch, und die Beitexte "Was sie kann" und
+    "Auch das Offene" waren Fuellwoerter ohne Nutzen.
+
+    Jetzt: eine Produktzeile ganz oben (wer das Menue oeffnet, sucht
+    meistens das Produkt), darunter fuenf gleich hohe Verweise in
+    ruhigerer Groesse, und Zusatzangaben nur dort, wo sie eine echte
+    Frage beantworten - was der Versand kostet und wie schnell geantwortet
+    wird.
   {%- endcomment -%}
+  {%- assign mslug = lv.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
   <nav class="n-mnav" data-mnav aria-label="Menü" aria-hidden="true">
     <div class="n-mnav__kopf">
       <a class="n-marke" href="{{ routes.root_url }}">
@@ -270,17 +279,36 @@
       </button>
     </div>
 
+    {%- if lp != empty -%}
+      <a class="n-mnav__produkt" href="{{ lp.url }}">
+        <span class="n-mnav__bild">
+          <img src="{{ 'a-flasche-' | append: mslug | append: '.webp' | asset_url }}" alt=""
+               width="650" height="2212" loading="lazy" decoding="async">
+        </span>
+        <span class="n-mnav__pt">
+          <b>Trinkflasche mit Napf</b>
+          <span>550 ml · sechs Farben</span>
+        </span>
+        {%- comment -%}
+          Kein Preis in dieser Zeile: er stand hier ein drittes Mal
+          (Untertitel, Zeile, Knopf) und nahm dem Titel so viel Platz,
+          dass "Trinkflasche mit Napf" mitten im Wort umbrach.
+        {%- endcomment -%}
+        <svg class="n-mnav__pfeil" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+      </a>
+    {%- endif -%}
+
     <div class="n-mnav__liste">
-      <a class="n-mnav__z" style="--i:0" href="{{ kaufziel }}">Shop<span class="n-mnav__was">550 ml · sechs Farben</span></a>
-      <a class="n-mnav__z" style="--i:1" href="{{ routes.root_url }}#warum">Warum wir<span class="n-mnav__was">Was sie kann</span></a>
-      <a class="n-mnav__z" style="--i:2" href="/pages/haeufige-fragen">Häufige Fragen<span class="n-mnav__was">Auch das Offene</span></a>
-      <a class="n-mnav__z" style="--i:3" href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe<span class="n-mnav__was">CH gratis · 14 Tage</span></a>
+      <a class="n-mnav__z" style="--i:0" href="{{ routes.root_url }}#warum">Warum wir</a>
+      <a class="n-mnav__z" style="--i:1" href="/pages/haeufige-fragen">Häufige Fragen</a>
+      <a class="n-mnav__z" style="--i:2" href="/pages/versand-und-rueckgabe">Versand<span class="n-mnav__was">Schweiz gratis</span></a>
+      <a class="n-mnav__z" style="--i:3" href="/pages/versand-und-rueckgabe#rueckgabe">Rückgabe<span class="n-mnav__was">14 Tage</span></a>
       <a class="n-mnav__z" style="--i:4" href="/pages/contact">Kontakt<span class="n-mnav__was">Antwort in 1 Werktag</span></a>
     </div>
 
     <div class="n-mnav__fuss">
       {%- if lp != empty and lv.available -%}
-        <a class="n-knopf" href="{{ lp.url }}">In den Warenkorb · {{ lv.price | money }}</a>
+        <a class="n-knopf n-knopf--voll" href="{{ lp.url }}">In den Warenkorb · {{ lv.price | money }}</a>
       {%- endif -%}
       <p class="n-mnav__hinweis">
         Gratisversand in der Schweiz · 14 Tage Rückgabe<br>
