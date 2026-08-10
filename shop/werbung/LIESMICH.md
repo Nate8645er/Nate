@@ -1,74 +1,38 @@
-# Werbebilder
+# Werbebilder Let'sDrink
 
-Vier Motive in drei Formaten, zwoelf Dateien unter `bilder/`.
+Erzeugt am 10.8.2026 aus den echten Studio-Freistellern des Produkts.
+Nichts hineinretuschiert, nichts hinzuerfunden - nur skaliert,
+beschnitten und auf eine Studioflaeche gesetzt.
 
-    01-knopf      Was das Ding tut
-    02-farben     Der einzige echte Unterschied zu jeder anderen Flasche
-    03-preis      Preis und Bedingungen
-    04-ehrlich    Der Grund, hier zu kaufen statt anderswo
+## Formate je Entwurf
+- `_1080x1080` Feed (Instagram, Meta)
+- `_1080x1920` Story, Reel, TikTok
+- `_1200x628`  Meta-Linkanzeige
 
-    _beitrag      1080 x 1350  Hochformat 4:5, nimmt im Verlauf am meisten Platz
-    _geschichte   1080 x 1920  9:16, oben und unten je 260 px frei gelassen
-    _quadrat      1080 x 1080  Katalog, Vorschaubild, Anzeige
-
-Neu bauen:
-
-    python3 saeubern.py    # einmalig: Sockel unter den Freistellern wegschneiden
-    python3 werbung.py     # die zwoelf Bilder
-
-## Woraus die Bilder gemacht sind
-
-Aus den echten Produktfotos, ueber Kantenverfolgung freigestellt. **Keine
-erzeugten Produktbilder.** Das ist keine Notloesung: wer eine erfundene
-Flasche anklickt und eine andere geliefert bekommt, schreibt eine
-Rueckgabe statt einer Empfehlung.
-
-Die Schrift ist die des Shops — Fraunces fuer die Titel, IBM Plex Sans
-fuer den Satz. Beide werden aus den `woff2`-Dateien des Themes in `ttf`
-umgewandelt, statt eine aehnliche Schrift zu nehmen. Wer die Anzeige
-sieht und dann den Shop oeffnet, soll dieselbe Marke sehen.
-
-## Warum die Produktmotive dunkel sind, der Shop aber hell
-
-Der Flaschenkoerper ist weiss-durchscheinend. Auf dem hellen Grund des
-Shops (`#E8EEEB`) wird er zu einem weissen Klotz ohne Silhouette — erste
-Fassung gebaut, angesehen, verworfen.
-
-Dasselbe Problem loest das Farbsystem des Shops seit jeher mit einer
-Umkehrung: die *weisse* Flasche bekommt dort einen *dunklen* Grund. Hier
-gilt diese Regel fuer alle sechs, weil der Koerper immer weiss ist.
-Motiv 04 zeigt keine Flasche gross und bleibt hell — so hat der Verlauf
-beide Seiten der Marke.
-
-Welche Farbe auf welchen Grund:
-
-| Grund | geht | geht nicht |
+## Die fuenf Entwuerfe
+| Datei | Aussage | Einsatz |
 |---|---|---|
-| dunkel `#12211F` | tuerkis, gruen, rosa, weiss, grau | **schwarz** — die Kappe verschwindet |
-| hell `#E8EEEB` | schwarz, grau | **weiss** — der Koerper verschwindet |
+| `C-napf_*` | "Der Napf ist fest angebaut." | **Startmotiv fuer kalte Zielgruppen.** Grosser Anschnitt, traegt auch im Daumenbild. Aussage und Beleg im selben Bild. |
+| `B-farben_*` | "Sechs Farben." | Zweitmotiv. Beantwortet "welche nehme ich". Im Feed werden die einzelnen Flaschen klein - besser als Story und Querformat. |
+| `E-fakten_*` | "Auf einen Blick." | Retargeting. Das 1200x628 ist die beste Linkanzeige der Reihe, fuer kaltes Publikum zu textlastig. |
+| `A-hand_*` | "Eine Hand reicht." | Zweite Welle. Der Satz behauptet Einhandbedienung, das Bild kann sie nicht zeigen - eine Hand daneben waere ein Groessenvergleich, den wir nicht belegen koennen. |
+| `D-volumen_*` | "550 ml" | NICHT als Anzeige schalten. Handwerklich das sauberste Plakat, inhaltlich das schwaechste: 550 ml ist kein Kaufgrund. Taugt als Banner im Shop. |
 
-## Der Sockel unter den Freistellern
+`kontaktbogen-*.png` zeigt alle fuenf Entwuerfe je Format nebeneinander.
 
-Unter dem echten Flaschenboden stand in allen sechs Freistellern ein
-hellgrauer, gestufter Klotz: die Spiegelung aus dem Produktfoto, die die
-Kantenverfolgung mitgenommen hatte. Auf hellem Grund faellt sie kaum auf,
-auf dunklem sieht die Flasche aus, als staende sie auf einem Podest.
+## Was bewusst NICHT drin ist
+Keine Bewertung, kein Stern, keine Kundenzahl - der Shop hat null
+Bestellungen. Keine Dringlichkeit, kein Countdown, kein Streichpreis.
+Als Produktangabe nur "550 ml" und "Sechs Farben" plus die Namen der
+sechs echten Farben. Kein Gegenstand, keine Hand und kein Tier neben
+der Flasche: das waere ein Groessenvergleich, und die Masse des
+Produkts liegen uns nicht vor. Die Flasche steht ueberall aufrecht.
 
-`saeubern.py` schneidet ihn weg — ohne feste Zeilennummer. Es zaehlt von
-unten nach oben, wie breit jede Zeile gedeckt ist; wo die Breite
-sprunghaft zunimmt, faengt der Koerper an. Gemessen: 13 Zeilen je Bild.
-Wer spaeter neue Fotos einpflegt, muss nichts nachrechnen.
+## Neu bauen
+`python3 c_napf.py` und so weiter; `lib_studio.py` ist der gemeinsame
+Renderer (Zyklorama, zwei gestapelte Schatten, Laufweite von Hand).
+Die Freisteller kommen aus dem Ordner mit den Produktbildern.
 
-## Rote Linien — gelten fuer Werbung genauso wie fuer den Shop
-
-- Kein erfundener Beweis: keine Bewertungen, Sterne, Verkaufszahlen.
-- Keine Dringlichkeit, kein Countdown, keine Verknappung.
-- Keine Produktangabe ausser 550 ml und sechs Farben. Nicht
-  "auslaufsicher", nicht "BPA-frei", nicht "spuelmaschinenfest", kein
-  Material, keine Masse.
-- Die Flasche nie auf dem Kopf, Kippen hoechstens 20 Grad.
-- Nie das Zeichen scharfes s.
-
-Der Preis steht im Bild als Text und muss von Hand nachgezogen werden,
-wenn er sich im Shop aendert. Die Schriftgroesse passt sich selbst an,
-damit ein laengerer Preis nicht in die Flasche laeuft.
+## Naechster Schritt
+Fuer Reels und TikTok fehlt jedes Bewegtformat. Naheliegend waere eine
+Sequenz von C (Anschnitt) nach B (Farbreihe).
