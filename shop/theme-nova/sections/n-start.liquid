@@ -365,7 +365,23 @@
       <p class="n-unter">Alle 550 ml. Alle zum gleichen Preis.</p>
     </div>
 
-    <ul class="a-gitter" data-staffel>
+    {%- comment -%}
+      Der Streifen bekommt dieselben Pfeile wie der Hero. Grund: Wischen
+      ist nicht ueberall verlaesslich - im Shopify-Theme-Editor zum
+      Beispiel faengt die Vorschau Zeigerereignisse ab, und dort kommt
+      man ohne Pfeile an die hinteren Farben nicht heran. Ein Klick geht
+      immer.
+    {%- endcomment -%}
+    <div class="a-streifen" data-streifen>
+    <button class="n-gal__pfeil n-gal__pfeil--links a-streifen__pfeil" type="button"
+            data-streifen-schritt="-1" aria-label="Farben zurück" hidden>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <button class="n-gal__pfeil n-gal__pfeil--rechts a-streifen__pfeil" type="button"
+            data-streifen-schritt="1" aria-label="Weitere Farben" hidden>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
+    <ul class="a-gitter" data-staffel data-streifen-spur>
       {%- for var in lp.variants -%}
         {%- assign s = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
         <li data-auf="skalier">
@@ -381,6 +397,7 @@
         </li>
       {%- endfor -%}
     </ul>
+    </div>
   </div>
 </section>
 

@@ -691,6 +691,42 @@
     });
   }
 
+  /* ---------- 10. Farbstreifen unter "Such dir eine aus" -------------
+     Derselbe Gedanke wie bei der Galerie: gescrollt wird nativ, die
+     Pfeile sind nur die Zugabe fuer alle Faelle, in denen Wischen nicht
+     ankommt. Sie erscheinen nur, wenn es wirklich etwas zu scrollen
+     gibt. */
+  var streifen = D.querySelector("[data-streifen]");
+  if (streifen) {
+    var spur = $("[data-streifen-spur]", streifen);
+    var spfeile = $$("[data-streifen-schritt]", streifen);
+    if (spur && spfeile.length) {
+      var pruefen = function () {
+        var scrollbar = spur.scrollWidth > spur.clientWidth + 2;
+        spfeile.forEach(function (b) {
+          b.hidden = !scrollbar;
+          var sch = parseInt(b.getAttribute("data-streifen-schritt"), 10);
+          if (!scrollbar) return;
+          b.disabled = sch < 0
+            ? spur.scrollLeft <= 2
+            : spur.scrollLeft >= spur.scrollWidth - spur.clientWidth - 2;
+        });
+      };
+      spfeile.forEach(function (b) {
+        b.addEventListener("click", function () {
+          var sch = parseInt(b.getAttribute("data-streifen-schritt"), 10);
+          var karte = spur.querySelector("li");
+          var weite = karte ? karte.getBoundingClientRect().width + 13 : spur.clientWidth * 0.7;
+          spur.scrollBy({ left: sch * weite * 2, behavior: ruhig ? "auto" : "smooth" });
+        });
+      });
+      spur.addEventListener("scroll", pruefen, { passive: true });
+      W.addEventListener("resize", pruefen);
+      pruefen();
+      W.addEventListener("load", pruefen);
+    }
+  }
+
   W.__nNova = true;
 })();
 

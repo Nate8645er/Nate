@@ -1532,3 +1532,12 @@ details > summary { min-height: 44px; display: flex; align-items: center; }
 /* Scroll-Sperre, wenn Menue oder Warenkorb offen sind. Auf html UND
    body - siehe Begruendung in n-nova.js. */
 html.n-sperre, html.n-sperre body { overflow: hidden; }
+
+/* --- Pfeile am Farbstreifen ------------------------------------------
+   Wischen ist nicht ueberall verlaesslich; im Theme-Editor faengt die
+   Vorschau Zeigerereignisse ab. Ein Klick geht immer. Die Pfeile
+   erscheinen nur, wenn der Streifen wirklich scrollt (das Skript nimmt
+   sonst das hidden nicht weg) und nur dort, wo er ein Streifen IST. */
+.a-streifen { position: relative; }
+.a-streifen__pfeil { top: calc(50% - 1.1rem); }
+@media (min-width: 940px) { .a-streifen__pfeil { display: none; } }
