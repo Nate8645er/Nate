@@ -818,11 +818,7 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .a-fakten b { display:block; font-size:.9375rem; }
 .a-fakten span { display:block; margin-top:.2rem; color:var(--n-sanft); font-size:.8125rem; }
 
-.a-nah { display:grid; gap:clamp(1.75rem,4vw,3rem); align-items:center; }
-@media (min-width: 820px) { .a-nah { grid-template-columns: 1fr 1fr; } }
-.a-nah img { border-radius: var(--n-rund); width:100%; height:auto; background: var(--n-panel); }
-.a-nah h2 { margin:0 0 .8rem; font-size:clamp(1.6rem,3.6vw,2.3rem); font-weight:700; letter-spacing:-.025em; }
-.a-nah p { margin:0 0 .9rem; color:var(--n-sanft); max-width:46ch; }
+/* Der Abschnitt .a-nah (Nahaufnahme des Knopfs) ist entfernt. */
 
 .a-fragen { max-width:64ch; }
 .a-frage { border-bottom: 1px solid var(--n-glas-rand); }
@@ -1433,17 +1429,6 @@ h1, h2, h3, .n-riese, .n-titel, .a-titel {
    also unter der Mindestgroesse fuer einen Beruehrpunkt. */
 .a-frage > summary, .n-frage > summary,
 details > summary { min-height: 44px; display: flex; align-items: center; }
-
-/* Das Knopf-Detailbild nie ueber seine echte Aufloesung hinaus zeigen.
-   900x900 auf 566 CSS-Pixel bedeutet auf einem 2x-Schirm 1132
-   Geraetepixel - 26 Prozent hochskaliert, und genau so sah es aus. */
-.a-nah__bild { margin: 0; }
-.a-nah__bild img { display: block; width: 100%; max-width: 450px; height: auto;
-                   border-radius: var(--n-rund); }
-.a-nah__bild figcaption {
-  margin-top: .6rem; max-width: 450px;
-  color: var(--n-sanft); font-size: .8125rem; line-height: 1.45;
-}
 
 /* ====================================================================
    MOBILES MENUE

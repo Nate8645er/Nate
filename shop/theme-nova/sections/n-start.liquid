@@ -409,7 +409,7 @@
       <h2 class="n-titel">Drei Sekunden, eine Hand.</h2>
     </div>
 
-    <div class="n-schritte" data-staffel style="margin-bottom:clamp(2rem,5vw,3rem)">
+    <div class="n-schritte" data-staffel>
       <article class="n-glas n-schritt" data-auf>
         <span class="n-nummer" aria-hidden="true"></span>
         <h3 class="n-karte-t">Knopf drücken</h3>
@@ -427,33 +427,12 @@
       </article>
     </div>
 
-    <div class="a-nah" data-auf>
-      {%- comment -%}
-        Die Aufnahme ist 900x900 gross. Auf 100 Prozent Breite gezogen
-        landet sie auf einem 2x-Schirm bei 1132 Geraetepixeln - also 26
-        Prozent hochskaliert, und genau so sah sie auch aus. Sie wird
-        deshalb nie breiter als 450 CSS-Pixel gezeigt; das entspricht
-        auf 2x exakt ihrer echten Aufloesung.
-      {%- endcomment -%}
-      <figure class="a-nah__bild">
-        <img src="{{ 'a-detail-knopf.webp' | asset_url }}"
-             alt="Nahaufnahme des Knopfs an der Flasche"
-             width="900" height="900" loading="lazy" decoding="async" data-parallaxe="8">
-        <figcaption>Detailaufnahme, Farbe Türkis. Der Knopf sitzt bei allen sechs Farben gleich.</figcaption>
-      </figure>
-      <div>
-        <span class="n-auge">Der Knopf</span>
-        <h2 class="n-titel" style="font-size:clamp(1.6rem,3.6vw,2.3rem)">Kein zweites Teil, das du vergessen kannst.</h2>
-        <p class="n-unter">
-          Der Napf ist fest angebaut. Es gibt nichts zum Abschrauben,
-          nichts zum Mitnehmen und nichts, was im Auto liegen bleibt.
-        </p>
-        <p class="n-unter">
-          Nur Wasser einfüllen. Andere Flüssigkeiten hinterlassen
-          Rückstände, die den Mechanismus verkleben.
-        </p>
-      </div>
-    </div>
+    {%- comment -%}
+      Der Abschnitt mit der Nahaufnahme des Knopfs ist auf Wunsch
+      entfernt. Beide Aussagen stehen weiter auf der Seite: der fest
+      angebaute Napf im Schritt-Block darueber, "nur Wasser" in den
+      Fragen weiter unten.
+    {%- endcomment -%}
   </div>
 </section>
 
