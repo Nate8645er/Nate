@@ -313,8 +313,12 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 }
 .n-bez--fuss { justify-content: center; margin-top: 1.6rem; }
 .n-bez__wort { color: var(--n-sanft); font-size: .75rem; letter-spacing: .04em; }
-.n-bez__liste { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0; padding: 0; list-style: none; }
-.n-bez__liste li { display: flex; }
+/* Spezifitaet mit Absicht erhoeht: ".n-fuss ul { display: grid }" weiter
+   unten im Blatt ist spezifischer als eine einzelne Klasse und legte
+   sonst jedes Symbol auf eine eigene Zeile - gemessen 319 px statt 60. */
+.n-bez .n-bez__liste { display: flex; flex-wrap: wrap; gap: .4rem;
+                       margin: 0; padding: 0; list-style: none; }
+.n-bez .n-bez__liste li { display: flex; }
 .n-bez__sym {
   height: 24px; width: auto; display: block; object-fit: contain;
   border-radius: 4px; background: #FFFFFF;
@@ -1561,3 +1565,94 @@ html.n-sperre, html.n-sperre body { overflow: hidden; }
 .a-streifen { position: relative; }
 .a-streifen__pfeil { top: calc(50% - 1.1rem); }
 @media (min-width: 940px) { .a-streifen__pfeil { display: none; } }
+
+/* ====================================================================
+   ABLAUF-ZEICHNUNG (Abschnitt Anwendung)
+
+   Der Knopfmechanismus wurde im Shop siebenmal beschrieben und nie
+   gezeigt. Hier wird er gezeigt - als Strichzeichnung, nicht als
+   erzeugtes Foto. Ein Foto muesste die Groesse der Flasche erfinden;
+   eine Zeichnung erklaert den Ablauf, ohne etwas zu behaupten.
+
+   Bewegt werden nur zwei Rechtecke hinter Masken, eine Drehung und
+   zwei Deckkraefte - alles Eigenschaften, die der Verbund uebernimmt.
+   Kein Pfad-Morphing, keine Bibliothek, 0 zusaetzliche Anfragen.
+   Ein Durchlauf dauert 9 Sekunden.
+   -------------------------------------------------------------------- */
+.n-ablauf__raster { display: grid; gap: clamp(1.5rem, 4vw, 2.75rem); align-items: center; }
+@media (min-width: 820px) { .n-ablauf__raster { grid-template-columns: minmax(0,.85fr) minmax(0,1fr); } }
+
+.n-ablauf { display: flex; justify-content: center; }
+.n-ab { width: min(100%, 260px); height: auto; overflow: visible; }
+
+.n-ab__strich { stroke: var(--n-text); stroke-width: 4; fill: none;
+                stroke-linecap: round; stroke-linejoin: round; }
+.n-ab__boden  { stroke: var(--n-glas-rand); stroke-width: 3; stroke-linecap: round; }
+.n-ab__knopf  { fill: none; stroke: var(--n-text); stroke-width: 4; }
+
+/* Wasser ist die einzige Farbe in einem sonst schwarzweissen Bild -
+   deshalb findet das Auge sofort, worum es geht. */
+.n-ab__pegel, .n-ab__napfwasser { fill: #7FC9DC; }
+.n-ab__strahl { stroke: #7FC9DC; stroke-width: 7; stroke-linecap: round; opacity: 0; }
+
+/* Sie laeuft ERST, wenn sie im Bild ist, und genau zweimal.
+   Das Startsignal ist die Klasse .n-da, die der ohnehin vorhandene
+   IntersectionObserver setzt - kein zusaetzliches Skript.
+   Eine Dauerschleife am Seitenrand verbrennt genau den Durchlauf, den
+   der Kunde sehen soll; danach ist sie nur noch Zappeln neben dem Text.
+   Ohne JavaScript kommt .n-da nie - dann steht die Zeichnung still,
+   und die drei Schritte daneben erklaeren den Ablauf in Worten. */
+.n-ablauf.n-da .n-ab__knopf      { transform-origin: 100px 137px; animation: nAbDruecken 8s var(--n-weich) 2; }
+.n-ablauf.n-da .n-ab__strahl     { animation: nAbStrahl   8s linear 2; }
+.n-ablauf.n-da .n-ab__napfwasser { animation: nAbNapfvoll 8s var(--n-weich) 2; }
+.n-ablauf.n-da .n-ab__pegel      { animation: nAbPegel    8s var(--n-weich) 2; }
+
+@keyframes nAbDruecken {
+  0%, 10%   { transform: scaleY(1); }
+  16%, 50%  { transform: scaleY(.74); }
+  58%, 100% { transform: scaleY(1); }
+}
+@keyframes nAbStrahl {
+  0%, 15%   { opacity: 0; }
+  19%, 30%  { opacity: 1; }
+  34%, 100% { opacity: 0; }
+}
+/* Die Gewichtung folgt einer Produktentscheidung, nicht dem Geschmack:
+   Wasser in einen Napf laufen lassen kann jede Flasche mit Napf. Dass
+   das UEBRIGE Wasser zurueckkommt, kann sie nicht. Deshalb bekommt der
+   Ruecklauf sichtbar Zeit, und der Zustand danach - leerer Napf, volle
+   Flasche - steht am laengsten. */
+@keyframes nAbNapfvoll {
+  0%, 16%   { transform: translateY(99px); }   /* Napf leer */
+  32%, 52%  { transform: translateY(18px); }   /* Napf gefuellt */
+  68%, 100% { transform: translateY(99px); }   /* zurueckgelaufen */
+}
+@keyframes nAbPegel {
+  0%, 16%   { transform: translateY(0); }
+  32%, 52%  { transform: translateY(34px); }   /* Flasche gibt ab */
+  68%, 100% { transform: translateY(0); }      /* bekommt zurueck */
+}
+
+/* Wer Bewegung reduziert hat, bekommt EIN ruhiges Bild statt gar
+   keiner Aussage: Flasche geneigt, Napf gefuellt - der Moment, auf den
+   es ankommt. */
+@media (prefers-reduced-motion: reduce) {
+  .n-ablauf.n-da .n-ab__knopf, .n-ablauf.n-da .n-ab__strahl,
+  .n-ablauf.n-da .n-ab__napfwasser, .n-ablauf.n-da .n-ab__pegel { animation: none; }
+  /* Ein ruhiges Bild statt gar keiner Aussage: Napf gefuellt, Flasche
+     entsprechend niedriger - der Moment, um den es geht. Der Wert 18
+     ist derselbe wie im Bewegungsablauf, damit beide gleich aussehen. */
+  .n-ab__knopf      { transform: scaleY(.74); }
+  .n-ab__napfwasser { transform: translateY(18px); }
+  .n-ab__pegel      { transform: translateY(34px); }
+  .n-ab__strahl     { opacity: 1; }
+}
+
+.n-ablauf__liste { margin: 0; padding: 0 0 0 1.35rem; display: grid; gap: .9rem; }
+.n-ablauf__liste li { color: var(--n-sanft); font-size: 1.0625rem; line-height: 1.55; }
+.n-ablauf__liste b { color: var(--n-text); }
+
+.n-ablauf__hinweis {
+  margin: 1.4rem 0 0; text-align: center;
+  color: var(--n-sanft); font-size: .8125rem;
+}
