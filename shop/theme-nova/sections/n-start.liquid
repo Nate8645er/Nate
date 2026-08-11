@@ -70,6 +70,9 @@
   Funktion als eine, die etwas vortaeuscht.
 {%- endcomment -%}
 {%- assign rundum_bilder = 0 -%}
+{%- comment -%} Wirklich faelliger Preis: siehe Begruendung in layout/theme.liquid. {%- endcomment -%}
+{%- assign v_ab = v.price | times: 9 | divided_by: 10 -%}
+
 
 {%- capture haken -%}<svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>{%- endcapture -%}
 {%- capture kreuz -%}<svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5.5 5.5l9 9M14.5 5.5l-9 9"/></svg>{%- endcapture -%}
@@ -222,7 +225,7 @@
         <input type="hidden" name="items[0][quantity]" value="1">
 
         <p class="n-preis">
-          <b>{{ v.price | money }}</b>
+          <b>{{ v_ab | money }}</b>
           <span>inkl. MwSt · ein Preis für alle Farben</span>
         </p>
 
@@ -246,71 +249,92 @@
         {%- comment -%}
           WIE VIELE - UND WELCHE FARBEN
 
-          Die Staffel bildet den Rabatt ab, der im Shopify-Konto
-          tatsaechlich eingerichtet ist: "kaufe 2, erhalte 1 gratis"
-          auf genau dieses Produkt, automatisch, ohne Code.
-          Bei drei Flaschen ist eine davon gratis - deshalb kostet 3
-          gleich viel wie 2. Alle Betraege werden hier aus v.price
-          gerechnet, nichts steht als Zahl im Text.
+          DIESE STAFFEL BILDET AB, WAS IM SHOPIFY-KONTO STEHT.
+          Fuenf automatische Rabatte auf genau dieses Produkt, ohne
+          Code, Stand 11.8.2026:
 
-          WIRD DER RABATT IM KONTO GEAENDERT ODER ABGESCHALTET, MUSS
-          DIESER BLOCK MIT. Sonst verspricht die Seite etwas, das die
-          Kasse nicht einloest. Schalter dafuer: aktion_drei_fuer_zwei.
+            ab 1 Flasche    10 %      DiscountAutomaticNode/2396403728761
+            ab 2 Flaschen   20 %      .../2396403761529
+            ab 4 Flaschen   25 %      .../2396403794297
+            ab 7 Flaschen   28.58 %   .../2396403827065
+            ab 9 Flaschen   33.34 %   .../2396403859833
+
+          WARUM MENGE IM WARENKORB UND ANGEBOT NICHT DASSELBE SIND
+          "3 + 1 gratis" heisst VIER Flaschen im Warenkorb; der Rabatt
+          macht eine davon gratis. Shopify legt von sich aus nichts
+          dazu - deshalb steht in value die Warenkorbmenge (4, 7, 9)
+          und in der Aufschrift das Angebot.
+
+          WARUM DIE KRUMMEN PROZENTE
+          "5 kaufen, 2 gratis" sind rechnerisch 2/7 = 28.5714...,
+          "6 + 3" sind 1/3. Shopify speichert vier Nachkommastellen.
+          Abgerundet waere der Abzug einen Rappen ZU KLEIN, die Seite
+          wuerde also einen Rappen zu viel versprechen. Deshalb
+          aufgerundet: der Abzug faellt hoechstens einen Rappen
+          groesser aus als hier steht, nie kleiner.
+
+          AENDERT SICH IM KONTO ETWAS, MUSS DIESE LISTE MIT.
+          Sonst verspricht die Seite etwas, das die Kasse nicht
+          einloest.
+
+          Alle Betraege kommen aus v.price, keiner steht als Zahl im
+          Text. Der Zaehler ist der Faktor mal zehn: 9 heisst 0.9 mal
+          Grundpreis, 16 heisst 1.6, 30 heisst 3.0 und so weiter.
         {%- endcomment -%}
-        {%- assign aktion_drei_fuer_zwei = true -%}
-        {%- assign p1 = v.price -%}
-        {%- assign p2 = v.price | times: 2 -%}
-        {%- if aktion_drei_fuer_zwei -%}
-          {%- assign p3 = v.price | times: 2 -%}
-        {%- else -%}
-          {%- assign p3 = v.price | times: 3 -%}
-        {%- endif -%}
+        {%- assign st_menge  = '1,2,4,7,9' | split: ',' -%}
+        {%- assign st_zaehler = '9,16,30,50,60' | split: ',' -%}
+        {%- assign st_titel  = '1 Flasche|2 Flaschen|3 + 1 gratis|5 + 2 gratis|6 + 3 gratis' | split: '|' -%}
+        {%- assign st_marke  = '10 % Rabatt|20 % Rabatt|1 gratis dazu|2 gratis dazu|3 gratis dazu' | split: '|' -%}
 
         {%- comment -%}
-          Die drei Mengenfelder tragen form="n-nichts" - ein Formular
-          mit dieser Kennung gibt es nicht. Damit gehoeren sie zu
-          keinem Formular und werden NICHT an die Kasse mitgeschickt;
-          sie sind reine Bedienung. Die Zusammengehoerigkeit der drei
+          Die Mengenfelder tragen form="n-nichts" - ein Formular mit
+          dieser Kennung gibt es nicht. Damit gehoeren sie zu keinem
+          Formular und werden NICHT an die Kasse mitgeschickt; sie
+          sind reine Bedienung. Die Zusammengehoerigkeit der
           Radiofelder bleibt ueber den gemeinsamen Namen bestehen.
         {%- endcomment -%}
         <fieldset class="n-anz" data-menge>
           <legend class="n-etikett">Wie viele?</legend>
-          <div class="n-anz__reihe">
-            <label class="n-anz__feld">
-              <input type="radio" name="n-menge" value="1" checked data-mengenwahl form="n-nichts">
-              <span class="n-anz__zahl">1</span>
-              <span class="n-anz__preis">{{ p1 | money }}</span>
-            </label>
-            <label class="n-anz__feld">
-              <input type="radio" name="n-menge" value="2" data-mengenwahl form="n-nichts">
-              <span class="n-anz__zahl">2</span>
-              <span class="n-anz__preis">{{ p2 | money }}</span>
-            </label>
-            <label class="n-anz__feld n-anz__feld--deal">
-              <input type="radio" name="n-menge" value="3" data-mengenwahl form="n-nichts">
-              <span class="n-anz__zahl">3</span>
-              <span class="n-anz__preis">{{ p3 | money }}</span>
-              {%- if aktion_drei_fuer_zwei -%}
-                <span class="n-anz__spar">eine gratis</span>
-              {%- endif -%}
-            </label>
+          <div class="n-anz__liste">
+            {%- for m in st_menge -%}
+              {%- assign i = forloop.index0 -%}
+              {%- assign mz = m | times: 1 -%}
+              {%- assign z = st_zaehler[i] | times: 1 -%}
+              {%- assign preis = v.price | times: z | divided_by: 10 -%}
+              {%- comment -%} Aufrunden, damit der Stueckpreis nie zu tief steht. {%- endcomment -%}
+              {%- assign je = preis | plus: mz | minus: 1 | divided_by: mz -%}
+              <label class="n-anz__zeile">
+                <input type="radio" name="n-menge" value="{{ mz }}" data-mengenwahl form="n-nichts"
+                       data-preis="{{ preis | money }}"{% if forloop.first %} checked{% endif %}>
+                <span class="n-anz__haken" aria-hidden="true"></span>
+                <span class="n-anz__was">
+                  <b>{{ st_titel[i] }}</b>
+                  <small>{{ mz }} {% if mz == 1 %}Flasche{% else %}Flaschen{% endif %} · {{ je | money }} pro Stück</small>
+                </span>
+                <span class="n-anz__geld">
+                  <b>{{ preis | money }}</b>
+                  <small>{{ st_marke[i] }}</small>
+                </span>
+              </label>
+            {%- endfor -%}
           </div>
-          {%- if aktion_drei_fuer_zwei -%}
-            {%- assign gespart = v.price -%}
-            <p class="n-anz__hinweis">
-              Bei drei Flaschen ist eine gratis – du sparst {{ gespart | money }}.
-              Der Abzug erscheint im Warenkorb, du brauchst keinen Code.
-              Die drei dürfen verschiedene Farben haben.
-            </p>
-          {%- endif -%}
+          <p class="n-anz__hinweis">
+            Der Abzug erscheint im Warenkorb, ohne Code. Die Flaschen
+            dürfen verschiedene Farben haben.
+          </p>
         </fieldset>
 
         {%- comment -%}
-          Farbe fuer Flasche 2 und 3. Echte Radiofelder, damit die Wahl
-          ohne eine Zeile JavaScript funktioniert. Ausgeschaltet, bis
-          die Menge es verlangt.
+          Farbe fuer jede weitere Flasche. Echte Radiofelder, damit die
+          Wahl ohne eine Zeile JavaScript funktioniert. Ausgeschaltet,
+          bis die Menge sie verlangt - und ein ausgeschaltetes Feld
+          schickt der Browser nicht mit. Faellt das Skript aus, bleibt
+          es bei genau einer Flasche, und der Kauf geht trotzdem.
+
+          Neun Plaetze, weil die groesste Stufe neun Flaschen in den
+          Warenkorb legt.
         {%- endcomment -%}
-        {%- for platz in (2..3) -%}
+        {%- for platz in (2..9) -%}
           {%- assign idx = platz | minus: 1 -%}
           <fieldset class="n-zusatz" data-zusatz="{{ platz }}" disabled hidden>
             <legend class="n-etikett">Farbe der {{ platz }}. Flasche</legend>
@@ -334,7 +358,7 @@
         <div class="n-cta">
           <button class="n-knopf" type="submit" data-leiste-anker
                   {% unless v.available %}disabled{% endunless %}>
-            {%- if v.available -%}<span data-knopftext>In den Warenkorb · {{ v.price | money }}</span>{%- else -%}Zurzeit nicht lieferbar{%- endif -%}
+            {%- if v.available -%}<span data-knopftext>In den Warenkorb · {{ v_ab | money }}</span>{%- else -%}Zurzeit nicht lieferbar{%- endif -%}
           </button>
           {%- comment -%}
             Hier stand ein zweiter, gleich grosser Knopf. Zwei schwarze
@@ -544,7 +568,7 @@
         noch auf dem Knopf - dort, wo er zaehlt.
       {%- endcomment -%}
       <div class="n-cta" style="justify-content:center">
-        <a class="n-knopf" href="#kaufen">Farbe wählen · {{ v.price | money }}</a>
+        <a class="n-knopf" href="#kaufen">Farbe wählen · {{ v_ab | money }}</a>
         <a class="n-textlink" href="/pages/contact">Frage stellen</a>
       </div>
     </div>

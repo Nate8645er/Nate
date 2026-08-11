@@ -35,6 +35,9 @@
   assign sslug = sv.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase
 -%}
 
+{%- comment -%} Wirklich faelliger Preis: siehe Begruendung in layout/theme.liquid. {%- endcomment -%}
+{%- assign sv_ab = sv.price | times: 9 | divided_by: 10 -%}
+
 {%- comment -%}
   Ein Bild pro Seite, passend zum Inhalt. Die Rechtsseiten bekommen
   keines: ein Produktfoto neben den AGB wirkt wie ein Verkaufsversuch
@@ -131,7 +134,7 @@
           <b>Trinkflasche mit Napf</b>
           <span>550 ml · Gratisversand in der Schweiz</span>
         </div>
-        <a class="n-knopf n-knopf--klein" href="{{ sp.url }}">Farbe wählen · {{ sv.price | money }}</a>
+        <a class="n-knopf n-knopf--klein" href="{{ sp.url }}">Farbe wählen · {{ sv_ab | money }}</a>
       </aside>
     {%- endif -%}
 

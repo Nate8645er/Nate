@@ -25,6 +25,26 @@
       assign kaufziel = '#kaufen'
     endif
   -%}
+{%- comment -%}
+  DER PREIS, DEN MAN WIRKLICH ZAHLT
+
+  Im Konto laeuft ein automatischer Rabatt von 10 Prozent ab der
+  ERSTEN Flasche. Damit zahlt niemand je den Katalogpreis. Stuende
+  hier trotzdem der Katalogpreis, wuerde der Shop einen Betrag
+  anschreiben, den die Kasse nie verlangt - und nach der schweizer
+  Preisbekanntgabeverordnung ist anzuschreiben, was tatsaechlich zu
+  bezahlen ist.
+
+  Deshalb rechnet der Shop ueberall mit dem wirklich faelligen Preis:
+  Katalogpreis mal neun geteilt durch zehn. Ein durchgestrichener
+  Katalogpreis steht NIRGENDS - er war nie im Umlauf, also waere er
+  ein erfundener Vergleichspreis.
+
+  FAELLT DER 10-PROZENT-RABATT IM KONTO WEG, MUSS DIESE ZEILE MIT
+  (dann einfach den Preis der Variante nehmen).
+{%- endcomment -%}
+{%- assign lv_ab = lv.price | times: 9 | divided_by: 10 -%}
+
 
   {%- capture t -%}{% if ist_start %}Trinkflasche mit Napf für Hund & Katze – 550 ml | Let'sDrink{% else %}{{ page_title }} – Let'sDrink{% endif %}{%- endcapture -%}
   {%- capture b -%}{% if page_description %}{{ page_description }}{% else %}Knopf drücken, der Napf füllt sich. Aufrichten, und das übrige Wasser läuft zurück. 550 ml, sechs Farben. Gratisversand in der Schweiz.{% endif %}{%- endcapture -%}
@@ -308,7 +328,7 @@
         </span>
         <span class="n-mnav__pt">
           <b>Trinkflasche mit Napf</b>
-          <span>550 ml · {{ lv.price | money }}</span>
+          <span>550 ml · {{ lv_ab | money }}</span>
           {%- comment -%}
             Die Farbpunkte statt des Wortes "sechs Farben": ein Blick
             genuegt, und sie kommen aus dem Sortiment. Faellt eine
@@ -348,7 +368,7 @@
           Kaufknopf ginge hier nicht: das Kaufformular steht nur auf
           der Start- und der Produktseite, das Menue aber auf jeder.
         {%- endcomment -%}
-        <a class="n-knopf n-knopf--voll" href="{{ lp.url }}">Farbe wählen · {{ lv.price | money }}</a>
+        <a class="n-knopf n-knopf--voll" href="{{ lp.url }}">Farbe wählen · {{ lv_ab | money }}</a>
       {%- endif -%}
       <p class="n-mnav__hinweis">
         Versand in der Schweiz gratis · 14 Tage Rückgabe
@@ -508,7 +528,7 @@
         </div>
         <div class="n-leiste__text">
           <b>Trinkflasche mit Napf</b>
-          <span>{{ lv.price | money }} · 550 ml</span>
+          <span>{{ lv_ab | money }} · 550 ml</span>
         </div>
         {%- comment -%}
           Der Knopf war ein Anker auf #kaufen. Gemessen: ein Klick nach

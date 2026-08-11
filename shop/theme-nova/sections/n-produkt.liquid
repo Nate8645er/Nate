@@ -22,6 +22,9 @@
   assign slug = v.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase
 -%}
 
+{%- comment -%} Wirklich faelliger Preis: siehe Begruendung in layout/theme.liquid. {%- endcomment -%}
+{%- assign v_ab = v.price | times: 9 | divided_by: 10 -%}
+
 {%- comment -%}
   Der Ton der Produktflaeche haengt an der gewaehlten Farbe: nur die
   schwarze Flasche braucht die helle Flaeche, die uebrigen fuenf die
@@ -78,7 +81,7 @@
         <h1 class="a-titel">{{ product.title }}</h1>
 
         <p class="n-preis" style="margin-top:1rem">
-          <b>{{ v.price | money }}</b>
+          <b>{{ v_ab | money }}</b>
           <span>inkl. MwSt · Gratisversand Schweiz</span>
         </p>
         <p class="a-pr__zeile">550 ml · Farbe <span data-farbname>{{ v.option1 }}</span> · ein Preis für alle Farben</p>

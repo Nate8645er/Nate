@@ -776,10 +776,30 @@
     var text   = $("[data-knopftext]", form);
     var pfeld  = $("[data-variantenfeld]", form);
 
+    /* Wer in einer Zusatzzeile selbst eine Farbe waehlt, soll sie
+       behalten. Ab dann fasst das Angleichen diese Zeile nicht mehr
+       an. */
+    zusatz.forEach(function (fs) {
+      fs.addEventListener("change", function () { fs.setAttribute("data-selbst", ""); });
+    });
+
+    /* Ohne das hier stuenden alle weiteren Flaschen auf Rosa, weil das
+       die erste Variante im Sortiment ist - auch wenn oben Schwarz
+       gewaehlt wurde. Wer neun Flaschen nimmt, will sie im Zweifel
+       alle in derselben Farbe; wer es anders will, klickt es an. */
+    function farbenAngleichen() {
+      if (!pfeld || !pfeld.value) return;
+      zusatz.forEach(function (fs) {
+        if (fs.hasAttribute("data-selbst")) return;
+        var r = fs.querySelector('input[value="' + pfeld.value + '"]');
+        if (r && !r.disabled) r.checked = true;
+      });
+    }
+
     function setzen() {
-      var n = 1;
+      var n = 1, gewaehlt = null;
       for (var i = 0; i < wahlen.length; i++) {
-        if (wahlen[i].checked) n = parseInt(wahlen[i].value, 10) || 1;
+        if (wahlen[i].checked) { n = parseInt(wahlen[i].value, 10) || 1; gewaehlt = wahlen[i]; }
       }
       zusatz.forEach(function (fs) {
         var noetig = parseInt(fs.getAttribute("data-zusatz"), 10) <= n;
@@ -787,24 +807,29 @@
         if (noetig) { fs.removeAttribute("hidden"); }
         else        { fs.setAttribute("hidden", ""); }
       });
+      farbenAngleichen();
       if (text) {
-        var feld = null;
-        for (var k = 0; k < wahlen.length; k++) {
-          if (wahlen[k].checked) feld = $(".n-anz__preis", wahlen[k].parentNode);
-        }
-        text.textContent = (n === 1 ? "In den Warenkorb · " : n + " in den Warenkorb · ")
-                         + (feld ? feld.textContent.trim() : "");
+        /* Der Betrag steht am Feld selbst (data-preis) und kommt aus
+           Liquid. Frueher wurde er aus der Beschriftung gelesen - das
+           brach, sobald sich der Aufbau der Zeile aenderte. */
+        var preis = gewaehlt ? (gewaehlt.getAttribute("data-preis") || "") : "";
+        text.textContent = (n === 1 ? "In den Warenkorb · " : n + " in den Warenkorb · ") + preis;
       }
     }
     wahlen.forEach(function (r) { r.addEventListener("change", setzen); });
     setzen();
 
-    /* Die Farbpunkte oben aendern nur Flasche 1. Sie schreiben in
+    /* Die Farbpunkte oben aendern Flasche 1. Sie schreiben in
        data-variantenfeld, das jetzt items[0][id] heisst - der Name
-       hat sich geaendert, das Merkmal nicht. */
+       hat sich geaendert, das Merkmal nicht. Die uebrigen Flaschen
+       ziehen nach, sofern sie nicht von Hand gesetzt wurden. */
     if (pfeld && pfeld.name.indexOf("items[") !== 0) {
       pfeld.name = "items[0][id]";
     }
+    D.addEventListener("click", function (e) {
+      if (!e.target.closest) return;
+      if (e.target.closest("[data-farbe], [data-gal-feld]")) setTimeout(farbenAngleichen, 0);
+    });
   })();
 
   /* ---------- 12 · FRAGEN-CHAT ------------------------------------

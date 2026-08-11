@@ -1704,39 +1704,67 @@ html.n-sperre, html.n-sperre body { overflow: hidden; }
    Frist, kein Countdown - der Abzug passiert wirklich an der Kasse.
    -------------------------------------------------------------------- */
 .n-anz { display: block; border: 0; margin: 0 0 1.4rem; padding: 0; min-width: 0; }
-.n-anz__reihe { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; margin-top: .55rem; }
 
-.n-anz__feld { position: relative; display: block; cursor: pointer; }
-.n-anz__feld input {
-  position: absolute; width: 1px; height: 1px; opacity: 0;
-  margin: 0; pointer-events: none;
-}
-.n-anz__feld > span:not(.n-anz__spar) { display: block; text-align: center; }
-.n-anz__feld::before {
-  content: ""; position: absolute; inset: 0; border-radius: 16px;
+/* FUENF STUFEN, ALSO ZEILEN STATT KAESTEN.
+
+   Vorher waren es drei Kaesten nebeneinander. Bei fuenf Stufen wird
+   jeder Kasten auf einem 390er Handy 70 px breit, und "3 + 1 gratis"
+   passt dort nicht hinein. Als Zeile hat jede Stufe die volle Breite:
+   links was man bekommt, rechts was es kostet. Das skaliert auch,
+   wenn spaeter eine Stufe dazukommt oder wegfaellt. */
+.n-anz__liste { display: grid; gap: .5rem; margin-top: .55rem; }
+
+.n-anz__zeile {
+  position: relative; display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center; gap: .8rem;
+  padding: .8rem 1rem; border-radius: 16px; cursor: pointer;
   box-shadow: inset 0 0 0 1px var(--n-glas-rand);
   transition: box-shadow .18s ease, background .18s ease;
 }
-.n-anz__feld > span { position: relative; }
-.n-anz__zahl  { padding-top: .85rem; font-size: 1.25rem; font-weight: 700; line-height: 1.1; }
-.n-anz__preis { padding-bottom: .85rem; margin-top: .15rem; color: var(--n-sanft); font-size: .8125rem; }
-
-.n-anz__feld:hover::before { box-shadow: inset 0 0 0 1px rgb(17 17 17 / .3); }
-.n-anz__feld:has(input:checked)::before {
+.n-anz__zeile input {
+  position: absolute; width: 1px; height: 1px; opacity: 0;
+  margin: 0; pointer-events: none;
+}
+.n-anz__zeile:hover { box-shadow: inset 0 0 0 1px rgb(17 17 17 / .3); }
+.n-anz__zeile:has(input:checked) {
   box-shadow: inset 0 0 0 2px var(--n-akzent);
   background: var(--n-glas);
 }
-/* Tastatur sichtbar machen - der Ring liegt auf der Huelle, weil das
-   Feld selbst einen Pixel gross ist. */
-.n-anz__feld:has(input:focus-visible)::before { outline: 2px solid var(--n-akzent); outline-offset: 3px; }
+/* Tastatur sichtbar machen - das Feld selbst ist einen Pixel gross. */
+.n-anz__zeile:has(input:focus-visible) { outline: 2px solid var(--n-akzent); outline-offset: 3px; }
 
-.n-anz__spar {
-  position: absolute; top: -.55rem; left: 50%; transform: translateX(-50%);
-  white-space: nowrap; background: var(--n-akzent); color: var(--n-knopftext);
-  border-radius: 999px; padding: .12rem .5rem;
-  font-size: .6875rem; font-weight: 700; letter-spacing: .02em;
+.n-anz__haken {
+  width: 20px; height: 20px; border-radius: 999px; flex: none;
+  box-shadow: inset 0 0 0 1.5px var(--n-glas-rand);
+  transition: box-shadow .18s ease;
 }
+.n-anz__zeile:has(input:checked) .n-anz__haken {
+  box-shadow: inset 0 0 0 6px var(--n-akzent);
+}
+
+.n-anz__was { display: grid; gap: .1rem; min-width: 0; }
+.n-anz__was b { font-size: 1rem; font-weight: 700; letter-spacing: -.015em; }
+.n-anz__was small { font-size: .8125rem; color: var(--n-sanft); }
+
+.n-anz__geld { display: grid; gap: .1rem; justify-items: end; text-align: right; }
+.n-anz__geld b { font-size: 1rem; font-weight: 700; white-space: nowrap; }
+.n-anz__geld small {
+  font-size: .6875rem; font-weight: 700; letter-spacing: .02em;
+  white-space: nowrap; border-radius: 999px; padding: .1rem .45rem;
+  background: var(--n-glas-hell); color: var(--n-text);
+}
+.n-anz__zeile:has(input:checked) .n-anz__geld small {
+  background: var(--n-akzent); color: var(--n-knopftext);
+}
+
 .n-anz__hinweis { margin: .8rem 0 0; color: var(--n-sanft); font-size: .875rem; line-height: 1.5; }
+
+@media (max-width: 359px) {
+  /* Auf sehr schmalen Geraeten fliegt der Stueckpreis raus, bevor
+     etwas umbricht. */
+  .n-anz__was small { display: none; }
+}
 
 .n-zusatz { display: block; border: 0; margin: 0 0 1.2rem; padding: 0; min-width: 0; }
 .n-zusatz[hidden] { display: none; }
