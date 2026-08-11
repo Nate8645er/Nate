@@ -28,26 +28,22 @@
 {%- comment -%}
   DER PREIS, DEN MAN WIRKLICH ZAHLT
 
-  Kurz gab es einen automatischen Rabatt ab der ERSTEN Flasche. Damit
-  zahlte niemand je den Katalogpreis, und der Shop haette einen Betrag
-  angeschrieben, den die Kasse nie verlangt - nach der schweizer
+  Im Konto laeuft ein automatischer Rabatt von 5 Prozent ab der
+  ERSTEN Flasche. Damit zahlt niemand je den Katalogpreis. Stuende
+  hier trotzdem der Katalogpreis, wuerde der Shop einen Betrag
+  anschreiben, den die Kasse nie verlangt - und nach der schweizer
   Preisbekanntgabeverordnung ist anzuschreiben, was tatsaechlich zu
-  bezahlen ist. Alle Preisstellen im Shop rechnen deshalb ueber diese
-  eine Variable.
+  bezahlen ist.
 
-  Heute beginnt die Staffel erst bei ZWEI Flaschen. Der Katalogpreis
-  ist damit wieder ein Preis, den jemand zahlt, und die Variable steht
-  einfach auf ihm.
+  Deshalb rechnet der Shop ueberall mit dem wirklich faelligen Preis:
+  Katalogpreis mal 95 geteilt durch 100, aufgerundet. Ein
+  durchgestrichener Katalogpreis steht NIRGENDS - er war nie im
+  Umlauf, also waere er ein erfundener Vergleichspreis.
 
-  Kommt je wieder ein Rabatt ab der ersten Flasche dazu, MUSS diese
-  Zeile mit - sonst steht im ganzen Shop ein Betrag, den die Kasse
-  nicht verlangt. Beispiel fuer 5 Prozent:
-    lv.price | times: 95 | plus: 99 | divided_by: 100
-
-  Ein durchgestrichener Vergleichspreis steht NIRGENDS. Ein Preis, der
-  nie im Umlauf war, waere ein erfundener Vergleichspreis.
+  FAELLT DER 5-PROZENT-RABATT IM KONTO WEG, MUSS DIESE ZEILE MIT
+  (dann einfach lv.price nehmen).
 {%- endcomment -%}
-{%- assign lv_ab = lv.price -%}
+{%- assign lv_ab = lv.price | times: 95 | plus: 99 | divided_by: 100 -%}
 
 
   {%- capture t -%}{% if ist_start %}Trinkflasche mit Napf für Hund & Katze – 550 ml | Let'sDrink{% else %}{{ page_title }} – Let'sDrink{% endif %}{%- endcapture -%}

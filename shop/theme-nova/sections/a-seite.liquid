@@ -35,8 +35,8 @@
   assign sslug = sv.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase
 -%}
 
-{%- comment -%} Angeschriebener Preis: siehe Begruendung in layout/theme.liquid. {%- endcomment -%}
-{%- assign sv_ab = sv.price -%}
+{%- comment -%} Wirklich faelliger Preis: siehe Begruendung in layout/theme.liquid. {%- endcomment -%}
+{%- assign sv_ab = sv.price | times: 95 | plus: 99 | divided_by: 100 -%}
 
 {%- comment -%}
   Ein Bild pro Seite, passend zum Inhalt. Die Rechtsseiten bekommen

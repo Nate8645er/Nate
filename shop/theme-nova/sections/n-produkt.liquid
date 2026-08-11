@@ -22,8 +22,8 @@
   assign slug = v.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase
 -%}
 
-{%- comment -%} Angeschriebener Preis: siehe Begruendung in layout/theme.liquid. {%- endcomment -%}
-{%- assign v_ab = v.price -%}
+{%- comment -%} Wirklich faelliger Preis: siehe Begruendung in layout/theme.liquid. {%- endcomment -%}
+{%- assign v_ab = v.price | times: 95 | plus: 99 | divided_by: 100 -%}
 
 {%- comment -%}
   Der Ton der Produktflaeche haengt an der gewaehlten Farbe: nur die

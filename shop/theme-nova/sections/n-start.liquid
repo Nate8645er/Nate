@@ -70,8 +70,8 @@
   Funktion als eine, die etwas vortaeuscht.
 {%- endcomment -%}
 {%- assign rundum_bilder = 0 -%}
-{%- comment -%} Angeschriebener Preis: siehe Begruendung in layout/theme.liquid. {%- endcomment -%}
-{%- assign v_ab = v.price -%}
+{%- comment -%} Wirklich faelliger Preis: siehe Begruendung in layout/theme.liquid. {%- endcomment -%}
+{%- assign v_ab = v.price | times: 95 | plus: 99 | divided_by: 100 -%}
 
 
 {%- capture haken -%}<svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>{%- endcapture -%}
@@ -250,45 +250,53 @@
           WIE VIELE - UND WELCHE FARBEN
 
           DIESE STAFFEL BILDET AB, WAS IM SHOPIFY-KONTO STEHT.
-          Drei automatische Rabatte auf genau dieses Produkt, ohne
+          Sechs automatische Rabatte auf genau dieses Produkt, ohne
           Code, Stand 11.8.2026:
 
-            ab 2 Flaschen   10 %      DiscountAutomaticNode/2396403761529
+            ab 1 Flasche     5 %      DiscountAutomaticNode/2396403728761
+            ab 2 Flaschen   10 %      .../2396403761529
             ab 3 Flaschen   15 %      .../2396403827065
-            ab 4 Flaschen   25 %      .../2396403794297
-
-          Auf die einzelne Flasche gibt es KEINEN Rabatt mehr. Damit
-          ist der Katalogpreis wieder ein Preis, den jemand zahlt -
-          und darf ueberall angeschrieben werden. Die frueheren Stufen
-          "ab 1", "ab 7" und "ab 9" sind abgeschaltet, nicht
-          geloescht; sie liessen sich im Admin wieder einschalten.
+            ab 5 Flaschen   20 %      .../2396403794297
+            ab 7 Flaschen   28.58 %   .../2396403859833
+            ab 9 Flaschen   33.34 %   .../2396436562297
 
           WARUM MENGE IM WARENKORB UND ANGEBOT NICHT DASSELBE SIND
-          "3 + 1 gratis" heisst VIER Flaschen im Warenkorb; der Rabatt
+          "4 + 1 gratis" heisst FUENF Flaschen im Warenkorb; der Rabatt
           macht eine davon gratis. Shopify legt von sich aus nichts
-          dazu - deshalb steht in value die Warenkorbmenge und in der
-          Aufschrift das Angebot. 25 Prozent von vier Flaschen sind
-          exakt eine, nicht ungefaehr eine.
+          dazu - deshalb steht in value die Warenkorbmenge (5, 7, 9)
+          und in der Aufschrift das Angebot. Die Prozente sind so
+          gewaehlt, dass genau die versprochene Zahl Flaschen gratis
+          ist: 20 Prozent von fuenf sind exakt eine, 2/7 von sieben
+          exakt zwei, 1/3 von neun exakt drei.
+
+          WARUM DIE KRUMMEN PROZENTE BEI 7 UND 9
+          2/7 sind 28.5714..., 1/3 sind 33.333... Shopify speichert
+          vier Nachkommastellen. Abgerundet waere der Abzug einen
+          Rappen ZU KLEIN, die Seite wuerde also einen Rappen zu viel
+          versprechen. Deshalb aufgerundet: der Abzug faellt
+          hoechstens einen Rappen groesser aus als hier steht, nie
+          kleiner.
 
           AENDERT SICH IM KONTO ETWAS, MUSS DIESE LISTE MIT.
           Sonst verspricht die Seite etwas, das die Kasse nicht
           einloest.
 
           Alle Betraege kommen aus v.price, keiner steht als Zahl im
-          Text. Der Zaehler ist der Faktor mal HUNDERT: 100 heisst
-          voller Preis, 180 heisst 2 mal 0.9, 255 heisst 3 mal 0.85,
-          300 heisst 4 mal 0.75.
+          Text. Der Zaehler ist der Faktor mal HUNDERT: 95 heisst
+          0.95 mal Grundpreis, 180 heisst 2 mal 0.9, 255 heisst 3 mal
+          0.85, 400 heisst vier bezahlte Flaschen, 500 fuenf, 600
+          sechs.
 
-          Das plus 99 vor dem Teilen rundet AUF. Nur eine Stufe
-          braucht es: 15 Prozent von drei Flaschen sind 17.955, je
-          nach Rundung zahlt man 101.74 oder 101.75. Aufgerundet steht
-          auf der Seite hoechstens ein Rappen MEHR, als die Kasse
-          verlangt, nie weniger.
+          Das plus 99 vor dem Teilen rundet AUF. Zwei Stufen brauchen
+          es: 5 Prozent von 39.90 sind 1.995, 15 Prozent von 119.70
+          sind 17.955 - je nach Rundung ein Rappen hin oder her.
+          Aufgerundet steht auf der Seite hoechstens ein Rappen MEHR,
+          als die Kasse verlangt, nie weniger.
         {%- endcomment -%}
-        {%- assign st_menge  = '1,2,3,4' | split: ',' -%}
-        {%- assign st_zaehler = '100,180,255,300' | split: ',' -%}
-        {%- assign st_titel  = '1 Flasche|2 Flaschen|3 Flaschen|3 + 1 gratis' | split: '|' -%}
-        {%- assign st_marke  = 'Einzelpreis|10 % Rabatt|15 % Rabatt|1 gratis dazu' | split: '|' -%}
+        {%- assign st_menge  = '1,2,3,5,7,9' | split: ',' -%}
+        {%- assign st_zaehler = '95,180,255,400,500,600' | split: ',' -%}
+        {%- assign st_titel  = '1 Flasche|2 Flaschen|3 Flaschen|4 + 1 gratis|5 + 2 gratis|6 + 3 gratis' | split: '|' -%}
+        {%- assign st_marke  = '5 % Rabatt|10 % Rabatt|15 % Rabatt|1 gratis dazu|2 gratis dazu|3 gratis dazu' | split: '|' -%}
 
         {%- comment -%}
           Die Mengenfelder tragen form="n-nichts" - ein Formular mit
@@ -335,12 +343,12 @@
           schickt der Browser nicht mit. Faellt das Skript aus, bleibt
           es bei genau einer Flasche, und der Kauf geht trotzdem.
 
-          Vier Plaetze, weil die groesste Stufe vier Flaschen in den
-          Warenkorb legt. Waechst die Staffel wieder, muss die Zahl
-          in der Schleife mitwachsen - sonst laesst sich die fuenfte
+          Neun Plaetze, weil die groesste Stufe neun Flaschen in den
+          Warenkorb legt. Aendert sich die Staffel, muss die Zahl in
+          der Schleife mitwachsen - sonst laesst sich die letzte
           Flasche nicht einfaerben.
         {%- endcomment -%}
-        {%- for platz in (2..4) -%}
+        {%- for platz in (2..9) -%}
           {%- assign idx = platz | minus: 1 -%}
           <fieldset class="n-zusatz" data-zusatz="{{ platz }}" disabled hidden>
             <legend class="n-etikett">Farbe der {{ platz }}. Flasche</legend>
