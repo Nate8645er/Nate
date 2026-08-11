@@ -361,11 +361,20 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .n-flasche {
   position: relative; z-index: 2;
   height: clamp(185px, 29vh, 340px); width: auto;
-  /* Zwei Schatten uebereinander: ein enger, der die Kante zeichnet,
-     und ein weiter, der die Flasche auf den Boden stellt. Genau das
-     traegt die weisse Flasche auf hellem Grund. */
-  filter: drop-shadow(0 6px 8px rgb(17 17 17 / .16))
-          drop-shadow(0 26px 34px rgb(17 17 17 / .26));
+  /* HIER STANDEN ZWEI GESTAPELTE drop-shadow - SIE SIND DIE URSACHE
+     DER "KAESTEN" IM HERO.
+
+     Nachgestellt und Schritt fuer Schritt eingegrenzt: leere Buehne
+     ohne Bilder = sauber. Bilder ohne Filter = sauber. Bilder MIT den
+     beiden Schatten = hinter jeder Flasche ein hellerer Kasten mit
+     scharfen Kanten. Ein Filter spannt eine eigene Filterflaeche auf,
+     die der Browser am Elementrand abschneidet; bei sechs
+     nebeneinander liegenden, gedrehten Feldern wird diese Kante
+     sichtbar - es sah aus, als lägen Fotos im Hero.
+
+     Der Bodenschatten kommt jetzt aus einer weichen Ellipse hinter der
+     Flasche (.n-gal__feld::after). Die kann keine Kante erzeugen. */
+  filter: none;
   transition: transform .18s linear;
 }
 @media (min-width: 940px) { .n-flasche { height: clamp(380px, 58vh, 560px); } }
@@ -1253,6 +1262,7 @@ html.n-intro .n-vorhang.n-hebt { transform: translate3d(0, -101%, 0); }
 .n-gal__feld {
   flex: 0 0 var(--n-feld);
   display: grid; place-items: center;
+  position: relative;
   scroll-snap-align: center; scroll-snap-stop: always;
   transform: perspective(1100px) rotateY(var(--r, 0deg)) scale(var(--s, 1));
   opacity: var(--o, 1);
@@ -1261,6 +1271,17 @@ html.n-intro .n-vorhang.n-hebt { transform: translate3d(0, -101%, 0); }
 /* Das Bild darf den Zug nicht abfangen - sonst startet auf dem
    Desktop das Bild-Ziehen des Browsers statt des Wischens. */
 .n-gal__feld img { pointer-events: none; -webkit-user-select: none; user-select: none; }
+
+/* Der Bodenschatten als weiche Ellipse - ersetzt den frueheren
+   drop-shadow-Filter an der Flasche. Reines Hintergrundbild, kein
+   Filter, also keine Filterflaeche und keine sichtbare Kante. */
+.n-gal__feld::after {
+  content: ""; position: absolute; z-index: 1;
+  left: 50%; bottom: 8%; transform: translateX(-50%);
+  width: 52%; height: 7%; border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 50%,
+              rgb(17 17 17 / .30), rgb(17 17 17 / .12) 45%, transparent 72%);
+}
 
 /* --- Pfeile ---------------------------------------------------------
    Sie liegen UEBER der Buehne. Eine eigene Zeile darunter kostet
