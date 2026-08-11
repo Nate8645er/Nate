@@ -199,7 +199,25 @@
       <form method="post" action="{{ routes.cart_add_url }}" id="kaufen" data-kaufform data-auf="klein">
         <input type="hidden" name="form_type" value="product">
         <input type="hidden" name="utf8" value="✓">
-        <input type="hidden" name="id" value="{{ v.id }}" data-variantenfeld>
+        {%- comment -%}
+          MEHRERE FLASCHEN, JEDE IN EIGENER FARBE
+
+          Shopify nimmt ueber cart/add.js auch mehrere Zeilen entgegen,
+          wenn die Felder items[N][id] und items[N][quantity] heissen.
+          Statt eines einzigen id-Feldes stehen hier drei Plaetze.
+
+          Plaetze 2 und 3 sind mit disabled ausgeschaltet - und ein
+          ausgeschaltetes Feld wird vom Browser NICHT mitgeschickt.
+          Das ist der Schalter: kein verstecktes Feld, das man
+          vergessen kann, sondern der eingebaute Mechanismus. Ohne
+          JavaScript bleibt es deshalb bei genau einer Flasche, und
+          der Kauf funktioniert trotzdem.
+
+          Der Preis kommt ueberall aus {{ v.price }}, nie aus einer
+          Zahl im Text.
+        {%- endcomment -%}
+        <input type="hidden" name="items[0][id]" value="{{ v.id }}" data-variantenfeld>
+        <input type="hidden" name="items[0][quantity]" value="1">
 
         <p class="n-preis">
           <b>{{ v.price | money }}</b>
@@ -223,10 +241,98 @@
           {%- endfor -%}
         </ul>
 
+        {%- comment -%}
+          WIE VIELE - UND WELCHE FARBEN
+
+          Die Staffel bildet den Rabatt ab, der im Shopify-Konto
+          tatsaechlich eingerichtet ist: "kaufe 2, erhalte 1 gratis"
+          auf genau dieses Produkt, automatisch, ohne Code.
+          Bei drei Flaschen ist eine davon gratis - deshalb kostet 3
+          gleich viel wie 2. Alle Betraege werden hier aus v.price
+          gerechnet, nichts steht als Zahl im Text.
+
+          WIRD DER RABATT IM KONTO GEAENDERT ODER ABGESCHALTET, MUSS
+          DIESER BLOCK MIT. Sonst verspricht die Seite etwas, das die
+          Kasse nicht einloest. Schalter dafuer: aktion_drei_fuer_zwei.
+        {%- endcomment -%}
+        {%- assign aktion_drei_fuer_zwei = true -%}
+        {%- assign p1 = v.price -%}
+        {%- assign p2 = v.price | times: 2 -%}
+        {%- if aktion_drei_fuer_zwei -%}
+          {%- assign p3 = v.price | times: 2 -%}
+        {%- else -%}
+          {%- assign p3 = v.price | times: 3 -%}
+        {%- endif -%}
+
+        {%- comment -%}
+          Die drei Mengenfelder tragen form="n-nichts" - ein Formular
+          mit dieser Kennung gibt es nicht. Damit gehoeren sie zu
+          keinem Formular und werden NICHT an die Kasse mitgeschickt;
+          sie sind reine Bedienung. Die Zusammengehoerigkeit der drei
+          Radiofelder bleibt ueber den gemeinsamen Namen bestehen.
+        {%- endcomment -%}
+        <fieldset class="n-anz" data-menge>
+          <legend class="n-etikett">Wie viele?</legend>
+          <div class="n-anz__reihe">
+            <label class="n-anz__feld">
+              <input type="radio" name="n-menge" value="1" checked data-mengenwahl form="n-nichts">
+              <span class="n-anz__zahl">1</span>
+              <span class="n-anz__preis">{{ p1 | money }}</span>
+            </label>
+            <label class="n-anz__feld">
+              <input type="radio" name="n-menge" value="2" data-mengenwahl form="n-nichts">
+              <span class="n-anz__zahl">2</span>
+              <span class="n-anz__preis">{{ p2 | money }}</span>
+            </label>
+            <label class="n-anz__feld n-anz__feld--deal">
+              <input type="radio" name="n-menge" value="3" data-mengenwahl form="n-nichts">
+              <span class="n-anz__zahl">3</span>
+              <span class="n-anz__preis">{{ p3 | money }}</span>
+              {%- if aktion_drei_fuer_zwei -%}
+                <span class="n-anz__spar">eine gratis</span>
+              {%- endif -%}
+            </label>
+          </div>
+          {%- if aktion_drei_fuer_zwei -%}
+            {%- assign gespart = v.price -%}
+            <p class="n-anz__hinweis">
+              Bei drei Flaschen ist eine gratis – du sparst {{ gespart | money }}.
+              Der Abzug erscheint im Warenkorb, du brauchst keinen Code.
+              Die drei dürfen verschiedene Farben haben.
+            </p>
+          {%- endif -%}
+        </fieldset>
+
+        {%- comment -%}
+          Farbe fuer Flasche 2 und 3. Echte Radiofelder, damit die Wahl
+          ohne eine Zeile JavaScript funktioniert. Ausgeschaltet, bis
+          die Menge es verlangt.
+        {%- endcomment -%}
+        {%- for platz in (2..3) -%}
+          {%- assign idx = platz | minus: 1 -%}
+          <fieldset class="n-zusatz" data-zusatz="{{ platz }}" disabled hidden>
+            <legend class="n-etikett">Farbe der {{ platz }}. Flasche</legend>
+            <input type="hidden" name="items[{{ idx }}][quantity]" value="1">
+            <ul class="n-wahl n-wahl--klein">
+              {%- for var in lp.variants -%}
+                {%- assign s2 = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
+                <li>
+                  <label class="n-pkt n-pkt--{{ s2 | escape }} n-pkt--radio">
+                    <input type="radio" name="items[{{ idx }}][id]" value="{{ var.id }}"
+                           {% if forloop.first %}checked{% endif %}
+                           {% unless var.available %}disabled{% endunless %}>
+                    <span class="n-sr">{{ var.option1 }}{% unless var.available %} – zurzeit nicht lieferbar{% endunless %}</span>
+                  </label>
+                </li>
+              {%- endfor -%}
+            </ul>
+          </fieldset>
+        {%- endfor -%}
+
         <div class="n-cta">
           <button class="n-knopf" type="submit" data-leiste-anker
                   {% unless v.available %}disabled{% endunless %}>
-            {%- if v.available -%}In den Warenkorb · {{ v.price | money }}{%- else -%}Zurzeit nicht lieferbar{%- endif -%}
+            {%- if v.available -%}<span data-knopftext>In den Warenkorb · {{ v.price | money }}</span>{%- else -%}Zurzeit nicht lieferbar{%- endif -%}
           </button>
           {%- comment -%}
             Hier stand ein zweiter, gleich grosser Knopf. Zwei schwarze

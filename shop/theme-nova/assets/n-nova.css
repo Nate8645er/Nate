@@ -1656,3 +1656,69 @@ html.n-sperre, html.n-sperre body { overflow: hidden; }
   margin: 1.4rem 0 0; text-align: center;
   color: var(--n-sanft); font-size: .8125rem;
 }
+
+/* ====================================================================
+   ANZAHL UND FARBE JE FLASCHE
+
+   Heisst .n-anz und nicht .n-menge: den Namen .n-menge gibt es
+   bereits fuer den Schrittschalter auf der Produktseite, und der
+   steht auf display:inline-flex. Gemessen: dadurch rutschten die
+   drei Kaesten und der Hinweis nebeneinander statt untereinander.
+
+   Die Staffel bildet den Rabatt ab, der im Konto eingerichtet ist:
+   kaufe 2, erhalte 1 gratis. Kein erfundener Streichpreis, keine
+   Frist, kein Countdown - der Abzug passiert wirklich an der Kasse.
+   -------------------------------------------------------------------- */
+.n-anz { display: block; border: 0; margin: 0 0 1.4rem; padding: 0; min-width: 0; }
+.n-anz__reihe { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; margin-top: .55rem; }
+
+.n-anz__feld { position: relative; display: block; cursor: pointer; }
+.n-anz__feld input {
+  position: absolute; width: 1px; height: 1px; opacity: 0;
+  margin: 0; pointer-events: none;
+}
+.n-anz__feld > span:not(.n-anz__spar) { display: block; text-align: center; }
+.n-anz__feld::before {
+  content: ""; position: absolute; inset: 0; border-radius: 16px;
+  box-shadow: inset 0 0 0 1px var(--n-glas-rand);
+  transition: box-shadow .18s ease, background .18s ease;
+}
+.n-anz__feld > span { position: relative; }
+.n-anz__zahl  { padding-top: .85rem; font-size: 1.25rem; font-weight: 700; line-height: 1.1; }
+.n-anz__preis { padding-bottom: .85rem; margin-top: .15rem; color: var(--n-sanft); font-size: .8125rem; }
+
+.n-anz__feld:hover::before { box-shadow: inset 0 0 0 1px rgb(17 17 17 / .3); }
+.n-anz__feld:has(input:checked)::before {
+  box-shadow: inset 0 0 0 2px var(--n-akzent);
+  background: var(--n-glas);
+}
+/* Tastatur sichtbar machen - der Ring liegt auf der Huelle, weil das
+   Feld selbst einen Pixel gross ist. */
+.n-anz__feld:has(input:focus-visible)::before { outline: 2px solid var(--n-akzent); outline-offset: 3px; }
+
+.n-anz__spar {
+  position: absolute; top: -.55rem; left: 50%; transform: translateX(-50%);
+  white-space: nowrap; background: var(--n-akzent); color: var(--n-knopftext);
+  border-radius: 999px; padding: .12rem .5rem;
+  font-size: .6875rem; font-weight: 700; letter-spacing: .02em;
+}
+.n-anz__hinweis { margin: .8rem 0 0; color: var(--n-sanft); font-size: .875rem; line-height: 1.5; }
+
+.n-zusatz { display: block; border: 0; margin: 0 0 1.2rem; padding: 0; min-width: 0; }
+.n-zusatz[hidden] { display: none; }
+.n-wahl--klein { gap: .45rem; margin-bottom: 0; margin-top: .55rem; }
+.n-wahl--klein .n-pkt { width: 38px; height: 38px; }
+
+/* Der Farbpunkt als Radiofeld: dieselbe Optik wie die Punkte oben,
+   nur dass die Auswahl nativ funktioniert. */
+.n-pkt--radio { position: relative; }
+.n-pkt--radio input {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  opacity: 0; margin: 0; cursor: pointer;
+}
+.n-pkt--radio:has(input:checked) {
+  transform: scale(1.1);
+  box-shadow: inset 0 0 0 1px rgb(17 17 17 / .25), 0 0 0 2px var(--n-grund), 0 0 0 4px var(--n-akzent);
+}
+.n-pkt--radio:has(input:focus-visible) { outline: 2px solid var(--n-akzent); outline-offset: 4px; }
+.n-pkt--radio:has(input:disabled) { opacity: .35; cursor: not-allowed; }

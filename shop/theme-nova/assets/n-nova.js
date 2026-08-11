@@ -727,6 +727,55 @@
     }
   }
 
+  /* ---------- 11 · MENGE UND FARBE JE FLASCHE ----------------------
+     Die Plaetze 2 und 3 stehen als ausgeschaltete Feldgruppen im HTML.
+     Ein ausgeschaltetes Feld schickt der Browser nicht mit - genau das
+     ist der Schalter. Hier wird nur disabled und hidden umgelegt und
+     der Knopftext nachgefuehrt; die Farbwahl selbst sind echte
+     Radiofelder und braucht kein Skript.
+
+     Faellt dieses Skript aus, bleiben die Plaetze aus und der Kunde
+     kauft genau eine Flasche. Das ist der gewollte Rueckfall. */
+  (function () {
+    var form = $("form[data-kaufform]");
+    if (!form) return;
+    var wahlen = $$("[data-mengenwahl]", form);
+    if (!wahlen.length) return;
+    var zusatz = $$("[data-zusatz]", form);
+    var text   = $("[data-knopftext]", form);
+    var pfeld  = $("[data-variantenfeld]", form);
+
+    function setzen() {
+      var n = 1;
+      for (var i = 0; i < wahlen.length; i++) {
+        if (wahlen[i].checked) n = parseInt(wahlen[i].value, 10) || 1;
+      }
+      zusatz.forEach(function (fs) {
+        var noetig = parseInt(fs.getAttribute("data-zusatz"), 10) <= n;
+        fs.disabled = !noetig;
+        if (noetig) { fs.removeAttribute("hidden"); }
+        else        { fs.setAttribute("hidden", ""); }
+      });
+      if (text) {
+        var feld = null;
+        for (var k = 0; k < wahlen.length; k++) {
+          if (wahlen[k].checked) feld = $(".n-anz__preis", wahlen[k].parentNode);
+        }
+        text.textContent = (n === 1 ? "In den Warenkorb · " : n + " in den Warenkorb · ")
+                         + (feld ? feld.textContent.trim() : "");
+      }
+    }
+    wahlen.forEach(function (r) { r.addEventListener("change", setzen); });
+    setzen();
+
+    /* Die Farbpunkte oben aendern nur Flasche 1. Sie schreiben in
+       data-variantenfeld, das jetzt items[0][id] heisst - der Name
+       hat sich geaendert, das Merkmal nicht. */
+    if (pfeld && pfeld.name.indexOf("items[") !== 0) {
+      pfeld.name = "items[0][id]";
+    }
+  })();
+
   W.__nNova = true;
 })();
 
