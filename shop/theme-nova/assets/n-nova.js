@@ -807,6 +807,94 @@
     }
   })();
 
+  /* ---------- 12 · FRAGEN-CHAT ------------------------------------
+     Er hat KEINEN eigenen Antworttext. Beim ersten Oeffnen liest er
+     die Fragen und Antworten aus dem Wissensblock im Seitencode und
+     gibt sie woertlich weiter. Steht etwas dort nicht, kann er es
+     nicht sagen - dann bleibt der Weg zu einer echten Person.
+
+     Kein Sprachmodell, kein Netzaufruf, kein Speichern, kein Cookie. */
+  (function () {
+    var auf   = $("[data-chat-auf]");
+    var kasten= $("[data-chat]");
+    if (!auf || !kasten) return;
+    var lauf  = $("[data-chat-lauf]", kasten);
+    var wahl  = $("[data-chat-wahl]", kasten);
+    var zu    = $("[data-chat-zu]", kasten);
+
+    // Quelle: der sichtbare Frageblock, sonst der versteckte im Kopf.
+    var quelle = $("[data-wissen]");
+    if (!quelle) return;
+
+    var paare = [];
+    $$("details", quelle).forEach(function (d) {
+      var f = $("summary", d);
+      var a = $(".n-frage__inhalt", d) || d;
+      if (!f) return;
+      paare.push({ frage: f.textContent.trim(), antwort: a.cloneNode(true) });
+    });
+    if (!paare.length) return;
+
+    var gestartet = false;
+
+    function blase(art, inhalt) {
+      var b = el("div", { klasse: "n-chat__b n-chat__b--" + art });
+      if (typeof inhalt === "string") b.textContent = inhalt;
+      else {
+        // Die Antwort wird als DOM uebernommen, damit Links erhalten
+        // bleiben - aber ohne Skripte oder Formulare aus der Quelle.
+        $$("script, form, iframe", inhalt).forEach(function (x) { x.remove(); });
+        while (inhalt.firstChild) b.appendChild(inhalt.firstChild);
+      }
+      lauf.appendChild(b);
+      lauf.scrollTop = lauf.scrollHeight;
+      return b;
+    }
+
+    function knoepfe() {
+      wahl.textContent = "";
+      paare.forEach(function (p, i) {
+        var k = el("button", { klasse: "n-chat__frage", type: "button", text: p.frage });
+        k.addEventListener("click", function () {
+          blase("ich", p.frage);
+          var kopie = p.antwort.cloneNode(true);
+          W.setTimeout(function () { blase("shop", kopie); }, ruhig ? 0 : 260);
+        });
+        wahl.appendChild(k);
+      });
+    }
+
+    function oeffnen() {
+      kasten.removeAttribute("hidden");
+      // Ein Bild frueher als die Klasse, sonst faellt die Bewegung aus.
+      W.requestAnimationFrame(function () { kasten.classList.add("n-offen"); });
+      auf.setAttribute("aria-expanded", "true");
+      if (!gestartet) {
+        gestartet = true;
+        blase("shop", "Hallo. Such dir eine Frage aus - die Antworten kommen "
+                    + "direkt aus dem Shop, Wort fuer Wort.");
+        knoepfe();
+      }
+      W.setTimeout(function () { if (zu) zu.focus({ preventScroll: true }); }, 60);
+    }
+    function schliessen() {
+      kasten.classList.remove("n-offen");
+      auf.setAttribute("aria-expanded", "false");
+      W.setTimeout(function () {
+        if (!kasten.classList.contains("n-offen")) kasten.setAttribute("hidden", "");
+      }, 240);
+      auf.focus({ preventScroll: true });
+    }
+
+    auf.addEventListener("click", function () {
+      if (kasten.classList.contains("n-offen")) schliessen(); else oeffnen();
+    });
+    if (zu) zu.addEventListener("click", schliessen);
+    D.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && kasten.classList.contains("n-offen")) schliessen();
+    });
+  })();
+
   W.__nNova = true;
 })();
 

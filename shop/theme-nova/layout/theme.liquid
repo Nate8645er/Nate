@@ -338,6 +338,66 @@
     </div>
   </nav>
 
+  {%- comment -%} ============================================ FRAGEN-CHAT
+
+    Ein Chat, der NICHTS ERFINDEN KANN.
+
+    Er hat keinen eigenen Antworttext. Beim Oeffnen liest er die
+    Fragen und Antworten aus dem Block n-wissen im Seitencode und
+    gibt sie woertlich weiter. Steht eine Aussage dort nicht, kann er
+    sie nicht sagen - er bietet dann den Weg zu einer echten Person an.
+
+    Bewusst KEIN Sprachmodell im Hintergrund: bei einem Produkt, zu dem
+    wir Material, Dichtigkeit und Masse nicht kennen, wuerde ein
+    Sprachmodell genau diese Fragen selbstbewusst falsch beantworten.
+    Das ist dieselbe Kategorie wie eine erfundene Bewertung, nur
+    schneller und oefter.
+
+    Er sendet nichts, speichert nichts, setzt kein Cookie und ruft
+    keinen fremden Dienst auf. Damit braucht er auch keinen Hinweis
+    nach revDSG und keine Einwilligung.
+  {%- endcomment -%}
+  {%- unless ist_start -%}
+    {%- comment -%}
+      Auf der Startseite steht der Frageblock ohnehin sichtbar. Auf
+      allen anderen Seiten kommt er hier versteckt dazu, damit der Chat
+      seine Quelle hat. hidden heisst: nicht sichtbar, nicht vorgelesen -
+      aber fuer das Skript lesbar.
+    {%- endcomment -%}
+    <div hidden data-wissen-quelle>{% render 'n-wissen' %}</div>
+  {%- endunless -%}
+
+  <button class="n-chat__auf" type="button" data-chat-auf
+          aria-expanded="false" aria-controls="n-chat">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.9A8.4 8.4 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.5 8.5 0 0 1 21 11.5Z"/>
+    </svg>
+    <span>Fragen?</span>
+  </button>
+
+  <aside class="n-chat" id="n-chat" data-chat aria-label="Häufige Fragen" hidden>
+    <div class="n-chat__kopf">
+      <span class="n-chat__wer">
+        <b>Häufige Fragen</b>
+        <span>Antworten direkt aus dem Shop</span>
+      </span>
+      <button class="n-icon" type="button" data-chat-zu aria-label="Schliessen">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="n-chat__lauf" data-chat-lauf role="log" aria-live="polite"></div>
+
+    <div class="n-chat__wahl" data-chat-wahl></div>
+
+    <div class="n-chat__fuss">
+      <p>Nichts dabei?</p>
+      <a class="n-knopf n-knopf--klein n-knopf--voll" href="/pages/contact">Nate direkt fragen</a>
+    </div>
+  </aside>
+
   <main id="inhalt" tabindex="-1">
     {{ content_for_layout }}
   </main>

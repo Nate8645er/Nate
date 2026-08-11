@@ -1,0 +1,145 @@
+{%- comment -%}
+  snippets/n-wissen.liquid — DIE EINE WAHRHEIT
+
+  Hier stehen die Antworten auf die haeufigen Fragen. GENAU EINMAL.
+
+  Warum das wichtig ist: dieselbe Aussage stand im Shop bis zu fuenfmal
+  an verschiedenen Stellen, jedes Mal etwas anders formuliert. Wer eine
+  davon aendert, laesst die anderen vier falsch stehen. Ab jetzt gibt es
+  eine Quelle - dieses Schnipsel - und alles andere liest daraus:
+
+    * der Frageblock auf der Startseite rendert es sichtbar
+    * der Chat unten rechts nimmt seine Antworten aus DIESEM DOM,
+      er hat keinen eigenen Text. Er kann deshalb nichts sagen, was
+      hier nicht steht.
+
+  WAS HIER NICHT HINEIN DARF
+  Keine Angabe ausser 550 ml und sechs Farben. Nichts ueber Material,
+  Dichtigkeit, Masse, Gewicht, Spuelmaschine oder Pruefzeichen - das
+  liegt vom Lieferanten nicht vor. Keine erfundenen Bewertungen, keine
+  Dringlichkeit. Preise und Farben kommen aus Liquid, nie als Zahl im
+  Text.
+
+  Der Wortlaut zur Dichtigkeit ist unveraenderlich. Er ist mit Bedacht
+  so formuliert und schuetzt bei einer Reklamation.
+{%- endcomment -%}
+
+{%- assign wp = all_products['trinkflasche-napf-hund-katze'] -%}
+{%- assign wv = wp.selected_or_first_available_variant -%}
+
+<div class="n-fragen" data-wissen>
+
+  <details class="n-frage" open>
+    <summary>Wie viel passt hinein?</summary>
+    <div class="n-frage__inhalt">
+      <p>550 ml. Weil der Rest nach jedem Trinken zurückläuft, reicht
+         eine Füllung für mehrere Pausen.</p>
+    </div>
+  </details>
+
+  <details class="n-frage">
+    <summary>Läuft sie im Rucksack aus?</summary>
+    <div class="n-frage__inhalt">
+      <p>
+        Wir haben keine schriftliche Zusicherung des Lieferanten, dass
+        sie unter allen Umständen dicht ist – deshalb behaupten wir es
+        auch nicht. Transportiere sie am besten aufrecht. Läuft deine
+        Flasche trotzdem aus, ist das ein Reklamationsfall: Du bekommst
+        Ersatz oder dein Geld zurück.
+      </p>
+    </div>
+  </details>
+
+  <details class="n-frage">
+    <summary>Was darf ich einfüllen?</summary>
+    <div class="n-frage__inhalt">
+      <p>Nur Wasser. Andere Flüssigkeiten hinterlassen Rückstände, die
+         den Mechanismus verkleben.</p>
+    </div>
+  </details>
+
+  {%- comment -%}
+    Frueher stand hier "Der Napf ist niedrig genug". Das ist eine
+    Aussage ueber die Masse, und die kennen wir nicht. Gestrichen.
+  {%- endcomment -%}
+  <details class="n-frage">
+    <summary>Geht das auch für Katzen?</summary>
+    <div class="n-frage__inhalt">
+      <p>Ja – für Katzen, die mitfahren oder an der Leine laufen.</p>
+    </div>
+  </details>
+
+  <details class="n-frage">
+    <summary>Welche Farben gibt es?</summary>
+    <div class="n-frage__inhalt">
+      {%- comment -%} Kommt aus dem Sortiment, nicht aus dem Text. {%- endcomment -%}
+      <p>
+        {%- for var in wp.variants -%}
+          {{ var.option1 }}{% unless forloop.last %}, {% endunless %}
+        {%- endfor -%}.
+        Alle zum gleichen Preis von {{ wv.price | money }}.
+      </p>
+    </div>
+  </details>
+
+  <details class="n-frage">
+    <summary>Wie reinige ich sie?</summary>
+    <div class="n-frage__inhalt">
+      <p>Von Hand mit warmem Wasser ausspülen, danach offen trocknen
+         lassen. Ob sie in die Spülmaschine darf, wissen wir nicht –
+         also sagen wir es auch nicht.</p>
+    </div>
+  </details>
+
+  <details class="n-frage">
+    <summary>Was kostet der Versand, und wie lange dauert er?</summary>
+    <div class="n-frage__inhalt">
+      <p>Innerhalb der Schweiz ist der Versand gratis. In die übrigen
+         Länder kostet er CHF 1.50. Die Lieferzeit beträgt 7 bis 14
+         Werktage, mit Sendungsverfolgung per E-Mail.</p>
+    </div>
+  </details>
+
+  {%- if shop.enabled_payment_types.size > 0 -%}
+    <details class="n-frage">
+      <summary>Womit kann ich bezahlen?</summary>
+      <div class="n-frage__inhalt">
+        {%- comment -%}
+          Auch das kommt aus dem Konto, nicht aus dem Text: Shopify
+          nennt genau die freigeschalteten Methoden. Wird eine
+          abgeschaltet, verschwindet sie hier von selbst.
+        {%- endcomment -%}
+        <p>
+          {%- for art in shop.enabled_payment_types -%}
+            {{ art | replace: '_', ' ' | capitalize }}{% unless forloop.last %}, {% endunless %}
+          {%- endfor -%}.
+        </p>
+      </div>
+    </details>
+  {%- endif -%}
+
+  <details class="n-frage">
+    <summary>Und wenn sie mir nicht gefällt?</summary>
+    <div class="n-frage__inhalt">
+      <p>
+        Du hast 14 Tage Rückgaberecht, ohne Begründung. Schreib mir über das
+        <a href="/pages/contact">Kontaktformular</a>, dann klären wir die
+        Rücksendung. Die Rücksendekosten trägst du. Die Einzelheiten stehen
+        unter <a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>.
+      </p>
+    </div>
+  </details>
+
+  <details class="n-frage">
+    <summary>Warum stehen hier keine Bewertungen?</summary>
+    <div class="n-frage__inhalt">
+      <p>
+        Weil es noch keine gibt. Der Shop ist neu. Erfundene Bewertungen
+        kommen nicht rein – auch keine gekauften. Sobald die ersten
+        Flaschen ausgeliefert sind, frage ich nach und stelle die
+        Antworten unverändert hierhin, auch die kritischen.
+      </p>
+    </div>
+  </details>
+
+</div>

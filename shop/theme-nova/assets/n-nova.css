@@ -1766,3 +1766,101 @@ html.n-sperre, html.n-sperre body { overflow: hidden; }
   border-radius: var(--n-rund-gross);
 }
 .n-mini--gross li { font-size: 1rem; }
+
+/* ====================================================================
+   FRAGEN-CHAT
+
+   Er sitzt unten rechts und darf dem Kaufknopf nicht ins Gehege
+   kommen: auf dem Handy laeuft dort die Kaufleiste mit, deshalb sitzt
+   der Knopf darueber. Er ist bewusst kleiner und leiser als der
+   Kaufknopf - er soll helfen, nicht ablenken.
+   -------------------------------------------------------------------- */
+.n-chat__auf {
+  position: fixed; z-index: 96;
+  right: clamp(.9rem, 3vw, 1.6rem);
+  bottom: calc(clamp(.9rem, 3vw, 1.6rem) + env(safe-area-inset-bottom));
+  display: inline-flex; align-items: center; gap: .5rem;
+  min-height: 46px; padding: 0 1rem 0 .85rem;
+  border: 0; border-radius: 999px;
+  background: var(--n-grund); color: var(--n-text);
+  font: inherit; font-size: .9375rem; font-weight: 700;
+  box-shadow: 0 0 0 1px var(--n-glas-rand), 0 8px 24px rgb(17 17 17 / .14);
+  cursor: pointer;
+  transition: transform .18s var(--n-weich), box-shadow .18s ease;
+}
+.n-chat__auf:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px rgb(17 17 17/.2), 0 12px 30px rgb(17 17 17/.18); }
+.n-chat__auf:active { transform: none; }
+/* Solange die Kaufleiste laeuft, rueckt der Knopf ueber sie.
+   Kein Nachbar-Selektor: die Leiste steht im Seitencode NACH dem
+   Knopf, ein Tilde-Selektor greift deshalb nicht. */
+body:has(.n-leiste.n-an) .n-chat__auf { bottom: calc(84px + env(safe-area-inset-bottom)); }
+body:has(.n-leiste.n-an) .n-chat       { bottom: calc(84px + env(safe-area-inset-bottom)); }
+
+.n-chat {
+  position: fixed; z-index: 99;
+  right: clamp(.9rem, 3vw, 1.6rem);
+  bottom: calc(clamp(.9rem, 3vw, 1.6rem) + env(safe-area-inset-bottom));
+  width: min(calc(100vw - 1.8rem), 380px);
+  max-height: min(78vh, 620px);
+  display: flex; flex-direction: column;
+  background: var(--n-grund); border-radius: var(--n-rund-gross);
+  box-shadow: 0 0 0 1px var(--n-glas-rand), 0 24px 60px rgb(17 17 17 / .22);
+  overflow: hidden;
+  opacity: 0; transform: translateY(12px) scale(.98);
+  transform-origin: bottom right;
+  transition: opacity .22s ease, transform .22s var(--n-weich);
+}
+.n-chat.n-offen { opacity: 1; transform: none; }
+/* WICHTIG: display:flex weiter oben schlaegt die eingebaute Regel des
+   hidden-Attributs (display:none). Ohne diese Zeile ist das Panel
+   unsichtbar, faengt aber weiterhin Klicks in der ganzen Ecke ab -
+   im Test genau so passiert. */
+.n-chat[hidden] { display: none; }
+
+.n-chat__kopf {
+  flex: none; display: flex; align-items: center; gap: .8rem;
+  padding: .9rem 1rem; border-bottom: 1px solid var(--n-glas-rand);
+}
+.n-chat__wer { display: grid; gap: .1rem; min-width: 0; }
+.n-chat__wer b { font-size: .9375rem; }
+.n-chat__wer span { font-size: .8125rem; color: var(--n-sanft); }
+.n-chat__kopf .n-icon { margin-left: auto; flex: none; position: static; }
+
+.n-chat__lauf {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+  padding: 1rem; display: flex; flex-direction: column; gap: .6rem;
+}
+.n-chat__b {
+  max-width: 88%; padding: .7rem .9rem; border-radius: 16px;
+  font-size: .9375rem; line-height: 1.5;
+}
+.n-chat__b p { margin: 0 0 .5rem; }
+.n-chat__b p:last-child { margin-bottom: 0; }
+.n-chat__b--shop { align-self: flex-start; background: var(--n-tief); color: var(--n-text); border-bottom-left-radius: 6px; }
+.n-chat__b--ich  { align-self: flex-end;  background: var(--n-akzent); color: var(--n-knopftext); border-bottom-right-radius: 6px; }
+.n-chat__b--ich a, .n-chat__b--shop a { color: inherit; text-underline-offset: 2px; }
+
+.n-chat__wahl {
+  flex: none; display: flex; flex-wrap: wrap; gap: .4rem;
+  padding: 0 1rem .8rem; max-height: 34vh; overflow-y: auto;
+}
+.n-chat__frage {
+  border: 0; border-radius: 999px; cursor: pointer;
+  min-height: 38px; padding: 0 .85rem;
+  background: transparent; color: var(--n-text);
+  box-shadow: inset 0 0 0 1px var(--n-glas-rand);
+  font: inherit; font-size: .8125rem; font-weight: 600;
+  transition: background .15s ease;
+}
+.n-chat__frage:hover { background: var(--n-glas); }
+
+.n-chat__fuss {
+  flex: none; padding: .85rem 1rem calc(.85rem + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--n-glas-rand);
+}
+.n-chat__fuss p { margin: 0 0 .5rem; color: var(--n-sanft); font-size: .8125rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .n-chat, .n-chat__auf { transition: none; }
+  .n-chat { transform: none; }
+}
