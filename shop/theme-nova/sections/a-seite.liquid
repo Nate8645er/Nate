@@ -39,9 +39,16 @@
 {%- assign sv_ab = sv.price | times: 95 | plus: 99 | divided_by: 100 -%}
 
 {%- comment -%}
-  Ein Bild pro Seite, passend zum Inhalt. Die Rechtsseiten bekommen
-  keines: ein Produktfoto neben den AGB wirkt wie ein Verkaufsversuch
-  im Kleingedruckten.
+  Ein Bild pro Seite, passend zum Inhalt.
+
+  Die Rechtsseiten bekommen KEIN Produktfoto: eine Flasche neben den
+  AGB wirkt wie ein Verkaufsversuch im Kleingedruckten. Sie standen
+  dafuer aber ganz ohne Kopf da - eine Ueberschrift auf weiss.
+
+  Sie bekommen jetzt dasselbe Schild, nur mit dem Zeichen der Marke
+  statt eines Fotos: der Tropfen gross und sehr blass in der rechten
+  Ecke. Damit gehoeren die Seiten sichtbar zusammen, ohne dass im
+  Kleingedruckten verkauft wird.
 {%- endcomment -%}
 {%- assign schildbild = blank -%}
 {%- case page.handle -%}
@@ -62,7 +69,7 @@
 <div class="a-seite">
   <div class="a-huelle">
 
-    <header class="a-schild{% if schildbild != blank %} a-schild--bild{% endif %}">
+    <header class="a-schild a-schild--bild{% if schildbild == blank %} a-schild--marke{% endif %}">
       <div class="a-schild__text">
         <p class="a-auge">Let&rsquo;sDrink</p>
         <h1 class="a-titel">{{ page.title }}</h1>
@@ -73,6 +80,17 @@
                {% if schildform == 'napf' %}width="900" height="1200"{% else %}width="650" height="2212"{% endif %}
                loading="eager" decoding="async">
         </figure>
+      {%- else -%}
+        {%- comment -%}
+          Der Tropfen aus der Wortmarke, gross und blass. Reines SVG,
+          kein Bild, kein Ladevorgang - und aria-hidden, weil er
+          nichts sagt, was nicht danebensteht.
+        {%- endcomment -%}
+        <span class="a-schild__marke" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3.2C9 7.4 6.2 10.2 6.2 13.8a5.8 5.8 0 0 0 11.6 0c0-3.6-2.8-6.4-5.8-10.6Z"/>
+          </svg>
+        </span>
       {%- endif -%}
     </header>
 
