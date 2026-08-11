@@ -148,8 +148,22 @@ legend { padding: 0; }
 }
 .ld-sprung:focus { transform: translate(-50%, 0); }
 
-.ld-nur-breit { display: none; }
-@media (min-width: 900px) { .ld-nur-breit { display: inline-flex; } }
+/* NUR AUF BREITEN BILDSCHIRMEN.
+
+   Der doppelte Klassenname ist kein Tippfehler. Diese Hilfsklasse
+   sitzt an einem .ld-knopf, und .ld-knopf setzt weiter unten in
+   dieser Datei display:inline-flex. Beide Regeln haetten dieselbe
+   Staerke - dann gewinnt die spaetere, und der Knopf waere auf dem
+   Handy sichtbar, obwohl er versteckt sein soll. Genau das war er
+   auch: gemessen ragte er auf einem 390er Bildschirm bis 407 px
+   hinaus, also 17 px ueber den Rand.
+
+   Der Klassenname zweimal hintereinander verdoppelt die Staerke der
+   Regel, ohne dass irgendwo ein !important stehen muss. Ein
+   !important waere hier auch die falsche Antwort: es wuerde spaeter
+   jede berechtigte Ausnahme mit blockieren. */
+.ld-nur-breit.ld-nur-breit { display: none; }
+@media (min-width: 900px) { .ld-nur-breit.ld-nur-breit { display: inline-flex; } }
 
 
 /* ====================================================================
@@ -442,11 +456,26 @@ body:not(.template-index) { padding-top: var(--ld-kopf-hoch); }
 }
 @media (min-width: 900px) { .ld-hero__film, .ld-hero__bild { object-position: center; } }
 
-.ld-hero__bild--schmal { display: block; }
-.ld-hero__bild--breit  { display: none; }
-@media (min-width: 760px) {
-  .ld-hero__bild--schmal { display: none; }
-  .ld-hero__bild--breit  { display: block; }
+/* DAS BREITE BILD IST DER NORMALFALL, NICHT DER SONDERFALL.
+
+   Hier stand vorher die naheliegende Regel: unter 760 px das
+   Hochformat, darueber das Querformat. Sie hat einen Haken, und der
+   ist im Test aufgeflogen - der Hero war auf dem Handy KOMPLETT
+   SCHWARZ. Grund: ein Hochformat ist optional. Ist keines
+   hinterlegt, blendet die Regel das einzige vorhandene Bild aus und
+   uebrig bleibt der schwarze Grund. Ausgerechnet auf dem Geraet,
+   auf dem die meisten Kunden ankommen.
+
+   Jetzt gilt: das breite Bild ist IMMER da. Nur wenn wirklich ein
+   Hochformat hinterlegt ist, setzt Liquid .ld-hero--zwei-bilder auf
+   die Sektion, und erst dann uebernimmt das Hochformat den schmalen
+   Bildschirm. Fehlt es, sieht man den Ausschnitt des breiten Bilds -
+   nicht ideal, aber ein Bild statt eines Lochs. */
+.ld-hero__bild--breit  { display: block; }
+.ld-hero__bild--schmal { display: none; }
+@media (max-width: 759.98px) {
+  .ld-hero--zwei-bilder .ld-hero__bild--breit  { display: none; }
+  .ld-hero--zwei-bilder .ld-hero__bild--schmal { display: block; }
 }
 /* Laeuft ein Film, liegt das Standbild nur darunter. */
 .ld-hero__film + .ld-hero__bild { z-index: -1; }
@@ -580,16 +609,24 @@ body:not(.template-index) { padding-top: var(--ld-kopf-hoch); }
 
 .ld-ent__mitte { grid-row: 1; display: grid; place-items: center; width: 100%; min-height: 0; }
 .ld-ent__stueck {
-  /* Die Kamerafahrt: von 0.86 auf 1.12 ueber die ganze Strecke.
-     Das ist bewusst wenig - es soll wie eine Fahrt wirken, nicht
-     wie ein Zoom-Sprung. */
-  width: min(58vw, 42svh);
-  max-height: 56svh;
+  /* Die Kamerafahrt endet bei GENAU 1, nicht darueber.
+
+     Vorher lief sie von 0.86 bis 1.12. Das sah bei kleinen Fenstern
+     gut aus und hat bei 1440x900 das Produkt oben abgeschnitten: der
+     Kasten hat overflow:hidden, und ueber 1.0 hinaus waechst das
+     Bild aus ihm heraus. Ein angeschnittenes Produkt liest sich
+     nicht als Kamerafahrt, sondern als Fehler.
+
+     Von 0.82 auf 1.0 ist die Bewegung genauso gross - sie beginnt
+     nur weiter weg, statt zu weit heranzufahren. Und weil 1.0 die
+     Obergrenze ist, kann nie etwas abgeschnitten werden. */
+  width: min(58vw, 40svh);
+  max-height: 52svh;
   object-fit: contain;
-  transform: scale(calc(.86 + var(--p) * .26));
+  transform: scale(calc(.82 + var(--p) * .18));
   will-change: transform;
 }
-@media (min-width: 900px) { .ld-ent__stueck { width: min(30vw, 46svh); max-height: 60svh; } }
+@media (min-width: 900px) { .ld-ent__stueck { width: min(28vw, 42svh); max-height: 54svh; } }
 
 .ld-ent__text { grid-row: 2; width: 100%; text-align: center; padding-bottom: clamp(2rem, 6vh, 4rem); }
 .ld-ent__titel { margin-bottom: 1.4rem; }
@@ -657,6 +694,17 @@ body:not(.template-index) { padding-top: var(--ld-kopf-hoch); }
 .ld-welle svg {
   position: absolute; bottom: 0; left: 0;
   width: 200%; height: 100%;
+  /* DIESES max-width:none IST PFLICHT.
+
+     Weiter oben steht die uebliche Grundregel
+     img, video, svg { max-width: 100% }.
+     Sie ist fuer Bilder richtig und fuer diese Welle toedlich: die
+     Welle MUSS doppelt so breit sein wie ihr Kasten, weil die
+     Schleife sie um die halbe Breite nach links schiebt. Gekappt auf
+     100 Prozent wandert sie aus dem Bild, und die rechte Haelfte des
+     Bildschirms bleibt leer - im Test lief die Welle bei 1440 px
+     nur bis etwa 920 px und horte dann einfach auf. */
+  max-width: none;
   /* Ein Durchlauf ist genau die halbe Breite - deshalb ist die
      Schleife nahtlos. */
   animation: ld-fliessen 18s linear infinite;

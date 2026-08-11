@@ -37,7 +37,12 @@
   endif
 -%}
 
-<section class="ld-hero{% unless hat_film %} ld-hero--standbild{% endunless %}"
+{%- comment -%}
+  Die Klasse ld-hero--zwei-bilder entscheidet im CSS, ob auf dem
+  Handy auf ein Hochformat umgeschaltet wird. Sie kommt nur, wenn
+  wirklich eines hinterlegt ist - sonst bliebe der Hero dort leer.
+{%- endcomment -%}
+<section class="ld-hero{% unless hat_film %} ld-hero--standbild{% endunless %}{% if section.settings.bild_schmal != blank %} ld-hero--zwei-bilder{% endif %}"
          data-szene data-hero
          style="--ld-dunkel:{{ section.settings.dunkelheit | divided_by: 100.0 }}">
 
