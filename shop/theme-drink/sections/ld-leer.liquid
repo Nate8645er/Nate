@@ -1,0 +1,30 @@
+{%- comment -%}
+  sections/ld-leer.liquid — Seite nicht gefunden
+
+  Eine 404 ist kein Fehler des Besuchers. Also kein "Ups!", keine
+  Schuldzuweisung - ein Satz und der Weg zurueck.
+{%- endcomment -%}
+
+<section class="ld-leer">
+  <div class="ld-breite ld-breite--eng">
+    <p class="ld-auge">404</p>
+    <h1 class="ld-riese ld-riese--mittel">Diese Seite gibt es nicht.</h1>
+    <p class="ld-fuehrung ld-fuehrung--dunkel">
+      Vielleicht ist der Verweis alt, vielleicht hat sich ein Zeichen
+      vertippt. Beides lässt sich in einem Klick lösen.
+    </p>
+    {%- assign lp = all_products[settings.produkt_griff] -%}
+    <div class="ld-tasten">
+      <a class="ld-knopf ld-knopf--gross" href="{{ routes.root_url }}">Zur Startseite</a>
+      {%- if lp != empty -%}
+        <a class="ld-geist ld-geist--dunkel" href="{{ lp.url }}">Zum Produkt
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{ "name": "Nicht gefunden", "tag": "section", "settings": [], "presets": [{ "name": "Nicht gefunden" }] }
+{% endschema %}

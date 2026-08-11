@@ -1,0 +1,178 @@
+{%- comment -%}
+  snippets/ld-wissen.liquid — DIE EINE WAHRHEIT
+
+  Hier stehen die Antworten auf die haeufigen Fragen. GENAU EINMAL.
+  Startseite, Produktseite und Frageseite rendern alle DIESES
+  Schnipsel. Wer eine Antwort aendert, aendert sie ueberall
+  gleichzeitig - es kann nicht passieren, dass drei Stellen drei
+  verschiedene Dinge sagen.
+
+  WAS HIER NICHT HINEIN DARF
+  Keine Angabe ausser 550 ml und den Farben aus dem Sortiment.
+  Nichts ueber Material, Dichtigkeit, Masse, Gewicht, Spuelmaschine
+  oder Pruefzeichen - das liegt vom Lieferanten nicht vor. Keine
+  erfundenen Bewertungen, keine Dringlichkeit. Preise und Farben
+  kommen aus Liquid, nie als Zahl im Text.
+
+  Der Wortlaut zur Dichtigkeit ist unveraenderlich. Er ist mit
+  Bedacht so formuliert und schuetzt bei einer Reklamation.
+{%- endcomment -%}
+
+{%- liquid
+  assign wp = all_products[settings.produkt_griff]
+  assign wv = wp.selected_or_first_available_variant
+-%}
+
+<div class="ld-fragen" data-wissen>
+
+  <details class="ld-frage" open>
+    <summary>Wie viel passt hinein?<span class="ld-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="ld-frage__inhalt">
+      <p>550 ml. Weil der Rest nach jedem Trinken zurückläuft, reicht
+         eine Füllung für mehrere Pausen.</p>
+    </div>
+  </details>
+
+  <details class="ld-frage">
+    <summary>Läuft sie im Rucksack aus?<span class="ld-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="ld-frage__inhalt">
+      <p>
+        Wir haben keine schriftliche Zusicherung des Lieferanten, dass
+        sie unter allen Umständen dicht ist – deshalb behaupten wir es
+        auch nicht. Transportiere sie am besten aufrecht. Läuft deine
+        Flasche trotzdem aus, ist das ein Reklamationsfall: Du bekommst
+        Ersatz oder dein Geld zurück.
+      </p>
+    </div>
+  </details>
+
+  <details class="ld-frage">
+    <summary>Was darf ich einfüllen?<span class="ld-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="ld-frage__inhalt">
+      <p>Nur Wasser. Andere Flüssigkeiten hinterlassen Rückstände, die
+         den Mechanismus verkleben.</p>
+    </div>
+  </details>
+
+  <details class="ld-frage">
+    <summary>Wie funktioniert sie?<span class="ld-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="ld-frage__inhalt">
+      <p>Knopf drücken – das Wasser läuft in den Napf. Trinken lassen.
+         Aufrichten – das übrige Wasser läuft zurück in die Flasche.
+         Eine Hand reicht, die Leine bleibt in der anderen.</p>
+    </div>
+  </details>
+
+  <details class="ld-frage">
+    <summary>Geht das auch für Katzen?<span class="ld-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="ld-frage__inhalt">
+      <p>Ja – für Katzen, die mitfahren oder an der Leine laufen.</p>
+    </div>
+  </details>
+
+  <details class="ld-frage">
+    <summary>Welche Farben gibt es?<span class="ld-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="ld-frage__inhalt">
+      {%- comment -%}
+        Kommt aus dem Sortiment, nicht aus dem Text. Die Bindestriche
+        an den Liquid-Klammern sind wichtig: ohne sie stuende ein
+        Leerzeichen vor dem Komma.
+      {%- endcomment -%}
+      <p>
+        {%- for var in wp.variants -%}
+          {{- var.option1 -}}{%- unless forloop.last -%}, {% endunless -%}
+        {%- endfor -%}.
+        Alle zum gleichen Preis von {% render 'ld-preis', roh: wv.price %}.
+      </p>
+    </div>
+  </details>
+
+  <details class="ld-frage">
+    <summary>Wie reinige ich sie?<span class="ld-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="ld-frage__inhalt">
+      <p>Von Hand mit warmem Wasser ausspülen, danach offen trocknen
+         lassen. Zur Spülmaschine liegt uns keine Angabe vor.</p>
+    </div>
+  </details>
+
+  <details class="ld-frage">
+    <summary>Ist sie für längere Reisen geeignet?<span class="ld-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="ld-frage__inhalt">
+      <p>Für eine normale Runde reicht eine Füllung. Auf langen Touren
+         oder bei sehr grossen Hunden nimmst du besser zwei mit oder
+         füllst unterwegs nach.</p>
+    </div>
+  </details>
+
+  <details class="ld-frage">
+    <summary>Was kostet der Versand, und wie lange dauert er?<span class="ld-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="ld-frage__inhalt">
+      <p>Innerhalb der Schweiz ist der Versand gratis. In die übrigen
+         Länder kostet er CHF 1.50. Die Lieferzeit beträgt 7 bis 14
+         Werktage, mit Sendungsverfolgung per E-Mail.</p>
+    </div>
+  </details>
+
+  {%- if shop.enabled_payment_types.size > 0 -%}
+    <details class="ld-frage">
+      <summary>Womit kann ich bezahlen?<span class="ld-frage__zeichen" aria-hidden="true"></span></summary>
+      <div class="ld-frage__inhalt">
+        {%- comment -%}
+          Kommt aus dem Konto, nicht aus dem Text: Shopify nennt
+          genau die freigeschalteten Methoden. Wird eine abgeschaltet,
+          verschwindet sie hier von selbst. Die Kuerzel werden auf die
+          richtigen Markennamen abgebildet - "master" heisst
+          "Mastercard", nicht "Master".
+        {%- endcomment -%}
+        <p>
+          {%- for art in shop.enabled_payment_types -%}
+            {%- case art -%}
+              {%- when 'master' -%}Mastercard
+              {%- when 'american_express' -%}American Express
+              {%- when 'paypal' -%}PayPal
+              {%- when 'apple_pay' -%}Apple&nbsp;Pay
+              {%- when 'google_pay' -%}Google&nbsp;Pay
+              {%- when 'shopify_pay' -%}Shop&nbsp;Pay
+              {%- when 'unionpay' -%}UnionPay
+              {%- when 'visa' -%}Visa
+              {%- else -%}{{- art | replace: '_', ' ' | capitalize -}}
+            {%- endcase -%}
+            {%- unless forloop.last -%}, {% endunless -%}
+          {%- endfor -%}.
+        </p>
+      </div>
+    </details>
+  {%- endif -%}
+
+  <details class="ld-frage">
+    <summary>Aus welchem Material ist sie?<span class="ld-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="ld-frage__inhalt">
+      <p>Dazu liegt uns keine Angabe des Lieferanten vor. Sobald sie
+         vorliegt, steht sie hier.</p>
+    </div>
+  </details>
+
+  <details class="ld-frage">
+    <summary>Und wenn sie mir nicht gefällt?<span class="ld-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="ld-frage__inhalt">
+      <p>
+        Du hast 14 Tage Rückgaberecht, ohne Begründung. Schreib mir über das
+        <a href="/pages/contact">Kontaktformular</a>, dann klären wir die
+        Rücksendung. Die Rücksendekosten trägst du. Die Einzelheiten stehen
+        unter <a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>.
+      </p>
+    </div>
+  </details>
+
+  <details class="ld-frage">
+    <summary>Warum stehen hier keine Bewertungen?<span class="ld-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="ld-frage__inhalt">
+      <p>
+        Weil es noch keine gibt – der Shop ist neu. Sobald die ersten
+        Flaschen ausgeliefert sind, frage ich nach und stelle die
+        Antworten unverändert hierhin, auch die kritischen.
+      </p>
+    </div>
+  </details>
+
+</div>

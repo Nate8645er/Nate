@@ -1,0 +1,1383 @@
+/* ====================================================================
+   LET'SDRINK — ld.css
+   ====================================================================
+
+   AUFBAU DIESER DATEI
+   1  Grundlagen: Farben, Masse, Schrift, Zuruecksetzen
+   2  Werkzeug: Breiten, unsichtbarer Text, Sprungmarke
+   3  Schrift: Riese, Auge, Fuehrung, Etikett
+   4  Knoepfe
+   5  Bewegung: das --p-Verfahren und [data-auf]
+   6  Kopf, Menue, Warenkorbknopf
+   7  Hero
+   8  Wende (Problem / Loesung)
+   9  Enthuellung
+   10 Wasser
+   11 Erkunden
+   12 Filmstreifen
+   13 Wofuer sie gedacht ist
+   14 Anlaesse
+   15 Stimmen
+   16 Fragen
+   17 Fuss
+   18 Produktseite
+   19 Warenkorb (Seite und Lade)
+   20 Inhaltsseiten, Sammlung, Suche, 404
+   21 Weniger Bewegung, Druck
+
+   ZWEI REGELN, DIE ALLES ANDERE ERKLAEREN
+
+   ERSTENS: bewegt werden nur transform und opacity. Beide laufen auf
+   der Grafikkarte, ohne dass der Browser das Layout neu rechnet. Kein
+   width, kein top, kein margin wird animiert. Deshalb bleibt die
+   Seite auch auf einem drei Jahre alten Handy fluessig.
+
+   ZWEITENS: die Seite muss ohne JavaScript vollstaendig lesbar sein.
+   Alles, was das JS spaeter bewegt, hat hier einen Ruhezustand, in
+   dem es SICHTBAR ist. Ein Element, das erst durch JS erscheint,
+   waere fuer jeden ohne JS verschwunden - das kommt hier nicht vor.
+   Die Klasse .ld-js auf <html> setzt das JS selbst; nur was hinter
+   dieser Klasse steht, darf anfangs unsichtbar sein.
+   ==================================================================== */
+
+
+/* ====================================================================
+   1 · GRUNDLAGEN
+   ==================================================================== */
+
+:root {
+  /* Farbwelt: Tinte, Papier, Wasser. Mehr braucht es nicht.
+     Die Aquatoene sind der einzige bunte Akzent im ganzen Shop -
+     genau deshalb wirkt er. */
+  --ld-tinte:      #07090B;
+  --ld-tinte-weich:#1A1F24;
+  --ld-papier:     #FFFFFF;
+  --ld-sand:       #F4F2EF;
+  --ld-nebel:      #E9E7E3;
+  --ld-grau:       #666E74;
+  --ld-grau-hell:  #9AA1A6;
+
+  --ld-aqua:       #17B8D4;
+  --ld-aqua-tief:  #0A7C93;
+  --ld-aqua-hell:  #8FE4F2;
+
+  --ld-linie:      rgb(7 9 11 / .12);
+  --ld-linie-hell: rgb(255 255 255 / .22);
+
+  /* Masse */
+  --ld-max:   1320px;
+  --ld-eng:   820px;
+  --ld-rand:  clamp(1.15rem, 4vw, 3rem);
+  --ld-rund:  14px;
+  --ld-rund-gross: 26px;
+
+  /* Bewegung. Eine einzige Kurve fuer alles, damit die Seite eine
+     Handschrift hat statt fuenf verschiedener. */
+  --ld-weich: cubic-bezier(.22, .61, .36, 1);
+  --ld-zeit:  .55s;
+
+  /* Der Kopf ist ueberall gleich hoch - Hero, Lade und die
+     mitlaufende Leiste rechnen damit. */
+  --ld-kopf-hoch: 66px;
+
+  --ld-schrift: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
+                Helvetica, Arial, "Noto Sans", sans-serif;
+}
+
+@media (min-width: 900px) { :root { --ld-kopf-hoch: 76px; } }
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  background: var(--ld-papier);
+  color: var(--ld-tinte);
+  font-family: var(--ld-schrift);
+  font-size: 1rem;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Kein waagrechtes Scrollen. Einzelne Sektionen schieben Inhalt
+     ueber den Rand hinaus; das faengt hier auf. */
+  overflow-x: hidden;
+}
+
+img, video, svg { max-width: 100%; }
+img, video { height: auto; display: block; }
+
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+
+h1, h2, h3, p, figure, blockquote, ul, ol, fieldset { margin: 0; padding: 0; }
+ul, ol { list-style: none; }
+fieldset { border: 0; }
+legend { padding: 0; }
+
+:focus-visible {
+  outline: 2px solid var(--ld-aqua);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+
+/* ====================================================================
+   2 · WERKZEUG
+   ==================================================================== */
+
+.ld-breite { width: min(100% - (var(--ld-rand) * 2), var(--ld-max)); margin-inline: auto; }
+.ld-breite--eng { max-width: var(--ld-eng); }
+
+/* Text, den nur Screenreader hoeren. NICHT display:none - das
+   wuerde ihn auch fuer sie entfernen. */
+.ld-nur-lese {
+  position: absolute; width: 1px; height: 1px;
+  margin: -1px; padding: 0; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+.ld-sprung {
+  position: absolute; left: 50%; top: 0; z-index: 200;
+  transform: translate(-50%, -120%);
+  padding: .7rem 1.2rem; border-radius: 0 0 12px 12px;
+  background: var(--ld-tinte); color: var(--ld-papier);
+  text-decoration: none; font-weight: 600; font-size: .9375rem;
+  transition: transform .2s var(--ld-weich);
+}
+.ld-sprung:focus { transform: translate(-50%, 0); }
+
+.ld-nur-breit { display: none; }
+@media (min-width: 900px) { .ld-nur-breit { display: inline-flex; } }
+
+
+/* ====================================================================
+   3 · SCHRIFT
+
+   Die Wirkung dieser Seite kommt aus der Groesse und aus dem, was
+   NICHT dasteht. Deshalb ist der Riese wirklich riesig, und die
+   Laufweite wird negativ - grosse Schrift braucht enger stehende
+   Buchstaben, sonst zerfaellt das Wort in Einzelteile.
+   ==================================================================== */
+
+.ld-riese {
+  font-size: clamp(2.55rem, 8.4vw, 7rem);
+  line-height: .95;
+  letter-spacing: -.042em;
+  font-weight: 700;
+  text-wrap: balance;
+  margin: 0;
+}
+.ld-riese--mittel { font-size: clamp(2rem, 5.4vw, 4rem); line-height: 1.02; letter-spacing: -.034em; }
+
+.ld-auge {
+  font-size: .8125rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--ld-grau);
+  margin-bottom: .95rem;
+}
+.ld-auge--hell { color: rgb(255 255 255 / .82); }
+
+.ld-fuehrung {
+  margin-top: 1.15rem;
+  font-size: clamp(1.0625rem, 1.7vw, 1.3125rem);
+  line-height: 1.5;
+  color: rgb(255 255 255 / .88);
+  max-width: 42ch;
+  text-wrap: pretty;
+}
+.ld-fuehrung--dunkel { color: var(--ld-grau); }
+
+.ld-etikett {
+  display: block;
+  font-size: .8125rem; font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--ld-grau);
+  margin-bottom: .7rem;
+}
+.ld-etikett b { text-transform: none; letter-spacing: 0; color: var(--ld-tinte); font-weight: 600; }
+
+.ld-kopfzeile { margin-bottom: clamp(2.2rem, 5vw, 3.6rem); max-width: 26ch; }
+.ld-kopfzeile--mitte { margin-inline: auto; text-align: center; max-width: 30ch; }
+
+.ld-leerzeile { color: var(--ld-grau); }
+
+.ld-text { font-size: 1.0625rem; line-height: 1.7; color: var(--ld-tinte-weich); }
+.ld-text > * + * { margin-top: 1.1rem; }
+.ld-text h2 { font-size: 1.4rem; letter-spacing: -.02em; margin-top: 2.2rem; }
+.ld-text h3 { font-size: 1.15rem; margin-top: 1.8rem; }
+.ld-text ul { list-style: disc; padding-left: 1.3rem; }
+.ld-text li + li { margin-top: .35rem; }
+.ld-text a { color: var(--ld-aqua-tief); text-underline-offset: 3px; }
+
+
+/* ====================================================================
+   4 · KNOEPFE
+   ==================================================================== */
+
+.ld-knopf {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: .5rem;
+  min-height: 50px; padding: 0 1.5rem;
+  border: 0; border-radius: 999px;
+  background: var(--ld-tinte); color: var(--ld-papier);
+  font-weight: 650; font-size: .96875rem; letter-spacing: -.005em;
+  text-decoration: none; cursor: pointer;
+  transition: transform .2s var(--ld-weich), box-shadow .2s ease, background-color .2s ease;
+  box-shadow: 0 1px 2px rgb(7 9 11 / .18);
+}
+.ld-knopf:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgb(7 9 11 / .22); }
+.ld-knopf:active { transform: translateY(0); }
+.ld-knopf[disabled] { background: var(--ld-nebel); color: var(--ld-grau-hell); cursor: not-allowed; box-shadow: none; transform: none; }
+
+.ld-knopf--gross { min-height: 58px; padding: 0 2rem; font-size: 1.03125rem; }
+.ld-knopf--klein { min-height: 42px; padding: 0 1.1rem; font-size: .90625rem; }
+.ld-knopf--voll  { display: flex; width: 100%; }
+
+/* Auf dunklem Grund kehrt sich der Knopf um - heller Knopf auf
+   dunklem Bild ist die einzige Kombination, die im Gegenlicht
+   eines Fotos zuverlaessig lesbar bleibt. */
+.ld-hero .ld-knopf, .ld-streifen .ld-knopf {
+  background: var(--ld-papier); color: var(--ld-tinte);
+}
+.ld-hero .ld-knopf:hover, .ld-streifen .ld-knopf:hover { box-shadow: 0 12px 32px rgb(0 0 0 / .35); }
+
+.ld-geist {
+  display: inline-flex; align-items: center; gap: .38rem;
+  min-height: 50px; padding: 0 .3rem;
+  color: rgb(255 255 255 / .92);
+  font-weight: 600; font-size: .96875rem; text-decoration: none;
+  transition: gap .2s var(--ld-weich), opacity .2s ease;
+}
+.ld-geist:hover { gap: .62rem; }
+.ld-geist--dunkel { color: var(--ld-tinte); }
+.ld-geist svg { flex: none; }
+
+.ld-tasten { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem 1.15rem; margin-top: clamp(1.6rem, 3.4vw, 2.4rem); }
+
+
+/* ====================================================================
+   5 · BEWEGUNG
+
+   DAS --p-VERFAHREN
+   Das JS schreibt auf jedes [data-szene] eine Zahl --p zwischen 0 und
+   1: 0, wenn die Sektion gerade von unten hereinkommt, 1, wenn sie
+   oben hinausgeht. Das CSS rechnet daraus alles Weitere. Der Vorteil:
+   das JS kennt kein einziges Aussehen, und das CSS kennt kein
+   Scrollen. Wer die Optik aendern will, aendert nur diese Datei.
+
+   [data-auf] IST ETWAS ANDERES
+   Das ist das einmalige Hereingleiten beim ersten Sichtbarwerden -
+   ueber IntersectionObserver, nicht ueber den Scrollwert. Ein Element
+   gleitet genau einmal herein und bleibt dann in Ruhe.
+   ==================================================================== */
+
+[data-szene] { --p: 0; }
+
+/* Ohne .ld-js ist NICHTS versteckt. Das ist die Lebensversicherung
+   der Seite: faellt das JS aus, steht der ganze Inhalt da. */
+.ld-js [data-auf] {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  transition: opacity .7s var(--ld-weich), transform .7s var(--ld-weich);
+  transition-delay: calc(var(--nr, 0) * .06s);
+}
+.ld-js [data-auf="klein"] { transform: translate3d(0, 14px, 0); transition-duration: .55s; }
+.ld-js [data-auf].ist-da { opacity: 1; transform: none; }
+
+/* Die gestaffelten Zeilen im Hero: jede Zahl ist ein Schritt. */
+.ld-js [data-auf="1"] { transition-delay: .05s; }
+.ld-js [data-auf="2"] { transition-delay: .13s; }
+.ld-js [data-auf="3"] { transition-delay: .23s; }
+.ld-js [data-auf="4"] { transition-delay: .33s; }
+.ld-js [data-auf="5"] { transition-delay: .43s; }
+
+
+/* ====================================================================
+   6 · KOPF
+   ==================================================================== */
+
+.ld-kopf {
+  position: fixed; inset: 0 0 auto; z-index: 90;
+  height: var(--ld-kopf-hoch);
+  color: var(--ld-papier);
+  transition: color .3s ease;
+}
+/* Das Glas liegt in einem eigenen Pseudo-Element, damit die Schrift
+   beim Einblenden nicht mitverblasst. */
+.ld-kopf::before {
+  content: ""; position: absolute; inset: 0;
+  background: rgb(255 255 255 / .82);
+  backdrop-filter: saturate(180%) blur(18px);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  border-bottom: 1px solid var(--ld-linie);
+  opacity: 0; transition: opacity .3s ease;
+}
+.ld-kopf.ist-fest { color: var(--ld-tinte); }
+.ld-kopf.ist-fest::before { opacity: 1; }
+
+/* Auf allen Seiten ausser der Startseite liegt kein Hero darunter -
+   dort ist der Kopf von Anfang an fest. */
+body:not(.template-index) .ld-kopf { color: var(--ld-tinte); }
+body:not(.template-index) .ld-kopf::before { opacity: 1; }
+body:not(.template-index) { padding-top: var(--ld-kopf-hoch); }
+
+.ld-kopf__innen {
+  position: relative; z-index: 1;
+  height: 100%;
+  width: min(100% - (var(--ld-rand) * 2), var(--ld-max));
+  margin-inline: auto;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+}
+
+.ld-marke {
+  display: inline-flex; align-items: center; gap: .5rem;
+  text-decoration: none; flex: none;
+}
+.ld-marke__wort {
+  font-weight: 700; font-size: 1.0625rem;
+  letter-spacing: -.025em;
+}
+.ld-zeichen { color: var(--ld-aqua); flex: none; }
+.ld-marke--fuss .ld-marke__wort { font-size: 1.25rem; }
+
+.ld-nav { display: none; gap: .3rem; }
+@media (min-width: 900px) { .ld-nav { display: flex; } }
+.ld-nav__link {
+  padding: .5rem .85rem; border-radius: 999px;
+  text-decoration: none; font-size: .9375rem; font-weight: 550;
+  opacity: .86; transition: opacity .2s ease, background-color .2s ease;
+}
+.ld-nav__link:hover { opacity: 1; background: rgb(127 127 127 / .12); }
+.ld-nav__link[aria-current="page"] { opacity: 1; font-weight: 650; }
+
+.ld-kopf__rechts { display: flex; align-items: center; gap: .45rem; flex: none; }
+
+.ld-korbknopf {
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 42px; height: 42px; border-radius: 999px;
+  text-decoration: none;
+  transition: background-color .2s ease;
+}
+.ld-korbknopf:hover { background: rgb(127 127 127 / .14); }
+.ld-korbknopf__zahl {
+  position: absolute; top: 3px; right: 2px;
+  min-width: 18px; height: 18px; padding: 0 4px;
+  display: grid; place-items: center;
+  border-radius: 999px;
+  background: var(--ld-aqua); color: #04262E;
+  font-size: .6875rem; font-weight: 700; line-height: 1;
+}
+
+.ld-burger {
+  display: inline-grid; place-content: center; gap: 5px;
+  width: 42px; height: 42px; padding: 0;
+  border: 0; background: none; cursor: pointer; border-radius: 999px;
+}
+.ld-burger span { display: block; width: 19px; height: 1.8px; background: currentColor; border-radius: 2px; }
+@media (min-width: 900px) { .ld-burger { display: none; } }
+
+/* --- Mobilmenue --- */
+.ld-menue {
+  position: fixed; inset: 0; z-index: 120;
+  background: var(--ld-papier); color: var(--ld-tinte);
+  display: flex; flex-direction: column;
+  padding: 0 var(--ld-rand) calc(var(--ld-rand) + env(safe-area-inset-bottom));
+  opacity: 0; transform: translate3d(0, -8px, 0);
+  transition: opacity .28s var(--ld-weich), transform .28s var(--ld-weich);
+}
+.ld-menue[hidden] { display: none; }
+.ld-menue.ist-auf { opacity: 1; transform: none; }
+.ld-menue__kopf {
+  height: var(--ld-kopf-hoch); flex: none;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.ld-menue__zu { width: 42px; height: 42px; border: 0; background: none; cursor: pointer; display: grid; place-items: center; }
+.ld-menue__liste { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; gap: .2rem; }
+.ld-menue__liste a {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .85rem 0; border-bottom: 1px solid var(--ld-linie);
+  text-decoration: none;
+  font-size: clamp(1.5rem, 7vw, 2.1rem); font-weight: 650; letter-spacing: -.03em;
+}
+.ld-menue__liste a svg { color: var(--ld-grau-hell); }
+.ld-menue__fuss { flex: none; padding-top: 1.2rem; }
+
+
+/* ====================================================================
+   7 · HERO
+   ==================================================================== */
+
+.ld-hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex; align-items: flex-end;
+  padding-bottom: clamp(3rem, 9vh, 6rem);
+  overflow: hidden;
+  background: var(--ld-tinte);
+  isolation: isolate;
+}
+
+.ld-hero__buehne {
+  position: absolute; inset: 0; z-index: -1;
+  /* Die "Kamerafahrt": beim Scrollen faehrt die Buehne minimal
+     zurueck und nach oben. 6 Prozent - mehr wirkt wie ein Zoom im
+     Videoschnitt, weniger merkt niemand. */
+  transform: scale(calc(1.06 - var(--p) * .06)) translate3d(0, calc(var(--p) * -4%), 0);
+  will-change: transform;
+}
+
+.ld-hero__film, .ld-hero__bild {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  /* Das Produkt sitzt rechts der Mitte. Beim harten Beschnitt auf
+     dem Handy wandert der Ausschnitt mit, damit die Flasche nie
+     aus dem Bild faellt. */
+  object-position: 62% center;
+}
+@media (min-width: 900px) { .ld-hero__film, .ld-hero__bild { object-position: center; } }
+
+.ld-hero__bild--schmal { display: block; }
+.ld-hero__bild--breit  { display: none; }
+@media (min-width: 760px) {
+  .ld-hero__bild--schmal { display: none; }
+  .ld-hero__bild--breit  { display: block; }
+}
+/* Laeuft ein Film, liegt das Standbild nur darunter. */
+.ld-hero__film + .ld-hero__bild { z-index: -1; }
+.ld-hero.ist-film .ld-hero__bild { opacity: 0; transition: opacity .6s ease; }
+
+.ld-hero__schleier {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(to top, rgb(7 9 11 / calc(var(--ld-dunkel, .45) + .3)) 0%,
+                            rgb(7 9 11 / calc(var(--ld-dunkel, .45) * .5)) 42%,
+                            rgb(7 9 11 / calc(var(--ld-dunkel, .45) * .55)) 100%);
+}
+
+.ld-hero__text { position: relative; width: 100%; color: var(--ld-papier); }
+.ld-hero__text .ld-riese { max-width: 15ch; }
+
+.ld-hero__preis {
+  margin-top: 1.15rem;
+  font-size: .9375rem; color: rgb(255 255 255 / .72);
+}
+
+.ld-hero__wink {
+  position: absolute; left: 50%; bottom: 1.1rem; z-index: 2;
+  transform: translateX(-50%);
+  width: 22px; height: 34px; border: 1.5px solid rgb(255 255 255 / .45); border-radius: 999px;
+  opacity: calc(1 - var(--p) * 3);
+}
+.ld-hero__wink span {
+  position: absolute; left: 50%; top: 6px;
+  width: 3px; height: 6px; margin-left: -1.5px; border-radius: 2px;
+  background: rgb(255 255 255 / .8);
+  animation: ld-wink 1.9s var(--ld-weich) infinite;
+}
+@keyframes ld-wink {
+  0%   { transform: translateY(0);    opacity: 0; }
+  22%  { opacity: 1; }
+  75%  { transform: translateY(12px); opacity: 0; }
+  100% { transform: translateY(12px); opacity: 0; }
+}
+
+/* --- Tropfen vor der Buehne --- */
+.ld-tropfen { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.ld-tropfen i {
+  position: absolute;
+  left: var(--x); top: var(--y);
+  width: var(--g); height: var(--g);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 32% 28%, rgb(255 255 255 / .92), rgb(255 255 255 / .22) 42%, rgb(255 255 255 / 0) 68%);
+  box-shadow: inset 0 0 6px rgb(255 255 255 / .35);
+  /* --t ist die Tiefe: je groesser, desto weiter vorne, desto
+     schneller die Bewegung. Das ergibt die Parallaxe. */
+  transform: translate3d(0, calc(var(--p) * var(--t) * -140px), 0);
+  opacity: calc(.75 - var(--p) * .75);
+  animation: ld-schweben 7s var(--ld-weich) infinite alternate;
+  animation-delay: var(--v);
+  will-change: transform;
+}
+@keyframes ld-schweben {
+  from { margin-top: 0; }
+  to   { margin-top: 14px; }
+}
+
+
+/* ====================================================================
+   8 · WENDE
+   ==================================================================== */
+
+.ld-wende { position: relative; height: 200svh; background: var(--ld-tinte); }
+.ld-wende__halt {
+  position: sticky; top: 0;
+  height: 100svh;
+  display: grid; place-items: center;
+  overflow: hidden;
+}
+.ld-wende__lage {
+  grid-area: 1 / 1;
+  width: 100%;
+  padding-block: 4rem;
+  text-align: center;
+}
+
+/* Zustand 1 liegt oben und verblasst; Zustand 2 kommt darunter
+   hervor. Ohne JS bleibt --p auf 0: dann ist die Frage sichtbar
+   und die Antwort steht direkt darunter im Fluss - beides lesbar. */
+.ld-wende__lage--frage {
+  color: var(--ld-papier);
+  opacity: calc(1 - var(--p) * 2.4);
+  transform: translate3d(0, calc(var(--p) * -60px), 0);
+}
+.ld-wende__lage--antwort {
+  color: var(--ld-papier);
+  opacity: calc((var(--p) - .42) * 2.6);
+  transform: translate3d(0, calc(46px - var(--p) * 46px), 0);
+  pointer-events: none;
+}
+.ld-js .ld-wende__lage--antwort { pointer-events: auto; }
+
+.ld-orte {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem .55rem;
+  margin-top: clamp(1.6rem, 4vw, 2.4rem);
+}
+.ld-orte li {
+  padding: .42rem 1rem; border-radius: 999px;
+  border: 1px solid var(--ld-linie-hell);
+  color: rgb(255 255 255 / .78);
+  font-size: .90625rem;
+}
+
+.ld-wende__bild {
+  width: clamp(120px, 26vw, 210px);
+  margin: 0 auto clamp(1.2rem, 3vw, 2rem);
+  filter: drop-shadow(0 26px 44px rgb(0 0 0 / .5));
+}
+.ld-wende__lage--antwort .ld-fuehrung { margin-inline: auto; }
+.ld-wende__lage--antwort .ld-fuehrung--dunkel { color: rgb(255 255 255 / .72); }
+
+
+/* ====================================================================
+   9 · ENTHUELLUNG
+   ==================================================================== */
+
+.ld-ent { position: relative; height: 300svh; background: var(--ld-sand); }
+.ld-ent__halt {
+  position: sticky; top: 0; height: 100svh;
+  display: grid; grid-template-rows: 1fr auto;
+  align-items: center; justify-items: center;
+  padding-top: var(--ld-kopf-hoch);
+  overflow: hidden;
+}
+
+.ld-ent__mitte { grid-row: 1; display: grid; place-items: center; width: 100%; min-height: 0; }
+.ld-ent__stueck {
+  /* Die Kamerafahrt: von 0.86 auf 1.12 ueber die ganze Strecke.
+     Das ist bewusst wenig - es soll wie eine Fahrt wirken, nicht
+     wie ein Zoom-Sprung. */
+  width: min(58vw, 42svh);
+  max-height: 56svh;
+  object-fit: contain;
+  transform: scale(calc(.86 + var(--p) * .26));
+  will-change: transform;
+}
+@media (min-width: 900px) { .ld-ent__stueck { width: min(30vw, 46svh); max-height: 60svh; } }
+
+.ld-ent__text { grid-row: 2; width: 100%; text-align: center; padding-bottom: clamp(2rem, 6vh, 4rem); }
+.ld-ent__titel { margin-bottom: 1.4rem; }
+
+/* Die Zeilen liegen uebereinander. Ohne JS stehen sie
+   untereinander - deshalb ist das Stapeln an .ld-js gebunden. */
+.ld-schritte { display: grid; gap: .3rem; }
+.ld-js .ld-schritte { display: grid; }
+.ld-js .ld-schritt { grid-area: 1 / 1; opacity: 0; transform: translate3d(0, 12px, 0); }
+.ld-schritt {
+  font-size: clamp(1.15rem, 3vw, 1.9rem);
+  font-weight: 650; letter-spacing: -.025em;
+  color: var(--ld-tinte);
+  transition: opacity .4s var(--ld-weich), transform .4s var(--ld-weich);
+}
+.ld-js .ld-schritt.ist-da { opacity: 1; transform: none; }
+.ld-ent__knopf { margin-top: 1.6rem; }
+
+
+/* ====================================================================
+   10 · WASSER
+   ==================================================================== */
+
+.ld-wasser { position: relative; height: 200svh; background: linear-gradient(to bottom, var(--ld-tinte), #06222B); }
+.ld-wasser__halt {
+  position: sticky; top: 0; height: 100svh;
+  display: grid; place-items: center;
+  overflow: hidden;
+  padding-top: var(--ld-kopf-hoch);
+}
+
+.ld-wasser__kopf { grid-area: 1 / 1; align-self: start; padding-top: clamp(2rem, 8vh, 5rem); text-align: center; width: 100%; z-index: 3; color: var(--ld-papier); }
+.ld-wasser__kopf .ld-fuehrung { margin-inline: auto; }
+
+.ld-wasser__stueck {
+  grid-area: 1 / 1; z-index: 1;
+  width: min(52vw, 40svh);
+  align-self: center;
+  /* Steigt mit --p aus der Welle auf. */
+  transform: translate3d(0, calc(38% - var(--p) * 38%), 0) scale(calc(.92 + var(--p) * .12));
+  will-change: transform;
+}
+.ld-wasser__stueck img, .ld-wasser__stueck video {
+  width: 100%; border-radius: var(--ld-rund-gross);
+  filter: drop-shadow(0 30px 60px rgb(0 0 0 / .55));
+}
+@media (min-width: 900px) { .ld-wasser__stueck { width: min(28vw, 44svh); } }
+
+.ld-blasen { grid-area: 1 / 1; position: relative; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+.ld-blasen i {
+  position: absolute; bottom: 8%;
+  left: var(--x);
+  width: var(--g); height: var(--g); border-radius: 999px;
+  background: radial-gradient(circle at 34% 30%, rgb(255 255 255 / .85), rgb(143 228 242 / .3) 46%, rgb(143 228 242 / 0) 70%);
+  transform: translate3d(0, calc(var(--p) * var(--s) * -46svh), 0);
+  opacity: calc(var(--p) * 1.4 - var(--p) * var(--p) * 1.2);
+  will-change: transform;
+}
+
+.ld-welle {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
+  height: clamp(90px, 16svh, 190px);
+  overflow: hidden; pointer-events: none;
+}
+.ld-welle svg {
+  position: absolute; bottom: 0; left: 0;
+  width: 200%; height: 100%;
+  /* Ein Durchlauf ist genau die halbe Breite - deshalb ist die
+     Schleife nahtlos. */
+  animation: ld-fliessen 18s linear infinite;
+}
+.ld-welle--zwei { animation-duration: 26s; animation-direction: reverse; }
+@keyframes ld-fliessen {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+
+/* ====================================================================
+   11 · ERKUNDEN
+   ==================================================================== */
+
+.ld-erk { padding-block: clamp(4rem, 11vw, 8rem); background: var(--ld-papier); }
+.ld-erk__gitter { display: grid; gap: clamp(2rem, 5vw, 4rem); align-items: center; }
+@media (min-width: 920px) { .ld-erk__gitter { grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); } }
+
+.ld-erk__rahmen {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--ld-rund-gross);
+  background: var(--ld-sand);
+  overflow: hidden;
+  display: grid; place-items: center;
+}
+.ld-erk__rahmen[data-drehbar] { cursor: ew-resize; touch-action: pan-y; }
+.ld-erk__film, .ld-erk__farbbild {
+  grid-area: 1 / 1;
+  width: 100%; height: 100%; object-fit: contain;
+}
+.ld-erk__farbbild[hidden] { display: none; }
+/* Laeuft der Dreh-Film, treten die Farbbilder zurueck. */
+.ld-erk__rahmen.ist-dreh .ld-erk__farbbild { opacity: 0; }
+
+.ld-erk__wink {
+  position: absolute; left: 50%; bottom: .9rem; transform: translateX(-50%);
+  padding: .32rem .8rem; border-radius: 999px;
+  background: rgb(7 9 11 / .68); color: #fff;
+  font-size: .75rem; letter-spacing: .04em;
+  pointer-events: none;
+  transition: opacity .3s ease;
+}
+.ld-erk__rahmen.ist-gedreht .ld-erk__wink { opacity: 0; }
+
+.ld-punkt {
+  position: absolute; left: var(--x); top: var(--y);
+  width: 30px; height: 30px; margin: -15px 0 0 -15px;
+  padding: 0; border: 0; background: none; cursor: pointer;
+  display: grid; place-items: center; z-index: 3;
+}
+.ld-punkt__ring {
+  width: 13px; height: 13px; border-radius: 999px;
+  background: var(--ld-papier);
+  box-shadow: 0 0 0 1.5px rgb(7 9 11 / .2), 0 2px 8px rgb(7 9 11 / .3);
+  transition: transform .22s var(--ld-weich), background-color .22s ease;
+}
+.ld-punkt__ring::after {
+  content: ""; position: absolute; inset: -8px;
+  border-radius: 999px; border: 1.5px solid var(--ld-aqua);
+  opacity: 0; transform: scale(.7);
+  transition: opacity .3s ease, transform .3s var(--ld-weich);
+}
+.ld-punkt:hover .ld-punkt__ring { transform: scale(1.18); }
+.ld-punkt[aria-pressed="true"] .ld-punkt__ring { background: var(--ld-aqua); transform: scale(1.1); }
+.ld-punkt[aria-pressed="true"] .ld-punkt__ring::after { opacity: 1; transform: scale(1); }
+
+.ld-erk__farben { margin-bottom: 1.8rem; }
+.ld-farbliste { display: flex; flex-wrap: wrap; gap: .5rem; }
+.ld-farbe {
+  width: 58px; height: 58px; padding: 3px;
+  border: 1.5px solid var(--ld-linie); border-radius: 16px;
+  background: var(--ld-papier); cursor: pointer;
+  display: grid; place-items: center; overflow: hidden;
+  transition: border-color .2s ease, transform .2s var(--ld-weich);
+}
+.ld-farbe img { width: 100%; height: 100%; object-fit: contain; }
+.ld-farbe:hover { transform: translateY(-2px); }
+.ld-farbe[aria-pressed="true"] { border-color: var(--ld-tinte); border-width: 2px; }
+.ld-farbe[data-weg] { opacity: .34; cursor: not-allowed; }
+.ld-farbe__fleck { width: 26px; height: 26px; border-radius: 999px; background: var(--ld-nebel); }
+.ld-erk__farbname { margin-top: .7rem; font-weight: 600; }
+
+.ld-erk__tafel { min-height: 6.5rem; margin-bottom: 1.8rem; }
+.ld-tafel h3 { font-size: 1.25rem; letter-spacing: -.02em; margin-bottom: .35rem; }
+.ld-tafel p { color: var(--ld-grau); max-width: 38ch; }
+.ld-tafel[hidden] { display: none; }
+
+
+/* ====================================================================
+   12 · FILMSTREIFEN
+   ==================================================================== */
+
+.ld-streifen { position: relative; background: var(--ld-tinte); }
+.ld-streifen--maske { height: 200svh; }
+.ld-streifen--nah, .ld-streifen--weit { height: 160svh; }
+.ld-streifen__halt { position: sticky; top: 0; height: 100svh; display: grid; place-items: center; overflow: hidden; }
+
+.ld-streifen__fenster {
+  position: relative;
+  display: grid; place-items: center;
+  overflow: hidden;
+  background: #000;
+}
+/* Gangart "maske": das Fenster oeffnet sich von schmal auf voll. */
+.ld-streifen--maske .ld-streifen__fenster {
+  width: calc(52% + var(--p) * 48%);
+  height: calc(46svh + var(--p) * 54svh);
+  border-radius: calc(var(--ld-rund-gross) * (1 - var(--p)));
+}
+@media (max-width: 700px) {
+  .ld-streifen--maske .ld-streifen__fenster { width: calc(80% + var(--p) * 20%); }
+}
+.ld-streifen--nah .ld-streifen__fenster,
+.ld-streifen--weit .ld-streifen__fenster { width: 100%; height: 100svh; }
+
+.ld-streifen__film, .ld-streifen__bild {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+}
+.ld-streifen--nah  .ld-streifen__film, .ld-streifen--nah  .ld-streifen__bild { transform: scale(calc(1 + var(--p) * .16)); }
+.ld-streifen--weit .ld-streifen__film, .ld-streifen--weit .ld-streifen__bild { transform: scale(calc(1.16 - var(--p) * .16)); }
+.ld-streifen.ist-film .ld-streifen__bild { opacity: 0; transition: opacity .6s ease; }
+
+.ld-streifen__schleier {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgb(7 9 11 / calc(var(--ld-dunkel, .35) + .25)), rgb(7 9 11 / calc(var(--ld-dunkel, .35) * .5)));
+}
+
+.ld-streifen__text {
+  position: relative; z-index: 2; width: 100%;
+  color: var(--ld-papier); text-align: center;
+  padding-inline: var(--ld-rand);
+}
+.ld-streifen__text .ld-fuehrung { margin-inline: auto; }
+.ld-streifen__text .ld-tasten { justify-content: center; }
+
+.ld-streifen__ton {
+  position: absolute; right: 1rem; bottom: 1rem; z-index: 3;
+  width: 40px; height: 40px; border-radius: 999px;
+  border: 1px solid var(--ld-linie-hell);
+  background: rgb(7 9 11 / .5); color: #fff;
+  display: grid; place-items: center; cursor: pointer;
+}
+
+
+/* ====================================================================
+   13 · WOFUER SIE GEDACHT IST
+   ==================================================================== */
+
+.ld-vor { padding-block: clamp(4rem, 11vw, 8rem); background: var(--ld-sand); }
+.ld-vor__gitter { display: grid; gap: clamp(1.4rem, 3vw, 2.4rem); grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); }
+.ld-vor__feld { display: grid; gap: .45rem; justify-items: start; }
+.ld-vor__zeichen {
+  width: 46px; height: 46px; border-radius: 14px;
+  display: grid; place-items: center;
+  background: var(--ld-papier); color: var(--ld-aqua-tief);
+  box-shadow: 0 1px 2px rgb(7 9 11 / .06);
+  margin-bottom: .5rem;
+}
+.ld-vor__zeichen svg { width: 23px; height: 23px; }
+.ld-vor__feld b { font-size: 1.0625rem; letter-spacing: -.015em; }
+.ld-vor__feld span { color: var(--ld-grau); font-size: .96875rem; line-height: 1.5; }
+
+
+/* ====================================================================
+   14 · ANLAESSE
+   ==================================================================== */
+
+.ld-eins { padding-block: clamp(4rem, 11vw, 8rem); background: var(--ld-papier); }
+.ld-eins__reihe {
+  display: grid; grid-auto-flow: column;
+  grid-auto-columns: 78%;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-inline: var(--ld-rand);
+  padding-bottom: .6rem;
+}
+.ld-eins__reihe::-webkit-scrollbar { display: none; }
+.ld-eins__karte { scroll-snap-align: center; }
+
+@media (min-width: 760px) {
+  .ld-eins__reihe {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-columns: auto;
+    overflow: visible;
+    width: min(100% - (var(--ld-rand) * 2), var(--ld-max));
+    margin-inline: auto; padding-inline: 0;
+    gap: clamp(1rem, 2vw, 1.6rem);
+  }
+}
+
+.ld-eins__karte > a, .ld-eins__karte > div {
+  position: relative; display: block;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--ld-rund-gross);
+  overflow: hidden; text-decoration: none;
+  background: var(--ld-nebel);
+}
+.ld-eins__karte img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ld-weich); }
+.ld-eins__karte a:hover img { transform: scale(1.045); }
+.ld-eins__farbe {
+  position: absolute; inset: 0;
+  background: linear-gradient(150deg, var(--ld-aqua-hell), var(--ld-aqua-tief));
+}
+.ld-eins__text {
+  position: absolute; inset: auto 0 0; z-index: 2;
+  padding: 1.15rem;
+  display: grid; gap: .18rem;
+  color: #fff;
+  background: linear-gradient(to top, rgb(7 9 11 / .78), rgb(7 9 11 / 0));
+}
+.ld-eins__text b { font-size: 1.1875rem; letter-spacing: -.02em; }
+.ld-eins__text span { font-size: .90625rem; color: rgb(255 255 255 / .78); }
+
+
+/* ====================================================================
+   14b · FARBEN
+   ==================================================================== */
+
+.ld-farb { padding-block: clamp(4rem, 11vw, 8rem); background: var(--ld-papier); }
+.ld-farb__gruppe { margin-bottom: clamp(2rem, 5vw, 3.4rem); }
+.ld-farb__gruppe img { width: 100%; border-radius: var(--ld-rund-gross); }
+
+.ld-farb__gitter {
+  display: grid; gap: clamp(.7rem, 2vw, 1.2rem);
+  grid-template-columns: repeat(2, 1fr);
+}
+@media (min-width: 620px) { .ld-farb__gitter { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 980px) { .ld-farb__gitter { grid-template-columns: repeat(6, 1fr); } }
+
+.ld-farb__feld a {
+  display: grid; gap: .6rem;
+  padding: .9rem .8rem 1rem;
+  border: 1.5px solid var(--ld-linie); border-radius: var(--ld-rund-gross);
+  text-decoration: none; background: var(--ld-papier);
+  transition: border-color .2s ease, transform .2s var(--ld-weich), box-shadow .2s ease;
+}
+.ld-farb__feld a:hover {
+  border-color: var(--ld-tinte); transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgb(7 9 11 / .1);
+}
+.ld-farb__feld a.ist-weg { opacity: .55; }
+
+/* Das Bild bekommt eine feste Kachel und wird darin eingepasst.
+   Ohne aspect-ratio wuerden sechs unterschiedlich hohe Freisteller
+   die Reihe verspringen lassen. */
+.ld-farb__bild { display: block; aspect-ratio: 1 / 1; background: var(--ld-sand); border-radius: var(--ld-rund); overflow: hidden; }
+.ld-farb__bild img { width: 100%; height: 100%; object-fit: contain; }
+
+.ld-farb__wort { display: grid; gap: .1rem; text-align: center; }
+.ld-farb__wort b { font-size: .96875rem; letter-spacing: -.015em; }
+.ld-farb__wort span { font-size: .84375rem; color: var(--ld-grau); }
+.ld-farb__weg { color: var(--ld-grau-hell) !important; }
+
+
+/* ====================================================================
+   15 · STIMMEN
+   ==================================================================== */
+
+.ld-sti { padding-block: clamp(4rem, 11vw, 8rem); background: var(--ld-sand); }
+.ld-sti__reihe { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); }
+.ld-sti__karte {
+  background: var(--ld-papier); border-radius: var(--ld-rund-gross);
+  padding: clamp(1.3rem, 3vw, 1.9rem);
+  display: grid; gap: .9rem; align-content: start;
+}
+.ld-sterne { display: flex; gap: 2px; color: var(--ld-nebel); }
+.ld-sterne .ist-voll { color: #F2A93B; }
+.ld-sti__karte blockquote { font-size: 1.03125rem; line-height: 1.55; }
+.ld-sti__wer { display: flex; align-items: center; gap: .65rem; }
+.ld-sti__wer img { width: 40px; height: 40px; border-radius: 999px; object-fit: cover; }
+.ld-sti__wer b { display: block; font-size: .9375rem; }
+.ld-sti__wer span { font-size: .84375rem; color: var(--ld-grau); }
+.ld-sti__produktfoto { width: 100%; border-radius: var(--ld-rund); }
+
+.ld-sti__leer {
+  background: var(--ld-papier); border-radius: var(--ld-rund-gross);
+  padding: clamp(1.6rem, 4vw, 2.6rem);
+  max-width: 46rem;
+}
+.ld-sti__leer p { color: var(--ld-grau); font-size: 1.0625rem; line-height: 1.6; margin-bottom: .9rem; }
+
+
+/* ====================================================================
+   16 · FRAGEN
+
+   Das weiche Aufklappen ohne JavaScript: der Inhalt sitzt in einem
+   Raster, dessen Zeilenhoehe von 0fr auf 1fr geht. Das ist die
+   einzige Methode, "auf natuerliche Hoehe" zu animieren, ohne eine
+   feste Pixelhoehe zu erfinden. Das min-height:0 am Kind ist
+   Pflicht - ohne das ignoriert der Browser die 0fr.
+   ==================================================================== */
+
+.ld-frg { padding-block: clamp(4rem, 11vw, 8rem); background: var(--ld-papier); }
+.ld-fragen { border-top: 1px solid var(--ld-linie); }
+
+.ld-frage { border-bottom: 1px solid var(--ld-linie); }
+.ld-frage summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 1.15rem 0;
+  cursor: pointer; list-style: none;
+  font-size: clamp(1.03125rem, 1.9vw, 1.1875rem);
+  font-weight: 600; letter-spacing: -.015em;
+}
+.ld-frage summary::-webkit-details-marker { display: none; }
+.ld-frage summary:hover { color: var(--ld-aqua-tief); }
+
+.ld-frage__zeichen { position: relative; flex: none; width: 17px; height: 17px; }
+.ld-frage__zeichen::before, .ld-frage__zeichen::after {
+  content: ""; position: absolute; left: 50%; top: 50%;
+  background: currentColor; border-radius: 2px;
+  transform: translate(-50%, -50%);
+  transition: transform .28s var(--ld-weich), opacity .28s ease;
+}
+.ld-frage__zeichen::before { width: 15px; height: 1.8px; }
+.ld-frage__zeichen::after  { width: 1.8px; height: 15px; }
+.ld-frage[open] .ld-frage__zeichen::after { transform: translate(-50%, -50%) rotate(90deg); opacity: 0; }
+
+.ld-frage__inhalt {
+  display: grid; grid-template-rows: 1fr;
+  padding-bottom: 1.15rem;
+}
+.ld-frage__inhalt > p { min-height: 0; color: var(--ld-grau); max-width: 62ch; }
+.ld-frage__inhalt a { color: var(--ld-aqua-tief); }
+
+.ld-frg__rest { margin-top: 1.8rem; color: var(--ld-grau); }
+.ld-frg__rest a { color: var(--ld-aqua-tief); font-weight: 600; }
+
+
+/* ====================================================================
+   17 · FUSS
+   ==================================================================== */
+
+.ld-fuss { background: var(--ld-tinte); color: var(--ld-papier); padding-block: clamp(3rem, 8vw, 5.5rem) 2rem; }
+.ld-fuss__oben { display: grid; gap: 2.2rem; padding-bottom: clamp(2.2rem, 5vw, 3.4rem); }
+@media (min-width: 820px) { .ld-fuss__oben { grid-template-columns: minmax(0, 1fr) minmax(0, 22rem); align-items: start; } }
+.ld-fuss__satz { margin-top: .7rem; color: rgb(255 255 255 / .6); max-width: 30ch; }
+
+.ld-fuss__brieftitel { font-size: 1.0625rem; font-weight: 650; letter-spacing: -.02em; margin-bottom: .8rem; }
+.ld-brief__zeile { display: flex; gap: .4rem; }
+.ld-brief__zeile input {
+  flex: 1 1 auto; min-width: 0;
+  height: 48px; padding: 0 1rem;
+  border: 1px solid var(--ld-linie-hell); border-radius: 999px;
+  background: rgb(255 255 255 / .06); color: var(--ld-papier);
+  font: inherit; font-size: .96875rem;
+}
+.ld-brief__zeile input::placeholder { color: rgb(255 255 255 / .4); }
+.ld-brief__zeile button {
+  flex: none; width: 48px; height: 48px; border-radius: 999px;
+  border: 0; background: var(--ld-aqua); color: #04262E; cursor: pointer;
+  display: grid; place-items: center;
+  transition: transform .2s var(--ld-weich);
+}
+.ld-brief__zeile button:hover { transform: translateX(2px); }
+.ld-brief__klein { margin-top: .6rem; font-size: .8125rem; color: rgb(255 255 255 / .45); }
+.ld-brief__ok { color: var(--ld-aqua-hell); }
+.ld-brief__fehler { margin-top: .5rem; font-size: .875rem; color: #FF9E9E; }
+
+.ld-fuss__gitter {
+  display: grid; gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  padding-block: clamp(2rem, 5vw, 3rem);
+  border-top: 1px solid var(--ld-linie-hell);
+}
+.ld-fuss__kopf { font-size: .8125rem; letter-spacing: .13em; text-transform: uppercase; color: rgb(255 255 255 / .45); margin-bottom: .85rem; }
+.ld-fuss__spalte li + li { margin-top: .5rem; }
+.ld-fuss__spalte a { color: rgb(255 255 255 / .82); text-decoration: none; font-size: .96875rem; }
+.ld-fuss__spalte a:hover { color: var(--ld-papier); text-decoration: underline; text-underline-offset: 3px; }
+
+.ld-fuss__unten {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem;
+  padding-top: 1.6rem; border-top: 1px solid var(--ld-linie-hell);
+}
+.ld-fuss__recht { font-size: .84375rem; color: rgb(255 255 255 / .45); }
+.ld-fuss__zahlen { display: flex; flex-wrap: wrap; gap: .35rem; }
+.ld-zahlzeichen { height: 22px; width: auto; border-radius: 3px; }
+
+
+/* ====================================================================
+   18 · PRODUKTSEITE
+   ==================================================================== */
+
+.ld-pdp { padding-block: clamp(1.6rem, 4vw, 3.4rem) clamp(3rem, 7vw, 5rem); }
+.ld-pdp__gitter { display: grid; gap: clamp(1.8rem, 4vw, 3.4rem); }
+@media (min-width: 1000px) { .ld-pdp__gitter { grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); align-items: start; } }
+
+/* --- Galerie --- */
+.ld-gal__gross { position: relative; display: grid; border-radius: var(--ld-rund-gross); overflow: hidden; background: var(--ld-sand); }
+.ld-gal__stueck { grid-area: 1 / 1; aspect-ratio: 1 / 1; }
+.ld-gal__stueck[data-versteckt] { visibility: hidden; opacity: 0; }
+.ld-gal__stueck img, .ld-gal__stueck video { width: 100%; height: 100%; object-fit: contain; }
+.ld-gal__stueck--leer { display: grid; place-items: center; color: var(--ld-grau-hell); }
+
+.ld-gal__lupe {
+  position: absolute; right: .8rem; bottom: .8rem; z-index: 3;
+  width: 40px; height: 40px; border-radius: 999px;
+  border: 1px solid var(--ld-linie);
+  background: rgb(255 255 255 / .9); color: var(--ld-tinte);
+  display: grid; place-items: center; cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+
+.ld-gal__streifen { display: flex; gap: .5rem; margin-top: .7rem; overflow-x: auto; scrollbar-width: none; }
+.ld-gal__streifen::-webkit-scrollbar { display: none; }
+.ld-gal__daumen {
+  position: relative; flex: none;
+  width: 66px; height: 66px; padding: 3px;
+  border: 1.5px solid var(--ld-linie); border-radius: 13px;
+  background: var(--ld-papier); cursor: pointer; overflow: hidden;
+}
+.ld-gal__daumen img { width: 100%; height: 100%; object-fit: contain; }
+.ld-gal__daumen[aria-pressed="true"] { border-color: var(--ld-tinte); border-width: 2px; }
+.ld-gal__spiel {
+  position: absolute; inset: auto 3px 3px auto;
+  width: 19px; height: 19px; border-radius: 999px;
+  background: rgb(7 9 11 / .72); color: #fff;
+  display: grid; place-items: center;
+}
+
+/* --- Kaufbereich --- */
+@media (min-width: 1000px) {
+  .ld-kauf__haft { position: sticky; top: calc(var(--ld-kopf-hoch) + 1.4rem); }
+}
+.ld-pdp__titel { font-size: clamp(1.7rem, 3.6vw, 2.6rem); line-height: 1.06; letter-spacing: -.032em; font-weight: 700; margin-bottom: .7rem; }
+.ld-pdp__preis { display: flex; flex-wrap: wrap; align-items: baseline; gap: .55rem; margin-bottom: 1.1rem; }
+.ld-pdp__preis b { font-size: 1.5rem; letter-spacing: -.025em; }
+.ld-pdp__preis s { color: var(--ld-grau-hell); }
+.ld-pdp__mwst { font-size: .84375rem; color: var(--ld-grau); }
+.ld-pdp__kurz { color: var(--ld-grau); max-width: 44ch; margin-bottom: 1.7rem; }
+
+.ld-wahl { margin-bottom: 1.5rem; }
+.ld-wahl__liste { display: flex; flex-wrap: wrap; gap: .5rem; }
+.ld-wahl__feld {
+  display: grid; place-items: center;
+  width: 62px; height: 62px; padding: 3px;
+  border: 1.5px solid var(--ld-linie); border-radius: 16px;
+  background: var(--ld-papier); cursor: pointer; overflow: hidden;
+  transition: border-color .18s ease, transform .18s var(--ld-weich);
+}
+.ld-wahl__feld img { width: 100%; height: 100%; object-fit: contain; }
+.ld-wahl__fleck { width: 26px; height: 26px; border-radius: 999px; background: var(--ld-nebel); }
+.ld-wahl__feld:hover { transform: translateY(-2px); }
+.ld-wahl input:checked + .ld-wahl__feld { border-color: var(--ld-tinte); border-width: 2px; }
+.ld-wahl input:focus-visible + .ld-wahl__feld { outline: 2px solid var(--ld-aqua); outline-offset: 3px; }
+.ld-wahl input:disabled + .ld-wahl__feld { opacity: .32; cursor: not-allowed; }
+/* Der Diagonalstrich zeigt "nicht lieferbar" auch ohne Farbe -
+   Ausgrauen allein waere fuer farbenblinde Augen zu wenig. */
+.ld-wahl input:disabled + .ld-wahl__feld::after {
+  content: ""; position: absolute;
+  width: 62px; height: 1.5px; background: var(--ld-grau);
+  transform: rotate(-45deg);
+}
+.ld-wahl__feld { position: relative; }
+
+.ld-menge { margin-bottom: 1.4rem; }
+.ld-menge__leiste {
+  display: inline-flex; align-items: center;
+  border: 1.5px solid var(--ld-linie); border-radius: 999px;
+  overflow: hidden;
+}
+.ld-menge__leiste button {
+  width: 46px; height: 46px; border: 0; background: none; cursor: pointer;
+  display: grid; place-items: center;
+  transition: background-color .18s ease;
+}
+.ld-menge__leiste button:hover { background: var(--ld-sand); }
+.ld-menge__leiste input {
+  width: 48px; height: 46px; border: 0; background: none;
+  text-align: center; font: inherit; font-weight: 650; font-size: 1rem;
+  -moz-appearance: textfield;
+}
+.ld-menge__leiste input::-webkit-outer-spin-button,
+.ld-menge__leiste input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.ld-menge__leiste--klein button { width: 36px; height: 36px; }
+.ld-menge__leiste--klein input { width: 38px; height: 36px; font-size: .9375rem; }
+
+.ld-kauf__fehler { margin-top: .7rem; color: #B4262B; font-size: .90625rem; }
+
+.ld-haken { display: grid; gap: .5rem; margin-top: 1.4rem; }
+.ld-haken li { display: flex; align-items: flex-start; gap: .55rem; font-size: .96875rem; color: var(--ld-tinte-weich); }
+.ld-haken svg { flex: none; margin-top: .28rem; color: var(--ld-aqua-tief); }
+
+.ld-kauf__zahlen { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: 1.4rem; padding-top: 1.2rem; border-top: 1px solid var(--ld-linie); }
+
+/* --- mitlaufende Leiste --- */
+.ld-leiste {
+  position: fixed; inset: auto 0 0; z-index: 95;
+  background: rgb(255 255 255 / .92);
+  backdrop-filter: saturate(180%) blur(18px);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  border-top: 1px solid var(--ld-linie);
+  padding: .6rem var(--ld-rand) calc(.6rem + env(safe-area-inset-bottom));
+  transform: translate3d(0, 110%, 0);
+  transition: transform .32s var(--ld-weich);
+}
+.ld-leiste[hidden] { display: none; }
+.ld-leiste.ist-da { transform: none; }
+.ld-leiste__innen { width: min(100%, var(--ld-max)); margin-inline: auto; display: flex; align-items: center; gap: .75rem; }
+.ld-leiste__innen img { width: 42px; height: 42px; border-radius: 10px; object-fit: contain; background: var(--ld-sand); flex: none; }
+.ld-leiste__wort { flex: 1 1 auto; min-width: 0; display: grid; }
+.ld-leiste__wort b { font-size: .90625rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ld-leiste__wort span { font-size: .8125rem; color: var(--ld-grau); }
+.ld-leiste__preis { font-weight: 700; flex: none; }
+@media (max-width: 560px) { .ld-leiste__wort { display: none; } .ld-leiste .ld-knopf { flex: 1 1 auto; } }
+
+/* --- Bildlupe --- */
+.ld-lupe {
+  position: fixed; inset: 0; z-index: 140;
+  background: rgb(7 9 11 / .94);
+  display: grid; place-items: center; padding: var(--ld-rand);
+  opacity: 0; transition: opacity .25s ease;
+}
+.ld-lupe[hidden] { display: none; }
+.ld-lupe.ist-auf { opacity: 1; }
+.ld-lupe img { max-width: 100%; max-height: 88svh; object-fit: contain; }
+.ld-lupe__zu {
+  position: absolute; top: 1rem; right: 1rem;
+  width: 46px; height: 46px; border-radius: 999px;
+  border: 1px solid var(--ld-linie-hell); background: rgb(255 255 255 / .08);
+  color: #fff; cursor: pointer; display: grid; place-items: center;
+}
+
+
+/* ====================================================================
+   19 · WARENKORB
+   ==================================================================== */
+
+.ld-korbseite { padding-block: clamp(2rem, 5vw, 3.5rem) clamp(3rem, 7vw, 5rem); }
+.ld-korbseite__leer { display: grid; gap: 1.2rem; justify-items: start; color: var(--ld-grau); }
+
+.ld-korbliste { border-top: 1px solid var(--ld-linie); }
+.ld-korbzeile {
+  display: grid; align-items: center; gap: .8rem 1rem;
+  grid-template-columns: 74px minmax(0, 1fr) auto;
+  grid-template-areas: "bild wort weg" "bild menge geld";
+  padding-block: 1.1rem;
+  border-bottom: 1px solid var(--ld-linie);
+}
+@media (min-width: 760px) {
+  .ld-korbzeile {
+    grid-template-columns: 100px minmax(0, 1fr) auto auto 40px;
+    grid-template-areas: "bild wort menge geld weg";
+  }
+}
+.ld-korbzeile__bild { grid-area: bild; }
+.ld-korbzeile__bild img { width: 100%; border-radius: var(--ld-rund); background: var(--ld-sand); }
+.ld-korbzeile__wort { grid-area: wort; display: grid; gap: .15rem; }
+.ld-korbzeile__wort a { text-decoration: none; }
+.ld-korbzeile__wort span { font-size: .875rem; color: var(--ld-grau); }
+.ld-korbzeile__rabatt { color: var(--ld-aqua-tief) !important; font-weight: 600; }
+.ld-korbzeile .ld-menge__leiste { grid-area: menge; justify-self: start; }
+.ld-korbzeile__geld { grid-area: geld; justify-self: end; display: grid; justify-items: end; }
+.ld-korbzeile__geld s { font-size: .8125rem; color: var(--ld-grau-hell); }
+.ld-korbzeile__weg { grid-area: weg; justify-self: end; color: var(--ld-grau); }
+
+.ld-korbfuss { margin-top: 1.8rem; margin-left: auto; max-width: 26rem; display: grid; gap: .7rem; }
+.ld-korbfuss__rabatte li { display: flex; justify-content: space-between; color: var(--ld-aqua-tief); font-size: .9375rem; }
+.ld-korbfuss__summe { display: flex; justify-content: space-between; align-items: baseline; font-size: 1.125rem; }
+.ld-korbfuss__summe b { font-size: 1.4rem; letter-spacing: -.025em; }
+.ld-korbfuss__hinweis { font-size: .84375rem; color: var(--ld-grau); }
+
+/* --- Korblade --- */
+.ld-lade { position: fixed; inset: 0; z-index: 130; }
+.ld-lade[hidden] { display: none; }
+.ld-lade__schatten {
+  position: absolute; inset: 0; background: rgb(7 9 11 / .5);
+  opacity: 0; transition: opacity .3s ease;
+}
+.ld-lade.ist-auf .ld-lade__schatten { opacity: 1; }
+.ld-lade__blatt {
+  position: absolute; inset: 0 0 0 auto;
+  width: min(100%, 27rem);
+  background: var(--ld-papier);
+  display: flex; flex-direction: column;
+  transform: translate3d(100%, 0, 0);
+  transition: transform .34s var(--ld-weich);
+}
+.ld-lade.ist-auf .ld-lade__blatt { transform: none; }
+.ld-lade__kopf {
+  flex: none; display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem var(--ld-rand); border-bottom: 1px solid var(--ld-linie);
+}
+.ld-lade__kopf h2 { font-size: 1.125rem; letter-spacing: -.02em; }
+.ld-lade__kopf button { width: 40px; height: 40px; border: 0; background: none; cursor: pointer; display: grid; place-items: center; }
+.ld-lade__leib { flex: 1 1 auto; overflow-y: auto; padding: .5rem var(--ld-rand); }
+.ld-lade__fuss { flex: none; padding: 1rem var(--ld-rand) calc(1rem + env(safe-area-inset-bottom)); border-top: 1px solid var(--ld-linie); display: grid; gap: .6rem; }
+.ld-lade__summe { display: flex; justify-content: space-between; align-items: baseline; }
+.ld-lade__summe b { font-size: 1.25rem; letter-spacing: -.02em; }
+.ld-lade__hinweis { font-size: .8125rem; color: var(--ld-grau); }
+.ld-lade__leer { padding: 2.5rem 0; text-align: center; color: var(--ld-grau); }
+
+.ld-ladezeile { display: grid; grid-template-columns: 62px minmax(0,1fr) auto; gap: .75rem; align-items: center; padding-block: .85rem; border-bottom: 1px solid var(--ld-linie); }
+.ld-ladezeile img { width: 62px; height: 62px; object-fit: contain; background: var(--ld-sand); border-radius: 10px; }
+.ld-ladezeile__wort { display: grid; gap: .1rem; min-width: 0; }
+.ld-ladezeile__wort b { font-size: .9375rem; }
+.ld-ladezeile__wort span { font-size: .8125rem; color: var(--ld-grau); }
+.ld-ladezeile__geld { font-weight: 650; font-size: .9375rem; }
+
+
+/* ====================================================================
+   20 · INHALTSSEITEN, SAMMLUNG, SUCHE, 404
+   ==================================================================== */
+
+.ld-seite { padding-block: clamp(1.6rem, 4vw, 3rem) clamp(3rem, 7vw, 5rem); }
+.ld-schild {
+  display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+  padding: clamp(1.6rem, 4vw, 2.6rem);
+  border-radius: var(--ld-rund-gross);
+  background: var(--ld-sand);
+  margin-bottom: clamp(1.8rem, 4vw, 2.8rem);
+  overflow: hidden;
+}
+.ld-schild__bild { flex: none; width: clamp(90px, 22vw, 160px); }
+.ld-schild__bild img { width: 100%; }
+.ld-schild__zeichen { flex: none; color: var(--ld-nebel); }
+.ld-schild__zeichen .ld-zeichen { width: 64px; height: 64px; color: var(--ld-aqua-hell); opacity: .5; }
+.ld-schild--still { background: var(--ld-papier); border: 1px solid var(--ld-linie); }
+
+.ld-seite__fragen { margin-top: clamp(2rem, 5vw, 3rem); }
+.ld-weiter { display: flex; flex-wrap: wrap; gap: .5rem 1.2rem; margin-top: clamp(2.4rem, 5vw, 3.4rem); padding-top: 1.4rem; border-top: 1px solid var(--ld-linie); }
+.ld-weiter a { font-size: .9375rem; color: var(--ld-grau); text-decoration: none; }
+.ld-weiter a:hover { color: var(--ld-tinte); text-decoration: underline; text-underline-offset: 3px; }
+
+.ld-samm { padding-block: clamp(2rem, 5vw, 3.5rem) clamp(3rem, 7vw, 5rem); }
+.ld-samm__gitter { display: grid; gap: 1.2rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); }
+.ld-samm__gitter a { text-decoration: none; display: grid; gap: .4rem; }
+.ld-samm__gitter img { border-radius: var(--ld-rund); background: var(--ld-sand); width: 100%; }
+.ld-samm__gitter span { color: var(--ld-grau); }
+
+.ld-suchfeld { display: flex; gap: .5rem; margin-bottom: 2rem; }
+.ld-suchfeld input {
+  flex: 1 1 auto; min-width: 0; height: 50px; padding: 0 1.1rem;
+  border: 1.5px solid var(--ld-linie); border-radius: 999px;
+  font: inherit; background: var(--ld-papier);
+}
+
+/* --- Kontaktseite --- */
+.ld-wege { display: grid; gap: .7rem; margin-block: clamp(1.8rem, 4vw, 2.6rem); }
+@media (min-width: 700px) { .ld-wege { grid-template-columns: 1fr 1fr; } }
+.ld-weg {
+  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: .2rem 1rem;
+  padding: 1.15rem 1.3rem;
+  border: 1px solid var(--ld-linie); border-radius: var(--ld-rund-gross);
+  text-decoration: none;
+  transition: border-color .2s ease, transform .2s var(--ld-weich);
+}
+.ld-weg:hover { border-color: var(--ld-tinte); transform: translateY(-2px); }
+.ld-weg b { font-size: 1.03125rem; letter-spacing: -.015em; }
+.ld-weg span { grid-column: 1; font-size: .90625rem; color: var(--ld-grau); }
+.ld-weg svg { grid-row: 1 / 3; color: var(--ld-grau-hell); }
+
+.ld-schreib { margin-top: clamp(2rem, 5vw, 3rem); }
+.ld-schreib h2 { font-size: clamp(1.4rem, 3vw, 2rem); letter-spacing: -.028em; margin-bottom: 1.2rem; }
+.ld-form { display: grid; gap: .9rem; }
+.ld-form__paar { display: grid; gap: .9rem; }
+@media (min-width: 560px) { .ld-form__paar { grid-template-columns: 1fr 1fr; } }
+.ld-feld { display: grid; gap: .35rem; }
+.ld-feld > span { font-size: .875rem; font-weight: 600; color: var(--ld-grau); }
+.ld-feld em { font-style: normal; font-weight: 400; color: var(--ld-grau-hell); }
+.ld-feld input, .ld-feld textarea {
+  width: 100%; padding: .85rem 1rem;
+  border: 1.5px solid var(--ld-linie); border-radius: var(--ld-rund);
+  background: var(--ld-papier); color: var(--ld-tinte);
+  font: inherit; font-size: 1rem;
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+.ld-feld input { min-height: 52px; }
+.ld-feld textarea { resize: vertical; min-height: 120px; line-height: 1.55; }
+.ld-feld input:focus, .ld-feld textarea:focus {
+  outline: none; border-color: var(--ld-tinte);
+  box-shadow: inset 0 0 0 1px var(--ld-tinte);
+}
+.ld-feld ::placeholder { color: var(--ld-grau-hell); }
+.ld-form__klein { font-size: .84375rem; color: var(--ld-grau); }
+.ld-form__klein a { color: var(--ld-aqua-tief); }
+.ld-meldung { padding: .9rem 1.1rem; border-radius: var(--ld-rund); background: var(--ld-sand); font-size: .96875rem; }
+.ld-meldung--fehler { background: #FDEDED; color: #8E2226; }
+
+.ld-leer { padding-block: clamp(4rem, 12vw, 8rem); text-align: center; }
+.ld-leer .ld-fuehrung { margin-inline: auto; }
+.ld-leer .ld-tasten { justify-content: center; }
+
+
+/* ====================================================================
+   21 · WENIGER BEWEGUNG, DRUCK
+
+   Wer im Betriebssystem "Bewegung reduzieren" gesetzt hat, meint das
+   ernst - haeufig wegen Schwindel oder Migraene. Dann steht alles
+   still. Wichtig: die Inhalte bleiben dabei SICHTBAR. Es wird nichts
+   ausgeblendet, nur das Gleiten faellt weg.
+   ==================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+  .ld-js [data-auf] { opacity: 1 !important; transform: none !important; }
+  .ld-js .ld-schritt { position: static; opacity: 1 !important; transform: none !important; }
+  .ld-js .ld-schritte { display: grid !important; gap: .3rem; }
+  .ld-js .ld-schritt { grid-area: auto !important; }
+  .ld-hero__buehne, .ld-ent__stueck, .ld-wasser__stueck,
+  .ld-streifen__film, .ld-streifen__bild { transform: none !important; }
+  .ld-wende__lage--frage, .ld-wende__lage--antwort { opacity: 1 !important; transform: none !important; }
+  .ld-wende, .ld-ent, .ld-wasser, .ld-streifen { height: auto !important; }
+  .ld-wende__halt, .ld-ent__halt, .ld-wasser__halt, .ld-streifen__halt { position: static !important; height: auto !important; }
+  .ld-wende__lage { grid-area: auto !important; }
+  .ld-streifen--maske .ld-streifen__fenster { width: 100% !important; height: 70svh !important; border-radius: 0 !important; }
+  .ld-hero__wink { display: none; }
+  .ld-tropfen, .ld-blasen { display: none; }
+}
+
+@media print {
+  .ld-kopf, .ld-leiste, .ld-lade, .ld-menue, .ld-hero__wink, .ld-gal__lupe { display: none !important; }
+  body { padding-top: 0; }
+  * { background: #fff !important; color: #000 !important; }
+}

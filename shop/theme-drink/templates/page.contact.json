@@ -1,0 +1,1 @@
+{ "sections": { "kontakt": { "type": "ld-kontakt", "settings": { "bild": "shopify://shop_images/ld-bank.jpg", "vorspann": "Hinter diesem Shop steht eine Person. Ich lese und beantworte jede Nachricht selbst, in der Regel innerhalb eines Werktags." } } }, "order": ["kontakt"] }

@@ -1,0 +1,133 @@
+{%- comment -%}
+  sections/ld-fuss.liquid — der Fuss
+
+  DIE RECHTLICHEN VERWEISE SIND NICHT VERHANDELBAR.
+  Impressum, Datenschutz, AGB und Widerruf stehen fest verdrahtet
+  im Code und nicht als loeschbare Bloecke. Ein Schweizer Shop, in
+  dem der Betreiber nicht auffindbar ist, hat ein Problem, das kein
+  Design ausgleicht. Sie stehen zusaetzlich zu den frei
+  konfigurierbaren Menues - wer sie doppelt haben will, kann sie im
+  Menue weglassen, nicht umgekehrt.
+
+  DER NEWSLETTER SAMMELT NUR, WENN SHOPIFY DAS AUCH TUT.
+  Das Formular ist Shopifys eigenes customer-Formular. Es gibt
+  keinen eigenen Datenweg an mir vorbei und kein Feld, das mehr
+  abfragt, als fuer eine E-Mail noetig ist.
+
+  KEINE ZAHLUNGSLOGOS, DIE NICHT FREIGESCHALTET SIND.
+  Die Liste kommt aus shop.enabled_payment_types. Wird TWINT
+  eingeschaltet, erscheint TWINT - ohne dass jemand ein Bild
+  hochlaedt. Wird etwas abgeschaltet, verschwindet es.
+{%- endcomment -%}
+
+<footer class="ld-fuss">
+  <div class="ld-breite">
+
+    <div class="ld-fuss__oben">
+
+      <div class="ld-fuss__marke">
+        <a class="ld-marke ld-marke--fuss" href="{{ routes.root_url }}">
+          {%- render 'ld-zeichen' -%}
+          <span class="ld-marke__wort">{{ settings.marke | default: shop.name }}</span>
+        </a>
+        {%- if section.settings.satz != blank -%}
+          <p class="ld-fuss__satz">{{ section.settings.satz }}</p>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} Newsletter {%- endcomment -%}
+      {%- if section.settings.brief_titel != blank -%}
+        <div class="ld-fuss__brief">
+          <p class="ld-fuss__brieftitel">{{ section.settings.brief_titel }}</p>
+          {%- form 'customer', class: 'ld-brief' -%}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            {%- if form.posted_successfully? -%}
+              <p class="ld-brief__ok">Danke – du bist eingetragen.</p>
+            {%- else -%}
+              <label class="ld-nur-lese" for="ld-brief-mail">E-Mail-Adresse</label>
+              <div class="ld-brief__zeile">
+                <input id="ld-brief-mail" type="email" name="contact[email]"
+                       placeholder="{{ section.settings.brief_platzhalter | default: 'deine@adresse.ch' }}"
+                       autocomplete="email" required>
+                <button type="submit" aria-label="Eintragen">
+                  <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+                </button>
+              </div>
+              {%- if form.errors -%}
+                <p class="ld-brief__fehler">{{ form.errors.messages.email }}</p>
+              {%- endif -%}
+              <p class="ld-brief__klein">Jederzeit abbestellbar. Kein Weiterverkauf deiner Adresse.</p>
+            {%- endif -%}
+          {%- endform -%}
+        </div>
+      {%- endif -%}
+
+    </div>
+
+    <div class="ld-fuss__gitter">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'spalte' -%}
+          <nav class="ld-fuss__spalte" {{ block.shopify_attributes }}>
+            <p class="ld-fuss__kopf">{{ block.settings.titel }}</p>
+            <ul role="list">
+              {%- for verweis in linklists[block.settings.menue].links -%}
+                <li><a href="{{ verweis.url }}">{{ verweis.title }}</a></li>
+              {%- endfor -%}
+            </ul>
+          </nav>
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- comment -%} Fest: die rechtlichen Seiten {%- endcomment -%}
+      <nav class="ld-fuss__spalte">
+        <p class="ld-fuss__kopf">Rechtliches</p>
+        <ul role="list">
+          <li><a href="/pages/letsdrink-impressum">Impressum</a></li>
+          <li><a href="/pages/letsdrink-datenschutz">Datenschutz</a></li>
+          <li><a href="/pages/letsdrink-agb">AGB</a></li>
+          <li><a href="/pages/letsdrink-widerruf">Widerruf</a></li>
+          <li><a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="ld-fuss__unten">
+      <p class="ld-fuss__recht">
+        © {{ 'now' | date: '%Y' }} {{ settings.marke | default: shop.name }}
+        {%- if settings.zeile_mwst != blank %} · {{ settings.zeile_mwst }}{% endif -%}
+      </p>
+
+      {%- if shop.enabled_payment_types.size > 0 -%}
+        <ul class="ld-fuss__zahlen" role="list" aria-label="Zahlungsarten">
+          {%- for art in shop.enabled_payment_types -%}
+            <li>{{ art | payment_type_svg_tag: class: 'ld-zahlzeichen' }}</li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Fuss",
+  "settings": [
+    { "type": "text", "id": "satz", "label": "Satz unter der Marke", "default": "Wasser für jedes Abenteuer." },
+    { "type": "header", "content": "Newsletter" },
+    { "type": "text", "id": "brief_titel", "label": "Titel", "default": "Join the Let'sDrink adventure." },
+    { "type": "text", "id": "brief_platzhalter", "label": "Platzhalter", "default": "deine@adresse.ch" }
+  ],
+  "blocks": [
+    {
+      "type": "spalte",
+      "name": "Menue-Spalte",
+      "settings": [
+        { "type": "text", "id": "titel", "label": "Ueberschrift", "default": "Shop" },
+        { "type": "link_list", "id": "menue", "label": "Menue" }
+      ]
+    }
+  ],
+  "max_blocks": 3
+}
+{% endschema %}

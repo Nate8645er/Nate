@@ -1,0 +1,17 @@
+{
+  "general": {
+    "meta": { "tags": "Schlagwort: {{ tags }}", "page": "Seite {{ page }}" },
+    "search": { "title": "Suche", "placeholder": "Wonach suchst du?", "submit": "Suchen" },
+    "404": { "title": "Diese Seite gibt es nicht.", "subtext": "Der Verweis ist vermutlich alt." }
+  },
+  "cart": {
+    "general": { "title": "Warenkorb", "empty": "Dein Warenkorb ist leer.", "subtotal": "Zwischensumme", "checkout": "Zur Kasse" }
+  },
+  "products": {
+    "product": { "add_to_cart": "In den Warenkorb", "sold_out": "Ausverkauft", "quantity": "Menge" }
+  },
+  "contact": {
+    "form": { "name": "Name", "email": "E-Mail", "message": "Deine Nachricht", "send": "Nachricht senden",
+              "post_success": "Danke – deine Nachricht ist angekommen." }
+  }
+}

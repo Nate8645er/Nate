@@ -1,0 +1,90 @@
+{%- comment -%}
+  sections/ld-wende.liquid — Problem, dann Loesung
+
+  ZWEI ZUSTAENDE IN EINER SEKTION, NICHT ZWEI SEKTIONEN.
+  Das Problem und die Antwort darauf gehoeren in dasselbe Bild.
+  Stuenden sie untereinander, muesste der Leser sie selbst
+  zusammenbringen. Hier haelt die Sektion sich fest (sticky), der
+  dunkle Zustand blendet aus, der helle blendet ein - der Wechsel
+  passiert an einer Stelle, waehrend der Leser stehen bleibt.
+
+  Gesteuert ueber --p (0 bis 1), das JS schreibt es beim Scrollen.
+  Ohne JS steht --p auf 0: dann sieht man den Problemzustand, und
+  darunter folgt die Loesung als normaler Abschnitt. Nichts ist
+  unsichtbar, nichts ist unlesbar.
+
+  KEINE ANGST ALS VERKAUFSMITTEL.
+  "Durstig unterwegs?" ist eine Frage, kein Drohbild. Es steht hier
+  nichts ueber Gesundheitsfolgen, Hitze oder Notfaelle - das waeren
+  Behauptungen ueber Tiere, die wir nicht belegen koennen.
+{%- endcomment -%}
+
+<section class="ld-wende" data-szene data-lang="2">
+  <div class="ld-wende__halt" data-szene-ziel>
+
+    {%- comment -%} Zustand 1: die Frage {%- endcomment -%}
+    <div class="ld-wende__lage ld-wende__lage--frage">
+      <div class="ld-breite">
+        <h2 class="ld-riese ld-riese--mittel">{{ section.settings.frage }}</h2>
+        <ul class="ld-orte">
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'ort' -%}
+              <li {{ block.shopify_attributes }}>{{ block.settings.wort }}</li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      </div>
+    </div>
+
+    {%- comment -%} Zustand 2: die Antwort {%- endcomment -%}
+    <div class="ld-wende__lage ld-wende__lage--antwort">
+      <div class="ld-breite">
+        {%- if section.settings.bild != blank -%}
+          <img class="ld-wende__bild"
+               src="{{ section.settings.bild | image_url: width: 900 }}"
+               alt="{{ section.settings.bild.alt | default: 'Die Trinkflasche mit angebautem Napf' | escape }}"
+               width="900" height="900" loading="lazy" decoding="async">
+        {%- endif -%}
+        <h2 class="ld-riese ld-riese--mittel">{{ section.settings.antwort }}</h2>
+        <p class="ld-fuehrung ld-fuehrung--dunkel">{{ section.settings.satz }}</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Problem und Loesung",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "frage", "label": "Frage", "default": "Durstig unterwegs?" },
+    { "type": "text", "id": "antwort", "label": "Antwort", "default": "Let'sDrink." },
+    { "type": "text", "id": "satz", "label": "Satz darunter", "default": "Frisches Wasser. Immer dabei." },
+    { "type": "image_picker", "id": "bild", "label": "Produktbild (freigestellt)" }
+  ],
+  "blocks": [
+    {
+      "type": "ort",
+      "name": "Ort",
+      "settings": [
+        { "type": "text", "id": "wort", "label": "Ort", "default": "Spaziergang" }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "Problem und Loesung",
+      "blocks": [
+        { "type": "ort", "settings": { "wort": "Spaziergang" } },
+        { "type": "ort", "settings": { "wort": "Wanderung" } },
+        { "type": "ort", "settings": { "wort": "Roadtrip" } },
+        { "type": "ort", "settings": { "wort": "Park" } },
+        { "type": "ort", "settings": { "wort": "Strand" } },
+        { "type": "ort", "settings": { "wort": "Camping" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

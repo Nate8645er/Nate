@@ -1,0 +1,21 @@
+<section class="ld-seite"><div class="ld-breite">
+  <header class="ld-kopfzeile"><h1 class="ld-riese ld-riese--mittel">Dein Konto</h1></header>
+  <p class="ld-fuehrung ld-fuehrung--dunkel">{{ customer.email }} · <a href="{{ routes.account_logout_url }}">Abmelden</a></p>
+  <h2 style="margin:2rem 0 1rem;font-size:1.3rem;letter-spacing:-.02em">Bestellungen</h2>
+  {%- if customer.orders.size > 0 -%}
+    <ul class="ld-korbliste" role="list">
+      {%- for bestellung in customer.orders -%}
+        <li class="ld-korbzeile" style="grid-template-columns:1fr auto;grid-template-areas:'wort geld'">
+          <div class="ld-korbzeile__wort">
+            <a href="{{ bestellung.customer_url }}"><b>{{ bestellung.name }}</b></a>
+            <span>{{ bestellung.created_at | date: '%d.%m.%Y' }} · {{ bestellung.financial_status_label }}</span>
+          </div>
+          <div class="ld-korbzeile__geld"><b>{{ bestellung.total_price | money }}</b></div>
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- else -%}
+    <p class="ld-leerzeile">Noch keine Bestellung.</p>
+  {%- endif -%}
+  <nav class="ld-weiter"><a href="{{ routes.account_addresses_url }}">Adressen</a><a href="{{ routes.root_url }}">Startseite</a></nav>
+</div></section>

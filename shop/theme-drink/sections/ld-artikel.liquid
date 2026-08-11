@@ -1,0 +1,19 @@
+{%- comment -%} sections/ld-artikel.liquid — einzelner Beitrag {%- endcomment -%}
+<section class="ld-seite">
+  <div class="ld-breite ld-breite--eng">
+    <header class="ld-kopfzeile" data-auf>
+      <p class="ld-auge">{{ article.published_at | date: '%d.%m.%Y' }}</p>
+      <h1 class="ld-riese ld-riese--mittel">{{ article.title }}</h1>
+    </header>
+    {%- if article.image != blank -%}
+      <img src="{{ article.image | image_url: width: 1400 }}" alt="{{ article.image.alt | escape }}"
+           width="1400" height="800" loading="eager" decoding="async"
+           style="border-radius:var(--ld-rund-gross);margin-bottom:2rem">
+    {%- endif -%}
+    <div class="ld-text" data-auf>{{ article.content }}</div>
+    <nav class="ld-weiter"><a href="{{ blog.url }}">Zurück zur Übersicht</a></nav>
+  </div>
+</section>
+{% schema %}
+{ "name": "Beitrag", "tag": "section", "settings": [], "presets": [{ "name": "Beitrag" }] }
+{% endschema %}

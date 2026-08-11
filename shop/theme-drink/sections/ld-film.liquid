@@ -1,0 +1,130 @@
+{%- comment -%}
+  sections/ld-film.liquid — Filmstreifen zwischen den Abschnitten
+
+  KEIN VIDEO IM RECHTECK.
+  Der Film startet als schmales Fenster in der Seitenmitte und
+  oeffnet sich beim Scrollen auf die volle Breite und Hoehe. Das
+  macht eine Maske: border-radius und die Breite haengen an --p.
+  Weil sich dabei nur zwei Werte aendern und kein Layout neu
+  gerechnet wird, laeuft es auch auf einem alten Handy sauber.
+
+  DREI GANGARTEN, EINE SEKTION.
+  "maske" - das Fenster oeffnet sich.
+  "nah"   - der Film faehrt langsam heran (Zoom hinein).
+  "weit"  - der Film faehrt langsam zurueck (Zoom heraus).
+  Mehr Varianten waeren nur mehr Regler, nicht mehr Wirkung.
+
+  DER TON BLEIBT AUS.
+  Ein Film, der ungefragt Ton macht, ist auf jeder Seite ein
+  Fehler. Wer Ton will, bekommt einen Knopf - der erscheint nur,
+  wenn der Haendler ihn ausdruecklich einschaltet.
+{%- endcomment -%}
+
+{%- liquid
+  assign f = section.settings.film
+  assign f_schmal = section.settings.film_schmal
+  assign f_url = section.settings.film_adresse | strip
+  assign hat = false
+  if f != blank or f_url != blank
+    assign hat = true
+  endif
+-%}
+
+<section class="ld-streifen ld-streifen--{{ section.settings.gangart }}"
+         data-szene data-lang="{% if section.settings.gangart == 'maske' %}2{% else %}1.6{% endif %}">
+  <div class="ld-streifen__halt">
+    <div class="ld-streifen__fenster" data-szene-ziel>
+
+      {%- if hat -%}
+        <video class="ld-streifen__film" data-film
+               playsinline muted loop preload="none"
+               {% if section.settings.bild != blank %}poster="{{ section.settings.bild | image_url: width: 1600 }}"{% endif %}
+               aria-hidden="true" tabindex="-1">
+          {%- if f_schmal != blank -%}
+            <source data-quelle="{{ f_schmal.sources[1].url | default: f_schmal.sources[0].url }}" media="(max-width: 900px)" type="video/mp4">
+          {%- endif -%}
+          {%- if f != blank -%}
+            <source data-quelle="{{ f.sources[1].url | default: f.sources[0].url }}" type="video/mp4">
+          {%- elsif f_url != blank -%}
+            <source data-quelle="{{ f_url }}" type="video/mp4">
+          {%- endif -%}
+        </video>
+      {%- endif -%}
+
+      {%- if section.settings.bild != blank -%}
+        <img class="ld-streifen__bild"
+             src="{{ section.settings.bild | image_url: width: 2000 }}"
+             srcset="{{ section.settings.bild | image_url: width: 1000 }} 1000w,
+                     {{ section.settings.bild | image_url: width: 2000 }} 2000w"
+             sizes="100vw"
+             alt="{{ section.settings.bild.alt | default: section.settings.titel | escape }}"
+             width="2000" height="1125" loading="lazy" decoding="async">
+      {%- endif -%}
+
+      {%- if section.settings.abdunkeln > 0 -%}
+        <div class="ld-streifen__schleier" style="--ld-dunkel:{{ section.settings.abdunkeln | divided_by: 100.0 }}" aria-hidden="true"></div>
+      {%- endif -%}
+
+      {%- if section.settings.titel != blank or section.settings.satz != blank -%}
+        <div class="ld-streifen__text">
+          <div class="ld-breite">
+            {%- if section.settings.auge != blank -%}
+              <p class="ld-auge ld-auge--hell" data-auf>{{ section.settings.auge }}</p>
+            {%- endif -%}
+            {%- if section.settings.titel != blank -%}
+              <h2 class="ld-riese ld-riese--mittel" data-auf>{{ section.settings.titel }}</h2>
+            {%- endif -%}
+            {%- if section.settings.satz != blank -%}
+              <p class="ld-fuehrung" data-auf>{{ section.settings.satz }}</p>
+            {%- endif -%}
+            {%- if section.settings.knopf_text != blank -%}
+              <div class="ld-tasten" data-auf>
+                <a class="ld-knopf ld-knopf--gross" href="{{ section.settings.knopf_ziel | default: routes.root_url }}">{{ section.settings.knopf_text }}</a>
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- if hat and section.settings.tonknopf -%}
+        <button class="ld-streifen__ton" type="button" data-ton aria-pressed="false">
+          <span class="ld-nur-lese">Ton einschalten</span>
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 9.5h3l4-3.5v12l-4-3.5H5Z"/><path d="M16.5 9a4 4 0 0 1 0 6" data-ton-an hidden/>
+            <path d="M16.5 9.5l4 5m0-5l-4 5" data-ton-aus/>
+          </svg>
+        </button>
+      {%- endif -%}
+
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Filmstreifen",
+  "tag": "section",
+  "settings": [
+    { "type": "select", "id": "gangart", "label": "Gangart",
+      "options": [
+        { "value": "maske", "label": "Fenster oeffnet sich" },
+        { "value": "nah", "label": "Langsam heran" },
+        { "value": "weit", "label": "Langsam zurueck" }
+      ], "default": "maske" },
+    { "type": "video", "id": "film", "label": "Film (breit)" },
+    { "type": "video", "id": "film_schmal", "label": "Film (Handy)" },
+    { "type": "text", "id": "film_adresse", "label": "Alternativ: Filmadresse (.mp4)" },
+    { "type": "image_picker", "id": "bild", "label": "Standbild" },
+    { "type": "range", "id": "abdunkeln", "label": "Abdunklung", "min": 0, "max": 80, "step": 5, "unit": "%", "default": 35 },
+    { "type": "checkbox", "id": "tonknopf", "label": "Tonknopf anzeigen", "default": false },
+
+    { "type": "header", "content": "Text" },
+    { "type": "text", "id": "auge", "label": "Kleine Zeile" },
+    { "type": "text", "id": "titel", "label": "Ueberschrift" },
+    { "type": "text", "id": "satz", "label": "Satz" },
+    { "type": "text", "id": "knopf_text", "label": "Knopf" },
+    { "type": "url", "id": "knopf_ziel", "label": "Ziel" }
+  ],
+  "presets": [{ "name": "Filmstreifen" }]
+}
+{% endschema %}

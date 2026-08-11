@@ -1,0 +1,46 @@
+{%- comment -%}
+  sections/ld-suche.liquid — Suche
+
+  Kein Vorschlagsfeld, keine Live-Suche: bei einem Produkt waere das
+  Zierrat. Ein Feld, eine Trefferliste, ein ehrlicher Leerzustand.
+{%- endcomment -%}
+
+<section class="ld-samm">
+  <div class="ld-breite ld-breite--eng">
+    <div class="ld-kopfzeile" data-auf>
+      <h1 class="ld-riese ld-riese--mittel">Suche</h1>
+    </div>
+
+    <form class="ld-suchfeld" action="{{ routes.search_url }}" method="get" role="search">
+      <label class="ld-nur-lese" for="ld-suche">Suchbegriff</label>
+      <input id="ld-suche" type="search" name="q" value="{{ search.terms | escape }}"
+             placeholder="Wonach suchst du?" autocomplete="off">
+      <button class="ld-knopf ld-knopf--klein" type="submit">Suchen</button>
+    </form>
+
+    {%- if search.performed -%}
+      {%- if search.results_count > 0 -%}
+        <p class="ld-leerzeile">{{ search.results_count }} Treffer</p>
+        <ul class="ld-samm__gitter" role="list">
+          {%- for treffer in search.results -%}
+            <li>
+              <a href="{{ treffer.url }}">
+                {%- if treffer.featured_image != blank -%}
+                  <img src="{{ treffer.featured_image | image_url: width: 700 }}" alt=""
+                       width="350" height="350" loading="lazy" decoding="async">
+                {%- endif -%}
+                <b>{{ treffer.title }}</b>
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- else -%}
+        <p class="ld-leerzeile">Nichts gefunden für &bdquo;{{ search.terms | escape }}&ldquo;.</p>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{ "name": "Suche", "tag": "section", "settings": [], "presets": [{ "name": "Suche" }] }
+{% endschema %}

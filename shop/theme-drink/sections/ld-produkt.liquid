@@ -1,0 +1,294 @@
+{%- comment -%}
+  sections/ld-produkt.liquid — die Produktseite, oberer Teil
+
+  WAS DIESE SEKTION MACHT UND WAS NICHT.
+  Sie macht den Kaufbereich: Galerie, Farbe, Menge, Knopf, und die
+  mitlaufende Leiste. Alles darunter - Anlaesse, Fragen, Stimmen,
+  Filmstreifen - sind eigene Sektionen und stehen in
+  templates/product.json. So kann der Haendler die Reihenfolge im
+  Theme-Editor aendern, ohne dass jemand Liquid anfasst.
+
+  DIE GALERIE IST EINE ECHTE GALERIE, KEIN KARUSSELL MIT AUTOPLAY.
+  Auf dem Handy schiebt man die Bilder mit dem Finger (scroll-snap),
+  ab Tablet steht ein grosses Bild mit Streifen daneben. Kein
+  Zeitgeber, der weiterspringt, waehrend man hinschaut.
+
+  DER PREIS IST DER PREIS, DEN MAN ZAHLT.
+  Ueberall {% render 'ld-preis' %} - siehe die Begruendung in dem
+  Schnipsel. Nirgends eine Zahl im Text.
+
+  DIE MITLAUFENDE LEISTE ERSCHEINT ERST, WENN DER ECHTE KNOPF WEG IST.
+  Sonst staenden zwei Kaufknoepfe gleichzeitig da und man wuesste
+  nicht, welcher gilt. Das JS beobachtet den Knopf im Formular; auf
+  dem Bildschirm ist immer genau einer aktiv.
+
+  OHNE JAVASCRIPT BLEIBT DIE SEITE KAUFBAR.
+  Das Formular ist ein normales Shopify-Produktformular. Ohne JS
+  laedt es die Warenkorbseite neu - langsamer, aber vollstaendig.
+  Die Farbwahl sind echte Radios mit Labels; ohne JS wird die
+  gewaehlte Variante trotzdem uebertragen.
+{%- endcomment -%}
+
+{%- liquid
+  assign p = product
+  assign v = p.selected_or_first_available_variant
+-%}
+
+<section class="ld-pdp" data-pdp
+         data-produkt='{{ p | json | escape }}'>
+  <div class="ld-breite">
+    <div class="ld-pdp__gitter">
+
+      {%- comment -%} ======================================= GALERIE {%- endcomment -%}
+      <div class="ld-gal">
+        <div class="ld-gal__gross" data-gal-gross>
+          {%- for medium in p.media -%}
+            <figure class="ld-gal__stueck"
+                    data-medium="{{ medium.id }}"
+                    data-fuer-variante="{{ medium.id }}"
+                    {% unless forloop.first %}data-versteckt="1"{% endunless %}>
+              {%- case medium.media_type -%}
+                {%- when 'video' -%}
+                  <video data-film playsinline muted loop preload="none"
+                         poster="{{ medium.preview_image | image_url: width: 1200 }}"
+                         aria-label="{{ medium.alt | default: p.title | escape }}">
+                    <source data-quelle="{{ medium.sources[1].url | default: medium.sources[0].url }}" type="video/mp4">
+                  </video>
+                {%- when 'external_video' -%}
+                  {{ medium | external_video_tag }}
+                {%- else -%}
+                  <img src="{{ medium.preview_image | image_url: width: 1200 }}"
+                       srcset="{{ medium.preview_image | image_url: width: 600 }} 600w,
+                               {{ medium.preview_image | image_url: width: 1200 }} 1200w,
+                               {{ medium.preview_image | image_url: width: 1800 }} 1800w"
+                       sizes="(min-width: 1000px) 46vw, 92vw"
+                       alt="{{ medium.alt | default: p.title | escape }}"
+                       width="1200" height="1200"
+                       {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %}
+                       decoding="async"
+                       data-lupe="{{ medium.preview_image | image_url: width: 2400 }}">
+              {%- endcase -%}
+            </figure>
+          {%- else -%}
+            <figure class="ld-gal__stueck ld-gal__stueck--leer">
+              <span>Noch kein Bild hinterlegt.</span>
+            </figure>
+          {%- endfor -%}
+
+          {%- if p.media.size > 0 -%}
+            <button class="ld-gal__lupe" type="button" data-lupe-auf aria-label="Bild vergrössern">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4M11 8.5v5M8.5 11h5"/>
+              </svg>
+            </button>
+          {%- endif -%}
+        </div>
+
+        {%- if p.media.size > 1 -%}
+          <ul class="ld-gal__streifen" role="list">
+            {%- for medium in p.media -%}
+              <li>
+                <button type="button" class="ld-gal__daumen"
+                        data-daumen="{{ medium.id }}"
+                        aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
+                        aria-label="Ansicht {{ forloop.index }}">
+                  <img src="{{ medium.preview_image | image_url: width: 200 }}"
+                       alt="" width="100" height="100" loading="lazy" decoding="async">
+                  {%- if medium.media_type == 'video' -%}
+                    <span class="ld-gal__spiel" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M8 5.5v13l11-6.5Z"/></svg>
+                    </span>
+                  {%- endif -%}
+                </button>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} ======================================== KAUFEN {%- endcomment -%}
+      <div class="ld-kauf">
+        <div class="ld-kauf__haft">
+
+          <p class="ld-auge">{{ settings.marke | default: shop.name }}</p>
+          <h1 class="ld-pdp__titel">{{ p.title }}</h1>
+
+          <p class="ld-pdp__preis">
+            <b data-preis>{% render 'ld-preis', roh: v.price %}</b>
+            {%- if v.compare_at_price > v.price -%}
+              <s data-alt>{{ v.compare_at_price | money }}</s>
+            {%- endif -%}
+            {%- if settings.zeile_mwst != blank -%}
+              <span class="ld-pdp__mwst">{{ settings.zeile_mwst }}</span>
+            {%- endif -%}
+          </p>
+
+          {%- if section.settings.kurz != blank -%}
+            <p class="ld-pdp__kurz">{{ section.settings.kurz }}</p>
+          {%- endif -%}
+
+          {%- form 'product', p, id: 'ld-kauf-form', class: 'ld-kauf__form', novalidate: 'novalidate' -%}
+            <input type="hidden" name="id" value="{{ v.id }}" data-variante-feld>
+
+            {%- comment -%}
+              FARBE.
+              Echte Radios in einem fieldset - Tastatur, Screenreader
+              und der Fall "kein JS" funktionieren damit von selbst.
+              Nicht lieferbare Farben werden ausgegraut und nicht
+              waehlbar; sie verschwinden nicht, sonst wundert sich
+              der Kunde, wo seine Farbe hin ist.
+            {%- endcomment -%}
+            {%- unless p.has_only_default_variant -%}
+              {%- for option in p.options_with_values -%}
+                <fieldset class="ld-wahl">
+                  <legend class="ld-etikett">
+                    {{ option.name }}
+                    <b data-wahl-name="{{ forloop.index }}">{{ option.selected_value }}</b>
+                  </legend>
+                  <ul class="ld-wahl__liste" role="list">
+                    {%- for wert in option.values -%}
+                      {%- assign kandidat = null -%}
+                      {%- for variante in p.variants -%}
+                        {%- if variante.option1 == wert -%}{%- assign kandidat = variante -%}{%- break -%}{%- endif -%}
+                      {%- endfor -%}
+                      <li>
+                        <input class="ld-nur-lese" type="radio"
+                               id="ld-o{{ forloop.parentloop.index }}-{{ forloop.index }}"
+                               name="option{{ forloop.parentloop.index }}"
+                               value="{{ wert | escape }}"
+                               data-option="{{ forloop.parentloop.index }}"
+                               {% if wert == option.selected_value %}checked{% endif %}
+                               {% unless kandidat.available %}disabled{% endunless %}>
+                        <label class="ld-wahl__feld" for="ld-o{{ forloop.parentloop.index }}-{{ forloop.index }}"
+                               title="{{ wert | escape }}">
+                          {%- if kandidat.image != blank -%}
+                            <img src="{{ kandidat.image | image_url: width: 140 }}" alt="" width="70" height="70" loading="lazy" decoding="async">
+                          {%- else -%}
+                            <span class="ld-wahl__fleck"></span>
+                          {%- endif -%}
+                          <span class="ld-nur-lese">{{ wert }}</span>
+                        </label>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                </fieldset>
+              {%- endfor -%}
+            {%- endunless -%}
+
+            {%- comment -%}
+              MENGE.
+              Die Knoepfe sind echte Knoepfe, das Feld ist ein
+              number-Feld: ohne JS tippt man die Zahl, mit JS
+              klickt man. Beides fuehrt zum selben Wert.
+            {%- endcomment -%}
+            <div class="ld-menge">
+              <span class="ld-etikett">Menge</span>
+              <div class="ld-menge__leiste">
+                <button type="button" data-menge="-1" aria-label="Eine weniger">
+                  <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg>
+                </button>
+                <input type="number" name="quantity" value="1" min="1" max="99" step="1"
+                       inputmode="numeric" aria-label="Menge" data-menge-feld>
+                <button type="button" data-menge="1" aria-label="Eine mehr">
+                  <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <button class="ld-knopf ld-knopf--voll ld-knopf--gross" type="submit" data-kaufknopf
+                    {% unless v.available %}disabled{% endunless %}>
+              <span data-kaufwort>{% if v.available %}In den Warenkorb{% else %}Ausverkauft{% endif %}</span>
+            </button>
+
+            <p class="ld-kauf__fehler" data-kauf-fehler hidden role="alert"></p>
+          {%- endform -%}
+
+          {%- comment -%}
+            Die Haken unter dem Knopf. Sie sind Bloecke, damit sie im
+            Theme-Editor stehen - aber jede Zeile muss dieselbe
+            Pruefung bestehen wie ueberall sonst: Anlass ja,
+            Produktangabe nein.
+          {%- endcomment -%}
+          {%- if section.blocks.size > 0 -%}
+            <ul class="ld-haken" role="list">
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'haken' -%}
+                  <li {{ block.shopify_attributes }}>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+                    {{ block.settings.zeile }}
+                  </li>
+                {%- endif -%}
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+
+          {%- if shop.enabled_payment_types.size > 0 -%}
+            <ul class="ld-kauf__zahlen" role="list" aria-label="Zahlungsarten">
+              {%- for art in shop.enabled_payment_types limit: 8 -%}
+                <li>{{ art | payment_type_svg_tag: class: 'ld-zahlzeichen' }}</li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  {%- comment -%} ================================== MITLAUFENDE LEISTE {%- endcomment -%}
+  <div class="ld-leiste" data-leiste hidden>
+    <div class="ld-leiste__innen">
+      {%- if p.featured_image != blank -%}
+        <img src="{{ p.featured_image | image_url: width: 120 }}" alt="" width="46" height="46" loading="lazy" decoding="async" data-leiste-bild>
+      {%- endif -%}
+      <div class="ld-leiste__wort">
+        <b>{{ p.title }}</b>
+        <span data-leiste-farbe>{{ v.option1 }}</span>
+      </div>
+      <span class="ld-leiste__preis" data-leiste-preis>{% render 'ld-preis', roh: v.price %}</span>
+      <button class="ld-knopf ld-knopf--klein" type="button" data-leiste-kaufen>In den Warenkorb</button>
+    </div>
+  </div>
+
+  {%- comment -%} ========================================== BILDLUPE {%- endcomment -%}
+  <div class="ld-lupe" data-lupe hidden>
+    <button class="ld-lupe__zu" type="button" data-lupe-zu aria-label="Schliessen">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <img data-lupe-bild alt="">
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Produkt kaufen",
+  "tag": "section",
+  "settings": [
+    { "type": "textarea", "id": "kurz", "label": "Kurzbeschreibung",
+      "default": "Napf und Flasche sind ein Teil. Knopf drücken, trinken lassen, aufrichten – der Rest läuft zurück." },
+    { "type": "paragraph", "content": "Preise, Farben und Bilder kommen aus dem Produkt in Shopify. Hier wird nichts hart eingetragen." }
+  ],
+  "blocks": [
+    {
+      "type": "haken",
+      "name": "Haken unter dem Knopf",
+      "settings": [
+        { "type": "text", "id": "zeile", "label": "Zeile", "default": "Für Hunde & Katzen" }
+      ]
+    }
+  ],
+  "max_blocks": 5,
+  "presets": [
+    {
+      "name": "Produkt kaufen",
+      "blocks": [
+        { "type": "haken", "settings": { "zeile": "Für Hunde & Katzen" } },
+        { "type": "haken", "settings": { "zeile": "Gratisversand in der Schweiz" } },
+        { "type": "haken", "settings": { "zeile": "14 Tage Rückgaberecht" } },
+        { "type": "haken", "settings": { "zeile": "Eine erreichbare Person, kein Callcenter" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

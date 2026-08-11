@@ -1,0 +1,198 @@
+{%- comment -%}
+  sections/ld-erkunden.liquid — das Produkt anfassen
+
+  DREHEN OHNE 36 EINZELBILDER.
+  Ein echter 360-Grad-Betrachter braucht pro Farbe drei Dutzend
+  Aufnahmen. Die gibt es nicht. Was es gibt, ist ein Dreh-Film.
+  Also wird beim Ziehen nicht ein Bild getauscht, sondern die
+  Abspielposition des Films verschoben - Finger nach rechts, Film
+  laeuft vor; Finger nach links, zurueck. Das Gefuehl ist dasselbe,
+  die Datenmenge ein Bruchteil, und es ist keine Behauptung im
+  Spiel: gezeigt wird genau das, was aufgenommen wurde.
+
+  Laeuft kein Film, dreht sich nichts - dann bleibt die Farbwahl,
+  und die Punkte am Produkt funktionieren weiter. Die Sektion
+  bricht nie auf ein leeres Feld zusammen.
+
+  DIE PUNKTE BENENNEN, SIE BEHAUPTEN NICHT.
+  "Napf", "Knopf", "Öse", "Flasche" - das sind Bezeichnungen fuer
+  sichtbare Teile. Was wir nicht wissen (Masse, Material, Gewicht),
+  steht hier nicht und darf hier auch spaeter nicht hinein.
+
+  ZUGAENGLICH BLEIBT ES AUCH.
+  Die Punkte sind echte Knoepfe: mit der Tabulatortaste erreichbar,
+  mit Leertaste ausloesbar, und der Text erscheint in einer Region
+  mit aria-live, damit ein Screenreader die Aenderung mitbekommt.
+{%- endcomment -%}
+
+{%- liquid
+  assign gp = all_products[settings.produkt_griff]
+  assign gv = gp.selected_or_first_available_variant
+  assign erk_url = section.settings.film_adresse | strip
+  assign erk_hat = false
+  if section.settings.film != blank or erk_url != blank
+    assign erk_hat = true
+  endif
+-%}
+
+<section class="ld-erk" data-erkunden>
+  <div class="ld-breite">
+
+    <div class="ld-kopfzeile" data-auf>
+      {%- if section.settings.auge != blank -%}<p class="ld-auge">{{ section.settings.auge }}</p>{%- endif -%}
+      <h2 class="ld-riese ld-riese--mittel">{{ section.settings.titel }}</h2>
+    </div>
+
+    <div class="ld-erk__gitter">
+
+      {%- comment -%} ---------------------------------- die Buehne {%- endcomment -%}
+      <div class="ld-erk__buehne">
+        <div class="ld-erk__rahmen"
+             data-dreh
+             {% if erk_hat %}data-drehbar="1"{% endif %}
+             role="group" aria-label="Produktansicht">
+
+          {%- if erk_hat -%}
+            <video class="ld-erk__film" data-dreh-film
+                   playsinline muted preload="none"
+                   {% if section.settings.bild != blank %}poster="{{ section.settings.bild | image_url: width: 900 }}"{% endif %}>
+              <source data-quelle="{% if section.settings.film != blank %}{{ section.settings.film.sources[1].url | default: section.settings.film.sources[0].url }}{% else %}{{ erk_url }}{% endif %}" type="video/mp4">
+            </video>
+          {%- endif -%}
+
+          {%- comment -%}
+            Die Farbbilder liegen uebereinander; sichtbar ist immer
+            genau eines. Sie kommen aus den Produktbildern in
+            Shopify, damit eine neue Farbe im Konto genuegt.
+          {%- endcomment -%}
+          {%- if gp != empty -%}
+            {%- for variante in gp.variants -%}
+              {%- if variante.image != blank -%}
+                <img class="ld-erk__farbbild"
+                     data-farbbild="{{ variante.id }}"
+                     src="{{ variante.image | image_url: width: 900 }}"
+                     alt="{{ gp.title }} in {{ variante.option1 }}"
+                     width="900" height="900" loading="lazy" decoding="async"
+                     {% unless variante.id == gv.id %}hidden{% endunless %}>
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
+
+          {%- comment -%} Die Punkte am Produkt {%- endcomment -%}
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'punkt' -%}
+              <button class="ld-punkt" type="button"
+                      data-punkt="{{ forloop.index0 }}"
+                      aria-pressed="false"
+                      style="--x:{{ block.settings.x }}%;--y:{{ block.settings.y }}%"
+                      {{ block.shopify_attributes }}>
+                <span class="ld-punkt__ring" aria-hidden="true"></span>
+                <span class="ld-nur-lese">{{ block.settings.titel }}</span>
+              </button>
+            {%- endif -%}
+          {%- endfor -%}
+
+          {%- if erk_hat -%}
+            <p class="ld-erk__wink" aria-hidden="true">Ziehen zum Drehen</p>
+          {%- endif -%}
+        </div>
+      </div>
+
+      {%- comment -%} ------------------------------------ die Seite {%- endcomment -%}
+      <div class="ld-erk__seite">
+
+        {%- comment -%}
+          Farbwahl. Ohne Produkt im Konto faellt der ganze Block
+          weg - lieber keine Farbe als sechs erfundene.
+        {%- endcomment -%}
+        {%- if gp != empty and gp.variants.size > 1 -%}
+          <div class="ld-erk__farben">
+            <p class="ld-etikett">Farbe</p>
+            <ul class="ld-farbliste" role="list">
+              {%- for variante in gp.variants -%}
+                <li>
+                  <button class="ld-farbe" type="button"
+                          data-farbe="{{ variante.id }}"
+                          data-name="{{ variante.option1 | escape }}"
+                          {% unless variante.available %}data-weg="1"{% endunless %}
+                          aria-pressed="{% if variante.id == gv.id %}true{% else %}false{% endif %}"
+                          title="{{ variante.option1 | escape }}">
+                    {%- if variante.image != blank -%}
+                      <img src="{{ variante.image | image_url: width: 120 }}" alt="" width="60" height="60" loading="lazy" decoding="async">
+                    {%- else -%}
+                      <span class="ld-farbe__fleck" style="background:{{ variante.option1 | handle }}"></span>
+                    {%- endif -%}
+                    <span class="ld-nur-lese">{{ variante.option1 }}</span>
+                  </button>
+                </li>
+              {%- endfor -%}
+            </ul>
+            <p class="ld-erk__farbname" data-farbname>{{ gv.option1 }}</p>
+          </div>
+        {%- endif -%}
+
+        {%- comment -%}
+          Der Erklaertext zum gewaehlten Punkt. Startzustand ist
+          der erste Punkt - nie ein leeres Feld.
+        {%- endcomment -%}
+        <div class="ld-erk__tafel" aria-live="polite">
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'punkt' -%}
+              <div class="ld-tafel" data-tafel="{{ forloop.index0 }}"{% unless forloop.first %} hidden{% endunless %}>
+                <h3>{{ block.settings.titel }}</h3>
+                <p>{{ block.settings.text }}</p>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+
+        {%- if gp != empty and gv != blank -%}
+          <a class="ld-knopf ld-knopf--gross" href="{{ gp.url }}">
+            {{ section.settings.knopf | default: 'Zum Produkt' }} · {% render 'ld-preis', roh: gv.price %}
+          </a>
+        {%- endif -%}
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Produkt erkunden",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "auge", "label": "Kleine Zeile", "default": "Aus der Nähe" },
+    { "type": "text", "id": "titel", "label": "Ueberschrift", "default": "Dreh sie um. Sieh dir alles an." },
+    { "type": "video", "id": "film", "label": "Dreh-Film", "info": "Ziehen scrubbt durch diesen Film. Ohne Film bleibt die Farbwahl." },
+    { "type": "text", "id": "film_adresse", "label": "Alternativ: Filmadresse (.mp4)" },
+    { "type": "image_picker", "id": "bild", "label": "Standbild" },
+    { "type": "text", "id": "knopf", "label": "Knopfaufschrift", "default": "Zum Produkt" }
+  ],
+  "blocks": [
+    {
+      "type": "punkt",
+      "name": "Punkt am Produkt",
+      "settings": [
+        { "type": "text", "id": "titel", "label": "Titel", "default": "Der Napf" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "Er ist fest angebaut. Nichts zum Abschrauben, nichts, was verloren geht." },
+        { "type": "range", "id": "x", "label": "Position von links", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 50 },
+        { "type": "range", "id": "y", "label": "Position von oben", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 30 }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Produkt erkunden",
+      "blocks": [
+        { "type": "punkt", "settings": { "titel": "Der Napf", "text": "Fest angebaut. Nichts zum Abschrauben, nichts, was im Auto liegen bleibt.", "x": 50, "y": 24 } },
+        { "type": "punkt", "settings": { "titel": "Der Knopf", "text": "Drücken – das Wasser läuft in den Napf. Aufrichten – der Rest läuft zurück.", "x": 50, "y": 46 } },
+        { "type": "punkt", "settings": { "titel": "Die Öse", "text": "Oben am Napf. Für ein Band oder einen Karabiner am Rucksack.", "x": 57, "y": 9 } },
+        { "type": "punkt", "settings": { "titel": "Die Flasche", "text": "550 ml. Nur Wasser – nichts anderes kommt hinein.", "x": 50, "y": 74 } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,120 @@
+{%- comment -%}
+  sections/ld-vorteile.liquid — wofuer sie gedacht ist
+
+  WAS HIER STEHEN DARF UND WAS NICHT.
+  Jede Zeile hier beschreibt einen ANLASS, keine Eigenschaft. Der
+  Unterschied ist der ganze Punkt: "Für Reisen" ist eine Aussage
+  ueber die Verwendung und damit belegbar. "Auslaufsicher",
+  "spülmaschinenfest", "BPA-frei", eine Masse oder ein Gewicht
+  waeren Aussagen ueber das Produkt - und die haben wir vom
+  Lieferanten nicht schriftlich. Solche Zeilen gehoeren nicht in
+  diese Sektion, auch nicht spaeter, auch nicht "nur kurz".
+
+  DIE ZEICHEN SIND PFADE, KEINE EMOJIS.
+  Ein Emoji sieht auf jedem Geraet anders aus und faerbt sich nicht
+  mit. Diese Zeichen nehmen die Textfarbe an und sitzen auf allen
+  Bildschirmen gleich.
+{%- endcomment -%}
+
+<section class="ld-vor">
+  <div class="ld-breite">
+
+    <div class="ld-kopfzeile ld-kopfzeile--mitte" data-auf>
+      {%- if section.settings.auge != blank -%}<p class="ld-auge">{{ section.settings.auge }}</p>{%- endif -%}
+      <h2 class="ld-riese ld-riese--mittel">{{ section.settings.titel }}</h2>
+    </div>
+
+    <ul class="ld-vor__gitter" role="list">
+      {%- for block in section.blocks -%}
+        <li class="ld-vor__feld" data-auf="klein" style="--nr:{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+          <span class="ld-vor__zeichen" aria-hidden="true">
+            {%- case block.settings.zeichen -%}
+              {%- when 'hund' -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4.5 8.5 6 4l3.2 2.4h5.6L18 4l1.5 4.5v5.2c0 3.2-2.6 5.8-5.8 5.8h-3.4A5.8 5.8 0 0 1 4.5 13.7Z"/>
+                  <path d="M9.6 12.2h.01M14.4 12.2h.01"/><path d="M12 15.2a1.6 1.6 0 0 1-1.4-.8"/>
+                </svg>
+              {%- when 'katze' -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4.8 10 4 4.4l4.2 2.8h7.6L20 4.4 19.2 10v3.6A5.6 5.6 0 0 1 13.6 19h-3.2A5.6 5.6 0 0 1 4.8 13.6Z"/>
+                  <path d="M9.4 11.6h.01M14.6 11.6h.01"/><path d="M12 14v1.2"/><path d="M8.4 15.2h2.2M13.4 15.2h2.2"/>
+                </svg>
+              {%- when 'tropfen' -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 3.2c3.6 4.3 6 7.7 6 10.8A6 6 0 0 1 6 14c0-3.1 2.4-6.5 6-10.8Z"/>
+                  <path d="M9.6 14.4a2.4 2.4 0 0 0 2.4 2.4"/>
+                </svg>
+              {%- when 'rucksack' -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 9.5A4.5 4.5 0 0 1 10.5 5h3A4.5 4.5 0 0 1 18 9.5V19a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1Z"/>
+                  <path d="M9.5 5V3.8A1.8 1.8 0 0 1 11.3 2h1.4a1.8 1.8 0 0 1 1.8 1.8V5"/>
+                  <path d="M9 13.5h6"/>
+                </svg>
+              {%- when 'auto' -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3.5 15.5v-2.2l2-4.6A2 2 0 0 1 7.3 7.5h9.4a2 2 0 0 1 1.8 1.2l2 4.6v2.2"/>
+                  <path d="M3.5 15.5h17M6.5 15.5v2M17.5 15.5v2"/><path d="M6.6 12.4h10.8"/>
+                </svg>
+              {%- when 'berg' -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2.5 19.5 9 7l4 7 2.2-3.6 6.3 9.1Z"/><path d="M7.2 10.4h3.6"/>
+                </svg>
+              {%- else -%}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="8.5"/><path d="M8.6 12.2l2.4 2.4 4.4-4.8"/>
+                </svg>
+            {%- endcase -%}
+          </span>
+          <b>{{ block.settings.titel }}</b>
+          {%- if block.settings.text != blank -%}<span>{{ block.settings.text }}</span>{%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Wofuer sie gedacht ist",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "auge", "label": "Kleine Zeile", "default": "Gemacht für" },
+    { "type": "text", "id": "titel", "label": "Ueberschrift", "default": "Hund, Katze und alles dazwischen." }
+  ],
+  "blocks": [
+    {
+      "type": "punkt",
+      "name": "Punkt",
+      "settings": [
+        { "type": "select", "id": "zeichen", "label": "Zeichen",
+          "options": [
+            { "value": "hund", "label": "Hund" },
+            { "value": "katze", "label": "Katze" },
+            { "value": "tropfen", "label": "Tropfen" },
+            { "value": "rucksack", "label": "Rucksack" },
+            { "value": "auto", "label": "Auto" },
+            { "value": "berg", "label": "Berg" },
+            { "value": "haken", "label": "Haken" }
+          ], "default": "tropfen" },
+        { "type": "text", "id": "titel", "label": "Titel", "default": "Für Hunde" },
+        { "type": "text", "id": "text", "label": "Zeile darunter" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Wofuer sie gedacht ist",
+      "blocks": [
+        { "type": "punkt", "settings": { "zeichen": "hund", "titel": "Für Hunde", "text": "Der Napf ist offen, sie trinkt daraus wie aus einer Schale." } },
+        { "type": "punkt", "settings": { "zeichen": "katze", "titel": "Für Katzen", "text": "Derselbe Napf, dieselbe Handbewegung." } },
+        { "type": "punkt", "settings": { "zeichen": "tropfen", "titel": "Nur Wasser", "text": "Kein Futter, keine Milch, keine Brühe." } },
+        { "type": "punkt", "settings": { "zeichen": "rucksack", "titel": "Einfach mitnehmen", "text": "Oben am Napf ist eine Öse für ein Band." } },
+        { "type": "punkt", "settings": { "zeichen": "auto", "titel": "Für Reisen", "text": "Auto, Bahn, Ferienwohnung – dieselbe Flasche." } },
+        { "type": "punkt", "settings": { "zeichen": "berg", "titel": "Für Abenteuer", "text": "Wanderung, Strand, Camping." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

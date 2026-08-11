@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}" class="ld-html">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07090B">
+  <link rel="canonical" href="{{ canonical_url }}">
+  {%- if settings.favicon != blank -%}
+    <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 64 }}">
+  {%- endif -%}
+
+  <title>{{ page_title }}{% if current_tags %} &ndash; {{ current_tags | join: ', ' }}{% endif %}{% unless page_title contains shop.name %} &middot; {{ settings.marke | default: shop.name }}{% endunless %}</title>
+  {%- if page_description -%}<meta name="description" content="{{ page_description | escape }}">{%- endif -%}
+
+  {%- comment -%}
+    DER TYPOGRAFIE-STACK IST BEWUSST SYSTEMNAH.
+
+    Ein Webfont vom fremden Server kostet zwei Netzverbindungen und
+    einen Textsprung, bevor die erste Zeile steht. Diese Seite lebt
+    vom ersten Eindruck - der darf nicht auf eine Schriftdatei warten.
+    Die Wirkung entsteht hier ueber Groesse, Laufweite und Weissraum,
+    nicht ueber eine exotische Schrift.
+  {%- endcomment -%}
+
+  <link rel="preload" as="style" href="{{ 'ld.css' | asset_url }}">
+  <link rel="stylesheet" href="{{ 'ld.css' | asset_url }}">
+
+  {%- comment -%}
+    KEIN BLITZ VOR DEM FILM.
+    Der Kopf liegt spaeter transparent ueber dem Hero. Damit die Seite
+    nicht eine Zehntelsekunde weiss aufblitzt, bevor das CSS greift,
+    steht die Grundfarbe schon hier.
+  {%- endcomment -%}
+  <style>html{background:#07090B}body{margin:0}</style>
+
+  {%- comment -%}
+    DIESE ZWEI ZEILEN MUESSEN HIER OBEN STEHEN, NICHT IN ld.js.
+
+    Das CSS versteckt alles, was hereingleiten soll - aber nur hinter
+    der Klasse .ld-js. Wuerde diese Klasse erst von der (verzoegerten)
+    Skriptdatei gesetzt, waere der Inhalt einen Wimpernschlag lang
+    sichtbar und wuerde dann verschwinden, um wieder aufzutauchen.
+    Genau dieses Zucken kennt man von schlecht gebauten Seiten.
+
+    Umgekehrt gilt: bleibt JavaScript aus, kommt die Klasse nie, und
+    das CSS versteckt nichts. Die Seite ist dann vollstaendig da.
+  {%- endcomment -%}
+  <script>
+    document.documentElement.className += " ld-js";
+    window.LD = {
+      korbUrl: "{{ routes.cart_url }}.js",
+      geldform: {{ shop.money_format | json }},
+      {%- comment -%}
+        Derselbe Faktor wie in snippets/ld-preis.liquid. Er steht
+        hier, damit die Produktseite beim Farbwechsel denselben
+        Preis rechnet wie Liquid beim ersten Aufbau - und damit es
+        weiterhin nur EINE Stelle gibt, an der die Zahl steht.
+      {%- endcomment -%}
+      rabattFaktor: 0.95
+    };
+  </script>
+
+  {{ content_for_header }}
+</head>
+
+<body class="ld-korpus template-{{ template.name | handle }}">
+
+  <a class="ld-sprung" href="#inhalt">Zum Inhalt springen</a>
+
+  {%- comment -%} ================================================== KOPF {%- endcomment -%}
+  {%- comment -%}
+    Der Kopf liegt ueber dem Hero und ist dort durchsichtig. Sobald
+    man scrollt, legt sich Glas darunter. Das macht das JS ueber die
+    Klasse .ist-fest - ohne JS bleibt er lesbar, weil die Schrift im
+    Hero ohnehin hell auf dunkel steht.
+  {%- endcomment -%}
+  <header class="ld-kopf" data-kopf>
+    <div class="ld-kopf__innen">
+
+      <a class="ld-marke" href="{{ routes.root_url }}" aria-label="{{ settings.marke | default: shop.name }} Startseite">
+        {%- render 'ld-zeichen' -%}
+        <span class="ld-marke__wort">{{ settings.marke | default: shop.name }}</span>
+      </a>
+
+      <nav class="ld-nav" aria-label="Hauptmenue">
+        {%- for verweis in linklists[settings.menue_haupt].links limit: 5 -%}
+          <a class="ld-nav__link" href="{{ verweis.url }}"{% if verweis.active %} aria-current="page"{% endif %}>{{ verweis.title }}</a>
+        {%- else -%}
+          <a class="ld-nav__link" href="{{ routes.root_url }}">Start</a>
+          <a class="ld-nav__link" href="/pages/haeufige-fragen">Fragen</a>
+          <a class="ld-nav__link" href="/pages/contact">Kontakt</a>
+        {%- endfor -%}
+      </nav>
+
+      <div class="ld-kopf__rechts">
+        {%- comment -%}
+          Der Kaufweg im Kopf zeigt den Preis. Er kommt aus Liquid,
+          nie aus einer Einstellung und nie aus dem Text - sonst
+          steht irgendwann eine Zahl da, die niemand mehr pflegt.
+        {%- endcomment -%}
+        {%- assign kp = all_products[settings.produkt_griff] -%}
+        {%- if kp != empty and kp.available -%}
+          <a class="ld-knopf ld-knopf--klein ld-nur-breit" href="{{ kp.url }}">
+            Kaufen · {% render 'ld-preis', roh: kp.price %}
+          </a>
+        {%- endif -%}
+
+        <a class="ld-korbknopf" href="{{ routes.cart_url }}" data-korb-auf aria-label="Warenkorb">
+          <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4.5 7h15l-1.2 11.2a2 2 0 0 1-2 1.8H7.7a2 2 0 0 1-2-1.8L4.5 7Z"/>
+            <path d="M9 7V5.6a3 3 0 0 1 6 0V7"/>
+          </svg>
+          <span class="ld-korbknopf__zahl" data-korb-zahl{% if cart.item_count == 0 %} hidden{% endif %}>{{ cart.item_count }}</span>
+        </a>
+
+        <button class="ld-burger" type="button" data-menue-auf aria-expanded="false" aria-controls="ld-menue" aria-label="Menue oeffnen">
+          <span></span><span></span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  {%- comment -%} =========================================== MOBILMENUE {%- endcomment -%}
+  <div class="ld-menue" id="ld-menue" data-menue hidden>
+    <div class="ld-menue__kopf">
+      <span class="ld-marke__wort">{{ settings.marke | default: shop.name }}</span>
+      <button class="ld-menue__zu" type="button" data-menue-zu aria-label="Menue schliessen">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="ld-menue__liste" aria-label="Menue">
+      {%- for verweis in linklists[settings.menue_haupt].links -%}
+        <a href="{{ verweis.url }}"><span>{{ verweis.title }}</span>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+        </a>
+      {%- else -%}
+        <a href="{{ routes.root_url }}"><span>Start</span>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
+        <a href="/pages/haeufige-fragen"><span>Fragen</span>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
+        <a href="/pages/contact"><span>Kontakt</span>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
+      {%- endfor -%}
+    </nav>
+
+    {%- if kp != empty and kp.available -%}
+      <div class="ld-menue__fuss">
+        <a class="ld-knopf ld-knopf--voll" href="{{ kp.url }}">Kaufen · {% render 'ld-preis', roh: kp.price %}</a>
+      </div>
+    {%- endif -%}
+  </div>
+
+  <main id="inhalt">
+    {{ content_for_layout }}
+  </main>
+
+  {%- section 'ld-fuss' -%}
+
+  {%- comment -%} ============================================ KORBLADE {%- endcomment -%}
+  {%- comment -%}
+    Die Lade wird vom JS mit Inhalt gefuellt. Ohne JS wird der Knopf
+    oben zu einem normalen Verweis auf /cart - deshalb ist er ein
+    <a> und kein <button>.
+  {%- endcomment -%}
+  <div class="ld-lade" data-lade hidden>
+    <div class="ld-lade__schatten" data-lade-zu></div>
+    <aside class="ld-lade__blatt" role="dialog" aria-modal="true" aria-label="Warenkorb">
+      <div class="ld-lade__kopf">
+        <h2>Warenkorb</h2>
+        <button type="button" data-lade-zu aria-label="Warenkorb schliessen">
+          <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="ld-lade__leib" data-lade-leib></div>
+      <div class="ld-lade__fuss" data-lade-fuss hidden>
+        <div class="ld-lade__summe">
+          <span>Zwischensumme</span>
+          <b data-lade-summe></b>
+        </div>
+        <p class="ld-lade__hinweis">Versandkosten und Rabatte erscheinen an der Kasse.</p>
+        <a class="ld-knopf ld-knopf--voll" href="{{ routes.cart_url }}">Zur Kasse</a>
+      </div>
+    </aside>
+  </div>
+
+  <script src="{{ 'ld.js' | asset_url }}" defer></script>
+</body>
+</html>

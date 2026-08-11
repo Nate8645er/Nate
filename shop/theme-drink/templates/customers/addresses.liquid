@@ -1,0 +1,24 @@
+<section class="ld-seite"><div class="ld-breite ld-breite--eng">
+  <header class="ld-kopfzeile"><h1 class="ld-riese ld-riese--mittel">Adressen</h1></header>
+  {%- paginate customer.addresses by 6 -%}
+    {%- for adresse in customer.addresses -%}
+      <div class="ld-weg" style="display:block;margin-bottom:.7rem">{{ adresse | format_address }}</div>
+    {%- else -%}
+      <p class="ld-leerzeile">Noch keine Adresse hinterlegt.</p>
+    {%- endfor -%}
+  {%- endpaginate -%}
+  {%- form 'customer_address', customer.new_address, class: 'ld-form' -%}
+    <div class="ld-form__paar">
+      <label class="ld-feld"><span>Vorname</span><input type="text" name="address[first_name]" autocomplete="given-name"></label>
+      <label class="ld-feld"><span>Nachname</span><input type="text" name="address[last_name]" autocomplete="family-name"></label>
+    </div>
+    <label class="ld-feld"><span>Strasse</span><input type="text" name="address[address1]" autocomplete="address-line1"></label>
+    <div class="ld-form__paar">
+      <label class="ld-feld"><span>PLZ</span><input type="text" name="address[zip]" autocomplete="postal-code"></label>
+      <label class="ld-feld"><span>Ort</span><input type="text" name="address[city]" autocomplete="address-level2"></label>
+    </div>
+    <label class="ld-feld"><span>Land</span><input type="text" name="address[country]" autocomplete="country-name" value="Schweiz"></label>
+    <button class="ld-knopf ld-knopf--gross" type="submit">Adresse speichern</button>
+  {%- endform -%}
+  <nav class="ld-weiter"><a href="{{ routes.account_url }}">Zurück zum Konto</a></nav>
+</div></section>

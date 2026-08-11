@@ -1,0 +1,1 @@
+{ "sections": { "blog": { "type": "ld-blog", "settings": {} } }, "order": ["blog"] }

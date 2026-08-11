@@ -1,0 +1,121 @@
+{%- comment -%}
+  sections/ld-stimmen.liquid — Platz fuer echte Stimmen
+
+  HIER STEHT NICHTS ERFUNDENES. NIE.
+  Dieser Shop hat noch keine Bestellung gesehen. Erfundene
+  Bewertungen, gemittelte Sterne oder eine Zahl wie "über 15.000
+  zufriedene Kunden" waeren schlicht gelogen - und in der Schweiz
+  nach UWG Art. 3 unlautere Werbung. Also steht hier, solange keine
+  echte Bewertung da ist, kein Sternenteppich, sondern eine ehrliche
+  Zeile und eine Einladung.
+
+  WIE DER HAENDLER SPAETER ECHTE STIMMEN EINSETZT:
+  Im Theme-Editor "Stimme" als Block hinzufuegen - Name, Text,
+  Sterne, Foto. Sobald mindestens eine Stimme da ist, verschwindet
+  der Leerzustand automatisch und die Karten erscheinen. Es muss
+  kein Code angefasst werden.
+
+  DIE STERNE STEHEN NUR AN EINER STIMME, NIE ALS DURCHSCHNITT.
+  Ein Durchschnitt aus drei Bewertungen ist eine Zahl, die mehr
+  behauptet, als sie weiss.
+{%- endcomment -%}
+
+{%- assign stimmen = section.blocks | where: 'type', 'stimme' -%}
+
+<section class="ld-sti">
+  <div class="ld-breite">
+
+    <div class="ld-kopfzeile" data-auf>
+      {%- if section.settings.auge != blank -%}<p class="ld-auge">{{ section.settings.auge }}</p>{%- endif -%}
+      <h2 class="ld-riese ld-riese--mittel">{{ section.settings.titel }}</h2>
+    </div>
+
+    {%- if stimmen.size > 0 -%}
+      <ul class="ld-sti__reihe" role="list">
+        {%- for block in stimmen -%}
+          <li class="ld-sti__karte" data-auf="klein" style="--nr:{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+            {%- if block.settings.sterne > 0 -%}
+              <p class="ld-sterne" aria-label="{{ block.settings.sterne }} von 5 Sternen">
+                {%- for i in (1..5) -%}
+                  <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"
+                       class="{% if i <= block.settings.sterne %}ist-voll{% endif %}">
+                    <path d="m12 3.2 2.6 5.5 5.9.8-4.3 4.2 1 6-5.2-2.8L6.8 19.7l1-6L3.5 9.5l5.9-.8Z"
+                          fill="currentColor"/>
+                  </svg>
+                {%- endfor -%}
+              </p>
+            {%- endif -%}
+
+            <blockquote>{{ block.settings.text }}</blockquote>
+
+            <div class="ld-sti__wer">
+              {%- if block.settings.foto != blank -%}
+                <img src="{{ block.settings.foto | image_url: width: 96 }}"
+                     alt="" width="48" height="48" loading="lazy" decoding="async">
+              {%- endif -%}
+              <div>
+                <b>{{ block.settings.name }}</b>
+                {%- if block.settings.ort != blank -%}<span>{{ block.settings.ort }}</span>{%- endif -%}
+              </div>
+            </div>
+
+            {%- if block.settings.produktfoto != blank -%}
+              <img class="ld-sti__produktfoto"
+                   src="{{ block.settings.produktfoto | image_url: width: 600 }}"
+                   alt="" width="300" height="300" loading="lazy" decoding="async">
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+
+    {%- else -%}
+      {%- comment -%}
+        Der Leerzustand. Er ist absichtlich kurz und ohne
+        Sternattrappen - ein ausgegrauter Sternenteppich liest
+        sich nicht als Ehrlichkeit, sondern als leerer Laden.
+      {%- endcomment -%}
+      <div class="ld-sti__leer" data-auf>
+        <p>{{ section.settings.leer_text }}</p>
+        {%- if section.settings.leer_knopf != blank -%}
+          <a class="ld-geist ld-geist--dunkel" href="{{ section.settings.leer_ziel | default: '/pages/contact' }}">
+            {{ section.settings.leer_knopf }}
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Stimmen",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "auge", "label": "Kleine Zeile", "default": "Stimmen" },
+    { "type": "text", "id": "titel", "label": "Ueberschrift", "default": "Noch keine Bewertung." },
+    { "type": "paragraph", "content": "Solange kein Block 'Stimme' angelegt ist, zeigt die Sektion den ehrlichen Leerzustand. Erfundene Bewertungen gehoeren hier nicht hinein." },
+    { "type": "textarea", "id": "leer_text", "label": "Text im Leerzustand",
+      "default": "Dieser Shop ist neu. Sobald die ersten Bestellungen ausgeliefert sind, stehen hier echte Rückmeldungen – mit Namen und Foto, freiwillig gegeben. Bis dahin steht hier lieber nichts als etwas Erfundenes." },
+    { "type": "text", "id": "leer_knopf", "label": "Knopf im Leerzustand", "default": "Frag mich direkt" },
+    { "type": "url", "id": "leer_ziel", "label": "Ziel" }
+  ],
+  "blocks": [
+    {
+      "type": "stimme",
+      "name": "Stimme (echt)",
+      "settings": [
+        { "type": "textarea", "id": "text", "label": "Was die Person geschrieben hat" },
+        { "type": "text", "id": "name", "label": "Name" },
+        { "type": "text", "id": "ort", "label": "Ort" },
+        { "type": "range", "id": "sterne", "label": "Sterne", "min": 0, "max": 5, "step": 1, "default": 5 },
+        { "type": "image_picker", "id": "foto", "label": "Foto der Person" },
+        { "type": "image_picker", "id": "produktfoto", "label": "Foto vom Produkt" }
+      ]
+    }
+  ],
+  "max_blocks": 9,
+  "presets": [{ "name": "Stimmen" }]
+}
+{% endschema %}

@@ -1,0 +1,28 @@
+{%- comment -%} sections/ld-blog.liquid — Blogliste (Fallback-Vorlage) {%- endcomment -%}
+<section class="ld-samm">
+  <div class="ld-breite">
+    <div class="ld-kopfzeile" data-auf>
+      <h1 class="ld-riese ld-riese--mittel">{{ blog.title }}</h1>
+    </div>
+    {%- if blog.articles.size > 0 -%}
+      <ul class="ld-samm__gitter" role="list">
+        {%- for beitrag in blog.articles -%}
+          <li data-auf="klein">
+            <a href="{{ beitrag.url }}">
+              {%- if beitrag.image != blank -%}
+                <img src="{{ beitrag.image | image_url: width: 700 }}" alt="" width="350" height="220" loading="lazy" decoding="async">
+              {%- endif -%}
+              <b>{{ beitrag.title }}</b>
+              <span>{{ beitrag.published_at | date: '%d.%m.%Y' }}</span>
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- else -%}
+      <p class="ld-leerzeile">Hier steht noch nichts.</p>
+    {%- endif -%}
+  </div>
+</section>
+{% schema %}
+{ "name": "Blog", "tag": "section", "settings": [], "presets": [{ "name": "Blog" }] }
+{% endschema %}

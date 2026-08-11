@@ -1,0 +1,43 @@
+{%- comment -%}
+  sections/ld-sammlung.liquid — Sammlungsseite
+
+  Der Shop verkauft ein Produkt. Diese Seite ist deshalb kein
+  Sortimentsraster, sondern ein sauberer Fallback: Shopify braucht
+  die Vorlage, Suchmaschinen finden sie, und wenn spaeter ein
+  zweites Produkt dazukommt, steht sie schon.
+{%- endcomment -%}
+
+<section class="ld-samm">
+  <div class="ld-breite">
+    <div class="ld-kopfzeile" data-auf>
+      <h1 class="ld-riese ld-riese--mittel">{{ collection.title | default: 'Alle Produkte' }}</h1>
+      {%- if collection.description != blank -%}
+        <div class="ld-text">{{ collection.description }}</div>
+      {%- endif -%}
+    </div>
+
+    {%- if collection.products.size > 0 -%}
+      <ul class="ld-samm__gitter" role="list">
+        {%- for artikel in collection.products -%}
+          <li data-auf="klein" style="--nr:{{ forloop.index0 }}">
+            <a href="{{ artikel.url }}">
+              {%- if artikel.featured_image != blank -%}
+                <img src="{{ artikel.featured_image | image_url: width: 700 }}"
+                     alt="{{ artikel.featured_image.alt | default: artikel.title | escape }}"
+                     width="350" height="350" loading="lazy" decoding="async">
+              {%- endif -%}
+              <b>{{ artikel.title }}</b>
+              <span>{% render 'ld-preis', roh: artikel.price %}</span>
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- else -%}
+      <p class="ld-leerzeile">Hier ist gerade nichts.</p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{ "name": "Sammlung", "tag": "section", "settings": [], "presets": [{ "name": "Sammlung" }] }
+{% endschema %}

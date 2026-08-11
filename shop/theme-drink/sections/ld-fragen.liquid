@@ -1,0 +1,46 @@
+{%- comment -%}
+  sections/ld-fragen.liquid — Fragen
+
+  Der Inhalt kommt aus snippets/ld-wissen. Diese Sektion ist nur der
+  Rahmen: Ueberschrift, Abstand, und ein Weg zur Person, wenn die
+  Antwort nicht dabei war. Sie hat bewusst KEINE eigenen Fragen als
+  Bloecke - sonst gaebe es wieder zwei Quellen, die sich
+  widersprechen koennen.
+{%- endcomment -%}
+
+<section class="ld-frg" id="{{ section.settings.anker | default: 'fragen' }}">
+  <div class="ld-breite ld-breite--eng">
+
+    <div class="ld-kopfzeile" data-auf>
+      {%- if section.settings.auge != blank -%}<p class="ld-auge">{{ section.settings.auge }}</p>{%- endif -%}
+      <h2 class="ld-riese ld-riese--mittel">{{ section.settings.titel }}</h2>
+    </div>
+
+    <div data-auf>{% render 'ld-wissen' %}</div>
+
+    {%- if section.settings.rest_text != blank -%}
+      <p class="ld-frg__rest" data-auf>
+        {{ section.settings.rest_text }}
+        <a href="{{ section.settings.rest_ziel | default: '/pages/contact' }}">{{ section.settings.rest_link | default: 'Schreib mir' }}</a>
+      </p>
+    {%- endif -%}
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Fragen",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "auge", "label": "Kleine Zeile", "default": "Bevor du bestellst" },
+    { "type": "text", "id": "titel", "label": "Ueberschrift", "default": "Häufige Fragen" },
+    { "type": "text", "id": "anker", "label": "Ankername", "default": "fragen" },
+    { "type": "paragraph", "content": "Die Antworten stehen in snippets/ld-wissen.liquid – einmal fuer den ganzen Shop." },
+    { "type": "text", "id": "rest_text", "label": "Zeile darunter", "default": "Deine Frage war nicht dabei?" },
+    { "type": "text", "id": "rest_link", "label": "Linktext", "default": "Schreib mir" },
+    { "type": "url", "id": "rest_ziel", "label": "Ziel" }
+  ],
+  "presets": [{ "name": "Fragen" }]
+}
+{% endschema %}

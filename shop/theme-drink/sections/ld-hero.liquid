@@ -1,0 +1,200 @@
+{%- comment -%}
+  sections/ld-hero.liquid — Vollbild-Auftritt
+
+  DIE BUEHNE IST EINE, NICHT ZWEI.
+  Der Auftrag lautete: das Produkt kommt aus dem Wasser, die Kamera
+  faehrt heran, Tropfen fliegen in Zeitlupe. Genau das leistet ein
+  Film. Waere zusaetzlich ein freigestelltes Produktbild darueber
+  gelegt, staende dieselbe Flasche zweimal im Bild - einmal im Film,
+  einmal als Aufkleber davor. Deshalb gibt es hier GENAU EINE Buehne:
+  ist ein Film hinterlegt, laeuft der Film; ist keiner da, steht das
+  Standbild. Die Tiefe entsteht ueber die Ebene DAVOR (Tropfen) und
+  ueber die langsame Skalierung beim Scrollen, nicht ueber ein
+  zweites Produkt.
+
+  OHNE FILM IST DER HERO NICHT KAPUTT.
+  Solange kein Video hinterlegt ist, traegt das Standbild die Seite
+  vollstaendig. Der Haendler hinterlegt spaeter im Theme-Editor eine
+  Datei - Code muss dafuer nicht angefasst werden.
+
+  DAS VIDEO IST STUMM UND SPIELT VON SELBST.
+  Anders liesse iOS es gar nicht erst starten. Wer Bewegung im
+  Betriebssystem abgeschaltet hat (prefers-reduced-motion), bekommt
+  das Standbild - das entscheidet das JS, nicht das CSS, damit gar
+  keine Videodaten geladen werden.
+{%- endcomment -%}
+
+{%- liquid
+  assign hp = all_products[settings.produkt_griff]
+  assign hv = hp.selected_or_first_available_variant
+  assign film = section.settings.film_breit
+  assign film_schmal = section.settings.film_schmal
+  assign film_url = section.settings.film_adresse | strip
+  assign film_url_schmal = section.settings.film_adresse_schmal | strip
+  assign hat_film = false
+  if film != blank or film_url != blank
+    assign hat_film = true
+  endif
+-%}
+
+<section class="ld-hero{% unless hat_film %} ld-hero--standbild{% endunless %}"
+         data-szene data-hero
+         style="--ld-dunkel:{{ section.settings.dunkelheit | divided_by: 100.0 }}">
+
+  {%- comment -%}
+    Die Buehne wird beim Scrollen leicht kleiner und wandert nach
+    oben. Das uebernimmt eine einzige CSS-Variable (--p, 0 bis 1),
+    die das JS auf die Sektion schreibt. Kein Layout wird dabei neu
+    berechnet - nur transform und opacity, beide laufen auf der
+    Grafikkarte.
+  {%- endcomment -%}
+  <div class="ld-hero__buehne" data-szene-ziel>
+
+    {%- if hat_film -%}
+      <video class="ld-hero__film" data-film
+             playsinline muted loop preload="none"
+             {% if section.settings.bild_breit != blank %}poster="{{ section.settings.bild_breit | image_url: width: 1600 }}"{% endif %}
+             aria-hidden="true" tabindex="-1">
+        {%- comment -%}
+          Zwei Quellen, damit auf dem Handy nicht die grosse Datei
+          gezogen wird. Die schmale Fassung gewinnt bis 900 px.
+          Die Quellen stehen als data-quelle drin und werden erst
+          vom JS eingesetzt - so laedt kein Byte, bevor entschieden
+          ist, ob ueberhaupt abgespielt werden darf.
+        {%- endcomment -%}
+        {%- if film_schmal != blank -%}
+          <source data-quelle="{{ film_schmal.sources[1].url | default: film_schmal.sources[0].url }}" media="(max-width: 900px)" type="video/mp4">
+        {%- elsif film_url_schmal != blank -%}
+          <source data-quelle="{{ film_url_schmal }}" media="(max-width: 900px)" type="video/mp4">
+        {%- endif -%}
+        {%- if film != blank -%}
+          <source data-quelle="{{ film.sources[1].url | default: film.sources[0].url }}" type="video/mp4">
+        {%- elsif film_url != blank -%}
+          <source data-quelle="{{ film_url }}" type="video/mp4">
+        {%- endif -%}
+      </video>
+    {%- endif -%}
+
+    {%- comment -%}
+      Das Standbild liegt IMMER darunter. Es ist der Poster des
+      Films, der Ersatz bei abgeschalteter Bewegung und das Bild,
+      das in der ersten Zehntelsekunde schon steht.
+    {%- endcomment -%}
+    {%- if section.settings.bild_breit != blank -%}
+      <img class="ld-hero__bild ld-hero__bild--breit"
+           src="{{ section.settings.bild_breit | image_url: width: 2400 }}"
+           srcset="{{ section.settings.bild_breit | image_url: width: 1200 }} 1200w,
+                   {{ section.settings.bild_breit | image_url: width: 1800 }} 1800w,
+                   {{ section.settings.bild_breit | image_url: width: 2400 }} 2400w"
+           sizes="100vw"
+           alt="{{ section.settings.bild_breit.alt | default: 'Die Trinkflasche mit Napf im Freien' | escape }}"
+           width="2400" height="1350" fetchpriority="high" decoding="async">
+    {%- endif -%}
+    {%- if section.settings.bild_schmal != blank -%}
+      <img class="ld-hero__bild ld-hero__bild--schmal"
+           src="{{ section.settings.bild_schmal | image_url: width: 1200 }}"
+           alt="" aria-hidden="true"
+           width="1200" height="1600" fetchpriority="high" decoding="async">
+    {%- endif -%}
+
+    <div class="ld-hero__schleier" aria-hidden="true"></div>
+
+    {%- comment -%}
+      TROPFEN DAVOR - die eigentliche Tiefe.
+      Sechs Punkte auf drei Ebenen. Jede Ebene bewegt sich beim
+      Scrollen unterschiedlich schnell (--t = Tiefe). Das ergibt
+      Parallaxe, ohne dass irgendetwas gerendert werden muss: es
+      sind sechs runde Verlaeufe.
+    {%- endcomment -%}
+    <div class="ld-tropfen" aria-hidden="true">
+      <i style="--x:12%;--y:22%;--g:26px;--t:.9;--v:0s"></i>
+      <i style="--x:78%;--y:16%;--g:16px;--t:1.4;--v:.7s"></i>
+      <i style="--x:88%;--y:58%;--g:34px;--t:.6;--v:1.3s"></i>
+      <i style="--x:22%;--y:70%;--g:20px;--t:1.2;--v:.4s"></i>
+      <i style="--x:56%;--y:12%;--g:12px;--t:1.8;--v:1.9s"></i>
+      <i style="--x:40%;--y:82%;--g:28px;--t:.75;--v:1.1s"></i>
+    </div>
+  </div>
+
+  {%- comment -%}
+    Der Text sitzt NICHT in der skalierten Buehne. Sonst wuerde die
+    Schrift beim Scrollen mitwachsen und unscharf werden.
+  {%- endcomment -%}
+  <div class="ld-hero__text">
+    <div class="ld-breite">
+      {%- if section.settings.auge != blank -%}
+        <p class="ld-auge ld-auge--hell" data-auf="1">{{ section.settings.auge }}</p>
+      {%- endif -%}
+
+      <h1 class="ld-riese" data-auf="2">{{ section.settings.titel }}</h1>
+
+      {%- if section.settings.unterzeile != blank -%}
+        <p class="ld-fuehrung" data-auf="3">{{ section.settings.unterzeile }}</p>
+      {%- endif -%}
+
+      <div class="ld-tasten" data-auf="4">
+        {%- comment -%}
+          Erster Knopf fuehrt zum Produkt. Wenn kein Produkt
+          hinterlegt ist, faellt er auf die Sammlung zurueck - ein
+          Knopf, der ins Leere fuehrt, ist schlimmer als keiner.
+        {%- endcomment -%}
+        {%- assign ziel1 = section.settings.knopf1_ziel -%}
+        {%- if ziel1 == blank and hp != empty -%}{%- assign ziel1 = hp.url -%}{%- endif -%}
+        {%- if ziel1 == blank -%}{%- assign ziel1 = routes.all_products_collection_url -%}{%- endif -%}
+        <a class="ld-knopf ld-knopf--gross" href="{{ ziel1 }}">{{ section.settings.knopf1_text }}</a>
+
+        {%- if section.settings.knopf2_text != blank -%}
+          <a class="ld-geist" href="{{ section.settings.knopf2_ziel | default: '#geschichte' }}">
+            {{ section.settings.knopf2_text }}
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+          </a>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%}
+        Der Preis unter den Knoepfen kommt aus Liquid. Steht kein
+        Produkt bereit, steht auch keine Zeile da - lieber nichts
+        als eine Zahl ohne Deckung.
+      {%- endcomment -%}
+      {%- if hp != empty and hv != blank -%}
+        <p class="ld-hero__preis" data-auf="5">
+          Ab {% render 'ld-preis', roh: hv.price %}{% if settings.zeile_versand != blank %} · {{ settings.zeile_versand }}{% endif %}
+        </p>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <div class="ld-hero__wink" aria-hidden="true">
+    <span></span>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero",
+  "tag": "section",
+  "settings": [
+    { "type": "header", "content": "Bewegtbild" },
+    { "type": "paragraph", "content": "Ist ein Film hinterlegt, laeuft er stumm in Schleife. Ohne Film traegt das Standbild den Hero vollstaendig." },
+    { "type": "video", "id": "film_breit", "label": "Film (breit, ab 900 px)" },
+    { "type": "video", "id": "film_schmal", "label": "Film (Handy, hochkant)" },
+    { "type": "text", "id": "film_adresse", "label": "Alternativ: Filmadresse breit (.mp4)", "info": "Nur nutzen, wenn die Datei nicht in Shopify liegt." },
+    { "type": "text", "id": "film_adresse_schmal", "label": "Alternativ: Filmadresse Handy (.mp4)" },
+
+    { "type": "header", "content": "Standbild" },
+    { "type": "image_picker", "id": "bild_breit", "label": "Standbild breit" },
+    { "type": "image_picker", "id": "bild_schmal", "label": "Standbild Handy (hochkant)" },
+    { "type": "range", "id": "dunkelheit", "label": "Abdunklung fuer die Schrift", "min": 0, "max": 80, "step": 5, "unit": "%", "default": 45 },
+
+    { "type": "header", "content": "Text" },
+    { "type": "text", "id": "auge", "label": "Kleine Zeile darueber", "default": "Let'sDrink" },
+    { "type": "text", "id": "titel", "label": "Ueberschrift", "default": "Wasser für jedes Abenteuer." },
+    { "type": "text", "id": "unterzeile", "label": "Unterzeile", "default": "Frisches Wasser für deinen Vierbeiner – überall dabei." },
+    { "type": "text", "id": "knopf1_text", "label": "Knopf 1", "default": "Jetzt entdecken" },
+    { "type": "url", "id": "knopf1_ziel", "label": "Ziel Knopf 1", "info": "Leer lassen: fuehrt automatisch zum Produkt." },
+    { "type": "text", "id": "knopf2_text", "label": "Knopf 2", "default": "Mehr erfahren" },
+    { "type": "url", "id": "knopf2_ziel", "label": "Ziel Knopf 2" }
+  ],
+  "presets": [{ "name": "Hero" }]
+}
+{% endschema %}

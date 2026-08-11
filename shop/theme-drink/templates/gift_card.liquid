@@ -1,0 +1,16 @@
+{%- comment -%} Geschenkkarte. Bewusst schlicht: sie wird gedruckt oder gezeigt. {%- endcomment -%}
+{% layout none %}<!doctype html>
+<html lang="{{ request.locale.iso_code }}"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ 'gift_cards.issued.title' | t: value: gift_card.balance | money }}</title>
+<link rel="stylesheet" href="{{ 'ld.css' | asset_url }}">
+</head><body class="ld-korpus">
+<section class="ld-leer"><div class="ld-breite ld-breite--eng">
+  <p class="ld-auge">{{ shop.name }}</p>
+  <h1 class="ld-riese ld-riese--mittel">Geschenkkarte</h1>
+  <p class="ld-fuehrung ld-fuehrung--dunkel">Guthaben: <b>{{ gift_card.balance | money }}</b></p>
+  <p style="margin-top:1.5rem;font-size:1.5rem;letter-spacing:.08em"><code>{{ gift_card.code | format_code }}</code></p>
+  {{ gift_card.qr_identifier }}
+  <div class="ld-tasten"><a class="ld-knopf ld-knopf--gross" href="{{ shop.url }}">Zum Shop</a></div>
+</div></section>
+</body></html>

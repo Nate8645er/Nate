@@ -1,0 +1,118 @@
+{%- comment -%}
+  sections/ld-enthuellung.liquid — "Ein Schluck. Und weiter."
+
+  DAS PRODUKT BLEIBT STEHEN, DIE WORTE ZIEHEN VORBEI.
+  Die Sektion ist drei Bildschirme hoch. Das Produkt haelt sich in
+  der Mitte fest und waechst dabei sehr langsam - das ist die
+  "Kamerafahrt". Die vier Zeilen loesen sich der Reihe nach ab,
+  jede genau ein Viertel der Strecke.
+
+  WARUM NUR EINE ZEILE GLEICHZEITIG SICHTBAR IST.
+  Vier Zeilen untereinander waeren eine Liste. Eine Zeile, die die
+  vorige ersetzt, ist ein Gedanke, der weitergeht. Das ist der
+  ganze Unterschied zwischen einer Aufzaehlung und einem Film.
+
+  OHNE JS UND OHNE BEWEGUNGSWUNSCH:
+  --p bleibt 0, und dann greift die Regel .ld-schritt { opacity:1 }
+  aus dem CSS-Fallback - alle vier Zeilen stehen untereinander da,
+  lesbar, ohne Sprung. Es geht nie Inhalt verloren.
+
+  DIE FLASCHE STEHT AUFRECHT.
+  Kein Kippen ueber 20 Grad, nie auf dem Kopf - das gilt auch fuer
+  Bewegung. Hier bewegt sie sich ueberhaupt nicht: sie waechst nur.
+{%- endcomment -%}
+
+{%- liquid
+  assign ep = all_products[settings.produkt_griff]
+  assign ev = ep.selected_or_first_available_variant
+  assign ent_url = section.settings.film_adresse | strip
+-%}
+
+<section class="ld-ent" id="{{ section.settings.anker | default: 'geschichte' }}" data-szene data-lang="3">
+  <div class="ld-ent__halt">
+
+    <div class="ld-ent__mitte">
+      {%- comment -%}
+        Bevorzugt der Film aus dem Theme-Editor. Ist keiner da, das
+        Standbild. Ist auch keins da, das erste Produktbild aus
+        Shopify - so steht hier nie ein Loch.
+      {%- endcomment -%}
+      {%- if section.settings.film != blank or ent_url != blank -%}
+        <video class="ld-ent__stueck" data-film data-szene-ziel
+               playsinline muted loop preload="none" aria-hidden="true" tabindex="-1"
+               {% if section.settings.bild != blank %}poster="{{ section.settings.bild | image_url: width: 1000 }}"{% endif %}>
+          <source data-quelle="{% if section.settings.film != blank %}{{ section.settings.film.sources[1].url | default: section.settings.film.sources[0].url }}{% else %}{{ ent_url }}{% endif %}" type="video/mp4">
+        </video>
+      {%- elsif section.settings.bild != blank -%}
+        <img class="ld-ent__stueck" data-szene-ziel
+             src="{{ section.settings.bild | image_url: width: 1000 }}"
+             alt="{{ section.settings.bild.alt | default: 'Die Trinkflasche mit Napf' | escape }}"
+             width="1000" height="1000" loading="lazy" decoding="async">
+      {%- elsif ep.featured_image != blank -%}
+        <img class="ld-ent__stueck" data-szene-ziel
+             src="{{ ep.featured_image | image_url: width: 1000 }}"
+             alt="{{ ep.featured_image.alt | default: ep.title | escape }}"
+             width="1000" height="1000" loading="lazy" decoding="async">
+      {%- endif -%}
+    </div>
+
+    <div class="ld-ent__text">
+      <div class="ld-breite">
+        <h2 class="ld-riese ld-riese--mittel ld-ent__titel">{{ section.settings.titel }}</h2>
+
+        <div class="ld-schritte">
+          {%- assign anzahl = section.blocks.size -%}
+          {%- for block in section.blocks -%}
+            <p class="ld-schritt"
+               data-schritt="{{ forloop.index0 }}"
+               data-von="{{ anzahl }}"
+               {{ block.shopify_attributes }}>{{ block.settings.zeile }}</p>
+          {%- endfor -%}
+        </div>
+
+        {%- if ep != empty and ev != blank -%}
+          <a class="ld-knopf ld-knopf--gross ld-ent__knopf" href="{{ ep.url }}">
+            {{ section.settings.knopf | default: 'Jetzt kaufen' }} · {% render 'ld-preis', roh: ev.price %}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Produkt-Enthuellung",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "titel", "label": "Ueberschrift", "default": "Ein Schluck. Und weiter." },
+    { "type": "text", "id": "anker", "label": "Ankername", "default": "geschichte" },
+    { "type": "video", "id": "film", "label": "Film (laeuft in Schleife)" },
+    { "type": "text", "id": "film_adresse", "label": "Alternativ: Filmadresse (.mp4)" },
+    { "type": "image_picker", "id": "bild", "label": "Standbild" },
+    { "type": "text", "id": "knopf", "label": "Knopfaufschrift", "default": "Jetzt kaufen" }
+  ],
+  "blocks": [
+    {
+      "type": "zeile",
+      "name": "Zeile",
+      "settings": [
+        { "type": "text", "id": "zeile", "label": "Zeile", "default": "Für Spaziergänge." }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Produkt-Enthuellung",
+      "blocks": [
+        { "type": "zeile", "settings": { "zeile": "Für Spaziergänge." } },
+        { "type": "zeile", "settings": { "zeile": "Für Reisen." } },
+        { "type": "zeile", "settings": { "zeile": "Für Wanderungen." } },
+        { "type": "zeile", "settings": { "zeile": "Für jedes Abenteuer." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

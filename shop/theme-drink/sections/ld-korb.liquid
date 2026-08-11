@@ -1,0 +1,114 @@
+{%- comment -%}
+  sections/ld-korb.liquid — die Warenkorbseite
+
+  SIE MUSS AUCH OHNE JAVASCRIPT VOLLSTAENDIG FUNKTIONIEREN.
+  Deshalb ist alles ein echtes Formular: Mengen aendern und Entfernen
+  laufen ueber Namen, die Shopify selbst versteht (updates[], und
+  /cart/change fuer den Einzelfall). Mit JS wird derselbe Weg per
+  fetch gegangen, ohne die Seite neu zu laden.
+
+  ZWISCHENSUMME IST NICHT ENDSUMME.
+  Automatische Rabatte zieht Shopify im Warenkorb, Versand und
+  Steuern erst an der Kasse. Genau das steht auch da - keine
+  ausgerechnete Endsumme, die spaeter nicht stimmt.
+{%- endcomment -%}
+
+<section class="ld-korbseite">
+  <div class="ld-breite">
+
+    <div class="ld-kopfzeile" data-auf>
+      <h1 class="ld-riese ld-riese--mittel">Warenkorb</h1>
+    </div>
+
+    {%- if cart.item_count == 0 -%}
+      <div class="ld-korbseite__leer" data-auf>
+        <p>Dein Warenkorb ist leer.</p>
+        {%- assign lp = all_products[settings.produkt_griff] -%}
+        <a class="ld-knopf ld-knopf--gross" href="{% if lp != empty %}{{ lp.url }}{% else %}{{ routes.all_products_collection_url }}{% endif %}">
+          Zum Produkt
+        </a>
+      </div>
+
+    {%- else -%}
+      <form action="{{ routes.cart_url }}" method="post" novalidate class="ld-korbform" data-korbform>
+
+        <ul class="ld-korbliste" role="list">
+          {%- for zeile in cart.items -%}
+            <li class="ld-korbzeile" data-zeile="{{ forloop.index }}">
+              <a class="ld-korbzeile__bild" href="{{ zeile.url }}">
+                {%- if zeile.image != blank -%}
+                  <img src="{{ zeile.image | image_url: width: 220 }}" alt="{{ zeile.title | escape }}"
+                       width="110" height="110" loading="lazy" decoding="async">
+                {%- endif -%}
+              </a>
+
+              <div class="ld-korbzeile__wort">
+                <a href="{{ zeile.url }}"><b>{{ zeile.product.title }}</b></a>
+                {%- unless zeile.product.has_only_default_variant -%}
+                  <span>{{ zeile.variant.title }}</span>
+                {%- endunless -%}
+                {%- if zeile.line_level_discount_allocations.size > 0 -%}
+                  {%- for rabatt in zeile.line_level_discount_allocations -%}
+                    <span class="ld-korbzeile__rabatt">{{ rabatt.discount_application.title }} &minus;{{ rabatt.amount | money }}</span>
+                  {%- endfor -%}
+                {%- endif -%}
+              </div>
+
+              <div class="ld-menge__leiste ld-menge__leiste--klein">
+                <button type="button" data-korb-menge="-1" data-schluessel="{{ zeile.key }}" aria-label="Eine weniger">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg>
+                </button>
+                <input type="number" name="updates[]" value="{{ zeile.quantity }}" min="0" max="99"
+                       inputmode="numeric" aria-label="Menge für {{ zeile.title | escape }}"
+                       data-korb-feld data-schluessel="{{ zeile.key }}">
+                <button type="button" data-korb-menge="1" data-schluessel="{{ zeile.key }}" aria-label="Eine mehr">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg>
+                </button>
+              </div>
+
+              <div class="ld-korbzeile__geld">
+                {%- if zeile.original_line_price > zeile.final_line_price -%}
+                  <s>{{ zeile.original_line_price | money }}</s>
+                {%- endif -%}
+                <b>{{ zeile.final_line_price | money }}</b>
+              </div>
+
+              <a class="ld-korbzeile__weg" href="{{ zeile.url_to_remove }}" data-korb-weg data-schluessel="{{ zeile.key }}" aria-label="Entfernen">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        <noscript>
+          <button class="ld-geist ld-geist--dunkel" type="submit" name="update">Mengen übernehmen</button>
+        </noscript>
+
+        <div class="ld-korbfuss">
+          {%- if cart.cart_level_discount_applications.size > 0 -%}
+            <ul class="ld-korbfuss__rabatte" role="list">
+              {%- for rabatt in cart.cart_level_discount_applications -%}
+                <li><span>{{ rabatt.title }}</span><b>&minus;{{ rabatt.total_allocated_amount | money }}</b></li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+
+          <div class="ld-korbfuss__summe">
+            <span>Zwischensumme</span>
+            <b>{{ cart.total_price | money }}</b>
+          </div>
+          <p class="ld-korbfuss__hinweis">
+            Mengenrabatte, Versand und Steuern erscheinen an der Kasse.
+          </p>
+          <button class="ld-knopf ld-knopf--voll ld-knopf--gross" type="submit" name="checkout">Zur Kasse</button>
+        </div>
+
+      </form>
+    {%- endif -%}
+
+  </div>
+</section>
+
+{% schema %}
+{ "name": "Warenkorb", "settings": [], "presets": [{ "name": "Warenkorb" }] }
+{% endschema %}

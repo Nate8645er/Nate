@@ -1,0 +1,363 @@
+{
+  "sections": {
+    "hero": {
+      "type": "ld-hero",
+      "settings": {
+        "bild_breit": "shopify://shop_images/ld-hero.jpg",
+        "dunkelheit": 40,
+        "auge": "Let'sDrink",
+        "titel": "Wasser für jedes Abenteuer.",
+        "unterzeile": "Frisches Wasser für deinen Vierbeiner – überall dabei.",
+        "knopf1_text": "Jetzt entdecken",
+        "knopf2_text": "Mehr erfahren",
+        "knopf2_ziel": "#geschichte",
+        "film_adresse": "https://cdn.shopify.com/videos/c/vp/666f977e3b3649488f46deea668e4e24/666f977e3b3649488f46deea668e4e24.HD-720p-1.6Mbps-91359696.mp4",
+        "film_adresse_schmal": "https://cdn.shopify.com/videos/c/vp/fd0ef138c8044f00ab4cfa4247465ba2/fd0ef138c8044f00ab4cfa4247465ba2.SD-480p-0.9Mbps-91359697.mp4"
+      }
+    },
+    "wende": {
+      "type": "ld-wende",
+      "blocks": {
+        "o1": {
+          "type": "ort",
+          "settings": {
+            "wort": "Spaziergang"
+          }
+        },
+        "o2": {
+          "type": "ort",
+          "settings": {
+            "wort": "Wanderung"
+          }
+        },
+        "o3": {
+          "type": "ort",
+          "settings": {
+            "wort": "Roadtrip"
+          }
+        },
+        "o4": {
+          "type": "ort",
+          "settings": {
+            "wort": "Park"
+          }
+        },
+        "o5": {
+          "type": "ort",
+          "settings": {
+            "wort": "Strand"
+          }
+        },
+        "o6": {
+          "type": "ort",
+          "settings": {
+            "wort": "Camping"
+          }
+        }
+      },
+      "block_order": [
+        "o1",
+        "o2",
+        "o3",
+        "o4",
+        "o5",
+        "o6"
+      ],
+      "settings": {
+        "frage": "Durstig unterwegs?",
+        "antwort": "Let'sDrink.",
+        "satz": "Frisches Wasser. Immer dabei.",
+        "bild": "shopify://shop_images/ld-splash-tuerkis.jpg"
+      }
+    },
+    "vorteile": {
+      "type": "ld-vorteile",
+      "blocks": {
+        "v1": {
+          "type": "punkt",
+          "settings": {
+            "zeichen": "hund",
+            "titel": "Für Hunde",
+            "text": "Der Napf ist offen – sie trinkt daraus wie aus einer Schale."
+          }
+        },
+        "v2": {
+          "type": "punkt",
+          "settings": {
+            "zeichen": "katze",
+            "titel": "Für Katzen",
+            "text": "Derselbe Napf, dieselbe Handbewegung."
+          }
+        },
+        "v3": {
+          "type": "punkt",
+          "settings": {
+            "zeichen": "tropfen",
+            "titel": "Nur Wasser",
+            "text": "Kein Futter, keine Milch, keine Brühe."
+          }
+        },
+        "v4": {
+          "type": "punkt",
+          "settings": {
+            "zeichen": "rucksack",
+            "titel": "Einfach mitnehmen",
+            "text": "Oben am Napf ist eine Öse für ein Band."
+          }
+        },
+        "v5": {
+          "type": "punkt",
+          "settings": {
+            "zeichen": "auto",
+            "titel": "Für Reisen",
+            "text": "Auto, Bahn, Ferienwohnung – dieselbe Flasche."
+          }
+        },
+        "v6": {
+          "type": "punkt",
+          "settings": {
+            "zeichen": "berg",
+            "titel": "Für Abenteuer",
+            "text": "Wanderung, Strand, Camping."
+          }
+        }
+      },
+      "block_order": [
+        "v1",
+        "v2",
+        "v3",
+        "v4",
+        "v5",
+        "v6"
+      ],
+      "settings": {
+        "auge": "Gemacht für",
+        "titel": "Hund, Katze und alles dazwischen."
+      }
+    },
+    "enthuellung": {
+      "type": "ld-enthuellung",
+      "blocks": {
+        "z1": {
+          "type": "zeile",
+          "settings": {
+            "zeile": "Für Spaziergänge."
+          }
+        },
+        "z2": {
+          "type": "zeile",
+          "settings": {
+            "zeile": "Für Reisen."
+          }
+        },
+        "z3": {
+          "type": "zeile",
+          "settings": {
+            "zeile": "Für Wanderungen."
+          }
+        },
+        "z4": {
+          "type": "zeile",
+          "settings": {
+            "zeile": "Für jedes Abenteuer."
+          }
+        }
+      },
+      "block_order": [
+        "z1",
+        "z2",
+        "z3",
+        "z4"
+      ],
+      "settings": {
+        "titel": "Ein Schluck. Und weiter.",
+        "anker": "geschichte",
+        "bild": "shopify://shop_images/ld-splash-tuerkis.jpg",
+        "knopf": "Jetzt kaufen",
+        "film_adresse": "https://cdn.shopify.com/videos/c/vp/54cda8c55e5e48daa6ce449f264b44b6/54cda8c55e5e48daa6ce449f264b44b6.HD-720p-1.6Mbps-91359701.mp4"
+      }
+    },
+    "streifen": {
+      "type": "ld-film",
+      "settings": {
+        "gangart": "maske",
+        "bild": "shopify://shop_images/ld-trail.jpg",
+        "abdunkeln": 40,
+        "auge": "Unterwegs",
+        "titel": "Bereit für das nächste Abenteuer?",
+        "satz": "Wo kein Napf steht, steht deiner.",
+        "knopf_text": "Zum Produkt",
+        "film_adresse": "https://cdn.shopify.com/videos/c/vp/44564349b48d4c2a8db67637dfa83934/44564349b48d4c2a8db67637dfa83934.HD-720p-1.6Mbps-91359699.mp4"
+      }
+    },
+    "erkunden": {
+      "type": "ld-erkunden",
+      "blocks": {
+        "p1": {
+          "type": "punkt",
+          "settings": {
+            "titel": "Der Napf",
+            "text": "Fest angebaut. Nichts zum Abschrauben, nichts, was im Auto liegen bleibt.",
+            "x": 50,
+            "y": 24
+          }
+        },
+        "p2": {
+          "type": "punkt",
+          "settings": {
+            "titel": "Der Knopf",
+            "text": "Drücken – das Wasser läuft in den Napf. Aufrichten – der Rest läuft zurück.",
+            "x": 50,
+            "y": 46
+          }
+        },
+        "p3": {
+          "type": "punkt",
+          "settings": {
+            "titel": "Die Öse",
+            "text": "Oben am Napf. Für ein Band oder einen Karabiner am Rucksack.",
+            "x": 57,
+            "y": 9
+          }
+        },
+        "p4": {
+          "type": "punkt",
+          "settings": {
+            "titel": "Die Flasche",
+            "text": "550 ml. Nur Wasser – nichts anderes kommt hinein.",
+            "x": 50,
+            "y": 74
+          }
+        }
+      },
+      "block_order": [
+        "p1",
+        "p2",
+        "p3",
+        "p4"
+      ],
+      "settings": {
+        "auge": "Aus der Nähe",
+        "titel": "Dreh sie um. Sieh dir alles an.",
+        "bild": "shopify://shop_images/ld-splash-tuerkis.jpg",
+        "knopf": "Zum Produkt",
+        "film_adresse": "https://cdn.shopify.com/videos/c/vp/8883b52fdc914436804b491b1b1640ba/8883b52fdc914436804b491b1b1640ba.HD-720p-1.6Mbps-91359702.mp4"
+      }
+    },
+    "farben": {
+      "type": "ld-farben",
+      "settings": {
+        "auge": "Sechs Farben",
+        "titel": "Such dir eine aus.",
+        "satz": "Alle zum gleichen Preis. Die Farbe ändert nichts an der Flasche – nur daran, wie sie aussieht.",
+        "gruppenbild": "shopify://shop_images/ld-farben-gruppe.jpg",
+        "knopf": "Farbe wählen"
+      }
+    },
+    "wasser": {
+      "type": "ld-wasser",
+      "settings": {
+        "auge": "Nur Wasser",
+        "titel": "Klar. Kalt. Dabei.",
+        "satz": "Die Flasche ist für Wasser gemacht – nichts anderes kommt hinein.",
+        "bild": "shopify://shop_images/ld-splash-tuerkis.jpg",
+        "film_adresse": "https://cdn.shopify.com/videos/c/vp/25105c034f92460083f3960d2c695b8e/25105c034f92460083f3960d2c695b8e.HD-720p-1.6Mbps-91359698.mp4"
+      }
+    },
+    "einsatz": {
+      "type": "ld-einsatz",
+      "blocks": {
+        "a1": {
+          "type": "anlass",
+          "settings": {
+            "titel": "Spaziergang",
+            "satz": "Die Runde um den Block, jeden Tag.",
+            "bild": "shopify://shop_images/ld-bank.jpg"
+          }
+        },
+        "a2": {
+          "type": "anlass",
+          "settings": {
+            "titel": "Wandern",
+            "satz": "Wo der nächste Brunnen weit weg ist.",
+            "bild": "shopify://shop_images/ld-trail.jpg"
+          }
+        },
+        "a3": {
+          "type": "anlass",
+          "settings": {
+            "titel": "Roadtrip",
+            "satz": "Pause am Rastplatz, ohne Napf im Kofferraum."
+          }
+        },
+        "a4": {
+          "type": "anlass",
+          "settings": {
+            "titel": "Urlaub",
+            "satz": "Fremde Stadt, gewohnte Flasche."
+          }
+        },
+        "a5": {
+          "type": "anlass",
+          "settings": {
+            "titel": "Camping",
+            "satz": "Am Zelt, am Feuer, am Weg."
+          }
+        },
+        "a6": {
+          "type": "anlass",
+          "settings": {
+            "titel": "Strand",
+            "satz": "Salzwasser ringsum, Süsswasser dabei."
+          }
+        }
+      },
+      "block_order": [
+        "a1",
+        "a2",
+        "a3",
+        "a4",
+        "a5",
+        "a6"
+      ],
+      "settings": {
+        "auge": "Unterwegs",
+        "titel": "Überall, wo kein Napf steht."
+      }
+    },
+    "stimmen": {
+      "type": "ld-stimmen",
+      "settings": {
+        "auge": "Stimmen",
+        "titel": "Noch keine Bewertung.",
+        "leer_text": "Dieser Shop ist neu. Sobald die ersten Bestellungen ausgeliefert sind, stehen hier echte Rückmeldungen – mit Namen und Foto, freiwillig gegeben. Bis dahin steht hier lieber nichts als etwas Erfundenes.",
+        "leer_knopf": "Frag mich direkt",
+        "leer_ziel": "/pages/contact"
+      }
+    },
+    "fragen": {
+      "type": "ld-fragen",
+      "settings": {
+        "auge": "Bevor du bestellst",
+        "titel": "Häufige Fragen",
+        "anker": "fragen",
+        "rest_text": "Deine Frage war nicht dabei?",
+        "rest_link": "Schreib mir",
+        "rest_ziel": "/pages/contact"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "wende",
+    "vorteile",
+    "enthuellung",
+    "streifen",
+    "erkunden",
+    "farben",
+    "wasser",
+    "einsatz",
+    "stimmen",
+    "fragen"
+  ]
+}

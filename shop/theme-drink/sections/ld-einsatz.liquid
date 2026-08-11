@@ -1,0 +1,88 @@
+{%- comment -%}
+  sections/ld-einsatz.liquid — die Anlaesse als grosse Flaechen
+
+  EINE REIHE, DIE MAN SCHIEBT - KEIN SLIDER MIT PFEILEN.
+  Ein Slider versteckt Inhalt hinter einem Knopf und zwingt zum
+  Warten. Diese Reihe liegt offen da: auf dem Handy schiebt man
+  sie mit dem Finger (scroll-snap), ab Tablet stehen alle Karten
+  nebeneinander im Raster. Kein JS noetig, kein Autoplay, keine
+  Punkte-Navigation, die niemand trifft.
+
+  DIE KARTEN SIND VERWEISE, WENN EIN ZIEL DA IST.
+  Ohne Ziel bleiben sie stumme Flaechen statt Knoepfe ins Leere.
+
+  BILD ODER FARBE.
+  Ohne Bild bekommt die Karte einen Verlauf aus den Markenfarben
+  statt eines grauen Lochs. Der Shop sieht also auch fertig aus,
+  bevor jedes Motiv steht.
+{%- endcomment -%}
+
+<section class="ld-eins">
+  <div class="ld-breite">
+    <div class="ld-kopfzeile" data-auf>
+      {%- if section.settings.auge != blank -%}<p class="ld-auge">{{ section.settings.auge }}</p>{%- endif -%}
+      <h2 class="ld-riese ld-riese--mittel">{{ section.settings.titel }}</h2>
+    </div>
+  </div>
+
+  <ul class="ld-eins__reihe" role="list">
+    {%- for block in section.blocks -%}
+      {%- assign karte_ziel = block.settings.ziel -%}
+      <li class="ld-eins__karte" data-auf="klein" style="--nr:{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+        {%- if karte_ziel != blank -%}<a href="{{ karte_ziel }}">{%- else -%}<div>{%- endif -%}
+          {%- if block.settings.bild != blank -%}
+            <img src="{{ block.settings.bild | image_url: width: 800 }}"
+                 srcset="{{ block.settings.bild | image_url: width: 500 }} 500w,
+                         {{ block.settings.bild | image_url: width: 800 }} 800w"
+                 sizes="(min-width: 900px) 30vw, 78vw"
+                 alt="{{ block.settings.bild.alt | default: block.settings.titel | escape }}"
+                 width="800" height="1000" loading="lazy" decoding="async">
+          {%- else -%}
+            <span class="ld-eins__farbe" aria-hidden="true"></span>
+          {%- endif -%}
+          <span class="ld-eins__text">
+            <b>{{ block.settings.titel }}</b>
+            {%- if block.settings.satz != blank -%}<span>{{ block.settings.satz }}</span>{%- endif -%}
+          </span>
+        {%- if karte_ziel != blank -%}</a>{%- else -%}</div>{%- endif -%}
+      </li>
+    {%- endfor -%}
+  </ul>
+</section>
+
+{% schema %}
+{
+  "name": "Anlaesse",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "auge", "label": "Kleine Zeile", "default": "Unterwegs" },
+    { "type": "text", "id": "titel", "label": "Ueberschrift", "default": "Überall, wo kein Napf steht." }
+  ],
+  "blocks": [
+    {
+      "type": "anlass",
+      "name": "Anlass",
+      "settings": [
+        { "type": "image_picker", "id": "bild", "label": "Bild (hochkant)" },
+        { "type": "text", "id": "titel", "label": "Titel", "default": "Spaziergang" },
+        { "type": "text", "id": "satz", "label": "Zeile darunter" },
+        { "type": "url", "id": "ziel", "label": "Ziel" }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "Anlaesse",
+      "blocks": [
+        { "type": "anlass", "settings": { "titel": "Spaziergang", "satz": "Die Runde um den Block, jeden Tag." } },
+        { "type": "anlass", "settings": { "titel": "Wandern", "satz": "Wo der nächste Brunnen weit weg ist." } },
+        { "type": "anlass", "settings": { "titel": "Roadtrip", "satz": "Pause am Rastplatz, ohne Napf im Kofferraum." } },
+        { "type": "anlass", "settings": { "titel": "Urlaub", "satz": "Fremde Stadt, gewohnte Flasche." } },
+        { "type": "anlass", "settings": { "titel": "Camping", "satz": "Am Zelt, am Feuer, am Weg." } },
+        { "type": "anlass", "settings": { "titel": "Strand", "satz": "Salzwasser ringsum, Süsswasser dabei." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,10 @@
+<section class="ld-seite"><div class="ld-breite ld-breite--eng">
+  <header class="ld-kopfzeile"><h1 class="ld-riese ld-riese--mittel">Anmelden</h1></header>
+  {%- form 'customer_login', class: 'ld-form' -%}
+    {%- if form.errors -%}<p class="ld-meldung ld-meldung--fehler">{{ form.errors | default_errors }}</p>{%- endif -%}
+    <label class="ld-feld"><span>E-Mail</span><input type="email" name="customer[email]" autocomplete="email" required></label>
+    <label class="ld-feld"><span>Passwort</span><input type="password" name="customer[password]" autocomplete="current-password"></label>
+    <button class="ld-knopf ld-knopf--gross" type="submit">Anmelden</button>
+    <p class="ld-form__klein"><a href="{{ routes.account_register_url }}">Konto anlegen</a></p>
+  {%- endform -%}
+</div></section>

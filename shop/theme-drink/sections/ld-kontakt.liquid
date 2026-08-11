@@ -1,0 +1,112 @@
+{%- comment -%}
+  sections/ld-kontakt.liquid — Kontakt
+
+  ZUERST DIE SELBSTHILFE, DANN DAS FORMULAR.
+  Wer eine Antwort schon findet, muss nicht warten. Wer trotzdem
+  schreibt, hat es bewusst getan - und bekommt eine echte Antwort.
+
+  EINE ANTWORTZEIT, UEBERALL DIESELBE.
+  "in der Regel innerhalb eines Werktags". Kein Versprechen, das ein
+  Einzelbetrieb an einem schlechten Tag nicht halten kann, und keine
+  Telefonnummer, die nicht besetzt ist.
+{%- endcomment -%}
+
+<section class="ld-seite">
+  <div class="ld-breite ld-breite--eng">
+
+    <header class="ld-schild" data-auf>
+      <div class="ld-schild__wort">
+        <p class="ld-auge">{{ settings.marke | default: shop.name }}</p>
+        <h1 class="ld-riese ld-riese--mittel">{{ page.title | default: 'Kontakt' }}</h1>
+      </div>
+      {%- if section.settings.bild != blank -%}
+        <figure class="ld-schild__bild">
+          <img src="{{ section.settings.bild | image_url: width: 700 }}" alt=""
+               width="350" height="350" loading="eager" decoding="async">
+        </figure>
+      {%- endif -%}
+    </header>
+
+    <p class="ld-fuehrung ld-fuehrung--dunkel">{{ section.settings.vorspann }}</p>
+
+    <div class="ld-wege">
+      <a class="ld-weg" href="/pages/haeufige-fragen">
+        <b>Häufige Fragen</b>
+        <span>Die Antworten, die am häufigsten gebraucht werden.</span>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+      </a>
+      <a class="ld-weg" href="/pages/versand-und-rueckgabe">
+        <b>Versand &amp; Rückgabe</b>
+        <span>Kosten, Lieferzeit und wie eine Rücksendung läuft.</span>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+
+    {%- if page.content != blank -%}
+      <div class="ld-text" data-auf>{{ page.content }}</div>
+    {%- endif -%}
+
+    <div class="ld-schreib" data-auf>
+      <h2>Schreib mir</h2>
+      {%- form 'contact', class: 'ld-form' -%}
+        {%- if form.posted_successfully? -%}
+          <p class="ld-meldung">Danke – deine Nachricht ist angekommen. Ich melde mich.</p>
+        {%- elsif form.errors -%}
+          <p class="ld-meldung ld-meldung--fehler">
+            {%- for f in form.errors -%}
+              {{ form.errors.translated_fields[f] }} – {{ form.errors.messages[f] }}{% unless forloop.last %}; {% endunless %}
+            {%- endfor -%}
+          </p>
+        {%- endif -%}
+
+        <div class="ld-form__paar">
+          <label class="ld-feld">
+            <span>Name</span>
+            <input type="text" name="contact[name]" autocomplete="name" placeholder="Vorname" value="{{ form.name }}">
+          </label>
+          <label class="ld-feld">
+            <span>E-Mail</span>
+            <input type="email" name="contact[email]" autocomplete="email" required
+                   placeholder="damit ich antworten kann" value="{{ form.email }}">
+          </label>
+        </div>
+
+        <label class="ld-feld">
+          <span>Bestellnummer <em>optional</em></span>
+          <input type="text" name="contact[Bestellnummer]" placeholder="#1024">
+        </label>
+
+        <label class="ld-feld">
+          <span>Deine Nachricht</span>
+          <textarea name="contact[body]" rows="5" required placeholder="Worum geht es?">{{ form.body }}</textarea>
+        </label>
+
+        <button class="ld-knopf ld-knopf--gross" type="submit">Nachricht senden</button>
+        <p class="ld-form__klein">
+          Deine Angaben gehen nur an mich. Was damit passiert, steht in der
+          <a href="/pages/letsdrink-datenschutz">Datenschutzerklärung</a>.
+        </p>
+      {%- endform -%}
+    </div>
+
+    <nav class="ld-weiter" aria-label="Weitere Seiten">
+      <a href="{{ routes.root_url }}">Startseite</a>
+      <a href="/pages/haeufige-fragen">Häufige Fragen</a>
+      <a href="/pages/letsdrink-impressum">Impressum</a>
+    </nav>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Kontakt",
+  "tag": "section",
+  "settings": [
+    { "type": "image_picker", "id": "bild", "label": "Bild im Kopfband" },
+    { "type": "textarea", "id": "vorspann", "label": "Vorspann",
+      "default": "Hinter diesem Shop steht eine Person. Ich lese und beantworte jede Nachricht selbst, in der Regel innerhalb eines Werktags." }
+  ],
+  "presets": [{ "name": "Kontakt" }]
+}
+{% endschema %}

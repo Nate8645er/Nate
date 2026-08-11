@@ -1,0 +1,40 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "LET'SDRINK",
+    "theme_version": "1.0.0",
+    "theme_author": "Let'sDrink",
+    "theme_documentation_url": "https://katzenufos.com",
+    "theme_support_url": "https://katzenufos.com/pages/contact"
+  },
+  {
+    "name": "Marke",
+    "settings": [
+      { "type": "text", "id": "marke", "label": "Markenname", "default": "Let'sDrink",
+        "info": "Steht im Kopf, im Fuss und im Seitentitel." },
+      { "type": "image_picker", "id": "favicon", "label": "Favicon" }
+    ]
+  },
+  {
+    "name": "Produkt",
+    "settings": [
+      { "type": "paragraph", "content": "Der Griff (Handle) des Hauptprodukts. Er steuert die Kaufknoepfe im Kopf, im Menue und in den Sektionen. Steht hier ein falscher Griff, verschwinden diese Knoepfe – sie fuehren nie ins Leere." },
+      { "type": "text", "id": "produkt_griff", "label": "Produkt-Griff", "default": "trinkflasche-napf-hund-katze" }
+    ]
+  },
+  {
+    "name": "Menue",
+    "settings": [
+      { "type": "link_list", "id": "menue_haupt", "label": "Hauptmenue", "default": "main-menu" }
+    ]
+  },
+  {
+    "name": "Zeilen unter dem Preis",
+    "settings": [
+      { "type": "paragraph", "content": "Diese Zeilen erscheinen an mehreren Stellen. Was hier steht, muss stimmen – es ist eine Zusage an den Kunden." },
+      { "type": "text", "id": "zeile_versand", "label": "Versandzeile", "default": "Gratisversand in der Schweiz" },
+      { "type": "text", "id": "zeile_mwst", "label": "Steuerzeile", "default": "Preise inkl. MwSt.",
+        "info": "Nur setzen, wenn der Betrieb mehrwertsteuerpflichtig ist. Sonst leer lassen." }
+    ]
+  }
+]

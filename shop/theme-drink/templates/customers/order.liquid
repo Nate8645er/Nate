@@ -1,0 +1,19 @@
+<section class="ld-seite"><div class="ld-breite">
+  <header class="ld-kopfzeile">
+    <p class="ld-auge">{{ order.created_at | date: '%d.%m.%Y' }}</p>
+    <h1 class="ld-riese ld-riese--mittel">{{ order.name }}</h1>
+  </header>
+  <ul class="ld-korbliste" role="list">
+    {%- for zeile in order.line_items -%}
+      <li class="ld-korbzeile" style="grid-template-columns:74px 1fr auto;grid-template-areas:'bild wort geld'">
+        <div class="ld-korbzeile__bild">{%- if zeile.image -%}<img src="{{ zeile.image | image_url: width: 220 }}" alt="" width="110" height="110" loading="lazy">{%- endif -%}</div>
+        <div class="ld-korbzeile__wort"><b>{{ zeile.title }}</b><span>{{ zeile.quantity }} ×</span></div>
+        <div class="ld-korbzeile__geld"><b>{{ zeile.final_line_price | money }}</b></div>
+      </li>
+    {%- endfor -%}
+  </ul>
+  <div class="ld-korbfuss">
+    <div class="ld-korbfuss__summe"><span>Gesamt</span><b>{{ order.total_price | money }}</b></div>
+  </div>
+  <nav class="ld-weiter"><a href="{{ routes.account_url }}">Zurück zum Konto</a></nav>
+</div></section>

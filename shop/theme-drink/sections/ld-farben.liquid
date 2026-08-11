@@ -1,0 +1,118 @@
+{%- comment -%}
+  sections/ld-farben.liquid — alle sechs Farben
+
+  WARUM DIE FARBEN EINE EIGENE SEKTION BEKOMMEN.
+  Es sind sechs Varianten desselben Produkts, und sie sind der
+  einzige echte Auswahlpunkt im ganzen Shop. Wer die Farbe schon
+  hier trifft, kommt auf der Produktseite mit einer Entscheidung an
+  statt mit einer Frage. Das ist kein Zierrat, das ist der
+  Kaufweg.
+
+  DIE FARBEN KOMMEN AUS DEM SORTIMENT.
+  Kein Block, keine Liste im Code, kein Farbcode von Hand. Wird im
+  Shopify-Konto eine Variante angelegt, umbenannt oder ausverkauft,
+  aendert sich diese Sektion mit. Wird eine Farbe eingestellt, taucht
+  sie hier nie mehr auf - ohne dass jemand daran denken muss.
+
+  JEDE KACHEL FUEHRT MIT DER GEWAEHLTEN FARBE ZUM PRODUKT.
+  ?variant= am Ende der Adresse. Damit ist die Farbe schon gesetzt,
+  wenn die Produktseite aufgeht - ein Klick weniger, und der Kunde
+  sieht sofort, dass ihm zugehoert wurde.
+
+  NICHT LIEFERBARE FARBEN VERSCHWINDEN NICHT.
+  Sie bleiben sichtbar und tragen die Zeile "gerade nicht lieferbar".
+  Eine Farbe, die kommentarlos fehlt, wirkt wie ein Fehler im Shop;
+  eine Farbe mit Hinweis wirkt wie ein Laden, der weiss, was er hat.
+{%- endcomment -%}
+
+{%- liquid
+  assign fp = all_products[settings.produkt_griff]
+  assign fv = fp.selected_or_first_available_variant
+-%}
+
+{%- if fp != empty -%}
+<section class="ld-farb">
+  <div class="ld-breite">
+
+    <div class="ld-kopfzeile ld-kopfzeile--mitte" data-auf>
+      {%- if section.settings.auge != blank -%}<p class="ld-auge">{{ section.settings.auge }}</p>{%- endif -%}
+      <h2 class="ld-riese ld-riese--mittel">{{ section.settings.titel }}</h2>
+      {%- if section.settings.satz != blank -%}
+        <p class="ld-fuehrung ld-fuehrung--dunkel" style="margin-inline:auto">{{ section.settings.satz }}</p>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%}
+      Das Gruppenbild steht ueber den Kacheln: erst der Ueberblick,
+      dann die Wahl. Fehlt es, faellt es weg - die Kacheln tragen
+      die Sektion allein.
+    {%- endcomment -%}
+    {%- if section.settings.gruppenbild != blank -%}
+      <figure class="ld-farb__gruppe" data-auf>
+        <img src="{{ section.settings.gruppenbild | image_url: width: 2000 }}"
+             srcset="{{ section.settings.gruppenbild | image_url: width: 1000 }} 1000w,
+                     {{ section.settings.gruppenbild | image_url: width: 2000 }} 2000w"
+             sizes="100vw"
+             alt="{{ fp.title }} in allen {{ fp.variants.size }} Farben nebeneinander"
+             width="2000" height="1125" loading="lazy" decoding="async">
+      </figure>
+    {%- endif -%}
+
+    <ul class="ld-farb__gitter" role="list">
+      {%- for variante in fp.variants -%}
+        <li class="ld-farb__feld" data-auf="klein" style="--nr:{{ forloop.index0 }}" >
+          <a href="{{ fp.url }}?variant={{ variante.id }}"
+             {% unless variante.available %}class="ist-weg"{% endunless %}>
+            <span class="ld-farb__bild">
+              {%- if variante.image != blank -%}
+                <img src="{{ variante.image | image_url: width: 600 }}"
+                     srcset="{{ variante.image | image_url: width: 300 }} 300w,
+                             {{ variante.image | image_url: width: 600 }} 600w"
+                     sizes="(min-width: 900px) 15vw, 44vw"
+                     alt="{{ fp.title }} in {{ variante.option1 }}"
+                     width="300" height="300" loading="lazy" decoding="async">
+              {%- elsif fp.featured_image != blank -%}
+                <img src="{{ fp.featured_image | image_url: width: 600 }}"
+                     alt="{{ fp.title }}" width="300" height="300" loading="lazy" decoding="async">
+              {%- endif -%}
+            </span>
+            <span class="ld-farb__wort">
+              <b>{{ variante.option1 }}</b>
+              {%- if variante.available -%}
+                <span>{% render 'ld-preis', roh: variante.price %}</span>
+              {%- else -%}
+                <span class="ld-farb__weg">gerade nicht lieferbar</span>
+              {%- endif -%}
+            </span>
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+
+    {%- if fv != blank -%}
+      <div class="ld-tasten" style="justify-content:center" data-auf>
+        <a class="ld-knopf ld-knopf--gross" href="{{ fp.url }}">
+          {{ section.settings.knopf | default: 'Farbe wählen' }} · {% render 'ld-preis', roh: fv.price %}
+        </a>
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Farben",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "auge", "label": "Kleine Zeile", "default": "Sechs Farben" },
+    { "type": "text", "id": "titel", "label": "Ueberschrift", "default": "Such dir eine aus." },
+    { "type": "text", "id": "satz", "label": "Satz", "default": "Alle zum gleichen Preis. Die Farbe ändert nichts an der Flasche – nur daran, wie sie aussieht." },
+    { "type": "image_picker", "id": "gruppenbild", "label": "Gruppenbild (alle Farben nebeneinander)" },
+    { "type": "text", "id": "knopf", "label": "Knopfaufschrift", "default": "Farbe wählen" },
+    { "type": "paragraph", "content": "Die Farben, Bilder und Preise kommen aus den Produktvarianten in Shopify. Hier wird nichts von Hand eingetragen." }
+  ],
+  "presets": [{ "name": "Farben" }]
+}
+{% endschema %}

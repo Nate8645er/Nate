@@ -1,0 +1,12 @@
+{%- comment -%}
+  snippets/ld-zeichen.liquid — das Markenzeichen
+
+  Ein Tropfen, gezeichnet als Pfad, nicht als Bild. Grund: er sitzt im
+  Kopf, im Menue, im Fuss und im Ladebalken. Als Datei waere er vier
+  Anfragen; als Pfad ist er Teil der Seite und nimmt immer die Farbe
+  des Umfelds an (currentColor) - hell auf dem Hero, dunkel im Fuss.
+{%- endcomment -%}
+<svg class="ld-zeichen" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+  <path d="M12 2.6c3.7 4.4 6.2 7.9 6.2 11.1A6.2 6.2 0 0 1 12 20a6.2 6.2 0 0 1-6.2-6.3c0-3.2 2.5-6.7 6.2-11.1Z" fill="currentColor"/>
+  <path d="M9.6 13.8a2.6 2.6 0 0 0 2.6 2.6" fill="none" stroke="var(--ld-tinte)" stroke-width="1.4" stroke-linecap="round" opacity=".55"/>
+</svg>

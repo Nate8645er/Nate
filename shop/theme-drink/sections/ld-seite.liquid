@@ -1,0 +1,64 @@
+{%- comment -%}
+  sections/ld-seite.liquid — Inhaltsseiten (Fragen, Versand, Recht)
+
+  Ein Kopfband mit Bild, dann der Text aus dem Shopify-Konto. Die
+  Rechtsseiten bekommen statt eines Produktfotos das Markenzeichen -
+  ein Werbebild ueber dem Impressum waere Reklame an der falschen
+  Stelle.
+{%- endcomment -%}
+
+{%- liquid
+  assign ist_recht = false
+  if page.handle contains 'impressum' or page.handle contains 'datenschutz' or page.handle contains 'agb' or page.handle contains 'widerruf'
+    assign ist_recht = true
+  endif
+-%}
+
+<section class="ld-seite">
+  <div class="ld-breite ld-breite--eng">
+
+    <header class="ld-schild{% if ist_recht %} ld-schild--still{% endif %}" data-auf>
+      <div class="ld-schild__wort">
+        <p class="ld-auge">{{ settings.marke | default: shop.name }}</p>
+        <h1 class="ld-riese ld-riese--mittel">{{ page.title }}</h1>
+      </div>
+      {%- if ist_recht -%}
+        <div class="ld-schild__zeichen" aria-hidden="true">{% render 'ld-zeichen' %}</div>
+      {%- elsif section.settings.bild != blank -%}
+        <figure class="ld-schild__bild">
+          <img src="{{ section.settings.bild | image_url: width: 800 }}"
+               alt="{{ section.settings.bild.alt | default: '' | escape }}"
+               width="400" height="400" loading="eager" decoding="async">
+        </figure>
+      {%- endif -%}
+    </header>
+
+    {%- if page.content != blank -%}
+      <div class="ld-text" data-auf>{{ page.content }}</div>
+    {%- endif -%}
+
+    {%- if section.settings.fragen_zeigen -%}
+      <div class="ld-seite__fragen" data-auf>{% render 'ld-wissen' %}</div>
+    {%- endif -%}
+
+    <nav class="ld-weiter" aria-label="Weitere Seiten">
+      <a href="{{ routes.root_url }}">Startseite</a>
+      <a href="/pages/haeufige-fragen">Häufige Fragen</a>
+      <a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>
+      <a href="/pages/contact">Kontakt</a>
+    </nav>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Inhaltsseite",
+  "tag": "section",
+  "settings": [
+    { "type": "image_picker", "id": "bild", "label": "Bild im Kopfband" },
+    { "type": "checkbox", "id": "fragen_zeigen", "label": "Haeufige Fragen anhaengen", "default": false }
+  ],
+  "presets": [{ "name": "Inhaltsseite" }]
+}
+{% endschema %}

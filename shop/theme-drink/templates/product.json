@@ -1,0 +1,220 @@
+{
+  "sections": {
+    "kaufen": {
+      "type": "ld-produkt",
+      "blocks": {
+        "h1": {
+          "type": "haken",
+          "settings": {
+            "zeile": "Für Hunde & Katzen"
+          }
+        },
+        "h2": {
+          "type": "haken",
+          "settings": {
+            "zeile": "Gratisversand in der Schweiz"
+          }
+        },
+        "h3": {
+          "type": "haken",
+          "settings": {
+            "zeile": "14 Tage Rückgaberecht"
+          }
+        },
+        "h4": {
+          "type": "haken",
+          "settings": {
+            "zeile": "Eine erreichbare Person, kein Callcenter"
+          }
+        }
+      },
+      "block_order": [
+        "h1",
+        "h2",
+        "h3",
+        "h4"
+      ],
+      "settings": {
+        "kurz": "Napf und Flasche sind ein Teil. Knopf drücken, trinken lassen, aufrichten – der Rest läuft zurück."
+      }
+    },
+    "erkunden": {
+      "type": "ld-erkunden",
+      "blocks": {
+        "p1": {
+          "type": "punkt",
+          "settings": {
+            "titel": "Der Napf",
+            "text": "Fest angebaut. Nichts zum Abschrauben, nichts, was im Auto liegen bleibt.",
+            "x": 50,
+            "y": 24
+          }
+        },
+        "p2": {
+          "type": "punkt",
+          "settings": {
+            "titel": "Der Knopf",
+            "text": "Drücken – das Wasser läuft in den Napf. Aufrichten – der Rest läuft zurück.",
+            "x": 50,
+            "y": 46
+          }
+        },
+        "p3": {
+          "type": "punkt",
+          "settings": {
+            "titel": "Die Öse",
+            "text": "Oben am Napf. Für ein Band oder einen Karabiner am Rucksack.",
+            "x": 57,
+            "y": 9
+          }
+        },
+        "p4": {
+          "type": "punkt",
+          "settings": {
+            "titel": "Die Flasche",
+            "text": "550 ml. Nur Wasser – nichts anderes kommt hinein.",
+            "x": 50,
+            "y": 74
+          }
+        }
+      },
+      "block_order": [
+        "p1",
+        "p2",
+        "p3",
+        "p4"
+      ],
+      "settings": {
+        "auge": "Aus der Nähe",
+        "titel": "Dreh sie um. Sieh dir alles an.",
+        "bild": "shopify://shop_images/ld-splash-tuerkis.jpg",
+        "knopf": "Zum Produkt",
+        "film_adresse": "https://cdn.shopify.com/videos/c/vp/8883b52fdc914436804b491b1b1640ba/8883b52fdc914436804b491b1b1640ba.HD-720p-1.6Mbps-91359702.mp4"
+      }
+    },
+    "streifen": {
+      "type": "ld-film",
+      "settings": {
+        "gangart": "nah",
+        "bild": "shopify://shop_images/ld-splash-tuerkis.jpg",
+        "abdunkeln": 30,
+        "auge": "Nur Wasser",
+        "titel": "Klar. Kalt. Dabei.",
+        "film_adresse": "https://cdn.shopify.com/videos/c/vp/25105c034f92460083f3960d2c695b8e/25105c034f92460083f3960d2c695b8e.HD-720p-1.6Mbps-91359698.mp4"
+      }
+    },
+    "vorteile": {
+      "type": "ld-vorteile",
+      "blocks": {
+        "v1": {
+          "type": "punkt",
+          "settings": {
+            "zeichen": "hund",
+            "titel": "Für Hunde",
+            "text": "Der Napf ist offen – sie trinkt daraus wie aus einer Schale."
+          }
+        },
+        "v2": {
+          "type": "punkt",
+          "settings": {
+            "zeichen": "katze",
+            "titel": "Für Katzen",
+            "text": "Derselbe Napf, dieselbe Handbewegung."
+          }
+        },
+        "v3": {
+          "type": "punkt",
+          "settings": {
+            "zeichen": "tropfen",
+            "titel": "Nur Wasser",
+            "text": "Kein Futter, keine Milch, keine Brühe."
+          }
+        },
+        "v4": {
+          "type": "punkt",
+          "settings": {
+            "zeichen": "rucksack",
+            "titel": "Einfach mitnehmen",
+            "text": "Oben am Napf ist eine Öse für ein Band."
+          }
+        }
+      },
+      "block_order": [
+        "v1",
+        "v2",
+        "v3",
+        "v4"
+      ],
+      "settings": {
+        "auge": "Gemacht für",
+        "titel": "Hund, Katze und alles dazwischen."
+      }
+    },
+    "einsatz": {
+      "type": "ld-einsatz",
+      "blocks": {
+        "a1": {
+          "type": "anlass",
+          "settings": {
+            "titel": "Spaziergang",
+            "satz": "Die Runde um den Block, jeden Tag.",
+            "bild": "shopify://shop_images/ld-bank.jpg"
+          }
+        },
+        "a2": {
+          "type": "anlass",
+          "settings": {
+            "titel": "Wandern",
+            "satz": "Wo der nächste Brunnen weit weg ist.",
+            "bild": "shopify://shop_images/ld-trail.jpg"
+          }
+        },
+        "a3": {
+          "type": "anlass",
+          "settings": {
+            "titel": "Roadtrip",
+            "satz": "Pause am Rastplatz, ohne Napf im Kofferraum."
+          }
+        }
+      },
+      "block_order": [
+        "a1",
+        "a2",
+        "a3"
+      ],
+      "settings": {
+        "auge": "Unterwegs",
+        "titel": "Überall, wo kein Napf steht."
+      }
+    },
+    "fragen": {
+      "type": "ld-fragen",
+      "settings": {
+        "auge": "Bevor du bestellst",
+        "titel": "Häufige Fragen",
+        "anker": "fragen",
+        "rest_text": "Deine Frage war nicht dabei?",
+        "rest_link": "Schreib mir",
+        "rest_ziel": "/pages/contact"
+      }
+    },
+    "stimmen": {
+      "type": "ld-stimmen",
+      "settings": {
+        "auge": "Stimmen",
+        "titel": "Noch keine Bewertung.",
+        "leer_text": "Dieser Shop ist neu. Sobald die ersten Bestellungen ausgeliefert sind, stehen hier echte Rückmeldungen – mit Namen und Foto, freiwillig gegeben. Bis dahin steht hier lieber nichts als etwas Erfundenes.",
+        "leer_knopf": "Frag mich direkt"
+      }
+    }
+  },
+  "order": [
+    "kaufen",
+    "erkunden",
+    "streifen",
+    "vorteile",
+    "einsatz",
+    "fragen",
+    "stimmen"
+  ]
+}

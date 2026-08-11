@@ -1,0 +1,36 @@
+{%- comment -%}
+  snippets/ld-preis.liquid — DER PREIS, DEN MAN WIRKLICH ZAHLT
+
+  Aufruf:  {% render 'ld-preis', roh: variante.price %}
+
+  WARUM DIESES SCHNIPSEL UEBERHAUPT EXISTIERT.
+  Im Shopify-Konto laeuft ein automatischer Rabatt von 5 Prozent, und
+  zwar AB DER ERSTEN FLASCHE ("Mengenrabatt ab 1 Flasche", aktiv).
+  Er wird erst im Warenkorb gezogen. Wuerde der Shop ueberall
+  {{ variante.price | money }} anzeigen, staende auf jeder Seite eine
+  Zahl, die an der Kasse nie verlangt wird - der Kunde zahlt weniger
+  als angeschrieben. Das ist zwar nicht zu seinem Nachteil, aber es
+  ist falsch, und es macht jede Preisangabe im Shop unzuverlaessig.
+
+  Deshalb rechnet DIESES Schnipsel den wirklich faelligen Preis, und
+  jede Preisstelle im Theme ruft es auf. Es gibt genau eine Formel
+  an genau einer Stelle.
+
+  DIE RECHNUNG.
+  Liquid kennt nur Ganzzahlen. price steht in Rappen (3990 = 39.90).
+    3990 * 95        = 379050
+    + 99             = 379149     <- Aufrundung auf den naechsten Rappen
+    / 100            = 3791       = CHF 37.91
+  Aufgerundet wird bewusst NACH OBEN: so ist der angezeigte Preis nie
+  niedriger als der, den Shopify tatsaechlich verlangt. Ein Rappen zu
+  viel angezeigt ist harmlos, ein Rappen zu wenig waere eine falsche
+  Preisangabe.
+
+  WENN DER 5-PROZENT-RABATT IM KONTO WEGFAELLT:
+  Dann muss diese Datei mit. Eine einzige Zeile - die Zuweisung von
+  ld_echt - auf {{ roh }} setzen, und der ganze Shop stimmt wieder.
+  Solange sie hier steht, gibt es keine zweite Stelle, die man
+  vergessen kann.
+{%- endcomment -%}
+{%- assign ld_echt = roh | times: 95 | plus: 99 | divided_by: 100 -%}
+{{- ld_echt | money -}}
