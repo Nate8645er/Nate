@@ -1270,7 +1270,13 @@ html.n-intro .n-vorhang.n-hebt { transform: translate3d(0, -101%, 0); }
 }
 /* Das Bild darf den Zug nicht abfangen - sonst startet auf dem
    Desktop das Bild-Ziehen des Browsers statt des Wischens. */
+/* Das Bild faengt den Zug nicht ab - sonst startet auf dem Rechner das
+   Bild-Ziehen des Browsers statt des Wischens. Der Klick landet
+   trotzdem beim Feld darunter, das ihn auswertet. */
 .n-gal__feld img { pointer-events: none; -webkit-user-select: none; user-select: none; }
+/* Antippbar - und sichtbar antippbar. */
+.n-gal__feld { cursor: pointer; }
+.n-gal__feld:active { --s: .97; }
 
 /* Der Bodenschatten als weiche Ellipse - ersetzt den frueheren
    drop-shadow-Filter an der Flasche. Reines Hintergrundbild, kein
@@ -1743,3 +1749,20 @@ html.n-sperre, html.n-sperre body { overflow: hidden; }
 }
 .n-pkt--radio:has(input:focus-visible) { outline: 2px solid var(--n-akzent); outline-offset: 4px; }
 .n-pkt--radio:has(input:disabled) { opacity: .35; cursor: not-allowed; }
+
+/* ====================================================================
+   ZEIGEN STATT BESCHREIBEN
+   Bild links, wenige Zeilen rechts. Ersetzt die zwei Spalten mit acht
+   Aufzaehlungspunkten, die 885 px und 67 Woerter fuer eine einzige
+   Aussage brauchten.
+   -------------------------------------------------------------------- */
+.n-zeig { display: grid; gap: clamp(1.4rem, 4vw, 3rem); align-items: center; }
+@media (min-width: 820px) { .n-zeig { grid-template-columns: minmax(0,.9fr) minmax(0,1fr); } }
+
+.n-zeig__bild { margin: 0; }
+.n-zeig__bild img {
+  display: block; width: 100%; height: auto;
+  max-width: 420px; margin-inline: auto;
+  border-radius: var(--n-rund-gross);
+}
+.n-mini--gross li { font-size: 1rem; }

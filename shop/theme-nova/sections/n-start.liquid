@@ -373,36 +373,32 @@
 {%- endcomment -%}
 
 {%- comment -%} =============================== 3 + 4 · PROBLEM UND LOESUNG {%- endcomment -%}
+{%- comment -%}
+  HIER STANDEN ZWEI SPALTEN MIT ACHT AUFZAEHLUNGSPUNKTEN.
+  Gemessen 885 px und 67 Woerter, um einen einzigen Unterschied zu
+  erklaeren: der Napf ist angebaut. Das zeigt ein Foto in einer
+  Sekunde. Das Bild ist ein Ausschnitt aus dem echten Produktfoto -
+  nichts erzeugt, nichts hineinretuschiert.
+{%- endcomment -%}
 <section class="n-block" id="warum">
   <div class="n-huelle">
-    <div class="n-kopfz n-kopfz--mitte" data-auf>
-      <span class="n-auge">Das Problem</span>
-      {%- comment -%}
-        Der Untertitel sprach von "alle drei Varianten", gezeigt werden
-        zwei. Er sagte ausserdem nichts, was die Ueberschrift nicht
-        schon sagt. Ersatzlos gestrichen.
-      {%- endcomment -%}
-      <h2 class="n-titel">Warum herkömmliche Lösungen nicht ausreichen.</h2>
-    </div>
-
-    <div class="n-gegen" data-staffel>
-      <div class="n-spalte n-spalte--alt" data-auf>
-        <h3>Flasche plus Faltnapf</h3>
-        <ul class="n-liste">
-          <li>{{ kreuz }} Zwei Teile, die man beide dabeihaben muss</li>
-          <li>{{ kreuz }} Zum Einschenken braucht es zwei Hände – die Leine muss weg</li>
-          <li>{{ kreuz }} Das Restwasser landet auf dem Boden</li>
-          <li>{{ kreuz }} Der nasse Napf wandert zurück in den Rucksack</li>
-        </ul>
-      </div>
-
-      <div class="n-spalte n-spalte--neu" data-auf>
-        <h3>Diese Flasche</h3>
-        <ul class="n-liste">
-          <li>{{ haken }} Ein Teil. Der Napf ist fest angebaut</li>
-          <li>{{ haken }} Knopf drücken – eine Hand reicht</li>
-          <li>{{ haken }} Das übrige Wasser läuft zurück in die Flasche</li>
-          <li>{{ haken }} Nichts bleibt nass zurück</li>
+    <div class="n-zeig" data-auf>
+      <figure class="n-zeig__bild">
+        <img src="{{ 'a-napf-nah.webp' | asset_url }}"
+             alt="Nahaufnahme: der Napf sitzt fest am Flaschenhals, dazwischen keine Trennstelle"
+             width="900" height="1200" loading="lazy" decoding="async">
+      </figure>
+      <div class="n-zeig__text">
+        <span class="n-auge">Der Unterschied</span>
+        <h2 class="n-titel">Ein Teil statt zwei.</h2>
+        <p class="n-unter">
+          Napf und Flasche sind eins. Nichts zum Abschrauben, nichts,
+          was im Auto liegen bleibt.
+        </p>
+        <ul class="n-mini n-mini--gross">
+          <li>{{ haken }} Eine Hand reicht</li>
+          <li>{{ haken }} Restwasser läuft zurück</li>
+          <li>{{ haken }} Nichts Nasses im Rucksack</li>
         </ul>
       </div>
     </div>

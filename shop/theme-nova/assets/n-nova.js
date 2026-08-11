@@ -486,6 +486,37 @@
       }
     };
 
+    /* DIE FLASCHE SELBST IST ANTIPPBAR.
+       Vorher war sie tot: das Bild stand auf pointer-events:none und
+       kein Feld hatte einen Klick-Empfaenger. Das Groesste auf der
+       Seite reagierte auf nichts - man tippt eine Flasche an und es
+       passiert nichts. Genau das war die Rueckmeldung.
+
+       Ein Wischen darf NICHT als Tipp gelten. Deshalb wird die
+       Startposition gemerkt und nur gewaehlt, wenn der Finger sich um
+       weniger als 12 Pixel bewegt hat. */
+    (function () {
+      var startX = 0, startY = 0, startZeit = 0;
+      var merken = function (e) {
+        var t = (e.touches && e.touches[0]) || e;
+        startX = t.clientX; startY = t.clientY; startZeit = e.timeStamp || 0;
+      };
+      gal.addEventListener("pointerdown", merken, { passive: true });
+      gal.addEventListener("touchstart", merken, { passive: true });
+
+      gal.addEventListener("click", function (e) {
+        var f = e.target.closest ? e.target.closest("[data-gal-feld]") : null;
+        if (!f) return;
+        var dx = Math.abs(e.clientX - startX), dy = Math.abs(e.clientY - startY);
+        if (dx > 12 || dy > 12) return;              // war ein Wischen
+        var i = felder.indexOf(f);
+        if (i < 0) return;
+        f.scrollIntoView({ behavior: ruhig ? "auto" : "smooth",
+                           block: "nearest", inline: "center" });
+        uebernehmen(i);
+      });
+    })();
+
     var malen = function () {
       malt = false;
       var r = gal.getBoundingClientRect();
