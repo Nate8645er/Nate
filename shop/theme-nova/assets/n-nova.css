@@ -1897,3 +1897,155 @@ body:has(.n-leiste.n-an) .n-chat       { bottom: calc(84px + env(safe-area-inset
   color: var(--n-sanft); font-size: .9375rem;
 }
 .a-text--nach { margin-top: 2.5rem; }
+
+/* ==================================================================
+   INHALTSSEITEN: BILD STATT WORTWAND
+   Nate: "jede Seite ist irgendwie nur Text". Die Rechts- und
+   Serviceseiten waren eine Ueberschrift auf einer Wortwand. Drei
+   Eingriffe, alle mit ECHTEN Produktaufnahmen aus dem Theme:
+
+     1. ein Kopfschild mit Bild (nicht auf den Rechtsseiten - ein
+        Produktfoto neben den AGB wirkt wie ein Verkaufsversuch im
+        Kleingedruckten)
+     2. auf der Frageseite die sechs Farben zum Anschauen und
+        Anklicken, statt sechs Woertern in einem Satz
+     3. unten auf jeder Seite die Flasche mit Preis, statt vier
+        gleich aussehender Links in eine Sackgasse
+   ================================================================== */
+
+.a-schild {
+  max-width: 44ch;
+  margin-bottom: clamp(1.75rem, 4vw, 2.75rem);
+}
+.a-schild--bild {
+  max-width: none;
+  position: relative;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end; gap: 1rem;
+  padding: clamp(1.4rem, 4vw, 2.4rem);
+  border-radius: var(--n-rund-gross);
+  background: var(--n-tief);
+  overflow: hidden;
+}
+.a-schild__text { min-width: 0; align-self: center; }
+/* Ohne Begrenzung laeuft "Versand und Rueckgabe" bis unter das Bild. */
+.a-schild--bild .a-titel { max-width: 12ch; }
+
+.a-schild__bild { margin: 0; flex: none; }
+.a-schild__bild img { display: block; width: auto; }
+/* Die Flasche steht auf der unteren Kante auf und wird von ihr
+   angeschnitten - sie steht im Schild, sie schwebt nicht darin. */
+.a-schild__bild--flasche img {
+  height: clamp(155px, 30vw, 240px);
+  margin-bottom: calc(-1 * clamp(1.4rem, 4vw, 2.4rem));
+}
+.a-schild__bild--napf img {
+  height: clamp(118px, 23vw, 190px);
+  border-radius: 14px;
+}
+
+/* AB TABLETBREITE WIRD DAS SCHILD SONST EIN LEERES FELD.
+
+   Gemessen bei 1280 px: Titel links, briefmarkengrosses Bild rechts,
+   dazwischen 900 px Nichts. Also fuellt das Bild ab hier die rechte
+   Spalte ueber die volle Hoehe - die Napfaufnahme als angeschnittene
+   Flaeche, die Flasche weiterhin stehend, nur groesser. */
+@media (min-width: 900px) {
+  .a-schild--bild {
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 38%);
+    align-items: stretch; gap: clamp(1.5rem, 3vw, 2.5rem);
+    padding-right: 0; padding-block: 0;
+    min-height: 260px;
+  }
+  .a-schild--bild .a-schild__text { padding-block: clamp(1.8rem, 3vw, 2.6rem); }
+  .a-schild--bild .a-titel { max-width: 16ch; }
+
+  .a-schild__bild--napf { position: relative; }
+  .a-schild__bild--napf img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; object-fit: cover;
+    border-radius: 0;
+  }
+  /* Die Flasche ist ein Freisteller - object-fit:cover wuerde sie
+     zerschneiden. Sie bleibt stehend, waechst nur, und bekommt keine
+     breite Spalte: in einer 38-Prozent-Spalte stand sie mitten im
+     Nichts, weil sie schmal ist. */
+  .a-schild--bild:has(.a-schild__bild--flasche) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding-right: clamp(1.4rem, 4vw, 2.4rem);
+    min-height: 210px;
+  }
+  .a-schild__bild--flasche { display: grid; place-items: end center; }
+  .a-schild__bild--flasche img { height: 250px; margin-bottom: 0; }
+}
+
+/* --- Die sechs Farben auf der Frageseite -------------------------- */
+.a-farbband { margin-top: clamp(2.5rem, 6vw, 4rem); }
+.a-farbband__titel {
+  margin: 0 0 1.1rem; font-size: clamp(1.3rem, 3vw, 1.75rem);
+  font-weight: 700; letter-spacing: -.02em;
+}
+.a-farbband__reihe {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: .7rem;
+  margin: 0; padding: 0; list-style: none;
+}
+@media (min-width: 700px) { .a-farbband__reihe { grid-template-columns: repeat(6, 1fr); } }
+.a-farbband__reihe > li { min-width: 0; }
+
+/* BEWUSST KEIN GRID AUF DEM LINK.
+
+   Erster Versuch war display:grid mit justify-items:center. Gemessen:
+   das Feld wurde 225 px breit in einer 110 px breiten Spalte, und die
+   Farbreihe schob sich ueber den Fussbereich. Grund ist eine
+   Rueckkopplung: das Bild ist 650 x 2212, seine Mindestbreite laesst
+   die Rasterspur wachsen, aus der breiteren Spur folgt ueber
+   aspect-ratio eine groessere Hoehe, daraus ein hoeheres Bild - und so
+   weiter. Als Block gibt es keine Spur, die mitwachsen kann:
+   width:100% bezieht sich auf die feste Breite der Kachel. */
+.a-farbband__reihe a {
+  display: block; text-align: center;
+  text-decoration: none; color: var(--n-text);
+}
+.a-farbband__feld {
+  position: relative; display: block; width: 100%;
+  /* Hoch, weil die Flasche hoch ist: bei 3/4 waere sie 30 px breit. */
+  aspect-ratio: 3 / 5;
+  border-radius: 16px; background: var(--n-panel);
+  overflow: hidden;
+  transition: background .2s ease;
+}
+/* ABSOLUT GESETZT, NICHT UEBER height IN PROZENT.
+
+   Gemessen: mit height:86% blieb von der Flasche nur der obere Rand
+   uebrig, der Rest war abgeschnitten. Eine Prozenthoehe braucht eine
+   Elternhoehe, die schon feststeht - die Hoehe der Kachel entsteht
+   hier aber erst aus aspect-ratio. Das Bild fiel also auf seine
+   eigenen 2212 px zurueck und wurde von overflow:hidden gekappt.
+   Absolut gesetzt bezieht sich die Prozentangabe auf die fertige
+   Kachel, und object-fit haelt das Seitenverhaeltnis. */
+.a-farbband__feld img {
+  position: absolute; top: 7%; left: 6%; width: 88%; height: 86%;
+  object-fit: contain;
+}
+.a-farbband__reihe a:hover .a-farbband__feld { background: var(--n-glas-hell); }
+.a-farbband__name {
+  display: block; margin-top: .5rem;
+  font-size: .8125rem; color: var(--n-sanft);
+}
+
+/* --- Der Weg zurueck zur Flasche ---------------------------------- */
+.a-band {
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+  display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+  padding: 1rem 1.25rem; border-radius: var(--n-rund);
+  background: var(--n-tief);
+}
+.a-band__bild { flex: none; display: grid; place-items: center; }
+.a-band__bild img { display: block; height: 72px; width: auto; }
+.a-band__text { display: grid; gap: .15rem; min-width: 0; flex: 1 1 11rem; }
+.a-band__text b { font-size: 1rem; font-weight: 700; letter-spacing: -.015em; }
+.a-band__text span { font-size: .8125rem; color: var(--n-sanft); }
+.a-band .n-knopf { flex: none; }
+/* Steht das Band da, braucht die Linkzeile darunter keinen zweiten
+   grossen Abstand mehr. */
+.a-band + .a-weiter { margin-top: 1rem; }

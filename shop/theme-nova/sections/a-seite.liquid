@@ -10,20 +10,99 @@
   teils andere Aussage. Sie rendert jetzt dieselbe Quelle wie der
   Frageblock der Startseite und der Chat. Im Seiteninhalt bleibt nur,
   was dort NICHT steht.
+
+  WARUM HIER BILDER STEHEN
+  Nate: "jede Seite ist irgendwie nur Text". Stimmt - diese Seiten
+  waren eine Wortwand mit einer Ueberschrift obendrauf. Jetzt traegt
+  jede ein echtes Produktbild im Kopf, die Frageseite zusaetzlich die
+  sechs Farben zum Anschauen und Auswaehlen, und unten steht auf jeder
+  Seite der Weg zurueck zur Flasche statt einer Sackgasse aus Links.
+
+  ALLE BILDER SIND ECHTE PRODUKTAUFNAHMEN aus dem Theme. Nichts
+  erzeugt, nichts hineinretuschiert, kein Tier, keine Hand und kein
+  Gegenstand daneben - das waere ein Groessenvergleich, und die Masse
+  des Produkts liegen uns nicht vor.
+
+  NICHT VERWENDEN: a-detail-knopf.webp. Die Aufnahme ist hochskaliert
+  und unscharf; genau dieses Bild sollte auf Wunsch aus dem Shop
+  verschwinden. Es liegt nur noch im Theme, weil Loeschen eine eigene
+  Entscheidung ist.
 {%- endcomment -%}
+
+{%- liquid
+  assign sp = all_products['trinkflasche-napf-hund-katze']
+  assign sv = sp.selected_or_first_available_variant
+  assign sslug = sv.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase
+-%}
+
+{%- comment -%}
+  Ein Bild pro Seite, passend zum Inhalt. Die Rechtsseiten bekommen
+  keines: ein Produktfoto neben den AGB wirkt wie ein Verkaufsversuch
+  im Kleingedruckten.
+{%- endcomment -%}
+{%- assign schildbild = blank -%}
+{%- case page.handle -%}
+  {%- when 'haeufige-fragen' -%}
+    {%- assign schildbild = 'a-napf-nah.webp' -%}
+    {%- assign schildform = 'napf' -%}
+    {%- assign schildalt = 'Nahaufnahme des Napfs, der fest am Flaschenhals sitzt' -%}
+  {%- when 'versand-und-rueckgabe' -%}
+    {%- assign schildbild = 'a-flasche-' | append: sslug | append: '.webp' -%}
+    {%- assign schildform = 'flasche' -%}
+    {%- assign schildalt = 'Die Trinkflasche mit Napf, aufrecht' -%}
+  {%- when 'contact' -%}
+    {%- assign schildbild = 'a-flasche-' | append: sslug | append: '.webp' -%}
+    {%- assign schildform = 'flasche' -%}
+    {%- assign schildalt = 'Die Trinkflasche mit Napf, aufrecht' -%}
+{%- endcase -%}
 
 <div class="a-seite">
   <div class="a-huelle">
 
-    <div class="a-kopfzeile">
-      <p class="a-auge">Let&rsquo;sDrink</p>
-      <h1 class="a-titel">{{ page.title }}</h1>
-    </div>
+    <header class="a-schild{% if schildbild != blank %} a-schild--bild{% endif %}">
+      <div class="a-schild__text">
+        <p class="a-auge">Let&rsquo;sDrink</p>
+        <h1 class="a-titel">{{ page.title }}</h1>
+      </div>
+      {%- if schildbild != blank -%}
+        <figure class="a-schild__bild a-schild__bild--{{ schildform }}">
+          <img src="{{ schildbild | asset_url }}" alt="{{ schildalt | escape }}"
+               {% if schildform == 'napf' %}width="900" height="1200"{% else %}width="650" height="2212"{% endif %}
+               loading="eager" decoding="async">
+        </figure>
+      {%- endif -%}
+    </header>
 
     {%- if page.handle == 'haeufige-fragen' -%}
       <div class="a-text">{% render 'n-wissen' %}</div>
       {%- if page.content != blank -%}
         <div class="a-text a-text--nach">{{ page.content }}</div>
+      {%- endif -%}
+
+      {%- comment -%}
+        Die Frage "welche Farbe nehme ich" beantwortet keine Liste von
+        Woertern. Hier stehen die sechs echten Aufnahmen, jede fuehrt
+        direkt auf die Flasche in dieser Farbe.
+      {%- endcomment -%}
+      {%- if sp != empty -%}
+        <section class="a-farbband" aria-label="Die sechs Farben">
+          <h2 class="a-farbband__titel">Die sechs Farben</h2>
+          <ul class="a-farbband__reihe">
+            {%- for var in sp.variants -%}
+              {%- assign fslug = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
+              <li>
+                <a href="{{ sp.url }}?variant={{ var.id }}">
+                  <span class="a-farbband__feld">
+                    <img src="{{ 'a-flasche-' | append: fslug | append: '.webp' | asset_url }}"
+                         alt="Die Flasche in {{ var.option1 | escape }}"
+                         width="650" height="2212" loading="lazy" decoding="async">
+                  </span>
+                  <span class="a-farbband__name">{{ var.option1 }}</span>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </section>
       {%- endif -%}
     {%- else -%}
       <div class="a-text">
@@ -31,8 +110,33 @@
       </div>
     {%- endif -%}
 
+    {%- comment -%}
+      Frueher endete jede Seite mit vier gleich aussehenden Links -
+      eine Sackgasse. Wer die Versandkosten nachgelesen hat, will
+      danach kaufen, nicht das Impressum. Also steht hier die Flasche
+      mit ihrem Preis, und die Verweise ruecken darunter ins Kleine.
+
+      Der Knopf fuehrt auf die Produktseite und heisst auch so. Ein
+      echter Kaufknopf ginge nicht: das Kaufformular steht nur auf der
+      Start- und der Produktseite, diese Vorlage aber auf jeder
+      Inhaltsseite.
+    {%- endcomment -%}
+    {%- if sp != empty and sv.available -%}
+      <aside class="a-band">
+        <span class="a-band__bild">
+          <img src="{{ 'a-flasche-' | append: sslug | append: '.webp' | asset_url }}" alt=""
+               width="650" height="2212" loading="lazy" decoding="async">
+        </span>
+        <div class="a-band__text">
+          <b>Trinkflasche mit Napf</b>
+          <span>550 ml · Gratisversand in der Schweiz</span>
+        </div>
+        <a class="n-knopf n-knopf--klein" href="{{ sp.url }}">Farbe wählen · {{ sv.price | money }}</a>
+      </aside>
+    {%- endif -%}
+
     <div class="a-weiter">
-      <a href="{{ routes.root_url }}">Zur Flasche</a>
+      <a href="{{ routes.root_url }}">Startseite</a>
       <a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>
       <a href="/pages/haeufige-fragen">Häufige Fragen</a>
       <a href="/pages/contact">Kontakt</a>
