@@ -565,23 +565,66 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .n-tab .n-nein{ color: #A33228; }
 .n-tabhuelle { overflow-x: auto; border-radius: var(--n-rund); }
 
-/* --- Fragen ---------------------------------------------------------- */
-.n-fragen { max-width: 64ch; margin-inline: auto; }
-.n-frage { border-bottom: 1px solid var(--n-glas-rand); }
+/* --- Fragen ----------------------------------------------------------
+   Ruhig gesetzt: grosse Frage, Haarlinie dazwischen, ein duennes Plus
+   statt eines Pfeils, und die Antwort faehrt weich auf.
+
+   Vorher sprang die Antwort hart hervor - <details> hat keine
+   Animation. Die Hoehe laesst sich mit grid-template-rows von 0fr auf
+   1fr fahren; das ist der einzige Weg, eine unbekannte Hoehe ohne
+   JavaScript weich zu oeffnen. Wer Bewegung reduziert hat, bekommt
+   den Sprung wie bisher.
+   -------------------------------------------------------------------- */
+.n-fragen { max-width: 68ch; margin-inline: auto; }
+.n-frage { border-top: 1px solid var(--n-glas-rand); }
+.n-frage:last-child { border-bottom: 1px solid var(--n-glas-rand); }
+
 .n-frage summary {
-  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-  padding: 1.25rem 0; cursor: pointer; font-weight: 700; list-style: none;
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 1.5rem; padding: 1.35rem 0; cursor: pointer; list-style: none;
+  font-size: clamp(1.0625rem, 2.4vw, 1.1875rem);
+  font-weight: 700; letter-spacing: -.015em; line-height: 1.35;
+  transition: color .2s ease;
 }
 .n-frage summary::-webkit-details-marker { display: none; }
-.n-frage summary::after {
-  content: ""; flex: none; width: 12px; height: 12px;
-  border-right: 2px solid var(--n-akzent); border-bottom: 2px solid var(--n-akzent);
-  transform: rotate(45deg) translateY(-3px); transition: transform .3s var(--n-weich);
+.n-frage summary:hover { color: var(--n-sanft); }
+.n-frage summary:focus-visible { outline: 2px solid var(--n-akzent); outline-offset: 4px; border-radius: 6px; }
+
+/* Ein Plus, das zum Minus wird. Zwei Striche aus einem Element:
+   der zweite steht im ::before quer dazu und dreht beim Oeffnen weg. */
+.n-frage__zeichen {
+  position: relative; flex: none; width: 15px; height: 15px; margin-top: .3rem;
 }
-.n-frage[open] summary::after { transform: rotate(-135deg) translateY(-3px); }
-.n-frage__inhalt { padding: 0 0 1.3rem; color: var(--n-sanft); }
-.n-frage__inhalt p { margin: 0 0 .8rem; }
-.n-frage__inhalt p:last-child { margin-bottom: 0; }
+.n-frage__zeichen::before,
+.n-frage__zeichen::after {
+  content: ""; position: absolute; left: 0; top: 50%;
+  width: 100%; height: 1.5px; border-radius: 2px;
+  background: var(--n-text);
+  transition: transform .32s var(--n-weich), opacity .2s ease;
+}
+.n-frage__zeichen::after { transform: rotate(90deg); }
+.n-frage[open] .n-frage__zeichen::after { transform: rotate(0deg); }
+
+/* Die weiche Oeffnung. Das Raster faehrt von 0fr auf 1fr; das Kind
+   MUSS min-height:0 haben, sonst weigert es sich zu schrumpfen. */
+.n-frage__inhalt {
+  display: grid; grid-template-rows: 0fr;
+  transition: grid-template-rows .34s var(--n-weich);
+}
+.n-frage[open] .n-frage__inhalt { grid-template-rows: 1fr; }
+.n-frage__inhalt > * { min-height: 0; overflow: hidden; }
+.n-frage__inhalt p {
+  margin: 0 0 .9rem; padding-right: 2.5rem;
+  color: var(--n-sanft); font-size: 1rem; line-height: 1.65;
+}
+.n-frage__inhalt p:first-child { padding-top: .1rem; }
+.n-frage__inhalt p:last-child { margin-bottom: 1.5rem; }
+.n-frage__inhalt a { color: var(--n-text); text-decoration: underline; text-underline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .n-frage__inhalt { transition: none; }
+  .n-frage__zeichen::before, .n-frage__zeichen::after { transition: none; }
+}
 
 /* --- Schlussaufruf --------------------------------------------------- */
 .n-schluss { position: relative; overflow: hidden; text-align: center;
@@ -957,13 +1000,83 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
   box-shadow: inset 0 0 0 1px var(--n-glas-rand); }
 .a-blaettern [aria-current="page"] { background: var(--n-akzent); color: var(--n-knopftext); box-shadow:none; }
 
-.a-form { display:grid; gap:1.1rem; max-width:34rem; }
-.a-feld { display:grid; gap:.4rem; }
-.a-feld > span { font-size:.8125rem; font-weight:700; color:var(--n-sanft); }
-.a-feld input, .a-feld textarea { min-height:52px; padding:.8rem 1rem; border:0; border-radius:12px;
+/* ==================================================================
+   KONTAKTSEITE
+
+   Aufgebaut wie eine Support-Seite, nicht wie ein Formular: zuerst
+   die zwei Wege, die sofort helfen, dann erst das Schreibfeld. Wer
+   die Antwort schon findet, muss nicht warten.
+   ================================================================== */
+
+/* --- Die beiden Selbsthilfe-Flaechen ------------------------------ */
+.a-wege {
+  display: grid; gap: .7rem;
+  margin: clamp(1.6rem, 4vw, 2.4rem) 0 clamp(2.2rem, 5vw, 3rem);
+}
+@media (min-width: 720px) { .a-wege { grid-template-columns: 1fr 1fr; } }
+
+.a-weg {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center; gap: 1rem;
+  padding: 1.1rem 1.2rem; border-radius: var(--n-rund);
+  background: var(--n-tief); color: var(--n-text); text-decoration: none;
+  transition: transform .2s var(--n-weich), background .2s ease;
+}
+.a-weg:hover { transform: translateY(-2px); background: var(--n-glas-hell); }
+.a-weg:focus-visible { outline: 2px solid var(--n-akzent); outline-offset: 3px; }
+.a-weg__zeichen {
+  display: grid; place-items: center; flex: none;
+  width: 42px; height: 42px; border-radius: 12px;
+  background: var(--n-grund); color: var(--n-text);
+}
+.a-weg__text { display: grid; gap: .15rem; min-width: 0; }
+.a-weg__text b { font-size: 1rem; font-weight: 700; letter-spacing: -.015em; }
+.a-weg__text span { font-size: .8125rem; color: var(--n-sanft); line-height: 1.45; }
+.a-weg__pfeil { flex: none; color: var(--n-sanft); }
+
+/* --- Das Schreibfeld ---------------------------------------------- */
+.a-schreib { max-width: 40rem; }
+.a-schreib__titel {
+  margin: 0 0 1.2rem; font-size: clamp(1.4rem, 3.2vw, 1.9rem);
+  font-weight: 700; letter-spacing: -.025em;
+}
+
+.a-form { display: grid; gap: 1rem; }
+.a-form__paar { display: grid; gap: 1rem; }
+@media (min-width: 560px) { .a-form__paar { grid-template-columns: 1fr 1fr; } }
+
+.a-feld { display: grid; gap: .45rem; min-width: 0; }
+.a-feld > span {
+  font-size: .8125rem; font-weight: 700; color: var(--n-text);
+  letter-spacing: -.005em;
+}
+.a-feld > span em { font-style: normal; font-weight: 400; color: var(--n-sanft); }
+.a-feld input, .a-feld textarea {
+  min-height: 54px; padding: .9rem 1.1rem; border: 0; border-radius: 14px;
   box-shadow: inset 0 0 0 1px var(--n-glas-rand);
-  background: var(--n-glas); color: var(--n-text); font:inherit; }
-.a-feld textarea { min-height:150px; resize:vertical; }
+  background: var(--n-grund); color: var(--n-text); font: inherit;
+  transition: box-shadow .18s ease, background .18s ease;
+}
+.a-feld input::placeholder, .a-feld textarea::placeholder { color: var(--n-sanft); opacity: .75; }
+.a-feld input:hover, .a-feld textarea:hover { box-shadow: inset 0 0 0 1px rgb(17 17 17 / .28); }
+/* Der Rahmen wird beim Tippen zwei Pixel stark statt zu leuchten -
+   ruhiger, und er verschiebt nichts, weil er nach innen liegt. */
+.a-feld input:focus, .a-feld textarea:focus {
+  outline: none; background: var(--n-grund);
+  box-shadow: inset 0 0 0 2px var(--n-akzent);
+}
+.a-feld textarea { min-height: 160px; resize: vertical; line-height: 1.6; }
+
+.a-form__fuss {
+  display: grid; gap: .9rem; justify-items: start;
+  margin-top: .4rem;
+}
+.a-form__hinweis {
+  margin: 0; font-size: .8125rem; color: var(--n-sanft); line-height: 1.55;
+  max-width: 42ch;
+}
+.a-form__hinweis a { color: var(--n-text); text-decoration: underline; text-underline-offset: 3px; }
+
 .a-meldung { padding:1rem 1.2rem; border-radius:14px; background: var(--n-glas);
              box-shadow: inset 0 0 0 1px var(--n-glas-rand);
              border-left:3px solid var(--n-akzent); margin-bottom:1.6rem; }
