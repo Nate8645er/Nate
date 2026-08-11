@@ -308,32 +308,50 @@
         </span>
         <span class="n-mnav__pt">
           <b>Trinkflasche mit Napf</b>
-          <span>550 ml · sechs Farben</span>
+          <span>550 ml · {{ lv.price | money }}</span>
+          {%- comment -%}
+            Die Farbpunkte statt des Wortes "sechs Farben": ein Blick
+            genuegt, und sie kommen aus dem Sortiment. Faellt eine
+            Variante weg, verschwindet auch der Punkt.
+          {%- endcomment -%}
+          <span class="n-mnav__pkte" aria-hidden="true">
+            {%- for var in lp.variants -%}
+              {%- assign ps = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
+              <i class="n-mnav__pkt n-pkt--{{ ps | escape }}"></i>
+            {%- endfor -%}
+          </span>
         </span>
-        {%- comment -%}
-          Kein Preis in dieser Zeile: er stand hier ein drittes Mal
-          (Untertitel, Zeile, Knopf) und nahm dem Titel so viel Platz,
-          dass "Trinkflasche mit Napf" mitten im Wort umbrach.
-        {%- endcomment -%}
         <svg class="n-mnav__pfeil" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
       </a>
     {%- endif -%}
 
+    {%- comment -%}
+      Vier Verweise statt fuenf. "Versand" und "Rueckgabe" fuehrten
+      beide auf DIESELBE Seite - zwei Zeilen fuer ein Ziel. Und die
+      Beisaetze ("Schweiz gratis", "14 Tage") standen woertlich noch
+      einmal in der Zeile darunter im Fuss. Weg damit.
+    {%- endcomment -%}
     <div class="n-mnav__liste">
       <a class="n-mnav__z" style="--i:0" href="{{ routes.root_url }}#warum">Warum wir</a>
       <a class="n-mnav__z" style="--i:1" href="/pages/haeufige-fragen">Häufige Fragen</a>
-      <a class="n-mnav__z" style="--i:2" href="/pages/versand-und-rueckgabe">Versand<span class="n-mnav__was">Schweiz gratis</span></a>
-      <a class="n-mnav__z" style="--i:3" href="/pages/versand-und-rueckgabe#rueckgabe">Rückgabe<span class="n-mnav__was">14 Tage</span></a>
-      <a class="n-mnav__z" style="--i:4" href="/pages/contact">Kontakt<span class="n-mnav__was">Antwort in 1 Werktag</span></a>
+      <a class="n-mnav__z" style="--i:2" href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>
+      <a class="n-mnav__z" style="--i:3" href="/pages/contact">Kontakt</a>
     </div>
 
     <div class="n-mnav__fuss">
       {%- if lp != empty and lv.available -%}
-        <a class="n-knopf n-knopf--voll" href="{{ lp.url }}">In den Warenkorb · {{ lv.price | money }}</a>
+        {%- comment -%}
+          Dieser Knopf hiess "In den Warenkorb", war aber nur ein Link
+          auf die Produktseite - er legte nie etwas in den Korb. Genau
+          derselbe Fehler wie frueher beim Schluss-Knopf und in der
+          Kaufleiste. Er heisst jetzt, was er tut. Ein echter
+          Kaufknopf ginge hier nicht: das Kaufformular steht nur auf
+          der Start- und der Produktseite, das Menue aber auf jeder.
+        {%- endcomment -%}
+        <a class="n-knopf n-knopf--voll" href="{{ lp.url }}">Farbe wählen · {{ lv.price | money }}</a>
       {%- endif -%}
       <p class="n-mnav__hinweis">
-        Gratisversand in der Schweiz · 14 Tage Rückgabe<br>
-        Fragen? <a href="mailto:beamswiss@gmail.com">beamswiss@gmail.com</a>
+        Versand in der Schweiz gratis · 14 Tage Rückgabe
       </p>
     </div>
   </nav>

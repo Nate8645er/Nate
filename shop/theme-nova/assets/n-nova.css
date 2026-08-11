@@ -1525,45 +1525,54 @@ details > summary { min-height: 44px; display: flex; align-items: center; }
 /* Produktzeile ganz oben: wer das Menue oeffnet, sucht meistens das
    Produkt und nicht das Impressum. */
 .n-mnav__produkt {
-  flex: none; display: flex; align-items: center; gap: .9rem;
-  padding: .8rem .9rem; margin-bottom: 1.1rem;
-  border-radius: 16px; background: var(--n-tief);
+  flex: none; display: flex; align-items: center; gap: 1rem;
+  padding: 1rem; margin-bottom: 1.25rem;
+  border-radius: 20px; background: var(--n-tief);
   color: var(--n-text);
 }
 .n-mnav__bild {
-  flex: none; width: 46px; height: 58px; border-radius: 10px;
+  flex: none; width: 62px; height: 78px; border-radius: 14px;
   background: var(--n-panel); display: grid; place-items: center;
   overflow: hidden;
 }
-.n-mnav__bild img { height: 46px; width: auto; }
-.n-mnav__pt { display: grid; gap: .1rem; min-width: 0; }
-.n-mnav__pt b { font-size: .9375rem; font-weight: 700; }
+.n-mnav__bild img { height: 64px; width: auto; }
+.n-mnav__pt { display: grid; gap: .18rem; min-width: 0; }
+.n-mnav__pt b { font-size: 1.0625rem; font-weight: 700; letter-spacing: -.02em; white-space: nowrap; }
 .n-mnav__pt span { font-size: .8125rem; color: var(--n-sanft); }
-.n-mnav__pt b { white-space: nowrap; }
+/* Die sechs Farben als Punkte. Die Farbe selbst kommt aus .n-pkt--*,
+   deshalb hier KEIN background - sonst gaebe es sechs graue Punkte. */
+.n-mnav__pkte { display: flex; gap: .3rem; margin-top: .25rem; }
+.n-mnav__pkt {
+  width: 13px; height: 13px; border-radius: 999px; flex: none;
+  box-shadow: inset 0 0 0 1px rgb(17 17 17 / .22);
+}
 .n-mnav__pfeil { margin-left: auto; flex: none; color: var(--n-sanft); }
 
-/* Fuenf gleich hohe Zeilen. Kein 1fr, keine Umbrueche. */
+/* Die Verweise sind Nebensache - das Produkt oben und der Knopf unten
+   tragen das Menue. Deshalb ruhiger als vorher: kleiner, nicht fett,
+   mit einem Pfeil rechts, damit man sieht, dass es weitergeht. */
 .n-mnav__liste { flex: none; display: grid; }
 .n-mnav a.n-mnav__z {
   display: flex; align-items: center; gap: .8rem;
   /* Die Zeilenhoehe waechst mit dem Schirm, sonst bleibt auf einem
      hohen Handy ein Loch zwischen Liste und Fuss stehen. */
-  min-height: clamp(56px, 9.2vh, 82px); padding: 0;
-  font-size: 1.1875rem; font-weight: 700; letter-spacing: -.015em;
+  min-height: clamp(54px, 8.4vh, 74px); padding: 0;
+  font-size: 1.0625rem; font-weight: 500; letter-spacing: -.01em;
   color: var(--n-text); white-space: nowrap;
   border-bottom: 1px solid var(--n-glas-rand);
   opacity: 0; transform: translate3d(0, 8px, 0);
 }
 .n-mnav__z:last-child { border-bottom: 0; }
+.n-mnav a.n-mnav__z::after {
+  content: ""; margin-left: auto; flex: none;
+  width: 7px; height: 7px; border-radius: 1px;
+  border-top: 1.6px solid var(--n-sanft); border-right: 1.6px solid var(--n-sanft);
+  transform: rotate(45deg);
+}
 .n-mnav.n-offen a.n-mnav__z {
   opacity: 1; transform: none;
   transition: opacity .34s var(--n-weich) calc(var(--i, 0) * 40ms + 70ms),
               transform .34s var(--n-weich) calc(var(--i, 0) * 40ms + 70ms);
-}
-/* Zusatz nur, wo er eine echte Frage beantwortet. */
-.n-mnav__was {
-  margin-left: auto; font-size: .8125rem; font-weight: 400;
-  color: var(--n-sanft); letter-spacing: 0; white-space: nowrap;
 }
 
 .n-mnav__fuss { margin-top: auto; padding-top: 1.4rem; flex: none; }
@@ -1575,8 +1584,6 @@ details > summary { min-height: 44px; display: flex; align-items: center; }
   color: var(--n-sanft); font-size: .8125rem; line-height: 1.55;
 }
 .n-mnav__hinweis a { color: var(--n-text); text-decoration: underline; text-underline-offset: 3px; }
-
-@media (max-width: 340px) { .n-mnav__was { display: none; } }
 @media (prefers-reduced-motion: reduce) {
   .n-mnav a.n-mnav__z { opacity: 1; transform: none; transition: none; }
 }
@@ -1864,3 +1871,29 @@ body:has(.n-leiste.n-an) .n-chat       { bottom: calc(84px + env(safe-area-inset
   .n-chat, .n-chat__auf { transition: none; }
   .n-chat { transform: none; }
 }
+
+/* ====================================================================
+   FAKTENBLOCK AUF INHALTSSEITEN
+
+   Die Info-Seiten waren Wortwaende: Ueberschrift, Absatz, Ueberschrift,
+   Absatz. Wer wissen will, was der Versand kostet, soll es in einer
+   Sekunde sehen und nicht lesen muessen. Deshalb steht oben eine
+   Liste aus Begriff und Wert, danach erst der Fliesstext.
+   -------------------------------------------------------------------- */
+.a-text dl.a-fakt {
+  margin: 0 0 2.25rem; padding: 0;
+  border-top: 1px solid var(--n-glas-rand);
+}
+.a-text dl.a-fakt div {
+  display: flex; align-items: baseline; gap: 1rem;
+  padding: .85rem 0; border-bottom: 1px solid var(--n-glas-rand);
+}
+.a-text dl.a-fakt dt {
+  margin: 0; flex: 1 1 auto; font-weight: 700; font-size: 1rem;
+  color: var(--n-text);
+}
+.a-text dl.a-fakt dd {
+  margin: 0; flex: 0 0 auto; text-align: right;
+  color: var(--n-sanft); font-size: .9375rem;
+}
+.a-text--nach { margin-top: 2.5rem; }

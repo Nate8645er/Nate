@@ -72,10 +72,14 @@
   <details class="n-frage">
     <summary>Welche Farben gibt es?</summary>
     <div class="n-frage__inhalt">
-      {%- comment -%} Kommt aus dem Sortiment, nicht aus dem Text. {%- endcomment -%}
+      {%- comment -%}
+        Kommt aus dem Sortiment, nicht aus dem Text. Die Bindestriche
+        an den Liquid-Klammern sind wichtig: ohne sie stand ein
+        Leerzeichen vor dem Punkt - "Weiss ." statt "Weiss."
+      {%- endcomment -%}
       <p>
         {%- for var in wp.variants -%}
-          {{ var.option1 }}{% unless forloop.last %}, {% endunless %}
+          {{- var.option1 -}}{%- unless forloop.last -%}, {% endunless -%}
         {%- endfor -%}.
         Alle zum gleichen Preis von {{ wv.price | money }}.
       </p>
@@ -86,8 +90,7 @@
     <summary>Wie reinige ich sie?</summary>
     <div class="n-frage__inhalt">
       <p>Von Hand mit warmem Wasser ausspülen, danach offen trocknen
-         lassen. Ob sie in die Spülmaschine darf, wissen wir nicht –
-         also sagen wir es auch nicht.</p>
+         lassen. Zur Spülmaschine liegt uns keine Angabe vor.</p>
     </div>
   </details>
 
@@ -108,15 +111,54 @@
           Auch das kommt aus dem Konto, nicht aus dem Text: Shopify
           nennt genau die freigeschalteten Methoden. Wird eine
           abgeschaltet, verschwindet sie hier von selbst.
+
+          Shopify liefert Kuerzel wie "master" und "american_express".
+          Einfach gross geschrieben stand hier "Master" und "American
+          express" - so heisst keine dieser Karten. Die Liste unten
+          setzt die richtigen Namen ein; ein unbekanntes Kuerzel
+          faellt auf die alte Schreibweise zurueck, damit nichts
+          verschwindet, wenn Shopify eine neue Methode aufnimmt.
         {%- endcomment -%}
         <p>
           {%- for art in shop.enabled_payment_types -%}
-            {{ art | replace: '_', ' ' | capitalize }}{% unless forloop.last %}, {% endunless %}
+            {%- case art -%}
+              {%- when 'master' -%}Mastercard
+              {%- when 'american_express' -%}American Express
+              {%- when 'paypal' -%}PayPal
+              {%- when 'apple_pay' -%}Apple&nbsp;Pay
+              {%- when 'google_pay' -%}Google&nbsp;Pay
+              {%- when 'shopify_pay' -%}Shop&nbsp;Pay
+              {%- when 'unionpay' -%}UnionPay
+              {%- when 'visa' -%}Visa
+              {%- else -%}{{- art | replace: '_', ' ' | capitalize -}}
+            {%- endcase -%}
+            {%- unless forloop.last -%}, {% endunless -%}
           {%- endfor -%}.
         </p>
       </div>
     </details>
   {%- endif -%}
+
+  {%- comment -%}
+    Diese Frage kommt oft und wurde bisher auf der FAQ-Seite mit einem
+    Absatz darueber beantwortet, wie gewissenhaft wir sind. Der Kunde
+    will die Angabe, nicht unsere Haltung dazu. Ein Satz reicht.
+  {%- endcomment -%}
+  <details class="n-frage">
+    <summary>Aus welchem Material ist sie?</summary>
+    <div class="n-frage__inhalt">
+      <p>Dazu liegt uns keine Angabe des Lieferanten vor. Sobald sie
+         vorliegt, steht sie hier.</p>
+    </div>
+  </details>
+
+  <details class="n-frage">
+    <summary>Reicht eine Flasche für einen grossen Hund?</summary>
+    <div class="n-frage__inhalt">
+      <p>Für eine normale Runde ja. Für sehr grosse Hunde auf langen
+         Touren nimmst du besser zwei mit.</p>
+    </div>
+  </details>
 
   <details class="n-frage">
     <summary>Und wenn sie mir nicht gefällt?</summary>
@@ -134,8 +176,7 @@
     <summary>Warum stehen hier keine Bewertungen?</summary>
     <div class="n-frage__inhalt">
       <p>
-        Weil es noch keine gibt. Der Shop ist neu. Erfundene Bewertungen
-        kommen nicht rein – auch keine gekauften. Sobald die ersten
+        Weil es noch keine gibt – der Shop ist neu. Sobald die ersten
         Flaschen ausgeliefert sind, frage ich nach und stelle die
         Antworten unverändert hierhin, auch die kritischen.
       </p>

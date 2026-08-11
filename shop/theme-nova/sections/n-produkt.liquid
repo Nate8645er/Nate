@@ -204,86 +204,18 @@
       <h2 class="a-titel" style="font-size:clamp(1.6rem,3.6vw,2.2rem)">Fragen</h2>
     </div>
 
-    <div class="a-fragen" data-auf="klein">
-      <details class="a-frage" open>
-        <summary>Wie funktioniert sie?</summary>
-        <div class="a-frage__inhalt">
-          <p>
-            Du drückst den Knopf, dann läuft Wasser aus der Flasche in den
-            Napf. Wenn dein Tier fertig ist, richtest du die Flasche auf und
-            das übrige Wasser läuft zurück. Nichts bleibt im Napf stehen.
-          </p>
-        </div>
-      </details>
+    {%- comment -%}
+      Hier standen dieselben acht Fragen noch einmal, mit eigenem
+      Wortlaut. Ein Beispiel dafuer, warum das schiefgeht: die Antwort
+      zu den Katzen behauptete hier "der Napf ist niedrig genug" -
+      eine Aussage ueber die Masse, die wir nicht kennen. Auf der
+      Frageseite war sie laengst gestrichen, hier ueberlebte sie.
 
-      <details class="a-frage">
-        <summary>Wie viel passt hinein?</summary>
-        <div class="a-frage__inhalt">
-          <p>550 ml. Weil der Rest nach jedem Trinken zurückläuft, reicht eine Füllung für mehrere Pausen.</p>
-        </div>
-      </details>
-
-      <details class="a-frage">
-        <summary>Läuft sie im Rucksack aus?</summary>
-        <div class="a-frage__inhalt">
-          <p>
-            Wir haben keine schriftliche Zusicherung des Lieferanten, dass
-            sie unter allen Umständen dicht ist – deshalb behaupten wir es
-            auch nicht. Transportiere sie am besten aufrecht. Läuft deine
-            Flasche trotzdem aus, ist das ein Reklamationsfall: Du bekommst
-            Ersatz oder dein Geld zurück.
-          </p>
-        </div>
-      </details>
-
-      <details class="a-frage">
-        <summary>Was darf ich einfüllen?</summary>
-        <div class="a-frage__inhalt">
-          <p>Nur Wasser. Andere Flüssigkeiten hinterlassen Rückstände, die den Mechanismus verkleben.</p>
-        </div>
-      </details>
-
-      <details class="a-frage">
-        <summary>Geht das auch für Katzen?</summary>
-        <div class="a-frage__inhalt">
-          <p>Ja – für Katzen, die mitfahren oder an der Leine laufen. Der Napf ist niedrig genug.</p>
-        </div>
-      </details>
-
-      <details class="a-frage">
-        <summary>Wie reinige ich sie?</summary>
-        <div class="a-frage__inhalt">
-          <p>
-            Von Hand mit warmem Wasser ausspülen, danach offen trocknen
-            lassen. Ob sie in die Spülmaschine darf, wissen wir nicht – also
-            sagen wir es auch nicht.
-          </p>
-        </div>
-      </details>
-
-      <details class="a-frage">
-        <summary>Was kostet der Versand, und wie lange dauert er?</summary>
-        <div class="a-frage__inhalt">
-          <p>
-            Innerhalb der Schweiz ist der Versand gratis. In die übrigen
-            Länder kostet er CHF 1.50. Die Lieferzeit beträgt 7 bis 14
-            Werktage, mit Sendungsverfolgung per E-Mail.
-          </p>
-        </div>
-      </details>
-
-      <details class="a-frage">
-        <summary>Und wenn sie mir nicht gefällt?</summary>
-        <div class="a-frage__inhalt">
-          <p>
-            Du hast 14 Tage Rückgaberecht, ohne Begründung. Schreib mir über das
-            <a href="/pages/contact">Kontaktformular</a>, dann klären wir die Rücksendung.
-            Die Einzelheiten stehen unter
-            <a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>.
-          </p>
-        </div>
-      </details>
-    </div>
+      Es gibt jetzt genau eine Quelle: snippets/n-wissen.liquid.
+      Startseite, Produktseite, Frageseite und der Chat lesen alle
+      daraus. Wer dort etwas aendert, aendert es ueberall.
+    {%- endcomment -%}
+    <div data-auf="klein">{% render 'n-wissen' %}</div>
 
     <div class="a-weiter">
       <a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>

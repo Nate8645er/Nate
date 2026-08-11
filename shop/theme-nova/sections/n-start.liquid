@@ -2,10 +2,10 @@
   sections/n-start.liquid — LET'SDRINK NOVA, Startseite
   9.8.2026. Bauleitung.
 
-  AUFBAU (Stand 10.8.2026, nach dem Kuerzungsdurchgang):
-    1 Hero -> 3+4 Problem/Loesung -> 5 Vorteile -> 7 Anwendung
-    -> 10 FAQ -> 11 Schluss
-  Die Nummern 2, 6, 8 und 9 sind bewusst leer und als Kommentar an
+  AUFBAU (Stand 11.8.2026, nach dem zweiten Kuerzungsdurchgang):
+    1 Hero -> 3+4 Problem/Loesung -> 7 Anwendung -> 10 FAQ
+    -> 11 Schluss
+  Die Nummern 2, 5, 6, 8 und 9 sind bewusst leer und als Kommentar an
   ihrer Stelle begruendet. Nicht kommentarlos wieder einfuegen.
   Gemessen auf einem 390er Handy: 8975 px vorher, danach deutlich
   kuerzer. Vier Abschnitte sagten dieselben vier Dinge.
@@ -24,8 +24,10 @@
   WEITERE ROTE LINIEN
   - Keine Produktangabe ausser 550 ml und sechs Farben. Nichts ueber
     Material, Dichtigkeit, Masse, Gewicht oder Spuelmaschine. Deshalb
-    steht bei den Vorteilen "Ein Teil statt zwei" und nicht
-    "hochwertige Materialien" - Letzteres koennen wir nicht belegen.
+    heisst der Bildblock "Ein Teil statt zwei" und nicht "hochwertige
+    Materialien" - Letzteres koennen wir nicht belegen. Und deshalb
+    steht nirgends mehr, der Napf sei "niedrig genug" oder "flach":
+    das waeren Masse, und die kennen wir nicht.
   - Nur Wasser.
   - Preis immer aus Liquid.
   - Versandangaben aus dem Versandprofil: CH gratis, Ausland CHF 1.50.
@@ -405,52 +407,28 @@
   </div>
 </section>
 
-{%- comment -%} ======================================== 5 · PRODUKTVORTEILE {%- endcomment -%}
-<section class="n-block n-block--tief">
-  <div class="n-huelle">
-    <div class="n-kopfz" data-auf>
-      <span class="n-auge">Vorteile</span>
-      <h2 class="n-titel">Drei Dinge, die den Unterschied machen.</h2>
-    </div>
+{%- comment -%}
+  ABSCHNITT 5 (PRODUKTVORTEILE) IST ENTFERNT.
 
-    {%- comment -%}
-      Die vierte Karte hiess "Ein Knopf" und beschrieb genau den
-      Vorgang, den der Anwendungsblock darunter in drei Schritten
-      zeigt. Sie ist entfernt; das Raster steht jetzt auf drei.
-    {%- endcomment -%}
-    <div class="n-raster n-raster--3" data-staffel>
-      <article class="n-glas n-glas--hebt" data-auf>
-        <div class="n-kreis">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c-3 4-5.5 6.6-5.5 9.5a5.5 5.5 0 0 0 11 0C17.5 9.6 15 7 12 3Z"/></svg>
-        </div>
-        <h3 class="n-karte-t">550 ml</h3>
-        <p class="n-karte-p">Eine Füllung reicht für mehrere Pausen, weil der Rest jedes Mal zurückläuft.</p>
-      </article>
+  Drei Karten, und jede sagte etwas, das auf derselben Seite schon
+  stand:
 
-      <article class="n-glas n-glas--hebt" data-auf>
-        <div class="n-kreis">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="16" rx="3"/><path d="M9 9h6"/></svg>
-        </div>
-        <h3 class="n-karte-t">Ein Teil statt zwei</h3>
-        <p class="n-karte-p">Der Napf ist fest angebaut. Nichts zum Abschrauben, nichts zum Verlieren.</p>
-      </article>
+    "550 ml - eine Fuellung reicht fuer mehrere Pausen, weil der Rest
+     zurueckläuft"  ->  Wort fuer Wort die erste Frage im Frageblock.
+    "Ein Teil statt zwei - der Napf ist fest angebaut"
+                         ->  der Bildblock direkt darueber traegt
+                             genau diesen Titel und diesen Satz.
+    "Hund und Katze"     ->  steht im Frageblock als eigene Frage.
 
-      <article class="n-glas n-glas--hebt" data-auf>
-        <div class="n-kreis">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="7" r="2.4"/><circle cx="16.5" cy="7" r="2.4"/><circle cx="4.5" cy="13.5" r="2"/><circle cx="19.5" cy="13.5" r="2"/><path d="M12 12c-2.6 0-4.3 2.2-4.3 4.2 0 1.6 1.2 2.7 2.8 2.7h3c1.6 0 2.8-1.1 2.8-2.7C16.3 14.2 14.6 12 12 12Z"/></svg>
-        </div>
-        <h3 class="n-karte-t">Hund und Katze</h3>
-        <p class="n-karte-p">Der Napf ist niedrig genug – auch für Katzen, die mitfahren oder an der Leine laufen.</p>
-      </article>
-    </div>
+  Dazu kam ein handfester Fehler: die dritte Karte behauptete "der
+  Napf ist niedrig genug". Das ist eine Aussage ueber die Masse, und
+  die kennen wir nicht - dieselbe Aussage war auf der Frageseite
+  schon gestrichen worden und hatte hier ueberlebt. Mit dem
+  Abschnitt verschwindet sie aus dem ganzen Shop.
 
-    {%- comment -%}
-      Bewusst NICHT in dieser Liste: "hochwertige Materialien",
-      "auslaufsicher", "spuelmaschinenfest", "BPA-frei". Wir haben vom
-      Lieferanten keine Zusicherung dazu - also behaupten wir es nicht.
-    {%- endcomment -%}
-  </div>
-</section>
+  Gemessen: rund 60 Woerter und ein voller Bildschirm weniger
+  zwischen Kaufknopf und Anwendung.
+{%- endcomment -%}
 
 {%- comment -%}
   ABSCHNITT 6 (FARB-SHOWCASE) IST ENTFERNT.
@@ -550,7 +528,7 @@
       <span class="n-auge">Bereit?</span>
       <h2 class="n-titel">Hydration, die dein Haustier liebt.</h2>
       <p class="n-unter" style="margin-inline:auto;max-width:44ch">
-        {{ v.price | money }} · Gratisversand in der Schweiz · 14 Tage Rückgabe
+        Gratisversand in der Schweiz · 14 Tage Rückgabe
       </p>
       {%- comment -%}
         Dieser Knopf hiess "In den Warenkorb", legte aber nichts in den
@@ -559,9 +537,14 @@
         hier unten ist keine Farbe gewaehlt, also fuehrt der Weg zur
         Farbwahl. Der echte Kaufknopf ist der im Formular oben und der
         in der mitlaufenden Leiste.
+
+        Die Aufschrift war "Farbe waehlen und kaufen · CHF 39.90" und
+        brach auf dem Handy mitten in der Pille um. Der Preis stand
+        ohnehin eine Zeile darueber noch einmal. Er steht jetzt nur
+        noch auf dem Knopf - dort, wo er zaehlt.
       {%- endcomment -%}
       <div class="n-cta" style="justify-content:center">
-        <a class="n-knopf" href="#kaufen">Farbe wählen und kaufen · {{ v.price | money }}</a>
+        <a class="n-knopf" href="#kaufen">Farbe wählen · {{ v.price | money }}</a>
         <a class="n-textlink" href="/pages/contact">Frage stellen</a>
       </div>
     </div>
