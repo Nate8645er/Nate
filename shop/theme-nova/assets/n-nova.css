@@ -1766,8 +1766,50 @@ html.n-sperre, html.n-sperre body { overflow: hidden; }
   .n-anz__was small { display: none; }
 }
 
-.n-zusatz { display: block; border: 0; margin: 0 0 1.2rem; padding: 0; min-width: 0; }
-.n-zusatz[hidden] { display: none; }
+/* ==================================================================
+   FARBE JE FLASCHE
+
+   Vorher: acht Feldgruppen untereinander, jede mit eigener
+   Ueberschrift und einer vollen Reihe 38er Punkte. Gemessen 598 px
+   bei neun Flaschen, und alle acht sahen gleich aus - man konnte
+   nicht sehen, was man schon gewaehlt hatte, ohne die Ringe zu
+   zaehlen.
+
+   Jetzt eine Zeile je Flasche: Nummer links, sechs kleine Punkte,
+   Farbname rechts. Der Name ist der eigentliche Gewinn - damit liest
+   sich die Liste als "Tuerkis, Tuerkis, Rosa" statt als acht
+   identische Punktreihen.
+   ================================================================== */
+.n-farbliste { display: block; margin: 0 0 1.3rem; }
+.n-farbliste[hidden] { display: none; }
+
+.n-fz {
+  display: grid; grid-template-columns: 18px 1fr auto;
+  align-items: center; gap: .55rem;
+  border: 0; margin: 0; padding: .3rem 0; min-width: 0;
+}
+/* display:grid wuerde das hidden-Attribut aushebeln - siehe der
+   gleiche Fehler frueher beim Chatfenster. */
+.n-fz[hidden] { display: none; }
+.n-fz + .n-fz { border-top: 1px solid var(--n-glas-rand); }
+
+.n-fz__nr { font-size: .8125rem; font-weight: 700; color: var(--n-sanft); }
+.n-fz__punkte { display: flex; gap: .3rem; margin: 0; padding: 0; list-style: none; }
+.n-pkt--mini { width: 34px; height: 34px; }
+.n-pkt--mini:hover { transform: none; }
+.n-pkt--radio.n-pkt--mini:has(input:checked) { transform: none; }
+.n-fz__name {
+  font-size: .8125rem; color: var(--n-text); font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 7ch; text-align: right;
+}
+
+@media (max-width: 339px) {
+  /* Auf sehr schmalen Geraeten fliegt der Name raus, bevor die
+     Punkte kleiner werden - antippen muss man sie koennen. */
+  .n-fz__name { display: none; }
+}
+
 .n-wahl--klein { gap: .45rem; margin-bottom: 0; margin-top: .55rem; }
 .n-wahl--klein .n-pkt { width: 38px; height: 38px; }
 

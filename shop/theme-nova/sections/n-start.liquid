@@ -337,37 +337,65 @@
         </fieldset>
 
         {%- comment -%}
-          Farbe fuer jede weitere Flasche. Echte Radiofelder, damit die
-          Wahl ohne eine Zeile JavaScript funktioniert. Ausgeschaltet,
-          bis die Menge sie verlangt - und ein ausgeschaltetes Feld
-          schickt der Browser nicht mit. Faellt das Skript aus, bleibt
-          es bei genau einer Flasche, und der Kauf geht trotzdem.
+          FARBE JE FLASCHE
 
-          Neun Plaetze, weil die groesste Stufe neun Flaschen in den
-          Warenkorb legt. Aendert sich die Staffel, muss die Zahl in
-          der Schleife mitwachsen - sonst laesst sich die letzte
-          Flasche nicht einfaerben.
+          Vorher standen hier acht Feldgruppen untereinander, jede mit
+          eigener Ueberschrift ("Farbe der 2. Flasche") und einer
+          vollen Reihe grosser Punkte: gemessen 598 px, acht Bloecke,
+          die alle gleich aussehen. Und die ERSTE Flasche fehlte -
+          ihre Farbe waehlt man oben am Preis, in der Liste begann es
+          bei der zweiten. Wer neun Flaschen nahm, sah eine Liste von
+          2 bis 9 und fragte sich, wo die erste geblieben ist.
+
+          Jetzt eine Zeile je Flasche: Nummer, sechs kleine Punkte,
+          Farbname. Die erste Flasche steht mit drin.
+
+          WIE DIE ERSTE ZEILE ANGEBUNDEN IST
+          Flasche 1 haengt am versteckten Feld items[0][id], das auch
+          die grossen Farbpunkte oben schreiben. Damit es nicht zwei
+          Felder mit demselben Namen gibt, traegt die erste Zeile
+          form="n-nichts" - sie gehoert zu keinem Formular und wird
+          nicht mitgeschickt. Das Skript schiebt ihre Wahl auf den
+          passenden grossen Punkt weiter; damit laufen Bild, Preis,
+          Farbname und Adresszeile mit, ohne dass es ein zweites Mal
+          programmiert wird.
+
+          Die Zeilen 2 bis 9 sind echte Radiofelder mit
+          items[N][id] und ausgeschaltet, solange die Menge sie nicht
+          verlangt - ein ausgeschaltetes Feld schickt der Browser
+          nicht mit. Faellt das Skript aus, bleibt es bei genau einer
+          Flasche, und der Kauf geht trotzdem.
         {%- endcomment -%}
-        {%- for platz in (2..9) -%}
-          {%- assign idx = platz | minus: 1 -%}
-          <fieldset class="n-zusatz" data-zusatz="{{ platz }}" disabled hidden>
-            <legend class="n-etikett">Farbe der {{ platz }}. Flasche</legend>
-            <input type="hidden" name="items[{{ idx }}][quantity]" value="1">
-            <ul class="n-wahl n-wahl--klein">
-              {%- for var in lp.variants -%}
-                {%- assign s2 = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
-                <li>
-                  <label class="n-pkt n-pkt--{{ s2 | escape }} n-pkt--radio">
-                    <input type="radio" name="items[{{ idx }}][id]" value="{{ var.id }}"
-                           {% if forloop.first %}checked{% endif %}
-                           {% unless var.available %}disabled{% endunless %}>
-                    <span class="n-sr">{{ var.option1 }}{% unless var.available %} – zurzeit nicht lieferbar{% endunless %}</span>
-                  </label>
-                </li>
-              {%- endfor -%}
-            </ul>
-          </fieldset>
-        {%- endfor -%}
+        <div class="n-farbliste" data-farbliste hidden>
+          <span class="n-etikett">Farbe je Flasche</span>
+          {%- for platz in (1..9) -%}
+            {%- assign idx = platz | minus: 1 -%}
+            <fieldset class="n-fz" data-zusatz="{{ platz }}"{% if platz > 1 %} disabled hidden{% endif %}>
+              <legend class="n-sr">Farbe der {{ platz }}. Flasche</legend>
+              {%- if platz > 1 -%}
+                <input type="hidden" name="items[{{ idx }}][quantity]" value="1">
+              {%- endif -%}
+              <span class="n-fz__nr" aria-hidden="true">{{ platz }}</span>
+              <ul class="n-fz__punkte">
+                {%- for var in lp.variants -%}
+                  {%- assign s2 = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
+                  <li>
+                    <label class="n-pkt n-pkt--{{ s2 | escape }} n-pkt--radio n-pkt--mini">
+                      <input type="radio"
+                             {%- if platz == 1 %} name="n-farbe-1" form="n-nichts" data-hauptzeile{% else %} name="items[{{ idx }}][id]"{% endif %}
+                             value="{{ var.id }}"
+                             data-name="{{ var.option1 | escape }}"
+                             {% if var.id == v.id %}checked{% endif %}
+                             {% unless var.available %}disabled{% endunless %}>
+                      <span class="n-sr">{{ var.option1 }}{% unless var.available %} – zurzeit nicht lieferbar{% endunless %}</span>
+                    </label>
+                  </li>
+                {%- endfor -%}
+              </ul>
+              <span class="n-fz__name" data-fz-name>{{ v.option1 }}</span>
+            </fieldset>
+          {%- endfor -%}
+        </div>
 
         <div class="n-cta">
           <button class="n-knopf" type="submit" data-leiste-anker

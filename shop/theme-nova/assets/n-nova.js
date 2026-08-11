@@ -776,12 +776,43 @@
     var text   = $("[data-knopftext]", form);
     var pfeld  = $("[data-variantenfeld]", form);
 
-    /* Wer in einer Zusatzzeile selbst eine Farbe waehlt, soll sie
-       behalten. Ab dann fasst das Angleichen diese Zeile nicht mehr
-       an. */
+    var liste = $("[data-farbliste]", form);
+
+    /* Zeile 1 ist KEINE eigene Wahl, sondern dieselbe wie die grossen
+       Farbpunkte oben. Sie schiebt ihren Klick auf den passenden
+       grossen Punkt weiter - damit laufen Bild, Preis, Farbname und
+       Adresszeile mit, ohne dass das ein zweites Mal programmiert
+       wird. Deshalb bekommt sie auch nie die Marke data-selbst: sie
+       spiegelt immer, was oben steht. */
+    function istHauptzeile(fs) { return fs.getAttribute("data-zusatz") === "1"; }
+
     zusatz.forEach(function (fs) {
-      fs.addEventListener("change", function () { fs.setAttribute("data-selbst", ""); });
+      fs.addEventListener("change", function (e) {
+        if (istHauptzeile(fs)) {
+          var id = e.target.value;
+          for (var k = 0; k < punkte.length; k++) {
+            if (punkte[k].getAttribute("data-variante") === id) { punkte[k].click(); break; }
+          }
+        } else {
+          /* Wer in einer Zusatzzeile selbst eine Farbe waehlt, soll
+             sie behalten. Ab dann fasst das Angleichen sie nicht
+             mehr an. */
+          fs.setAttribute("data-selbst", "");
+        }
+        namenNachfuehren();
+      });
     });
+
+    /* Der Farbname am Zeilenende. Ohne ihn liest sich die Liste als
+       neun identische Punktreihen; mit ihm als "Tuerkis, Tuerkis,
+       Rosa" - man sieht auf einen Blick, was man bestellt. */
+    function namenNachfuehren() {
+      zusatz.forEach(function (fs) {
+        var an = fs.querySelector("input:checked");
+        var feld = fs.querySelector("[data-fz-name]");
+        if (an && feld) feld.textContent = an.getAttribute("data-name") || "";
+      });
+    }
 
     /* Ohne das hier stuenden alle weiteren Flaschen auf Rosa, weil das
        die erste Variante im Sortiment ist - auch wenn oben Schwarz
@@ -790,10 +821,11 @@
     function farbenAngleichen() {
       if (!pfeld || !pfeld.value) return;
       zusatz.forEach(function (fs) {
-        if (fs.hasAttribute("data-selbst")) return;
+        if (fs.hasAttribute("data-selbst")) return;   // Hauptzeile hat sie nie
         var r = fs.querySelector('input[value="' + pfeld.value + '"]');
         if (r && !r.disabled) r.checked = true;
       });
+      namenNachfuehren();
     }
 
     function setzen() {
@@ -802,18 +834,31 @@
         if (wahlen[i].checked) { n = parseInt(wahlen[i].value, 10) || 1; gewaehlt = wahlen[i]; }
       }
       zusatz.forEach(function (fs) {
-        var noetig = parseInt(fs.getAttribute("data-zusatz"), 10) <= n;
-        fs.disabled = !noetig;
+        var platz = parseInt(fs.getAttribute("data-zusatz"), 10);
+        var noetig = platz <= n;
+        /* Die Hauptzeile nie ausschalten - sie schickt ohnehin nichts
+           mit (form="n-nichts") und dient nur der Anzeige. */
+        if (!istHauptzeile(fs)) fs.disabled = !noetig;
         if (noetig) { fs.removeAttribute("hidden"); }
         else        { fs.setAttribute("hidden", ""); }
       });
+      /* Bei einer Flasche waere die Liste eine einzige Zeile, die
+         dasselbe sagt wie die grossen Punkte zwei Zeilen darueber. */
+      if (liste) {
+        if (n > 1) liste.removeAttribute("hidden");
+        else       liste.setAttribute("hidden", "");
+      }
       farbenAngleichen();
       if (text) {
         /* Der Betrag steht am Feld selbst (data-preis) und kommt aus
            Liquid. Frueher wurde er aus der Beschriftung gelesen - das
            brach, sobald sich der Aufbau der Zeile aenderte. */
         var preis = gewaehlt ? (gewaehlt.getAttribute("data-preis") || "") : "";
-        text.textContent = (n === 1 ? "In den Warenkorb · " : n + " in den Warenkorb · ") + preis;
+        /* Frueher stand die Menge vorn ("9 in den Warenkorb · CHF
+           239.40"). Auf einem 390er Handy brach das in zwei Zeilen um.
+           Wie viele es sind, sagt die gewaehlte Stufe drei Zeilen
+           darueber schon. */
+        text.textContent = "In den Warenkorb · " + preis;
       }
     }
     wahlen.forEach(function (r) { r.addEventListener("change", setzen); });
