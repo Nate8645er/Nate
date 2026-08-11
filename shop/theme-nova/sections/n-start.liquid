@@ -337,54 +337,93 @@
         </fieldset>
 
         {%- comment -%}
-          FARBE JE FLASCHE
+          FARBE JE FLASCHE — ZWEI SCHRITTE STATT NEUN REIHEN
 
-          Vorher standen hier acht Feldgruppen untereinander, jede mit
-          eigener Ueberschrift ("Farbe der 2. Flasche") und einer
-          vollen Reihe grosser Punkte: gemessen 598 px, acht Bloecke,
-          die alle gleich aussehen. Und die ERSTE Flasche fehlte -
-          ihre Farbe waehlt man oben am Preis, in der Liste begann es
-          bei der zweiten. Wer neun Flaschen nahm, sah eine Liste von
-          2 bis 9 und fragte sich, wo die erste geblieben ist.
+          Zuerst standen hier neun Zeilen mit je sechs Punkten. Das
+          war ordentlich, aber es war eine Tabelle, kein Konfigurator:
+          54 Punkte gleichzeitig auf dem Schirm, und die Farbe war
+          nur ein Kreis, nie das Produkt.
 
-          Jetzt eine Zeile je Flasche: Nummer, sechs kleine Punkte,
-          Farbname. Die erste Flasche steht mit drin.
+          Wer bei Apple ein iPhone waehlt, sieht das GERAET in der
+          Farbe, gross, ruhig, eins nach dem anderen. Genau das hier:
 
-          WIE DIE ERSTE ZEILE ANGEBUNDEN IST
-          Flasche 1 haengt am versteckten Feld items[0][id], das auch
-          die grossen Farbpunkte oben schreiben. Damit es nicht zwei
-          Felder mit demselben Namen gibt, traegt die erste Zeile
-          form="n-nichts" - sie gehoert zu keinem Formular und wird
-          nicht mitgeschickt. Das Skript schiebt ihre Wahl auf den
-          passenden grossen Punkt weiter; damit laufen Bild, Preis,
-          Farbname und Adresszeile mit, ohne dass es ein zweites Mal
+            Schritt 1  ein Streifen mit deinen Flaschen. Jede zeigt
+                       die echte Aufnahme in ihrer aktuellen Farbe.
+                       Antippen waehlt sie aus.
+            Schritt 2  darunter EINE Farbreihe in voller Groesse,
+                       plus der Name. Sie gehoert zur ausgewaehlten
+                       Flasche.
+
+          Damit stehen nie mehr als sechs Punkte gleichzeitig da,
+          egal ob zwei oder neun Flaschen - und man sieht, was man
+          bestellt, statt es aus Ringen zu erschliessen.
+
+          WAS TECHNISCH GLEICH BLEIBT
+          Die Wahrheit sind weiterhin echte Radiofelder, eine Gruppe
+          je Flasche, mit items[N][id]. Nicht ausgewaehlte Gruppen
+          sind nur VERSTECKT, nicht ausgeschaltet - versteckte Felder
+          schickt der Browser mit, ausgeschaltete nicht. Ausgeschaltet
+          sind allein die Plaetze oberhalb der gewaehlten Menge.
+
+          Flasche 1 haengt am selben versteckten Feld wie die grossen
+          Farbpunkte oben (items[0][id]). Ihre Gruppe traegt deshalb
+          form="n-nichts" - sie gehoert zu keinem Formular, wird nicht
+          mitgeschickt, und das Skript schiebt ihre Wahl auf den
+          passenden grossen Punkt weiter. So laufen Bild, Preis,
+          Farbname und Adresszeile mit, ohne dass das ein zweites Mal
           programmiert wird.
 
-          Die Zeilen 2 bis 9 sind echte Radiofelder mit
-          items[N][id] und ausgeschaltet, solange die Menge sie nicht
-          verlangt - ein ausgeschaltetes Feld schickt der Browser
-          nicht mit. Faellt das Skript aus, bleibt es bei genau einer
-          Flasche, und der Kauf geht trotzdem.
+          Ohne JavaScript erscheint dieser Block gar nicht, und es
+          bleibt bei genau einer Flasche in der oben gewaehlten Farbe.
+          Das ist der gewollte Rueckfall.
         {%- endcomment -%}
-        <div class="n-farbliste" data-farbliste hidden>
-          <span class="n-etikett">Farbe je Flasche</span>
+        <div class="n-wahlz" data-farbliste hidden>
+
+          <div class="n-wahlz__kopf">
+            <span class="n-etikett">Farbe je Flasche</span>
+            <button class="n-wahlz__alle" type="button" data-alle-gleich>Alle gleich</button>
+          </div>
+
+          {%- comment -%}
+            Der Streifen. Die Karten oberhalb der gewaehlten Menge
+            sind versteckt; das Skript deckt sie auf.
+          {%- endcomment -%}
+          <ul class="n-wahlz__strip" data-flaschenstrip>
+            {%- for platz in (1..9) -%}
+              <li>
+                <button class="n-wahlz__karte" type="button"
+                        data-flasche="{{ platz }}" aria-pressed="false"
+                        {% if platz > 1 %}hidden{% endif %}>
+                  <span class="n-wahlz__bild">
+                    <img src="{{ 'a-flasche-' | append: slug | append: '.webp' | asset_url }}"
+                         alt="" width="650" height="2212" loading="lazy" decoding="async"
+                         data-karte-bild>
+                  </span>
+                  <span class="n-wahlz__nr">{{ platz }}</span>
+                </button>
+              </li>
+            {%- endfor -%}
+          </ul>
+
           {%- for platz in (1..9) -%}
             {%- assign idx = platz | minus: 1 -%}
-            <fieldset class="n-fz" data-zusatz="{{ platz }}"{% if platz > 1 %} disabled hidden{% endif %}>
-              <legend class="n-sr">Farbe der {{ platz }}. Flasche</legend>
+            <fieldset class="n-wahlz__farben" data-zusatz="{{ platz }}"{% if platz > 1 %} disabled{% endif %} hidden>
+              <legend class="n-wahlz__legende">
+                Flasche {{ platz }} · <b data-fz-name>{{ v.option1 }}</b>
+              </legend>
               {%- if platz > 1 -%}
                 <input type="hidden" name="items[{{ idx }}][quantity]" value="1">
               {%- endif -%}
-              <span class="n-fz__nr" aria-hidden="true">{{ platz }}</span>
-              <ul class="n-fz__punkte">
+              <ul class="n-wahl n-wahl--klein">
                 {%- for var in lp.variants -%}
                   {%- assign s2 = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
                   <li>
-                    <label class="n-pkt n-pkt--{{ s2 | escape }} n-pkt--radio n-pkt--mini">
+                    <label class="n-pkt n-pkt--{{ s2 | escape }} n-pkt--radio">
                       <input type="radio"
                              {%- if platz == 1 %} name="n-farbe-1" form="n-nichts" data-hauptzeile{% else %} name="items[{{ idx }}][id]"{% endif %}
                              value="{{ var.id }}"
                              data-name="{{ var.option1 | escape }}"
+                             data-bild="{{ 'a-flasche-' | append: s2 | append: '.webp' | asset_url }}"
                              {% if var.id == v.id %}checked{% endif %}
                              {% unless var.available %}disabled{% endunless %}>
                       <span class="n-sr">{{ var.option1 }}{% unless var.available %} – zurzeit nicht lieferbar{% endunless %}</span>
@@ -392,7 +431,6 @@
                   </li>
                 {%- endfor -%}
               </ul>
-              <span class="n-fz__name" data-fz-name>{{ v.option1 }}</span>
             </fieldset>
           {%- endfor -%}
         </div>

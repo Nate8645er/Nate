@@ -1767,48 +1767,78 @@ html.n-sperre, html.n-sperre body { overflow: hidden; }
 }
 
 /* ==================================================================
-   FARBE JE FLASCHE
+   FARBE JE FLASCHE — KONFIGURATOR IN ZWEI SCHRITTEN
 
-   Vorher: acht Feldgruppen untereinander, jede mit eigener
-   Ueberschrift und einer vollen Reihe 38er Punkte. Gemessen 598 px
-   bei neun Flaschen, und alle acht sahen gleich aus - man konnte
-   nicht sehen, was man schon gewaehlt hatte, ohne die Ringe zu
-   zaehlen.
+   Zuerst waren es neun Zeilen mit je sechs Punkten: 54 Punkte auf
+   einmal, und die Farbe war nur ein Kreis, nie das Produkt.
 
-   Jetzt eine Zeile je Flasche: Nummer links, sechs kleine Punkte,
-   Farbname rechts. Der Name ist der eigentliche Gewinn - damit liest
-   sich die Liste als "Tuerkis, Tuerkis, Rosa" statt als acht
-   identische Punktreihen.
+   Jetzt oben ein Streifen mit den echten Flaschenaufnahmen, darunter
+   EINE Farbreihe fuer die angetippte Flasche. Nie mehr als sechs
+   Punkte gleichzeitig, egal ob zwei oder neun Flaschen - und die
+   Hoehe bleibt konstant bei rund 210 px statt 428.
    ================================================================== */
-.n-farbliste { display: block; margin: 0 0 1.3rem; }
-.n-farbliste[hidden] { display: none; }
+.n-wahlz { display: block; margin: 0 0 1.4rem; }
+.n-wahlz[hidden] { display: none; }
 
-.n-fz {
-  display: grid; grid-template-columns: 18px 1fr auto;
-  align-items: center; gap: .55rem;
-  border: 0; margin: 0; padding: .3rem 0; min-width: 0;
+.n-wahlz__kopf {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 1rem; margin-bottom: .7rem;
 }
-/* display:grid wuerde das hidden-Attribut aushebeln - siehe der
-   gleiche Fehler frueher beim Chatfenster. */
-.n-fz[hidden] { display: none; }
-.n-fz + .n-fz { border-top: 1px solid var(--n-glas-rand); }
+.n-wahlz__kopf .n-etikett { margin: 0; }
+.n-wahlz__alle {
+  border: 0; background: none; padding: 0; cursor: pointer;
+  font: inherit; font-size: .8125rem; color: var(--n-sanft);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.n-wahlz__alle:hover { color: var(--n-text); }
 
-.n-fz__nr { font-size: .8125rem; font-weight: 700; color: var(--n-sanft); }
-.n-fz__punkte { display: flex; gap: .3rem; margin: 0; padding: 0; list-style: none; }
-.n-pkt--mini { width: 34px; height: 34px; }
-.n-pkt--mini:hover { transform: none; }
-.n-pkt--radio.n-pkt--mini:has(input:checked) { transform: none; }
-.n-fz__name {
-  font-size: .8125rem; color: var(--n-text); font-weight: 700;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  max-width: 7ch; text-align: right;
+/* --- Schritt 1: der Flaschenstreifen ------------------------------ */
+.n-wahlz__strip {
+  display: flex; gap: .5rem; margin: 0 0 1rem; padding: 0 0 .2rem;
+  list-style: none;
+  overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
 }
+.n-wahlz__strip::-webkit-scrollbar { display: none; }
+.n-wahlz__strip > li { flex: none; scroll-snap-align: start; }
 
-@media (max-width: 339px) {
-  /* Auf sehr schmalen Geraeten fliegt der Name raus, bevor die
-     Punkte kleiner werden - antippen muss man sie koennen. */
-  .n-fz__name { display: none; }
+.n-wahlz__karte {
+  position: relative; display: grid; justify-items: center; gap: .3rem;
+  width: 64px; padding: .5rem .3rem .45rem;
+  border: 0; border-radius: 14px; cursor: pointer;
+  background: var(--n-panel);
+  box-shadow: inset 0 0 0 1px transparent;
+  transition: box-shadow .18s ease, background .18s ease, transform .18s var(--n-weich);
+  font: inherit;
 }
+.n-wahlz__karte[hidden] { display: none; }
+.n-wahlz__bild { display: block; height: 58px; }
+.n-wahlz__bild img { display: block; height: 100%; width: auto; }
+.n-wahlz__nr { font-size: .75rem; font-weight: 700; color: var(--n-sanft); line-height: 1; }
+
+.n-wahlz__karte:hover { transform: translateY(-2px); }
+/* Apple setzt keinen fetten Rahmen um die Auswahl, sondern einen
+   duennen Ring MIT LUFT dazwischen. Deshalb zwei Schatten: erst die
+   Grundfarbe als Abstandhalter, dann der Ring. */
+.n-wahlz__karte[aria-pressed="true"] {
+  background: var(--n-tief);
+  box-shadow: 0 0 0 2px var(--n-grund), 0 0 0 3.5px var(--n-akzent);
+}
+.n-wahlz__karte[aria-pressed="true"] .n-wahlz__nr { color: var(--n-text); }
+.n-wahlz__karte:focus-visible { outline: 2px solid var(--n-akzent); outline-offset: 4px; }
+
+/* --- Schritt 2: die Farbreihe der gewaehlten Flasche -------------- */
+.n-wahlz__farben { display: block; border: 0; margin: 0; padding: 0; min-width: 0; }
+/* display:block wuerde das hidden-Attribut aushebeln - derselbe
+   Fehler wie frueher beim Chatfenster. Deshalb ausdruecklich. */
+.n-wahlz__farben[hidden] { display: none; }
+.n-wahlz__legende {
+  display: block; padding: 0; margin: 0 0 .6rem;
+  font-size: .9375rem; color: var(--n-sanft);
+}
+.n-wahlz__legende b { color: var(--n-text); font-weight: 700; }
+.n-wahlz__farben .n-wahl { margin-bottom: 0; }
 
 .n-wahl--klein { gap: .45rem; margin-bottom: 0; margin-top: .55rem; }
 .n-wahl--klein .n-pkt { width: 38px; height: 38px; }

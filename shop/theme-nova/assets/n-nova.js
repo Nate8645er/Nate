@@ -759,14 +759,20 @@
   }
 
   /* ---------- 11 · MENGE UND FARBE JE FLASCHE ----------------------
-     Die Plaetze 2 und 3 stehen als ausgeschaltete Feldgruppen im HTML.
-     Ein ausgeschaltetes Feld schickt der Browser nicht mit - genau das
-     ist der Schalter. Hier wird nur disabled und hidden umgelegt und
-     der Knopftext nachgefuehrt; die Farbwahl selbst sind echte
-     Radiofelder und braucht kein Skript.
+     Neun Feldgruppen stehen im HTML, eine je Flasche. Ausgeschaltet
+     sind die Plaetze oberhalb der gewaehlten Menge - ein
+     ausgeschaltetes Feld schickt der Browser nicht mit, genau das ist
+     der Schalter. VERSTECKT sind alle ausser der gerade bearbeiteten;
+     versteckte Felder schickt er sehr wohl mit.
 
-     Faellt dieses Skript aus, bleiben die Plaetze aus und der Kunde
-     kauft genau eine Flasche. Das ist der gewollte Rueckfall. */
+     Der Konfigurator hat zwei Schritte: oben ein Streifen mit den
+     echten Flaschenaufnahmen (antippen waehlt aus), darunter EINE
+     Farbreihe fuer die gewaehlte Flasche. Damit stehen nie mehr als
+     sechs Punkte gleichzeitig da, egal ob zwei oder neun Flaschen.
+
+     Faellt dieses Skript aus, bleibt der ganze Block versteckt und
+     der Kunde kauft genau eine Flasche in der oben gewaehlten Farbe.
+     Das ist der gewollte Rueckfall. */
   (function () {
     var form = $("form[data-kaufform]");
     if (!form) return;
@@ -776,48 +782,93 @@
     var text   = $("[data-knopftext]", form);
     var pfeld  = $("[data-variantenfeld]", form);
 
-    var liste = $("[data-farbliste]", form);
+    var liste  = $("[data-farbliste]", form);
+    var karten = $$("[data-flasche]", form);
+    var alle   = $("[data-alle-gleich]", form);
+    var aktiv  = 1;
 
-    /* Zeile 1 ist KEINE eigene Wahl, sondern dieselbe wie die grossen
-       Farbpunkte oben. Sie schiebt ihren Klick auf den passenden
-       grossen Punkt weiter - damit laufen Bild, Preis, Farbname und
-       Adresszeile mit, ohne dass das ein zweites Mal programmiert
-       wird. Deshalb bekommt sie auch nie die Marke data-selbst: sie
-       spiegelt immer, was oben steht. */
     function istHauptzeile(fs) { return fs.getAttribute("data-zusatz") === "1"; }
+    function platzVon(fs) { return parseInt(fs.getAttribute("data-zusatz"), 10); }
+
+    /* Welche Flasche gerade bearbeitet wird. Sichtbar ist immer genau
+       EINE Farbreihe - die der angetippten Karte. Die uebrigen sind
+       nur VERSTECKT, nicht ausgeschaltet: versteckte Felder schickt
+       der Browser mit, ausgeschaltete nicht. */
+    function waehleFlasche(platz) {
+      aktiv = platz;
+      zusatz.forEach(function (fs) {
+        var dran = platzVon(fs) === platz && !fs.disabled;
+        if (dran) fs.removeAttribute("hidden");
+        else      fs.setAttribute("hidden", "");
+      });
+      karten.forEach(function (k) {
+        k.setAttribute("aria-pressed",
+          parseInt(k.getAttribute("data-flasche"), 10) === platz ? "true" : "false");
+      });
+    }
+
+    /* Karte und Beschriftung auf den Stand der Radiofelder bringen. */
+    function nachfuehren() {
+      zusatz.forEach(function (fs) {
+        var an = fs.querySelector("input:checked");
+        if (!an) return;
+        var platz = platzVon(fs);
+        var name  = an.getAttribute("data-name") || "";
+        var bild  = an.getAttribute("data-bild");
+        var etikett = fs.querySelector("[data-fz-name]");
+        if (etikett) etikett.textContent = name;
+        var karte = null;
+        for (var i = 0; i < karten.length; i++) {
+          if (parseInt(karten[i].getAttribute("data-flasche"), 10) === platz) { karte = karten[i]; break; }
+        }
+        if (karte) {
+          var img = karte.querySelector("[data-karte-bild]");
+          if (img && bild && img.getAttribute("src") !== bild) img.src = bild;
+          karte.setAttribute("aria-label", "Flasche " + platz + ": " + name);
+        }
+      });
+    }
 
     zusatz.forEach(function (fs) {
       fs.addEventListener("change", function (e) {
         if (istHauptzeile(fs)) {
+          /* Flasche 1 ist dieselbe Wahl wie die grossen Farbpunkte
+             oben. Der Klick wird dorthin weitergeschoben, damit Bild,
+             Preis, Farbname und Adresszeile mitlaufen - statt das ein
+             zweites Mal zu programmieren. */
           var id = e.target.value;
           for (var k = 0; k < punkte.length; k++) {
             if (punkte[k].getAttribute("data-variante") === id) { punkte[k].click(); break; }
           }
         } else {
-          /* Wer in einer Zusatzzeile selbst eine Farbe waehlt, soll
-             sie behalten. Ab dann fasst das Angleichen sie nicht
-             mehr an. */
+          /* Wer eine Flasche selbst faerbt, soll sie behalten. Ab
+             dann fasst das Angleichen sie nicht mehr an. */
           fs.setAttribute("data-selbst", "");
         }
-        namenNachfuehren();
+        nachfuehren();
       });
     });
 
-    /* Der Farbname am Zeilenende. Ohne ihn liest sich die Liste als
-       neun identische Punktreihen; mit ihm als "Tuerkis, Tuerkis,
-       Rosa" - man sieht auf einen Blick, was man bestellt. */
-    function namenNachfuehren() {
-      zusatz.forEach(function (fs) {
-        var an = fs.querySelector("input:checked");
-        var feld = fs.querySelector("[data-fz-name]");
-        if (an && feld) feld.textContent = an.getAttribute("data-name") || "";
+    karten.forEach(function (k) {
+      k.addEventListener("click", function () {
+        waehleFlasche(parseInt(k.getAttribute("data-flasche"), 10));
+      });
+    });
+
+    /* "Alle gleich" nimmt die Marken zurueck und faerbt alles auf die
+       Farbe von Flasche 1. Ohne diesen Knopf muesste man jede von
+       Hand gefaerbte Flasche einzeln zurueckstellen. */
+    if (alle) {
+      alle.addEventListener("click", function () {
+        zusatz.forEach(function (fs) { fs.removeAttribute("data-selbst"); });
+        farbenAngleichen();
       });
     }
 
     /* Ohne das hier stuenden alle weiteren Flaschen auf Rosa, weil das
        die erste Variante im Sortiment ist - auch wenn oben Schwarz
-       gewaehlt wurde. Wer neun Flaschen nimmt, will sie im Zweifel
-       alle in derselben Farbe; wer es anders will, klickt es an. */
+       gewaehlt wurde. Wer mehrere Flaschen nimmt, will sie im Zweifel
+       alle in derselben Farbe; wer es anders will, tippt es an. */
     function farbenAngleichen() {
       if (!pfeld || !pfeld.value) return;
       zusatz.forEach(function (fs) {
@@ -825,7 +876,7 @@
         var r = fs.querySelector('input[value="' + pfeld.value + '"]');
         if (r && !r.disabled) r.checked = true;
       });
-      namenNachfuehren();
+      nachfuehren();
     }
 
     function setzen() {
@@ -834,16 +885,23 @@
         if (wahlen[i].checked) { n = parseInt(wahlen[i].value, 10) || 1; gewaehlt = wahlen[i]; }
       }
       zusatz.forEach(function (fs) {
-        var platz = parseInt(fs.getAttribute("data-zusatz"), 10);
-        var noetig = platz <= n;
-        /* Die Hauptzeile nie ausschalten - sie schickt ohnehin nichts
-           mit (form="n-nichts") und dient nur der Anzeige. */
+        var noetig = platzVon(fs) <= n;
+        /* Die Gruppe von Flasche 1 nie ausschalten - sie schickt
+           ohnehin nichts mit (form="n-nichts") und dient nur der
+           Bedienung. */
         if (!istHauptzeile(fs)) fs.disabled = !noetig;
-        if (noetig) { fs.removeAttribute("hidden"); }
-        else        { fs.setAttribute("hidden", ""); }
       });
-      /* Bei einer Flasche waere die Liste eine einzige Zeile, die
-         dasselbe sagt wie die grossen Punkte zwei Zeilen darueber. */
+      karten.forEach(function (k) {
+        var noetig = parseInt(k.getAttribute("data-flasche"), 10) <= n;
+        if (noetig) k.removeAttribute("hidden");
+        else        k.setAttribute("hidden", "");
+      });
+      /* Steht die bearbeitete Flasche nicht mehr im Warenkorb, faellt
+         die Auswahl auf die erste zurueck - sonst zeigte der
+         Konfigurator die Farbreihe einer Flasche, die es nicht gibt. */
+      waehleFlasche(aktiv > n ? 1 : aktiv);
+      /* Bei einer Flasche waere der ganze Block eine Wiederholung der
+         grossen Punkte zwei Zeilen darueber. */
       if (liste) {
         if (n > 1) liste.removeAttribute("hidden");
         else       liste.setAttribute("hidden", "");
