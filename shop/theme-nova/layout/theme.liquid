@@ -28,7 +28,7 @@
 {%- comment -%}
   DER PREIS, DEN MAN WIRKLICH ZAHLT
 
-  Im Konto laeuft ein automatischer Rabatt von 10 Prozent ab der
+  Im Konto laeuft ein automatischer Rabatt von 5 Prozent ab der
   ERSTEN Flasche. Damit zahlt niemand je den Katalogpreis. Stuende
   hier trotzdem der Katalogpreis, wuerde der Shop einen Betrag
   anschreiben, den die Kasse nie verlangt - und nach der schweizer
@@ -36,14 +36,14 @@
   bezahlen ist.
 
   Deshalb rechnet der Shop ueberall mit dem wirklich faelligen Preis:
-  Katalogpreis mal neun geteilt durch zehn. Ein durchgestrichener
+  Katalogpreis mal 95 geteilt durch 100, aufgerundet. Ein durchgestrichener
   Katalogpreis steht NIRGENDS - er war nie im Umlauf, also waere er
   ein erfundener Vergleichspreis.
 
-  FAELLT DER 10-PROZENT-RABATT IM KONTO WEG, MUSS DIESE ZEILE MIT
+  FAELLT DER 5-PROZENT-RABATT IM KONTO WEG, MUSS DIESE ZEILE MIT
   (dann einfach den Preis der Variante nehmen).
 {%- endcomment -%}
-{%- assign lv_ab = lv.price | times: 9 | divided_by: 10 -%}
+{%- assign lv_ab = lv.price | times: 95 | plus: 99 | divided_by: 100 -%}
 
 
   {%- capture t -%}{% if ist_start %}Trinkflasche mit Napf für Hund & Katze – 550 ml | Let'sDrink{% else %}{{ page_title }} – Let'sDrink{% endif %}{%- endcapture -%}

@@ -71,7 +71,7 @@
 {%- endcomment -%}
 {%- assign rundum_bilder = 0 -%}
 {%- comment -%} Wirklich faelliger Preis: siehe Begruendung in layout/theme.liquid. {%- endcomment -%}
-{%- assign v_ab = v.price | times: 9 | divided_by: 10 -%}
+{%- assign v_ab = v.price | times: 95 | plus: 99 | divided_by: 100 -%}
 
 
 {%- capture haken -%}<svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>{%- endcapture -%}
@@ -253,8 +253,8 @@
           Fuenf automatische Rabatte auf genau dieses Produkt, ohne
           Code, Stand 11.8.2026:
 
-            ab 1 Flasche    10 %      DiscountAutomaticNode/2396403728761
-            ab 2 Flaschen   20 %      .../2396403761529
+            ab 1 Flasche     5 %      DiscountAutomaticNode/2396403728761
+            ab 2 Flaschen   15 %      .../2396403761529
             ab 4 Flaschen   25 %      .../2396403794297
             ab 7 Flaschen   28.58 %   .../2396403827065
             ab 9 Flaschen   33.34 %   .../2396403859833
@@ -278,13 +278,20 @@
           einloest.
 
           Alle Betraege kommen aus v.price, keiner steht als Zahl im
-          Text. Der Zaehler ist der Faktor mal zehn: 9 heisst 0.9 mal
-          Grundpreis, 16 heisst 1.6, 30 heisst 3.0 und so weiter.
+          Text. Der Zaehler ist der Faktor mal HUNDERT: 95 heisst 0.95
+          mal Grundpreis, 170 heisst 1.7, 300 heisst 3.0 und so weiter.
+          Hundertstel, weil 5 Prozent auf eine Flasche 0.95 ergibt -
+          in Zehnteln nicht darstellbar.
+
+          Das plus 99 vor dem Teilen rundet AUF. 5 Prozent von 39.90
+          sind 1.995 - je nachdem, wie Shopify rundet, zahlt man 37.90
+          oder 37.91. Aufgerundet steht auf der Seite hoechstens ein
+          Rappen MEHR, als die Kasse verlangt, nie weniger.
         {%- endcomment -%}
         {%- assign st_menge  = '1,2,4,7,9' | split: ',' -%}
-        {%- assign st_zaehler = '9,16,30,50,60' | split: ',' -%}
+        {%- assign st_zaehler = '95,170,300,500,600' | split: ',' -%}
         {%- assign st_titel  = '1 Flasche|2 Flaschen|3 + 1 gratis|5 + 2 gratis|6 + 3 gratis' | split: '|' -%}
-        {%- assign st_marke  = '10 % Rabatt|20 % Rabatt|1 gratis dazu|2 gratis dazu|3 gratis dazu' | split: '|' -%}
+        {%- assign st_marke  = '5 % Rabatt|15 % Rabatt|1 gratis dazu|2 gratis dazu|3 gratis dazu' | split: '|' -%}
 
         {%- comment -%}
           Die Mengenfelder tragen form="n-nichts" - ein Formular mit
@@ -300,7 +307,7 @@
               {%- assign i = forloop.index0 -%}
               {%- assign mz = m | times: 1 -%}
               {%- assign z = st_zaehler[i] | times: 1 -%}
-              {%- assign preis = v.price | times: z | divided_by: 10 -%}
+              {%- assign preis = v.price | times: z | plus: 99 | divided_by: 100 -%}
               {%- comment -%} Aufrunden, damit der Stueckpreis nie zu tief steht. {%- endcomment -%}
               {%- assign je = preis | plus: mz | minus: 1 | divided_by: mz -%}
               <label class="n-anz__zeile">
