@@ -26,8 +26,8 @@
 
 {%- assign wp = all_products['trinkflasche-napf-hund-katze'] -%}
 {%- assign wv = wp.selected_or_first_available_variant -%}
-{%- comment -%} Wirklich faelliger Preis: siehe Begruendung in layout/theme.liquid. {%- endcomment -%}
-{%- assign wv_ab = wv.price | times: 95 | plus: 99 | divided_by: 100 -%}
+{%- comment -%} Angeschriebener Preis: siehe Begruendung in layout/theme.liquid. {%- endcomment -%}
+{%- assign wv_ab = wv.price -%}
 
 
 <div class="n-fragen" data-wissen>
