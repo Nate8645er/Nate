@@ -531,12 +531,19 @@
 {%- endcomment -%}
 <section class="n-block" id="warum">
   <div class="n-huelle">
-    <div class="n-zeig" data-auf>
-      <figure class="n-zeig__bild">
-        <img src="{{ 'a-napf-nah.webp' | asset_url }}"
-             alt="Nahaufnahme: der Napf sitzt fest am Flaschenhals, dazwischen keine Trennstelle"
-             width="900" height="1200" loading="lazy" decoding="async">
-      </figure>
+    {%- comment -%}
+      Hier stand die Nahaufnahme a-napf-nah.webp. Sie ist die beste
+      Aufnahme, die wir vom offenen Napf haben, und steht deshalb jetzt
+      bei Schritt 2 "Trinken lassen" - dort, wo genau dieser Napf
+      erklaert wird. Zweimal dasselbe Bild auf einer Seite waere eines
+      zu viel gewesen.
+
+      Der Abschnitt traegt sich ohne Bild: er sagt einen einzigen Satz,
+      und die drei Haken darunter sind die ganze Begruendung. Deshalb
+      laeuft er jetzt einspaltig ueber die volle Breite statt als
+      halbe Spalte neben einer Luecke.
+    {%- endcomment -%}
+    <div class="n-zeig n-zeig--nurtext" data-auf>
       <div class="n-zeig__text">
         <span class="n-auge">Der Unterschied</span>
         <h2 class="n-titel">Ein Teil statt zwei.</h2>
@@ -643,7 +650,19 @@
       {%- for i in (0..3) -%}
         <li data-auf="klein" style="--nr:{{ i }}">
           <figure class="n-schritte__bild">
-            <img src="{{ 'a-schritt-' | append: forloop.index | append: '.webp' | asset_url }}"
+            {%- comment -%}
+              Schritt 2 nimmt die Nahaufnahme, die vorher im Abschnitt
+              "Der Unterschied" stand: sie zeigt den offenen Napf mit
+              Wasser deutlich besser als die urspruengliche Kachel.
+              Sie ist hochkant, die Kachel ist quadratisch - das
+              erledigt object-fit im CSS.
+            {%- endcomment -%}
+            {%- if forloop.index == 2 -%}
+              {%- assign schritt_bild = 'a-napf-nah.webp' -%}
+            {%- else -%}
+              {%- assign schritt_bild = 'a-schritt-' | append: forloop.index | append: '.webp' -%}
+            {%- endif -%}
+            <img src="{{ schritt_bild | asset_url }}"
                  alt="{{ schritt_alt[i] }}"
                  width="900" height="900" loading="lazy" decoding="async">
             <span class="n-schritte__zahl" aria-hidden="true">{{ forloop.index }}</span>

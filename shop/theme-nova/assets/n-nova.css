@@ -2112,6 +2112,12 @@ html.n-sperre, html.n-sperre body { overflow: hidden; }
    -------------------------------------------------------------------- */
 .n-zeig { display: grid; gap: clamp(1.4rem, 4vw, 3rem); align-items: center; }
 @media (min-width: 820px) { .n-zeig { grid-template-columns: minmax(0,.9fr) minmax(0,1fr); } }
+/* Ohne Bild bleibt der Block einspaltig, sonst stuende der Text als
+   halbe Spalte neben einer Luecke. Die Breite wird begrenzt, damit die
+   Zeilen nicht ueber die ganze Seite laufen - lange Zeilen liest
+   niemand gern. */
+@media (min-width: 820px) { .n-zeig--nurtext { grid-template-columns: 1fr; } }
+.n-zeig--nurtext .n-zeig__text { max-width: 58ch; }
 
 .n-zeig__bild { margin: 0; }
 .n-zeig__bild img {
