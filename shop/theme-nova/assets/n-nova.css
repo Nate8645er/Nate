@@ -714,15 +714,17 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .n-schluss--bild .n-textlink:hover { color: #FFFFFF; }
 
 @media (min-width: 760px) {
-  /* Jetzt steht die Flasche rechts im Bild, der Text bekommt die linke
-     Haelfte. Die Mindesthoehe ist noetig, weil der Block sonst flacher
-     waere als die Flasche hoch ist und sie oben und unten abschneiden
-     wuerde. */
+  /* Die Flasche steht im Bild rechts, also bekommt der Text die linke
+     Haelfte. Andersherum laeuft die Ueberschrift mitten durch das
+     Produkt - beides einmal gerendert und nachgesehen.
+
+     Die Mindesthoehe ist noetig, weil der Block sonst flacher waere als
+     die Flasche hoch ist und sie oben und unten abschneiden wuerde. */
   .n-schluss--bild { padding: clamp(4rem, 7vw, 6rem) clamp(2rem, 5vw, 4rem);
                      min-height: 34rem; display: flex; align-items: center; text-align: left; }
-  .n-schluss__bild img { object-position: 76% 52%; }
+  .n-schluss__bild img { object-position: 50% 52%; }
   .n-schluss__schleier {
-    background: linear-gradient(100deg, rgb(6 6 7 / .90) 0%, rgb(6 6 7 / .78) 42%, rgb(6 6 7 / .22) 70%, rgb(6 6 7 / 0) 100%); }
+    background: linear-gradient(100deg, rgb(6 6 7 / .90) 0%, rgb(6 6 7 / .78) 40%, rgb(6 6 7 / .20) 68%, rgb(6 6 7 / 0) 100%); }
   .n-schluss__text { max-width: 30ch; margin-inline: 0; }
   .n-schluss--bild .n-unter { margin-inline: 0; }
   .n-schluss--bild .n-cta { justify-content: flex-start; }
