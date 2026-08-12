@@ -676,6 +676,58 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .n-schluss .n-titel { margin-bottom: .8rem; }
 .n-schluss .n-cta { justify-content: center; margin-top: 1.8rem; }
 
+/* --- Schlussaufruf mit Bild ------------------------------------------
+   Derselbe Block, nur dunkel unterlegt. Alles Farbige wird hier lokal
+   umgestellt, damit die Grundregeln oben unangetastet bleiben und kein
+   anderer Knopf im Shop davon etwas mitbekommt.
+
+   Die Grundstellung ist die schmale: Text mittig oben, darunter viel
+   Platz, in dem die Flasche steht. Ab 760 px kippt der Block auf
+   Text links, Flasche rechts.                                          */
+.n-schluss--bild { padding: clamp(3rem, 9vw, 4rem) 1.5rem 21rem; background: #0B0B0C;
+                   box-shadow: none; color: #FFFFFF; isolation: isolate; text-align: center; }
+
+/* Bild und Schleier liegen HINTER dem Text. Der Text selbst braucht
+   keinen eigenen z-index: er ist im Quelltext spaeter und gewinnt. */
+.n-schluss__bild { position: absolute; inset: 0; z-index: -2; display: block; }
+.n-schluss__bild img { width: 100%; height: 100%; object-fit: cover;
+                       object-position: 50% 100%; display: block; }
+
+/* Oben dunkel, damit die Schrift traegt; unten klar, damit die Flasche
+   ganz zu sehen ist. Der Uebergang liegt genau dort, wo der Text endet. */
+.n-schluss__schleier { position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(180deg, rgb(6 6 7 / .88) 0%, rgb(6 6 7 / .82) 44%, rgb(6 6 7 / .34) 62%, rgb(6 6 7 / 0) 82%); }
+
+.n-schluss__text { max-width: 40ch; margin-inline: auto; }
+.n-schluss--bild .n-auge  { color: rgb(255 255 255 / .72); }
+.n-schluss--bild .n-titel { color: #FFFFFF; text-shadow: 0 2px 24px rgb(0 0 0 / .55); }
+.n-schluss--bild .n-unter { color: rgb(255 255 255 / .80); margin-inline: auto; }
+.n-schluss--bild .n-cta { justify-content: center; }
+
+/* Knopf umgekehrt: weiss auf dunkel. Die Sammelregel weiter unten in
+   dieser Datei setzt .n-knopf auf dunklen Grund; sie hat zwei Klassen,
+   diese hier hat drei und gewinnt deshalb unabhaengig von der
+   Reihenfolge - daher der doppelte Klassenname. */
+.n-schluss--bild .n-knopf.n-knopf { background: #FFFFFF; color: #111111; }
+.n-schluss--bild .n-knopf.n-knopf:hover { background: #F2F2F2; }
+.n-schluss--bild .n-textlink { color: rgb(255 255 255 / .74); }
+.n-schluss--bild .n-textlink:hover { color: #FFFFFF; }
+
+@media (min-width: 760px) {
+  /* Jetzt steht die Flasche rechts im Bild, der Text bekommt die linke
+     Haelfte. Die Mindesthoehe ist noetig, weil der Block sonst flacher
+     waere als die Flasche hoch ist und sie oben und unten abschneiden
+     wuerde. */
+  .n-schluss--bild { padding: clamp(4rem, 7vw, 6rem) clamp(2rem, 5vw, 4rem);
+                     min-height: 34rem; display: flex; align-items: center; text-align: left; }
+  .n-schluss__bild img { object-position: 76% 52%; }
+  .n-schluss__schleier {
+    background: linear-gradient(100deg, rgb(6 6 7 / .90) 0%, rgb(6 6 7 / .78) 42%, rgb(6 6 7 / .22) 70%, rgb(6 6 7 / 0) 100%); }
+  .n-schluss__text { max-width: 30ch; margin-inline: 0; }
+  .n-schluss--bild .n-unter { margin-inline: 0; }
+  .n-schluss--bild .n-cta { justify-content: flex-start; }
+}
+
 /* =====================================================================
    FARBWAHL, PREIS, KAUFEN
    ===================================================================== */

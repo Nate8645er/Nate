@@ -706,12 +706,41 @@
 {%- comment -%} =========================================== 11 · SCHLUSS {%- endcomment -%}
 <section class="n-block" style="padding-top:0">
   <div class="n-huelle">
-    <div class="n-schluss" data-auf>
-      <span class="n-auge">Bereit?</span>
-      <h2 class="n-titel">Hydration, die dein Haustier liebt.</h2>
-      <p class="n-unter" style="margin-inline:auto;max-width:44ch">
-        Gratisversand in der Schweiz · 14 Tage Rückgabe
-      </p>
+    {%- comment -%}
+      Der Schlussblock war eine leere graue Karte - der letzte Kaufpunkt
+      der Seite, und ausgerechnet der hatte kein Bild. Jetzt traegt er
+      eine dunkle Aufnahme des Produkts.
+
+      Zwei Dateien, nicht eine: die breite Fassung ist quer und wuerde
+      auf dem Handy so beschnitten, dass von der Flasche kaum etwas
+      uebrig bleibt. Ab 760 px uebernimmt sie, darunter laeuft die
+      hochkante.
+
+      Der Schleier darueber ist kein Schmuck. Die Schrift steht weiss
+      auf dem Bild, und ohne Abdunklung waere sie ueber den hellen
+      Stellen nicht mehr sicher lesbar.
+    {%- endcomment -%}
+    <div class="n-schluss n-schluss--bild" data-auf>
+      <picture class="n-schluss__bild" aria-hidden="true">
+        <source media="(min-width: 760px)" srcset="{{ 'a-schluss-breit.webp' | asset_url }}">
+        <img src="{{ 'a-schluss-hoch.webp' | asset_url }}" alt=""
+             width="900" height="1205" loading="lazy" decoding="async">
+      </picture>
+      <span class="n-schluss__schleier" aria-hidden="true"></span>
+
+      {%- comment -%}
+        Der Text steht in einer eigenen Huelle. Die Breiten und die
+        Ausrichtung kommen aus dem CSS und nicht mehr aus style-Attributen:
+        auf dem Handy mittig ueber der Flasche, ab 760 px linksbuendig
+        neben ihr. Mit inline gesetzten Werten liesse sich das nicht
+        umschalten, weil ein style-Attribut jede Regel schlaegt.
+      {%- endcomment -%}
+      <div class="n-schluss__text">
+        <span class="n-auge">Bereit?</span>
+        <h2 class="n-titel">Hydration, die dein Haustier liebt.</h2>
+        <p class="n-unter">
+          Gratisversand in der Schweiz · 14 Tage Rückgabe
+        </p>
       {%- comment -%}
         Dieser Knopf hiess "In den Warenkorb", legte aber nichts in den
         Warenkorb - er sprang nur nach oben zum Formular. Am untersten
@@ -725,9 +754,10 @@
         ohnehin eine Zeile darueber noch einmal. Er steht jetzt nur
         noch auf dem Knopf - dort, wo er zaehlt.
       {%- endcomment -%}
-      <div class="n-cta" style="justify-content:center">
+      <div class="n-cta">
         <a class="n-knopf" href="#kaufen">Farbe wählen · {{ v_ab | money }}</a>
         <a class="n-textlink" href="/pages/contact">Frage stellen</a>
+      </div>
       </div>
     </div>
   </div>
