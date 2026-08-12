@@ -1,0 +1,69 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family:"Nova"; src:url("a-sans.woff2") format("woff2"); font-weight:400; font-display:block }
+  @font-face { font-family:"Nova"; src:url("a-sans-bold.woff2") format("woff2"); font-weight:700; font-display:block }
+
+  html,body { margin:0; padding:0 }
+  body { width:1080px; font-family:"Nova", system-ui, sans-serif; -webkit-font-smoothing:antialiased }
+
+  /* Jede Karte ist genau ein 1080x1920-Ausschnitt. Playwright schiesst sie
+     einzeln ueber den Element-Screenshot, deshalb duerfen sie untereinander
+     stehen. */
+  .karte { width:1080px; height:1920px; position:relative; overflow:hidden }
+
+  /* ---------- Abspann: Tinte auf Weiss, wie im Shop ---------- */
+  .karte--ab { background:#FFFFFF; color:#111111;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0 }
+  .tropfen { display:block }
+  .wort { font-weight:700; font-size:104px; letter-spacing:-.035em; margin:34px 0 0; line-height:1 }
+  .strich { width:120px; height:1px; background:#111111; opacity:.16; margin:54px 0 }
+  .zeile { font-size:31px; letter-spacing:.22em; text-transform:uppercase; color:#6E6E73; margin:0 }
+  .netz { position:absolute; left:0; right:0; bottom:132px; text-align:center;
+    font-size:32px; letter-spacing:.06em; color:#111111; opacity:.78 }
+
+  /* ---------- Ecklogo: Weiss auf Bild, mit weichem Schatten ---------- */
+  .karte--ecke { background:transparent }
+  .ecke { position:absolute; top:64px; left:64px; display:flex; align-items:center; gap:16px;
+    color:#FFFFFF; filter:drop-shadow(0 2px 14px rgba(0,0,0,.55)) }
+  .ecke .wort2 { font-weight:700; font-size:50px; letter-spacing:-.03em; line-height:1 }
+
+  /* ---------- Aussage unten links, eine Zeile, sonst nichts ----------
+     Sitzt oberhalb der Bedienleisten von TikTok und Reels: 400 px Luft
+     nach unten, 64 px nach links. Weiss mit weichem Schatten, damit sie
+     auch auf hellem Bildinhalt lesbar bleibt. */
+  .satz { position:absolute; left:64px; bottom:400px; margin:0; color:#FFFFFF;
+    font-weight:700; font-size:72px; letter-spacing:-.03em; line-height:1.06;
+    filter:drop-shadow(0 2px 18px rgba(0,0,0,.6)) }
+</style>
+
+<!-- Abspann -->
+<div class="karte karte--ab" id="ab">
+  <svg class="tropfen" width="132" height="132" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 3.2C9 7.4 6.2 10.2 6.2 13.8a5.8 5.8 0 0 0 11.6 0c0-3.6-2.8-6.4-5.8-10.6Z"/>
+  </svg>
+  <p class="wort">Let&rsquo;sDrink</p>
+  <div class="strich"></div>
+  <p class="zeile">550 ml &middot; sechs Farben</p>
+  <p class="netz">katzenufos.com</p>
+</div>
+
+<!-- Ecklogo mit Alpha -->
+<div class="karte karte--ecke" id="ecke">
+  <div class="ecke">
+    <svg width="56" height="56" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 3.2C9 7.4 6.2 10.2 6.2 13.8a5.8 5.8 0 0 0 11.6 0c0-3.6-2.8-6.4-5.8-10.6Z"/>
+    </svg>
+    <span class="wort2">Let&rsquo;sDrink</span>
+  </div>
+</div>
+
+<!--
+  Vier Aussagen, jede eine Zeile. Keine davon behauptet etwas, das wir
+  nicht belegen koennen: 550 ml und sechs Farben stehen so beim
+  Lieferanten, alles Uebrige ist Stimmung, keine Eigenschaft.
+-->
+<div class="karte karte--ecke" id="satz1"><p class="satz">Wasser für unterwegs.</p></div>
+<div class="karte karte--ecke" id="satz2"><p class="satz">Sechs Farben.</p></div>
+<div class="karte karte--ecke" id="satz3"><p class="satz">Immer dabei.</p></div>
+<div class="karte karte--ecke" id="satz4"><p class="satz">550 ml.</p></div>
