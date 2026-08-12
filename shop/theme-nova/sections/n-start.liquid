@@ -646,7 +646,7 @@
     <ol class="n-schritte" data-staffel>
       {%- assign schritt_titel = 'Knopf drücken|Trinken lassen|Aufrichten|Mitnehmen' | split: '|' -%}
       {%- assign schritt_text = 'Ein Druck, und das Wasser läuft in den Napf. Du hältst nur die Flasche.|Der Napf ist offen wie eine Schale. Die Leine bleibt in der anderen Hand.|Das übrige Wasser läuft zurück in die Flasche. Nichts bleibt im Napf stehen.|Oben am Napf sitzt eine angeformte Öse – für ein Band oder einen Karabiner.' | split: '|' -%}
-      {%- assign schritt_alt = 'Nahaufnahme des Knopfes mit Pfotenzeichen und seinen beiden Stellungen|Die Flasche liegt schräg, der offene Napf ist gefüllt mit klarem Wasser|Die Flasche steht aufrecht, der Napf ist leer, das Wasser ist zurück in der Flasche|Nahaufnahme der angeformten Öse oben am Napf' | split: '|' -%}
+      {%- assign schritt_alt = 'Nahaufnahme des Knopfes mit Pfotenzeichen und seinen beiden Stellungen|Eine Hand hält die Flasche waagrecht, der offene Napf zeigt zur Seite|Die Flasche steht aufrecht, der Napf ist leer, das Wasser ist zurück in der Flasche|Nahaufnahme der angeformten Öse oben am Napf' | split: '|' -%}
       {%- for i in (0..3) -%}
         <li data-auf="klein" style="--nr:{{ i }}">
           <figure class="n-schritte__bild">
