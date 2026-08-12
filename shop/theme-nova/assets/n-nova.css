@@ -376,15 +376,17 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
    des Lichts - genau das macht das Wischen lesbar. */
 .n-grund::after {
   content: ""; position: absolute; inset: 0;
-  /* DEUTLICH SCHWAECHER ALS IM ERSTEN ANLAUF.
-     Dort lag die Insel bei 66 Prozent Weiss und deckte fast die
-     ganze Buehne - zusammen mit dem aufgehellten Bild blieb ein
-     beiger Nebel uebrig, in dem die Landschaft nicht mehr zu
-     erkennen war. 34 Prozent reichen: die Flasche trennt sich vom
-     Grund, die Berge bleiben sichtbar. */
+  /* ZWEIMAL NACH UNTEN KORRIGIERT.
+     Erster Anlauf 66 Prozent Weiss: die Insel deckte fast die ganze
+     Buehne, zusammen mit dem aufgehellten Bild blieb ein beiger Nebel
+     uebrig, in dem die Landschaft nicht mehr zu erkennen war. Danach
+     34 Prozent - richtig, solange die Kulisse stark weichgezeichnet
+     war. Seit die Kulisse eine scharfe Szene ist, legt sich auch das
+     wie Dunst ueber Hund, Katzen und Berge. 20 Prozent trennen die
+     Flasche noch vom Grund und lassen die Szene in Ruhe. */
   background:
     radial-gradient(38% 46% at 50% 48%,
-      rgb(255 255 255 / .34), rgb(255 255 255 / .10) 56%, rgb(255 255 255 / 0) 78%);
+      rgb(255 255 255 / .20), rgb(255 255 255 / .10) 56%, rgb(255 255 255 / 0) 78%);
 }
 
 /* Mit Kulisse braucht es die gezeichneten Ringe nicht mehr - sie
@@ -463,20 +465,46 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 }
 
 /* --- Wassertropfen: reines CSS, sechs Stueck, kein Bild ------------- */
-.n-tropfen { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
-.n-tropfen i {
-  position: absolute; display: block;
-  width: var(--d, 8px); height: var(--d, 8px); border-radius: 50% 50% 50% 0;
-  transform: rotate(45deg);
-  background: linear-gradient(140deg, rgb(17 17 17 / .16), rgb(17 17 17 / .05));
-  box-shadow: inset 0 0 4px rgb(255 255 255 / .85);
-  opacity: 0; animation: n-fall var(--t, 7s) var(--v, 0s) infinite ease-in;
+/* --- TROPFEN, DIE AUS DEM BILDSCHIRM KOMMEN --------------------------
+   Vorher fielen sie von oben nach unten. Jetzt fliegen sie dem
+   Betrachter entgegen: sie starten klein und scharf in der Bildmitte,
+   werden groesser, wandern nach aussen und verschwinden am Rand.
+
+   Der Trick ist perspective am Behaelter plus translateZ am Tropfen.
+   Damit rechnet der Browser echte Perspektive - der Tropfen wird nicht
+   nur groesser, er wandert dabei auch schneller aus der Mitte weg,
+   genau wie etwas, das wirklich auf einen zufliegt. Mit blossem scale
+   sieht es aus, als wuerde der Tropfen aufgeblasen.
+
+   overflow bleibt hidden: die Tropfen sollen an der Kante der Buehne
+   verschwinden und nicht ueber den Text darunter laufen.
+
+   Bewegt wird nur transform, opacity und filter. Kein Layout wird neu
+   berechnet, das laeuft auf der Grafikkarte. */
+.n-tropfen {
+  position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  overflow: hidden; perspective: 640px; perspective-origin: 50% 58%;
 }
-@keyframes n-fall {
-  0%   { opacity: 0; transform: rotate(45deg) translate3d(0, -30px, 0) scale(.6); }
-  12%  { opacity: .9; }
-  70%  { opacity: .55; }
-  100% { opacity: 0; transform: rotate(45deg) translate3d(0, 220px, 0) scale(1); }
+.n-tropfen i {
+  position: absolute; left: 50%; top: 58%; display: block;
+  width: var(--d, 8px); height: var(--d, 8px); border-radius: 50%;
+  /* Ein Wassertropfen ist nicht grau, er ist eine Linse: hell an der
+     einen Kante, dunkel an der anderen, innen fast durchsichtig. */
+  background:
+    radial-gradient(circle at 34% 30%, rgb(255 255 255 / .95), rgb(255 255 255 / .28) 42%, rgb(255 255 255 / .06) 62%),
+    radial-gradient(circle at 68% 74%, rgb(120 190 210 / .55), rgb(120 190 210 / 0) 60%);
+  box-shadow: inset 0 0 6px rgb(255 255 255 / .7), 0 2px 10px rgb(0 0 0 / .18);
+  opacity: 0;
+  animation: n-entgegen var(--t, 5.5s) var(--v, 0s) infinite cubic-bezier(.34,.06,.72,.4);
+  will-change: transform, opacity;
+}
+@keyframes n-entgegen {
+  0%   { opacity: 0;
+         transform: translate3d(calc(var(--sx, 0) * 8px), calc(var(--sy, 0) * 8px), -260px) scale(.5); }
+  14%  { opacity: .85; }
+  72%  { opacity: .7; }
+  100% { opacity: 0; filter: blur(3px);
+         transform: translate3d(calc(var(--sx, 0) * 190px), calc(var(--sy, 0) * 190px), 300px) scale(1); }
 }
 @media (prefers-reduced-motion: reduce) { .n-tropfen { display: none; } }
 

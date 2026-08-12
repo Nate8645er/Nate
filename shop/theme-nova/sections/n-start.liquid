@@ -117,12 +117,13 @@
          die waere auf dunklem Grund verschwunden. Eine helle Kulisse
          traegt beide Enden.
 
-      2  SIE IST WEICH, ABER NICHT UNKENNTLICH.
-         10 px Weichzeichnung. Drei Staerken wurden nebeneinander
-         gelegt und mit der schwarzen und der weissen Flasche davor
-         geprueft: bei 6 px ziehen die Tiere den Blick vom Produkt
-         weg, bei 16 px sind sie nicht mehr zu erkennen und die
-         Kulisse haette auch eine beliebige Wiese sein koennen.
+      2  SIE IST SCHARF, NICHT WEICHGEZEICHNET.
+         Zwischenstand am 12.8.2026 war eine weichgezeichnete Fassung -
+         ruhiger, aber der Inhaber wollte ausdruecklich die Wirkung
+         seiner Vorlage: Tiere scharf, Wasser gefroren, Kino. Der Preis
+         dafuer steht in Punkt 3 und ist bezahlt: die Lichtinsel ist
+         von 34 auf 20 Prozent zurueck, sonst legt sie sich wie Dunst
+         ueber die Szene. Die Datei wiegt dadurch 103 statt 13 KB.
 
       3  IN DER MITTE LIEGT LICHT.
          Die Lichtinsel im CSS sitzt genau dort, wo die gewaehlte
@@ -130,7 +131,9 @@
          nebenbei, welche Flasche gerade dran ist - das hilft beim
          Wischen, ohne dass irgendwo ein Hinweis stehen muss.
 
-      Die Datei wiegt 10 KB. Sie kostet den Seitenaufbau nichts.
+      Die Datei wiegt 103 KB. Sie ist damit das schwerste Einzelbild
+      der Seite - vertretbar, weil sie das Erste ist, was jemand sieht,
+      und weil sonst nichts ueber der Falz nachgeladen wird.
     {%- endcomment -%}
     <div class="n-buehne n-buehne--grund{% if panel == 'hell' %} n-hell{% endif %}" data-buehne>
       <span class="n-grund" aria-hidden="true">
@@ -141,17 +144,32 @@
       <span class="n-ring" aria-hidden="true"></span>
 
       {%- comment -%}
-        Wassertropfen aus reinem CSS - sechs Elemente, kein Bild, kein
-        Video. Jeder Tropfen bekommt eigene Groesse, Dauer und
-        Verzoegerung, damit kein Muster entsteht.
+        WASSERTROPFEN, DIE AUS DEM BILDSCHIRM KOMMEN.
+
+        Aus reinem CSS - kein Bild, kein Video, zusammen keine drei
+        Kilobyte. Jeder Tropfen startet klein in der Bildmitte und
+        fliegt dem Betrachter entgegen, dabei nach aussen.
+
+        --sx und --sy sind die RICHTUNG, in die er fliegt, als
+        Vielfaches: -1 ist ganz nach links bzw. oben, +1 ganz nach
+        rechts bzw. unten. Die Rechnung steht im CSS, hier steht nur,
+        wohin. Alle neun Richtungen sind verschieden und keine ist
+        das Spiegelbild einer anderen - sonst sieht man das Muster.
+
+        --d ist die Groesse am Ende, --t die Dauer, --v der Vorlauf.
+        Die Dauern sind bewusst krumm und teilerfremd, damit sich die
+        Tropfen nie zu einem gemeinsamen Takt sammeln.
       {%- endcomment -%}
       <span class="n-tropfen" aria-hidden="true">
-        <i style="--d:9px;  --t:6.5s; --v:0s;   left:18%; top:8%"></i>
-        <i style="--d:6px;  --t:8s;   --v:1.2s; left:32%; top:4%"></i>
-        <i style="--d:11px; --t:7.2s; --v:2.4s; left:68%; top:10%"></i>
-        <i style="--d:7px;  --t:9s;   --v:3.1s; left:80%; top:6%"></i>
-        <i style="--d:5px;  --t:6.8s; --v:4.3s; left:52%; top:2%"></i>
-        <i style="--d:8px;  --t:8.6s; --v:5.5s; left:8%;  top:12%"></i>
+        <i style="--d:10px; --t:5.4s;  --v:0s;   --sx:-.86; --sy:-.42"></i>
+        <i style="--d:7px;  --t:6.9s;  --v:.7s;  --sx: .74; --sy:-.58"></i>
+        <i style="--d:13px; --t:4.7s;  --v:1.4s; --sx:-.34; --sy: .88"></i>
+        <i style="--d:6px;  --t:7.6s;  --v:2.1s; --sx: .95; --sy: .16"></i>
+        <i style="--d:9px;  --t:5.9s;  --v:2.8s; --sx:-.96; --sy: .22"></i>
+        <i style="--d:8px;  --t:6.3s;  --v:3.6s; --sx: .28; --sy:-.92"></i>
+        <i style="--d:12px; --t:5.1s;  --v:4.2s; --sx: .62; --sy: .72"></i>
+        <i style="--d:5px;  --t:8.2s;  --v:4.9s; --sx:-.58; --sy:-.78"></i>
+        <i style="--d:11px; --t:6.6s;  --v:5.7s; --sx:-.12; --sy: .96"></i>
       </span>
 
       <div class="n-gal" data-gal tabindex="0" role="group"
