@@ -350,6 +350,48 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
   perspective: 1200px;
 }
 @media (min-width: 940px) { .n-buehne { order: 0; min-height: clamp(460px, 68vh, 680px); } }
+/* --- Die Kulisse hinter den Flaschen -------------------------------
+   Ein weichgezeichneter Bergweg im Gegenlicht. Er liegt UNTER allem
+   anderen in der Buehne und traegt keine eigene Aussage - seine
+   Aufgabe ist Tiefe, sonst nichts.
+
+   WARUM DIE KULISSE HELL IST: eine der sechs Farben ist Schwarz.
+   Auf dunklem Grund waere sie weg. Hell traegt Schwarz und Weiss.
+   -------------------------------------------------------------------- */
+.n-grund {
+  position: absolute; inset: 0; z-index: 0;
+  overflow: hidden; border-radius: inherit;
+}
+.n-grund img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  /* Etwas tiefer angesetzt: so liegt der Horizont ueber den Flaschen
+     und die helle Bodenflaeche genau dort, wo sie stehen. */
+  object-position: 50% 62%;
+}
+/* DIE LICHTINSEL.
+   Sie sitzt dort, wo die gewaehlte Flasche steht. Zwei Aufgaben: sie
+   trennt das Produkt vom Grund, und sie zeigt ohne ein einziges Wort,
+   welche der sechs gerade dran ist. Die Nachbarn liegen ausserhalb
+   des Lichts - genau das macht das Wischen lesbar. */
+.n-grund::after {
+  content: ""; position: absolute; inset: 0;
+  /* DEUTLICH SCHWAECHER ALS IM ERSTEN ANLAUF.
+     Dort lag die Insel bei 66 Prozent Weiss und deckte fast die
+     ganze Buehne - zusammen mit dem aufgehellten Bild blieb ein
+     beiger Nebel uebrig, in dem die Landschaft nicht mehr zu
+     erkennen war. 34 Prozent reichen: die Flasche trennt sich vom
+     Grund, die Berge bleiben sichtbar. */
+  background:
+    radial-gradient(38% 46% at 50% 48%,
+      rgb(255 255 255 / .34), rgb(255 255 255 / .10) 56%, rgb(255 255 255 / 0) 78%);
+}
+
+/* Mit Kulisse braucht es die gezeichneten Ringe nicht mehr - sie
+   waren der Ersatz fuer die Tiefe, die jetzt im Bild steckt. Zwei
+   feine Kreise ueber einer Landschaft saehen aus wie ein Versehen. */
+.n-buehne--grund .n-ring { display: none; }
+
 /* Der Ring hinter dem Produkt - gibt Tiefe ohne 3D-Modell */
 .n-ring {
   position: absolute; z-index: 0;

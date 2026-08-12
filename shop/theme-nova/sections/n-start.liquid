@@ -96,7 +96,40 @@
       alle sechs Farben erreichbar sind. Das Skript legt nur die
       Drehung, die Groesse und die Deckkraft darueber.
     {%- endcomment -%}
-    <div class="n-buehne{% if panel == 'hell' %} n-hell{% endif %}" data-buehne>
+    {%- comment -%}
+      DIE KULISSE HINTER DEN FLASCHEN
+
+      Bis hierher war die Buehne eine graue Studioflaeche. Sie war
+      sauber, aber sie erzaehlte nichts, und die Flaschen standen im
+      Nichts. Jetzt liegt eine echte Aussenkulisse dahinter: Bergweg
+      im Gegenlicht, stark weichgezeichnet.
+
+      DREI ENTSCHEIDUNGEN, DIE WICHTIG SIND:
+
+      1  SIE IST HELL, NICHT DUNKEL.
+         Naheliegend waere ein dunkler Hintergrund - weisse Flaschen
+         leuchten darauf. Nur ist eine der sechs Farben SCHWARZ, und
+         die waere auf dunklem Grund verschwunden. Eine helle Kulisse
+         traegt beide Enden.
+
+      2  SIE IST BIS ZUR UNKENNTLICHKEIT WEICH.
+         30 px Weichzeichnung loeschen jede Kante, an der das Auge
+         haengen bleiben koennte. Was bleibt, ist Farbe, Licht und
+         Tiefe - kein zweites Motiv, das mit dem Produkt konkurriert.
+
+      3  IN DER MITTE LIEGT LICHT.
+         Die Lichtinsel im CSS sitzt genau dort, wo die gewaehlte
+         Flasche steht. Sie trennt das Produkt vom Grund und zeigt
+         nebenbei, welche Flasche gerade dran ist - das hilft beim
+         Wischen, ohne dass irgendwo ein Hinweis stehen muss.
+
+      Die Datei wiegt 10 KB. Sie kostet den Seitenaufbau nichts.
+    {%- endcomment -%}
+    <div class="n-buehne n-buehne--grund{% if panel == 'hell' %} n-hell{% endif %}" data-buehne>
+      <span class="n-grund" aria-hidden="true">
+        <img src="{{ 'a-buehne.webp' | asset_url }}" alt=""
+             width="1600" height="1067" fetchpriority="high" decoding="async">
+      </span>
       <span class="n-ring n-ring--2" aria-hidden="true"></span>
       <span class="n-ring" aria-hidden="true"></span>
 
