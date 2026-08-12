@@ -1561,17 +1561,11 @@ html.n-intro .n-vorhang.n-hebt { transform: translate3d(0, -101%, 0); }
 .n-rund {
   position: fixed; inset: 0; z-index: 210;
   display: grid; place-items: center;
-  background: rgb(20 16 12 / .93);
+  background: rgb(255 255 255 / .97);
   padding: clamp(1rem, 4vw, 3rem);
   cursor: grab; touch-action: none;
 }
 .n-rund:active { cursor: grabbing; }
-.n-rund__bild {
-  max-height: 76vh; max-width: 100%; width: auto; height: auto;
-  -webkit-user-select: none; user-select: none; pointer-events: none;
-  filter: drop-shadow(0 30px 44px rgb(0 0 0 / .5));
-}
-
 /* Alle Ansichten liegen in EINER Datei nebeneinander, und dieses Feld
    zeigt immer nur eine Zelle davon. Der Grund ist nicht Sparsamkeit,
    sondern Ruhe: 24 einzelne Dateien werden einzeln geladen, und beim
@@ -1583,11 +1577,10 @@ html.n-intro .n-vorhang.n-hebt { transform: translate3d(0, -101%, 0); }
    Seitenverhaeltnis kommt aus der Zellgroesse, damit das Feld auf
    jedem Bildschirm dieselbe Form hat. */
 .n-rund__bogen {
-  height: 76vh; aspect-ratio: 560 / 987; max-width: 100%;
+  height: 76vh; aspect-ratio: 460 / 812; max-width: 100%;
   background-repeat: no-repeat;
   background-size: calc(var(--sp) * 100%) calc(var(--ze) * 100%);
   -webkit-user-select: none; user-select: none; pointer-events: none;
-  filter: drop-shadow(0 30px 44px rgb(0 0 0 / .5));
 }
 .n-rund__hinweis {
   position: absolute; inset-inline: 0; bottom: clamp(1rem, 4vw, 2.5rem);
@@ -1598,11 +1591,11 @@ html.n-intro .n-vorhang.n-hebt { transform: translate3d(0, -101%, 0); }
 .n-rund__zu {
   position: absolute; top: clamp(.75rem, 3vw, 1.5rem); right: clamp(.75rem, 3vw, 1.5rem);
   width: 42px; height: 42px; border-radius: 50%;
-  border: 1px solid rgb(255 255 255 / .22);
-  background: rgb(255 255 255 / .1); color: #FFFFFF;
+  border: 1px solid rgb(17 17 17 / .16);
+  background: rgb(17 17 17 / .05); color: #111111;
   font: inherit; font-size: 1.05rem; line-height: 1; cursor: pointer;
 }
-.n-rund__zu:focus-visible { outline: 2px solid #FFFFFF; outline-offset: 3px; }
+.n-rund__zu:focus-visible { outline: 2px solid #111111; outline-offset: 3px; }
 
 /* ====================================================================
    SECHS FARBEN AUF DEM HANDY: STREIFEN STATT TURM
@@ -2110,8 +2103,7 @@ html.n-sperre, html.n-sperre body { overflow: hidden; }
    Wischen beim Browser und nur das waagrechte gehoert der Drehung. */
 .n-dreher {
   display: block; width: 100%; max-width: 420px; margin-inline: auto;
-  aspect-ratio: 560 / 987;
-  border-radius: var(--n-rund-gross);
+  aspect-ratio: 460 / 812;
   background-image: var(--bogen);
   background-repeat: no-repeat;
   background-size: calc(var(--sp) * 100%) calc(var(--ze) * 100%);
