@@ -615,16 +615,47 @@
     </div>
 
     {%- comment -%}
-      Die Ablauf-Zeichnung ist auf Wunsch wieder entfernt.
-      Der Mechanismus steht jetzt nur noch in den drei Schritten hier
-      darunter und in den Fragen. Gezeigt wird er nirgends - das bleibt
-      die groesste Luecke der Seite, und sie schliesst nur ein echtes
-      Foto oder Video vom Produkt in Benutzung.
+      HIER STAND BIS ZUM 12.8.2026 NUR TEXT.
+
+      An dieser Stelle stand der Satz: "Gezeigt wird er nirgends - das
+      bleibt die groesste Luecke der Seite." Die Luecke ist jetzt zur
+      Haelfte geschlossen: vier Studioaufnahmen zeigen den Knopf, den
+      gefuellten Napf, die aufgerichtete Flasche und die Oese.
+
+      NUR ZUR HAELFTE - UND DAS GEHOERT DAZUGESAGT.
+      Die vier Bilder sind aus dem echten Produktfoto ERZEUGT, nicht
+      fotografiert. Sie zeigen die Teile richtig: den Knopf mit den
+      beiden Stellungen, den offenen Napf mit Wasser, die aufrechte
+      Flasche mit dem Wasser wieder drin, die angeformte Oese. Was sie
+      NICHT sind: ein Beweis, dass es in der Hand genau so ablaeuft.
+      Dafuer braucht es eine echte Aufnahme vom Produkt in Benutzung -
+      die fehlt weiterhin.
+
+      WAS BEWUSST NICHT IM BILD IST:
+      Keine Hand, kein Tier, kein Gegenstand daneben. Sobald etwas
+      Bekanntes danebensteht, liest der Betrachter eine Groesse ab -
+      und die kennen wir nicht.
+
+      Und: keine Aussage zur Dichtigkeit. Der Knopf hat sichtbar zwei
+      Stellungen, das ist eine Beobachtung. "Laeuft nicht aus" waere
+      eine Zusicherung, die uns der Lieferant nie gegeben hat.
     {%- endcomment -%}
-    <ol class="n-ablauf__liste n-ablauf__liste--breit" data-staffel>
-      <li data-auf="klein"><b>Knopf drücken.</b> Das Wasser läuft in den Napf. Du hältst nur die Flasche.</li>
-      <li data-auf="klein"><b>Trinken lassen.</b> Die Leine bleibt in der anderen Hand.</li>
-      <li data-auf="klein"><b>Aufrichten.</b> Das übrige Wasser läuft zurück. Nichts bleibt im Napf stehen.</li>
+    <ol class="n-schritte" data-staffel>
+      {%- assign schritt_titel = 'Knopf drücken|Trinken lassen|Aufrichten|Mitnehmen' | split: '|' -%}
+      {%- assign schritt_text = 'Ein Druck, und das Wasser läuft in den Napf. Du hältst nur die Flasche.|Der Napf ist offen wie eine Schale. Die Leine bleibt in der anderen Hand.|Das übrige Wasser läuft zurück in die Flasche. Nichts bleibt im Napf stehen.|Oben am Napf sitzt eine angeformte Öse – für ein Band oder einen Karabiner.' | split: '|' -%}
+      {%- assign schritt_alt = 'Nahaufnahme des Knopfes mit Pfotenzeichen und seinen beiden Stellungen|Der offene Napf, gefüllt mit klarem Wasser|Die Flasche steht aufrecht, der Napf ist leer, das Wasser ist zurück in der Flasche|Nahaufnahme der angeformten Öse oben am Napf' | split: '|' -%}
+      {%- for i in (0..3) -%}
+        <li data-auf="klein" style="--nr:{{ i }}">
+          <figure class="n-schritte__bild">
+            <img src="{{ 'a-schritt-' | append: forloop.index | append: '.webp' | asset_url }}"
+                 alt="{{ schritt_alt[i] }}"
+                 width="900" height="900" loading="lazy" decoding="async">
+            <span class="n-schritte__zahl" aria-hidden="true">{{ forloop.index }}</span>
+          </figure>
+          <b>{{ schritt_titel[i] }}</b>
+          <span>{{ schritt_text[i] }}</span>
+        </li>
+      {%- endfor -%}
     </ol>
   </div>
 </section>

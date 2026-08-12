@@ -2030,6 +2030,49 @@ html.n-sperre, html.n-sperre body { overflow: hidden; }
 .n-mini--gross li { font-size: 1rem; }
 
 /* ====================================================================
+   DIE VIER SCHRITTE MIT BILD
+
+   Bis hierher war der Ablauf eine Textliste. Vier Bilder erklaeren
+   ihn in einem Blick, ohne dass jemand einen Satz lesen muss.
+
+   ZWEI SPALTEN AUF DEM HANDY, VIER AB TABLET.
+   Vier Kacheln nebeneinander waeren auf 390 px je 88 px breit - da
+   ist von einem Knopf nichts mehr zu erkennen. Zwei mal zwei gibt
+   jeder Kachel die doppelte Breite.
+   -------------------------------------------------------------------- */
+.n-schritte {
+  display: grid; gap: clamp(1rem, 3vw, 1.8rem);
+  grid-template-columns: repeat(2, 1fr);
+  margin: 0; padding: 0; list-style: none;
+  counter-reset: none;
+}
+@media (min-width: 760px) { .n-schritte { grid-template-columns: repeat(4, 1fr); } }
+
+.n-schritte li { display: grid; gap: .3rem; align-content: start; }
+
+.n-schritte__bild {
+  position: relative; margin: 0 0 .55rem;
+  aspect-ratio: 1; overflow: hidden;
+  border-radius: var(--n-rund-gross);
+  background: var(--n-panel);
+}
+.n-schritte__bild img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Die Nummer sitzt IM Bild, nicht darueber. Eine eigene Zeile fuer
+   vier Ziffern kostet Hoehe und traegt nichts. */
+.n-schritte__zahl {
+  position: absolute; left: .6rem; top: .6rem;
+  width: 26px; height: 26px; border-radius: 999px;
+  display: grid; place-items: center;
+  background: rgb(255 255 255 / .92); color: var(--n-text);
+  font-size: .8125rem; font-weight: 700; line-height: 1;
+  box-shadow: 0 1px 3px rgb(17 17 17 / .16);
+}
+
+.n-schritte li b { font-size: 1rem; letter-spacing: -.015em; }
+.n-schritte li span { font-size: .90625rem; line-height: 1.5; color: var(--n-sanft); }
+
+/* ====================================================================
    FRAGEN-CHAT
 
    Er sitzt unten rechts und darf dem Kaufknopf nicht ins Gehege
