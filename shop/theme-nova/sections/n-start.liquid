@@ -646,23 +646,11 @@
     <ol class="n-schritte" data-staffel>
       {%- assign schritt_titel = 'Knopf drücken|Trinken lassen|Aufrichten|Mitnehmen' | split: '|' -%}
       {%- assign schritt_text = 'Ein Druck, und das Wasser läuft in den Napf. Du hältst nur die Flasche.|Der Napf ist offen wie eine Schale. Die Leine bleibt in der anderen Hand.|Das übrige Wasser läuft zurück in die Flasche. Nichts bleibt im Napf stehen.|Oben am Napf sitzt eine angeformte Öse – für ein Band oder einen Karabiner.' | split: '|' -%}
-      {%- assign schritt_alt = 'Nahaufnahme des Knopfes mit Pfotenzeichen und seinen beiden Stellungen|Der offene Napf, gefüllt mit klarem Wasser|Die Flasche steht aufrecht, der Napf ist leer, das Wasser ist zurück in der Flasche|Nahaufnahme der angeformten Öse oben am Napf' | split: '|' -%}
+      {%- assign schritt_alt = 'Nahaufnahme des Knopfes mit Pfotenzeichen und seinen beiden Stellungen|Die Flasche liegt schräg, der offene Napf ist gefüllt mit klarem Wasser|Die Flasche steht aufrecht, der Napf ist leer, das Wasser ist zurück in der Flasche|Nahaufnahme der angeformten Öse oben am Napf' | split: '|' -%}
       {%- for i in (0..3) -%}
         <li data-auf="klein" style="--nr:{{ i }}">
           <figure class="n-schritte__bild">
-            {%- comment -%}
-              Schritt 2 nimmt die Nahaufnahme, die vorher im Abschnitt
-              "Der Unterschied" stand: sie zeigt den offenen Napf mit
-              Wasser deutlich besser als die urspruengliche Kachel.
-              Sie ist hochkant, die Kachel ist quadratisch - das
-              erledigt object-fit im CSS.
-            {%- endcomment -%}
-            {%- if forloop.index == 2 -%}
-              {%- assign schritt_bild = 'a-napf-nah.webp' -%}
-            {%- else -%}
-              {%- assign schritt_bild = 'a-schritt-' | append: forloop.index | append: '.webp' -%}
-            {%- endif -%}
-            <img src="{{ schritt_bild | asset_url }}"
+            <img src="{{ 'a-schritt-' | append: forloop.index | append: '.webp' | asset_url }}"
                  alt="{{ schritt_alt[i] }}"
                  width="900" height="900" loading="lazy" decoding="async">
             <span class="n-schritte__zahl" aria-hidden="true">{{ forloop.index }}</span>
