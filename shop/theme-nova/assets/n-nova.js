@@ -764,6 +764,53 @@
     });
   }
 
+  /* ---------- 9b. Drehung direkt auf der Seite -----------------------
+     Gleiche Rechnung wie im Vollbild-Rundumblick, nur ohne Dialog:
+     das Feld traegt den Bogen als Hintergrund und wir verschieben ihn.
+     Ohne dieses Skript bleibt die vordere Ansicht stehen - das Feld
+     ist dann einfach ein Bild.
+
+     Waagrecht ziehen dreht, senkrecht ziehen scrollt die Seite. Das
+     entscheidet nicht das Skript, sondern touch-action im CSS; hier
+     wird nur ab einer kleinen Schwelle ueberhaupt reagiert, damit ein
+     Tippen nicht schon als Drehung zaehlt. */
+  $$("[data-dreher]").forEach(function (feld) {
+    var anz = parseInt(feld.getAttribute("data-bilder"), 10) || 0;
+    var spa = parseInt(feld.getAttribute("data-spalten"), 10) || 1;
+    if (anz < 2) return;
+    var zei = Math.ceil(anz / spa);
+    var stand = 0;
+
+    var zeigen = function (i) {
+      stand = ((i % anz) + anz) % anz;
+      var sx = spa > 1 ? (stand % spa) * 100 / (spa - 1) : 0;
+      var sy = zei > 1 ? Math.floor(stand / spa) * 100 / (zei - 1) : 0;
+      feld.style.backgroundPosition = sx + "% " + sy + "%";
+    };
+
+    var vonX = 0, haelt = false;
+    feld.addEventListener("pointerdown", function (e) {
+      haelt = true; vonX = e.clientX;
+      try { feld.setPointerCapture(e.pointerId); } catch (x) {}
+    });
+    feld.addEventListener("pointermove", function (e) {
+      if (!haelt) return;
+      var dx = e.clientX - vonX;
+      // 18 px je Ansicht: eine volle Umdrehung braucht damit gut eine
+      // Fingerbreite mal zwanzig - schnell genug, ohne dass ein
+      // Wackeln schon durchdreht.
+      var schritt = (dx / 18) | 0;
+      if (schritt) { zeigen(stand - schritt); vonX = e.clientX; }
+    });
+    var los = function () { haelt = false; };
+    feld.addEventListener("pointerup", los);
+    feld.addEventListener("pointercancel", los);
+    feld.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowLeft")  { e.preventDefault(); zeigen(stand - 1); }
+      if (e.key === "ArrowRight") { e.preventDefault(); zeigen(stand + 1); }
+    });
+  });
+
   /* ---------- 10. Farbstreifen unter "Such dir eine aus" -------------
      Derselbe Gedanke wie bei der Galerie: gescrollt wird nativ, die
      Pfeile sind nur die Zugabe fuer alle Faelle, in denen Wischen nicht

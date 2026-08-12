@@ -2099,6 +2099,37 @@ html.n-sperre, html.n-sperre body { overflow: hidden; }
   max-width: 420px; margin-inline: auto;
   border-radius: var(--n-rund-gross);
 }
+
+/* --- Drehung direkt auf der Seite ------------------------------------
+   Dieselbe Bilddatei wie im Vollbild-Rundumblick, nur hier fest im
+   Text eingebaut. Ohne JavaScript steht die Hintergrundposition auf
+   0 0 - das ist die vordere Ansicht, also faellt nichts aus.
+
+   touch-action: pan-y ist der wichtige Teil. Mit none liesse sich die
+   Seite ueber dem Bild nicht mehr scrollen; so bleibt das senkrechte
+   Wischen beim Browser und nur das waagrechte gehoert der Drehung. */
+.n-dreher {
+  display: block; width: 100%; max-width: 420px; margin-inline: auto;
+  aspect-ratio: 560 / 987;
+  border-radius: var(--n-rund-gross);
+  background-image: var(--bogen);
+  background-repeat: no-repeat;
+  background-size: calc(var(--sp) * 100%) calc(var(--ze) * 100%);
+  background-position: 0% 0%;
+  -webkit-user-select: none; user-select: none;
+  touch-action: pan-y;
+}
+.n-js .n-dreher { cursor: grab; }
+.n-js .n-dreher:active { cursor: grabbing; }
+.n-dreher:focus-visible { outline: 2px solid var(--n-akzent); outline-offset: 4px; }
+
+/* Der Hinweis gilt nur, wenn wirklich gedreht werden kann. */
+.n-dreher__wink { display: none; }
+.n-js .n-dreher__wink {
+  display: block; margin-top: .7rem; text-align: center;
+  font-size: .8125rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--n-leise, #6E6E73);
+}
 .n-mini--gross li { font-size: 1rem; }
 
 /* ====================================================================

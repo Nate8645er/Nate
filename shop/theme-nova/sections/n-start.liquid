@@ -540,14 +540,38 @@
   kein Gegenstand daneben - im Bild gibt es nichts, woran jemand die
   Groesse ablesen koennte. Sobald ein echtes Foto in dieser Qualitaet
   da ist, gehoert es an diese Stelle.
+
+  SEIT DEM 12.8.2026 STEHT HIER KEIN STANDBILD MEHR, SONDERN DIE
+  DREHUNG. Wer behauptet "ein Teil statt zwei", sollte es zeigen
+  koennen: man dreht die Flasche mit dem Finger und sieht selbst, dass
+  am Uebergang keine Trennstelle sitzt. Ein Standbild kann das nur
+  behaupten.
+
+  Bewusst NICHT gebaut: das Abnehmen des Napfes. Ob sich das Oberteil
+  loesen laesst, wissen wir nicht - und der Text daneben sagt sogar das
+  Gegenteil. Eine Explosionsansicht waere hier also nicht nur
+  ungeprueft, sie widerspraeche der eigenen Aussage.
+
+  OHNE JAVASCRIPT bleibt die erste Ansicht als Bild stehen. Der
+  Hintergrund sitzt an Position 0 0, das ist genau das vordere Bild -
+  es faellt also nichts aus, nur das Drehen fehlt.
 {%- endcomment -%}
 <section class="n-block" id="warum">
   <div class="n-huelle">
     <div class="n-zeig" data-auf>
       <figure class="n-zeig__bild">
-        <img src="{{ 'a-napf-nah.webp' | asset_url }}"
-             alt="Nahaufnahme: der Napf sitzt fest am Flaschenhals, dazwischen keine Trennstelle"
-             width="900" height="1200" loading="lazy" decoding="async">
+        {%- if rundum_farben contains 'tuerkis' -%}
+          <div class="n-dreher" data-dreher
+               data-bilder="{{ rundum_bilder }}" data-spalten="6"
+               style="--sp:6;--ze:4;--bogen:url({{ 'a-rundum-tuerkis.webp' | asset_url }})"
+               role="img" tabindex="0"
+               aria-label="Die Trinkflasche von allen Seiten. Ziehen oder Pfeiltasten zum Drehen."></div>
+          <figcaption class="n-dreher__wink">Ziehen zum Drehen</figcaption>
+        {%- else -%}
+          <img src="{{ 'a-napf-nah.webp' | asset_url }}"
+               alt="Nahaufnahme: der Napf sitzt fest am Flaschenhals, dazwischen keine Trennstelle"
+               width="900" height="1200" loading="lazy" decoding="async">
+        {%- endif -%}
       </figure>
       <div class="n-zeig__text">
         <span class="n-auge">Der Unterschied</span>
