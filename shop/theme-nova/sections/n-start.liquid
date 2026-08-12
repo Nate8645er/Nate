@@ -49,32 +49,19 @@
 {%- if dunkle_flaschen contains slug -%}{%- assign panel = 'hell' -%}{%- endif -%}
 
 {%- comment -%}
-  RUNDUMBLICK (360 GRAD) — AN, ABER NUR FUER TUERKIS
+  RUNDUMBLICK (360 GRAD) — AUSGESCHALTET
 
-  WORAUF DIE 24 BILDER BERUHEN, damit das spaeter niemand raten muss:
+  Er war am 12.8.2026 kurz an: 24 Ansichten in einem Bogen, ziehen zum
+  Drehen, dazu dasselbe direkt im Abschnitt "Der Unterschied". Der
+  Inhaber hat ihn wieder abbestellt - er passte nicht zum Shop, und
+  die Qualitaet der gerechneten Ansichten reichte nicht.
 
-  Die Form ist belegt. Der Flaschenkoerper ist ein klar durchsichtiger
-  runder Zylinder - der sieht von hinten aus wie von vorne. Wie die
-  Rueckseite des Napfes aussieht, zeigt ein Video des Produkts im
-  Einsatz: eine geschlossene runde Haube, keine Oeffnung, keine
-  Klammern. Bis dahin hatte ein erster Versuch dort einen spitzen
-  Kegel erfunden; der ist verworfen.
-
-  Die zweite Halbdrehung ist die GESPIEGELTE erste. Der Napf ist zur
-  senkrechten Mittelachse symmetrisch und der Knopf sitzt mittig
-  vorne, also ist der Blick von links der Blick von rechts. Das ist
-  kein erfundener Winkel, sondern derselbe von der anderen Seite.
-
-  Trotzdem sind es GERENDERTE Bilder, keine Fotos. Sobald echte
-  Aufnahmen da sind, gehoeren sie hierher - dafuer reicht ein
-  Drehteller, ein weisses Blatt und 24 Auslesungen im Abstand von
-  15 Grad, Flasche aufrecht, gleiches Licht.
-
-  Von den anderen fuenf Farben gibt es die Bilder NICHT. Deshalb steht
-  unten die Liste: fuer jede Farbe, die dort fehlt, verschwindet der
-  Knopf. Kommt eine Farbe dazu, wird sie dort ergaenzt - sonst nichts.
+  Der Betrachter steht weiterhin fertig im Skript. Zum Einschalten
+  reichen zwei Zeilen: unten die Anzahl setzen und die Datei
+  a-rundum-FARBE.webp hinterlegen. Solange hier 0 steht, erscheint der
+  Knopf gar nicht.
 {%- endcomment -%}
-{%- assign rundum_bilder = 24 -%}
+{%- assign rundum_bilder = 0 -%}
 {%- assign rundum_farben = 'tuerkis' -%}
 {%- comment -%} Wirklich faelliger Preis: siehe Begruendung in layout/theme.liquid. {%- endcomment -%}
 {%- assign v_ab = v.price | times: 95 | plus: 99 | divided_by: 100 -%}
@@ -541,37 +528,14 @@
   Groesse ablesen koennte. Sobald ein echtes Foto in dieser Qualitaet
   da ist, gehoert es an diese Stelle.
 
-  SEIT DEM 12.8.2026 STEHT HIER KEIN STANDBILD MEHR, SONDERN DIE
-  DREHUNG. Wer behauptet "ein Teil statt zwei", sollte es zeigen
-  koennen: man dreht die Flasche mit dem Finger und sieht selbst, dass
-  am Uebergang keine Trennstelle sitzt. Ein Standbild kann das nur
-  behaupten.
-
-  Bewusst NICHT gebaut: das Abnehmen des Napfes. Ob sich das Oberteil
-  loesen laesst, wissen wir nicht - und der Text daneben sagt sogar das
-  Gegenteil. Eine Explosionsansicht waere hier also nicht nur
-  ungeprueft, sie widerspraeche der eigenen Aussage.
-
-  OHNE JAVASCRIPT bleibt die erste Ansicht als Bild stehen. Der
-  Hintergrund sitzt an Position 0 0, das ist genau das vordere Bild -
-  es faellt also nichts aus, nur das Drehen fehlt.
 {%- endcomment -%}
 <section class="n-block" id="warum">
   <div class="n-huelle">
     <div class="n-zeig" data-auf>
       <figure class="n-zeig__bild">
-        {%- if rundum_farben contains 'tuerkis' -%}
-          <div class="n-dreher" data-dreher
-               data-bilder="{{ rundum_bilder }}" data-spalten="6"
-               style="--sp:6;--ze:4;--bogen:url({{ 'a-rundum-tuerkis.webp' | asset_url }})"
-               role="img" tabindex="0"
-               aria-label="Die Trinkflasche von allen Seiten. Ziehen oder Pfeiltasten zum Drehen."></div>
-          <figcaption class="n-dreher__wink">Ziehen zum Drehen</figcaption>
-        {%- else -%}
-          <img src="{{ 'a-napf-nah.webp' | asset_url }}"
-               alt="Nahaufnahme: der Napf sitzt fest am Flaschenhals, dazwischen keine Trennstelle"
-               width="900" height="1200" loading="lazy" decoding="async">
-        {%- endif -%}
+        <img src="{{ 'a-napf-nah.webp' | asset_url }}"
+             alt="Nahaufnahme: der Napf sitzt fest am Flaschenhals, dazwischen keine Trennstelle"
+             width="900" height="1200" loading="lazy" decoding="async">
       </figure>
       <div class="n-zeig__text">
         <span class="n-auge">Der Unterschied</span>
@@ -786,9 +750,14 @@
         ohnehin eine Zeile darueber noch einmal. Er steht jetzt nur
         noch auf dem Knopf - dort, wo er zaehlt.
       {%- endcomment -%}
+      {%- comment -%}
+        "Frage stellen" stand hier und lag auf dem Handy quer ueber der
+        Flasche. Der Weg zur Frage ist ohnehin doppelt vorhanden: im
+        Menue und im Chat unten rechts. Am letzten Kaufpunkt der Seite
+        soll genau EIN Weg stehen.
+      {%- endcomment -%}
       <div class="n-cta">
         <a class="n-knopf" href="#kaufen">Farbe wählen · {{ v_ab | money }}</a>
-        <a class="n-textlink" href="/pages/contact">Frage stellen</a>
       </div>
       </div>
     </div>

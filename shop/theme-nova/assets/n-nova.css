@@ -684,21 +684,40 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
    Die Grundstellung ist die schmale: Text mittig oben, darunter viel
    Platz, in dem die Flasche steht. Ab 760 px kippt der Block auf
    Text links, Flasche rechts.                                          */
-.n-schluss--bild { padding: clamp(3rem, 9vw, 4rem) 1.5rem 21rem; background: #0B0B0C;
-                   box-shadow: none; color: #FFFFFF; isolation: isolate; text-align: center; }
+.n-schluss--bild { padding: clamp(3rem, 9vw, 4rem) 1.5rem 2.75rem; background: #0B0B0C;
+                   box-shadow: none; color: #FFFFFF; isolation: isolate; text-align: center;
+                   display: flex; flex-direction: column; min-height: 42rem; }
 
 /* Bild und Schleier liegen HINTER dem Text. Der Text selbst braucht
    keinen eigenen z-index: er ist im Quelltext spaeter und gewinnt. */
-.n-schluss__bild { position: absolute; inset: 0; z-index: -2; display: block; }
+/* Auf dem Handy nimmt das Bild NUR den oberen Teil ein, nicht die
+   ganze Flaeche. Der Grund ist die Reihenfolge, die der Inhaber wollte:
+   Titel, Text, Flasche, und der Preisknopf ganz unten. Bei einem Bild
+   ueber die volle Hoehe steht die Flasche zwangslaeufig bis zum
+   unteren Rand - dann gibt es unter ihr keinen Platz mehr fuer den
+   Knopf, und object-position hilft nicht: cover laesst bei diesem
+   Verhaeltnis nur waagrecht Ueberstand, senkrecht sitzt das Bild fest.
+
+   Darum endet das Bild bei 78 Prozent und blendet ueber eine Maske in
+   den dunklen Grund aus. Darunter liegt der Knopf auf ruhiger Flaeche. */
+.n-schluss__bild { position: absolute; inset: 0 0 auto 0; height: 78%;
+                   z-index: -2; display: block;
+                   -webkit-mask-image: linear-gradient(180deg, #000 74%, transparent 100%);
+                           mask-image: linear-gradient(180deg, #000 74%, transparent 100%); }
 .n-schluss__bild img { width: 100%; height: 100%; object-fit: cover;
-                       object-position: 50% 100%; display: block; }
+                       object-position: 50% 50%; display: block; }
 
 /* Oben dunkel, damit die Schrift traegt; unten klar, damit die Flasche
    ganz zu sehen ist. Der Uebergang liegt genau dort, wo der Text endet. */
 .n-schluss__schleier { position: absolute; inset: 0; z-index: -1;
   background: linear-gradient(180deg, rgb(6 6 7 / .88) 0%, rgb(6 6 7 / .82) 44%, rgb(6 6 7 / .34) 62%, rgb(6 6 7 / 0) 82%); }
 
-.n-schluss__text { max-width: 40ch; margin-inline: auto; }
+/* Der Textblock nimmt die uebrige Hoehe, und der Knopf haengt sich
+   mit margin-top:auto an dessen unteren Rand. So steht er immer ganz
+   unten, egal wie lang die Ueberschrift umbricht. */
+.n-schluss__text { max-width: 40ch; margin-inline: auto; width: 100%;
+                   display: flex; flex-direction: column; flex: 1; }
+.n-schluss--bild .n-cta { margin-top: auto; }
 .n-schluss--bild .n-auge  { color: rgb(255 255 255 / .72); }
 .n-schluss--bild .n-titel { color: #FFFFFF; text-shadow: 0 2px 24px rgb(0 0 0 / .55); }
 .n-schluss--bild .n-unter { color: rgb(255 255 255 / .80); margin-inline: auto; }
@@ -721,8 +740,16 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
      Die Mindesthoehe ist noetig, weil der Block sonst flacher waere als
      die Flasche hoch ist und sie oben und unten abschneiden wuerde. */
   .n-schluss--bild { padding: clamp(4rem, 7vw, 6rem) clamp(2rem, 5vw, 4rem);
-                     min-height: 34rem; display: flex; align-items: center; text-align: left; }
+                     min-height: 34rem; display: flex; flex-direction: row;
+                     align-items: center; text-align: left; }
+  /* Breit ist das Nebeneinander wieder richtig: Text links, Flasche
+     rechts. Das Bild darf hier ueber die ganze Hoehe, es steht ja
+     nichts darunter. */
+  .n-schluss__bild { inset: 0; height: auto;
+                     -webkit-mask-image: none; mask-image: none; }
   .n-schluss__bild img { object-position: 50% 52%; }
+  .n-schluss__text { display: block; flex: none; }
+  .n-schluss--bild .n-cta { margin-top: 1.8rem; }
   .n-schluss__schleier {
     background: linear-gradient(100deg, rgb(6 6 7 / .90) 0%, rgb(6 6 7 / .78) 40%, rgb(6 6 7 / .20) 68%, rgb(6 6 7 / 0) 100%); }
   .n-schluss__text { max-width: 30ch; margin-inline: 0; }
@@ -2093,35 +2120,6 @@ html.n-sperre, html.n-sperre body { overflow: hidden; }
   border-radius: var(--n-rund-gross);
 }
 
-/* --- Drehung direkt auf der Seite ------------------------------------
-   Dieselbe Bilddatei wie im Vollbild-Rundumblick, nur hier fest im
-   Text eingebaut. Ohne JavaScript steht die Hintergrundposition auf
-   0 0 - das ist die vordere Ansicht, also faellt nichts aus.
-
-   touch-action: pan-y ist der wichtige Teil. Mit none liesse sich die
-   Seite ueber dem Bild nicht mehr scrollen; so bleibt das senkrechte
-   Wischen beim Browser und nur das waagrechte gehoert der Drehung. */
-.n-dreher {
-  display: block; width: 100%; max-width: 420px; margin-inline: auto;
-  aspect-ratio: 460 / 812;
-  background-image: var(--bogen);
-  background-repeat: no-repeat;
-  background-size: calc(var(--sp) * 100%) calc(var(--ze) * 100%);
-  background-position: 0% 0%;
-  -webkit-user-select: none; user-select: none;
-  touch-action: pan-y;
-}
-.n-js .n-dreher { cursor: grab; }
-.n-js .n-dreher:active { cursor: grabbing; }
-.n-dreher:focus-visible { outline: 2px solid var(--n-akzent); outline-offset: 4px; }
-
-/* Der Hinweis gilt nur, wenn wirklich gedreht werden kann. */
-.n-dreher__wink { display: none; }
-.n-js .n-dreher__wink {
-  display: block; margin-top: .7rem; text-align: center;
-  font-size: .8125rem; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--n-leise, #6E6E73);
-}
 .n-mini--gross li { font-size: 1rem; }
 
 /* ====================================================================
