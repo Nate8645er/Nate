@@ -394,6 +394,24 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
    feine Kreise ueber einer Landschaft saehen aus wie ein Versehen. */
 .n-buehne--grund .n-ring { display: none; }
 
+/* NUR EINE FLASCHE, NICHT DREI.
+   Vor der grauen Studioflaeche waren die angeschnittenen Nachbarn
+   richtig: sie zeigten, dass es weitergeht. Vor einer Szene mit Hund
+   und Katzen sind sie im Weg - drei Flaschen in einer Landschaft
+   sehen aus wie ein Fehler, nicht wie eine Auswahl.
+
+   Der Zug bleibt vollstaendig: alle sechs Felder liegen weiter da,
+   nehmen ihren Platz ein und rasten ein. Sie sind nur unsichtbar.
+   Damit funktionieren Wischen, Pfeile, Pfeiltasten und die Farbpunkte
+   unveraendert - es wird nichts entfernt, nur ausgeblendet.
+
+   Die Rechnung: das Skript schreibt --o als 1 minus Abstand mal .55,
+   also 1 in der Mitte und rund .45 bis .72 daneben. Die Verschiebung
+   um .72 und die Streckung mal 3.6 macht daraus 1 in der Mitte und 0
+   fuer alle anderen - dazwischen ein weicher Uebergang, der beim
+   Wischen wie eine Ueberblendung wirkt. */
+.n-buehne--grund .n-gal__feld { opacity: clamp(0, calc((var(--o, 1) - .72) * 3.6), 1); }
+
 /* Der Ring hinter dem Produkt - gibt Tiefe ohne 3D-Modell */
 .n-ring {
   position: absolute; z-index: 0;
