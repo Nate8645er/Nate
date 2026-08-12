@@ -484,6 +484,13 @@
           if (punkte[k].getAttribute("data-variante") === id) { waehleFarbe(punkte[k]); break; }
         }
       }
+      // Meldung fuer alles, was auf die Farbe reagieren muss, ohne dass
+      // die Galerie davon wissen muesste. Zurzeit hoert nur der
+      // Rundumblick zu: den gibt es nicht fuer jede Farbe.
+      try {
+        D.dispatchEvent(new CustomEvent("n:farbe", {
+          detail: { platz: i, slug: f.getAttribute("data-slug") || "" } }));
+      } catch (e) { /* aeltere Browser ohne CustomEvent: kein Verlust */ }
     };
 
     /* DIE FLASCHE SELBST IST ANTIPPBAR.
@@ -638,31 +645,54 @@
   var rundKnopf = $("[data-rundum]");
   if (rundKnopf && gal) {
     var anzahl  = parseInt(rundKnopf.getAttribute("data-bilder"), 10) || 0;
+    var spalten = parseInt(rundKnopf.getAttribute("data-spalten"), 10) || 1;
+    var zeilen  = Math.ceil(anzahl / spalten);
     var vorlage = rundKnopf.getAttribute("data-vorlage") || "";
 
-    var pfad = function (slug, n) {
-      return vorlage.replace("FARBE", slug)
-                    .replace("NN", n < 10 ? "0" + n : "" + n);
+    /* Es gibt die 36 Aufnahmen nicht von jeder Farbe. Welche sie hat,
+       steht in data-farben. Fuer alle anderen verschwindet der Knopf,
+       statt dass er dasteht und beim Druck nichts tut. Die Liste ist
+       der einzige Ort, an dem das gepflegt wird - kommt eine Farbe
+       dazu, wird sie in n-start.liquid ergaenzt, sonst nichts. */
+    var habenBilder = (rundKnopf.getAttribute("data-farben") || "")
+                        .split(",").map(function (s) { return s.trim(); })
+                        .filter(function (s) { return s.length; });
+
+    var knopfPruefen = function (slug) {
+      var da = !habenBilder.length || habenBilder.indexOf(slug) !== -1;
+      // Gemessen: das Attribut hidden allein reicht nicht. Die Regel
+      // .n-gal__rundum setzt display, und display schlaegt hidden -
+      // der Knopf blieb bei jeder Farbe stehen. Deshalb zusaetzlich
+      // hart am Element, das gewinnt gegen jede Klasse.
+      rundKnopf.hidden = !da;
+      rundKnopf.style.display = da ? "" : "none";
     };
+    D.addEventListener("n:farbe", function (e) {
+      knopfPruefen((e.detail && e.detail.slug) || "");
+    });
 
     var laden = function (slug) {
-      var auftraege = [];
-      for (var n = 1; n <= anzahl; n++) {
-        auftraege.push(new Promise(function (fertig, daneben) {
-          var b = new Image();
-          b.onload = function () { fertig(b); };
-          b.onerror = daneben;
-          b.src = pfad(slug, this);
-        }.bind(n)));
-      }
-      return Promise.all(auftraege);
+      // Ein einziger Auftrag: der Bogen mit allen Ansichten. Kommt er
+      // nicht, gibt es auch keinen halben Rundumblick.
+      return new Promise(function (fertig, daneben) {
+        var b = new Image();
+        b.onload = function () { fertig(b.src); };
+        b.onerror = daneben;
+        b.src = vorlage.replace("FARBE", slug);
+      });
     };
 
-    var oeffnen = function (bilder, name) {
+    var oeffnen = function (bogen, name) {
       var stand = 0;
-      var bild = el("img", { klasse: "n-rund__bild", alt:
-        "Trinkflasche in " + name + ", rundum gedreht", draggable: "false" });
-      bild.src = bilder[0].src;
+      // Kein img, sondern eine Flaeche mit dem Bogen als Hintergrund.
+      // role und aria-label geben ihr denselben Rang wie ein Bild,
+      // damit ein Vorleseprogramm nichts verliert.
+      var bild = el("div", { klasse: "n-rund__bogen", role: "img",
+        "aria-label": "Trinkflasche in " + name + ", rundum gedreht" });
+      bild.style.backgroundImage = "url(" + bogen + ")";
+      bild.style.setProperty("--sp", spalten);
+      bild.style.setProperty("--ze", zeilen);
+
       var hinweis = el("p", { klasse: "n-rund__hinweis",
         text: "Ziehen zum Drehen · Escape schliesst" });
       var zu2 = el("button", { klasse: "n-rund__zu", type: "button",
@@ -671,9 +701,16 @@
         "aria-modal": "true", "aria-label": "Rundumblick" }, [bild, hinweis, zu2]);
 
       var zeigen = function (i) {
-        stand = ((i % bilder.length) + bilder.length) % bilder.length;
-        bild.src = bilder[stand].src;
+        stand = ((i % anzahl) + anzahl) % anzahl;
+        // Bei background-size in Prozent zaehlt nicht der Pixelversatz,
+        // sondern der Anteil an der UEBERSTEHENDEN Flaeche. Bei sechs
+        // Spalten sind das fuenf Schritte, nicht sechs - deshalb der
+        // Nenner minus eins.
+        var sx = spalten > 1 ? (stand % spalten) * 100 / (spalten - 1) : 0;
+        var sy = zeilen  > 1 ? Math.floor(stand / spalten) * 100 / (zeilen - 1) : 0;
+        bild.style.backgroundPosition = sx + "% " + sy + "%";
       };
+      zeigen(0);
       var aktivX = 0, haelt = false;
       kasten.addEventListener("pointerdown", function (e) {
         haelt = true; aktivX = e.clientX; kasten.setPointerCapture(e.pointerId);
@@ -704,6 +741,11 @@
       D.body.appendChild(kasten);
       zu2.focus();
     };
+
+    // Beim Aufbau einmal pruefen: die Galerie meldet die Farbe erst,
+    // wenn sich etwas aendert, und beim ersten Bild aendert sich nichts.
+    var erst = felder[aktiv] || felder[0];
+    knopfPruefen(erst ? (erst.getAttribute("data-slug") || "") : "");
 
     rundKnopf.addEventListener("click", function () {
       var f = felder[aktiv] || felder[0];

@@ -1571,6 +1571,24 @@ html.n-intro .n-vorhang.n-hebt { transform: translate3d(0, -101%, 0); }
   -webkit-user-select: none; user-select: none; pointer-events: none;
   filter: drop-shadow(0 30px 44px rgb(0 0 0 / .5));
 }
+
+/* Alle Ansichten liegen in EINER Datei nebeneinander, und dieses Feld
+   zeigt immer nur eine Zelle davon. Der Grund ist nicht Sparsamkeit,
+   sondern Ruhe: 24 einzelne Dateien werden einzeln geladen, und beim
+   Ziehen sieht man jedes Bild einmal kurz aufblitzen. Ein Bogen ist
+   nach dem ersten Laden vollstaendig da, und der Wechsel kostet nur
+   eine verschobene Hintergrundposition.
+
+   --sp und --ze setzt das Skript aus den Angaben am Knopf. Das
+   Seitenverhaeltnis kommt aus der Zellgroesse, damit das Feld auf
+   jedem Bildschirm dieselbe Form hat. */
+.n-rund__bogen {
+  height: 76vh; aspect-ratio: 560 / 987; max-width: 100%;
+  background-repeat: no-repeat;
+  background-size: calc(var(--sp) * 100%) calc(var(--ze) * 100%);
+  -webkit-user-select: none; user-select: none; pointer-events: none;
+  filter: drop-shadow(0 30px 44px rgb(0 0 0 / .5));
+}
 .n-rund__hinweis {
   position: absolute; inset-inline: 0; bottom: clamp(1rem, 4vw, 2.5rem);
   margin: 0; text-align: center;

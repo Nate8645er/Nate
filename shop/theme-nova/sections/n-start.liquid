@@ -49,27 +49,33 @@
 {%- if dunkle_flaschen contains slug -%}{%- assign panel = 'hell' -%}{%- endif -%}
 
 {%- comment -%}
-  RUNDUMBLICK (360 GRAD) — AUSGESCHALTET, WEIL DIE AUFNAHMEN FEHLEN
+  RUNDUMBLICK (360 GRAD) — AN, ABER NUR FUER TUERKIS
 
-  Es gibt von jeder Farbe genau EIN Foto, die Frontansicht. Die
-  Rueckseite der Flasche liegt uns nicht vor. Eine gedrehte Ansicht
-  aus einem Frontfoto zu erzeugen hiesse, dem Kunden eine Produkt-
-  ansicht als echt zu zeigen, die niemand geprueft hat - dieselbe
-  Kategorie wie eine erfundene Bewertung.
+  WORAUF DIE 24 BILDER BERUHEN, damit das spaeter niemand raten muss:
 
-  Der Betrachter ist vollstaendig gebaut und wartet nur auf Bilder.
-  So schaltest du ihn ein:
-    1. Von JEDER Farbe 36 Aufnahmen im Abstand von 10 Grad,
-       gleiche Kamera, gleiches Licht, Flasche AUFRECHT.
-    2. Als Theme-Dateien hochladen, benannt nach diesem Muster:
-       v360-tuerkis-01.webp ... v360-tuerkis-36.webp
-       v360-gruen-01.webp   ... und so weiter fuer alle sechs.
-    3. Hier unten 0 durch 36 ersetzen. Sonst nichts.
+  Die Form ist belegt. Der Flaschenkoerper ist ein klar durchsichtiger
+  runder Zylinder - der sieht von hinten aus wie von vorne. Wie die
+  Rueckseite des Napfes aussieht, zeigt ein Video des Produkts im
+  Einsatz: eine geschlossene runde Haube, keine Oeffnung, keine
+  Klammern. Bis dahin hatte ein erster Versuch dort einen spitzen
+  Kegel erfunden; der ist verworfen.
 
-  Solange hier 0 steht, erscheint der Knopf gar nicht - lieber keine
-  Funktion als eine, die etwas vortaeuscht.
+  Die zweite Halbdrehung ist die GESPIEGELTE erste. Der Napf ist zur
+  senkrechten Mittelachse symmetrisch und der Knopf sitzt mittig
+  vorne, also ist der Blick von links der Blick von rechts. Das ist
+  kein erfundener Winkel, sondern derselbe von der anderen Seite.
+
+  Trotzdem sind es GERENDERTE Bilder, keine Fotos. Sobald echte
+  Aufnahmen da sind, gehoeren sie hierher - dafuer reicht ein
+  Drehteller, ein weisses Blatt und 24 Auslesungen im Abstand von
+  15 Grad, Flasche aufrecht, gleiches Licht.
+
+  Von den anderen fuenf Farben gibt es die Bilder NICHT. Deshalb steht
+  unten die Liste: fuer jede Farbe, die dort fehlt, verschwindet der
+  Knopf. Kommt eine Farbe dazu, wird sie dort ergaenzt - sonst nichts.
 {%- endcomment -%}
-{%- assign rundum_bilder = 0 -%}
+{%- assign rundum_bilder = 24 -%}
+{%- assign rundum_farben = 'tuerkis' -%}
 {%- comment -%} Wirklich faelliger Preis: siehe Begruendung in layout/theme.liquid. {%- endcomment -%}
 {%- assign v_ab = v.price | times: 95 | plus: 99 | divided_by: 100 -%}
 
@@ -218,7 +224,9 @@
       {%- if rundum_bilder > 0 -%}
         <button class="n-gal__rundum" type="button" data-rundum
                 data-bilder="{{ rundum_bilder }}"
-                data-vorlage="{{ 'v360-FARBE-NN.webp' | asset_url }}"
+                data-spalten="6"
+                data-farben="{{ rundum_farben }}"
+                data-vorlage="{{ 'a-rundum-FARBE.webp' | asset_url }}"
                 aria-label="Flasche rundum ansehen">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v4h-4"/></svg>
           360° drehen
