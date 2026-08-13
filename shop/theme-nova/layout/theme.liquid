@@ -527,8 +527,24 @@
                width="650" height="2212" data-leistenbild loading="lazy" decoding="async">
         </div>
         <div class="n-leiste__text">
+          {%- comment -%}
+            HIER STAND EIN PREIS, UND ER KONNTE FALSCH SEIN.
+
+            Die Leiste zeigte fest lv_ab, also den Betrag fuer EINE
+            Flasche. Der Knopf daneben schickt aber das Kaufformular ab,
+            und darin steht die oben gewaehlte Menge. Wer "6 + 3 gratis"
+            gewaehlt hatte und unten auf Kaufen tippte, legte CHF 239.40
+            in den Warenkorb, waehrend daneben CHF 37.91 stand.
+
+            Das ist nicht nur Vertrauensverlust. Die
+            Preisbekanntgabeverordnung verlangt, dass am Ort des Kaufs
+            der Betrag steht, der wirklich faellig wird. Solange die
+            Leiste die Menge nicht kennt, ist gar kein Betrag die
+            richtige Anzeige - der Betrag steht auf dem grossen
+            Kaufknopf, und der wird nachgefuehrt.
+          {%- endcomment -%}
           <b>Trinkflasche mit Napf</b>
-          <span>{{ lv_ab | money }} · 550 ml</span>
+          <span>550 ml · sechs Farben</span>
         </div>
         {%- comment -%}
           Der Knopf war ein Anker auf #kaufen. Gemessen: ein Klick nach

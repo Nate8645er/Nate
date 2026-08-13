@@ -286,7 +286,15 @@
 
         <p class="n-preis">
           <b>{{ v_ab | money }}</b>
-          <span>inkl. MwSt · ein Preis für alle Farben</span>
+          {%- comment -%}
+            Hier stand "inkl. MwSt". Das widerspricht der Begruendung in
+            layout/theme.liquid, wo derselbe Zusatz aus der Fusszeile
+            entfernt wurde: wer nicht im MWST-Register eingetragen ist,
+            darf keine MWST ausweisen. "Endpreis" sagt dasselbe, was die
+            Preisbekanntgabeverordnung wirklich verlangt - der
+            angezeigte Betrag ist der, den der Kunde zahlt.
+          {%- endcomment -%}
+          <span>Endpreis · ein Preis für alle sechs Farben</span>
         </p>
 
         <span class="n-etikett" id="n-farblabel">Farbe · <span data-farbname>{{ v.option1 }}</span><em class="n-zaehler" data-gal-zaehler>{% assign nr = 0 %}{% for var in lp.variants %}{% if var.id == v.id %}{% assign nr = forloop.index %}{% endif %}{% endfor %}{{ nr | default: 1 }} von {{ lp.variants.size }} · 550 ml</em></span>
@@ -358,6 +366,56 @@
         {%- assign st_titel  = '1 Flasche|2 Flaschen|3 Flaschen|4 + 1 gratis|5 + 2 gratis|6 + 3 gratis' | split: '|' -%}
         {%- assign st_marke  = '5 % Rabatt|10 % Rabatt|15 % Rabatt|1 gratis dazu|2 gratis dazu|3 gratis dazu' | split: '|' -%}
 
+
+        <div class="n-cta">
+          <button class="n-knopf" type="submit" data-leiste-anker
+                  {% unless v.available %}disabled{% endunless %}>
+            {%- if v.available -%}<span data-knopftext>In den Warenkorb · {{ v_ab | money }}</span>{%- else -%}Zurzeit nicht lieferbar{%- endif -%}
+          </button>
+          {%- comment -%}
+            Hier stand ein zweiter, gleich grosser Knopf. Zwei schwarze
+            Pillen nebeneinander streiten um denselben Blick, und einer
+            davon fuehrt nicht zum Kauf. Jetzt ein Textlink: sichtbar
+            fuer den, der ihn sucht, ohne dem Kaufknopf Gewicht zu
+            nehmen.
+          {%- endcomment -%}
+          <a class="n-textlink" href="#fragen">Erst die häufigen Fragen lesen</a>
+        </div>
+
+        {%- comment -%}
+          Vier Punkte, nicht drei: "Ersatz bei Defekt" und die
+          erreichbare Person kommen aus dem geloeschten
+          Vertrauensstreifen. Sie stehen jetzt am Kaufknopf statt in
+          einem eigenen Abschnitt darunter.
+        {%- endcomment -%}
+        <ul class="n-mini">
+          <li>{{ haken }} Gratisversand Schweiz · 7–14 Werktage</li>
+          <li>{{ haken }} 14 Tage Rückgabe · Rücksendung zahlst du</li>
+          <li>{{ haken }} Läuft sie aus: Ersatz oder Geld zurück</li>
+          <li>{{ haken }} Nate antwortet selbst, in der Regel innerhalb eines Werktags</li>
+        </ul>
+
+        {%- comment -%}
+          MENGENSTAFFEL STEHT JETZT HINTER DEM KAUFKNOPF.
+
+          Vorher lag sie davor. Gerechnet auf 390x844 begann der
+          Kaufknopf damit erst bei rund 1265 px - die Kundin sah
+          Preis und Farben, wollte kaufen und fand nichts zum
+          Antippen. Stattdessen kam eine sechszeilige Staffel, also
+          eine Mengenentscheidung VOR der Kaufentscheidung. Wer dort
+          abspringt, springt mit Kaufabsicht ab.
+
+          Verschaerfend: data-leiste-anker sitzt auf dem Kaufknopf,
+          und die Auffangleiste schaltet erst, wenn dieser Anker oben
+          aus dem Bild ist. Sie griff also ERST HINTER dem Knopf. Auf
+          dem ganzen Weg von 844 bis 1265 px gab es keinen einzigen
+          Kaufausloeser auf dem Schirm.
+
+          Die Reihenfolge im Formular ist funktional egal: die
+          Mengenfelder tragen form="n-nichts", und setzen() in
+          n-nova.js fuehrt den Knopftext ueber die Datenmerkmale nach,
+          nicht ueber die Position im Dokument.
+        {%- endcomment -%}
         {%- comment -%}
           Die Mengenfelder tragen form="n-nichts" - ein Formular mit
           dieser Kennung gibt es nicht. Damit gehoeren sie zu keinem
@@ -494,34 +552,6 @@
             </fieldset>
           {%- endfor -%}
         </div>
-
-        <div class="n-cta">
-          <button class="n-knopf" type="submit" data-leiste-anker
-                  {% unless v.available %}disabled{% endunless %}>
-            {%- if v.available -%}<span data-knopftext>In den Warenkorb · {{ v_ab | money }}</span>{%- else -%}Zurzeit nicht lieferbar{%- endif -%}
-          </button>
-          {%- comment -%}
-            Hier stand ein zweiter, gleich grosser Knopf. Zwei schwarze
-            Pillen nebeneinander streiten um denselben Blick, und einer
-            davon fuehrt nicht zum Kauf. Jetzt ein Textlink: sichtbar
-            fuer den, der ihn sucht, ohne dem Kaufknopf Gewicht zu
-            nehmen.
-          {%- endcomment -%}
-          <a class="n-textlink" href="#fragen">Erst die häufigen Fragen lesen</a>
-        </div>
-
-        {%- comment -%}
-          Vier Punkte, nicht drei: "Ersatz bei Defekt" und die
-          erreichbare Person kommen aus dem geloeschten
-          Vertrauensstreifen. Sie stehen jetzt am Kaufknopf statt in
-          einem eigenen Abschnitt darunter.
-        {%- endcomment -%}
-        <ul class="n-mini">
-          <li>{{ haken }} Gratisversand Schweiz · 7–14 Werktage</li>
-          <li>{{ haken }} 14 Tage Rückgabe · Rücksendung zahlst du</li>
-          <li>{{ haken }} Läuft sie aus: Ersatz oder Geld zurück</li>
-          <li>{{ haken }} Nate antwortet selbst, in der Regel innerhalb eines Werktags</li>
-        </ul>
       </form>
     </div>
 
