@@ -543,6 +543,21 @@
         }
         if (a < nd) { nd = a; nah = i; }
       });
+      /* Was man nicht sieht, darf man auch nicht treffen.
+         Deckkraft 0 nimmt einem Feld nur das Aussehen, nicht die
+         Klickflaeche. Die Nachbarflaschen sind unsichtbar, lagen aber
+         weiter links und rechts der mittleren: man sah die Wiese,
+         tippte darauf, und die Flasche wechselte die Farbe. Auf dem
+         Handy trifft der Daumen diese Flaechen staendig.
+         Nur bei !ruhig - bei reduzierter Bewegung setzt die Schleife
+         oben kein --o, dann sind alle sechs sichtbar und muessen
+         antippbar bleiben. Gewischt wird in beiden Faellen weiter:
+         das Scrollen liegt auf der Liste, nicht auf den Feldern. */
+      if (!ruhig) {
+        felder.forEach(function (f, i) {
+          f.style.pointerEvents = (i === nah) ? "" : "none";
+        });
+      }
       if (nah !== aktiv) { aktiv = nah; uebernehmen(nah); }
     };
     var anstoss = function () {
@@ -821,7 +836,13 @@
     var wahlen = $$("[data-mengenwahl]", form);
     if (!wahlen.length) return;
     var zusatz = $$("[data-zusatz]", form);
-    var text   = $("[data-knopftext]", form);
+    /* Alle Knopfbeschriftungen, nicht nur die im Formular. Der
+       Schlussknopf am Seitenende ist ein echter Kaufknopf (form=
+       "kaufen"), steht aber ausserhalb des Formulars. Suchte man nur
+       innerhalb, zeigte er dauerhaft den Preis fuer EINE Flasche,
+       waehrend er die oben gewaehlte Menge abschickt - derselbe
+       Fehler, der in der Kaufleiste schon behoben ist. */
+    var texte  = $$("[data-knopftext]");
     var pfeld  = $("[data-variantenfeld]", form);
 
     var liste  = $("[data-farbliste]", form);
@@ -949,7 +970,7 @@
         else       liste.setAttribute("hidden", "");
       }
       farbenAngleichen();
-      if (text) {
+      if (texte.length) {
         /* Der Betrag steht am Feld selbst (data-preis) und kommt aus
            Liquid. Frueher wurde er aus der Beschriftung gelesen - das
            brach, sobald sich der Aufbau der Zeile aenderte. */
@@ -958,7 +979,9 @@
            239.40"). Auf einem 390er Handy brach das in zwei Zeilen um.
            Wie viele es sind, sagt die gewaehlte Stufe drei Zeilen
            darueber schon. */
-        text.textContent = "In den Warenkorb · " + preis;
+        texte.forEach(function (t) {
+          t.textContent = "In den Warenkorb · " + preis;
+        });
       }
     }
     wahlen.forEach(function (r) { r.addEventListener("change", setzen); });

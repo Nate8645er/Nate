@@ -412,6 +412,20 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
    Wischen wie eine Ueberblendung wirkt. */
 .n-buehne--grund .n-gal__feld { opacity: clamp(0, calc((var(--o, 1) - .72) * 3.6), 1); }
 
+/* UNSICHTBAR HEISST AUCH UNANTASTBAR - die Regel dazu steht im
+   Skript, nicht hier.
+
+   Deckkraft 0 nimmt einem Element nur das Aussehen, nicht den Platz
+   und nicht die Klickflaeche. Die Nachbarflaschen lagen also weiter
+   links und rechts der mittleren: man sah nur die Wiese, tippte
+   darauf, und die Flasche wechselte die Farbe.
+
+   Warum das nicht hier geloest ist: pointer-events laesst sich nicht
+   aus --o berechnen, und eine feste Regel waere falsch. Faellt das
+   Skript aus, bleibt --o ungesetzt, alle sechs Flaschen sind sichtbar
+   und muessen antippbar bleiben. Das Skript schaltet die Flaechen
+   deshalb genau dann ab, wenn es sie auch unsichtbar macht. */
+
 /* Der Ring hinter dem Produkt - gibt Tiefe ohne 3D-Modell */
 .n-ring {
   position: absolute; z-index: 0;
@@ -446,6 +460,17 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
    Ausgangslage (Buehne 52vh, Flasche 44vh): auf 390x844 endete der
    erste Bildschirm mitten in der Ueberschrift - Preis, Farbwahl und
    Knopf lagen darunter, man sah nur die Flasche.
+
+   ACHTUNG, DIESE MESSUNG IST VON VOR DER MENGENSTAFFEL.
+   Sie stammt aus der Zeit, als unter der Farbwahl direkt der
+   Kaufknopf kam. Danach schob sich erst eine fuenf-, dann eine
+   sechsstufige Mengenstaffel dazwischen, und der Knopf lag rund 450
+   px tiefer als hier behauptet - gemerkt hat das niemand, weil die
+   Zahlen im Kommentar stehen blieben.
+   Am 13.8.2026 ist die Staffel HINTER den Kaufknopf gewandert
+   (Begruendung in sections/n-start.liquid). Die Staffelung unten
+   gilt damit wieder fuer den Weg bis zum Knopf, die Zahlen sind
+   aber weiterhin NICHT nachgemessen. Wer sie braucht, misst neu.
 
    Nach dieser Staffelung endet der Kaufknopf bei:
      360x780 ....  737 von 780   sichtbar

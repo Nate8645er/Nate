@@ -32,6 +32,28 @@
 
 <div class="n-fragen" data-wissen>
 
+  {%- comment -%}
+    ZUR REIHENFOLGE - SIE IST EINE ENTSCHEIDUNG, KEIN ZUFALL.
+
+    Vorher stand "Laeuft sie im Rucksack aus?" auf Platz 2 und "Aus
+    welchem Material ist sie?" auf Platz 9. Das sind die beiden
+    Antworten, in denen ehrlich steht, dass wir etwas NICHT wissen.
+    Sie standen damit ganz oben in einem Block, den ein Zweifelnder
+    ohnehin liest, um Gruende gegen den Kauf zu finden.
+
+    Jetzt ist nach dem geordnet, was eine Kaeuferin zuerst fragt:
+    Menge, Versand, Rueckgabe, reicht eine fuer meinen Hund. Die
+    beiden "wissen wir nicht" stehen weiter unten - aber sie stehen
+    da, vollstaendig und Wort fuer Wort unveraendert.
+
+    WAS AUSDRUECKLICH NICHT GEAENDERT WURDE: der Wortlaut zur
+    Dichtigkeit, auch nicht die Reihenfolge seiner Saetze. Er beginnt
+    weiterhin mit dem Eingestaendnis und endet mit der Zusage. Ein
+    Vorschlag war, das umzudrehen, damit der Leser mit der Zusage aus
+    dem Absatz geht. Das ist eine Entscheidung des Inhabers, nicht
+    meine - siehe die Sperre oben im Kopf dieser Datei.
+  {%- endcomment -%}
+
   <details class="n-frage" open>
     <summary>Wie viel passt hinein?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
     <div class="n-frage__inhalt">
@@ -41,23 +63,31 @@
   </details>
 
   <details class="n-frage">
-    <summary>Läuft sie im Rucksack aus?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
+    <summary>Was kostet der Versand, und wie lange dauert er?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="n-frage__inhalt">
+      <p>Innerhalb der Schweiz ist der Versand gratis. In die übrigen
+         Länder kostet er CHF 1.50. Die Lieferzeit beträgt 7 bis 14
+         Werktage, mit Sendungsverfolgung per E-Mail.</p>
+    </div>
+  </details>
+
+  <details class="n-frage">
+    <summary>Und wenn sie mir nicht gefällt?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
     <div class="n-frage__inhalt">
       <p>
-        Wir haben keine schriftliche Zusicherung des Lieferanten, dass
-        sie unter allen Umständen dicht ist – deshalb behaupten wir es
-        auch nicht. Transportiere sie am besten aufrecht. Läuft deine
-        Flasche trotzdem aus, ist das ein Reklamationsfall: Du bekommst
-        Ersatz oder dein Geld zurück.
+        Du hast 14 Tage Rückgaberecht, ohne Begründung. Schreib mir über das
+        <a href="/pages/contact">Kontaktformular</a>, dann klären wir die
+        Rücksendung. Die Rücksendekosten trägst du. Die Einzelheiten stehen
+        unter <a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>.
       </p>
     </div>
   </details>
 
   <details class="n-frage">
-    <summary>Was darf ich einfüllen?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
+    <summary>Reicht eine Flasche für einen grossen Hund?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
     <div class="n-frage__inhalt">
-      <p>Nur Wasser. Andere Flüssigkeiten hinterlassen Rückstände, die
-         den Mechanismus verkleben.</p>
+      <p>Für eine normale Runde ja. Für sehr grosse Hunde auf langen
+         Touren nimmst du besser zwei mit.</p>
     </div>
   </details>
 
@@ -69,6 +99,14 @@
     <summary>Geht das auch für Katzen?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
     <div class="n-frage__inhalt">
       <p>Ja – für Katzen, die mitfahren oder an der Leine laufen.</p>
+    </div>
+  </details>
+
+  <details class="n-frage">
+    <summary>Was darf ich einfüllen?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="n-frage__inhalt">
+      <p>Nur Wasser. Andere Flüssigkeiten hinterlassen Rückstände, die
+         den Mechanismus verkleben.</p>
     </div>
   </details>
 
@@ -94,15 +132,6 @@
     <div class="n-frage__inhalt">
       <p>Von Hand mit warmem Wasser ausspülen, danach offen trocknen
          lassen. Zur Spülmaschine liegt uns keine Angabe vor.</p>
-    </div>
-  </details>
-
-  <details class="n-frage">
-    <summary>Was kostet der Versand, und wie lange dauert er?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
-    <div class="n-frage__inhalt">
-      <p>Innerhalb der Schweiz ist der Versand gratis. In die übrigen
-         Länder kostet er CHF 1.50. Die Lieferzeit beträgt 7 bis 14
-         Werktage, mit Sendungsverfolgung per E-Mail.</p>
     </div>
   </details>
 
@@ -142,6 +171,19 @@
     </details>
   {%- endif -%}
 
+  <details class="n-frage">
+    <summary>Läuft sie im Rucksack aus?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="n-frage__inhalt">
+      <p>
+        Wir haben keine schriftliche Zusicherung des Lieferanten, dass
+        sie unter allen Umständen dicht ist – deshalb behaupten wir es
+        auch nicht. Transportiere sie am besten aufrecht. Läuft deine
+        Flasche trotzdem aus, ist das ein Reklamationsfall: Du bekommst
+        Ersatz oder dein Geld zurück.
+      </p>
+    </div>
+  </details>
+
   {%- comment -%}
     Diese Frage kommt oft und wurde bisher auf der FAQ-Seite mit einem
     Absatz darueber beantwortet, wie gewissenhaft wir sind. Der Kunde
@@ -152,26 +194,6 @@
     <div class="n-frage__inhalt">
       <p>Dazu liegt uns keine Angabe des Lieferanten vor. Sobald sie
          vorliegt, steht sie hier.</p>
-    </div>
-  </details>
-
-  <details class="n-frage">
-    <summary>Reicht eine Flasche für einen grossen Hund?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
-    <div class="n-frage__inhalt">
-      <p>Für eine normale Runde ja. Für sehr grosse Hunde auf langen
-         Touren nimmst du besser zwei mit.</p>
-    </div>
-  </details>
-
-  <details class="n-frage">
-    <summary>Und wenn sie mir nicht gefällt?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
-    <div class="n-frage__inhalt">
-      <p>
-        Du hast 14 Tage Rückgaberecht, ohne Begründung. Schreib mir über das
-        <a href="/pages/contact">Kontaktformular</a>, dann klären wir die
-        Rücksendung. Die Rücksendekosten trägst du. Die Einzelheiten stehen
-        unter <a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>.
-      </p>
     </div>
   </details>
 
