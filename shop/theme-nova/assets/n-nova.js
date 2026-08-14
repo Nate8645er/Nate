@@ -539,10 +539,21 @@
         if (!ruhig) {
           f.style.setProperty("--r", (-dk * 34).toFixed(2) + "deg");
           f.style.setProperty("--s", (1 - a * 0.28).toFixed(3));
-          f.style.setProperty("--o", (1 - a * 0.55).toFixed(3));
         }
         if (a < nd) { nd = a; nah = i; }
       });
+      /* --o wird NICHT mehr aus dem Abstand gerechnet. Zwei gleich
+         weit entfernte Felder bekaemen denselben Wert, und beim
+         Wischen standen dadurch zwei halbdurchsichtige Flaschen im
+         Bild statt einer ganzen (gemessen: bei halbem Zug beide auf
+         .41 bzw. .40). Hier faellt die Entscheidung: das naechste
+         Feld bekommt 1, alle anderen 0. Die Blende macht das CSS
+         ueber die Zeit. */
+      if (!ruhig) {
+        felder.forEach(function (f, i) {
+          f.style.setProperty("--o", i === nah ? "1" : "0");
+        });
+      }
       /* Was man nicht sieht, darf man auch nicht treffen.
          Deckkraft 0 nimmt einem Feld nur das Aussehen, nicht die
          Klickflaeche. Die Nachbarflaschen sind unsichtbar, lagen aber

@@ -344,9 +344,21 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
   /* Gemessen auf einem 390x844-Handy: mit 52vh Buehne und 44vh Flasche
      endete der erste Bildschirm mitten in der Ueberschrift - Preis,
      Farbwahl und Kaufknopf lagen darunter. Man sah nur die Flasche.
-     34vh/29vh bringen alle vier ueber die Falz, ohne dass das Produkt
-     klein wirkt. Ab 940px gelten wieder die grossen Werte. */
-  min-height: clamp(200px, 34vh, 380px);
+     34vh/29vh brachten alle vier ueber die Falz - aber sie waren die
+     Antwort auf ein Platzproblem, das es nicht mehr gibt.
+
+     13.8.2026: die Mengenstaffel ist hinter den Kaufknopf gewandert.
+     Damit sind rund 450 px ueber der Falz frei geworden. Gemessen im
+     Nachbau bei 390x844 endete der Kaufknopf danach bei 764 von 844 px
+     - achtzig Pixel Luft, die niemandem nuetzen.
+
+     Was 34vh/29vh in Wirklichkeit ergaben, ebenfalls gemessen: eine
+     Flasche von 54 x 185 px. Auf einem 390 px breiten Schirm sind das
+     vierzehn Prozent der Breite. Das Produkt war eine Briefmarke.
+
+     Jetzt 46vh/40vh. Die neue Messung steht beim Kaufknopf weiter
+     unten. Ab 940px gelten wie bisher die grossen Werte. */
+  min-height: clamp(260px, 46vh, 460px);
   perspective: 1200px;
 }
 @media (min-width: 940px) { .n-buehne { order: 0; min-height: clamp(460px, 68vh, 680px); } }
@@ -410,7 +422,38 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
    um .72 und die Streckung mal 3.6 macht daraus 1 in der Mitte und 0
    fuer alle anderen - dazwischen ein weicher Uebergang, der beim
    Wischen wie eine Ueberblendung wirkt. */
-.n-buehne--grund .n-gal__feld { opacity: clamp(0, calc((var(--o, 1) - .72) * 3.6), 1); }
+/* EINE FLASCHE, UND SIE WECHSELT SAUBER DURCH.
+
+   Vorher rechnete diese Zeile die Deckkraft aus dem ABSTAND zur Mitte:
+   clamp(0, (--o - .72) * 3.6, 1). Das klingt vernuenftig und ist beim
+   Wischen falsch. Gemessen im Nachbau bei 390x844, waehrend eines
+   Zuges um ein Feld:
+
+     30 %  Feld 3 auf .65,  Feld 4 auf .17
+     50 %  Feld 3 auf .41,  Feld 4 auf .40     <- zwei halbe Geister
+     70 %  Feld 3 auf .18,  Feld 4 auf .64
+
+   Von 30 bis 80 Prozent des Zuges standen also ZWEI durchsichtige
+   Flaschen im Bild und keine einzige ganze. Genau das fuehlt sich
+   kaputt an: man zieht, und das Produkt loest sich auf.
+
+   Der Fehler steckt in der Idee, nicht in den Zahlen. Zwei Felder,
+   die gleich weit von der Mitte weg sind, bekommen zwangslaeufig
+   dieselbe Deckkraft - eine Abstandsformel kann sich nie fuer eine
+   entscheiden.
+
+   Jetzt entscheidet das Skript: es kennt ohnehin das naechstgelegene
+   Feld und setzt --o auf 1 dafuer und 0 fuer alle anderen. Geblendet
+   wird ueber ZEIT statt ueber Weg - beim Wechsel eine knappe Fuenftel-
+   sekunde. Damit steht waehrend des ganzen Zuges genau eine Flasche
+   im Bild, so wie es der Inhaber verlangt hat. */
+.n-buehne--grund .n-gal__feld {
+  opacity: var(--o, 1);
+  transition: opacity .18s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .n-buehne--grund .n-gal__feld { transition: none; }
+}
 
 /* UNSICHTBAR HEISST AUCH UNANTASTBAR - die Regel dazu steht im
    Skript, nicht hier.
@@ -436,7 +479,7 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .n-ring--2 { width: min(96%, 540px); opacity: .55; }
 .n-flasche {
   position: relative; z-index: 2;
-  height: clamp(185px, 29vh, 340px); width: auto;
+  height: clamp(240px, 40vh, 420px); width: auto;
   /* HIER STANDEN ZWEI GESTAPELTE drop-shadow - SIE SIND DIE URSACHE
      DER "KAESTEN" IM HERO.
 
@@ -482,8 +525,31 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
                    nichts mehr; dort faengt ihn die Kaufleiste unten.
    ------------------------------------------------------------------ */
 @media (max-width: 939px) {
-  .n-buehne  { min-height: clamp(180px, 25vh, 300px); }
-  .n-flasche { height: clamp(165px, 22vh, 270px); }
+  /* DIESE ZWEI ZEILEN SIND DIE ECHTEN MOBILEN WERTE.
+     Die Basisregel weiter oben wird auf dem Handy nie wirksam - wer
+     dort die Groesse aendert, aendert nichts.
+
+     WIE HIER GEMESSEN WIRD, SONST MISST MAN FALSCH:
+     Nicht das erste Feld im DOM nehmen. Die Nachbarn sind um bis zu
+     34 Grad gedreht und kleiner skaliert, ihr Rechteck ist also
+     deutlich kleiner als das der mittleren Flasche. Zu messen ist das
+     Feld mit --o = 1. Genau diesen Fehler habe ich beim ersten Anlauf
+     gemacht und daraus geschlossen, die Vergroesserung wirke nicht.
+
+     Gemessen im Nachbau, jeweils die mittlere Flasche:
+       vorher 22vh ....  54 x 185 px, Kaufknopf 764 von 844
+       jetzt  26vh ....  64 x 219 px, Kaufknopf 800 von 844
+     Quer geprueft: 360x780 ok, 414x896 ok, 768x1024 ok, 1440x900 ok.
+     320x568 (altes iPhone SE) liegt weiterhin darunter - das war
+     schon vor dieser Aenderung so und faengt die Kaufleiste ab.
+
+     Der Deckel ist der Kaufknopf. Nach dem Verschieben der
+     Mengenstaffel waren achtzig Pixel Luft; 30vh/26vh verbrauchen
+     davon rund vierzig. Groesser geht nur, wenn der Knopf unter die
+     Falz rutschen darf - das ist eine Entscheidung des Inhabers,
+     nicht meine. */
+  .n-buehne  { min-height: clamp(215px, 30vh, 340px); }
+  .n-flasche { height: clamp(190px, 26vh, 300px); }
   .n-hero    { padding-block: .5rem clamp(2.5rem, 8vw, 6rem); }
   .n-riese   { font-size: clamp(2.05rem, 6.4vw, 3rem); }
   .n-lead    { margin-bottom: 1rem; font-size: 1rem; }
@@ -501,8 +567,8 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 }
 
 @media (max-width: 389px) {
-  .n-buehne  { min-height: clamp(150px, 19vh, 240px); }
-  .n-flasche { height: clamp(140px, 17vh, 220px); }
+  .n-buehne  { min-height: clamp(180px, 24vh, 280px); }
+  .n-flasche { height: clamp(160px, 21vh, 250px); }
   .n-riese   { font-size: 1.95rem; }
   .n-lead    { font-size: .9375rem; margin-bottom: .9rem; }
 }
