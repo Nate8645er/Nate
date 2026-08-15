@@ -758,6 +758,44 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .n-frage { border-top: 1px solid var(--n-glas-rand); }
 .n-frage:last-child { border-bottom: 1px solid var(--n-glas-rand); }
 
+/* ZWEI SPALTEN AB 940px.
+   Zwoelf Fragen untereinander sind am Schreibtisch eine Liste, durch
+   die man scrollen MUSS, um zu sehen, dass sie zu Ende ist. Zwei
+   Spalten machen daraus sechs Zeilen - der Abschnitt ist mit einem
+   Blick erfassbar, und wer nichts sucht, ist schneller vorbei.
+
+   Auf dem Handy bleibt es eine Spalte. Nebeneinander waeren die
+   Fragen dort schmaler als ihre eigenen Ueberschriften.
+
+   Die Reihenfolge ist eine Entscheidung (siehe n-wissen): der Fluss
+   ist zeilenweise, also 1 2 / 3 4 / 5 6. Damit steht das Wichtige
+   weiterhin oben, nur eben zu zweit.
+
+   Zu den Linien: in einer Spalte traegt jede Frage oben einen Strich
+   und die letzte zusaetzlich unten. In zwei Spalten waere die letzte
+   Frage der LINKEN Spalte ohne Abschluss. Deshalb hier umgedreht -
+   Strich unten fuer alle, Strich oben nur fuer die ersten beiden,
+   also fuer die Koepfe beider Spalten. */
+@media (min-width: 940px) {
+  .n-fragen {
+    max-width: 100%;
+    display: grid; grid-template-columns: 1fr 1fr;
+    column-gap: clamp(2rem, 4vw, 3.5rem);
+    align-content: start;
+    /* Die erste Frage steht offen. Ohne align-items:start dehnt das
+       Raster die geschlossene Frage daneben auf dieselbe Hoehe - ihr
+       Trennstrich rutscht dann weit unter den eigenen Text und der
+       Kasten sieht kaputt aus. Mit start behaelt jede Frage ihre
+       eigene Hoehe; die Zeile ist trotzdem so hoch wie die offene. */
+    align-items: start;
+  }
+  .n-frage { border-top: 0; border-bottom: 1px solid var(--n-glas-rand); }
+  .n-frage:nth-child(1), .n-frage:nth-child(2) {
+    border-top: 1px solid var(--n-glas-rand);
+  }
+  .n-frage:last-child { border-bottom: 1px solid var(--n-glas-rand); }
+}
+
 .n-frage summary {
   display: flex; align-items: flex-start; justify-content: space-between;
   gap: 1.5rem; padding: 1.35rem 0; cursor: pointer; list-style: none;
