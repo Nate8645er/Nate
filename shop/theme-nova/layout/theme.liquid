@@ -434,15 +434,23 @@
     keinen fremden Dienst auf. Damit braucht er auch keinen Hinweis
     nach revDSG und keine Einwilligung.
   {%- endcomment -%}
-  {%- unless ist_start -%}
-    {%- comment -%}
-      Auf der Startseite steht der Frageblock ohnehin sichtbar. Auf
-      allen anderen Seiten kommt er hier versteckt dazu, damit der Chat
-      seine Quelle hat. hidden heisst: nicht sichtbar, nicht vorgelesen -
-      aber fuer das Skript lesbar.
-    {%- endcomment -%}
-    <div hidden data-wissen-quelle>{% render 'n-wissen' %}</div>
-  {%- endunless -%}
+  {%- comment -%}
+    DIE QUELLE DES CHATS LIEGT AB JETZT IMMER HIER.
+
+    Vorher stand hier ein "ausser auf der Startseite" - dort galt der
+    sichtbare Frageblock als Quelle. Das hielt genau so lange, wie der
+    sichtbare Block vollstaendig war. Seit die Startseite nur noch die
+    fuenf Produktfragen zeigt, waere der Chat dort um sieben Antworten
+    aermer geworden, ohne dass es irgendwo aufgefallen waere.
+
+    Deshalb: der Chat liest ausschliesslich diese versteckte, immer
+    vollstaendige Fassung. Nur sie bekommt quelle und damit
+    data-wissen; keine sichtbare Liste traegt das Merkmal mehr.
+
+    hidden heisst: nicht sichtbar, nicht vorgelesen - aber fuer das
+    Skript lesbar.
+  {%- endcomment -%}
+  <div hidden data-wissen-quelle>{% render 'n-wissen', quelle: true %}</div>
 
   {%- comment -%}
     aria-label ist noetig, seit die Beschriftung auf dem Handy

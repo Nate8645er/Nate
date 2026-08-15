@@ -30,7 +30,27 @@
 {%- assign wv_ab = wv.price | times: 95 | plus: 99 | divided_by: 100 -%}
 
 
-<div class="n-fragen" data-wissen>
+{%- comment -%}
+  ZWEI SCHALTER, BEIDE NEU AM 15.8.2026.
+
+  kurz - die Startseite zeigt nur noch die fuenf PRODUKTfragen:
+  Menge, grosser Hund, Katze, was darf hinein, laeuft sie aus. Der
+  Rest (Versand, Rueckgabe, Farben, Reinigung, Bezahlung, Material,
+  Bewertungen) steht vollstaendig auf der Frageseite und im Chat.
+  Zwoelf Klappzeilen waren auf der Startseite ein Nachschlagewerk,
+  kein Verkaufsargument - und Versand und Rueckgabe gehoeren ohnehin
+  nicht in eine Klappe, die man erst oeffnen muss. Die stehen jetzt
+  offen im Band darueber.
+
+  quelle - NUR die versteckte Fassung im Layout traegt data-wissen.
+  Der Chat liest genau ein Element, und das muss die VOLLSTAENDIGE
+  Liste sein. Haenge das Merkmal an eine sichtbare Kurzfassung, und
+  der Chat kann auf der Startseite plotzlich sieben Antworten nicht
+  mehr - genau der Fehler, den diese Datei verhindern soll.
+{%- endcomment -%}
+{%- assign nur_kurz = kurz | default: false -%}
+
+<div class="n-fragen{% if nur_kurz %} n-fragen--kurz{% endif %}"{% if quelle %} data-wissen{% endif %}>
 
   {%- comment -%}
     ZUR REIHENFOLGE - SIE IST EINE ENTSCHEIDUNG, KEIN ZUFALL.
@@ -62,6 +82,7 @@
     </div>
   </details>
 
+  {%- unless nur_kurz -%}
   <details class="n-frage">
     <summary>Was kostet der Versand, und wie lange dauert er?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
     <div class="n-frage__inhalt">
@@ -70,7 +91,9 @@
          Werktage, mit Sendungsverfolgung per E-Mail.</p>
     </div>
   </details>
+  {%- endunless -%}
 
+  {%- unless nur_kurz -%}
   <details class="n-frage">
     <summary>Und wenn sie mir nicht gefällt?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
     <div class="n-frage__inhalt">
@@ -82,6 +105,7 @@
       </p>
     </div>
   </details>
+  {%- endunless -%}
 
   <details class="n-frage">
     <summary>Reicht eine Flasche für einen grossen Hund?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
@@ -110,6 +134,7 @@
     </div>
   </details>
 
+  {%- unless nur_kurz -%}
   <details class="n-frage">
     <summary>Welche Farben gibt es?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
     <div class="n-frage__inhalt">
@@ -126,7 +151,9 @@
       </p>
     </div>
   </details>
+  {%- endunless -%}
 
+  {%- unless nur_kurz -%}
   <details class="n-frage">
     <summary>Wie reinige ich sie?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
     <div class="n-frage__inhalt">
@@ -134,7 +161,9 @@
          lassen. Zur Spülmaschine liegt uns keine Angabe vor.</p>
     </div>
   </details>
+  {%- endunless -%}
 
+  {%- unless nur_kurz -%}
   {%- if shop.enabled_payment_types.size > 0 -%}
     <details class="n-frage">
       <summary>Womit kann ich bezahlen?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
@@ -170,6 +199,7 @@
       </div>
     </details>
   {%- endif -%}
+  {%- endunless -%}
 
   <details class="n-frage">
     <summary>Läuft sie im Rucksack aus?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
@@ -189,6 +219,7 @@
     Absatz darueber beantwortet, wie gewissenhaft wir sind. Der Kunde
     will die Angabe, nicht unsere Haltung dazu. Ein Satz reicht.
   {%- endcomment -%}
+  {%- unless nur_kurz -%}
   <details class="n-frage">
     <summary>Aus welchem Material ist sie?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
     <div class="n-frage__inhalt">
@@ -196,7 +227,9 @@
          vorliegt, steht sie hier.</p>
     </div>
   </details>
+  {%- endunless -%}
 
+  {%- unless nur_kurz -%}
   <details class="n-frage">
     <summary>Warum stehen hier keine Bewertungen?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
     <div class="n-frage__inhalt">
@@ -207,5 +240,6 @@
       </p>
     </div>
   </details>
+  {%- endunless -%}
 
 </div>

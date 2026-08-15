@@ -771,13 +771,19 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
    ist zeilenweise, also 1 2 / 3 4 / 5 6. Damit steht das Wichtige
    weiterhin oben, nur eben zu zweit.
 
+   NUR die lange Liste. Die Startseite zeigt seit dem Band nur noch
+   fuenf Fragen - die stehen in zwei Spalten schief (links drei,
+   rechts zwei, dazu ein Loch unter der offenen ersten). Fuenf
+   Zeilen untereinander sind ohnehin mit einem Blick erfassbar.
+   Deshalb haengt die Regel an :not(.n-fragen--kurz).
+
    Zu den Linien: in einer Spalte traegt jede Frage oben einen Strich
    und die letzte zusaetzlich unten. In zwei Spalten waere die letzte
    Frage der LINKEN Spalte ohne Abschluss. Deshalb hier umgedreht -
    Strich unten fuer alle, Strich oben nur fuer die ersten beiden,
    also fuer die Koepfe beider Spalten. */
 @media (min-width: 940px) {
-  .n-fragen {
+  .n-fragen:not(.n-fragen--kurz) {
     max-width: 100%;
     display: grid; grid-template-columns: 1fr 1fr;
     column-gap: clamp(2rem, 4vw, 3.5rem);
@@ -789,11 +795,12 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
        eigene Hoehe; die Zeile ist trotzdem so hoch wie die offene. */
     align-items: start;
   }
-  .n-frage { border-top: 0; border-bottom: 1px solid var(--n-glas-rand); }
-  .n-frage:nth-child(1), .n-frage:nth-child(2) {
+  .n-fragen:not(.n-fragen--kurz) .n-frage { border-top: 0; border-bottom: 1px solid var(--n-glas-rand); }
+  .n-fragen:not(.n-fragen--kurz) .n-frage:nth-child(1),
+  .n-fragen:not(.n-fragen--kurz) .n-frage:nth-child(2) {
     border-top: 1px solid var(--n-glas-rand);
   }
-  .n-frage:last-child { border-bottom: 1px solid var(--n-glas-rand); }
+  .n-fragen:not(.n-fragen--kurz) .n-frage:last-child { border-bottom: 1px solid var(--n-glas-rand); }
 }
 
 .n-frage summary {
@@ -2774,3 +2781,69 @@ body:has(.n-leiste.n-an) .n-chat       { bottom: calc(84px + env(safe-area-inset
   .n-chat__auf { padding: 0; width: 46px; justify-content: center; gap: 0; }
   .n-chat__auf span { display: none; }
 }
+
+/* ====================================================================
+   DAS BAND — Versand, Rueckgabe, Antworten
+   15.8.2026.
+
+   Drei Punkte offen statt drei Klappzeilen. Der Grund steht im
+   Abschnitt 9b von n-start.liquid: was den Kauf blockiert, gehoert
+   nicht hinter eine Klappe.
+
+   Eine ul, keine divs: es ist eine Aufzaehlung von drei
+   gleichrangigen Punkten, und genau das soll ein Screenreader auch
+   ansagen ("Liste mit 3 Eintraegen").
+
+   Auf dem Handy untereinander mit Trennstrichen, ab 700px
+   nebeneinander mit senkrechten Trennern. Der Trenner sitzt links
+   und wird beim ersten Eintrag abgeschaltet - mit border-right am
+   letzten waere ein Strich am aeusseren Rand.
+
+   Keine Symbole. Ein Lastwagen und ein Pfeil im Kreis sagen nichts,
+   was nicht schon im Wort darunter steht, und in dieser Groesse
+   erkennt sie ohnehin niemand.
+   -------------------------------------------------------------------- */
+.n-band {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: 0;
+  border-top: 1px solid var(--n-glas-rand);
+}
+.n-band__p {
+  padding: 1.4rem 0;
+  border-bottom: 1px solid var(--n-glas-rand);
+}
+.n-band__p b {
+  display: block; margin-bottom: .35rem;
+  font-size: .8125rem; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--n-sanft); font-weight: 600;
+}
+.n-band__p p {
+  margin: 0; font-size: 1rem; line-height: 1.55; max-width: 34ch;
+}
+.n-band__p a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+
+@media (min-width: 700px) {
+  .n-band {
+    grid-template-columns: repeat(3, 1fr);
+    border-bottom: 1px solid var(--n-glas-rand);
+  }
+  .n-band__p {
+    padding: 1.6rem clamp(1rem, 2.5vw, 2rem);
+    border-bottom: 0;
+    border-left: 1px solid var(--n-glas-rand);
+  }
+  .n-band__p:first-child { border-left: 0; padding-left: 0; }
+  .n-band__p:last-child { padding-right: 0; }
+}
+
+/* Der Verweis auf die vollstaendige Frageliste. Mittig unter der
+   gekuerzten Liste, mit Abstand - er soll gefunden werden, aber nicht
+   mit den Fragen selbst konkurrieren. */
+.n-band__mehr {
+  margin: 2.2rem 0 0; text-align: center;
+  font-size: .9375rem;
+}
+.n-band__mehr a {
+  color: var(--n-sanft); text-decoration: underline; text-underline-offset: 4px;
+}
+.n-band__mehr a:hover { color: var(--n-text); }

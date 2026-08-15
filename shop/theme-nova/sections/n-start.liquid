@@ -839,22 +839,82 @@
   auch nicht, wenn hier Platz frei wird.
 {%- endcomment -%}
 
+{%- comment -%} ========================================= 9b · DAS BAND {%- endcomment -%}
+{%- comment -%}
+  WARUM HIER EIN BAND STEHT UND NICHT NOCH MEHR KLAPPZEILEN.
+
+  Versand, Rueckgabe und "wer antwortet mir" waren drei von zwoelf
+  Zeilen in der Frageliste. Das sind aber keine Fragen im Sinne von
+  "falls es mich interessiert" - das sind die drei Dinge, die
+  jemanden vom ersten Kauf in einem unbekannten Schweizer Shop
+  abhalten. Etwas, das den Kauf blockiert, gehoert nicht hinter eine
+  Klappe, die man erst oeffnen muss.
+
+  Deshalb stehen sie jetzt offen, und die Frageliste darunter ist auf
+  die fuenf PRODUKTfragen gekuerzt.
+
+  KEINE ZAHL HIER IST NEU. Gratis in die Schweiz, CHF 1.50 in die
+  uebrigen Laender, 7-14 Werktage, 14 Tage Rueckgabe - alles steht
+  wortgleich schon im Warenkorb und in der Frageliste. Das Band
+  wiederholt, es erfindet nicht.
+
+  WAS HIER BEWUSST NICHT STEHT: der Satz zur Dichtigkeit. Er ist
+  unveraenderlich und steht genau einmal, in der Frage "Laeuft sie
+  im Rucksack aus?". Ihn hier zu verkuerzen wuerde eine zweite,
+  anders formulierte Fassung derselben Zusage erzeugen - genau der
+  Fehler, den n-wissen verhindern soll. Stattdessen fuehrt die dritte
+  Spalte auf die Fragen.
+
+  KEIN VERTRAUENS-THEATER: keine Siegel, keine Sterne, keine
+  Zufriedenheitsversprechen, keine Zahl ueber Kunden. Es gibt null
+  Bestellungen; alles davon waere erfunden.
+{%- endcomment -%}
+<section class="n-block" style="padding-bottom:0">
+  <div class="n-huelle">
+    <ul class="n-band" data-auf>
+      <li class="n-band__p">
+        <b>Versand</b>
+        <p>In die Schweiz gratis, 7–14 Werktage. In die übrigen Länder
+           kommen CHF 1.50 dazu.</p>
+      </li>
+      <li class="n-band__p">
+        <b>Rückgabe</b>
+        <p>14 Tage, ohne dass du einen Grund nennen musst.
+           Der Rückweg steht in <a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>.</p>
+      </li>
+      <li class="n-band__p">
+        <b>Antworten</b>
+        <p>Ein Produkt, ein Mensch. Ich schreibe die Antworten selbst –
+           auch die, in denen steht, dass ich etwas nicht weiss.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
 {%- comment -%} ================================================ 10 · FAQ {%- endcomment -%}
 <section class="n-block" id="fragen">
   <div class="n-huelle">
     <div class="n-kopfz n-kopfz--mitte" data-auf>
-      <span class="n-auge">Bevor du bestellst</span>
-      <h2 class="n-titel">Häufige Fragen</h2>
+      <span class="n-auge">Zum Produkt</span>
+      <h2 class="n-titel">Fünf Fragen, die oft kommen</h2>
     </div>
 
     {%- comment -%}
-      Die Fragen und Antworten stehen nicht mehr hier, sondern EINMAL
-      im Schnipsel n-wissen. Der Chat unten rechts liest genau diesen
-      Block aus - er hat keinen eigenen Text und kann deshalb nichts
-      sagen, was hier nicht steht. Wer eine Antwort aendert, aendert
-      sie damit an allen Stellen gleichzeitig.
+      Die Fragen und Antworten stehen nicht hier, sondern EINMAL im
+      Schnipsel n-wissen. Hier laeuft es mit kurz: true - nur die
+      fuenf Produktfragen. Der Chat unten rechts liest NICHT diesen
+      Block, sondern die versteckte vollstaendige Fassung im Layout;
+      er kann deshalb auch hier alle zwoelf Antworten.
+
+      Der Verweis darunter ist kein Schmuck: wer eine der sieben
+      anderen Fragen hat, muss sehen, dass es sie gibt. Sonst ist
+      Kuerzen nur Verstecken.
     {%- endcomment -%}
-    <div data-auf>{% render 'n-wissen' %}</div>
+    <div data-auf>{% render 'n-wissen', kurz: true %}</div>
+
+    <p class="n-band__mehr" data-auf="klein">
+      <a href="/pages/haeufige-fragen">Alle Fragen – Versand, Rückgabe, Farben, Reinigung, Material</a>
+    </p>
   </div>
 </section>
 
