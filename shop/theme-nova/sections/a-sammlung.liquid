@@ -48,7 +48,11 @@
                     {%- endif -%}
                   </div>
                   <h2>{{ p.title }}</h2>
-                  <p>{{ p.price | money }}</p>
+                  {%- comment -%} Katalogpreis CHF 39.90 stand hier, gezahlt wird
+                     aber der reduzierte Betrag. Gleiche Rechnung
+                     wie ueberall sonst im Theme. {%- endcomment -%}
+                  {%- assign p_ab = p.price | times: 95 | plus: 99 | divided_by: 100 -%}
+                  <p>{{ p_ab | money }}</p>
                 </a>
               </li>
             {%- endfor -%}

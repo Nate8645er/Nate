@@ -82,7 +82,15 @@
 
         <p class="n-preis" style="margin-top:1rem">
           <b>{{ v_ab | money }}</b>
-          <span>inkl. MwSt · Gratisversand Schweiz</span>
+          {%- comment -%}
+            Hier stand "inkl. MwSt". Dasselbe wurde in layout/theme.liquid
+            und in n-start.liquid bereits gestrichen, mit der Begruendung:
+            wer nicht im MWST-Register eingetragen ist, darf keine MWST
+            ausweisen. Auf der Produktseite hatte der Zusatz ueberlebt -
+            zwei Seiten, gleiches Produkt, gleicher Betrag, verschiedene
+            Angabe.
+          {%- endcomment -%}
+          <span>Endpreis · Gratisversand Schweiz</span>
         </p>
         <p class="a-pr__zeile">550 ml · Farbe <span data-farbname>{{ v.option1 }}</span> · ein Preis für alle Farben</p>
 

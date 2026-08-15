@@ -48,7 +48,11 @@
                       {%- endif -%}
                     </div>
                     <h2>{{ treffer.title }}</h2>
-                    <p>{{ treffer.price | money }}</p>
+                    {%- comment -%} Katalogpreis CHF 39.90 stand hier, gezahlt wird
+                     aber der reduzierte Betrag. Gleiche Rechnung
+                     wie ueberall sonst im Theme. {%- endcomment -%}
+                  {%- assign treffer_ab = treffer.price | times: 95 | plus: 99 | divided_by: 100 -%}
+                  <p>{{ treffer_ab | money }}</p>
                   {%- else -%}
                     <h2>{{ treffer.title }}</h2>
                     <p>{{ treffer.content | strip_html | truncatewords: 22 }}</p>

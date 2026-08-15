@@ -257,7 +257,30 @@
     </div>
 
     <div>
-      <h1 class="n-riese" data-auf>Hydration, die dein <em>Haustier liebt.</em></h1>
+      {%- comment -%}
+        DIE UEBERSCHRIFT SAGT JETZT, WAS ES IST.
+
+        Vorher stand hier "Hydration, die dein Haustier liebt." - ein
+        Markenspruch. Das Problem daran ist nicht der Ton, sondern eine
+        Luecke: das Wort "Trinkflasche" kam auf dem ganzen ersten
+        Bildschirm KEIN EINZIGES MAL vor. "550 ml" stand dort nur in
+        einer 11-px-Versalienzeile in Grau.
+
+        Der Verkehr kommt kalt von einer Anzeige. Wer die Marke nicht
+        kennt - und niemand kennt sie - liest zuerst die Ueberschrift
+        und muss daraus erkennen, ob die Seite das zeigt, worauf er
+        getippt hat. Ein Spruch beantwortet das nicht.
+
+        Beide Haelften stehen so schon auf der Seite: "Trinkflasche mit
+        Napf" ist der Produktname aus der Kaufleiste, "Eine Hand reicht"
+        der erste Haken im Abschnitt "Der Unterschied". Es kommt also
+        KEINE neue Produktbehauptung dazu.
+
+        Der Markenspruch ist nicht geloescht - er steht im Schlussblock,
+        wo ein Markenclaim hingehoert: am Ende, wenn die Sache erklaert
+        ist, nicht am Anfang, wo sie noch benannt werden muss.
+      {%- endcomment -%}
+      <h1 class="n-riese" data-auf>Trinkflasche mit Napf. <em>Eine Hand reicht.</em></h1>
       <p class="n-lead" data-auf="klein">
         Knopf drücken, der Napf füllt sich. Aufrichten, und das übrige
         Wasser läuft zurück in die Flasche. Eine Hand reicht – die Leine
@@ -657,7 +680,7 @@
     {%- endcomment -%}
     <ol class="n-schritte" data-staffel>
       {%- assign schritt_titel = 'Knopf drücken|Trinken lassen|Aufrichten|Mitnehmen' | split: '|' -%}
-      {%- assign schritt_text = 'Ein Druck, und das Wasser läuft in den Napf. Du hältst nur die Flasche.|Der Napf ist offen wie eine Schale. Die Leine bleibt in der anderen Hand.|Das übrige Wasser läuft zurück in die Flasche. Nichts bleibt im Napf stehen.|Oben am Napf sitzt eine angeformte Öse – für ein Band oder einen Karabiner.' | split: '|' -%}
+      {%- assign schritt_text = 'Ein Druck, und das Wasser läuft in den Napf. Du hältst nur die Flasche.|Der Napf ist offen wie eine Schale. Die Leine bleibt in der anderen Hand.|Das übrige Wasser läuft zurück in die Flasche.|Oben am Napf sitzt eine angeformte Öse – für ein Band oder einen Karabiner.' | split: '|' -%}
       {%- assign schritt_alt = 'Nahaufnahme des Knopfes mit Pfotenzeichen und seinen beiden Stellungen|Eine Hand hält die Flasche waagrecht, der offene Napf zeigt zur Seite|Die Flasche steht aufrecht, der Napf ist leer, das Wasser ist zurück in der Flasche|Nahaufnahme der angeformten Öse oben am Napf' | split: '|' -%}
       {%- for i in (0..3) -%}
         <li data-auf="klein" style="--nr:{{ i }}">

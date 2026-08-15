@@ -81,7 +81,17 @@
    "description":{{ product.description | strip_html | truncate: 300 | json }},
    "brand":{"@type":"Brand","name":"Let'sDrink"},
    "offers":{"@type":"Offer","priceCurrency":{{ cart.currency.iso_code | json }},
-     "price":"{{ product.selected_or_first_available_variant.price | divided_by: 100.0 }}",
+     {%- comment -%}
+       Hier stand der rohe Katalogpreis. Damit meldete der Shop an
+       Google CHF 39.90, waehrend auf der Seite CHF 37.91 stand - genau
+       die Abweichung, die das Merchant Center als "Preis stimmt nicht
+       mit der Seite ueberein" ablehnt. Der lange Kommentar oben in
+       dieser Datei erklaert, warum ueberall der wirklich faellige
+       Preis stehen muss; diese eine Zeile hatte die Regel als einzige
+       nicht mitbekommen.
+     {%- endcomment -%}
+     {%- assign ld_preis = product.selected_or_first_available_variant.price | times: 95 | plus: 99 | divided_by: 100 -%}
+     "price":"{{ ld_preis | divided_by: 100.0 }}",
      "availability":"https://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}",
      "url":"{{ shop.url }}{{ product.url }}",
      "shippingDetails":{"@type":"OfferShippingDetails",
@@ -95,17 +105,46 @@
        "returnPolicyCategory":"https://schema.org/MerchantReturnFiniteReturnWindow",
        "merchantReturnDays":14,
        "returnMethod":"https://schema.org/ReturnByMail",
-       "returnFees":"https://schema.org/ReturnShippingFees",
-       "returnShippingFeesAmount":{"@type":"MonetaryAmount","value":"0","currency":"CHF"}}}}
+       {%- comment -%}
+         Hier stand zusaetzlich returnShippingFeesAmount mit dem Wert 0
+         CHF. Das heisst "Ruecksendung kostet den Kunden nichts" und
+         widersprach damit im selben Objekt der Zeile darueber - und
+         dem, was im Shop steht: "Ruecksendung zahlst du". Google haette
+         daraus "Free returns" gemacht, der Kunde haette im Shop das
+         Gegenteil gefunden. Der Betrag ist raus, die Zeile darueber
+         sagt bereits alles Noetige.
+       {%- endcomment -%}
+       "returnFees":"https://schema.org/ReturnShippingFees"}}}
   </script>
   {%- endif -%}
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23111111'/%3E%3Cpath d='M12 4.5C9.3 8.1 6.6 10.8 6.6 14.4a5.4 5.4 0 0 0 10.8 0c0-3.6-2.7-6.3-5.4-9.9Z' fill='%23FFFFFF'/%3E%3C/svg%3E">
 
-  <link rel="preload" as="font" type="font/woff2" href="{{ 'a-sans.woff2' | asset_url }}" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="{{ 'a-sans-bold.woff2' | asset_url }}" crossorigin>
+  {%- comment -%}
+    DIE SCHRIFTEN WURDEN DOPPELT GELADEN.
+
+    asset_url haengt einen Versionsparameter an (...woff2?v=123). Die
+    @font-face-Regel in n-nova.css benutzt aber eine relative Adresse
+    ohne Parameter - und fuer den Browser sind das ZWEI verschiedene
+    Dateien. Ergebnis: vier Schriftdownloads statt zwei, der Vorladen-
+    Hinweis wurde nie verwendet, und in der Konsole stand die Warnung
+    "preloaded but not used". Alles im kritischen Ladepfad.
+
+    n-nova.css ist eine statische Datei und kann kein Liquid - also
+    muss der Parameter hier weg, nicht dort hin.
+  {%- endcomment -%}
+  <link rel="preload" as="font" type="font/woff2" href="{{ 'a-sans.woff2' | asset_url | split: '?' | first }}" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="{{ 'a-sans-bold.woff2' | asset_url | split: '?' | first }}" crossorigin>
   {%- if kauf_hier -%}
-    <link rel="preload" as="image" href="{{ 'a-flasche-tuerkis.webp' | asset_url }}" fetchpriority="high">
+    {%- comment -%}
+      Hier stand fest a-flasche-tuerkis.webp. Bei fuenf von sechs
+      Farben wurde damit ein Bild mit hoher Prioritaet geladen, das nie
+      erscheint - waehrend das wirklich sichtbare ohne Prioritaet
+      hinterherlief. Solche Links auf ?variant= stehen an achtzehn
+      Stellen im Shop, das ist kein Randfall.
+    {%- endcomment -%}
+    {%- assign vor_slug = lv.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
+    <link rel="preload" as="image" href="{{ 'a-flasche-' | append: vor_slug | append: '.webp' | asset_url }}" fetchpriority="high">
   {%- endif -%}
 
   {{ 'n-nova.css' | asset_url | stylesheet_tag }}

@@ -66,7 +66,14 @@
                     {%- unless item.product.has_only_default_variant -%}
                       {{ item.variant.title }} ·
                     {%- endunless -%}
-                    {{ item.original_price | money }} pro Stück
+                    {%- comment -%}
+                      Hier stand item.original_price, also der
+                      Katalogpreis CHF 39.90. Drei Zentimeter darunter
+                      steht die Zeilensumme aus final_line_price, bei
+                      einer Flasche CHF 37.91. Zwei verschiedene Preise
+                      fuer dasselbe Stueck im selben Kasten.
+                    {%- endcomment -%}
+                    {{ item.final_price | money }} pro Stück
                   </p>
 
                   <div class="a-pos__fuss">
@@ -108,7 +115,7 @@
               <span>{{ cart.total_price | money }}</span>
             </div>
             <p class="a-summe__hinweis">
-              Inkl. MwSt. In die übrigen Länder kommen CHF 1.50 Versand dazu.
+              Endpreis. In die übrigen Länder kommen CHF 1.50 Versand dazu.
               Der endgültige Betrag steht im nächsten Schritt, bevor du bezahlst.
             </p>
 
