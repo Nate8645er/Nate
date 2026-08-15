@@ -149,14 +149,10 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 /* =====================================================================
    KOPF, NAVIGATION
    ===================================================================== */
-.n-balken {
-  background: var(--n-akzent);
-  border-bottom: 1px solid var(--n-glas-rand);
-  color: rgb(255 255 255 / .85);
-  font-size: .78125rem; text-align: center; padding: .55rem 1rem;
-}
-.n-balken b { color: #FFFFFF; font-weight: 700; }
-.n-balken span + span::before { content: "·"; margin: 0 .55rem; opacity: .5; }
+/* Die Regeln fuer .n-balken standen hier. Der Balken selbst ist am
+   15.8.2026 aus dem Layout geflogen (Begruendung dort, mit Messwert).
+   Die Regeln sind mit ihm gegangen statt als Leiche liegen zu
+   bleiben - kommt er zurueck, kommt auch sein CSS zurueck. */
 
 .n-kopf {
   position: sticky; top: 0; z-index: 70;
@@ -169,7 +165,23 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
   -webkit-backdrop-filter: saturate(160%) blur(16px);
   border-bottom-color: var(--n-glas-rand);
 }
-.n-kopf__innen { display: flex; align-items: center; gap: 1rem; min-height: 66px; }
+.n-kopf__innen {
+  display: flex; align-items: center; gap: 1rem; min-height: 66px;
+  /* Seit der Balken weg ist, ist der Kopf das oberste Element der
+     Seite. Auf einem iPhone im Querformat schiebt die Notch den
+     nutzbaren Bereich seitlich hinein - ohne diese beiden Zeilen
+     laege die Wortmarke darunter. viewport-fit=cover steht im Layout,
+     also greift env() hier auch wirklich. */
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+/* Auf sehr schmalen Geraeten sechs Pixel weniger Kopf. Die
+   Antippflaechen bleiben bei 44 px - das ist die Untergrenze, nicht
+   die Kopfhoehe. */
+@media (max-width: 389px) {
+  .n-kopf__innen { min-height: 60px; gap: .6rem; }
+  .n-marke { font-size: 1rem; }
+}
 .n-marke {
   font-weight: 700; font-size: 1.0625rem; letter-spacing: -.01em;
   text-decoration: none; margin-right: auto; display: flex; align-items: center; gap: .55rem;

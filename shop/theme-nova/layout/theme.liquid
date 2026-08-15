@@ -287,13 +287,33 @@
   {%- endif -%}
 
   {%- comment -%}
-    Der Balken nennt nur Belegbares. Das Versandprofil dieses Shops
-    sagt: Schweiz gratis, uebrige Laender CHF 1.50. Kein Countdown,
-    kein "nur heute", keine Verknappung.
+    DER LAUFBALKEN UEBER DEM KOPF IST WEG - 15.8.2026, auf Wunsch des
+    Inhabers, nach einem Bildschirmfoto vom Handy.
+
+    Er trug drei Angaben: Gratisversand Schweiz, 14 Tage Rueckgabe,
+    Versand 7-14 Werktage. Inhaltlich war daran nichts falsch, alle
+    drei sind belegt.
+
+    Gemessen wurde das Problem, nicht geschaetzt: auf 390 px war der
+    Balken 59 Pixel hoch, weil die drei Angaben auf ZWEI Zeilen
+    umbrachen - mit einem Umbruch mitten in "Versand in 7-14
+    Werktagen". Zusammen mit dem Kopf gingen 126 Pixel weg, bevor der
+    Hero anfing; das ist ein Siebtel des ersten Bildschirms eines
+    iPhones fuer eine Zeile, die niemand liest, weil sie auf jeder
+    Seite gleich aussieht.
+
+    DIE DREI ANGABEN SIND NICHT VERLOREN. Nachgesehen, nicht
+    angenommen:
+      Startseite   - das Band (Versand, Rueckgabe, Antworten)
+      Produktseite - die vier Haken unter dem Kaufknopf
+      Warenkorb    - die Zeile unter "Zur Kasse"
+      eigene Seite - /pages/versand-und-rueckgabe
+    Wo sie fehlen, sind es Seiten, auf denen niemand kauft (Suche,
+    Rechtsseiten).
+
+    Wieder einbauen? Dann NICHT als drei Angaben nebeneinander -
+    genau das bricht um. Eine Angabe, oder gar keine.
   {%- endcomment -%}
-  <div class="n-balken">
-    <span><b>Gratisversand</b> in der Schweiz</span><span>14 Tage Rückgabe</span><span>Versand in 7–14 Werktagen</span>
-  </div>
 
   <header class="n-kopf" data-kopf>
     <div class="n-huelle n-kopf__innen">
