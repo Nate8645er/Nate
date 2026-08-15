@@ -1,0 +1,97 @@
+{%- comment -%}
+  snippets/n-briefkasten.liquid — die E-Mail-Anmeldung
+  15.8.2026.
+
+  WAS HIER VERSPROCHEN WIRD, UND WARUM SO WENIG
+
+  Ein Newsletter ist ein Versprechen: du bekommst etwas, dafuer gibst
+  du deine Adresse. Die meisten Shops versprechen an dieser Stelle
+  Dinge, die sie nie liefern - "woechentliche Tipps", "exklusive
+  Angebote", "10 Prozent Rabatt". Der Inhaber schreibt allein und hat
+  null Bestellungen; woechentliche Tipps wird es nicht geben.
+
+  Deshalb steht hier nur, was er wirklich halten kann: er meldet sich,
+  wenn es etwas Neues gibt. Kein Rhythmus, keine Menge, kein Rabatt.
+  Das ist eine schwaechere Werbung und eine ehrliche Zusage - und wer
+  sich darauf meldet, ist eine echte Adresse statt einer, die beim
+  ersten Brief wieder abspringt.
+
+  KEIN RABATT ALS KOEDER. Das waere ausserdem ein Widerspruch zur
+  Preisaussage im Shop: wer sagt "kein Sale, kein Streichpreis", kann
+  nicht zehn Prozent fuer eine E-Mail-Adresse verschenken.
+
+  TECHNIK
+  Shopifys eigenes Kundenformular - der Formular-Tag mit dem Typ
+  "customer", weiter unten in dieser Datei. Kein fremder Dienst, kein
+  zusaetzliches Skript, keine Datenweitergabe an Dritte: die Adresse
+  landet in Shopifys Kundenliste. Ohne JavaScript funktioniert es
+  genauso, es ist ein normales Formular.
+
+  (Der Tagname steht hier bewusst NICHT in Klammern ausgeschrieben.
+  Liquid liest Bloecke auch innerhalb eines Kommentars an und haelt
+  ein erwaehntes form fuer ein geoeffnetes - die Seite bricht dann
+  mit einem Syntaxfehler.)
+
+  WAS DER INHABER NOCH TUN MUSS, BEVOR DAS LIVE GEHT:
+  1  Die Datenschutzerklaerung muss die Anmeldung nennen: welche
+     Daten, wozu, wie lange, und wie man sich abmeldet.
+  2  Doppelte Bestaetigung im Shopify-Konto einschalten
+     (Einstellungen, Kundenbenachrichtigungen). Ohne sie kann jeder
+     fremde Adressen eintragen, und in der EU ist die Bestaetigung
+     der sichere Weg.
+  Beides kann ich nicht von hier aus erledigen.
+{%- endcomment -%}
+
+<div class="n-brief">
+  <div class="n-brief__bild">
+    {%- comment -%}
+      Das Bild zeigt die Flasche am Karabiner an einem Rucksack. Es
+      belegt genau die eine Aussage, die im Abschnitt "Mitnehmen"
+      steht - die angeformte Oese - und behauptet sonst nichts.
+      Der Hund laeuft weg von der Kamera und trinkt nicht: das Bild
+      zeigt eine Situation, keine Funktion.
+    {%- endcomment -%}
+    <img src="{{ 'a-rucksack.webp' | asset_url }}"
+         alt="Die Trinkflasche hängt mit einem Karabiner an einem Rucksack, davor ein Hund auf einem Bergweg"
+         width="1044" height="909" loading="lazy" decoding="async">
+  </div>
+
+  <div class="n-brief__text">
+    <span class="n-auge">Bleib in Verbindung</span>
+    <h2 class="n-titel">Ich melde mich, wenn es Neues gibt.</h2>
+    <p class="n-unter">
+      Neue Farben, echte Rückmeldungen von Kundinnen und Kunden,
+      Antworten auf Fragen, die oft kommen. Kein fester Rhythmus –
+      nur dann, wenn es wirklich etwas zu sagen gibt.
+    </p>
+
+    {%- form 'customer', class: 'n-brief__form' -%}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      {%- if form.posted_successfully? -%}
+        <p class="n-brief__ok" role="status">
+          Danke. Du bekommst eine E-Mail zur Bestätigung –
+          erst danach stehst du auf der Liste.
+        </p>
+      {%- else -%}
+        <label class="n-sr" for="n-brief-mail">Deine E-Mail-Adresse</label>
+        <div class="n-brief__zeile">
+          <input class="n-brief__feld" id="n-brief-mail"
+                 type="email" name="contact[email]"
+                 placeholder="deine@adresse.ch"
+                 autocomplete="email" required>
+          <button class="n-knopf n-knopf--klein" type="submit">Eintragen</button>
+        </div>
+        {%- if form.errors -%}
+          <p class="n-brief__fehler" role="alert">
+            {{ form.errors.messages['email'] | default: 'Bitte prüf die Adresse noch einmal.' }}
+          </p>
+        {%- endif -%}
+        <p class="n-brief__klein">
+          Abmelden geht jederzeit mit einem Klick in jeder E-Mail.
+          Wie ich mit deiner Adresse umgehe, steht im
+          <a href="/policies/privacy-policy">Datenschutz</a>.
+        </p>
+      {%- endif -%}
+    {%- endform -%}
+  </div>
+</div>

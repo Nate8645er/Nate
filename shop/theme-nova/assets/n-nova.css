@@ -2636,3 +2636,81 @@ body:has(.n-leiste.n-an) .n-chat       { bottom: calc(84px + env(safe-area-inset
 /* Steht das Band da, braucht die Linkzeile darunter keinen zweiten
    grossen Abstand mehr. */
 .a-band + .a-weiter { margin-top: 1rem; }
+
+/* ====================================================================
+   BRIEFKASTEN — die E-Mail-Anmeldung
+   15.8.2026.
+
+   Bild links, Text rechts; auf dem Handy untereinander. Das Bild ist
+   das einzige echte Aussenfoto im Shop und traegt den Abschnitt -
+   deshalb bekommt es die volle Breite und keinen Rahmen.
+
+   Was hier bewusst FEHLT: ein Rabattversprechen als Koeder. Der Shop
+   sagt an anderer Stelle "kein Sale, kein Streichpreis" - zehn
+   Prozent fuer eine E-Mail-Adresse waere derselbe Satz in gruen.
+   -------------------------------------------------------------------- */
+.n-brief {
+  display: grid; gap: clamp(1.5rem, 5vw, 3rem);
+  align-items: center;
+}
+@media (min-width: 880px) { .n-brief { grid-template-columns: 1.05fr .95fr; } }
+
+.n-brief__bild {
+  border-radius: var(--n-rund-gross); overflow: hidden;
+  background: var(--n-panel); margin: 0;
+}
+.n-brief__bild img { width: 100%; height: auto; display: block; }
+
+.n-brief__form { margin-top: 1.4rem; }
+
+/* Feld und Knopf in einer Zeile, ab 420px nebeneinander. Darunter
+   untereinander - ein 44px hoher Knopf neben einem Feld laesst auf
+   einem schmalen Handy fuer beides zu wenig Platz. */
+.n-brief__zeile { display: grid; gap: .6rem; }
+@media (min-width: 420px) {
+  .n-brief__zeile { grid-template-columns: 1fr auto; align-items: stretch; }
+}
+
+.n-brief__feld {
+  width: 100%; min-height: 48px; padding: 0 1rem;
+  border: 1px solid var(--n-glas-rand); border-radius: 999px;
+  background: var(--n-grund); color: var(--n-text);
+  font: inherit; font-size: 1rem;
+}
+.n-brief__feld::placeholder { color: var(--n-sanft); }
+.n-brief__feld:focus-visible {
+  outline: 2px solid var(--n-akzent); outline-offset: 2px;
+}
+
+.n-brief__klein { margin: .8rem 0 0; font-size: .8125rem; color: var(--n-sanft); }
+.n-brief__klein a { color: inherit; }
+
+.n-brief__ok {
+  margin: 0; padding: .9rem 1.1rem;
+  border-radius: var(--n-rund); background: var(--n-panel);
+  font-size: .9375rem;
+}
+.n-brief__fehler { margin: .7rem 0 0; font-size: .875rem; color: #B4462F; }
+
+/* ====================================================================
+   DER CHATKNOPF LEGT SICH NICHT MEHR AUF DEN KAUFKNOPF
+   15.8.2026, nach einem Bildschirmfoto des Inhabers.
+
+   Der Knopf war eine breite Pille mit dem Wort "Fragen?" und sass
+   unten rechts fest. Am Seitenende, wo der Kaufknopf ueber die volle
+   Breite laeuft, deckte er dessen rechtes Drittel ab - im Foto war
+   der Preis darunter halb verschwunden.
+
+   Es gab bereits eine Regel, die ihn anhebt, sobald die mitlaufende
+   Kaufleiste erscheint. Die greift hier nicht: der Knopf im
+   Schlussblock gehoert zur Seite, nicht zur Leiste.
+
+   Auf dem Handy bleibt deshalb nur das Zeichen stehen, ohne Wort.
+   Das kostet rund 80 Pixel Breite - genug, dass ein vollbreiter
+   Kaufknopf darunter frei bleibt. Ab 700px ist Platz genug, dort
+   steht die Beschriftung weiterhin.
+   -------------------------------------------------------------------- */
+@media (max-width: 699px) {
+  .n-chat__auf { padding: 0; width: 46px; justify-content: center; gap: 0; }
+  .n-chat__auf span { display: none; }
+}

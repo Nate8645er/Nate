@@ -444,7 +444,15 @@
     <div hidden data-wissen-quelle>{% render 'n-wissen' %}</div>
   {%- endunless -%}
 
+  {%- comment -%}
+    aria-label ist noetig, seit die Beschriftung auf dem Handy
+    ausgeblendet wird (siehe Begruendung im CSS: der Knopf deckte den
+    Kaufknopf im Schlussblock ab). Ohne den Namen waere er fuer ein
+    Vorleseprogramm ein leerer Knopf - das Zeichen darin ist
+    aria-hidden.
+  {%- endcomment -%}
   <button class="n-chat__auf" type="button" data-chat-auf
+          aria-label="Häufige Fragen öffnen"
           aria-expanded="false" aria-controls="n-chat">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
