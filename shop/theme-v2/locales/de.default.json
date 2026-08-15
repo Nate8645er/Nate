@@ -1,0 +1,8 @@
+{
+  "general": {
+    "meta": {
+      "tags": "Schlagwörter",
+      "page": "Seite {{ page }}"
+    }
+  }
+}

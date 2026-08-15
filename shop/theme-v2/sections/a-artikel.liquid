@@ -1,0 +1,50 @@
+{%- comment -%}
+  sections/a-artikel.liquid — LET'SDRINK AMBER, Blogbeitrag
+  9.8.2026. Bauleitung.
+
+  Ohne Kommentarbereich: ein Shop mit null Bestellungen braucht keinen,
+  und ein unmoderierter Kommentarbereich ist eine offene Tuer fuer Spam.
+{%- endcomment -%}
+
+<div class="a-seite">
+  <div class="a-huelle">
+
+    <div class="a-kopfzeile">
+      <p class="a-auge">
+        <a href="{{ blog.url }}" style="color:inherit">{{ blog.title }}</a>
+      </p>
+      <h1 class="a-titel">{{ article.title }}</h1>
+      <p class="a-vorspann">
+        <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+          {{ article.published_at | date: '%d.%m.%Y' }}
+        </time>
+      </p>
+    </div>
+
+    {%- if article.image -%}
+      <img src="{{ article.image | image_url: width: 1200 }}"
+           alt="{{ article.image.alt | escape }}" width="1200" height="675"
+           style="border-radius:18px;margin-bottom:2.5rem;width:100%;height:auto"
+           loading="lazy" decoding="async">
+    {%- endif -%}
+
+    <div class="a-text">
+      {{ article.content }}
+    </div>
+
+    <div class="a-weiter">
+      <a href="{{ blog.url }}">Alle Beiträge</a>
+      <a href="{{ routes.root_url }}">Zur Flasche</a>
+      <a href="/pages/contact">Kontakt</a>
+    </div>
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Amber Beitrag",
+  "settings": [],
+  "presets": [{ "name": "Amber Beitrag" }]
+}
+{% endschema %}

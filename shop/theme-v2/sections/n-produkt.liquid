@@ -1,0 +1,245 @@
+{%- comment -%}
+  sections/n-produkt.liquid — LET'SDRINK NOVA, Produktseite
+  9.8.2026. Bauleitung.
+
+  Enthaelt alles, was das Briefing fuer die Produktseite verlangt:
+  grosses Produktbild mit Farbwechsel, Name, Preis, Varianten,
+  Mengenwahl, In-den-Warenkorb, Sofortkauf, Versandangaben,
+  Vertrauensabzeichen, Produktvorteile, FAQ und Beschreibung.
+
+  NICHT enthalten: Bewertungssterne mit Zahlen. Der Shop hat null
+  Bestellungen; erfundene Bewertungen sind nach UWG Art. 3 unlauter.
+  Die Bewertungssektion steht als gekennzeichneter Platzhalter auf der
+  Startseite und wird gefuellt, sobald echte Rueckmeldungen da sind.
+
+  Der Kaufknopf ist der einzige gefuellte Knopf auf dieser Seite -
+  alles andere ist Glas oder Text. Damit gibt es visuell genau ein
+  Ziel.
+{%- endcomment -%}
+
+{%- liquid
+  assign v = product.selected_or_first_available_variant
+  assign slug = v.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase
+-%}
+
+{%- comment -%} Wirklich faelliger Preis: siehe Begruendung in layout/theme.liquid. {%- endcomment -%}
+{%- assign v_ab = v.price | times: 95 | plus: 99 | divided_by: 100 -%}
+
+{%- comment -%}
+  Der Ton der Produktflaeche haengt an der gewaehlten Farbe: nur die
+  schwarze Flasche braucht die helle Flaeche, die uebrigen fuenf die
+  tiefe. Die Rechnung dazu steht im Kopf von n-nova.css.
+{%- endcomment -%}
+{%- assign dunkle_flaschen = 'schwarz' | split: ',' -%}
+{%- assign panel = 'tief' -%}
+{%- if dunkle_flaschen contains slug -%}{%- assign panel = 'hell' -%}{%- endif -%}
+
+{%- capture haken -%}<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>{%- endcapture -%}
+
+<div class="a-seite">
+  <div class="a-huelle">
+    <div class="n-pr">
+
+      <div class="n-pr__spalte">
+        <div class="n-pr__bild{% if panel == 'hell' %} n-hell{% endif %}" data-buehne>
+          <span class="n-tropfen" aria-hidden="true">
+            <i style="--d:8px; --t:7s;   --v:0s;   left:20%; top:6%"></i>
+            <i style="--d:6px; --t:8.4s; --v:2.1s; left:70%; top:9%"></i>
+            <i style="--d:10px;--t:7.6s; --v:4.2s; left:46%; top:3%"></i>
+          </span>
+          <img src="{{ 'a-flasche-' | append: slug | append: '.webp' | asset_url }}"
+               alt="{{ product.title | escape }} in {{ v.option1 | escape }}"
+               data-alt-vorlage="{{ product.title | escape }} in %s"
+               data-hauptbild data-parallaxe="10"
+               width="650" height="2212" fetchpriority="high" decoding="async">
+        </div>
+
+        {%- comment -%}
+          Kleine Vorschauen aller Farben. Echte Verweise auf ?variant=,
+          damit sie auch ohne JavaScript funktionieren.
+        {%- endcomment -%}
+        <div class="n-pr__mini">
+          {%- for var in product.variants -%}
+            {%- assign s = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
+            <a href="{{ product.url }}?variant={{ var.id }}"
+               data-farbe data-variante="{{ var.id }}"
+               data-name="{{ var.option1 | escape }}"
+               data-bild="{{ 'a-flasche-' | append: s | append: '.webp' | asset_url }}"
+               data-panel="{% if dunkle_flaschen contains s %}hell{% else %}tief{% endif %}"
+               aria-current="{% if var.id == v.id %}true{% else %}false{% endif %}"
+               aria-pressed="{% if var.id == v.id %}true{% else %}false{% endif %}">
+              <img src="{{ 'a-flasche-' | append: s | append: '.webp' | asset_url }}"
+                   alt="{{ var.option1 | escape }}" width="650" height="2212"
+                   loading="lazy" decoding="async">
+            </a>
+          {%- endfor -%}
+        </div>
+      </div>
+
+      <div>
+        <span class="n-auge">Let'sDrink</span>
+        <h1 class="a-titel">{{ product.title }}</h1>
+
+        <p class="n-preis" style="margin-top:1rem">
+          <b>{{ v_ab | money }}</b>
+          {%- comment -%}
+            Hier stand "inkl. MwSt". Dasselbe wurde in layout/theme.liquid
+            und in n-start.liquid bereits gestrichen, mit der Begruendung:
+            wer nicht im MWST-Register eingetragen ist, darf keine MWST
+            ausweisen. Auf der Produktseite hatte der Zusatz ueberlebt -
+            zwei Seiten, gleiches Produkt, gleicher Betrag, verschiedene
+            Angabe.
+          {%- endcomment -%}
+          <span>Endpreis · Gratisversand Schweiz</span>
+        </p>
+        <p class="a-pr__zeile">550 ml · Farbe <span data-farbname>{{ v.option1 }}</span> · ein Preis für alle Farben</p>
+
+        <form method="post" action="{{ routes.cart_add_url }}" id="kaufen" data-kaufform>
+          <input type="hidden" name="form_type" value="product">
+          <input type="hidden" name="utf8" value="✓">
+          <input type="hidden" name="id" value="{{ v.id }}" data-variantenfeld>
+
+          <span class="n-etikett" id="n-farblabel">Farbe wählen</span>
+          <ul class="n-wahl" role="group" aria-labelledby="n-farblabel">
+            {%- for var in product.variants -%}
+              {%- assign s = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
+              <li>
+                <a class="n-pkt n-pkt--{{ s | escape }}" href="{{ product.url }}?variant={{ var.id }}"
+                   role="button" data-farbe data-variante="{{ var.id }}"
+                   data-name="{{ var.option1 | escape }}"
+                   data-bild="{{ 'a-flasche-' | append: s | append: '.webp' | asset_url }}"
+                   data-panel="{% if dunkle_flaschen contains s %}hell{% else %}tief{% endif %}"
+                   aria-pressed="{% if var.id == v.id %}true{% else %}false{% endif %}">
+                  <span class="n-sr">{{ var.option1 }}{% unless var.available %} – zurzeit nicht lieferbar{% endunless %}</span>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+
+          <span class="n-etikett">Menge</span>
+          <div class="n-menge">
+            <button type="button" data-mschritt="-1" aria-label="Weniger">−</button>
+            <input type="number" name="quantity" value="1" min="1" step="1"
+                   inputmode="numeric" data-mengenfeld aria-label="Menge">
+            <button type="button" data-mschritt="1" aria-label="Mehr">+</button>
+          </div>
+
+          <button class="n-knopf n-knopf--voll" type="submit" data-leiste-anker
+                  {% unless v.available %}disabled{% endunless %}>
+            {%- if v.available -%}In den Warenkorb{%- else -%}Zurzeit nicht lieferbar{%- endif -%}
+          </button>
+
+          {%- comment -%}
+            Shopifys eigener Sofortkauf-Knopf. Er fuehrt direkt in den
+            Bestellabschluss und bringt Apple Pay, Google Pay und TWINT
+            mit, sofern sie im Shop eingerichtet sind.
+          {%- endcomment -%}
+          {%- if v.available -%}
+            <div style="margin-top:.7rem">{{ form | payment_button }}</div>
+          {%- endif -%}
+
+          <ul class="n-abzeichen">
+            <li>{{ haken }} Gratisversand Schweiz</li>
+            <li>{{ haken }} 14 Tage Rückgabe</li>
+            <li>{{ haken }} Versand 7–14 Werktage</li>
+            <li>{{ haken }} Ersatz bei Defekt</li>
+          </ul>
+
+          {%- comment -%}
+            Die Auslauffrage steht am Kaufknopf, nicht versteckt weiter
+            unten. Wortlaut unveraenderlich.
+          {%- endcomment -%}
+          <details class="a-offen">
+            <summary>Was wir über diese Flasche nicht wissen</summary>
+            <p>
+              Wir haben keine schriftliche Zusicherung des Lieferanten, dass
+              sie unter allen Umständen dicht ist – deshalb behaupten wir es
+              auch nicht. Transportiere sie am besten aufrecht. Läuft deine
+              Flasche trotzdem aus, ist das ein Reklamationsfall: Du bekommst
+              Ersatz oder dein Geld zurück.
+            </p>
+            {%- comment -%}
+              "Nur Wasser einfuellen" stand hier und noch zweimal weiter
+              unten in den Fragen. Hier gestrichen, in den Fragen bleibt
+              es - dort wird danach gesucht.
+              Die Dichtigkeitsfrage bleibt bewusst an BEIDEN Stellen:
+              am Kaufknopf, weil dort entschieden wird, und in den
+              Fragen, weil dort danach gesucht wird. Das ist die eine
+              Wiederholung, die dem Kunden nuetzt.
+            {%- endcomment -%}
+            <p>
+              Ich bin Nate und betreibe diesen Shop allein in Rapperswil-Jona.
+              Es gibt kein Lager – deshalb dauert es 7 bis 14 Werktage.
+            </p>
+          </details>
+        </form>
+
+        <ul class="a-fakten">
+          <li><b>550 ml</b><span>Eine Füllung</span></li>
+          <li><b>Sechs Farben</b><span>Gleicher Preis</span></li>
+          <li><b>Ein Teil</b><span>Napf fest angebaut</span></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{%- comment -%}
+  DER ABSCHNITT "DER KNOPF / EINE HAND REICHT" IST ENTFERNT.
+  Erst fiel die Nahaufnahme weg, dann blieb reiner Text uebrig - und
+  der stand fast wortgleich 40 px weiter unten in der Produkt-
+  beschreibung und ein drittes Mal in den Fragen. Gemessen 412 px fuer
+  null neue Information. Der Mechanismus wird im ganzen Shop siebenmal
+  beschrieben; einmal reicht, gezeigt waere besser.
+{%- endcomment -%}
+
+{%- comment -%} ============================================ BESCHREIBUNG {%- endcomment -%}
+{%- if product.description != blank -%}
+<section class="n-block">
+  <div class="n-huelle">
+    <div class="a-kopfzeile" data-auf>
+      <span class="n-auge">Beschreibung</span>
+      <h2 class="a-titel" style="font-size:clamp(1.6rem,3.6vw,2.2rem)">Im Detail</h2>
+    </div>
+    <div class="a-text" data-auf="klein">{{ product.description }}</div>
+  </div>
+</section>
+{%- endif -%}
+
+{%- comment -%} =================================================== FRAGEN {%- endcomment -%}
+<section class="n-block{% unless product.description != blank %} n-block--tief{% endunless %}">
+  <div class="n-huelle">
+    <div class="a-kopfzeile" data-auf>
+      <span class="n-auge">Bevor du bestellst</span>
+      <h2 class="a-titel" style="font-size:clamp(1.6rem,3.6vw,2.2rem)">Fragen</h2>
+    </div>
+
+    {%- comment -%}
+      Hier standen dieselben acht Fragen noch einmal, mit eigenem
+      Wortlaut. Ein Beispiel dafuer, warum das schiefgeht: die Antwort
+      zu den Katzen behauptete hier "der Napf ist niedrig genug" -
+      eine Aussage ueber die Masse, die wir nicht kennen. Auf der
+      Frageseite war sie laengst gestrichen, hier ueberlebte sie.
+
+      Es gibt jetzt genau eine Quelle: snippets/n-wissen.liquid.
+      Startseite, Produktseite, Frageseite und der Chat lesen alle
+      daraus. Wer dort etwas aendert, aendert es ueberall.
+    {%- endcomment -%}
+    <div data-auf="klein">{% render 'n-wissen' %}</div>
+
+    <div class="a-weiter">
+      <a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>
+      <a href="/pages/haeufige-fragen">Häufige Fragen</a>
+      <a href="/pages/contact">Kontakt</a>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "NOVA Produkt",
+  "settings": [],
+  "presets": [{ "name": "NOVA Produkt" }]
+}
+{% endschema %}

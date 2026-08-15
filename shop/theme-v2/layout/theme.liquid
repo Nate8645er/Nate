@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="de-CH" data-geldform="{{ shop.money_format | strip_html | escape }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <meta name="color-scheme" content="light">
+
+  {%- liquid
+    assign ist_start = false
+    if template.name == 'index'
+      assign ist_start = true
+    endif
+    assign lp = all_products['trinkflasche-napf-hund-katze']
+    assign lv = lp.selected_or_first_available_variant
+    assign kauf_hier = false
+    if ist_start or template.name == 'product'
+      assign kauf_hier = true
+    endif
+    assign kaufziel = routes.root_url
+    if lp != empty
+      assign kaufziel = lp.url
+    endif
+    if kauf_hier
+      assign kaufziel = '#kaufen'
+    endif
+  -%}
+{%- comment -%}
+  DER PREIS, DEN MAN WIRKLICH ZAHLT
+
+  Im Konto laeuft ein automatischer Rabatt von 5 Prozent ab der
+  ERSTEN Flasche. Damit zahlt niemand je den Katalogpreis. Stuende
+  hier trotzdem der Katalogpreis, wuerde der Shop einen Betrag
+  anschreiben, den die Kasse nie verlangt - und nach der schweizer
+  Preisbekanntgabeverordnung ist anzuschreiben, was tatsaechlich zu
+  bezahlen ist.
+
+  Deshalb rechnet der Shop ueberall mit dem wirklich faelligen Preis:
+  Katalogpreis mal 95 geteilt durch 100, aufgerundet. Ein
+  durchgestrichener Katalogpreis steht NIRGENDS - er war nie im
+  Umlauf, also waere er ein erfundener Vergleichspreis.
+
+  FAELLT DER 5-PROZENT-RABATT IM KONTO WEG, MUSS DIESE ZEILE MIT
+  (dann einfach lv.price nehmen).
+{%- endcomment -%}
+{%- assign lv_ab = lv.price | times: 95 | plus: 99 | divided_by: 100 -%}
+
+
+  {%- capture t -%}{% if ist_start %}Trinkflasche mit Napf für Hund & Katze – 550 ml | Let'sDrink{% else %}{{ page_title }} – Let'sDrink{% endif %}{%- endcapture -%}
+  {%- capture b -%}{% if page_description %}{{ page_description }}{% else %}Knopf drücken, der Napf füllt sich. Aufrichten, und das übrige Wasser läuft zurück. 550 ml, sechs Farben. Gratisversand in der Schweiz.{% endif %}{%- endcapture -%}
+  <title>{{ t | strip | escape }}</title>
+  <meta name="description" content="{{ b | strip_html | strip | escape }}">
+  <link rel="canonical" href="{{ canonical_url }}">
+  <meta name="robots" content="{% if template.name == 'cart' or template.name == 'search' or template.name == '404' %}noindex,follow{% else %}index,follow,max-image-preview:large{% endif %}">
+
+  <meta property="og:type" content="{% if template.name == 'product' %}product{% else %}website{% endif %}">
+  <meta property="og:title" content="{{ t | strip | escape }}">
+  <meta property="og:description" content="{{ b | strip_html | strip | escape }}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  {%- if lp != empty -%}
+    <meta property="og:image" content="https:{{ 'a-flasche-tuerkis.webp' | asset_url | remove: 'https:' }}">
+  {%- endif -%}
+  <meta name="twitter:card" content="summary_large_image">
+
+  {%- comment -%}
+    Organisation ohne aggregateRating und ohne review: der Shop hat
+    null Bestellungen. Eine erfundene Bewertung ist nach UWG Art. 3
+    unlauter - und Shopify sperrt Stores dafuer.
+    Das Produkt bekommt Angebotsdaten, aber keine Bewertungsdaten.
+  {%- endcomment -%}
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Organization","name":"Let'sDrink",
+   "url":"{{ shop.url }}/","email":"beamswiss@gmail.com",
+   "address":{"@type":"PostalAddress","addressLocality":"Rapperswil-Jona",
+   "addressRegion":"SG","addressCountry":"CH"}}
+  </script>
+  {%- if template.name == 'product' and product != empty -%}
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Product",
+   "name":{{ product.title | json }},
+   "description":{{ product.description | strip_html | truncate: 300 | json }},
+   "brand":{"@type":"Brand","name":"Let'sDrink"},
+   "offers":{"@type":"Offer","priceCurrency":{{ cart.currency.iso_code | json }},
+     {%- comment -%}
+       Hier stand der rohe Katalogpreis. Damit meldete der Shop an
+       Google CHF 39.90, waehrend auf der Seite CHF 37.91 stand - genau
+       die Abweichung, die das Merchant Center als "Preis stimmt nicht
+       mit der Seite ueberein" ablehnt. Der lange Kommentar oben in
+       dieser Datei erklaert, warum ueberall der wirklich faellige
+       Preis stehen muss; diese eine Zeile hatte die Regel als einzige
+       nicht mitbekommen.
+     {%- endcomment -%}
+     {%- assign ld_preis = product.selected_or_first_available_variant.price | times: 95 | plus: 99 | divided_by: 100 -%}
+     "price":"{{ ld_preis | divided_by: 100.0 }}",
+     "availability":"https://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}",
+     "url":"{{ shop.url }}{{ product.url }}",
+     "shippingDetails":{"@type":"OfferShippingDetails",
+       "shippingRate":{"@type":"MonetaryAmount","value":"0","currency":"CHF"},
+       "shippingDestination":{"@type":"DefinedRegion","addressCountry":"CH"},
+       "deliveryTime":{"@type":"ShippingDeliveryTime",
+         "handlingTime":{"@type":"QuantitativeValue","minValue":1,"maxValue":2,"unitCode":"DAY"},
+         "transitTime":{"@type":"QuantitativeValue","minValue":7,"maxValue":14,"unitCode":"DAY"}}},
+     "hasMerchantReturnPolicy":{"@type":"MerchantReturnPolicy",
+       "applicableCountry":"CH",
+       "returnPolicyCategory":"https://schema.org/MerchantReturnFiniteReturnWindow",
+       "merchantReturnDays":14,
+       "returnMethod":"https://schema.org/ReturnByMail",
+       {%- comment -%}
+         Hier stand zusaetzlich returnShippingFeesAmount mit dem Wert 0
+         CHF. Das heisst "Ruecksendung kostet den Kunden nichts" und
+         widersprach damit im selben Objekt der Zeile darueber - und
+         dem, was im Shop steht: "Ruecksendung zahlst du". Google haette
+         daraus "Free returns" gemacht, der Kunde haette im Shop das
+         Gegenteil gefunden. Der Betrag ist raus, die Zeile darueber
+         sagt bereits alles Noetige.
+       {%- endcomment -%}
+       "returnFees":"https://schema.org/ReturnShippingFees"}}}
+  </script>
+  {%- endif -%}
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23111111'/%3E%3Cpath d='M12 4.5C9.3 8.1 6.6 10.8 6.6 14.4a5.4 5.4 0 0 0 10.8 0c0-3.6-2.7-6.3-5.4-9.9Z' fill='%23FFFFFF'/%3E%3C/svg%3E">
+
+  {%- comment -%}
+    DIE SCHRIFTEN WURDEN DOPPELT GELADEN.
+
+    asset_url haengt einen Versionsparameter an (...woff2?v=123). Die
+    @font-face-Regel in n-nova.css benutzt aber eine relative Adresse
+    ohne Parameter - und fuer den Browser sind das ZWEI verschiedene
+    Dateien. Ergebnis: vier Schriftdownloads statt zwei, der Vorladen-
+    Hinweis wurde nie verwendet, und in der Konsole stand die Warnung
+    "preloaded but not used". Alles im kritischen Ladepfad.
+
+    n-nova.css ist eine statische Datei und kann kein Liquid - also
+    muss der Parameter hier weg, nicht dort hin.
+  {%- endcomment -%}
+  <link rel="preload" as="font" type="font/woff2" href="{{ 'a-sans.woff2' | asset_url | split: '?' | first }}" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="{{ 'a-sans-bold.woff2' | asset_url | split: '?' | first }}" crossorigin>
+  {%- if kauf_hier -%}
+    {%- comment -%}
+      Hier stand fest a-flasche-tuerkis.webp. Bei fuenf von sechs
+      Farben wurde damit ein Bild mit hoher Prioritaet geladen, das nie
+      erscheint - waehrend das wirklich sichtbare ohne Prioritaet
+      hinterherlief. Solche Links auf ?variant= stehen an achtzehn
+      Stellen im Shop, das ist kein Randfall.
+    {%- endcomment -%}
+    {%- assign vor_slug = lv.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
+    <link rel="preload" as="image" href="{{ 'a-flasche-' | append: vor_slug | append: '.webp' | asset_url }}" fetchpriority="high">
+  {%- endif -%}
+
+  {{ 'n-nova.css' | asset_url | stylesheet_tag }}
+
+  {%- comment -%}
+    Rund 6 KB eigenes Skript, keine Bibliothek von aussen. Kein GSAP,
+    kein Lenis, kein Framer Motion - die Bewegung laeuft ueber
+    CSS-Transitions, einen IntersectionObserver und genau eine
+    rAF-Schleife fuer die Parallaxe.
+  {%- endcomment -%}
+  <script src="{{ 'n-nova.js' | asset_url }}" defer></script>
+
+  {%- comment -%}
+    INTRO-VORHANG: AUSGESCHALTET.
+
+    Er legte sich beim ersten Aufruf der Startseite ueber die ganze
+    Seite und verschwand erst nach 1,7 bis hoechstens 4 Sekunden. In
+    dieser Zeit erreicht KEINE Beruehrung den Laden darunter: die erste
+    Bewegung hebt nur den Vorhang, weil die Ausstiege auf click,
+    wheel und touchmove mit capture liegen. Von aussen sieht das aus,
+    als reagiere die Seite nicht - wischen tut nichts, tippen tut
+    nichts. Genau diese Rueckmeldung kam zweimal.
+
+    Dazu kommt: er kostet die ersten Sekunden auf einer Seite, deren
+    einzige Aufgabe der Verkauf ist, und traegt dazu nichts bei.
+
+    Wieder einschalten: unten true auf false setzen. Der Vorhang
+    selbst, seine Gestaltung und alle Ausstiege bleiben im Code.
+  {%- endcomment -%}
+  {%- assign vorhang_aus = true -%}
+
+  {%- if ist_start and vorhang_aus == false -%}
+  {%- comment -%}
+    Der Intro-Vorhang muss VOR dem ersten Bild entschieden werden -
+    sonst blitzt der Laden kurz auf, bevor der Vorhang faellt. Darum
+    steht das hier inline und synchron und nicht im aufgeschobenen
+    Skript. Drei Bedingungen, sonst laeuft er nicht: Startseite,
+    keine Bewegungsreduktion, noch nicht in dieser Sitzung gesehen.
+  {%- endcomment -%}
+  <script>
+    (function () {
+      var w = window, d = document;
+      try {
+        if (w.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        if (sessionStorage.getItem("n-vorhang")) return;
+        /* SOFORT merken, nicht erst wenn sich der Vorhang hebt.
+           Gemessen: faellt n-nova.js aus, wurde der Schluessel nie
+           gesetzt - die schwarze Flaeche erschien bei JEDEM Aufruf der
+           Startseite neu. */
+        sessionStorage.setItem("n-vorhang", "1");
+      } catch (e) { return; }
+      d.documentElement.classList.add("n-intro");
+
+      /* Die Notausgaenge gehoeren hierher, nicht ins aufgeschobene
+         Skript. Gemessen: ohne n-nova.js wirkte weder Escape noch
+         Klick noch Mausrad noch der Ueberspringen-Knopf - man sass
+         volle vier Sekunden vor Schwarz. */
+      var weg = function () {
+        d.documentElement.classList.remove("n-intro");
+        d.removeEventListener("keydown", taste, true);
+        d.removeEventListener("click", weg, true);
+        w.removeEventListener("wheel", weg, true);
+        w.removeEventListener("touchmove", weg, true);
+      };
+      var taste = function (e) {
+        if (e.key === "Escape" || e.key === "Enter" || e.key === " ") weg();
+      };
+      d.addEventListener("keydown", taste, true);
+      d.addEventListener("click", weg, true);
+      w.addEventListener("wheel", weg, { capture: true, passive: true });
+      w.addEventListener("touchmove", weg, { capture: true, passive: true });
+      w.setTimeout(weg, 4000);   // harte Obergrenze
+    })();
+  </script>
+  {%- endif -%}
+
+  {{ content_for_header }}
+</head>
+<body>
+  <a class="n-sr" href="#inhalt">Zum Inhalt springen</a>
+
+  {%- if ist_start and vorhang_aus == false -%}
+  {%- comment -%}
+    Intro-Vorhang. Er liegt UEBER dem Laden, nicht davor: der gesamte
+    Inhalt steht bereits im HTML darunter. Suchmaschinen, Vorleseprogramme
+    und Besucher ohne JavaScript sehen den Laden - der Vorhang bleibt fuer
+    sie auf display:none. aria-hidden, weil er nichts zu lesen gibt, was
+    nicht auch im Laden steht.
+
+    Steht derzeit auf aus - die Begruendung im Kopf der Datei.
+  {%- endcomment -%}
+  <div class="n-vorhang" data-vorhang aria-hidden="true">
+    <div class="n-vorhang__regen">
+      <i style="--x:82.2%;--h:22px;--w:2px;--d:1.94s;--v:1.42s;--o:0.74"></i>
+      <i style="--x:53.0%;--h:34px;--w:2.5px;--d:1.13s;--v:0.69s;--o:0.67"></i>
+      <i style="--x:46.3%;--h:34px;--w:1.5px;--d:1.78s;--v:2.09s;--o:0.54"></i>
+      <i style="--x:31.1%;--h:40px;--w:2px;--d:2.29s;--v:0.56s;--o:0.61"></i>
+      <i style="--x:3.5%;--h:34px;--w:1.5px;--d:1.76s;--v:1.55s;--o:0.41"></i>
+      <i style="--x:28.1%;--h:30px;--w:1.5px;--d:1.16s;--v:1.61s;--o:0.78"></i>
+      <i style="--x:47.8%;--h:18px;--w:2px;--d:2.09s;--v:1.07s;--o:0.71"></i>
+      <i style="--x:56.8%;--h:26px;--w:2px;--d:1.25s;--v:1.28s;--o:0.55"></i>
+      <i style="--x:58.1%;--h:26px;--w:1.5px;--d:1.14s;--v:0.87s;--o:0.48"></i>
+      <i style="--x:83.5%;--h:14px;--w:2px;--d:1.65s;--v:1.49s;--o:0.42"></i>
+      <i style="--x:23.9%;--h:14px;--w:2px;--d:1.89s;--v:1.93s;--o:0.52"></i>
+      <i style="--x:76.4%;--h:40px;--w:2px;--d:1.48s;--v:1.95s;--o:0.68"></i>
+      <i style="--x:43.7%;--h:34px;--w:2px;--d:1.91s;--v:1.99s;--o:0.39"></i>
+      <i style="--x:67.5%;--h:26px;--w:1.5px;--d:2.17s;--v:1.46s;--o:0.52"></i>
+      <i style="--x:66.2%;--h:30px;--w:2.5px;--d:1.4s;--v:1.92s;--o:0.8"></i>
+      <i style="--x:59.2%;--h:22px;--w:1.5px;--d:1.3s;--v:0.96s;--o:0.69"></i>
+      <i style="--x:26.2%;--h:18px;--w:1.5px;--d:1.49s;--v:0.4s;--o:0.75"></i>
+      <i style="--x:16.6%;--h:18px;--w:2px;--d:1.27s;--v:0.84s;--o:0.39"></i>
+      <i style="--x:20.4%;--h:22px;--w:2.5px;--d:1.58s;--v:0.5s;--o:0.54"></i>
+      <i style="--x:40.1%;--h:18px;--w:2.5px;--d:2.07s;--v:0.95s;--o:0.59"></i>
+      <i style="--x:43.8%;--h:26px;--w:2.5px;--d:1.55s;--v:1.65s;--o:0.49"></i>
+      <i style="--x:21.0%;--h:40px;--w:2px;--d:1.52s;--v:0.15s;--o:0.36"></i>
+      <i style="--x:98.3%;--h:14px;--w:2px;--d:1.71s;--v:0.16s;--o:0.76"></i>
+      <i style="--x:39.1%;--h:14px;--w:1.5px;--d:2.06s;--v:1.4s;--o:0.35"></i>
+      <i style="--x:14.3%;--h:22px;--w:2.5px;--d:1.48s;--v:1.27s;--o:0.64"></i>
+      <i style="--x:22.8%;--h:18px;--w:2px;--d:1.37s;--v:0.34s;--o:0.56"></i>
+      <i style="--x:40.6%;--h:22px;--w:2px;--d:2.14s;--v:2.01s;--o:0.32"></i>
+      <i style="--x:14.4%;--h:22px;--w:1.5px;--d:1.98s;--v:1.44s;--o:0.69"></i>
+      <i style="--x:16.7%;--h:14px;--w:1.5px;--d:2.04s;--v:0.32s;--o:0.49"></i>
+      <i style="--x:37.3%;--h:18px;--w:1.5px;--d:1.79s;--v:1.01s;--o:0.78"></i>
+      <i style="--x:75.3%;--h:26px;--w:1.5px;--d:1.63s;--v:1.52s;--o:0.64"></i>
+      <i style="--x:58.5%;--h:30px;--w:2px;--d:1.46s;--v:1.44s;--o:0.54"></i>
+      <i style="--x:69.8%;--h:26px;--w:1.5px;--d:2.07s;--v:0.55s;--o:0.44"></i>
+      <i style="--x:13.3%;--h:30px;--w:1.5px;--d:1.19s;--v:0.06s;--o:0.54"></i>
+      <i style="--x:94.5%;--h:18px;--w:2.5px;--d:1.09s;--v:0.2s;--o:0.71"></i>
+      <i style="--x:82.7%;--h:22px;--w:2.5px;--d:1.39s;--v:1.27s;--o:0.57"></i>
+      <i style="--x:62.4%;--h:18px;--w:2px;--d:1.93s;--v:0.25s;--o:0.59"></i>
+      <i style="--x:13.4%;--h:30px;--w:2px;--d:1.31s;--v:1.07s;--o:0.58"></i>
+    </div>
+    <div class="n-vorhang__mitte">
+      <p class="n-vorhang__marke">Let&rsquo;s&thinsp;Drink</p>
+      <p class="n-vorhang__claim">Hydration, die dein Haustier liebt</p>
+      <div class="n-vorhang__strich"></div>
+    </div>
+    <button class="n-vorhang__weg" type="button" data-vorhang-weg tabindex="-1">Überspringen</button>
+  </div>
+  {%- endif -%}
+
+  {%- comment -%}
+    Der Balken nennt nur Belegbares. Das Versandprofil dieses Shops
+    sagt: Schweiz gratis, uebrige Laender CHF 1.50. Kein Countdown,
+    kein "nur heute", keine Verknappung.
+  {%- endcomment -%}
+  <div class="n-balken">
+    <span><b>Gratisversand</b> in der Schweiz</span><span>14 Tage Rückgabe</span><span>Versand in 7–14 Werktagen</span>
+  </div>
+
+  <header class="n-kopf" data-kopf>
+    <div class="n-huelle n-kopf__innen">
+      <a class="n-marke" href="{{ routes.root_url }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 3.2C9 7.4 6.2 10.2 6.2 13.8a5.8 5.8 0 0 0 11.6 0c0-3.6-2.8-6.4-5.8-10.6Z"/>
+        </svg>
+        Let'sDrink
+      </a>
+
+      <nav class="n-nav" aria-label="Hauptnavigation">
+        <a href="{{ kaufziel }}">Shop</a>
+        <a href="{{ routes.root_url }}#warum">Warum wir</a>
+        <a href="/pages/haeufige-fragen">FAQ</a>
+        <a href="/pages/contact">Kontakt</a>
+      </nav>
+
+      <div class="n-kopf__rechts">
+        <a class="n-icon" href="{{ routes.cart_url }}" data-lade-auf aria-label="Warenkorb öffnen">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5.5 7h13l-1.1 11.1a2 2 0 0 1-2 1.9H8.6a2 2 0 0 1-2-1.9Z"/>
+            <path d="M9 7V5.6a3 3 0 0 1 6 0V7"/>
+          </svg>
+          <span class="n-zahl" data-korbzahl {% if cart.item_count == 0 %}hidden{% endif %}>{{ cart.item_count }}</span>
+        </a>
+        <button class="n-icon n-burger" type="button" data-mnav-auf aria-expanded="false" aria-label="Menü öffnen">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  {%- comment -%}
+    Mobiles Menue, zweiter Anlauf.
+
+    Der erste war ein Stapel aus fuenf sehr fetten Zeilen mit zwei
+    grossen Loechern darin: oben und unten stand das Gitter auf 1fr und
+    schob alles auseinander. "Versand & Rueckgabe" brach um und machte
+    die Zeilen ungleich hoch, und die Beitexte "Was sie kann" und
+    "Auch das Offene" waren Fuellwoerter ohne Nutzen.
+
+    Jetzt: eine Produktzeile ganz oben (wer das Menue oeffnet, sucht
+    meistens das Produkt), darunter fuenf gleich hohe Verweise in
+    ruhigerer Groesse, und Zusatzangaben nur dort, wo sie eine echte
+    Frage beantworten - was der Versand kostet und wie schnell geantwortet
+    wird.
+  {%- endcomment -%}
+  {%- assign mslug = lv.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
+  <nav class="n-mnav" data-mnav aria-label="Menü" aria-hidden="true">
+    <div class="n-mnav__kopf">
+      <a class="n-marke" href="{{ routes.root_url }}">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 3.2C9 7.4 6.2 10.2 6.2 13.8a5.8 5.8 0 0 0 11.6 0c0-3.6-2.8-6.4-5.8-10.6Z"/>
+        </svg>
+        Let&rsquo;sDrink
+      </a>
+      <button class="n-icon n-mzu" type="button" data-mnav-zu aria-label="Menü schliessen">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
+    </div>
+
+    {%- if lp != empty -%}
+      <a class="n-mnav__produkt" href="{{ lp.url }}">
+        <span class="n-mnav__bild">
+          <img src="{{ 'a-flasche-' | append: mslug | append: '.webp' | asset_url }}" alt=""
+               width="650" height="2212" loading="lazy" decoding="async">
+        </span>
+        <span class="n-mnav__pt">
+          <b>Trinkflasche mit Napf</b>
+          <span>550 ml · {{ lv_ab | money }}</span>
+          {%- comment -%}
+            Die Farbpunkte statt des Wortes "sechs Farben": ein Blick
+            genuegt, und sie kommen aus dem Sortiment. Faellt eine
+            Variante weg, verschwindet auch der Punkt.
+          {%- endcomment -%}
+          <span class="n-mnav__pkte" aria-hidden="true">
+            {%- for var in lp.variants -%}
+              {%- assign ps = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
+              <i class="n-mnav__pkt n-pkt--{{ ps | escape }}"></i>
+            {%- endfor -%}
+          </span>
+        </span>
+        <svg class="n-mnav__pfeil" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+      </a>
+    {%- endif -%}
+
+    {%- comment -%}
+      Vier Verweise statt fuenf. "Versand" und "Rueckgabe" fuehrten
+      beide auf DIESELBE Seite - zwei Zeilen fuer ein Ziel. Und die
+      Beisaetze ("Schweiz gratis", "14 Tage") standen woertlich noch
+      einmal in der Zeile darunter im Fuss. Weg damit.
+    {%- endcomment -%}
+    <div class="n-mnav__liste">
+      <a class="n-mnav__z" style="--i:0" href="{{ routes.root_url }}#warum">Warum wir</a>
+      <a class="n-mnav__z" style="--i:1" href="/pages/haeufige-fragen">Häufige Fragen</a>
+      <a class="n-mnav__z" style="--i:2" href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>
+      <a class="n-mnav__z" style="--i:3" href="/pages/contact">Kontakt</a>
+    </div>
+
+    <div class="n-mnav__fuss">
+      {%- if lp != empty and lv.available -%}
+        {%- comment -%}
+          Dieser Knopf hiess "In den Warenkorb", war aber nur ein Link
+          auf die Produktseite - er legte nie etwas in den Korb. Genau
+          derselbe Fehler wie frueher beim Schluss-Knopf und in der
+          Kaufleiste. Er heisst jetzt, was er tut. Ein echter
+          Kaufknopf ginge hier nicht: das Kaufformular steht nur auf
+          der Start- und der Produktseite, das Menue aber auf jeder.
+        {%- endcomment -%}
+        <a class="n-knopf n-knopf--voll" href="{{ lp.url }}">Farbe wählen · {{ lv_ab | money }}</a>
+      {%- endif -%}
+      <p class="n-mnav__hinweis">
+        Versand in der Schweiz gratis · 14 Tage Rückgabe
+      </p>
+    </div>
+  </nav>
+
+  {%- comment -%} ============================================ FRAGEN-CHAT
+
+    Ein Chat, der NICHTS ERFINDEN KANN.
+
+    Er hat keinen eigenen Antworttext. Beim Oeffnen liest er die
+    Fragen und Antworten aus dem Block n-wissen im Seitencode und
+    gibt sie woertlich weiter. Steht eine Aussage dort nicht, kann er
+    sie nicht sagen - er bietet dann den Weg zu einer echten Person an.
+
+    Bewusst KEIN Sprachmodell im Hintergrund: bei einem Produkt, zu dem
+    wir Material, Dichtigkeit und Masse nicht kennen, wuerde ein
+    Sprachmodell genau diese Fragen selbstbewusst falsch beantworten.
+    Das ist dieselbe Kategorie wie eine erfundene Bewertung, nur
+    schneller und oefter.
+
+    Er sendet nichts, speichert nichts, setzt kein Cookie und ruft
+    keinen fremden Dienst auf. Damit braucht er auch keinen Hinweis
+    nach revDSG und keine Einwilligung.
+  {%- endcomment -%}
+  {%- unless ist_start -%}
+    {%- comment -%}
+      Auf der Startseite steht der Frageblock ohnehin sichtbar. Auf
+      allen anderen Seiten kommt er hier versteckt dazu, damit der Chat
+      seine Quelle hat. hidden heisst: nicht sichtbar, nicht vorgelesen -
+      aber fuer das Skript lesbar.
+    {%- endcomment -%}
+    <div hidden data-wissen-quelle>{% render 'n-wissen' %}</div>
+  {%- endunless -%}
+
+  <button class="n-chat__auf" type="button" data-chat-auf
+          aria-expanded="false" aria-controls="n-chat">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.9A8.4 8.4 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.5 8.5 0 0 1 21 11.5Z"/>
+    </svg>
+    <span>Fragen?</span>
+  </button>
+
+  <aside class="n-chat" id="n-chat" data-chat aria-label="Häufige Fragen" hidden>
+    <div class="n-chat__kopf">
+      <span class="n-chat__wer">
+        <b>Häufige Fragen</b>
+        <span>Antworten direkt aus dem Shop</span>
+      </span>
+      <button class="n-icon" type="button" data-chat-zu aria-label="Schliessen">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="n-chat__lauf" data-chat-lauf role="log" aria-live="polite"></div>
+
+    <div class="n-chat__wahl" data-chat-wahl></div>
+
+    <div class="n-chat__fuss">
+      <p>Nichts dabei?</p>
+      <a class="n-knopf n-knopf--klein n-knopf--voll" href="/pages/contact">Nate direkt fragen</a>
+    </div>
+  </aside>
+
+  <main id="inhalt" tabindex="-1">
+    {{ content_for_layout }}
+  </main>
+
+  {%- comment -%} ==================================== WARENKORB-SCHUBLADE {%- endcomment -%}
+  <div class="n-schleier" data-schleier></div>
+  <aside class="n-lade" data-lade aria-hidden="true" aria-label="Warenkorb">
+    <div class="n-lade__kopf">
+      <b>Warenkorb</b>
+      <button class="n-icon" type="button" data-lade-zu aria-label="Warenkorb schliessen">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="n-lade__leib" data-lade-leib>
+      <div class="n-lade__leer"><p>Dein Warenkorb ist leer.</p></div>
+    </div>
+
+    <div class="n-lade__fuss" data-lade-fuss {% if cart.item_count == 0 %}hidden{% endif %}>
+      <div class="n-summe"><span>Zwischensumme</span><span data-lade-summe>{{ cart.items_subtotal_price | money }}</span></div>
+      <div class="n-summe"><span>Versand</span><span>Schweiz gratis · Ausland CHF 1.50</span></div>
+      {%- comment -%}
+        Kein "Total" in der Schublade. Es waere nur fuer die Schweiz
+        richtig - bei jeder Auslandsbestellung stuende hier ein Betrag,
+        der an der Kasse nicht haelt.
+      {%- endcomment -%}
+      <p class="n-summe n-summe--klein">Den Endbetrag siehst du an der Kasse, sobald deine Adresse steht.</p>
+      <a class="n-knopf n-knopf--voll" href="{{ routes.cart_url }}/checkout">Zur Kasse</a>
+      <ul class="n-lade__sicher">
+        <li>
+          <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>
+          Gratisversand CH
+        </li>
+        <li>
+          <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>
+          14 Tage Rückgabe
+        </li>
+      </ul>
+
+      {%- comment -%}
+        Hier stand "Sichere Zahlung" - eine Behauptung ohne Beleg. Statt
+        dessen laesst Shopify die tatsaechlich freigeschalteten
+        Zahlungsarten selbst zeichnen. Was hier erscheint, ist genau
+        das, was im Checkout wirklich angeboten wird; wir behaupten
+        nichts, was nicht stimmt. Ist keine einzige Zahlungsart aktiv,
+        erscheint die Zeile gar nicht.
+      {%- endcomment -%}
+      {%- if shop.enabled_payment_types.size > 0 -%}
+        <div class="n-bez">
+          <span class="n-bez__wort">Bezahlen mit</span>
+          <ul class="n-bez__liste">
+            {%- comment -%}
+              Bild statt Inline-SVG. Gemessen: payment_type_svg_tag hat
+              zehn Symbole als rohes SVG in JEDE Seite geschrieben -
+              25 KB pro Block, zwei Bloecke, 50 KB auf einer 124-KB-
+              Seite. Ueber payment_type_img_url kommen dieselben Logos
+              vom Shopify-CDN, werden einmal geladen und danach vom
+              Browser zwischengespeichert.
+            {%- endcomment -%}
+            {%- for art in shop.enabled_payment_types -%}
+              <li><img class="n-bez__sym" src="{{ art | payment_type_img_url }}"
+                       alt="{{ art | replace: '_', ' ' }}"
+                       width="38" height="24" loading="lazy" decoding="async"></li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+    </div>
+  </aside>
+
+  {%- comment -%}
+    Mitlaufende Kaufleiste, nur auf dem Handy und nur dort, wo es etwas
+    zu kaufen gibt. Sie erscheint erst, wenn der Kaufknopf oben aus dem
+    Bild ist - vorher waere sie doppelt.
+  {%- endcomment -%}
+  {%- if kauf_hier and lp != empty -%}
+    <div class="n-leiste" data-leiste>
+      <div class="n-huelle n-leiste__innen">
+        <div class="n-leiste__bild">
+          {%- comment -%}
+            Das Bild folgt der gewaehlten Farbe. Vorher stand hier fest
+            die tuerkise Flasche - bei gewaehltem Rosa zeigte die Leiste
+            also ein anderes Produkt als der Hero. Gemessen und belegt.
+          {%- endcomment -%}
+          {%- assign ls = lv.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
+          <img src="{{ 'a-flasche-' | append: ls | append: '.webp' | asset_url }}" alt=""
+               width="650" height="2212" data-leistenbild loading="lazy" decoding="async">
+        </div>
+        <div class="n-leiste__text">
+          {%- comment -%}
+            HIER STAND EIN PREIS, UND ER KONNTE FALSCH SEIN.
+
+            Die Leiste zeigte fest lv_ab, also den Betrag fuer EINE
+            Flasche. Der Knopf daneben schickt aber das Kaufformular ab,
+            und darin steht die oben gewaehlte Menge. Wer "6 + 3 gratis"
+            gewaehlt hatte und unten auf Kaufen tippte, legte CHF 239.40
+            in den Warenkorb, waehrend daneben CHF 37.91 stand.
+
+            Das ist nicht nur Vertrauensverlust. Die
+            Preisbekanntgabeverordnung verlangt, dass am Ort des Kaufs
+            der Betrag steht, der wirklich faellig wird. Solange die
+            Leiste die Menge nicht kennt, ist gar kein Betrag die
+            richtige Anzeige - der Betrag steht auf dem grossen
+            Kaufknopf, und der wird nachgefuehrt.
+          {%- endcomment -%}
+          <b>Trinkflasche mit Napf</b>
+          <span>550 ml · sechs Farben</span>
+        </div>
+        {%- comment -%}
+          Der Knopf war ein Anker auf #kaufen. Gemessen: ein Klick nach
+          sechs Bildschirmen Argumenten warf den Kunden zurueck an den
+          Seitenanfang, der Warenkorb blieb leer. Jetzt schickt er das
+          Kaufformular wirklich ab - ueber das form-Attribut, das auch
+          ohne JavaScript funktioniert. Die gewaehlte Farbe steht im
+          versteckten Feld des Formulars, die Leiste braucht sie nicht
+          selbst zu kennen.
+        {%- endcomment -%}
+        <button class="n-knopf n-knopf--klein" type="submit" form="kaufen"
+                {% unless lv.available %}disabled{% endunless %}>
+          {%- if lv.available -%}Kaufen{%- else -%}Nicht lieferbar{%- endif -%}
+        </button>
+      </div>
+    </div>
+  {%- endif -%}
+
+  <footer class="n-fuss">
+    <div class="n-huelle">
+      <div class="n-fuss__raster">
+        <div>
+          <a class="n-marke" href="{{ routes.root_url }}" style="margin:0 0 .8rem">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 3.2C9 7.4 6.2 10.2 6.2 13.8a5.8 5.8 0 0 0 11.6 0c0-3.6-2.8-6.4-5.8-10.6Z"/>
+            </svg>
+            Let'sDrink
+          </a>
+          <p style="margin:0;max-width:34ch">
+            Ein Produkt, sorgfältig ausgesucht. Betrieben von einer Person
+            in Rapperswil-Jona.
+          </p>
+        </div>
+        <div>
+          <h4>Shop</h4>
+          <ul>
+            <li><a href="{{ kaufziel }}">Trinkflasche</a></li>
+            <li><a href="{{ routes.root_url }}#warum">Warum wir</a></li>
+            <li><a href="{{ routes.root_url }}#fragen">Häufige Fragen</a></li>
+            <li><a href="{{ routes.cart_url }}">Warenkorb</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Rechtliches</h4>
+          <ul>
+            <li><a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a></li>
+            <li><a href="/pages/contact">Kontakt</a></li>
+            <li><a href="/pages/letsdrink-impressum">Impressum</a></li>
+            <li><a href="/pages/letsdrink-agb">AGB</a></li>
+            <li><a href="/pages/letsdrink-datenschutz">Datenschutz</a></li>
+            <li><a href="/pages/data-sharing-opt-out">Cookies &amp; Datenweitergabe</a></li>
+          </ul>
+        </div>
+      </div>
+      {%- if shop.enabled_payment_types.size > 0 -%}
+        <div class="n-bez n-bez--fuss">
+          <span class="n-bez__wort">Bezahlen mit</span>
+          <ul class="n-bez__liste">
+            {%- comment -%}
+              Bild statt Inline-SVG. Gemessen: payment_type_svg_tag hat
+              zehn Symbole als rohes SVG in JEDE Seite geschrieben -
+              25 KB pro Block, zwei Bloecke, 50 KB auf einer 124-KB-
+              Seite. Ueber payment_type_img_url kommen dieselben Logos
+              vom Shopify-CDN, werden einmal geladen und danach vom
+              Browser zwischengespeichert.
+            {%- endcomment -%}
+            {%- for art in shop.enabled_payment_types -%}
+              <li><img class="n-bez__sym" src="{{ art | payment_type_img_url }}"
+                       alt="{{ art | replace: '_', ' ' }}"
+                       width="38" height="24" loading="lazy" decoding="async"></li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+
+      <div class="n-fuss__unten">
+        {%- comment -%}
+          Hier stand frueher die ganze Zeile mit Name, Ort und dem
+          Zusatz "Preise inkl. MwSt". Beides ist weg, auf Wunsch des
+          Inhabers.
+
+          Rechtlich geht das auf, und zwar aus zwei Gruenden:
+
+          Name und Anschrift sind nicht verschwunden, sie stehen im
+          Impressum - und der Link darauf liegt eine Spalte weiter
+          oben unter "Rechtliches", also auf jeder Seite erreichbar.
+          Die Fusszeile ist nicht der vorgeschriebene Ort dafuer.
+
+          Der Wegfall von "Preise inkl. MwSt" senkt das Risiko sogar.
+          Die Preisbekanntgabeverordnung verlangt, dass der ANGEZEIGTE
+          Preis der ist, den der Kunde am Ende zahlt - nicht, dass man
+          das Wort MWST danebenschreibt. Wer nicht im MWST-Register
+          eingetragen ist (Grenze CHF 100'000 Umsatz), darf ohnehin
+          keine MWST ausweisen. Solange keine UID vorliegt, ist diese
+          Zeile ohne den Zusatz die sichere Fassung.
+        {%- endcomment -%}
+        @Let'sDrink
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
