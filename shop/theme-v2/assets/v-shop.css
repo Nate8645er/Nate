@@ -1,82 +1,90 @@
 /* ===================================================================
    LET'SDRINK — v2
-   Neubau vom 15.8.2026. Entscheidungsgrundlage: drei unabhaengige
-   Entwuerfe (GPT-5.6, Kimi K3, Design-Agent). Gebaut wurde Entwurf B.
+   Neubau vom 15.8.2026. Grundlage: drei unabhaengige Entwuerfe
+   (GPT-5.6, Kimi K3, Design-Agent). Gebaut wurde Entwurf C, mit dem
+   Demoknopf aus Entwurf B.
 
-   DIE EINE IDEE: "Druck selbst."
-   Die Startseite erklaert die Flasche nicht, sie laesst sie bedienen.
-   Die Kundin haelt den Daumen auf einen Knopf, der Napf auf dem
-   Bildschirm fuellt sich, sie laesst los, das Wasser laeuft zurueck.
-   Erst danach verkauft die Seite. Wer das in Sekunde vier selbst
-   gemacht hat, braucht keinen Absatz Text mehr darueber.
+   DIE EINE IDEE: DIE SEITE IST EINE OFFENE RECHNUNG.
+   Der Shop verkauft nicht dasselbe Produkt teurer. Er verkauft ein
+   anderes Geschaeft. Das Produkt ist identisch mit dem billigen
+   Angebot - der Kaufvorgang ist es nicht. Also wird der Kaufvorgang
+   zum Produkt gemacht, sichtbar, nicht angedeutet.
 
-   WAS DIESE DATEI ABSICHTLICH NICHT TUT
-   Keine Schatten, keine Verlaeufe, keine grossen Rundungen, keine
-   Fade-in-Kaskaden beim Scrollen, kein Parallax. Jeder Shop dieser
-   Kategorie ist weiss, rund und laut. Diese Seite ist knochenfarben,
-   kantig und leise - mit genau EINEM orangen Befehl.
+   DIE FORM BEHAUPTET DASSELBE WIE DER TEXT:
+   Die Seite sieht aus wie ein Beleg, nicht wie eine Landingpage.
+   Jede Zahl steht in Belegschrift. Keine runden Ecken, keine
+   Schatten, keine Verlaeufe, keine Glasflaechen, kein Einblenden
+   beim Scrollen.
 
-   DIE WASSERREGEL
-   Blau kommt auf dieser Seite nur im Produkt und in der Demo vor.
-   Die Bedienoberflaeche bleibt trocken. Das Nasse ist das Produkt.
-   Das ist der Wiedererkennungswert, und es ist eine Regel, keine
-   Empfehlung: wer irgendwo sonst Blau einsetzt, nimmt sie kaputt.
+   WARUM DAS KEIN DROPSHIPPING-SHOP IST
+   Jedes dieser Themes lebt von fuenf Dingen: 22px runde Ecken,
+   weiche Schatten, Verlaufsknopf, Glasflaechen, alles blendet beim
+   Scrollen ein. Die alte Fassung hatte alle fuenf - handwerklich
+   gut und trotzdem austauschbar. Hier ist KEINES davon.
+
+   ZWEI EISERNE REGELN, BEIDE GEMESSEN:
+   1  Orange NIE als Text auf Papier. Das sind 2.9:1 und damit fuer
+      viele unlesbar. Orange ist entweder Flaeche mit schwarzem Text
+      darauf, oder Text auf Tinte (5.68:1).
+   2  Das Produkt liegt IMMER auf der Papierflaeche, nie auf der
+      Tinte. Damit loest sich das alte Problem der schwarzen Flasche
+      von selbst - es braucht keine zwei Buehnentoene mehr, kein
+      Umschalten beim Farbwechsel, keine Lichtinsel.
    =================================================================== */
 
 :root {
-  /* Knochen statt Weiss. Ein reines #FFF liest sich wie jede
-     Vorlage; ein warmer Grund liest sich wie Papier. */
-  --v-grund:    #F2EFE9;
-  --v-tinte:    #141414;
-  --v-grau:     #6B6B6B;
-  --v-linie:    #141414;
-  /* Signal. NUR fuer die zwei Handlungen: druecken und kaufen.
-     Nirgends sonst - kein Rahmen, kein Etikett, kein Haken. */
-  --v-signal:   #FF4A1C;
-  --v-papier:   #FFFFFF;
+  --v-tinte:    #101112;   /* Seitengrund */
+  --v-papier:   #F2EFE9;   /* Produktflaechen, helle Bloecke */
+  --v-signal:   #FF4D00;   /* nur als Flaeche, siehe Regel 1 */
+  --v-schwarz:  #0A0A0A;   /* Text auf Papier und auf Signal */
+  --v-gedaempft:#9A9893;   /* 6.6:1 auf Tinte */
 
-  /* Wasser. Ausschliesslich in der Demo. Siehe Wasserregel oben. */
+  --v-linie-hell: rgb(242 239 233 / .18);
+  --v-linie-dunkel: rgb(10 10 10 / .16);
+
+  /* Wasser. Kommt NUR in der Demo vor. Die Bedienoberflaeche bleibt
+     trocken - das Nasse ist das Produkt. Das ist der
+     Wiedererkennungswert und eine Regel, keine Empfehlung. */
   --v-wasser:   #2BB3A3;
 
-  --v-rand:     1px;
-  --v-radius:   8px;
-  --v-takt:     8px;           /* alles ist ein Vielfaches davon */
+  --v-takt:     8px;
   --v-huelle:   1180px;
-  --v-luft:     clamp(16px, 4vw, 24px);
-  --v-block:    clamp(56px, 11vw, 96px);
+  --v-luft:     16px;
+  --v-block:    56px;
 }
+@media (min-width: 900px) { :root { --v-luft: 40px; --v-block: 88px; } }
 
 *, *::before, *::after { box-sizing: border-box; }
-
 html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
-  background: var(--v-grund);
-  color: var(--v-tinte);
+  background: var(--v-tinte);
+  color: var(--v-papier);
   font-family: "Nova", system-ui, -apple-system, "Segoe UI", sans-serif;
   font-size: 16px; line-height: 1.5;
   font-synthesis-weight: none;
-  /* Zifferbreite fest. Sonst springt "CHF 37.91" an drei Stellen der
-     Seite unterschiedlich breit und wirkt wie drei Preise. */
-  font-variant-numeric: tabular-nums;
 }
-
 img { max-width: 100%; height: auto; display: block; }
 a { color: inherit; }
 
 .v-huelle { width: 100%; max-width: var(--v-huelle); margin-inline: auto; padding-inline: var(--v-luft); }
+.v-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-/* Nur fuer Vorleseprogramme. */
-.v-sr {
-  position: absolute; width: 1px; height: 1px; overflow: hidden;
-  clip-path: inset(50%); white-space: nowrap;
-}
+/* --- Schrift -------------------------------------------------------
+   Zwei Familien, drei Rollen.
 
-/* --- Schrift ------------------------------------------------------
-   Eine einzige Familie, zwei Schnitte. Keine Serifen, keine zweite
-   Schrift, keine Emojis. Die Schriften liegen lokal im Theme - kein
-   Google Fonts, damit ohne Einwilligung nichts an Dritte geht. */
+   Die BELEGSCHRIFT ist der Traeger der ganzen Idee: jede Zahl auf der
+   Seite steht darin. Preis, Menge, Lieferzeit, Abschnittsnummer,
+   Farbnummer. Das ist der Grund, warum die Seite wie ein Beleg wirkt
+   und nicht wie Werbung.
+
+   Sie kommt aus dem System, nicht aus einer Datei. Der Entwurf wollte
+   JetBrains Mono nachladen - rund 26 KB fuer eine Schrift, die auf
+   jedem Geraet ohnehin vorhanden ist. Die Systemschrift kostet null
+   Byte, laedt sofort und geht an keinen Dritten. Dass sie auf einem
+   iPhone anders aussieht als auf Android, ist der Preis dafuer, und
+   er ist es wert. */
 @font-face {
   font-family: "Nova"; font-style: normal; font-weight: 400;
   src: url("a-sans.woff2") format("woff2"); font-display: swap;
@@ -86,226 +94,293 @@ a { color: inherit; }
   src: url("a-sans-bold.woff2") format("woff2"); font-display: swap;
 }
 
-/* Grossbuchstaben, eng gesetzt, linksbuendig. Eine Ueberschrift soll
-   wie ein Schild wirken, nicht wie ein Satz. */
+.v-beleg {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+               "Liberation Mono", monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .02em;
+}
+
 .v-schild {
   font-weight: 800; text-transform: uppercase;
-  letter-spacing: -.02em; line-height: 1.02;
+  letter-spacing: -.02em; line-height: .94;
   margin: 0;
 }
-.v-h1 { font-size: clamp(2rem, 8.6vw, 3.4rem); }
-.v-h2 { font-size: clamp(1.5rem, 5.4vw, 2.2rem); }
+/* GEMESSEN, NICHT GESCHAETZT: bei 8.8vw sind das auf einem 390er
+   Handy 34px, und damit bricht "Eine Hand reicht." auf zwei Zeilen -
+   die Ueberschrift wird vierzeilig und schiebt den Kaufknopf 13px
+   unter die Falz. Bei 7.4vw passt jede der drei Aussagen auf ihre
+   eigene Zeile, so wie der Entwurf es vorsieht. */
+.v-h1 { font-size: clamp(1.75rem, 7.4vw, 4rem); }
+.v-h2 { font-size: clamp(1.5rem, 5.6vw, 2.25rem); }
+.v-h1 em, .v-h2 em { font-style: normal; color: var(--v-signal); }
 
-.v-auge {
-  font-size: .75rem; font-weight: 800; text-transform: uppercase;
-  letter-spacing: .14em; color: var(--v-grau);
-  display: block; margin-bottom: calc(var(--v-takt) * 2);
+.v-text { font-size: 1rem; line-height: 1.6; max-width: 46ch; }
+.v-klein { font-size: .8125rem; color: var(--v-gedaempft); margin: 0; }
+
+/* Abschnittskopf. Jeder Abschnitt beginnt gleich: eine Vollbreitlinie,
+   darunter links die Nummer und der Name, rechts der Zaehler. Das ist
+   die Belegform - man weiss immer, auf welchem Posten man steht. */
+.v-kopfz {
+  display: flex; justify-content: space-between; align-items: baseline;
+  gap: var(--v-luft);
+  padding-top: 12px; margin-bottom: calc(var(--v-takt) * 4);
+  border-top: 1px solid var(--v-linie-hell);
+  font-size: .6875rem; text-transform: uppercase;
+  color: var(--v-gedaempft);
 }
-.v-lead { font-size: 1.0625rem; margin: calc(var(--v-takt) * 2) 0 0; max-width: 46ch; }
-.v-klein { font-size: .8125rem; color: var(--v-grau); margin: 0; }
-
-/* --- Linien statt Karten ------------------------------------------
-   Typenschild-Aesthetik. Ein Kasten mit Schatten sagt "Vorlage",
-   eine 1px-Linie sagt "Datenblatt". */
-.v-linie { border: 0; border-top: var(--v-rand) solid var(--v-linie); margin: 0; opacity: .18; }
 
 .v-block { padding-block: var(--v-block); }
 
-/* --- Knoepfe ------------------------------------------------------ */
+/* --- Knoepfe -------------------------------------------------------
+   Eckenradius 2px, nicht 0. Bei genau 0 wirkt ein grosser Knopf auf
+   dem Handy wie ein Fehler im Rendering; 2px liest sich als Absicht. */
 .v-knopf {
-  display: flex; align-items: center; justify-content: center;
-  gap: var(--v-takt);
+  display: flex; align-items: center; justify-content: center; gap: var(--v-takt);
   width: 100%; min-height: 56px; padding: 14px 20px;
-  border: 0; border-radius: var(--v-radius);
-  background: var(--v-signal); color: var(--v-papier);
+  border: 0; border-radius: 2px;
+  background: var(--v-signal); color: var(--v-schwarz);
   font: inherit; font-weight: 800; font-size: 1.0625rem;
   text-transform: uppercase; letter-spacing: .01em;
   text-decoration: none; cursor: pointer;
-  transition: transform .08s ease-out, filter .15s ease-out;
+  transition: transform .08s ease-out;
 }
 .v-knopf:active { transform: translateY(1px); }
-.v-knopf:hover  { filter: brightness(1.06); }
-.v-knopf[disabled] { background: var(--v-grau); cursor: not-allowed; }
+.v-knopf[disabled] { background: #3A3B3C; color: var(--v-gedaempft); cursor: not-allowed; }
 
-.v-knopf--rand {
-  background: transparent; color: var(--v-tinte);
-  border: 2px solid var(--v-tinte);
-}
-
-/* Sichtbarer Fokus, ueberall. Ohne den ist die Seite mit der Tastatur
-   unbedienbar - und der orange Ring ist auf Knochengrund gut zu
-   sehen. */
 :where(a, button, input, [tabindex]):focus-visible {
-  outline: 3px solid var(--v-signal); outline-offset: 3px; border-radius: 4px;
+  outline: 3px solid var(--v-signal); outline-offset: 3px;
 }
 
 /* ===================================================================
-   1 · HERO — die Vorfuehrung
+   KOPF UND SIGNALBAND
    =================================================================== */
-.v-hero { padding-block: calc(var(--v-takt) * 3) calc(var(--v-takt) * 4); }
-
-.v-hero__kopf {
-  display: flex; align-items: flex-start; justify-content: space-between;
-  gap: var(--v-luft); margin-bottom: calc(var(--v-takt) * 3);
+.v-kopf {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--v-luft); min-height: 44px;
 }
-.v-marke { font-weight: 800; font-size: 1.125rem; letter-spacing: -.01em; text-decoration: none; }
-.v-hero__preis { text-align: right; line-height: 1.15; }
-.v-hero__preis b { display: block; font-size: .9375rem; font-weight: 800; }
-.v-hero__preis span { font-size: .6875rem; color: var(--v-grau); }
+.v-marke { font-weight: 800; font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; text-decoration: none; }
 
-/* Die Flasche steht frei auf dem Grund. Keine Kulisse, kein Ring,
-   keine Lichtinsel - nichts, was von ihr ablenkt. */
-.v-buehne {
+.v-band {
+  background: var(--v-signal); color: var(--v-schwarz);
+  text-align: center; padding: 11px var(--v-luft);
+  font-size: .6875rem; font-weight: 700; text-transform: uppercase;
+}
+
+/* ===================================================================
+   1 · HERO
+   =================================================================== */
+.v-auge {
+  display: block; color: var(--v-signal);
+  font-size: .6875rem; text-transform: uppercase; letter-spacing: .08em;
+  margin-bottom: var(--v-takt);
+}
+
+/* Die Papierflaeche. Vollbreit, hartkantig, hell - das Produkt liegt
+   darauf wie ein Dia auf dem Leuchttisch. Sie bricht bewusst aus der
+   Huelle aus, damit die Kante bis an den Bildschirmrand geht. */
+.v-flaeche {
   position: relative;
+  background: var(--v-papier);
+  margin-inline: calc(var(--v-luft) * -1);
+  padding: calc(var(--v-takt) * 3) var(--v-luft);
   display: grid; place-items: center;
-  margin-block: calc(var(--v-takt) * 3);
-  min-height: clamp(240px, 42vh, 420px);
+  /* 40vh statt 44vh: die vier Prozent sind der Rest, der den
+     Kaufknopf ueber die Falz holt. Gemessen, siehe Kommentar bei
+     .v-h1. */
+  min-height: clamp(260px, 40vh, 460px);
 }
-.v-flasche {
-  height: clamp(240px, 40vh, 420px); width: auto;
-  /* Sehr langsames Schweben. Sechs Sekunden sind bewusst zu lang zum
-     Bemerken - es soll lebendig wirken, nicht animiert. */
-  animation: v-schweben 6s ease-in-out infinite;
+.v-flasche { height: clamp(240px, 38vh, 400px); width: auto; }
+
+/* Die Ecketiketten auf der Papierflaeche. Sie sagen ohne Satzbau,
+   was gesichert ist - und sie sind schwarz auf Papier, also 16:1. */
+.v-ecke {
+  position: absolute; color: var(--v-schwarz);
+  font-size: .625rem; text-transform: uppercase; letter-spacing: .06em;
 }
-@keyframes v-schweben {
-  0%, 100% { transform: translateY(-4px); }
-  50%      { transform: translateY(4px); }
+.v-ecke--lu { left: var(--v-luft); bottom: 12px; }
+.v-ecke--ru { right: var(--v-luft); bottom: 12px; }
+
+/* --- Preiszeile --------------------------------------------------- */
+.v-preis {
+  display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+  margin: calc(var(--v-takt) * 3) 0 0;
+}
+.v-preis b { font-size: clamp(2rem, 9vw, 2.6rem); font-weight: 700; line-height: 1; }
+.v-preis span { font-size: .6875rem; text-transform: uppercase; color: var(--v-gedaempft); line-height: 1.4; }
+
+/* --- Der harte Satz unter dem Knopf ------------------------------- */
+.v-hart {
+  margin: 12px 0 0; font-size: .75rem; line-height: 1.5;
+  color: var(--v-gedaempft);
+}
+.v-hart em { font-style: normal; color: var(--v-signal); }
+
+/* Kleine Handys haben denselben Inhalt, aber 64px weniger Hoehe.
+   Gemessen auf 360x780: mit den Werten oben endet der Kaufknopf bei
+   817 von 780, also 37px zu tief. Die Papierflaeche gibt sie her,
+   ohne dass das Produkt klein wirkt. */
+@media (max-width: 389px) {
+  .v-flaeche { min-height: clamp(220px, 33vh, 320px); }
+  .v-flasche { height: clamp(200px, 30vh, 320px); }
 }
 
-/* Die gepunktete Linie verbindet den Knopf an der Flasche mit dem
-   Bedienknopf darunter. Sie sagt ohne Wort: das da unten ist das da
-   oben. */
-.v-faden {
-  display: block; width: 2px; height: 20px; margin: 0 auto;
-  background: repeating-linear-gradient(180deg,
-    var(--v-tinte) 0 3px, transparent 3px 7px);
-  opacity: .4;
+/* ===================================================================
+   2 · DIE OFFENE RECHNUNG
+   Der lauteste Block der Seite, weil er der wichtigste ist.
+   Schwarz auf Signal: gemessen 5.95:1.
+   =================================================================== */
+.v-rechnung {
+  background: var(--v-signal); color: var(--v-schwarz);
+  padding-block: var(--v-block);
+}
+.v-rechnung .v-kopfz { border-color: rgb(10 10 10 / .3); color: rgb(10 10 10 / .7); }
+.v-rechnung .v-h2 em { color: var(--v-schwarz); }
+
+.v-posten { list-style: none; margin: calc(var(--v-takt) * 3) 0 0; padding: 0; }
+.v-posten li {
+  display: grid; grid-template-columns: 1fr; gap: 2px;
+  padding-block: 14px;
+  border-top: 1px solid rgb(10 10 10 / .28);
+}
+.v-posten li:last-child { border-bottom: 1px solid rgb(10 10 10 / .28); }
+.v-posten dt, .v-posten b {
+  font-size: .625rem; text-transform: uppercase; letter-spacing: .06em;
+  opacity: .75; font-weight: 700;
+}
+.v-posten span { font-size: .9375rem; font-weight: 500; }
+@media (min-width: 700px) {
+  .v-posten li { grid-template-columns: 14rem 1fr; gap: var(--v-luft); align-items: baseline; }
 }
 
-/* --- Der Demoknopf: das Herzstueck -------------------------------- */
+/* ===================================================================
+   3 · DER DEMOKNOPF (aus Entwurf B)
+   Die einzige Interaktion der Seite. Halten laesst den Wasserstand
+   steigen, Loslassen laesst ihn zurueckfliessen - schneller runter
+   als hoch, weil Wasser das so tut.
+   =================================================================== */
 .v-demo {
   position: relative; overflow: hidden;
   width: 100%; min-height: 64px; padding: 12px 18px;
-  background: transparent; color: var(--v-tinte);
-  border: 2px solid var(--v-tinte); border-radius: var(--v-radius);
-  font: inherit; font-weight: 800; font-size: .875rem;
+  background: transparent; color: var(--v-papier);
+  border: 2px solid var(--v-papier); border-radius: 2px;
+  font: inherit; font-weight: 800; font-size: .8125rem;
   text-transform: uppercase; letter-spacing: .04em;
   cursor: pointer; touch-action: none; user-select: none;
   -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
 }
-/* Der Wasserstand im Knopf. Steigt beim Halten, faellt beim
-   Loslassen - schneller runter als hoch, wie echtes Wasser, das
-   zurueckfliesst. */
 .v-demo__wasser {
   position: absolute; left: 0; right: 0; bottom: 0;
   height: var(--stand, 0%);
-  background: var(--v-wasser); opacity: .22;
+  background: var(--v-wasser); opacity: .3;
   transition: height 1.2s cubic-bezier(.3,.7,.4,1);
   pointer-events: none;
 }
 .v-demo[data-los] .v-demo__wasser { transition-duration: .8s; }
 .v-demo__text { position: relative; z-index: 1; }
 
-/* --- Kaufbereich im Hero ----------------------------------------- */
-.v-kauf { display: grid; gap: calc(var(--v-takt) * 2); margin-top: calc(var(--v-takt) * 3); }
-.v-versand { text-align: center; font-size: .75rem; color: var(--v-grau); margin: 0; }
+/* ===================================================================
+   4 · WAS WIR NICHT WISSEN
+   Der Block, den niemand kopiert, der etwas zu verbergen hat.
+   =================================================================== */
+.v-luecken { list-style: none; margin: 0; padding: 0; }
+.v-luecken li {
+  display: flex; gap: 12px; align-items: baseline;
+  padding-block: 10px;
+  font-size: .9375rem; color: var(--v-gedaempft);
+}
+.v-luecken li::before {
+  content: ""; flex: 0 0 16px; height: 1px;
+  background: var(--v-signal); transform: translateY(-4px);
+}
+.v-folge {
+  margin: calc(var(--v-takt) * 4) 0 0;
+  font-size: clamp(1.0625rem, 4.4vw, 1.375rem);
+  font-weight: 800; line-height: 1.35; max-width: 34ch;
+}
 
-/* --- Farbwahl ----------------------------------------------------- */
+/* ===================================================================
+   FARBWAHL
+   =================================================================== */
 .v-farben { display: flex; flex-wrap: wrap; gap: 12px; list-style: none; margin: 0; padding: 0; }
 .v-pkt {
   display: block; width: 40px; height: 40px; border-radius: 50%;
-  border: var(--v-rand) solid rgb(20 20 20 / .25);
-  cursor: pointer; position: relative;
+  border: 1px solid rgb(242 239 233 / .3); position: relative; cursor: pointer;
 }
 .v-pkt[aria-pressed="true"]::after {
   content: ""; position: absolute; inset: -6px;
   border: 2px solid var(--v-signal); border-radius: 50%;
 }
-.v-pkt--rosa{background:#F2A7C3}   .v-pkt--schwarz{background:#1A1A1A}
-.v-pkt--grau{background:#9AA0A3}   .v-pkt--tuerkis{background:#2BB3A3}
-.v-pkt--gruen{background:#4C9A52}  .v-pkt--weiss{background:#FFFFFF}
-
-/* ===================================================================
-   2 · MECHANIK — vier Schritte als Schilder
-   =================================================================== */
-.v-schritte { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
-.v-schritte li {
-  display: grid; grid-template-columns: 3.5rem 1fr; gap: var(--v-luft);
-  align-items: start;
-  padding-block: calc(var(--v-takt) * 3);
-  border-top: var(--v-rand) solid rgb(20 20 20 / .18);
-}
-.v-schritte li:last-child { border-bottom: var(--v-rand) solid rgb(20 20 20 / .18); }
-.v-schritte__nr { font-weight: 800; font-size: 1.25rem; color: var(--v-signal); }
-.v-schritte b { display: block; font-weight: 800; text-transform: uppercase; letter-spacing: .02em; }
-.v-schritte span { color: var(--v-grau); font-size: .9375rem; }
-
-/* ===================================================================
-   3 · TYPENSCHILD — nur Gesichertes
-   =================================================================== */
-.v-daten { list-style: none; margin: 0; padding: 0; }
-.v-daten li {
-  display: flex; justify-content: space-between; gap: var(--v-luft);
-  padding-block: 14px;
-  border-top: var(--v-rand) solid rgb(20 20 20 / .18);
-  font-size: .9375rem;
-}
-.v-daten li:last-child { border-bottom: var(--v-rand) solid rgb(20 20 20 / .18); }
-.v-daten b { font-weight: 800; }
-.v-daten span { color: var(--v-grau); text-align: right; }
-
-/* ===================================================================
-   4 · PREISBLOCK
-   =================================================================== */
-.v-preisblock { max-width: 52ch; }
-.v-preisblock p { margin: calc(var(--v-takt) * 2) 0 0; }
+.v-pkt--rosa{background:#F09BB2}   .v-pkt--schwarz{background:#4A4C4C}
+.v-pkt--grau{background:#8E9495}   .v-pkt--tuerkis{background:#5DE1DC}
+.v-pkt--gruen{background:#9BF4BC}  .v-pkt--weiss{background:#E9F3F2}
 
 /* ===================================================================
    MITLAUFENDE KAUFLEISTE
-   Erscheint, sobald der Kaufknopf oben aus dem Bild ist. Sie zeigt
-   BEWUSST keinen Betrag: sie kennt die gewaehlte Menge nicht, und ein
-   falscher Preis am Ort des Kaufs ist schlimmer als gar keiner.
+   Zeigt BEWUSST keinen Betrag: sie kennt die gewaehlte Menge nicht,
+   und ein falscher Preis am Ort des Kaufs ist schlimmer als keiner.
+   Genau dieser Fehler steckte in der alten Fassung.
    =================================================================== */
 .v-leiste {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
   display: flex; align-items: center; gap: var(--v-luft);
-  padding: 10px var(--v-luft);
-  background: var(--v-grund);
-  border-top: var(--v-rand) solid var(--v-linie);
+  padding: 8px var(--v-luft);
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+  background: var(--v-tinte);
+  border-top: 1px solid var(--v-linie-hell);
   transform: translateY(105%);
-  transition: transform .2s ease-out;
-  padding-bottom: max(10px, env(safe-area-inset-bottom));
+  transition: transform .22s cubic-bezier(.2,.8,.2,1);
 }
 .v-leiste[data-an] { transform: none; }
-.v-leiste__text { flex: 1; min-width: 0; line-height: 1.2; }
-.v-leiste__text b { display: block; font-weight: 800; font-size: .9375rem; }
-.v-leiste__text span { font-size: .75rem; color: var(--v-grau); }
-.v-leiste .v-knopf { width: auto; min-width: 140px; }
+.v-leiste__text { flex: 1; min-width: 0; line-height: 1.25; }
+.v-leiste__text b { display: block; font-size: .875rem; font-weight: 800; }
+.v-leiste__text span { font-size: .6875rem; color: var(--v-gedaempft); }
+.v-leiste .v-knopf { width: auto; min-width: 132px; min-height: 44px; font-size: .875rem; }
+
+/* ===================================================================
+   FRAGELISTE
+   =================================================================== */
+.n-fragen { margin-top: calc(var(--v-takt) * 3); }
+.n-frage { border-top: 1px solid var(--v-linie-hell); }
+.n-frage:last-child { border-bottom: 1px solid var(--v-linie-hell); }
+.n-frage summary {
+  cursor: pointer; list-style: none; padding-block: 16px;
+  font-weight: 800; font-size: .9375rem;
+  display: flex; justify-content: space-between; gap: var(--v-luft);
+}
+.n-frage summary::-webkit-details-marker { display: none; }
+.n-frage__zeichen { flex: 0 0 auto; color: var(--v-signal); }
+.n-frage__zeichen::before { content: "+"; font-weight: 700; }
+.n-frage[open] .n-frage__zeichen::before { content: "–"; }
+.n-frage__inhalt { padding-bottom: 18px; color: var(--v-gedaempft); font-size: .9375rem; max-width: 60ch; }
+.n-frage__inhalt p { margin: 0 0 .6em; }
+.n-frage__inhalt a { color: var(--v-signal); }
+
+/* ===================================================================
+   SCHLUSS ALS PLAKAT
+   Der letzte Kaufpunkt darf nicht der leiseste sein.
+   =================================================================== */
+.v-plakat {
+  background: var(--v-signal); color: var(--v-schwarz);
+  padding-block: calc(var(--v-block) * 1.2);
+}
+.v-plakat .v-h1 em { color: var(--v-schwarz); }
+.v-plakat .v-knopf { background: var(--v-schwarz); color: var(--v-signal); }
+.v-plakat .v-preis span { color: rgb(10 10 10 / .7); }
 
 /* ===================================================================
    BREITE SCHIRME
-   Ab 900px steht die Flasche links und der Kaufbereich rechts. Auf
-   dem Handy bleibt alles untereinander - dort entscheidet die
-   Reihenfolge, nicht die Flaeche.
    =================================================================== */
 @media (min-width: 900px) {
-  .v-hero__raster {
-    display: grid; grid-template-columns: 1.1fr .9fr;
-    gap: calc(var(--v-block) / 2); align-items: center;
-  }
-  .v-buehne { margin-block: 0; }
+  .v-hero__raster { display: grid; grid-template-columns: 1.15fr .85fr; gap: 48px; align-items: center; }
+  .v-flaeche { margin-inline: 0; }
   .v-leiste { display: none; }
-  .v-schritte { grid-template-columns: repeat(4, 1fr); gap: var(--v-luft); }
-  .v-schritte li { border-top: 0; border-bottom: 0; display: block; }
-  .v-schritte li:last-child { border-bottom: 0; }
-  .v-schritte__nr { display: block; margin-bottom: var(--v-takt); }
 }
 
 /* ===================================================================
    REDUZIERTE BEWEGUNG
-   Wer das im Betriebssystem eingestellt hat, bekommt eine Seite ohne
-   jede Eigenbewegung. Die Demo funktioniert weiter - sie ist keine
-   Zierde, sondern die Bedienung -, aber sie springt statt zu fliessen.
+   Die Demo bleibt bedienbar - sie ist keine Zierde, sondern die
+   Bedienung. Sie springt dann, statt zu fliessen.
    =================================================================== */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
