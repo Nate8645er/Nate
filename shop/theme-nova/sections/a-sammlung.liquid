@@ -13,13 +13,24 @@
 
     {%- if collection -%}
 
-      <div class="a-kopfzeile">
-        <p class="a-auge">Let'sDrink</p>
-        <h1 class="a-titel">{{ collection.title }}</h1>
-        {%- if collection.description != blank -%}
-          <div class="a-vorspann">{{ collection.description }}</div>
-        {%- endif -%}
-      </div>
+      {%- comment -%}
+        Derselbe Kopf wie auf den Inhaltsseiten, mit dem Tropfen der
+        Wortmarke statt eines Fotos. Begruendung siehe a-korb.liquid.
+      {%- endcomment -%}
+      <header class="a-schild a-schild--bild a-schild--marke">
+        <div class="a-schild__text">
+          <p class="a-auge">Let&rsquo;sDrink</p>
+          <h1 class="a-titel">{{ collection.title }}</h1>
+          {%- if collection.description != blank -%}
+            <div class="a-vorspann">{{ collection.description }}</div>
+          {%- endif -%}
+        </div>
+        <span class="a-schild__marke" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3.2C9 7.4 6.2 10.2 6.2 13.8a5.8 5.8 0 0 0 11.6 0c0-3.6-2.8-6.4-5.8-10.6Z"/>
+          </svg>
+        </span>
+      </header>
 
       {%- paginate collection.products by 24 -%}
         {%- if collection.products.size == 0 -%}
@@ -76,10 +87,21 @@
 
     {%- else -%}
 
-      <div class="a-kopfzeile">
-        <p class="a-auge">Let'sDrink</p>
-        <h1 class="a-titel">Kategorien</h1>
-      </div>
+      {%- comment -%}
+        Derselbe Kopf wie auf den Inhaltsseiten, mit dem Tropfen der
+        Wortmarke statt eines Fotos. Begruendung siehe a-korb.liquid.
+      {%- endcomment -%}
+      <header class="a-schild a-schild--bild a-schild--marke">
+        <div class="a-schild__text">
+          <p class="a-auge">Let&rsquo;sDrink</p>
+          <h1 class="a-titel">Kategorien</h1>
+        </div>
+        <span class="a-schild__marke" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3.2C9 7.4 6.2 10.2 6.2 13.8a5.8 5.8 0 0 0 11.6 0c0-3.6-2.8-6.4-5.8-10.6Z"/>
+          </svg>
+        </span>
+      </header>
 
       <ul class="a-gitter">
         {%- for k in collections -%}
