@@ -2,11 +2,24 @@
   sections/n-start.liquid — LET'SDRINK NOVA, Startseite
   9.8.2026. Bauleitung.
 
-  AUFBAU (Stand 15.8.2026):
-    1 Hero -> 7 Anwendung -> 10 FAQ -> 11 Schluss
-  VIER Abschnitte. Die Nummern 2, 3, 4, 5, 6, 8 und 9 sind bewusst
-  leer und jeweils an ihrer Stelle als Kommentar begruendet. Nicht
-  kommentarlos wieder einfuegen.
+  AUFBAU (Stand 15.8.2026, zweite Fassung des Tages):
+    1 Hero -> 7 Anwendung -> 9b Band -> 10b Briefkasten -> 11 Schluss
+  FUENF Abschnitte. Die Nummern 2, 3, 4, 5, 6, 8, 9 und 10 sind
+  bewusst leer und jeweils an ihrer Stelle als Kommentar begruendet.
+  Nicht kommentarlos wieder einfuegen.
+
+  WAS AUF DIESE SEITE GEHOERT - UND WAS NICHT.
+  Auf Wunsch des Inhabers: "in start seite nur das was zur start
+  seite hingehoert". Der Massstab ist seither: zeigt es, WAS das
+  Produkt ist und WAS es tut? Dann bleibt es. Ist es etwas zum
+  Nachschlagen? Dann hat es eine eigene Seite.
+
+  Danach ist die Frageliste heruntergefallen - erst von zwoelf auf
+  fuenf Eintraege gekuerzt, dann ganz. Sie steht vollstaendig auf
+  /pages/haeufige-fragen. Was von ihr auf der Startseite bleiben
+  MUSSTE, sind die drei Angaben, die einen ersten Kauf blockieren:
+  Versand, Rueckgabe, wer antwortet. Die stehen im Band offen da,
+  nicht hinter einer Klappe.
 
   15.8.2026, auf Wunsch des Inhabers: zu viel Text.
   Gezaehlt und dann geschnitten - nicht nach Gefuehl gekuerzt:
@@ -882,41 +895,40 @@
         <p>14 Tage, ohne dass du einen Grund nennen musst.
            Der Rückweg steht in <a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>.</p>
       </li>
+      {%- comment -%}
+        Die dritte Spalte traegt seit dem Wegfall der Frageliste den
+        einzigen Weg zu den Fragen, der IM Seiteninhalt steht (die
+        anderen beiden sind das Menue und der Chat). Deshalb ist der
+        Verweis hier kein Zusatz, sondern der Zweck der Spalte.
+      {%- endcomment -%}
       <li class="n-band__p">
         <b>Antworten</b>
         <p>Ein Produkt, ein Mensch. Ich schreibe die Antworten selbst –
-           auch die, in denen steht, dass ich etwas nicht weiss.</p>
+           auch die, in denen steht, dass ich etwas nicht weiss.
+           <a href="/pages/haeufige-fragen">Alle Fragen</a>.</p>
       </li>
     </ul>
   </div>
 </section>
 
-{%- comment -%} ================================================ 10 · FAQ {%- endcomment -%}
-<section class="n-block" id="fragen">
-  <div class="n-huelle">
-    <div class="n-kopfz n-kopfz--mitte" data-auf>
-      <span class="n-auge">Zum Produkt</span>
-      <h2 class="n-titel">Fünf Fragen, die oft kommen</h2>
-    </div>
+{%- comment -%} =============================== 10 · FAQ - ENTFERNT {%- endcomment -%}
+{%- comment -%}
+  DIE FRAGELISTE STEHT NICHT MEHR AUF DER STARTSEITE.
 
-    {%- comment -%}
-      Die Fragen und Antworten stehen nicht hier, sondern EINMAL im
-      Schnipsel n-wissen. Hier laeuft es mit kurz: true - nur die
-      fuenf Produktfragen. Der Chat unten rechts liest NICHT diesen
-      Block, sondern die versteckte vollstaendige Fassung im Layout;
-      er kann deshalb auch hier alle zwoelf Antworten.
+  Sie stand hier zuletzt in einer gekuerzten Fassung mit fuenf
+  Eintraegen. Auch die war falsch am Platz: eine Startseite soll
+  zeigen, was das Produkt ist und was es tut, nicht ein
+  Nachschlagewerk mitfuehren. Fragen haben eine eigene Seite -
+  /pages/haeufige-fragen - und die traegt sie vollstaendig.
 
-      Der Verweis darunter ist kein Schmuck: wer eine der sieben
-      anderen Fragen hat, muss sehen, dass es sie gibt. Sonst ist
-      Kuerzen nur Verstecken.
-    {%- endcomment -%}
-    <div data-auf>{% render 'n-wissen', kurz: true %}</div>
+  ERREICHBAR BLEIBT SIE UEBER DREI WEGE: das Menue oben, die dritte
+  Spalte im Band darueber, und den Chat unten rechts.
 
-    <p class="n-band__mehr" data-auf="klein">
-      <a href="/pages/haeufige-fragen">Alle Fragen – Versand, Rückgabe, Farben, Reinigung, Material</a>
-    </p>
-  </div>
-</section>
+  DER CHAT VERLIERT NICHTS. Er las frueher genau diesen Block. Seit
+  dem 15.8.2026 liegt seine Quelle versteckt und immer vollstaendig
+  im Layout (siehe layout/theme.liquid), auf jeder Seite. Deshalb
+  darf der sichtbare Block hier ersatzlos weg.
+{%- endcomment -%}
 
 {%- comment -%} ================================== 10b · BRIEFKASTEN {%- endcomment -%}
 {%- comment -%}

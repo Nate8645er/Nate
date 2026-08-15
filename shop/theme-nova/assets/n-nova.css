@@ -771,11 +771,11 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
    ist zeilenweise, also 1 2 / 3 4 / 5 6. Damit steht das Wichtige
    weiterhin oben, nur eben zu zweit.
 
-   NUR die lange Liste. Die Startseite zeigt seit dem Band nur noch
-   fuenf Fragen - die stehen in zwei Spalten schief (links drei,
-   rechts zwei, dazu ein Loch unter der offenen ersten). Fuenf
-   Zeilen untereinander sind ohnehin mit einem Blick erfassbar.
-   Deshalb haengt die Regel an :not(.n-fragen--kurz).
+   Die Regel galt kurzzeitig nur fuer die lange Fassung, weil die
+   Startseite eine gekuerzte fuehrte. Die Startseite fuehrt gar keine
+   mehr - die Liste steht nur noch auf der Frageseite und der
+   Produktseite, beide mit allen zwoelf. Die Einschraenkung ist
+   deshalb wieder weg.
 
    Zu den Linien: in einer Spalte traegt jede Frage oben einen Strich
    und die letzte zusaetzlich unten. In zwei Spalten waere die letzte
@@ -783,7 +783,7 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
    Strich unten fuer alle, Strich oben nur fuer die ersten beiden,
    also fuer die Koepfe beider Spalten. */
 @media (min-width: 940px) {
-  .n-fragen:not(.n-fragen--kurz) {
+  .n-fragen {
     max-width: 100%;
     display: grid; grid-template-columns: 1fr 1fr;
     column-gap: clamp(2rem, 4vw, 3.5rem);
@@ -795,12 +795,11 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
        eigene Hoehe; die Zeile ist trotzdem so hoch wie die offene. */
     align-items: start;
   }
-  .n-fragen:not(.n-fragen--kurz) .n-frage { border-top: 0; border-bottom: 1px solid var(--n-glas-rand); }
-  .n-fragen:not(.n-fragen--kurz) .n-frage:nth-child(1),
-  .n-fragen:not(.n-fragen--kurz) .n-frage:nth-child(2) {
+  .n-frage { border-top: 0; border-bottom: 1px solid var(--n-glas-rand); }
+  .n-frage:nth-child(1), .n-frage:nth-child(2) {
     border-top: 1px solid var(--n-glas-rand);
   }
-  .n-fragen:not(.n-fragen--kurz) .n-frage:last-child { border-bottom: 1px solid var(--n-glas-rand); }
+  .n-frage:last-child { border-bottom: 1px solid var(--n-glas-rand); }
 }
 
 .n-frage summary {
@@ -2521,31 +2520,100 @@ body:has(.n-leiste.n-an) .n-chat       { bottom: calc(84px + env(safe-area-inset
   max-width: 44ch;
   margin-bottom: clamp(1.75rem, 4vw, 2.75rem);
 }
+/* AUS DEM BAND WIRD EIN KOPF - 15.8.2026.
+
+   Vorher: eine flache Flaeche, hoch genug fuer zwei Zeilen, mit
+   einem kleinen Bild in der Ecke. Das war eine Beschriftung. Drei
+   Aenderungen machen daraus einen Seitenkopf:
+
+   1  min-height. Der Kopf hat jetzt eine eigene Hoehe statt der
+      Hoehe seines Textes. Damit oeffnet jede Unterseite gleich -
+      egal ob der Titel ein Wort hat oder vier.
+   2  Die Zeile unter dem Titel (a-schild__lead), siehe a-seite.liquid.
+   3  Das Bild ist groesser und sitzt am rechten Rand statt in der
+      Ecke zu schweben.
+
+   Bewusst KEIN grosses Foto ueber die ganze Breite mit Text darauf:
+   das haette hier dieselben zwei Probleme wie im Hero der
+   Startseite - Kontrast der Schrift ueber hellen Stellen, und ein
+   schweres Bild vor dem ersten Text. Der Kopf bleibt eine Flaeche
+   mit einem Bild darin. */
 .a-schild--bild {
   max-width: none;
   position: relative;
   display: grid; grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end; gap: 1rem;
-  padding: clamp(1.4rem, 4vw, 2.4rem);
+  align-items: end; gap: clamp(1rem, 3vw, 2rem);
+  min-height: clamp(190px, 30vw, 300px);
+  padding: clamp(1.6rem, 4vw, 2.6rem);
   border-radius: var(--n-rund-gross);
   background: var(--n-tief);
   overflow: hidden;
 }
 .a-schild__text { min-width: 0; align-self: center; }
 /* Ohne Begrenzung laeuft "Versand und Rueckgabe" bis unter das Bild. */
-.a-schild--bild .a-titel { max-width: 12ch; }
+.a-schild--bild .a-titel { max-width: 14ch; }
+
+/* Die Zeile unter dem Titel. Schmal gehalten (46ch), damit sie
+   nicht unter das Bild laeuft, und in der ruhigen Textfarbe - sie
+   ordnet ein, sie ruft nicht. */
+.a-schild__lead {
+  margin: .9rem 0 0; max-width: 46ch;
+  font-size: clamp(1rem, 1.5vw, 1.0625rem); line-height: 1.55;
+  color: var(--n-sanft);
+}
+@media (max-width: 599px) {
+  /* Auf dem Handy steht neben dem Text nur noch wenig Platz. Die
+     Zeile bekommt die volle Breite, das Bild rutscht darunter. */
+  .a-schild--bild { grid-template-columns: 1fr; align-items: start; }
+  .a-schild__lead { max-width: none; }
+}
 
 .a-schild__bild { margin: 0; flex: none; }
 .a-schild__bild img { display: block; width: auto; }
 /* Die Flasche steht auf der unteren Kante auf und wird von ihr
    angeschnitten - sie steht im Schild, sie schwebt nicht darin. */
 .a-schild__bild--flasche img {
-  height: clamp(155px, 30vw, 240px);
+  height: clamp(170px, 34vw, 290px);
   margin-bottom: calc(-1 * clamp(1.4rem, 4vw, 2.4rem));
 }
+/* DER NAPF IST EIN FOTO, KEIN FREISTELLER - und wird deshalb anders
+   behandelt als die Flasche.
+
+   Vorher hing er als Bild mit fester Hoehe in der Ecke und wurde vom
+   Rand des Kopfes oben und unten angeschnitten: ein zufaelliger
+   Ausschnitt, der aussah wie ein Fehler.
+
+   Jetzt fuellt er die rechte Seite des Kopfes ganz - von Oberkante
+   bis Unterkante, bis an den rechten Rand. Die negativen Aussenmasse
+   heben genau die Innenabstaende des Kopfes wieder auf; object-fit
+   cover macht den Anschnitt zu einer Entscheidung statt zu einem
+   Zufall. Kein Rundungsradius mehr: die Flaeche endet an der
+   gerundeten Kante des Kopfes selbst.
+
+   Auf dem Handy stapelt der Kopf, und ein schmaler Streifen waere
+   dort ein Balken. Deshalb faellt das Bild dort weg - ein Foto, das
+   man nicht erkennt, hilft niemandem. */
+/* Die Breite gehoert ins RASTER, nicht auf das Bild. Eine Prozent-
+   breite auf einem Rasterfeld der Spur "auto" ist zirkulaer: die
+   Spur richtet sich nach dem Inhalt, der Inhalt nach der Spur. Das
+   Ergebnis war ein Bild, das den rechten Rand nicht erreichte. Mit
+   einer festen Spur ist die Breite entschieden, bevor das Bild
+   gemessen wird. */
+.a-schild--foto { grid-template-columns: minmax(0, 1fr) clamp(190px, 34vw, 420px); }
+.a-schild__bild--napf {
+  align-self: stretch;
+  width: auto;
+  margin: calc(-1 * clamp(1.6rem, 4vw, 2.6rem));
+  margin-left: 0;
+}
 .a-schild__bild--napf img {
-  height: clamp(118px, 23vw, 190px);
-  border-radius: 14px;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: 50% 42%;
+  border-radius: 0;
+}
+@media (max-width: 599px) {
+  .a-schild--foto { grid-template-columns: 1fr; }
+  .a-schild__bild--napf { display: none; }
 }
 
 /* --- Rechtsseiten: Schild mit Markenzeichen statt Foto -------------
@@ -2836,14 +2904,18 @@ body:has(.n-leiste.n-an) .n-chat       { bottom: calc(84px + env(safe-area-inset
   .n-band__p:last-child { padding-right: 0; }
 }
 
-/* Der Verweis auf die vollstaendige Frageliste. Mittig unter der
-   gekuerzten Liste, mit Abstand - er soll gefunden werden, aber nicht
-   mit den Fragen selbst konkurrieren. */
-.n-band__mehr {
-  margin: 2.2rem 0 0; text-align: center;
-  font-size: .9375rem;
-}
-.n-band__mehr a {
-  color: var(--n-sanft); text-decoration: underline; text-underline-offset: 4px;
-}
-.n-band__mehr a:hover { color: var(--n-text); }
+
+
+/* ====================================================================
+   DIE FRAGESEITE - VOLLE BREITE
+   15.8.2026.
+
+   Die Liste stand in a-text und damit in 33 rem: zwei Spalten in der
+   linken Haelfte der Seite, umbrechende Ueberschriften, rechts die
+   halbe Breite leer. a-text ist fuer Fliesstext gedacht, und dort ist
+   die schmale Spalte richtig - eine Frageliste ist kein Fliesstext.
+
+   Der Abstand nach unten trennt sie vom Seiteninhalt, der auf der
+   Frageseite darunter folgen kann.
+   -------------------------------------------------------------------- */
+.a-fragenseite { max-width: none; margin-bottom: 2.5rem; }

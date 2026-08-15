@@ -58,29 +58,57 @@
   Ecke. Damit gehoeren die Seiten sichtbar zusammen, ohne dass im
   Kleingedruckten verkauft wird.
 {%- endcomment -%}
+{%- comment -%}
+  DIE ZEILE UNTER DER UEBERSCHRIFT - NEU AM 15.8.2026.
+
+  Der Kopf war ein Band mit zwei Zeilen: Wortmarke und Seitentitel.
+  "Haeufige Fragen" auf einer Flaeche sagt nichts, was die Seite
+  nicht ohnehin durch ihren Inhalt sagt - es war eine Beschriftung,
+  kein Einstieg.
+
+  Jetzt steht darunter ein Satz, der sagt, WAS auf dieser Seite
+  passiert. Bei der Frageseite nennt er ausdruecklich auch das, was
+  wir NICHT wissen - der Shop verschweigt das an keiner Stelle, und
+  wer die Seite oeffnet, soll es lesen, bevor er suchen muss.
+
+  KEINE ZEILE fuer die Rechtsseiten. Ein aufmunternder Satz ueber
+  den AGB ist Verkauf im Kleingedruckten; dieselbe Ueberlegung wie
+  beim fehlenden Produktfoto dort.
+
+  Kein Versprechen ueber Antwortzeiten auf der Kontaktseite. Der
+  Inhaber ist eine Person; wie schnell er kann, weiss niemand im
+  Voraus, und eine Zusage waere die erste unbelegte Aussage im Shop.
+{%- endcomment -%}
 {%- assign schildbild = blank -%}
+{%- assign schildlead = blank -%}
 {%- case page.handle -%}
   {%- when 'haeufige-fragen' -%}
     {%- assign schildbild = 'a-napf-nah.webp' -%}
     {%- assign schildform = 'napf' -%}
     {%- assign schildalt = 'Nahaufnahme des Napfs, der fest am Flaschenhals sitzt' -%}
+    {%- assign schildlead = 'Alles, was oft gefragt wird – auch die zwei Fragen, auf die ich keine Antwort habe.' -%}
   {%- when 'versand-und-rueckgabe' -%}
     {%- assign schildbild = 'a-flasche-' | append: sslug | append: '.webp' -%}
     {%- assign schildform = 'flasche' -%}
     {%- assign schildalt = 'Die Trinkflasche mit Napf, aufrecht' -%}
+    {%- assign schildlead = 'Was der Versand kostet, wie lange er dauert und wie du zurückschickst.' -%}
   {%- when 'contact' -%}
     {%- assign schildbild = 'a-flasche-' | append: sslug | append: '.webp' -%}
     {%- assign schildform = 'flasche' -%}
     {%- assign schildalt = 'Die Trinkflasche mit Napf, aufrecht' -%}
+    {%- assign schildlead = 'Schreib mir. Ich lese die Nachrichten selbst.' -%}
 {%- endcase -%}
 
 <div class="a-seite">
   <div class="a-huelle">
 
-    <header class="a-schild a-schild--bild{% if schildbild == blank %} a-schild--marke{% endif %}">
+    <header class="a-schild a-schild--bild{% if schildform == 'napf' %} a-schild--foto{% endif %}{% if schildbild == blank %} a-schild--marke{% endif %}">
       <div class="a-schild__text">
         <p class="a-auge">Let&rsquo;sDrink</p>
         <h1 class="a-titel">{{ page.title }}</h1>
+        {%- if schildlead != blank -%}
+          <p class="a-schild__lead">{{ schildlead }}</p>
+        {%- endif -%}
       </div>
       {%- if schildbild != blank -%}
         <figure class="a-schild__bild a-schild__bild--{{ schildform }}">
@@ -103,7 +131,15 @@
     </header>
 
     {%- if page.handle == 'haeufige-fragen' -%}
-      <div class="a-text">{% render 'n-wissen' %}</div>
+      {%- comment -%}
+        NICHT in a-text. Diese Klasse deckelt auf 33 rem, weil sie
+        fuer Fliesstext gemacht ist - und dort ist eine schmale Spalte
+        richtig. Die Frageliste ist kein Fliesstext: sie stand damit
+        zweispaltig in der linken Haelfte der Seite gequetscht, mit
+        umbrechenden Ueberschriften, waehrend rechts die halbe Breite
+        leer blieb. Sie bekommt die volle Huelle.
+      {%- endcomment -%}
+      <div class="a-fragenseite">{% render 'n-wissen' %}</div>
       {%- if page.content != blank -%}
         <div class="a-text a-text--nach">{{ page.content }}</div>
       {%- endif -%}
