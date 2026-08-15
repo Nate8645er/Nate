@@ -1197,3 +1197,48 @@
   W.addEventListener("wheel", heben, { passive: true, once: true });
   W.addEventListener("touchmove", heben, { passive: true, once: true });
 })();
+
+/* ======================================================================
+   DER FILM IM BRIEFKASTEN HAELT AN, WENN JEMAND BEWEGUNG ABGESTELLT HAT
+   15.8.2026.
+
+   Der Film laeuft stumm in Schleife. Das ist fuer die meisten Leute
+   harmlos - fuer manche nicht: wer im Betriebssystem "Bewegung
+   reduzieren" gesetzt hat, tut das oft wegen Schwindel oder Migraene,
+   und eine Endlosschleife im Blickfeld ist genau der Fall.
+
+   CSS kann ein Video nicht anhalten - deshalb hier. Wir nehmen dem
+   Element autoplay weg und halten es an; das Standbild aus poster
+   bleibt stehen. Wer die Einstellung waehrend des Besuchs aendert,
+   wird gehoert (change am MediaQueryList), damit die Entscheidung in
+   beide Richtungen gilt.
+
+   Bewusst KEIN eigener Abspielknopf: er waere ein Bedienelement fuer
+   etwas, das nichts erklaert, was nicht auch danebensteht.
+   ------------------------------------------------------------------- */
+(function () {
+  var filme = document.querySelectorAll(".n-brief__film");
+  if (!filme.length || !window.matchMedia) return;
+
+  var frage = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  function richten() {
+    for (var i = 0; i < filme.length; i++) {
+      var f = filme[i];
+      if (frage.matches) {
+        f.removeAttribute("autoplay");
+        if (!f.paused) f.pause();
+      } else if (f.paused && f.readyState > 0) {
+        var v = f.play();
+        /* play() gibt ein Versprechen zurueck, das der Browser
+           ablehnen darf - etwa im Sparmodus. Das ist kein Fehler,
+           es bleibt dann eben das Standbild stehen. */
+        if (v && v.catch) v.catch(function () {});
+      }
+    }
+  }
+
+  richten();
+  if (frage.addEventListener) frage.addEventListener("change", richten);
+  else if (frage.addListener) frage.addListener(richten);
+})();

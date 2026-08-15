@@ -43,17 +43,46 @@
 {%- endcomment -%}
 
 <div class="n-brief">
-  <div class="n-brief__bild">
+  <div class="n-brief__bild"
+       style="background-image:url({{ 'a-film-napf-start.webp' | asset_url }})">
     {%- comment -%}
-      Das Bild zeigt die Flasche am Karabiner an einem Rucksack. Es
-      belegt genau die eine Aussage, die im Abschnitt "Mitnehmen"
-      steht - die angeformte Oese - und behauptet sonst nichts.
-      Der Hund laeuft weg von der Kamera und trinkt nicht: das Bild
-      zeigt eine Situation, keine Funktion.
+      DER FILM. Fuenfzehn Sekunden, hochkant, ohne Ton: Flasche auf der
+      Bank, Knopf gedrueckt und das Wasser laeuft in den Napf, Hund
+      trinkt, Flasche am Karabiner. Er zeigt genau die vier Dinge, die
+      der Shop behauptet - und keines mehr.
+
+      ER IST ERZEUGT, NICHT GEFILMT. Die Flasche ist aus dem echten
+      Lieferantenfoto nachgebaut und stimmt im Detail; Hund, Mensch
+      und Weg sind es nicht. Deshalb steht im Alternativtext
+      "Kurzfilm" und nicht "Aufnahme" - und deshalb steht nirgends,
+      dass das ein Kunde gefilmt haette.
+
+      KEIN SCHWARZER KASTEN. Drei Vorkehrungen, alle noetig:
+      1  poster - das erste Einzelbild liegt als eigene Datei daneben
+         und wird sofort gezeigt, bevor ein Byte Video geladen ist.
+      2  muted, playsinline, autoplay - ohne diese drei startet
+         Safari auf dem iPhone nicht und zeigt eine leere Flaeche.
+      3  Ein Bild als Ersatzinhalt IM video-Element: wer den Codec
+         nicht abspielen kann, sieht das Standbild statt nichts.
+      Dazu liegt dasselbe Standbild als Hintergrund unter dem Video
+      (siehe n-nova.css) - falls der Browser das Element vor dem
+      ersten Bild schwarz malt.
+
+      Kein controls: der Film hat keinen Ton und laeuft in Schleife,
+      eine Leiste waere nur Ballast. Wer Bewegung abgestellt hat,
+      bekommt ihn angehalten - das erledigt n-nova.js.
     {%- endcomment -%}
-    <img src="{{ 'a-rucksack.webp' | asset_url }}"
-         alt="Die Trinkflasche hängt mit einem Karabiner an einem Rucksack, davor ein Hund auf einem Bergweg"
-         width="1044" height="909" loading="lazy" decoding="async">
+    <video class="n-brief__film"
+           poster="{{ 'a-film-napf-start.webp' | asset_url }}"
+           width="720" height="1280"
+           muted autoplay loop playsinline preload="metadata"
+           disablepictureinpicture
+           aria-label="Kurzfilm: Die Flasche steht auf einer Bank, ein Daumen drückt den Knopf, das Wasser läuft in den Napf, ein Hund trinkt daraus, danach hängt die Flasche am Karabiner an einem Rucksack.">
+      <source src="{{ 'a-film-napf.mp4' | asset_url }}" type="video/mp4">
+      <img src="{{ 'a-film-napf-start.webp' | asset_url }}"
+           alt="Die Trinkflasche mit dem offenen Napf steht auf einer Holzbank, daneben eine Leine und ein Rucksack"
+           width="720" height="1280" loading="lazy" decoding="async">
+    </video>
   </div>
 
   <div class="n-brief__text">

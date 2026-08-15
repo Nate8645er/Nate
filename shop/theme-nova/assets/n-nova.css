@@ -2655,11 +2655,33 @@ body:has(.n-leiste.n-an) .n-chat       { bottom: calc(84px + env(safe-area-inset
 }
 @media (min-width: 880px) { .n-brief { grid-template-columns: 1.05fr .95fr; } }
 
+/* Der Film ist hochkant, 9:16. Ungebremst waere er in einer 480px
+   breiten Spalte 850 Pixel hoch und wuerde den Abschnitt erschlagen.
+   Deshalb bekommt er eine feste Hoechstbreite und steht mittig: so
+   liest sich das Hochformat als Absicht und nicht als Unfall.
+
+   Das Seitenverhaeltnis steht im CSS, nicht nur am Element - damit
+   der Platz schon vor dem Laden reserviert ist und nichts springt.
+
+   background-color statt nichts: waehrend das Video laedt, malt
+   mancher Browser die Flaeche in seiner Grundfarbe. Panel statt
+   Schwarz. Das Standbild kommt zusaetzlich per poster und per
+   inline gesetztem background-image aus dem Snippet - eine CSS-Datei
+   kann asset_url nicht aufloesen. */
 .n-brief__bild {
   border-radius: var(--n-rund-gross); overflow: hidden;
-  background: var(--n-panel); margin: 0;
+  background: var(--n-panel) center center / cover no-repeat;
+  margin: 0 auto;
+  width: 100%; max-width: 320px;
+  aspect-ratio: 9 / 16;
 }
-.n-brief__bild img { width: 100%; height: auto; display: block; }
+@media (min-width: 880px) { .n-brief__bild { max-width: 340px; } }
+
+.n-brief__bild img,
+.n-brief__film {
+  display: block; width: 100%; height: 100%;
+  object-fit: cover; background: transparent;
+}
 
 .n-brief__form { margin-top: 1.4rem; }
 
