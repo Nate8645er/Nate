@@ -148,9 +148,24 @@
           {%- comment -%}
             Die Auslauffrage steht am Kaufknopf, nicht versteckt weiter
             unten. Wortlaut unveraenderlich.
+
+            SIE STEHT JETZT OFFEN - 15.8.2026, nach einem Blick auf die
+            gerenderte Seite.
+
+            Vorher war das ein zugeklapptes details ohne jedes Zeichen,
+            dass man es aufklappen kann: ein grauer Kasten mit der
+            Zeile "Was wir ueber diese Flasche nicht wissen" und
+            darunter nichts. Das ist die schlechteste von drei
+            Moeglichkeiten - der Kasten WECKT den Zweifel und
+            beantwortet ihn nicht. Wer nicht merkt, dass er sich
+            oeffnet, geht mit "die wissen da was nicht" weg.
+
+            Fuenf Zeilen direkt am Kaufknopf sind der Preis dafuer,
+            dass die Antwort auch ankommt. Zuklappen geht weiterhin -
+            das Zeichen dafuer steht jetzt sichtbar daneben.
           {%- endcomment -%}
-          <details class="a-offen">
-            <summary>Was wir über diese Flasche nicht wissen</summary>
+          <details class="a-offen" open>
+            <summary>Was wir über diese Flasche nicht wissen<span class="a-offen__zeichen" aria-hidden="true"></span></summary>
             <p>
               Wir haben keine schriftliche Zusicherung des Lieferanten, dass
               sie unter allen Umständen dicht ist – deshalb behaupten wir es
@@ -202,7 +217,48 @@
       <span class="n-auge">Beschreibung</span>
       <h2 class="a-titel" style="font-size:clamp(1.6rem,3.6vw,2.2rem)">Im Detail</h2>
     </div>
-    <div class="a-text" data-auf="klein">{{ product.description }}</div>
+    {%- comment -%}
+      DER FILM STEHT NEBEN DEM TEXT - 15.8.2026.
+
+      Die Beschreibung stand allein in einer 33 rem breiten Spalte;
+      rechts daneben blieb auf einem grossen Bildschirm die halbe
+      Seite leer. Die schmale Spalte ist fuer den Text RICHTIG - so
+      liest man Fliesstext. Falsch war nur, dass daneben nichts
+      stand.
+
+      Jetzt laeuft dort der Film: Knopf druecken, Wasser laeuft in
+      den Napf, Hund trinkt. Er zeigt genau das, was der Absatz
+      danebenschreibt - und ist damit an dieser Stelle Beleg, nicht
+      Schmuck.
+
+      ER IST ERZEUGT, NICHT GEFILMT. Dasselbe gilt hier wie im
+      Briefkasten der Startseite: die Flasche ist aus dem echten
+      Lieferantenfoto nachgebaut, Hund und Mensch sind es nicht.
+      Deshalb steht im Alternativtext "Kurzfilm".
+
+      Kein schwarzer Kasten: poster, muted, playsinline, autoplay und
+      ein img als Ersatzinhalt - die Begruendung im Einzelnen steht
+      in snippets/n-briefkasten.liquid und wird hier nicht wiederholt.
+      Angehalten wird er bei reduzierter Bewegung; das erledigt
+      n-nova.js fuer beide Stellen.
+    {%- endcomment -%}
+    <div class="a-detail">
+      <div class="a-text" data-auf="klein">{{ product.description }}</div>
+      <div class="a-detail__film" data-auf="klein"
+           style="background-image:url({{ 'a-film-napf-start.webp' | asset_url }})">
+        <video class="n-brief__film"
+               poster="{{ 'a-film-napf-start.webp' | asset_url }}"
+               width="720" height="1280"
+               muted autoplay loop playsinline preload="none"
+               disablepictureinpicture
+               aria-label="Kurzfilm: Ein Daumen drückt den Knopf, das Wasser läuft in den Napf, ein Hund trinkt daraus.">
+          <source src="{{ 'a-film-napf.mp4' | asset_url }}" type="video/mp4">
+          <img src="{{ 'a-film-napf-start.webp' | asset_url }}"
+               alt="Die Trinkflasche mit dem offenen Napf steht auf einer Holzbank"
+               width="720" height="1280" loading="lazy" decoding="async">
+        </video>
+      </div>
+    </div>
   </div>
 </section>
 {%- endif -%}
