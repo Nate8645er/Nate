@@ -2286,27 +2286,52 @@ html.n-sperre, html.n-sperre body { overflow: hidden; }
 
 .n-schritte li { display: grid; gap: .3rem; align-content: start; }
 
+/* DIE VIER SCHRITTE, 15.8.2026 ANGEHOBEN.
+
+   Vorher: quadratische Bilder, auf einem 390er Handy gemessen
+   169 x 169 px, darunter vier Zeilen Text. Das las sich wie ein
+   Standard-Kachelraster - vier gleich grosse Quadrate, in denen das
+   Produkt klein in der Mitte schwimmt.
+
+   Drei Aenderungen, alle am Verhaeltnis, keine am Inhalt:
+
+   1  HOCHFORMAT 4:5 STATT QUADRAT. Dieselbe Breite, aber 211 statt
+      169 px hoch. Das Produkt ist hochkant - ein quadratischer
+      Ausschnitt schneidet oben und unten Luft mit, die niemand
+      braucht. Ein Viertel mehr Bildflaeche, ohne ein Pixel mehr
+      Breite.
+
+   2  DIE NUMMER WIRD GROSS UND WANDERT AUS DEM BILD. Vorher eine
+      26px-Pille auf dem Foto, die aussah wie ein Zaehler. Jetzt eine
+      grosse Ziffer neben der Ueberschrift, in der Akzentfarbe. Sie
+      ordnet die Schritte, statt sich zu verstecken.
+
+   3  MEHR LUFT ZWISCHEN DEN ZEILEN. Bei vier Kacheln in zwei Reihen
+      war der Abstand nach unten derselbe wie zur Seite; damit
+      verschmolzen die Reihen. */
+.n-schritte { row-gap: clamp(1.8rem, 5vw, 2.4rem); }
+
 .n-schritte__bild {
-  position: relative; margin: 0 0 .55rem;
-  aspect-ratio: 1; overflow: hidden;
+  position: relative; margin: 0 0 .8rem;
+  aspect-ratio: 4 / 5; overflow: hidden;
   border-radius: var(--n-rund-gross);
   background: var(--n-panel);
 }
 .n-schritte__bild img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-/* Die Nummer sitzt IM Bild, nicht darueber. Eine eigene Zeile fuer
-   vier Ziffern kostet Hoehe und traegt nichts. */
-.n-schritte__zahl {
-  position: absolute; left: .6rem; top: .6rem;
-  width: 26px; height: 26px; border-radius: 999px;
-  display: grid; place-items: center;
-  background: rgb(255 255 255 / .92); color: var(--n-text);
-  font-size: .8125rem; font-weight: 700; line-height: 1;
-  box-shadow: 0 1px 3px rgb(17 17 17 / .16);
+/* Die Zeile aus Nummer und Titel. Die Ziffer traegt hier die
+   Ordnung, deshalb darf sie gross sein - sie ist das Einzige, was
+   ueberhaupt sagt, dass es eine Reihenfolge ist. */
+.n-schritte li b {
+  display: flex; align-items: baseline; gap: .5rem;
+  font-size: 1.0625rem; letter-spacing: -.015em;
 }
-
-.n-schritte li b { font-size: 1rem; letter-spacing: -.015em; }
-.n-schritte li span { font-size: .90625rem; line-height: 1.5; color: var(--n-sanft); }
+.n-schritte__zahl {
+  flex: none;
+  font-size: 1.375rem; font-weight: 800; line-height: 1;
+  color: var(--n-akzent); font-variant-numeric: tabular-nums;
+}
+.n-schritte li span { font-size: .9375rem; line-height: 1.5; color: var(--n-sanft); }
 
 /* ====================================================================
    FRAGEN-CHAT

@@ -2,16 +2,22 @@
   sections/n-start.liquid — LET'SDRINK NOVA, Startseite
   9.8.2026. Bauleitung.
 
-  AUFBAU (Stand 13.8.2026):
-    1 Hero -> 7 Anwendung -> 3+4 Problem/Loesung -> 10 FAQ
-    -> 11 Schluss
-  Anwendung und Problem/Loesung sind am 13.8.2026 getauscht worden:
-  der Beweis gehoert vor die Wiederholung. Begruendung steht beim
-  Abschnitt selbst.
-  Die Nummern 2, 5, 6, 8 und 9 sind bewusst leer und als Kommentar an
-  ihrer Stelle begruendet. Nicht kommentarlos wieder einfuegen.
-  Gemessen auf einem 390er Handy: 8975 px vorher, danach deutlich
-  kuerzer. Vier Abschnitte sagten dieselben vier Dinge.
+  AUFBAU (Stand 15.8.2026):
+    1 Hero -> 7 Anwendung -> 10 FAQ -> 11 Schluss
+  VIER Abschnitte. Die Nummern 2, 3, 4, 5, 6, 8 und 9 sind bewusst
+  leer und jeweils an ihrer Stelle als Kommentar begruendet. Nicht
+  kommentarlos wieder einfuegen.
+
+  15.8.2026, auf Wunsch des Inhabers: zu viel Text.
+  Gezaehlt und dann geschnitten - nicht nach Gefuehl gekuerzt:
+    "Eine Hand" stand VIERMAL im sichtbaren Text, jetzt zweimal
+    (Ueberschrift und ein Alternativtext, der ein Bild beschreibt).
+    "laeuft zurueck" stand DREIMAL, jetzt einmal.
+    175 Woerter auf der Startseite, jetzt 130.
+  Drei Schnitte: der dreizeilige Vorspann im Hero auf eine Zeile, die
+  Ueberschrift der Anwendung, und der ganze Abschnitt "Der
+  Unterschied" - er wiederholte alle vier seiner Aussagen von
+  woanders.
 
   WARUM HIER KEINE BEWERTUNGEN STEHEN
   Das urspruengliche Briefing verlangte Kundenbewertungen, Sterne und
@@ -281,10 +287,20 @@
         ist, nicht am Anfang, wo sie noch benannt werden muss.
       {%- endcomment -%}
       <h1 class="n-riese" data-auf>Trinkflasche mit Napf. <em>Eine Hand reicht.</em></h1>
+      {%- comment -%}
+        DER VORSPANN WAR DREI ZEILEN LANG UND SAGTE NICHTS NEUES.
+
+        Gezaehlt auf der Startseite: "Eine Hand" stand viermal im
+        sichtbaren Text, "laeuft zurueck" dreimal. Zwei davon steckten
+        allein in diesem Absatz - er wiederholte die Ueberschrift
+        direkt darueber und Schritt 3 der Anwendung weiter unten.
+
+        Der Vorspann sagt jetzt nur, was die Ueberschrift NICHT sagt:
+        die Menge und fuer welches Tier. Beides stand vorher erst weit
+        unten oder in einer grauen Kleinschrift.
+      {%- endcomment -%}
       <p class="n-lead" data-auf="klein">
-        Knopf drücken, der Napf füllt sich. Aufrichten, und das übrige
-        Wasser läuft zurück in die Flasche. Eine Hand reicht – die Leine
-        bleibt in der anderen.
+        Knopf drücken, dein Tier trinkt. 550 ml, für Hund und Katze.
       </p>
 
       <form method="post" action="{{ routes.cart_add_url }}" id="kaufen" data-kaufform data-auf="klein">
@@ -642,7 +658,14 @@
   <div class="n-huelle">
     <div class="n-kopfz n-kopfz--mitte" data-auf>
       <span class="n-auge">Anwendung</span>
-      <h2 class="n-titel">Drei Sekunden, eine Hand.</h2>
+      {%- comment -%}
+        Hier stand "Drei Sekunden, eine Hand." - das dritte "eine Hand"
+        auf derselben Seite, nach der Ueberschrift ganz oben und der
+        Hakenliste weiter unten. Die Ueberschrift eines Abschnitts, der
+        vier Schritte zeigt, muss nicht auch noch behaupten, wie
+        einfach es ist. Das zeigen die Schritte selbst.
+      {%- endcomment -%}
+      <h2 class="n-titel">So funktioniert sie.</h2>
     </div>
 
     {%- comment -%}
@@ -680,7 +703,14 @@
     {%- endcomment -%}
     <ol class="n-schritte" data-staffel>
       {%- assign schritt_titel = 'Knopf drücken|Trinken lassen|Aufrichten|Mitnehmen' | split: '|' -%}
-      {%- assign schritt_text = 'Ein Druck, und das Wasser läuft in den Napf. Du hältst nur die Flasche.|Der Napf ist offen wie eine Schale. Die Leine bleibt in der anderen Hand.|Das übrige Wasser läuft zurück in die Flasche.|Oben am Napf sitzt eine angeformte Öse – für ein Band oder einen Karabiner.' | split: '|' -%}
+      {%- comment -%}
+        Die vier Texte sind am 15.8.2026 gekuerzt worden. Vorher
+        brauchte jeder vier Zeilen, wodurch die Kacheln ungleich hoch
+        standen und der Abschnitt wie eine Textwand mit Bildern wirkte.
+        Jede Aussage steht weiterhin vollstaendig da - nur ohne den
+        zweiten Satz, der jeweils wiederholte, was das Bild zeigt.
+      {%- endcomment -%}
+      {%- assign schritt_text = 'Ein Druck, und das Wasser läuft in den Napf.|Der Napf ist offen wie eine Schale.|Das übrige Wasser läuft zurück in die Flasche.|Angeformte Öse für Band oder Karabiner.' | split: '|' -%}
       {%- assign schritt_alt = 'Nahaufnahme des Knopfes mit Pfotenzeichen und seinen beiden Stellungen|Eine Hand hält die Flasche waagrecht, der offene Napf zeigt zur Seite|Die Flasche steht aufrecht, der Napf ist leer, das Wasser ist zurück in der Flasche|Nahaufnahme der angeformten Öse oben am Napf' | split: '|' -%}
       {%- for i in (0..3) -%}
         <li data-auf="klein" style="--nr:{{ i }}">
@@ -688,9 +718,8 @@
             <img src="{{ 'a-schritt-' | append: forloop.index | append: '.webp' | asset_url }}"
                  alt="{{ schritt_alt[i] }}"
                  width="900" height="900" loading="lazy" decoding="async">
-            <span class="n-schritte__zahl" aria-hidden="true">{{ forloop.index }}</span>
           </figure>
-          <b>{{ schritt_titel[i] }}</b>
+          <b><span class="n-schritte__zahl" aria-hidden="true">{{ forloop.index }}</span>{{ schritt_titel[i] }}</b>
           <span>{{ schritt_text[i] }}</span>
         </li>
       {%- endfor -%}
@@ -721,37 +750,37 @@
   da ist, gehoert es an diese Stelle.
 
 {%- endcomment -%}
-<section class="n-block" id="warum">
-  <div class="n-huelle">
     {%- comment -%}
       Hier stand die Nahaufnahme a-napf-nah.webp. Sie ist die beste
       Aufnahme, die wir vom offenen Napf haben, und steht deshalb jetzt
       bei Schritt 2 "Trinken lassen" - dort, wo genau dieser Napf
       erklaert wird. Zweimal dasselbe Bild auf einer Seite waere eines
       zu viel gewesen.
-
       Der Abschnitt traegt sich ohne Bild: er sagt einen einzigen Satz,
       und die drei Haken darunter sind die ganze Begruendung. Deshalb
       laeuft er jetzt einspaltig ueber die volle Breite statt als
       halbe Spalte neben einer Luecke.
     {%- endcomment -%}
-    <div class="n-zeig n-zeig--nurtext" data-auf>
-      <div class="n-zeig__text">
-        <span class="n-auge">Der Unterschied</span>
-        <h2 class="n-titel">Ein Teil statt zwei.</h2>
-        <p class="n-unter">
-          Napf und Flasche sind eins. Nichts zum Abschrauben, nichts,
-          was im Auto liegen bleibt.
-        </p>
-        <ul class="n-mini n-mini--gross">
-          <li>{{ haken }} Eine Hand reicht</li>
-          <li>{{ haken }} Restwasser läuft zurück</li>
-          <li>{{ haken }} Nichts Nasses im Rucksack</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
+    {%- comment -%}
+      DER GANZE ABSCHNITT "DER UNTERSCHIED" IST ENTFERNT.
+      15.8.2026, auf Wunsch des Inhabers: zu viel Text auf der
+      Startseite.
+      Er war die groesste Wiederholung der Seite. Jede seiner vier
+      Aussagen stand woanders schon:
+        "Ein Teil statt zwei" / "Napf und Flasche sind eins"
+             -> die Ueberschrift oben heisst "Trinkflasche mit Napf",
+                und die vier Anwendungsschritte zeigen genau das.
+        "Eine Hand reicht"
+             -> steht wortgleich in der Ueberschrift ganz oben.
+        "Restwasser laeuft zurueck"
+             -> ist Schritt 3 der Anwendung, direkt darueber.
+        "Nichts Nasses im Rucksack"
+             -> war ausserdem die einzige Aussage der Seite, die dem
+                Auslauf-Wortlaut in der Frageliste nahekam. Sie ist
+                nicht belegt und faellt ersatzlos weg.
+      Gezaehlt: 30 Woerter und eine ganze Bildschirmhoehe zwischen
+      Anwendung und Frageliste, ohne eine einzige neue Auskunft.
+    {%- endcomment -%}
 
 {%- comment -%}
   ABSCHNITT 5 (PRODUKTVORTEILE) IST ENTFERNT.
