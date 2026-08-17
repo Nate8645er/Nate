@@ -1045,7 +1045,7 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 .n-lade__leer { text-align: center; padding: 3rem 1rem; color: var(--n-sanft); }
 
 /* =====================================================================
-   MITLAUFENDE KAUFLEISTE (Handy)
+   MITLAUFENDE KAUFLEISTE — SEIT DEM 15.8.2026 AUCH AM SCHREIBTISCH
    ===================================================================== */
 .n-leiste {
   position: fixed; inset-inline: 0; bottom: 0; z-index: 80;
@@ -1066,7 +1066,55 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
                     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .n-leiste__text span { font-size: .8125rem; color: var(--n-sanft); }
 .n-leiste .n-knopf { margin-left: auto; flex: none; }
-@media (min-width: 940px) { .n-leiste { display: none; } }
+/* HIER STAND: @media (min-width: 940px) { .n-leiste { display: none; } }
+
+   Die Leiste war eine reine Handy-Loesung, weil es am Schreibtisch
+   den Schlussblock als untersten Kaufpunkt gab. Der Schlussblock ist
+   am 15.8.2026 entfallen - damit gab es auf einem 1280er Bildschirm
+   unterhalb des Heros KEINEN Kaufweg mehr. Gemessen: drei
+   Kaufknoepfe im Markup, aber die Leiste mit Hoehe 0.
+
+   Also laeuft sie jetzt auf jeder Breite mit. Am Schreibtisch sitzt
+   sie nicht ueber die ganze Breite, sondern als Insel rechts unten -
+   eine volle Leiste waere dort ein Werbebalken, eine Insel ist ein
+   Angebot. Die Kaufmoeglichkeit ist damit ueberall genau einen Klick
+   entfernt, ohne dass etwas blinkt oder zaehlt. */
+@media (min-width: 940px) {
+  .n-leiste {
+    /* Gleicher Randabstand wie der Chatknopf, damit beide rechts
+       buendig stehen - und hoch genug, dass die Insel ueber dem Knopf
+       sitzt statt auf ihm: sein Abstand + seine 46 Pixel Hoehe + ein
+       Finger breit Luft. Gemessen am 17.8.2026: vorher ueberlappten
+       sich beide auf 1280 und auf 1600 Pixel Breite. */
+    inset-inline: auto clamp(.9rem, 3vw, 1.6rem);
+    bottom: calc(clamp(.9rem, 3vw, 1.6rem) + 58px + env(safe-area-inset-bottom));
+    width: min(420px, calc(100vw - 3rem));
+    border: 1px solid var(--n-glas-rand);
+    border-radius: var(--n-rund-gross);
+    padding: .75rem 1rem;
+    box-shadow: 0 14px 40px rgb(17 17 17 / .14);
+    transform: translateY(calc(100% + 2rem));
+  }
+  .n-leiste.n-an { transform: none; }
+  /* Die Huelle im Inneren braucht am Schreibtisch keine eigene
+     Seitenbegrenzung mehr - die Insel ist selbst schon schmal. */
+  .n-leiste .n-huelle { width: 100%; }
+}
+
+/* HIER STAND EIN AUSWEICHEN DES CHATKNOPFES nach oben, solange die
+   Insel laeuft. Es ist wieder weg, und zwar aus zwei Gruenden.
+
+   Erstens hat es nicht gegriffen: weiter unten in dieser Datei steht
+   dieselbe Regel fuer das Handy mit einem festen Wert von 84 Pixeln.
+   Gleiche Spezifitaet, spaetere Zeile - die gewinnt. Der Knopf stand
+   also auf 84 statt auf den hier gedachten 112 Pixeln und lag
+   gemessen auf der Insel.
+
+   Zweitens ist Ausweichen hier der falsche Weg. Am Schreibtisch ist
+   Platz genug; die Insel legt sich einfach ueber den Knopf statt
+   neben ihn (siehe bottom-Wert oben). Damit haengt am Schreibtisch
+   nichts mehr an :has() - das kennen aeltere Safari-Versionen nicht,
+   und ohne :has() waere der Knopf sonst unter der Insel begraben. */
 
 /* =====================================================================
    PRODUKTSEITE
@@ -2434,9 +2482,18 @@ html.n-sperre, html.n-sperre body { overflow: hidden; }
 .n-chat__auf:active { transform: none; }
 /* Solange die Kaufleiste laeuft, rueckt der Knopf ueber sie.
    Kein Nachbar-Selektor: die Leiste steht im Seitencode NACH dem
-   Knopf, ein Tilde-Selektor greift deshalb nicht. */
-body:has(.n-leiste.n-an) .n-chat__auf { bottom: calc(84px + env(safe-area-inset-bottom)); }
-body:has(.n-leiste.n-an) .n-chat       { bottom: calc(84px + env(safe-area-inset-bottom)); }
+   Knopf, ein Tilde-Selektor greift deshalb nicht.
+
+   NUR UNTERHALB VON 940 PIXELN. Dort geht die Leiste ueber die volle
+   Breite und der Knopf muesste sonst auf ihr liegen. Am Schreibtisch
+   ist die Leiste eine schmale Insel, die selbst ueber dem Knopf
+   sitzt - dort darf er stehen bleiben. Ohne diese Grenze schob die
+   Regel den Knopf am Schreibtisch auf 84 Pixel hoch, mitten in die
+   Insel hinein. */
+@media (max-width: 939px) {
+  body:has(.n-leiste.n-an) .n-chat__auf { bottom: calc(84px + env(safe-area-inset-bottom)); }
+  body:has(.n-leiste.n-an) .n-chat       { bottom: calc(84px + env(safe-area-inset-bottom)); }
+}
 
 .n-chat {
   position: fixed; z-index: 99;

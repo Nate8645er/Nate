@@ -2,11 +2,18 @@
   sections/n-start.liquid — LET'SDRINK NOVA, Startseite
   9.8.2026. Bauleitung.
 
-  AUFBAU (Stand 15.8.2026, zweite Fassung des Tages):
-    1 Hero -> 7 Anwendung -> 9b Band -> 10b Briefkasten -> 11 Schluss
-  FUENF Abschnitte. Die Nummern 2, 3, 4, 5, 6, 8, 9 und 10 sind
+  AUFBAU (Stand 15.8.2026, dritte Fassung des Tages):
+    1 Hero -> 7 Anwendung -> 9b Band -> 10b Briefkasten
+  VIER Abschnitte. Die Nummern 2, 3, 4, 5, 6, 8, 9, 10 und 11 sind
   bewusst leer und jeweils an ihrer Stelle als Kommentar begruendet.
   Nicht kommentarlos wieder einfuegen.
+
+  DER LETZTE KAUFKNOPF DER SEITE IST JETZT DIE MITLAUFENDE LEISTE.
+  Der Schlussblock mit dem dunklen Bild ist am 15.8.2026 auf Wunsch
+  entfallen; mit ihm der unterste feste Kaufknopf. Wer diese Datei
+  spaeter aendert, muss wissen: die Leiste am unteren Bildschirmrand
+  ist damit der EINZIGE Kaufweg unterhalb des Heros. Sie darf nicht
+  ohne Ersatz verschwinden.
 
   WAS AUF DIESE SEITE GEHOERT - UND WAS NICHT.
   Auf Wunsch des Inhabers: "in start seite nur das was zur start
@@ -950,102 +957,29 @@
 </section>
 
 
-{%- comment -%} =========================================== 11 · SCHLUSS {%- endcomment -%}
-<section class="n-block" style="padding-top:0">
-  <div class="n-huelle">
-    {%- comment -%}
-      Der Schlussblock war eine leere graue Karte - der letzte Kaufpunkt
-      der Seite, und ausgerechnet der hatte kein Bild. Jetzt traegt er
-      eine dunkle Aufnahme des Produkts.
+{%- comment -%} ========================== 11 · SCHLUSS - ENTFERNT {%- endcomment -%}
+{%- comment -%}
+  DER DUNKLE SCHLUSSBLOCK IST WEG - 15.8.2026, auf Wunsch des
+  Inhabers nach einem Bildschirmfoto vom Handy ("das komplett
+  entfernen").
 
-      Zwei Dateien, nicht eine: die breite Fassung ist quer und wuerde
-      auf dem Handy so beschnitten, dass von der Flasche kaum etwas
-      uebrig bleibt. Ab 760 px uebernimmt sie, darunter laeuft die
-      hochkante.
+  Er bestand aus einer dunklen Aufnahme des Produkts (zwei Dateien,
+  quer und hochkant), einem Schleier darueber, der Ueberschrift, einer
+  Zeile mit Versand und Rueckgabe und einem Kaufknopf.
 
-      Der Schleier darueber ist kein Schmuck. Die Schrift steht weiss
-      auf dem Bild, und ohne Abdunklung waere sie ueber den hellen
-      Stellen nicht mehr sicher lesbar.
-    {%- endcomment -%}
-    <div class="n-schluss n-schluss--bild" data-auf>
-      <picture class="n-schluss__bild" aria-hidden="true">
-        <source media="(min-width: 760px)" srcset="{{ 'a-schluss-breit.webp' | asset_url }}">
-        <img src="{{ 'a-schluss-hoch.webp' | asset_url }}" alt=""
-             width="900" height="1205" loading="lazy" decoding="async">
-      </picture>
-      <span class="n-schluss__schleier" aria-hidden="true"></span>
+  WAS DAMIT VERLOREN GEHT, damit es niemand suchen muss:
+    - der UNTERSTE Kaufknopf der Seite (form="kaufen")
+    - die beiden Bilder a-schluss-breit.webp und a-schluss-hoch.webp
+      werden von keiner Seite mehr benutzt. Sie liegen weiter im
+      Theme; Loeschen ist eine eigene Entscheidung.
 
-      {%- comment -%}
-        Der Text steht in einer eigenen Huelle. Die Breiten und die
-        Ausrichtung kommen aus dem CSS und nicht mehr aus style-Attributen:
-        auf dem Handy mittig ueber der Flasche, ab 760 px linksbuendig
-        neben ihr. Mit inline gesetzten Werten liesse sich das nicht
-        umschalten, weil ein style-Attribut jede Regel schlaegt.
-      {%- endcomment -%}
-      {%- comment -%}
-        HIER STAND "Hydration, die dein Haustier liebt."
+  ES BLEIBT EIN WEG ZU KAUFEN. Die mitlaufende Leiste am unteren
+  Bildschirmrand traegt denselben Knopf und steht auf der ganzen
+  Seite zur Verfuegung - gemessen auf 390 px: 69 Pixel hoch, immer
+  sichtbar. Ohne sie waere dieser Schnitt nicht vertretbar gewesen.
 
-        Zwei Dinge stimmten daran nicht. Erstens behauptet der Satz
-        etwas ueber das Tier des Kunden, das niemand geprueft hat -
-        es gibt null Bestellungen, also auch kein Tier, das irgendetwas
-        geliebt haette. Genau die Sorte Satz, die der ganze uebrige
-        Shop vermeidet.
-
-        Zweitens ist "Hydration" englisch und steht mitten in einem
-        Text, der sonst durchgehend deutsch und knapp ist.
-
-        Was jetzt dasteht, wiederholt die Ueberschrift ganz oben.
-        Das ist Absicht: der letzte Kaufpunkt soll nichts Neues
-        behaupten, sondern das bestaetigen, weswegen jemand
-        heruntergescrollt ist.
-
-        Die Zeile darunter nennt nur Belegtes: Versand, Rueckgabe,
-        Menge, Farben. Die Menge steht als Zahl, weil 550 ml eine
-        Produktangabe ist und keine Preisangabe - Preise kommen
-        weiterhin ausschliesslich aus Liquid.
-      {%- endcomment -%}
-      <div class="n-schluss__text">
-        <span class="n-auge">Bereit?</span>
-        <h2 class="n-titel">Eine Flasche, ein Napf. Eine Hand reicht.</h2>
-        <p class="n-unter">
-          550 ml, sechs Farben · Gratisversand in der Schweiz · 14 Tage Rückgabe
-        </p>
-      {%- comment -%}
-        DIESER KNOPF KAUFT JETZT WIRKLICH.
-
-        Er war ein Anker auf #kaufen, mit der Aufschrift "Farbe
-        waehlen". Die Begruendung dafuer lautete: hier unten sei keine
-        Farbe gewaehlt. Das stimmt nicht - eine Farbe ist IMMER
-        gewaehlt, sonst koennte die mitlaufende Leiste nicht kaufen,
-        und die tut es seit Wochen ueber genau denselben Weg.
-
-        Was der Anker in Wahrheit tat: er warf den Kunden nach sechs
-        Bildschirmen Argumenten vier Bildschirme nach oben, wo der
-        Kaufknopf erneut gesucht werden musste. Am UNTERSTEN Kaufpunkt
-        der Seite.
-
-        Das form-Attribut verbindet den Knopf mit dem Formular oben,
-        obwohl er ausserhalb steht - das ist Standard und funktioniert
-        auch ohne JavaScript. Die Beschriftung traegt data-knopftext
-        und wird mit der gewaehlten Menge nachgefuehrt, damit hier nie
-        ein anderer Betrag steht als der, der faellig wird.
-      {%- endcomment -%}
-      {%- comment -%}
-        "Frage stellen" stand hier und lag auf dem Handy quer ueber der
-        Flasche. Der Weg zur Frage ist ohnehin doppelt vorhanden: im
-        Menue und im Chat unten rechts. Am letzten Kaufpunkt der Seite
-        soll genau EIN Weg stehen.
-      {%- endcomment -%}
-      <div class="n-cta">
-        <button class="n-knopf" type="submit" form="kaufen"
-                {% unless v.available %}disabled{% endunless %}>
-          {%- if v.available -%}<span data-knopftext>In den Warenkorb · {{ v_ab | money }}</span>{%- else -%}Zurzeit nicht lieferbar{%- endif -%}
-        </button>
-      </div>
-      </div>
-    </div>
-  </div>
-</section>
+  Der Briefkasten davor ist jetzt der letzte Abschnitt der Seite.
+{%- endcomment -%}
 
 {% schema %}
 {

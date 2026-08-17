@@ -404,15 +404,54 @@
     });
   });
 
-  /* ---------- 7. Kaufleiste ----------------------------------------- */
+  /* ---------- 7. Kaufleiste -----------------------------------------
+     Die Leiste erscheint, sobald der Kaufknopf im Hero oben aus dem
+     Bild gescrollt ist - und verschwindet wieder, sobald er zurueck
+     ins Bild kommt. Sie ist auf der Startseite der einzige Kaufweg
+     unterhalb des Heros; wenn sie nicht auftaucht, gibt es dort
+     keinen.
+
+     WARUM NICHT NUR EIN INTERSECTIONOBSERVER (gemessen, 17.8.2026):
+     Der Beobachter allein hing an einem Rand von "0px 0px -100% 0px".
+     Das schrumpft den Beobachtungsbereich auf eine null Pixel hohe
+     Linie am oberen Bildrand. Springt die Seite in einem Zug ueber
+     diese Linie - Bild-ab-Taste, Sprungmarke, Mausrad mit Schwung,
+     wiederhergestellte Scrollposition -, dann ist der Anker vorher
+     und nachher "nicht drin": der Zustand aendert sich nicht, der
+     Rueckruf kommt nie, die Leiste bleibt aus. In der Messung war
+     genau das der Fall: in 100er-Schritten erschien sie, in
+     700er-Schritten auf dem Desktop nie.
+
+     Deshalb rechnet stelle() den Zustand aus der Ankerposition selbst
+     aus, und es gibt zwei Ausloeser: den Beobachter (billig, genau am
+     Rand) und einen Zuhoerer am Scrollen, der hoechstens einmal pro
+     Bild laeuft. Fehlt IntersectionObserver, traegt der Zuhoerer
+     allein. */
   var leiste = $("[data-leiste]");
   var anker  = $("[data-leiste-anker]");
-  if (leiste && anker && "IntersectionObserver" in W) {
-    new IntersectionObserver(function (ein) {
-      ein.forEach(function (e) {
-        leiste.classList.toggle("n-an", !e.isIntersecting && e.boundingClientRect.top < 0);
-      });
-    }, { rootMargin: "0px 0px -100% 0px" }).observe(anker);
+  if (leiste && anker) {
+    var leisteLaeuft = false;
+
+    var stelle = function () {
+      leisteLaeuft = false;
+      // Oberkante des Ankers ueber dem Bildrand = Knopf ist weg.
+      leiste.classList.toggle("n-an", anker.getBoundingClientRect().bottom < 0);
+    };
+
+    var bittestelle = function () {
+      if (leisteLaeuft) return;
+      leisteLaeuft = true;
+      (W.requestAnimationFrame || setTimeout)(stelle, 16);
+    };
+
+    if ("IntersectionObserver" in W) {
+      new IntersectionObserver(bittestelle, {
+        rootMargin: "0px 0px -100% 0px"
+      }).observe(anker);
+    }
+    W.addEventListener("scroll", bittestelle, { passive: true });
+    W.addEventListener("resize", bittestelle, { passive: true });
+    stelle();
   }
 
   // Korbzahl beim Laden angleichen (Zurueck-Taste, Cache)
