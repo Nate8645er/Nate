@@ -1483,8 +1483,15 @@ html:not(.n-js) [data-auf] { opacity: 1; transform: none; }
 @media (min-width: 940px) { .n-fuss { padding-bottom: 3rem; } }
 .n-fuss__raster { display: grid; gap: 2rem; margin-bottom: 2.2rem; }
 @media (min-width: 760px) { .n-fuss__raster { grid-template-columns: 1.4fr 1fr 1fr; } }
-.n-fuss h4 { margin: 0 0 .9rem; font-size: .75rem; letter-spacing: .12em;
-             text-transform: uppercase; color: var(--n-text); }
+/* Die Fussueberschriften sind seit dem 17.8.2026 h2 statt h4 - der
+   Sprung von h1 auf h4 riss im Vorleseprogramm eine Luecke. Das
+   AUSSEHEN aendert sich dadurch nicht: der Rang steht fuer die
+   Gliederung, die Groesse steht hier. h4 bleibt mit aufgefuehrt,
+   falls irgendwo noch eine alte Fassung liegt. */
+.n-fuss h2, .n-fuss h4 {
+  margin: 0 0 .9rem; font-size: .75rem; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--n-text); font-weight: 700;
+}
 .n-fuss ul { margin: 0; padding: 0; list-style: none; display: grid; gap: .55rem; }
 .n-fuss a { text-decoration: none; }
 .n-fuss a:hover { color: var(--n-text); }

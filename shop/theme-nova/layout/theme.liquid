@@ -324,9 +324,21 @@
         Let'sDrink
       </a>
 
+      {%- comment -%}
+        "Warum wir" zeigte auf die Startseite mit dem Anker warum.
+        Diesen Ankerpunkt gibt es seit dem Umbau nicht mehr -
+        am 17.8.2026 nachgezaehlt: id="warum" kommt auf der
+        ausgelieferten Startseite null Mal vor. Der Link landete also
+        oben auf der Startseite und sprang nirgendwohin.
+
+        Er zeigt jetzt auf die Seite "Ueber uns". Die traegt genau das,
+        was der Link verspricht - wer hier schreibt und was man von ihm
+        erwarten kann - und war vorher aus dem ganzen Shop heraus nicht
+        erreichbar.
+      {%- endcomment -%}
       <nav class="n-nav" aria-label="Hauptnavigation">
         <a href="{{ kaufziel }}">Shop</a>
-        <a href="{{ routes.root_url }}#warum">Warum wir</a>
+        <a href="/pages/ueber-letsdrink">Warum wir</a>
         <a href="/pages/haeufige-fragen">FAQ</a>
         <a href="/pages/contact">Kontakt</a>
       </nav>
@@ -411,7 +423,7 @@
       einmal in der Zeile darunter im Fuss. Weg damit.
     {%- endcomment -%}
     <div class="n-mnav__liste">
-      <a class="n-mnav__z" style="--i:0" href="{{ routes.root_url }}#warum">Warum wir</a>
+      <a class="n-mnav__z" style="--i:0" href="/pages/ueber-letsdrink">Warum wir</a>
       <a class="n-mnav__z" style="--i:1" href="/pages/haeufige-fragen">Häufige Fragen</a>
       <a class="n-mnav__z" style="--i:2" href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a>
       <a class="n-mnav__z" style="--i:3" href="/pages/contact">Kontakt</a>
@@ -653,17 +665,31 @@
             in Rapperswil-Jona.
           </p>
         </div>
+        {%- comment -%}
+          ZWEI TOTE VERWEISE UND EIN UEBERSPRUNGENER RANG.
+
+          "Warum wir" zeigte auf #warum, "Haeufige Fragen" auf #fragen.
+          Beide Ankerpunkte sind mit dem Umbau der Startseite entfallen;
+          am 17.8.2026 nachgezaehlt kommen sie im ausgelieferten HTML
+          null Mal vor. Wer im Fuss auf "Haeufige Fragen" tippte, landete
+          oben auf der Startseite und fand nichts.
+
+          Und die beiden Ueberschriften waren h4 in einer Seite, deren
+          hoechste Ueberschrift h1 oder h2 ist. Ein Vorleseprogramm, das
+          nach Ueberschriften springt, meldet dabei eine Luecke - Rang 3
+          fehlt. Gemessen auf allen dreizehn Seiten. Jetzt h2.
+        {%- endcomment -%}
         <div>
-          <h4>Shop</h4>
+          <h2>Shop</h2>
           <ul>
             <li><a href="{{ kaufziel }}">Trinkflasche</a></li>
-            <li><a href="{{ routes.root_url }}#warum">Warum wir</a></li>
-            <li><a href="{{ routes.root_url }}#fragen">Häufige Fragen</a></li>
+            <li><a href="/pages/ueber-letsdrink">Warum wir</a></li>
+            <li><a href="/pages/haeufige-fragen">Häufige Fragen</a></li>
             <li><a href="{{ routes.cart_url }}">Warenkorb</a></li>
           </ul>
         </div>
         <div>
-          <h4>Rechtliches</h4>
+          <h2>Rechtliches</h2>
           <ul>
             <li><a href="/pages/versand-und-rueckgabe">Versand &amp; Rückgabe</a></li>
             <li><a href="/pages/contact">Kontakt</a></li>
