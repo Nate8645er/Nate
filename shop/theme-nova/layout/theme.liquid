@@ -48,14 +48,31 @@
 
   {%- capture t -%}{% if ist_start %}Trinkflasche mit Napf für Hund & Katze – 550 ml | Let'sDrink{% else %}{{ page_title }} – Let'sDrink{% endif %}{%- endcapture -%}
   {%- capture b -%}{% if page_description %}{{ page_description }}{% else %}Knopf drücken, der Napf füllt sich. Aufrichten, und das übrige Wasser läuft zurück. 550 ml, sechs Farben. Gratisversand in der Schweiz.{% endif %}{%- endcapture -%}
+  {%- comment -%}
+    DIE BESCHREIBUNG WIRD GEKUERZT.
+
+    Ohne eigene SEO-Beschreibung nimmt Shopify den Seitentext. Am
+    17.8.2026 gemessen kamen dabei heraus: AGB 320 Zeichen, Impressum
+    324, Datenschutz 320, Versand 319, Ueber uns 319, FAQ 278. Google
+    schneidet bei rund 158 ab - der Auszug brach also mitten im Satz
+    weg, und zwar an einer Stelle, die niemand gewaehlt hat.
+
+    Zwei Filter hintereinander: truncatewords schneidet an einer
+    Wortgrenze, truncate ist die harte Bremse dahinter, falls die
+    Woerter lang sind. Deutsch hat lange Woerter.
+
+    Der bessere Weg bleibt, je Seite eine eigene Beschreibung zu
+    setzen (Shopify, Seite bearbeiten, Suchmaschinen-Eintrag). Dann
+    greift diese Kuerzung gar nicht erst.
+  {% endcomment %}
   <title>{{ t | strip | escape }}</title>
-  <meta name="description" content="{{ b | strip_html | strip | escape }}">
+  <meta name="description" content="{{ b | strip_html | strip | truncatewords: 22, '' | truncate: 158, '…' | escape }}">
   <link rel="canonical" href="{{ canonical_url }}">
   <meta name="robots" content="{% if template.name == 'cart' or template.name == 'search' or template.name == '404' %}noindex,follow{% else %}index,follow,max-image-preview:large{% endif %}">
 
   <meta property="og:type" content="{% if template.name == 'product' %}product{% else %}website{% endif %}">
   <meta property="og:title" content="{{ t | strip | escape }}">
-  <meta property="og:description" content="{{ b | strip_html | strip | escape }}">
+  <meta property="og:description" content="{{ b | strip_html | strip | truncatewords: 22, '' | truncate: 158, '…' | escape }}">
   <meta property="og:url" content="{{ canonical_url }}">
   {%- if lp != empty -%}
     <meta property="og:image" content="https:{{ 'a-flasche-tuerkis.webp' | asset_url | remove: 'https:' }}">
