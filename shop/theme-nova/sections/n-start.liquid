@@ -166,8 +166,14 @@
     {%- endcomment -%}
     <div class="n-buehne n-buehne--grund{% if panel == 'hell' %} n-hell{% endif %}" data-buehne>
       <span class="n-grund" aria-hidden="true">
+        {%- comment -%}
+          Die Masse sind die ECHTEN der Datei (1170 x 650). Vorher
+          stand hier 1600 x 1067, was es nie war; das CSS zieht das
+          Bild ohnehin auf die volle Buehne, aber ein falsches
+          Seitenverhaeltnis reserviert beim Laden den falschen Platz.
+        {%- endcomment -%}
         <img src="{{ 'a-buehne.webp' | asset_url }}" alt=""
-             width="1600" height="1067" fetchpriority="high" decoding="async">
+             width="1170" height="650" fetchpriority="high" decoding="async">
       </span>
       <span class="n-ring n-ring--2" aria-hidden="true"></span>
       <span class="n-ring" aria-hidden="true"></span>
@@ -205,52 +211,86 @@
            aria-roledescription="Farbgalerie"
            aria-label="{{ lp.variants.size }} Farben – wischen oder Pfeiltasten benutzen">
         {%- comment -%}
-          DIE GALERIE IST GEDREHT, NICHT UMSORTIERT.
+          DIE GALERIE IST ENDLOS - DREI RUNDEN STATT EINER GEDREHTEN.
 
-          Gemessen: in der Mitte der Reihe sieht man drei Flaschen, am
-          Anfang nur zwei - links von der ersten Farbe ist nichts. Statt
-          die Vorauswahl zu aendern (das waere eine Entscheidung ueber
-          das Sortiment, nicht ueber das Aussehen), drehen wir die
-          Reihenfolge der ANZEIGE so, dass die gewaehlte Farbe auf
-          Position 3 von 6 liegt. Damit stehen immer zwei Nachbarn
-          bereit. Die Farbpunkte unter dem Preis behalten die
-          urspruengliche Reihenfolge, und welche Variante im
-          Kaufformular steht, aendert sich nicht.
+          HIER STAND VORHER eine gedrehte Einzelrunde: die sechs Farben
+          einmal, aber so umsortiert, dass die gewaehlte in der Mitte
+          lag. Das loeste ein Problem (links von der ersten Farbe war
+          nichts zu sehen) und schuf ein groesseres, am 17.8.2026
+          gemessen: die Reihe hatte trotzdem zwei Enden. Von der
+          Startfarbe aus kam man nach rechts drei Farben weit und dann
+          nicht mehr weiter - Wischen tat nichts, die Pfeile wurden
+          blass. Zwei der sechs Farben waren in dieser Richtung
+          ueberhaupt nicht erreichbar. Genau das ist die Rueckmeldung
+          "das Wischen ist verbuggt".
+
+          Jetzt stehen die sechs Farben DREIMAL in der Spur, in ihrer
+          natuerlichen Reihenfolge. Man startet in der mittleren Runde;
+          wischt man ueber deren Rand hinaus, springt die Galerie nach
+          dem Anhalten unsichtbar eine Runde zurueck in die Mitte
+          (n-nova.js, Abschnitt 8). Der Sprung ist genau eine
+          Rundenbreite gross, also steht danach dieselbe Flasche an
+          derselben Stelle - man sieht nichts davon und kann in beide
+          Richtungen endlos weiterwischen.
+
+          WARUM NICHT EINFACH DREI KOPIEN IM VORLESEPROGRAMM?
+          Nur die mittlere Runde wird vorgelesen. Die beiden aeusseren
+          sind mit aria-hidden abgemeldet - sonst zaehlte ein
+          Vorleseprogramm achtzehn Flaschen auf, von denen es nur
+          sechs gibt. Bedient wird die Galerie ohne Maus ohnehin ueber
+          die Pfeiltasten und die Farbpunkte unter dem Preis.
+
+          KOSTET DAS DREIMAL SO VIEL? Nein. Es sind achtzehn Felder,
+          aber nur sechs verschiedene Bildadressen - der Browser laedt
+          jede genau einmal.
         {%- endcomment -%}
         {%- assign anzahl = lp.variants.size -%}
-        {%- assign gewaehlt = 0 -%}
-        {%- for var in lp.variants -%}
-          {%- if var.id == v.id -%}{%- assign gewaehlt = forloop.index0 -%}{%- endif -%}
-        {%- endfor -%}
-        {%- assign start = gewaehlt | plus: anzahl | minus: 2 | modulo: anzahl -%}
 
-        <ul class="n-gal__spur" data-gal-spur>
-          {%- for i in (1..anzahl) -%}
-            {%- assign j = forloop.index0 | plus: start | modulo: anzahl -%}
-            {%- assign var = lp.variants[j] -%}
-            {%- assign fs = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
-            <li class="n-gal__feld" data-gal-feld
-                data-variante="{{ var.id }}"
-                data-slug="{{ fs | escape }}"
-                data-panel="{% if dunkle_flaschen contains fs %}hell{% else %}tief{% endif %}"
-                {%- comment -%}
-                  Die Nummer kommt aus der URSPRUENGLICHEN Reihenfolge,
-                  nicht aus der gedrehten Anzeige - sonst hoert ein
-                  Vorleseprogramm "Farbe 1 von 6", waehrend daneben
-                  "5 von 6" steht. Gemessen bei allen sechs Farben.
-                {%- endcomment -%}
-                {%- assign nr = 0 -%}
-                {%- for pv in lp.variants -%}
-                  {%- if pv.id == var.id -%}{%- assign nr = forloop.index -%}{%- endif -%}
-                {%- endfor -%}
-                aria-label="Farbe {{ nr }} von {{ anzahl }}: {{ var.option1 | escape }}">
-              <img class="n-flasche"
-                   src="{{ 'a-flasche-' | append: fs | append: '.webp' | asset_url }}"
-                   alt="Trinkflasche mit fest angebautem Napf für Hund und Katze, 550 ml, in {{ var.option1 | escape }}"
-                   width="650" height="2212" draggable="false"
-                   {% if var.id == v.id %}fetchpriority="high"{% else %}loading="lazy"{% endif %}
-                   decoding="async">
-            </li>
+        <ul class="n-gal__spur" data-gal-spur data-gal-runde="{{ anzahl }}">
+          {%- for runde in (1..3) -%}
+            {%- assign ist_mitte = false -%}
+            {%- if runde == 2 -%}{%- assign ist_mitte = true -%}{%- endif -%}
+            {%- for var in lp.variants -%}
+              {%- assign fs = var.option1 | replace: 'ü','ue' | replace: 'Ü','Ue' | replace: 'ä','ae' | replace: 'ö','oe' | downcase -%}
+              <li class="n-gal__feld" data-gal-feld
+                  data-variante="{{ var.id }}"
+                  data-slug="{{ fs | escape }}"
+                  data-panel="{% if dunkle_flaschen contains fs %}hell{% else %}tief{% endif %}"
+                  {% comment %}
+                    EIN EINZIGES if - UND KEIN BINDESTRICH AN DEN
+                    KLAMMERN.
+
+                    Ein Bindestrich am Klammeranfang frisst den
+                    Zeilenumbruch davor, und damit das Leerzeichen
+                    ZWISCHEN zwei Attributen. Am 17.8.2026 gemessen
+                    lieferte der alte Stand genau das: hinter dem
+                    Anfuehrungszeichen von data-panel begann sofort
+                    das naechste Attribut, ohne Trennung. Browser
+                    verzeihen das, aber aus zwei Attributen wird so
+                    schnell eines mit zusammengeschriebenem Namen.
+                    Deshalb steht alles, was zusammengehoert, in einem
+                    Zug - und dieser Kommentar hier hat aus demselben
+                    Grund keine Bindestriche.
+
+                    (In diesem Kommentar steht auch bewusst keine
+                    ausgeschriebene Liquid-Klammer. Liquid liest Tags
+                    INNERHALB eines Kommentars mit an; ein halb
+                    hingeschriebenes Tag laesst die ganze Datei
+                    durchfallen. Genau daran ist der erste Versuch
+                    dieses Kommentars gescheitert: Shopify nahm die
+                    Datei stillschweigend nicht an, ohne Fehlermeldung
+                    - erst die Pruefsumme zeigte, dass im Entwurf noch
+                    die alte Fassung lag.)
+                  {% endcomment %}
+                  {% if ist_mitte %}data-gal-mitte aria-label="Farbe {{ forloop.index }} von {{ anzahl }}: {{ var.option1 | escape }}"{% else %}aria-hidden="true"{% endif %}>
+                <img class="n-flasche"
+                     src="{{ 'a-flasche-' | append: fs | append: '.webp' | asset_url }}"
+                     alt="{% if ist_mitte %}Trinkflasche mit fest angebautem Napf für Hund und Katze, 550 ml, in {{ var.option1 | escape }}{% endif %}"
+                     width="650" height="2212" draggable="false"
+                     {% if ist_mitte and var.id == v.id %}fetchpriority="high"{% else %}loading="lazy"{% endif %}
+                     decoding="async">
+              </li>
+            {%- endfor -%}
           {%- endfor -%}
         </ul>
       </div>

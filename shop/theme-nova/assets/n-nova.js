@@ -464,7 +464,14 @@
 
      Auf dem Handy und auf dem Trackpad genuegt das. Fuer die Maus
      kommt weiter unten ein Ziehen dazu - ohne das waere die Galerie
-     am Rechner nur ueber die Pfeile bedienbar. */
+     am Rechner nur ueber die Pfeile bedienbar.
+
+     SIE IST ENDLOS. In der Spur stehen die Farben dreimal (siehe
+     n-start.liquid). Man faehrt in der mittleren Runde; verlaesst man
+     sie, springt rueckenNachMitte() nach dem Anhalten um genau eine
+     Rundenbreite zurueck. Weil an derselben Stelle dieselbe Flasche
+     steht, sieht man den Sprung nicht - und es gibt kein Ende mehr,
+     an dem das Wischen aufhoert zu wirken. */
   var gal = $("[data-gal]");
   if (gal) {
     var felder  = $$("[data-gal-feld]", gal);
@@ -473,6 +480,14 @@
     var buehne  = gal.parentNode;
     var aktiv   = -1;
     var malt    = false;
+    var zieht   = false;          // Maus zieht gerade (weiter unten)
+
+    var spur     = $("[data-gal-spur]", gal);
+    var proRunde = parseInt(spur && spur.getAttribute("data-gal-runde"), 10) || 0;
+    // Endlos nur, wenn wirklich drei volle Runden dastehen. Sonst
+    // faellt alles auf die alte, endliche Reihe zurueck - inklusive
+    // der Pfeile, die sich an den Enden abmelden.
+    var endlos   = proRunde > 0 && felder.length === proRunde * 3;
 
     var mittePunkt = function (e) {
       var r = e.getBoundingClientRect();
@@ -504,9 +519,11 @@
       if (buehne && buehne.classList.contains("n-buehne")) {
         buehne.classList.toggle("n-hell", f.getAttribute("data-panel") === "hell");
       }
+      // In der endlosen Galerie gibt es kein Ende, an dem ein Pfeil
+      // nichts mehr zu tun haette - er bleibt immer bedienbar.
       pfeile.forEach(function (b) {
         var sch = parseInt(b.getAttribute("data-gal-schritt"), 10);
-        b.disabled = (i + sch < 0) || (i + sch > felder.length - 1);
+        b.disabled = endlos ? false : ((i + sch < 0) || (i + sch > felder.length - 1));
       });
     };
 
@@ -624,7 +641,37 @@
       else gal.scrollLeft = ziel;
     };
 
-    gal.addEventListener("scroll", anstoss, { passive: true });
+    /* DER UNSICHTBARE SPRUNG ZURUECK IN DIE MITTLERE RUNDE.
+
+       Er darf erst passieren, wenn die Galerie steht. Waehrend eine
+       Bewegung laeuft - Finger auf dem Glas, Schwung nach dem
+       Loslassen, weiches Scrollen nach einem Pfeildruck - wuerde ein
+       Sprung sie abwuergen. Deshalb ein Zaehler, der bei jedem
+       Scroll-Ereignis neu startet: erst wenn 160 Millisekunden lang
+       keines mehr kam, ist Ruhe.
+
+       Der Sprung ist hart (ohne Animation) und genau eine Runde
+       breit. An der neuen Stelle steht dieselbe Flasche wie an der
+       alten, also aendert sich am Bild nichts und uebernehmen() wird
+       nicht erneut ausgeloest - die Farbe bleibt, die Adresse bleibt,
+       nur der Spielraum nach links und rechts ist wieder voll. */
+    var ruheUhr = null;
+    var rueckenNachMitte = function () {
+      if (!endlos || zieht || aktiv < 0) return;
+      var soll = aktiv;
+      if (aktiv < proRunde) soll = aktiv + proRunde;
+      else if (aktiv >= proRunde * 2) soll = aktiv - proRunde;
+      if (soll === aktiv) return;
+      aktiv = soll;
+      zu(soll, true);
+    };
+
+    gal.addEventListener("scroll", function () {
+      anstoss();
+      if (!endlos) return;
+      if (ruheUhr) clearTimeout(ruheUhr);
+      ruheUhr = setTimeout(rueckenNachMitte, 160);
+    }, { passive: true });
     W.addEventListener("resize", function () { zu(aktiv < 0 ? 0 : aktiv, true); anstoss(); });
 
     pfeile.forEach(function (b) {
@@ -641,10 +688,18 @@
     // Farbpunkte unter dem Preis fuehren die Galerie mit.
     punkte.forEach(function (p) {
       p.addEventListener("click", function () {
+        // Die Farbe steht dreimal in der Spur. Angesteuert wird die
+        // NAECHSTGELEGENE - sonst faehrt ein Klick auf einen Farbpunkt
+        // quer durch die ganze Reihe, obwohl dieselbe Flasche einen
+        // Schritt weiter stuende.
         var id = p.getAttribute("data-variante");
+        var ziel = -1, beste = Infinity, ab = aktiv < 0 ? 0 : aktiv;
         for (var i = 0; i < felder.length; i++) {
-          if (felder[i].getAttribute("data-variante") === id) { zu(i); return; }
+          if (felder[i].getAttribute("data-variante") !== id) continue;
+          var weg = Math.abs(i - ab);
+          if (weg < beste) { beste = weg; ziel = i; }
         }
+        if (ziel >= 0) zu(ziel);
       });
     });
 
@@ -652,11 +707,19 @@
        scrollen bereits nativ, und beides gleichzeitig gaebe doppelte
        Bewegung. */
     if (W.PointerEvent) {
-      var zieht = false, startX = 0, startL = 0, bewegt = 0;
+      var startX = 0, startL = 0, bewegt = 0, zeiger = 0;
       gal.addEventListener("pointerdown", function (e) {
         if (e.pointerType !== "mouse" || e.button !== 0) return;
-        zieht = true; bewegt = 0;
+        zieht = true; bewegt = 0; zeiger = e.pointerId;
         startX = e.clientX; startL = gal.scrollLeft;
+        /* Den Zeiger einfangen. Ohne das endete jeder Zug, sobald die
+           Maus den Rand der Galerie verliess - und weil die Galerie
+           auf dem Handybild nur gut 200 Pixel hoch ist, passiert das
+           bei jedem etwas schnelleren Zug nach oben oder unten. Der
+           Zug brach dann mitten in der Bewegung ab. */
+        if (gal.setPointerCapture) {
+          try { gal.setPointerCapture(e.pointerId); } catch (f) { /* egal */ }
+        }
         gal.style.scrollSnapType = "none";
         gal.style.cursor = "grabbing";
       });
@@ -669,24 +732,35 @@
       var loslassen = function () {
         if (!zieht) return;
         zieht = false;
+        if (gal.releasePointerCapture && zeiger) {
+          try { gal.releasePointerCapture(zeiger); } catch (f) { /* egal */ }
+        }
         gal.style.cursor = "grab";
         gal.style.scrollSnapType = "";
         // Einrasten nachholen: ohne das bleibt die Spur zwischen zwei
         // Feldern stehen, weil scroll-snap waehrend des Zugs aus war.
         zu(aktiv);
+        // Und danach zurueck in die mittlere Runde, falls der Zug
+        // ueber deren Rand hinausging.
+        if (endlos) {
+          if (ruheUhr) clearTimeout(ruheUhr);
+          ruheUhr = setTimeout(rueckenNachMitte, 260);
+        }
       };
       gal.addEventListener("pointerup", loslassen);
-      gal.addEventListener("pointerleave", loslassen);
       gal.addEventListener("pointercancel", loslassen);
       gal.style.cursor = "grab";
     }
 
-    // Startstellung: die bereits gewaehlte Farbe in die Mitte.
-    var start = 0;
+    /* Startstellung: die bereits gewaehlte Farbe in die Mitte - und
+       zwar ihr Vorkommen in der MITTLEREN Runde. Nimmt man das erste
+       (ganz links), steht die Galerie von Anfang an am Rand und muss
+       beim ersten Wischen springen. */
+    var start = endlos ? proRunde : 0;
     for (var i0 = 0; i0 < punkte.length; i0++) {
       if (punkte[i0].getAttribute("aria-pressed") === "true") {
         var sid = punkte[i0].getAttribute("data-variante");
-        for (var j0 = 0; j0 < felder.length; j0++) {
+        for (var j0 = endlos ? proRunde : 0; j0 < felder.length; j0++) {
           if (felder[j0].getAttribute("data-variante") === sid) { start = j0; break; }
         }
         break;
