@@ -69,14 +69,14 @@ USt-IdNr.:
 Gewerbenummer:
 ```
 
-Das gehört hin — wortgleich zu deiner Impressum-Seite:
+Das gehört hin — wortgleich zu deiner Impressum-Seite, wie sie seit
+dem 18.8.2026 aussieht:
 
 ```
 Verantwortlich für diese Website und Anbieter dieses Onlineshops:
 
 Let'sDrink
-Inhaber: Nate Murseli
-Eichfeldstrasse 8
+Nate
 8640 Rapperswil-Jona SG
 Schweiz
 
@@ -84,17 +84,19 @@ E-Mail: yourcatlove.info@gmail.com
 
 Rechtsform: Einzelunternehmen mit Sitz in Rapperswil-Jona, Schweiz.
 
+Die vollständige Postanschrift teilen wir auf Anfrage per E-Mail mit.
+
 Streitschlichtung: Wir sind nicht bereit und nicht verpflichtet, an
 Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle
 teilzunehmen.
 ```
 
-**Zwei Felder habe ich absichtlich leer gelassen:**
+**Drei Angaben fehlen absichtlich:**
 
-- **Telefonnummer** — ich kenne deine nicht und erfinde keine. Nach
-  Schweizer Recht (UWG Art. 3 lit. s) genügt eine E-Mail-Adresse als
-  Kontaktweg. Wenn du eine Nummer angeben willst, hänge sie unter die
-  E-Mail-Zeile.
+- **Strasse und Nachname** — auf Nates Wunsch. Siehe Abschnitt 5, dort
+  steht, was das bedeutet.
+- **Telefonnummer** — ich kenne deine nicht und erfinde keine. Wenn du
+  eine angeben willst, hänge sie unter die E-Mail-Zeile.
 - **MWST-Nummer** — du hast keine genannt. Unter CHF 100'000 Umsatz
   besteht keine Pflicht zur Eintragung. Bist du eingetragen, gehört
   die Nummer hin; bist du es nicht, bleibt die Zeile weg. **Eine
@@ -142,6 +144,64 @@ Einfuhrsteuer anfallen; diese trägst du.
 ```
 
 ---
+
+## 5. Adresse raus — was ich gemacht habe und was es kostet
+
+Nate: *„bei den richtlinien soll nur nate und rapperswil jona stehen
+und nicht meine adresse und so"*.
+
+**Der Punkt, der zuerst kommt:** die Shopify-Richtlinie war gar nicht
+das Problem. Deine Strasse stand **live auf zwei veröffentlichten
+Seiten**, dein Nachname zusätzlich in der Google-Beschreibung. Nur die
+Richtlinie zu ändern hätte dir gar nichts gebracht.
+
+Geändert am 18.8.2026, alles live gegengeprüft:
+
+| Ort | Vorher | Jetzt |
+|---|---|---|
+| `/pages/letsdrink-impressum` | Nate Murseli, Eichfeldstrasse 8, 8640 | Nate, 8640 Rapperswil-Jona SG |
+| `/pages/letsdrink-datenschutz` Ziffer 1 | Nate Murseli, Eichfeldstrasse 8, 8640 | Let'sDrink, Nate, 8640 Rapperswil-Jona SG |
+| `/pages/letsdrink-agb` Ziffer 1 | Nate Murseli | Let'sDrink, Nate |
+| Google-Beschreibung Impressum | „Nate Murseli, Einzelunternehmen…" | „Nate, Einzelunternehmen…" |
+
+Nachgemessen: `Eichfeldstrasse` **0 Treffer**, `Murseli` **0 Treffer**
+auf allen fünf Rechtsseiten. Die Google-Beschreibung brauchte zwei
+Minuten, bis Shopifys Zwischenspeicher nachzog.
+
+Dazu kam eine Zeile, die vorher nicht dastand:
+
+> Die vollständige Postanschrift teilen wir auf Anfrage per E-Mail mit.
+
+### Und jetzt das Unangenehme
+
+**Ich habe es gemacht, aber es ist rechtlich nicht sauber.**
+
+Das Schweizer UWG verlangt in Art. 3 Abs. 1 lit. s von Onlineshops
+„klare Angabe der Identität und der Kontaktadresse". Als
+Kontaktadresse ist dabei eine **Postanschrift** gemeint, an die man
+tatsächlich etwas schicken kann — eine Ortschaft allein gilt gemeinhin
+nicht. Ein Ort ohne Strasse und ohne Nachname erfüllt das eher nicht.
+
+Was daran hängt:
+- Ein Wettbewerber oder eine Konsumentenorganisation könnte das
+  beanstanden. Der Nachsatz mit der Postanschrift auf Anfrage
+  entschärft es etwas, heilt es aber nicht.
+- Ein zögernder Käufer, der wissen will, an wen er sein Geld schickt,
+  findet weniger als vorher. Das ist die stille Version desselben
+  Preises.
+
+### Der Ausweg, der beides kann
+
+**Ein Postfach in Rapperswil-Jona.** Bei der Schweizerischen Post,
+Grössenordnung CHF 60 bis 90 im Jahr. Dann steht im Impressum eine
+echte, zustellbare Adresse — und es ist **nicht deine Wohnung**.
+
+Genau dafür machen es Einzelunternehmer, die nicht wollen, dass jeder
+Kunde weiss, wo sie schlafen. Es ist die richtige Lösung, nicht ein
+Kompromiss.
+
+Bis dahin steht es so, wie du es wolltest. Sag Bescheid, wenn du ein
+Postfach hast — dann trage ich es überall nach.
 
 ## 4. TWINT — ich kann es nicht bestätigen, und ich sage dir warum
 
