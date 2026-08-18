@@ -1,0 +1,453 @@
+<title>Die sieben Richtlinien</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --ground:#F2F4F5;
+  --card:#FFFFFF;
+  --sunk:#E8ECEE;
+  --line:#D3DADD;
+  --line-soft:#E3E8EA;
+  --ink:#15201F;
+  --ink-2:#4A5A58;
+  --ink-3:#7A8A88;
+  --teal:#0C6B6B;
+  --teal-soft:#DCEDEC;
+  --amber:#8A5A00;
+  --amber-soft:#F7E9CD;
+  --rust:#8E3A2A;
+  --rust-soft:#F6E2DD;
+  --shadow:0 1px 2px rgb(21 32 31 / .05), 0 8px 24px -12px rgb(21 32 31 / .18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#12191C;
+    --card:#1A2327;
+    --sunk:#141C1F;
+    --line:#2C393E;
+    --line-soft:#232E32;
+    --ink:#E6EDEC;
+    --ink-2:#A3B3B1;
+    --ink-3:#758583;
+    --teal:#5FCFC4;
+    --teal-soft:#16332F;
+    --amber:#E0B15E;
+    --amber-soft:#33280F;
+    --rust:#E39079;
+    --rust-soft:#361F18;
+    --shadow:0 1px 2px rgb(0 0 0 / .4), 0 8px 24px -12px rgb(0 0 0 / .7);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#12191C;
+  --card:#1A2327;
+  --sunk:#141C1F;
+  --line:#2C393E;
+  --line-soft:#232E32;
+  --ink:#E6EDEC;
+  --ink-2:#A3B3B1;
+  --ink-3:#758583;
+  --teal:#5FCFC4;
+  --teal-soft:#16332F;
+  --amber:#E0B15E;
+  --amber-soft:#33280F;
+  --rust:#E39079;
+  --rust-soft:#361F18;
+  --shadow:0 1px 2px rgb(0 0 0 / .4), 0 8px 24px -12px rgb(0 0 0 / .7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"Source Serif 4",Georgia,serif;
+  font-size:17px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:820px;margin:0 auto;padding:clamp(28px,5vw,64px) clamp(16px,4vw,32px) 96px}
+
+h1,h2,h3,.ui{font-family:Archivo,"Helvetica Neue",Arial,sans-serif}
+.eyebrow{
+  font-family:Archivo,sans-serif;font-size:12px;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin:0 0 14px
+}
+h1{
+  font-size:clamp(34px,6vw,50px);line-height:1.04;font-weight:700;
+  letter-spacing:-.022em;margin:0 0 18px;text-wrap:balance
+}
+.lede{font-size:19px;color:var(--ink-2);margin:0;max-width:62ch}
+
+.note{
+  margin:34px 0 0;padding:22px 24px;border-radius:12px;
+  background:var(--rust-soft);border:1px solid color-mix(in srgb,var(--rust) 28%,transparent)
+}
+.note h2{font-size:16px;font-weight:700;margin:0 0 10px;color:var(--rust);letter-spacing:-.01em}
+.note p{margin:0 0 10px;font-size:16px;color:var(--ink)}
+.note p:last-child{margin-bottom:0}
+
+.jump{
+  display:flex;flex-wrap:wrap;gap:8px;margin:38px 0 0;
+  padding:18px;border-radius:12px;background:var(--sunk);border:1px solid var(--line-soft)
+}
+.jump a{
+  font-family:Archivo,sans-serif;font-size:13px;font-weight:500;text-decoration:none;
+  color:var(--ink-2);background:var(--card);border:1px solid var(--line);
+  padding:6px 11px;border-radius:99px;transition:color .15s,border-color .15s
+}
+.jump a:hover,.jump a:focus-visible{color:var(--teal);border-color:var(--teal)}
+
+.card{
+  margin-top:26px;background:var(--card);border:1px solid var(--line-soft);
+  border-radius:14px;box-shadow:var(--shadow);overflow:hidden;scroll-margin-top:20px
+}
+.card__head{padding:22px 24px 0}
+.chip{
+  display:inline-block;font-family:Archivo,sans-serif;font-size:11px;font-weight:600;
+  letter-spacing:.09em;text-transform:uppercase;padding:4px 9px;border-radius:5px;margin-bottom:12px
+}
+.chip--req{background:var(--amber-soft);color:var(--amber)}
+.chip--leer{background:var(--rust-soft);color:var(--rust)}
+.chip--auto{background:var(--teal-soft);color:var(--teal)}
+.card h2{font-size:24px;font-weight:700;letter-spacing:-.018em;margin:0 0 8px}
+.card__why{margin:0;color:var(--ink-2);font-size:16px;max-width:58ch}
+
+.block{margin:20px 24px 24px;border:1px solid var(--line);border-radius:10px;background:var(--sunk)}
+.block__bar{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:9px 12px 9px 14px;border-bottom:1px solid var(--line-soft)
+}
+.block__bar span{
+  font-family:Archivo,sans-serif;font-size:11px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3)
+}
+button.copy{
+  font-family:Archivo,sans-serif;font-size:12px;font-weight:600;cursor:pointer;
+  color:var(--card);background:var(--teal);border:1px solid var(--teal);
+  padding:6px 13px;border-radius:6px;transition:opacity .15s
+}
+button.copy:hover{opacity:.86}
+button.copy:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+button.copy[data-done="1"]{background:transparent;color:var(--teal)}
+pre{
+  margin:0;padding:16px 14px;overflow-x:auto;
+  font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;line-height:1.62;
+  color:var(--ink);white-space:pre-wrap;word-break:break-word
+}
+.card--skip pre{color:var(--ink-3);font-style:italic}
+
+.tail{margin-top:44px;padding-top:26px;border-top:1px solid var(--line)}
+.tail h2{font-size:20px;font-weight:700;margin:0 0 14px;letter-spacing:-.015em}
+.tail ol{margin:0;padding-left:22px}
+.tail li{margin-bottom:12px;color:var(--ink-2)}
+.tail li strong{color:var(--ink);font-weight:600}
+.src{margin-top:30px;font-size:14px;color:var(--ink-3);max-width:62ch}
+a{color:var(--teal)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <p class="eyebrow">Let'sDrink · Shopify-Einstellungen</p>
+  <h1>Die sieben Richtlinien</h1>
+  <p class="lede">Sieben Texte, die Shopify in der Kasse verlinkt. Fünf davon sind heute leer, zwei sind als erforderlich markiert. Alles hier ist dein eigener Wortlaut, aus deinen eigenen Seiten. Einsetzen, speichern, fertig.</p>
+
+  <div class="note">
+    <h2>Warum das nicht warten sollte</h2>
+    <p>Shopify verlinkt in der <strong>Kasse</strong> die Richtlinien — nicht deine Seiten. Am 18.8.2026 im Konto abgefragt: es existieren nur zwei, <strong>Impressum und Datenschutz</strong>. Es gibt <strong>keine Rückerstattungsrichtlinie, keine AGB, keine Versandbedingungen</strong>. Und das Impressum sagt dort wörtlich „Handelsname: My Store“.</p>
+    <p>Ein Kunde, der bezahlen will, findet an der Kasse also keine AGB und keine Rückgaberegel — während deine Produktseite sechsmal „14 Tage Rückgaberecht“ verspricht. Meta sieht sich die Zielseite bei der Anzeigenfreigabe an.</p>
+  </div>
+
+  <p class="src" style="margin-top:26px">So geht es: <strong>Einstellungen › Richtlinien</strong>, Richtlinie antippen, alles Vorhandene löschen, hier auf <strong>Kopieren</strong> tippen, einsetzen, speichern. Die Überschriften landen als normale Zeilen statt fett — inhaltlich fehlt nichts, und in jedem Feld funktioniert es. Siebenmal dasselbe.</p>
+
+  <nav class="jump" aria-label="Zu einer Richtlinie springen">
+    <a href="#kontakt">1 · Kontaktinformationen</a>
+    <a href="#impressum">2 · Impressum</a>
+    <a href="#widerruf">3 · Widerrufsrecht</a>
+    <a href="#versand">4 · Versandbedingungen</a>
+    <a href="#agb">5 · AGB</a>
+    <a href="#datenschutz">6 · Datenschutz</a>
+    <a href="#storno">7 · Stornierung</a>
+  </nav>
+
+  <article class="card" id="kontakt">
+    <div class="card__head">
+      <span class="chip chip--req">Erforderlich · leer</span>
+      <h2>Kontaktinformationen</h2>
+      <p class="card__why">Shopify markiert dieses Feld als Pflicht. Wohnadresse und Nachname sind draussen, wie gewünscht.</p>
+    </div>
+    <div class="block">
+      <div class="block__bar"><span>Einsetzen</span><button class="copy ui">Kopieren</button></div>
+<pre>Let'sDrink
+Nate
+8640 Rapperswil-Jona SG
+Schweiz
+
+E-Mail: yourcatlove.info@gmail.com
+
+Wir antworten innerhalb eines Werktags. Es liest eine Person, kein Formular.
+
+Die vollständige Postanschrift teilen wir auf Anfrage per E-Mail mit.</pre>
+    </div>
+  </article>
+
+  <article class="card" id="impressum">
+    <div class="card__head">
+      <span class="chip chip--req">Erforderlich · steht auf „My Store“</span>
+      <h2>Impressum</h2>
+      <p class="card__why">Telefonnummer und MWST-Nummer fehlen absichtlich — die eine kenne ich nicht, die andere hast du nie genannt. Eine erfundene MWST-Nummer wäre strafbar.</p>
+    </div>
+    <div class="block">
+      <div class="block__bar"><span>Einsetzen</span><button class="copy ui">Kopieren</button></div>
+<pre>Verantwortlich für diese Website und Anbieter dieses Onlineshops:
+
+Let'sDrink
+Nate
+8640 Rapperswil-Jona SG
+Schweiz
+
+E-Mail: yourcatlove.info@gmail.com
+
+Rechtsform: Einzelunternehmen mit Sitz in Rapperswil-Jona, Schweiz.
+
+Die vollständige Postanschrift teilen wir auf Anfrage per E-Mail mit.
+
+Streitschlichtung: Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</pre>
+    </div>
+  </article>
+
+  <article class="card" id="widerruf">
+    <div class="card__head">
+      <span class="chip chip--leer">Keine Richtlinie festgelegt</span>
+      <h2>Widerrufsrecht</h2>
+      <p class="card__why">Hier steht bewusst der unbequeme Satz: Schweizer Online-Käufer haben <em>kein</em> gesetzliches Widerrufsrecht. Deine 14 Tage sind freiwillig — und genau das ist ein Verkaufsargument, kein Makel.</p>
+    </div>
+    <div class="block">
+      <div class="block__bar"><span>Einsetzen</span><button class="copy ui">Kopieren</button></div>
+<pre>Rückgabe innerhalb von 14 Tagen
+
+Du kannst die Flasche innerhalb von 14 Tagen nach Erhalt zurückgeben, ohne Begründung. Spül sie vorher kurz aus. Gebrauchsspuren sind in Ordnung.
+
+So geht es: Schreib an yourcatlove.info@gmail.com mit deiner Bestellnummer. Innerhalb eines Werktags bekommst du die Rücksendeadresse. Die Rücksendekosten trägst du. Den Kaufpreis erstatte ich innerhalb von fünf Werktagen nach Eingang der Rücksendung, auf demselben Weg, auf dem du bezahlt hast.
+
+Wenn die Flasche ausläuft
+
+Dann ist sie defekt. Melde dich – du bekommst Ersatz oder dein Geld zurück, und die Rücksendung geht auf mich. Ein kurzes Video hilft bei der Abwicklung, ist aber keine Bedingung.
+
+Rechtlicher Hinweis
+
+Für Käuferinnen und Käufer mit Wohnsitz in der Schweiz besteht bei Online-Käufen kein gesetzliches Widerrufsrecht. Unsere 14 Tage sind eine freiwillige Leistung und gehen über das Gesetz hinaus.
+
+Bestellst du aus einem Land der Europäischen Union, steht dir zusätzlich das dort geltende gesetzliche Widerrufsrecht von 14 Tagen zu. Eine formlose E-Mail an yourcatlove.info@gmail.com genügt. Die Rücksendekosten aus dem Ausland trägst du.
+
+Die gesetzlichen Mängelrechte nach Art. 197 ff. OR gelten unabhängig von dieser freiwilligen Regelung.</pre>
+    </div>
+  </article>
+
+  <article class="card" id="versand">
+    <div class="card__head">
+      <span class="chip chip--leer">Keine Richtlinie festgelegt</span>
+      <h2>Versandbedingungen</h2>
+      <p class="card__why">Hängt an einem offenen Entscheid: die CHF 1.50 ins Ausland gelten in deinem Profil für rund 200 Länder. Änderst du das, muss dieser Text mit.</p>
+    </div>
+    <div class="block">
+      <div class="block__bar"><span>Einsetzen</span><button class="copy ui">Kopieren</button></div>
+<pre>Versandkosten
+
+Innerhalb der Schweiz versenden wir gratis. In alle übrigen Länder kostet der Versand pauschal CHF 1.50. Welche Länder das sind, siehst du an der Kasse, sobald du deine Adresse eingibst.
+
+Lieferzeit
+
+7 bis 14 Werktage nach Zahlungseingang. Dauert eine Bestellung länger, melden wir uns, bevor du nachfragen musst.
+
+Sendungsverfolgung
+
+Du bekommst die Nummer per E-Mail, sobald das Paket unterwegs ist.
+
+Lieferungen ins Ausland
+
+Bei Lieferungen ausserhalb der Schweiz und Liechtensteins können im Bestimmungsland Zoll, Einfuhrsteuer und Verzollungsgebühren anfallen. Diese sind im angezeigten Preis nicht enthalten und gehen zu deinen Lasten. Höhe und Erhebung richten sich nach dem Recht deines Landes; darauf haben wir keinen Einfluss. Nimmst du eine Sendung wegen solcher Abgaben nicht an, können wir die uns entstandenen Kosten von einer Rückerstattung abziehen.
+
+Verlust und Transportschaden
+
+Geht ein Paket auf dem Transportweg verloren oder kommt beschädigt an, melde dich bei uns. Wir klären das mit dem Versanddienstleister, und du bekommst Ersatz oder dein Geld zurück.</pre>
+    </div>
+  </article>
+
+  <article class="card" id="agb">
+    <div class="card__head">
+      <span class="chip chip--leer">Keine Richtlinie festgelegt</span>
+      <h2>Allgemeine Geschäftsbedingungen</h2>
+      <p class="card__why">Wortgleich zu deiner Seite <code>/pages/letsdrink-agb</code>, nur Ziffer 1 geändert — Nachname raus.</p>
+    </div>
+    <div class="block">
+      <div class="block__bar"><span>Einsetzen</span><button class="copy ui">Kopieren</button></div>
+<pre>1. Geltungsbereich
+
+Diese AGB gelten für alle Bestellungen über diesen Onlineshop, betrieben von Let'sDrink, Nate, Rapperswil-Jona SG, Schweiz.
+
+2. Vertragsabschluss
+
+Mit dem Absenden der Bestellung gibst du ein verbindliches Angebot ab. Der Vertrag kommt zustande, sobald wir die Bestellung per E-Mail bestätigen.
+
+3. Preise
+
+Alle Preise sind Endpreise in Schweizer Franken (CHF). Der angezeigte Preis ist der Preis an der Kasse. Versandkosten werden vor Abschluss der Bestellung klar ausgewiesen.
+
+4. Zahlung und Eigentumsvorbehalt
+
+Zahlung über die im Checkout angebotenen Zahlungsarten. Die Ware bleibt bis zur vollständigen Bezahlung unser Eigentum.
+
+5. Lieferung
+
+Wir liefern in die Schweiz und nach Liechtenstein sowie in zahlreiche weitere Länder. Welche Länder das sind und was der Versand dorthin kostet, siehst du an der Kasse, sobald du deine Adresse eingibst. Die Lieferzeit beträgt in der Regel 7 bis 14 Werktage. Wir informieren dich aktiv, wenn sich eine Lieferung verzögert.
+
+6. Lieferungen ins Ausland: Zoll und Einfuhrabgaben
+
+Bei Lieferungen ausserhalb der Schweiz und Liechtensteins können im Bestimmungsland Zoll, Einfuhrsteuer und Verzollungsgebühren anfallen. Diese sind im angezeigten Preis nicht enthalten und gehen zu deinen Lasten. Höhe und Erhebung richten sich nach dem Recht deines Landes; darauf haben wir keinen Einfluss. Wenn du eine Sendung wegen solcher Abgaben nicht annimmst, können wir die uns entstandenen Kosten von einer Rückerstattung abziehen.
+
+7. Gefahrübergang
+
+Die Gefahr des zufälligen Untergangs geht mit der Übergabe an dich über. Geht ein Paket auf dem Transportweg verloren oder kommt es beschädigt an, melde dich bei uns – wir klären das mit dem Versanddienstleister und du bekommst Ersatz oder dein Geld zurück.
+
+8. Rückgabe und Widerruf
+
+Wir gewähren ein freiwilliges Rückgaberecht von 14 Tagen ab Erhalt. Die Bedingungen stehen in unserer Richtlinie zum Widerrufsrecht.
+
+Für Käuferinnen und Käufer mit Wohnsitz in der Schweiz besteht für Online-Käufe kein gesetzliches Widerrufsrecht – unser Rückgaberecht ist eine freiwillige Leistung und geht über das Gesetz hinaus.
+
+Bestellst du aus einem Land der Europäischen Union, steht dir zusätzlich das dort geltende gesetzliche Widerrufsrecht von 14 Tagen zu. Du kannst den Vertrag ohne Angabe von Gründen widerrufen; eine formlose E-Mail an yourcatlove.info@gmail.com genügt. Die Rücksendekosten aus dem Ausland trägst du.
+
+9. Mängel und Gewährleistung
+
+Bei einem Mangel – zum Beispiel, wenn eine Flasche ausläuft – meldest du dich innerhalb von 14 Tagen. Du bekommst Ersatz oder dein Geld zurück, ohne dass wir darüber diskutieren. Die gesetzlichen Mängelrechte nach Art. 197 ff. OR bleiben davon unberührt.
+
+10. Bestimmungsgemässer Gebrauch
+
+Die Flasche ist für Wasser bestimmt. Für Schäden durch andere Flüssigkeiten können wir nicht einstehen.
+
+11. Haftung
+
+Wir haften im gesetzlich zulässigen Rahmen. Für leichte Fahrlässigkeit wird die Haftung, soweit gesetzlich zulässig, ausgeschlossen. Die Haftung für Personenschäden und nach dem Produktehaftpflichtgesetz bleibt in jedem Fall bestehen.
+
+12. Anwendbares Recht und Gerichtsstand
+
+Es gilt Schweizer Recht. Gerichtsstand ist, soweit gesetzlich zulässig, der Sitz des Anbieters. Zwingende Verbraucherschutzbestimmungen des Landes, in dem du deinen gewöhnlichen Aufenthalt hast, bleiben vorbehalten.
+
+13. Schlussbestimmungen
+
+Sollte eine Bestimmung dieser AGB unwirksam sein, bleiben die übrigen Bestimmungen davon unberührt.
+
+Stand: August 2026</pre>
+    </div>
+  </article>
+
+  <article class="card" id="datenschutz">
+    <div class="card__head">
+      <span class="chip chip--auto">Automatisiert · trotzdem ersetzen</span>
+      <h2>Datenschutzerklärung</h2>
+      <p class="card__why">Shopify erzeugt hier einen Standardtext — und der <strong>nennt deinen Meta-Pixel und TikTok-Pixel nicht</strong>, obwohl beide in deinem Shop laufen. Dein eigener Text tut es.</p>
+    </div>
+    <div class="block">
+      <div class="block__bar"><span>Einsetzen</span><button class="copy ui">Kopieren</button></div>
+<pre>Diese Erklärung informiert dich, welche Daten wir bearbeiten, wenn du diesen Shop besuchst oder bei uns bestellst. Grundlage ist das revidierte Schweizer Datenschutzgesetz (revDSG); für Besucherinnen und Besucher aus dem EWR gilt zusätzlich die DSGVO.
+
+1. Verantwortliche Stelle
+
+Let'sDrink, Nate, 8640 Rapperswil-Jona SG, Schweiz. E-Mail: yourcatlove.info@gmail.com. Die vollständige Postanschrift teilen wir auf Anfrage per E-Mail mit.
+
+2. Welche Daten wir bearbeiten
+
+- Bestelldaten: Name, Adresse, E-Mail, Telefonnummer, Zahlungsinformationen (verarbeitet über den Zahlungsanbieter, nicht bei uns gespeichert)
+- Technische Daten: IP-Adresse, Browsertyp, besuchte Seiten (über Shopify)
+- Newsletter-Daten: E-Mail-Adresse, nur bei aktiver Anmeldung
+
+3. Zweck der Bearbeitung
+
+Bestellabwicklung, Versand, Kundenservice, Reichweitenmessung sowie Werbung auf Meta- und TikTok-Plattformen. Newsletter nur mit deiner Einwilligung.
+
+4. Cookies und Messwerkzeuge
+
+Wir setzen technisch notwendige Cookies für den Betrieb des Shops ein – ohne sie funktionieren Warenkorb und Kasse nicht.
+
+Zusätzlich sind in diesem Shop zwei Messwerkzeuge von Drittanbietern eingebunden, die nicht technisch notwendig sind:
+
+- Meta-Pixel (Meta Platforms Ireland Ltd.): misst, welche Seiten du ansiehst und ob du bestellst, und dient der Ausspielung und Messung von Werbung auf Facebook und Instagram.
+- TikTok-Pixel (TikTok Technology Ltd.): dieselbe Funktion für Werbung auf TikTok.
+
+Über den Cookie-Hinweis kannst du beides ablehnen. Deine Entscheidung wird gespeichert und lässt sich jederzeit unter «Deine Datenschutz-Einstellungen» ändern. Wir schreiben das hier hin, weil es zutrifft – nicht, weil wir müssten.
+
+5. Weitergabe an Dritte
+
+Wir geben Daten weiter an:
+
+- Versanddienstleister und Zahlungsanbieter, soweit für die Bestellabwicklung nötig
+- Shopify als Betreiber der Shop-Plattform
+- Meta und TikTok im Rahmen der oben genannten Messwerkzeuge, sofern du zugestimmt hast. Übermittelt werden technische Daten sowie, sofern du bestellst, auch Angaben wie E-Mail-Adresse, Name, Telefonnummer und Adresse in verschlüsselter Form.
+- Behörden, soweit gesetzlich vorgeschrieben
+
+6. Bekanntgabe ins Ausland
+
+Meta und TikTok bearbeiten Daten auch in Ländern ausserhalb der Schweiz und des EWR, unter anderem in den USA. Diese Länder haben teilweise ein tieferes Datenschutzniveau als die Schweiz.
+
+7. Wie lange wir Daten aufbewahren
+
+- Bestell- und Rechnungsdaten: zehn Jahre. Das schreibt die Aufbewahrungspflicht für Geschäftsbücher vor (Art. 958f OR); wir können sie nicht früher löschen.
+- Newsletter-Adresse: bis zu deiner Abmeldung. Danach bewahren wir nur den Nachweis der Abmeldung auf, damit du keine weitere Post bekommst.
+- Anfragen über das Kontaktformular: zwei Jahre nach Abschluss der Sache.
+- Technische Daten und Messwerkzeuge: nach den Fristen von Shopify, Meta und TikTok. Darauf haben wir keinen Einfluss; nach heutigem Stand sind das bei Meta und TikTok bis zu zwei Jahre.
+
+8. Deine Rechte
+
+Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Bearbeitung, Datenübertragbarkeit und Widerspruch. Schreib uns dazu an yourcatlove.info@gmail.com – es liest wirklich eine Person, kein Formular. Wir antworten innerhalb von 30 Tagen. Bist du mit unserer Antwort nicht einverstanden, kannst du dich an den Eidgenössischen Datenschutz- und Öffentlichkeitsbeauftragten (EDÖB) wenden, aus dem EWR an die Datenschutzbehörde deines Landes.
+
+9. Änderungen
+
+Wir passen diese Erklärung an, wenn sich Bearbeitung oder Rechtslage ändern.
+
+Stand: August 2026</pre>
+    </div>
+  </article>
+
+  <article class="card card--skip" id="storno">
+    <div class="card__head">
+      <span class="chip chip--auto">Nichts eintragen</span>
+      <h2>Stornierungsbedingungen für Kaufoptionen</h2>
+      <p class="card__why">Das Feld gilt für Abos, Vorbestellungen und Ratenkäufe. Du verkaufst eine Flasche gegen Einmalzahlung — es gibt nichts zu stornieren. Ein Text hier würde ein Angebot beschreiben, das es nicht gibt.</p>
+    </div>
+    <div class="block">
+      <div class="block__bar"><span>Leer lassen</span></div>
+<pre>Führst du später ein Abo ein, gehört dieses Feld nachgetragen. Vorher nicht.</pre>
+    </div>
+  </article>
+
+  <section class="tail">
+    <h2>Was danach noch offen bleibt</h2>
+    <ol>
+      <li><strong>Telefonnummer und MWST-Nummer</strong> im Impressum. Beides deine Entscheidung — erfinden geht nicht.</li>
+      <li><strong>Die Postanschrift.</strong> Der jetzige Stand nennt nur die Ortschaft. Das UWG verlangt in Art. 3 Abs. 1 lit. s eine zustellbare Kontaktadresse. Ein Postfach in Rapperswil-Jona (rund CHF 60–90 im Jahr) löst das, ohne deine Wohnadresse preiszugeben.</li>
+      <li><strong>CHF 1.50 Auslandversand</strong> in rund 200 Länder. Änderst du das, muss Text 4 mit.</li>
+    </ol>
+    <p class="src">Alle Texte stammen aus deinen eigenen veröffentlichten Seiten — <code>letsdrink-impressum</code>, <code>letsdrink-agb</code>, <code>letsdrink-datenschutz</code>, <code>versand-und-rueckgabe</code>. Nichts ist erfunden. Wohnadresse und Nachname wurden am 18.8.2026 überall entfernt und live gegengeprüft. Ich kann diese sieben Felder nicht selbst schreiben: <code>shopPolicyUpdate</code> verlangt die Berechtigung <code>write_legal_policies</code>, die mir fehlt.</p>
+  </section>
+
+</div>
+
+<script>
+document.querySelectorAll("button.copy").forEach(function (b) {
+  b.addEventListener("click", function () {
+    var text = b.closest(".block").querySelector("pre").textContent;
+    navigator.clipboard.writeText(text).then(function () {
+      b.textContent = "Kopiert";
+      b.dataset.done = "1";
+      setTimeout(function () { b.textContent = "Kopieren"; b.dataset.done = "0"; }, 1800);
+    }, function () {
+      b.textContent = "Von Hand markieren";
+      setTimeout(function () { b.textContent = "Kopieren"; }, 2200);
+    });
+  });
+});
+</script>
