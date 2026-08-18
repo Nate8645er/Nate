@@ -109,6 +109,7 @@
                    data-name="{{ var.option1 | escape }}"
                    data-bild="{{ 'a-flasche-' | append: s | append: '.webp' | asset_url }}"
                    data-panel="{% if dunkle_flaschen contains s %}hell{% else %}tief{% endif %}"
+                   data-lieferbar="{% if var.available %}1{% else %}0{% endif %}"
                    aria-pressed="{% if var.id == v.id %}true{% else %}false{% endif %}">
                   <span class="n-sr">{{ var.option1 }}{% unless var.available %} – zurzeit nicht lieferbar{% endunless %}</span>
                 </a>
@@ -124,18 +125,33 @@
             <button type="button" data-mschritt="1" aria-label="Mehr">+</button>
           </div>
 
-          <button class="n-knopf n-knopf--voll" type="submit" data-leiste-anker
+          <button class="n-knopf n-knopf--voll" type="submit" data-leiste-anker data-kaufknopf
                   {% unless v.available %}disabled{% endunless %}>
             {%- if v.available -%}In den Warenkorb{%- else -%}Zurzeit nicht lieferbar{%- endif -%}
           </button>
+          {%- comment -%}
+            Siehe n-start.liquid: der Farbwechsel im Browser meldete die
+            Lieferbarkeit nicht an den Knopf weiter.
+          {%- endcomment -%}
+          <p class="n-nichtda" data-nichtda hidden role="status"></p>
 
           {%- comment -%}
             Shopifys eigener Sofortkauf-Knopf. Er fuehrt direkt in den
             Bestellabschluss und bringt Apple Pay, Google Pay und TWINT
             mit, sofern sie im Shop eingerichtet sind.
           {%- endcomment -%}
-          {%- if v.available -%}
-            <div style="margin-top:.7rem">{{ form | payment_button }}</div>
+          {%- comment -%}
+            Die Bedingung stand auf v.available, also auf der EINEN beim
+            Laden gewaehlten Farbe. Wechselte man im Browser auf eine
+            ausverkaufte, blieb der Sofortkauf stehen und fuehrte in eine
+            Absage der Kasse; wechselte man von einer ausverkauften auf
+            eine lieferbare, fehlte er ganz. Jetzt haengt das Rendern an
+            product.available - hat das Produkt ueberhaupt eine lieferbare
+            Farbe, steht der Knopf da - und das Ein- und Ausblenden
+            uebernimmt derselbe Schalter wie beim Kaufknopf.
+          {%- endcomment -%}
+          {%- if product.available -%}
+            <div style="margin-top:.7rem" data-express{% unless v.available %} hidden{% endunless %}>{{ form | payment_button }}</div>
           {%- endif -%}
 
           <ul class="n-abzeichen">

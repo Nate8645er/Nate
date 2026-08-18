@@ -139,12 +139,41 @@
     var fname  = $("[data-farbname]");
     var feld   = $("[data-variantenfeld]");
 
+    /* Lieferbarkeit an die Kaufknoepfe weitergeben.
+
+       Der Farbwechsel laedt die Seite nicht neu. Ohne diesen Schritt
+       behielten alle drei Kaufknoepfe - grosser Knopf, Kaufleiste,
+       Sofortkauf - den Zustand der beim Laden gewaehlten Farbe. Wer auf
+       eine ausverkaufte Farbe tippte, las weiter "In den Warenkorb" und
+       bekam erst vom Warenkorb eine Absage. Am 18.8.2026 war Rosa beim
+       Lieferanten auf null, also war das kein gedachter Fall.
+
+       Der Knopftext bleibt unangetastet: er traegt den Preis und wird
+       von der Mengenstaffel weiter unten gepflegt. Ein ausgeschalteter
+       Knopf plus ein Satz darunter sagt dasselbe, ohne zwei Stellen um
+       denselben Text streiten zu lassen. */
+    var meldeLieferbarkeit = function (p) {
+      var da = p.getAttribute("data-lieferbar") !== "0";
+      var name = p.getAttribute("data-name") || "Diese Farbe";
+      $$("[data-kaufknopf]").forEach(function (k) { k.disabled = !da; });
+      $$("[data-express]").forEach(function (x) {
+        if (da) x.removeAttribute("hidden");
+        else    x.setAttribute("hidden", "");
+      });
+      $$("[data-nichtda]").forEach(function (s) {
+        if (da) { s.setAttribute("hidden", ""); s.textContent = ""; }
+        else    { s.textContent = name + " ist zurzeit nicht lieferbar. " +
+                                  "Waehle eine andere Farbe."; s.removeAttribute("hidden"); }
+      });
+    };
+
     var waehle = function (p, ev) {
       var bild = p.getAttribute("data-bild");
       var name = p.getAttribute("data-name");
       var id   = p.getAttribute("data-variante");
       if (!bild || !id) return;                 // unvollstaendig: Link folgen
       if (ev) ev.preventDefault();
+      meldeLieferbarkeit(p);
 
       if (haupt) {
         // Kurzes Aufblenden, damit der Wechsel nicht hart springt.

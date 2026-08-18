@@ -659,7 +659,7 @@
           versteckten Feld des Formulars, die Leiste braucht sie nicht
           selbst zu kennen.
         {%- endcomment -%}
-        <button class="n-knopf n-knopf--klein" type="submit" form="kaufen"
+        <button class="n-knopf n-knopf--klein" type="submit" form="kaufen" data-kaufknopf
                 {% unless lv.available %}disabled{% endunless %}>
           {%- if lv.available -%}Kaufen{%- else -%}Nicht lieferbar{%- endif -%}
         </button>

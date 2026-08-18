@@ -409,6 +409,7 @@
                  data-name="{{ var.option1 | escape }}"
                  data-bild="{{ 'a-flasche-' | append: s | append: '.webp' | asset_url }}"
                  data-panel="{% if dunkle_flaschen contains s %}hell{% else %}tief{% endif %}"
+                 data-lieferbar="{% if var.available %}1{% else %}0{% endif %}"
                  aria-pressed="{% if var.id == v.id %}true{% else %}false{% endif %}">
                 <span class="n-sr">{{ var.option1 }}{% unless var.available %} – zurzeit nicht lieferbar{% endunless %}</span>
               </a>
@@ -470,10 +471,25 @@
 
 
         <div class="n-cta">
-          <button class="n-knopf" type="submit" data-leiste-anker
+          <button class="n-knopf" type="submit" data-leiste-anker data-kaufknopf
                   {% unless v.available %}disabled{% endunless %}>
             {%- if v.available -%}<span data-knopftext>In den Warenkorb · {{ v_ab | money }}</span>{%- else -%}Zurzeit nicht lieferbar{%- endif -%}
           </button>
+          {%- comment -%}
+            EINE FARBE KANN AUSGEHEN, WAEHREND DIE SEITE OFFEN IST.
+
+            Die Farbpunkte tauschen Bild, Name und verstecktes Feld im
+            Browser aus, ohne die Seite neu zu laden. Der Kaufknopf
+            wusste davon nichts: wer auf eine ausverkaufte Farbe tippte,
+            sah weiter "In den Warenkorb" und lief in eine Absage des
+            Warenkorbs. Am 18.8.2026 war Rosa beim Lieferanten auf null.
+
+            Dieser Satz ist leer und versteckt, solange die gewaehlte
+            Farbe lieferbar ist. Ohne JavaScript bleibt er es auch - dann
+            traegt aber jeder Farbpunkt seinen eigenen ?variant=-Verweis,
+            und die neu geladene Seite setzt den Knopf serverseitig.
+          {%- endcomment -%}
+          <p class="n-nichtda" data-nichtda hidden role="status"></p>
           {%- comment -%}
             Hier stand ein zweiter, gleich grosser Knopf. Zwei schwarze
             Pillen nebeneinander streiten um denselben Blick, und einer
