@@ -78,6 +78,41 @@
         "static-analysis"
       ],
       "category": "security"
+    },
+    {
+      "name": "marketing-skillstack",
+      "source": "./marketing-skillstack",
+      "description": "49 Marketing-Skills: Positionierung, Copywriting, CRO, SEO, AI-SEO, Ads, E-Mail, Preisgestaltung, Onboarding, Retention, Analytics, Attribution.",
+      "version": "1.0.0",
+      "author": {
+        "name": "coreyhaines31"
+      },
+      "keywords": [
+        "marketing",
+        "copywriting",
+        "cro",
+        "seo",
+        "ads",
+        "email"
+      ],
+      "category": "productivity"
+    },
+    {
+      "name": "awesome-skillstack",
+      "source": "./awesome-skillstack",
+      "description": "25 eigenstaendige Skills aus awesome-claude-skills: Dokumente, Bilder, Recherche, Automatisierung, MCP-Bau.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Composio"
+      },
+      "keywords": [
+        "skills",
+        "documents",
+        "research",
+        "automation",
+        "mcp"
+      ],
+      "category": "productivity"
     }
   ]
 }

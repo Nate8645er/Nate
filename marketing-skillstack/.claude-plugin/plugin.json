@@ -1,0 +1,21 @@
+{
+  "name": "marketing-skillstack",
+  "version": "1.0.0",
+  "description": "49 Marketing-Skills von coreyhaines31/marketingskills: Positionierung, Copywriting, CRO, SEO, AI-SEO, Ads, E-Mail, Preisgestaltung, Onboarding, Retention, Analytics und Attribution. Der Skill 'ads' ist zu 'marketing-ads' umbenannt, damit er nicht mit Claude Ads kollidiert.",
+  "author": {
+    "name": "Nate"
+  },
+  "keywords": [
+    "marketing",
+    "copywriting",
+    "cro",
+    "seo",
+    "ads",
+    "email",
+    "pricing",
+    "analytics"
+  ],
+  "skills": "./skills/",
+  "license": "MIT",
+  "homepage": "https://github.com/coreyhaines31/marketingskills"
+}

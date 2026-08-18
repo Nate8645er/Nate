@@ -1,0 +1,19 @@
+{
+  "name": "awesome-skillstack",
+  "version": "1.0.0",
+  "description": "25 eigenstaendige Skills aus awesome-claude-skills: Dokumente und Artefakte, Bildbearbeitung, Datei- und Rechnungsordnung, Lead-Recherche, Wettbewerbsanzeigen, Changelogs, Meeting-Auswertung, Webapp-Tests, MCP-Bau und mehr. Ohne die 832 Composio-Connectoren und ohne die bereits gebuendelten Skills.",
+  "author": {
+    "name": "Nate"
+  },
+  "keywords": [
+    "skills",
+    "documents",
+    "images",
+    "research",
+    "automation",
+    "mcp"
+  ],
+  "skills": "./skills/",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/composiodev/awesome-claude-skills"
+}
