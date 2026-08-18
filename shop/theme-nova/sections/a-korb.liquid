@@ -141,6 +141,40 @@
 
             <button class="a-knopf" type="submit" name="checkout">Zur Kasse</button>
 
+            {%- comment -%}
+              WARUM DIE ZAHLUNGSARTEN HIER STEHEN
+
+              Am 18.8.2026 gemessen: der Pixel meldet zwei begonnene
+              Kassengaenge, Shopify hat dazu NULL gespeicherte
+              Warenkorbabbrueche. Shopify legt einen Abbruch erst an,
+              wenn jemand seine Kontaktdaten eingetippt hat. Beide sind
+              also in den ersten Sekunden wieder raus, bevor sie
+              ueberhaupt etwas geschrieben haben.
+
+              Was man in diesen Sekunden sucht: kann ich hier
+              ueberhaupt zahlen. Der Fuss zeigt die Symbole, der
+              Warenkorb bisher nicht - ausgerechnet an der Stelle, an
+              der man es wissen will.
+
+              Aus shop.enabled_payment_types, nicht von Hand. Damit
+              kann die Zeile nicht falsch werden: schaltet Nate TWINT
+              frei, erscheint es hier von selbst; faellt eine Art weg,
+              verschwindet sie. Eine hartkodierte Liste waere eine
+              Behauptung, die irgendwann nicht mehr stimmt.
+            {%- endcomment -%}
+            {%- if shop.enabled_payment_types.size > 0 -%}
+              <div class="n-bez" style="margin-top:.9rem">
+                <span class="n-bez__wort">Bezahlen mit</span>
+                <ul class="n-bez__liste">
+                  {%- for art in shop.enabled_payment_types -%}
+                    <li><img class="n-bez__sym" src="{{ art | payment_type_img_url }}"
+                             alt="{{ art | replace: '_', ' ' }}"
+                             width="38" height="24" loading="lazy" decoding="async"></li>
+                  {%- endfor -%}
+                </ul>
+              </div>
+            {%- endif -%}
+
             <ul class="a-sicher">
               <li>14 Tage Rückgabe</li>
               <li>7–14 Werktage</li>
