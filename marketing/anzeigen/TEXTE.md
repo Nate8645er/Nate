@@ -150,6 +150,48 @@ Für Wasser gebaut
 
 ---
 
+## Satz 5 – aus der Kundenrecherche, nicht aus dem Kopf
+
+Am 18.8.2026 in einem deutschen Hundeforum nachgelesen. Zweimal
+unabhängig, unaufgefordert, als *der* Grund für eine Kaufempfehlung:
+
+> „Man kann das Wasser, was der Hund nicht trinkt wieder zurück in die
+> Flasche gießen, also keine Verschwendung."
+
+> „nicht getrunken Wasser kann wieder in die Flasche zurücklaufen.
+> Klare Kaufempfehlung."
+
+Unsere Flasche kann das, und es steht auf der Startseite – in den
+Anzeigen kam es bisher **kein einziges Mal** vor. Die vier Sätze oben
+sind aus dem Produkt heraus geschrieben, dieser aus dem, was Leute von
+selbst loben. Genau deshalb gehört er in den Test.
+
+**Primärtext**
+
+```
+Was dein Hund nicht austrinkt, läuft zurück in die Flasche. Kein Rest, den du wegkippst. 550 ml, sechs Farben.
+
+Gratisversand in der Schweiz, 14 Tage Rückgaberecht.
+```
+
+**Überschrift**
+
+```
+Der Rest läuft zurück
+```
+
+**Beschreibung**
+
+```
+550 ml · Gratisversand CH
+```
+
+110 von 125 Zeichen vor dem Umbruch, nachgemessen. Nichts darin ist
+unbelegt: das Zurücklaufen ist im eigenen Film zu sehen und steht
+wörtlich auf der Seite.
+
+---
+
 ## Ziel der Anzeigen — korrigiert
 
 Alle vier zeigen auf die **Startseite**:

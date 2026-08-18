@@ -1,6 +1,6 @@
 # Product Marketing Context
 
-**Document version:** v2
+**Document version:** v3
 **Last updated:** 2026-08-18
 
 > **Zur Herkunft der Angaben.** Alles hier ist an der ausgelieferten
@@ -201,14 +201,112 @@ mehr als Wasser einfüllen will; wer sofort geliefert braucht.
 
 ## Customer Language
 
-**UNBEKANNT — es gibt keine Kunden.** Null Bestellungen, keine
-Gespräche, keine Bewertungen, keine Support-Anfragen. Jedes „Zitat"
-hier wäre erfunden.
+**Eigene Kunden: weiterhin null.** Kein Zitat unten stammt von einem
+Käufer von Let'sDrink. Alle sind Fremdquellen zum Produkttyp,
+wörtlich abgeschrieben am 18.8.2026.
 
-Zu füllen aus fremden Quellen, bevor die erste grosse Kampagne läuft:
-Bewertungen ähnlicher Produkte bei Galaxus, Amazon.de und Fressnapf,
-sowie Hunde-Foren und Subreddits. Dafür ist der Skill
-`customer-research` da.
+**Quellen und ihre Schwächen — bitte mitlesen:**
+
+| Quelle | Umfang | Schwäche |
+|---|---|---|
+| `dogorama.app`, Forumsfaden „Hundetrinkflasche für unterwegs" | rund 8 Schreibende | deutsch, nicht schweizerisch; älterer Faden |
+| `tatzio.de`, Bewertungen am Produkt | 6 eindeutige | anderes, besseres Produkt; vom Händler ausgewählt, alle positiv |
+
+Zwei Quellen. Nach dem Massstab des Skills reicht das für **mittlere**
+Sicherheit, nicht für hohe (dafür bräuchte es drei unabhängige). Vor
+grossem Budget nachlegen.
+
+### Thema 1 — Undichtigkeit ist die beherrschende Sorge (mittel)
+
+In beiden Quellen, unaufgefordert. Der Forumsfaden **entsteht
+überhaupt nur deswegen**:
+
+> „Wir sind auf der Suche nach einer Trinkflasche für den Hund für
+> unterwegs. Wir hatten eine ganz schöne, die aber recht schnell
+> undicht war."
+
+> „So eine ähnliche hatte ich vorher, fand sie super, war aber nach
+> 3 x undicht.."
+
+> „sie hält schön dicht, ist befüllt auch nicht zu schwer" — Lob
+
+> „Die Flasche war wasserdicht und lief nicht aus." — Lob, Tatzio
+
+**Das ist der unangenehmste Befund im ganzen Dokument.** Die Frage,
+die Käufer in dieser Warengruppe zuerst stellen, ist genau die eine,
+die dieser Laden bewusst nicht beantwortet. Unsere Ehrlichkeits-
+Passage ist die richtige Antwort auf eine Frage, die andere einfach
+mit „auslaufsicher" überschreiben.
+
+Daraus folgt **keine** Lockerung der Regel. Es folgt: die Passage muss
+früh und selbstbewusst stehen, nicht kleingedruckt. Sie ist der
+wichtigste Text auf der Seite, nicht eine Fussnote.
+
+### Thema 2 — „Das Restwasser läuft zurück" ist das Lieblingsmerkmal (mittel)
+
+Zweimal unabhängig im Faden genannt, beide Male als *der* Grund für
+die Kaufempfehlung:
+
+> „Man kann das Wasser, was der Hund nicht trinkt wieder zurück in die
+> Flasche gießen, also keine Verschwendung."
+
+> „nicht getrunken Wasser kann wieder in die Flasche zurücklaufen.
+> Klare Kaufempfehlung."
+
+**Unsere Flasche kann das, und es steht auf der Seite** („Das übrige
+Wasser läuft zurück in die Flasche."). In **keiner** der vier
+Anzeigen kommt es vor. Das ist die konkreteste Lücke, die diese
+Recherche aufgedeckt hat.
+
+Anmerkung in eigener Sache: ich hatte diesen Satz auf der Startseite
+von drei Erwähnungen auf eine gekürzt, weil er mir doppelt vorkam.
+Nach dieser Recherche war das die falsche Richtung — jedenfalls für
+die Anzeigen, wo er ganz fehlt.
+
+### Thema 3 — Gemessen wird in Jahren, nicht in Merkmalen (mittel)
+
+> „Bei mir hält sie bisher etwas über 1 Jahr."
+
+> „Diese ist bei uns auch schon über 1 Jahr immer wieder im Einsatz,
+> sind sehr zufrieden"
+
+Haltbarkeit ist die Währung. Zu unserer Flasche wissen wir dazu
+nichts — also sagen wir dazu auch nichts.
+
+### Thema 4 — Der wahre Gegner ist die PET-Flasche (mittel)
+
+> „Ich nehm 0,5 Liter Einwegflaschen die verstau ich entweder in einer
+> kleinen Gürteltasche … dazu einen kleinen faltbaren Trinknapf"
+
+> „Ich benutze am liebsten ne alte Fit-Flasche"
+
+Bestätigt die Annahme oben: nicht Tatzio ist der Gegner, sondern die
+leere Mineralwasserflasche mit Faltnapf. Gegen die gewinnt man mit
+„ein Gegenstand statt zwei", nicht mit Ausstattung.
+
+### Thema 5 — Wo sie benutzt wird (mittel)
+
+Wanderung, Auto, Urlaub, Spaziergang, grosser Hund. In beiden Quellen.
+Deckt sich mit den vorhandenen Anzeigenmotiven — hier ist nichts zu
+ändern.
+
+**Words to use:** Napf, unterwegs, Spaziergang, 550 ml, sechs Farben,
+Gratisversand, 14 Tage Rückgabe, **„das übrige Wasser läuft zurück"**,
+**„ein Gegenstand statt zwei"**.
+
+**Words to avoid — das sind harte Grenzen, keine Stilfragen:**
+- „auslaufsicher", „dicht", „leakproof" — es gibt keine Zusicherung
+  des Lieferanten. **Auch dann nicht, wenn Thema 1 zeigt, dass genau
+  das gefragt ist.** Der Wettbewerb schreibt es hin; wir nicht.
+- „BPA-frei", „spülmaschinenfest", Materialangaben, Masse, Gewicht —
+  nichts davon ist belegt.
+- Haltbarkeitsangaben („hält jahrelang") — nicht belegt.
+- Jede Bewertung, Sternzahl oder Verkaufszahl — es gibt null. Die
+  Zitate oben sind **fremde** Stimmen zum Produkttyp und dürfen
+  niemals als Kundenstimmen des Ladens auftreten.
+- Dringlichkeit, Countdown, Verknappung, „nur noch heute".
+- Andeutungen, dass etwas anderes als Wasser hineingehört.
+- Der Buchstabe scharfes s. Schweizer Schreibweise, immer „ss".
 
 **Words to use:** Napf, unterwegs, Spaziergang, 550 ml, sechs Farben,
 Gratisversand, 14 Tage Rückgabe.
@@ -309,6 +407,15 @@ Obergrenze CHF 30 je Bestellung, Zielwert CHF 15.
 
 *Neueste zuerst. Eine Zeile je Fassung: was sich geaendert hat und warum.*
 
+- v3 (2026-08-18) — Customer Language von UNBEKANNT auf zwei
+  Fremdquellen umgestellt (Hundeforum dogorama.app, Bewertungen bei
+  tatzio.de), mit Sicherheitsstufen und offen benannten Schwaechen;
+  eigene Kunden weiterhin null. Zwei Befunde mit Folgen: erstens ist
+  Undichtigkeit die beherrschende Sorge der Warengruppe — also genau
+  die Frage, die wir bewusst nicht beantworten; die Regel bleibt
+  trotzdem. Zweitens ist "das Restwasser laeuft zurueck" das
+  spontan meistgelobte Merkmal, steht auf unserer Seite und fehlte in
+  allen vier Anzeigen. Daraus Satz 5 in TEXTE.md.
 - v2 (2026-08-18) — Wettbewerb von UNBEKANNT auf gemessen umgestellt:
   Meta-Werbebibliothek plus Besuch der gefundenen Laeden. Kernbefund:
   in der Schweiz null aktive Anzeigen fuer das Produkt, aber Tatzio.de
