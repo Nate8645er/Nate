@@ -34,7 +34,7 @@ Keine Bewertung, keine Verkaufszahl, kein Versprechen zur Dichtigkeit.
 |---|---|
 | Seitenname | `Let'sDrink` (gerader Apostroph, wie im Shop) |
 | Kategorie | Zoohandlung – falls nicht vorhanden: Einzelhandel |
-| Kurzbeschreibung | Eine Trinkflasche mit fest angebautem Napf für Hund und Katze. 550 ml, sechs Farben. Ein Produkt, ein Mensch in Rapperswil-Jona. |
+| Kurzbeschreibung | 🐾 Wasser dabei, Napf inklusive. 550 ml, sechs Farben. 💧 Gratisversand in die Schweiz |
 | Website | `https://www.letsdrink-pet.com` |
 | E-Mail | `yourcatlove.info@gmail.com` |
 
@@ -42,16 +42,38 @@ Die Website steht dort **ohne** Anhang. Die Seite ist die Visitenkarte,
 nicht die Anzeige – die Anhänge gehören nur an die Anzeigen, sonst
 verfälschen sie die Messung.
 
-## Danach nicht vergessen
+## Die Seite steht
 
-Die Seite muss im Business Manager (KatzenUfos) dem Werbekonto
-**KatzenUfo** zugewiesen werden. Ohne diesen Schritt sieht das Werbekonto
-sie nicht, und ohne Absender lässt sich keine Anzeige anlegen – am
-17.8.2026 gemessen: sowohl die Seitenliste des Nutzerkontos als auch die
-des Werbekontos war leer.
+Am 18.8.2026 angelegt und vom Connector gemessen sichtbar:
+
+| | |
+|---|---|
+| Seite | `Lets'drink`, **page_id 1189244220947958** |
+| Konto | dasselbe, das die Werbekonten hält (Nate Murseli) |
+
+Diese ID ist der Absender für alle Anzeigen.
+
+Zwei tote Seiten daneben, die nicht benutzt werden: `let'sdrink`
+(1282415524951154, leer, erster Anlauf) und `Let'Drink` auf dem zweiten
+Facebook-Konto.
+
+Der Name trägt noch den Apostroph an der falschen Stelle; richtig ist
+`Let'sDrink`. Solange die Seite frisch ist, geht eine Umbenennung ohne
+Prüfung durch.
+
+Die Seite muss dem Werbekonto **nicht** eigens zugewiesen werden – sie
+füllt die Liste des Werbekontos von selbst, sobald die erste Anzeige
+läuft. Was fehlt, ist etwas anderes: der **Pixel** hängt an keinem
+Werbekonto. Ohne ihn lässt sich nicht auf Käufe optimieren.
 
 ## Neu bauen
 
 `bilder.py` erzeugt beide Dateien. Es braucht die Schrift als TTF und das
 Flaschenbild; beide holt man vom CDN des Shops, die Pfade stehen oben in
 der Datei.
+
+## Die Rückgabefrist
+
+**14 Tage, nicht 30.** Ich hatte in einem Entwurf einmal 30 geschrieben.
+Die Produktseite sagt an sechs Stellen 14. Wo in diesen Unterlagen eine
+Frist steht, ist es diese.
