@@ -61,8 +61,12 @@ def tropfen(groesse, farbe):
 
 
 def profilbild(pfad, kante=1024):
+    # 0.46 war zu zaghaft. Am 18.8.2026 in echter Groesse nachgemessen:
+    # im Feed steht das Profilbild mit rund 40 Pixel neben der Anzeige,
+    # und bei 46 Prozent Kantenanteil verschwand der Tropfen dort fast.
+    # Bei 0.62 traegt er, bei 0.72 wird der Rand zu eng.
     b = Image.new("RGB", (kante, kante), TEXT)
-    t = tropfen(int(kante * 0.46), "#FFFFFF")
+    t = tropfen(int(kante * 0.62), "#FFFFFF")
     b.paste(t, ((kante - t.width) // 2, (kante - t.height) // 2), t)
     b.save(pfad, quality=95)
     return b.size
