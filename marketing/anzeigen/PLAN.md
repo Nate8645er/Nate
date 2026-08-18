@@ -122,13 +122,31 @@ Alles **pausiert**. Nichts liefert aus, nichts kostet.
 Meta empfiehlt für dieses Ziel selbst `OFFSITE_CONVERSIONS` als
 Optimierung – genau das, was ohne Pixel am Werbekonto nicht geht.
 
-## Werbemittel
+## Werbemittel - die gueltigen
 
 | Motiv | Creative-ID |
 |---|---|
-| Bank · Wasser dabei, Napf inklusive | `1404686871521712` |
-| Napf · Der Napf ist schon dran | `1104575722240401` |
+| A1 Hand · Wasser dabei, Napf inklusive | `1698306971276574` |
+| A2 Hund · Der Napf ist schon dran | `2010420012844133` |
+| A3 Rucksack · Im Rucksack dabei | `1064921423145405` |
 | Farben · Sechs Farben, eine Flasche | `1070643555444117` |
+
+### Und die toten daneben
+
+Fuenf Werbemittel im Konto sind Ausschuss und werden nicht benutzt:
+`1404686871521712`, `1104575722240401`, `1837253994367029`,
+`1588790252881607`, `1419096773440701`.
+
+Zwei aus der ersten Runde, in der die Textflaeche das Produkt verdeckte;
+drei aus der zweiten, in der der Verlauf zu schwach war. Ein Bild laesst
+sich in einem bestehenden Werbemittel nicht austauschen - Meta friert es
+beim Anlegen ein -, also musste jede Korrektur ein neues Werbemittel
+werden.
+
+`ads_creative_delete` ist fuer dieses Werbekonto nicht freigeschaltet.
+Sie stehen also weiter in der Bibliothek, haengen aber an keiner
+Anzeige und kosten nichts. Im Werbeanzeigenmanager lassen sie sich von
+Hand loeschen.
 
 Alle drei mit Absender Seite `1189244220947958`, Knopf „Jetzt einkaufen",
 Ziel die Produktseite, Anzeigename `letsdrink-pet.com`.
