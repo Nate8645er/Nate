@@ -150,18 +150,46 @@ Für Wasser gebaut
 
 ---
 
-## Ziel der Anzeigen
+## Ziel der Anzeigen — korrigiert
 
-Alle vier zeigen auf die **Produktseite**, nicht auf die Startseite:
+Alle vier zeigen auf die **Startseite**:
 
 ```
-https://www.letsdrink-pet.com/products/trinkflasche-napf-hund-katze
+https://www.letsdrink-pet.com/
 ```
 
-Am 18.8.2026 gemessen: von 542 Seitenaufrufen der letzten sieben Tage
-lösten nur 7 ein „Produkt angesehen" aus. Fast aller Verkehr blieb auf
-der Startseite. Wer dort landet, zählt für Meta nicht als Interessent,
-und die Kampagne lernt nichts.
+**Vorher stand hier das Gegenteil, und die Begründung war falsch.**
+Ich hatte geschrieben: von 542 Aufrufen lösten nur 7 ein „Produkt
+angesehen" aus, also bleibe der Verkehr auf einer Seite, die nicht
+verkauft. Der erste Teil stimmt, der Schluss nicht.
+
+Nachgemessen an den ausgelieferten Dateien:
+
+| | Startseite | Produktseite |
+|---|---|---|
+| Zeilen Vorlage | 1046 | 317 |
+| Kaufknopf mit Preis | ja | ja |
+| Farbwahl, Film, Fragen | ja | ja |
+| Mengenstaffel „4 + 1 gratis" | **ja** | nein |
+| Sechs-Farben-Galerie | **ja** | nein |
+
+Die Startseite ist die vollständigere Verkaufsseite. Sie hat zwei
+Kaufargumente, die der Produktseite ganz fehlen. Dass „Produkt
+angesehen" selten auslöst, liegt daran, dass Shopifys Meta-Pixel
+dieses Ereignis nur auf `/products/…` sendet — nicht daran, dass die
+Startseite schlecht wäre. Ich habe eine Messlücke für ein
+Verkaufsproblem gehalten.
+
+**Was das für die Optimierung kostet: nichts.** Stufe 1 optimiert auf
+„In den Warenkorb". Der Kaufknopf der Startseite ruft `cart/add.js`
+auf, und Shopify meldet daraus das Ereignis `product_added_to_cart` —
+unabhängig davon, auf welcher Seite geklickt wurde. Das Signal, auf
+das die Kampagne lernt, geht also nicht verloren.
+
+Preis der Umstellung: die vier bestehenden Werbemittel tragen die
+Produktseiten-Adresse fest eingebrannt und lassen sich nicht ändern.
+Es braucht vier neue. Die Bilder liegen schon auf der Shopify-CDN und
+werden wiederverwendet — kein neuer Upload.
 
 ## Wenn sich der Preis ändert
 

@@ -46,6 +46,43 @@ ist ein Umweg, aber ein kürzerer als wochenlang blind zu fliegen.
 **Stufe 2 – auf „Kauf" umstellen**, sobald der Pixel genug Käufe
 gesehen hat. Ab dann sucht Meta Käufer statt Klicker.
 
+## Wohin die Anzeigen zeigen — geändert am 18.8.2026
+
+Auf die **Startseite** `https://www.letsdrink-pet.com/`, nicht mehr auf
+die Produktseite. Die ausführliche Begründung samt Gegenüberstellung
+steht in `TEXTE.md`. Kurz: die Startseite ist die vollständigere
+Verkaufsseite und hat als einzige die Mengenstaffel und die
+Sechs-Farben-Galerie; die niedrige Zahl „Produkt angesehen" war eine
+Messlücke des Shopify-Pixels, kein Urteil über die Seite.
+
+Folge für die Umsetzung: die vier bereits angelegten Werbemittel
+tragen die alte Adresse fest eingebrannt. Es braucht vier neue —
+gleiche Bilder von der Shopify-CDN, gleiche Texte, andere Zieladresse.
+Sie entstehen zusammen mit dem Anzeigensatz, sobald der Pixel hängt,
+damit nicht noch mehr unbenutzte Werbemittel in der Bibliothek liegen.
+
+## Was am Messtag sonst noch in der Schweiz lief
+
+In der Meta-Werbebibliothek gesucht, 18.8.2026:
+
+| Suche | Land | aktive Anzeigen |
+|---|---|---|
+| „Hundetrinkflasche" | CH | **0** |
+| „Trinkflasche Hund Napf unterwegs" | CH | **0** |
+| „Hundetrinkflasche" | DE + AT + CH | 10 |
+
+Für dieses Produkt wirbt in der Schweiz gerade niemand. Das heisst
+nicht automatisch „freie Bahn" — es kann auch heissen, dass es schon
+jemand versucht und wieder abgestellt hat. Wissen tun wir es nicht.
+
+**Der unbequeme Teil:** `tatzio.de` verkauft für EUR 34.95–37.95 eine
+Flasche mit 1000 ml, Edelstahl 304, Vakuumisolierung und drei
+Futterfächern. Zum selben Geld das deutlich bessere Gerät. Was uns
+schützt, ist Geografie, nicht das Produkt: Tatzio bewirbt Deutschland,
+rechnet in Euro und verlangt EUR 5.90 Versand. Steht dieser Vergleich
+je nebeneinander, verlieren wir ihn. Die Einzelheiten stehen in
+`.agents/product-marketing.md`.
+
 ## Aufbau
 
 ```
@@ -122,7 +159,7 @@ Alles **pausiert**. Nichts liefert aus, nichts kostet.
 Meta empfiehlt für dieses Ziel selbst `OFFSITE_CONVERSIONS` als
 Optimierung – genau das, was ohne Pixel am Werbekonto nicht geht.
 
-## Werbemittel - die gueltigen
+## Werbemittel - angelegt, aber ueberholt
 
 | Motiv | Creative-ID |
 |---|---|
@@ -130,6 +167,12 @@ Optimierung – genau das, was ohne Pixel am Werbekonto nicht geht.
 | A2 Hund · Der Napf ist schon dran | `2010420012844133` |
 | A3 Rucksack · Im Rucksack dabei | `1064921423145405` |
 | Farben · Sechs Farben, eine Flasche | `1070643555444117` |
+
+Bilder und Texte dieser vier stimmen weiterhin. Nur die Zieladresse
+ist ueberholt - sie zeigen auf die Produktseite. Weil Meta die Adresse
+in einem bestehenden Werbemittel einfriert, werden sie durch vier neue
+ersetzt, die auf die Startseite zeigen. Angelegt zusammen mit dem
+Anzeigensatz.
 
 ### Und die toten daneben
 
