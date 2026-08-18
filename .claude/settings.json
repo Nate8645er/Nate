@@ -1,4 +1,57 @@
 {
+  "permissions": {
+    "allow": [
+      "mcp__Facebokk_Ads",
+      "mcp__Shopify",
+      "mcp__DSERS",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git show*)"
+    ],
+    "ask": [
+      "mcp__Facebokk_Ads__ads_create_campaign",
+      "mcp__Facebokk_Ads__ads_create_ad_set",
+      "mcp__Facebokk_Ads__ads_create_ad",
+      "mcp__Facebokk_Ads__ads_create_creative",
+      "mcp__Facebokk_Ads__ads_create_custom_audience",
+      "mcp__Facebokk_Ads__ads_update_entity",
+      "mcp__Facebokk_Ads__ads_activate_entity",
+      "mcp__Facebokk_Ads__ads_creative_update",
+      "mcp__Facebokk_Ads__ads_creative_delete",
+      "mcp__Facebokk_Ads__ads_creative_upload_image",
+      "mcp__Facebokk_Ads__ads_creative_upload_video",
+      "mcp__Facebokk_Ads__ads_update_custom_audience",
+      "mcp__Facebokk_Ads__ads_update_custom_audience_users",
+      "mcp__Facebokk_Ads__ads_delete_custom_audience",
+      "mcp__Facebokk_Ads__ads_boost_ig_post",
+      "mcp__Facebokk_Ads__ads_catalog_create",
+      "mcp__Facebokk_Ads__ads_catalog_update_catalog",
+      "mcp__Facebokk_Ads__ads_catalog_update_product",
+      "mcp__Facebokk_Ads__ads_catalog_delete_product",
+      "mcp__Facebokk_Ads__ads_catalog_product_create",
+      "mcp__Facebokk_Ads__ads_catalog_event_source_connect",
+      "mcp__Facebokk_Ads__ads_catalog_event_source_disconnect",
+      "mcp__Facebokk_Ads__ads_pixel_event_create",
+      "mcp__Facebokk_Ads__ads_pixel_event_update",
+      "mcp__Facebokk_Ads__ads_pixel_event_delete",
+      "mcp__Shopify__graphql_mutation",
+      "mcp__Shopify__create-product",
+      "mcp__Shopify__update-product",
+      "mcp__Shopify__bulk-update-product-status",
+      "mcp__Shopify__create-collection",
+      "mcp__Shopify__update-collection",
+      "mcp__Shopify__add-to-collection",
+      "mcp__Shopify__create-discount",
+      "mcp__Shopify__set-inventory",
+      "mcp__Shopify__switch-shop",
+      "mcp__DSERS__dsers_product_import",
+      "mcp__DSERS__dsers_product_delete",
+      "mcp__DSERS__dsers_product_update_rules",
+      "mcp__DSERS__dsers_sku_remap",
+      "mcp__DSERS__dsers_store_push"
+    ]
+  },
   "extraKnownMarketplaces": {
     "nate-marketplace": {
       "source": {
