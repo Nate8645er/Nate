@@ -3,6 +3,41 @@
 Stand 18.8.2026. Alles hier ist im Shopify-Konto abgefragt oder an der
 ausgelieferten Seite gelesen. Keine Vermutung ohne Kennzeichnung.
 
+---
+
+## NACHTRAG vom selben Tag: das meiste unten steht auf zu duennem Eis
+
+Nach einem neuen Meta-Zugang konnte ich den Pixel zum ersten Mal
+stundenweise auslesen. Zwei Befunde entwerten die Grundlage dieses
+Dokuments zum grossen Teil:
+
+**Erstens: der Pixel gehoert zwei Laeden.** `1978393872804216` feuert
+sowohl auf `letsdrink-pet.com` als auch auf `katzenufos.com`. Die
+542 Seitenaufrufe, mit denen ich hier rechne, sind eine Mischung aus
+beiden Shops. Die Zahl gilt nicht fuer Let'sDrink allein.
+
+**Zweitens: die zwei Warenkoerbe und die zwei Kassengaenge liegen in
+derselben einzigen Stunde** — 16.8.2026, 18 Uhr. Davor nichts, danach
+nichts. Das sind mit grosser Wahrscheinlichkeit **nicht zwei Kunden,
+sondern eine Sitzung**, moeglicherweise ein eigener Test.
+
+Dasselbe Muster bei den sieben Produktansichten: alle sieben in einer
+einzigen Stunde am 15.8.
+
+**Was das bedeutet:** meine Aussage „der Abbruch liegt an der Kasse"
+ist damit nicht mehr belegt. Wahrscheinlicher ist etwas Nuechterneres
+— **es hat nie ein echter Kaeufer die Kasse erreicht.** Der Trichter
+ist nicht kaputt; er ist leer.
+
+**Was trotzdem stehen bleibt:** die Maengel 1 bis 5 unten sind alle
+einzeln nachgemessen und real. Sie gehoeren behoben, weil sie falsch
+sind — nicht, weil sie nachweislich Umsatz kosten. Diesen Nachweis
+gibt es nicht. Insbesondere verliert die TWINT-Vermutung ihren
+Hauptbeleg: sie stuetzte sich auf zwei Abbrueche, die vermutlich gar
+keine Kundenabbrueche waren.
+
+---
+
 ## Warum überhaupt hier suchen
 
 | Ereignis | Anzahl |
