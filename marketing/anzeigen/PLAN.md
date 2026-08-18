@@ -206,6 +206,44 @@ Nebenwirkung: die Bilder stehen damit auch im Shopify-Dateibereich.
 Sie stören dort nicht, lassen sich aber jederzeit löschen – dann
 brechen allerdings die Werbemittel.
 
+## 18.8.2026 abends: Anzeigensatz steht, Anzeigen scheitern
+
+Nate kam nicht mehr in sein Meta-Konto (Bestaetigung haengt an einer
+alten Telefonnummer). Mein Connector-Zugang lief aber weiter, also
+habe ich versucht zu bauen.
+
+**Angelegt und in Ordnung:**
+
+| Was | ID |
+|---|---|
+| Anzeigensatz `CH · breit 25-65 · Warenkorb` | `120250908761910251` |
+| S1 Farben · Startseite | `1591323022470826` |
+| S2 Hund · Startseite | `896321246514385` |
+| S3 Hand · Startseite | `930602600113164` |
+| S4 Rucksack · Startseite · der ehrliche | `1061440346592747` |
+| S5 Hund · Startseite · Restwasser | `1316943306969895` |
+
+Alles PAUSED. Die fuenf Werbemittel zeigen auf die Startseite und
+benutzen dieselben Bild-Hashes wie vorher - kein neuer Upload noetig.
+
+**Und der Fehler, den ich gemacht habe:** der Anzeigensatz liess sich
+mit dem Pixel im `promoted_object` anlegen, ohne zu murren. Daraus habe
+ich geschlossen, die Pixel-Sperre sei gar nicht real, und habe Nate
+"es funktioniert" geschrieben. Das war voreilig. Beim naechsten
+Schritt, dem Anlegen der Anzeigen, kam:
+
+```
+Account does not have access to pixel: Account 1524822076060042
+does not have access to pixel 1978393872804216
+```
+
+Meta prueft die Pixel-Berechtigung also erst auf Anzeigenebene, nicht
+auf Anzeigensatzebene. **Die Sperre ist echt.** Ich haette den Erfolg
+erst melden duerfen, nachdem die ganze Kette durch war.
+
+Der Anzeigensatz bleibt stehen - er kostet nichts und ist fertig, sobald
+der Pixel haengt. Dann fehlen nur noch fuenf Aufrufe fuer die Anzeigen.
+
 ## Was noch fehlt
 
 1. **Pixel dem Werbekonto zuweisen.** Ohne das kein Anzeigensatz mit
