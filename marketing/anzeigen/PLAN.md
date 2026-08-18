@@ -101,3 +101,65 @@ nicht. Das ist der einzige harte Blocker.
 Kampagne, Anzeigensatz und vier Anzeigen – **alle pausiert**. Nichts
 startet von selbst, nichts kostet etwas, bevor Nate es angeschaut und
 selbst auf „Aktivieren" gedrückt hat.
+
+---
+
+# Was am 18.8.2026 angelegt wurde
+
+Alles **pausiert**. Nichts liefert aus, nichts kostet.
+
+## Kampagne
+
+| | |
+|---|---|
+| Name | `Let'sDrink · Verkauf · Start CH` |
+| ID | `120250903005380251` |
+| Ziel | OUTCOME_SALES |
+| Budget | CHF 20 pro Tag, auf Kampagnenebene (CBO) |
+| Gebotsstrategie | LOWEST_COST_WITHOUT_CAP |
+| Status | PAUSED |
+
+Meta empfiehlt für dieses Ziel selbst `OFFSITE_CONVERSIONS` als
+Optimierung – genau das, was ohne Pixel am Werbekonto nicht geht.
+
+## Werbemittel
+
+| Motiv | Creative-ID |
+|---|---|
+| Bank · Wasser dabei, Napf inklusive | `1404686871521712` |
+| Napf · Der Napf ist schon dran | `1104575722240401` |
+| Farben · Sechs Farben, eine Flasche | `1070643555444117` |
+
+Alle drei mit Absender Seite `1189244220947958`, Knopf „Jetzt einkaufen",
+Ziel die Produktseite, Anzeigename `letsdrink-pet.com`.
+
+## Umweg beim Bild
+
+`ads_creative_upload_image` ist für dieses Werbekonto nicht
+freigeschaltet – dieselbe Meldung wie beim Video-Upload. Statt dessen
+liegen die drei Bilder jetzt in Nates Shopify-Dateien und die
+Werbemittel verweisen direkt auf die CDN-Adresse. Das nimmt die
+Schnittstelle an.
+
+Nebenwirkung: die Bilder stehen damit auch im Shopify-Dateibereich.
+Sie stören dort nicht, lassen sich aber jederzeit löschen – dann
+brechen allerdings die Werbemittel.
+
+## Was noch fehlt
+
+1. **Pixel dem Werbekonto zuweisen.** Ohne das kein Anzeigensatz mit
+   Kauf- oder Warenkorb-Optimierung.
+2. **Anzeigensatz** – ein Aufruf, sobald der Pixel hängt.
+3. **Drei Anzeigen** – je einer.
+4. **Instagram-Konto.** Die Werbemittel tragen keine
+   `instagram_user_id`, weil `ads_get_ig_accounts` fuer dieses Konto
+   nicht freigeschaltet ist. So liefern sie nur auf Facebook aus. Im
+   Werbeanzeigenmanager laesst sich das Instagram-Konto von Hand
+   nachtragen.
+
+Bewusst NICHT gemacht: den Anzeigensatz schon mit einer Ersatz-
+Optimierung wie „Landingpage-Aufrufe" anzulegen. Er waere fertig
+aussehend und aktivierbar, wuerde aber auf das falsche Ziel
+optimieren. Eine Falle zu bauen, die aussieht wie ein fertiger
+Aufbau, spart fuenf Minuten und kostet im schlechtesten Fall das
+Budget einer Woche.
