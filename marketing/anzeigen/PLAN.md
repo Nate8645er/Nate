@@ -470,3 +470,60 @@ oben, dunkle Schrift, untere Bildhaelfte unberuehrt. Im Querformat
 liegen dieselben Flaschen unter der Textspalte, also gilt es dort
 auch — beim ersten Durchgang hatte ich nur das Quadrat umgestellt und
 das Querformat wieder nicht angesehen.
+
+## 19.8.2026: Werbevideo aus Nates Film
+
+Nate: „Das können wir als werbe video benutzen." 13.05 s, 888×490,
+HEVC, mit Ton. Inhalt: Produktnahaufnahmen auf Schwarz, Hund trinkt
+im Wald, Wanderung im Geröll, **Katze trinkt im Auto**, Küstenstrasse.
+Professionell gedreht — und die Katze ist genau das, was den
+Standbildern fehlte.
+
+### Geprüft, bevor gebaut wurde
+
+Bei voller Auflösung gegen den Freisteller gehalten:
+
+| Merkmal | Film | Nates Flasche |
+|---|---|---|
+| Flaschenkörper | klar | klar ✓ |
+| Kopf, Napfform | türkis, gleich | ✓ |
+| Schloss-Zeichen | zwei, oben zu / unten offen | **identisch** ✓ |
+| Knopf | **Wirbel mit zwei Punkten** | **Pfotenabdruck** ✗ |
+
+Also **nicht** das andere Modell aus dem 30-Sekunden-Film — das hatte
+einen cremefarbenen Körper. Hier stimmt alles bis auf den Knopf.
+Dieselbe Bauform, anderes eingeprägtes Zeichen; der Wirbel ist
+vermutlich das Markenzeichen des Herstellers.
+
+### Was gebaut wurde — `shop/werbung/video.py`
+
+Drei Fassungen, je 15.1 s (13.1 s Film + 2 s Abspann), **ohne Ton**:
+
+| Format | Film im Rahmen | Bemerkung |
+|---|---|---|
+| 1080×1080 | 1080×596 | Kopfzeile 49 px, das Band gibt nicht mehr her |
+| 1080×1350 | 1080×596 | Kopfzeile 93 px |
+| 1080×1920 | 1080×796, seitlich beschnitten | Schutzzone 250 oben / 340 unten |
+
+**Nicht beschnitten, sondern gerahmt.** 888 px Breite auf 1080 sind
+Faktor 1.22 — vertretbar. Ein 1:1-Zuschnitt hätte 490 auf 1080
+gestreckt, Faktor 2.2. Deshalb liegt der Film in voller Breite, der
+Text steht auf dem Band darunter.
+
+**Der Ton kommt weg.** Meta spielt Anzeigen stumm an, und Musik in
+einem fremd produzierten Film ist die häufigste Urheberrechtsfalle
+bei Videoanzeigen. Ohne Ton fällt das Risiko weg, die Anzeige
+verliert nichts.
+
+**Beim Hochformat lag der Preis in der Schutzzone.** Erste Fassung
+liess das Band bis zum unteren Bildrand laufen — Preis und Adresse
+wären hinter Metas Aktionsknopf verschwunden. Jetzt endet das Band
+340 px darüber, und der Film füllt den freigewordenen Platz.
+
+### Offen — nur Nate kann es beantworten
+
+**Woher stammt der Film, und darf er ihn verwenden?** Lieferanten
+geben Händlern solche Filme häufig ausdrücklich frei; dann ist alles
+in Ordnung. Stammt er von einer fremden Marke, kann Meta die Anzeige
+sperren und im schlechten Fall das Werbekonto. Die Dateien liegen
+gebaut bereit — veröffentlicht wird nichts, bevor das geklärt ist.
