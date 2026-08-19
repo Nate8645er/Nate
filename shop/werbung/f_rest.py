@@ -36,7 +36,7 @@ def quadrat():
     img = studio_bg(W, H, horizon=828)
     stelle(img, flasche(FARBE), hoehe=742, cx=792, boden_y=884)
 
-    text(img, (m, m), "LET'SDRINK", font(20, True), MUTED, track=3.4)
+    text(img, (m, m), "Let'sDrink", font(24, True), MUTED, track=0.4)
     y = block(img, (m, 348), ["Der Rest", "läuft", "zurück."], font(88, True),
               lh=96, track=-2.2)
     text(img, (m, y + 34), "Kein Wasser, das du wegkippst.", font(29), MUTED)
@@ -54,7 +54,7 @@ def story():
     stelle(img, flasche(FARBE), hoehe=740, cx=560, boden_y=1414,
            a_blur=46, a_w=1.5)
 
-    text(img, (m, 270), "LET'SDRINK", font(22, True), MUTED, track=3.8)
+    text(img, (m, 270), "Let'sDrink", font(26, True), MUTED, track=0.4)
     block(img, (m, 356), ["Der Rest", "läuft", "zurück."], font(96, True),
           lh=104, track=-2.4)
 
@@ -74,7 +74,7 @@ def link():
     stelle(img, flasche(FARBE), hoehe=498, cx=958, boden_y=534,
            a_blur=34, a_h=0.085)
 
-    text(img, (m, 56), "LET'SDRINK", font(18, True), MUTED, track=3.2)
+    text(img, (m, 56), "Let'sDrink", font(22, True), MUTED, track=0.4)
     y = block(img, (m, 176), ["Der Rest läuft", "zurück."], font(72, True),
               lh=78, track=-1.8)
     text(img, (m, y + 24), "Kein Wasser, das du wegkippst.", font(25), MUTED)

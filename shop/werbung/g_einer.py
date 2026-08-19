@@ -33,7 +33,7 @@ def quadrat():
     img = studio_bg(W, H, horizon=828)
     stelle(img, flasche(FARBE), hoehe=742, cx=792, boden_y=884)
 
-    text(img, (m, m), "LET'SDRINK", font(20, True), MUTED, track=3.4)
+    text(img, (m, m), "Let'sDrink", font(24, True), MUTED, track=0.4)
     y = block(img, (m, 348), ["Ein Gegenstand", "statt zwei."], font(76, True),
               lh=84, track=-1.9)
     text(img, (m, y + 34), "Flasche und Napf sind eins.", font(29), MUTED)
@@ -51,7 +51,7 @@ def story():
     stelle(img, flasche(FARBE), hoehe=740, cx=560, boden_y=1414,
            a_blur=46, a_w=1.5)
 
-    text(img, (m, 270), "LET'SDRINK", font(22, True), MUTED, track=3.8)
+    text(img, (m, 270), "Let'sDrink", font(26, True), MUTED, track=0.4)
     y = block(img, (m, 356), ["Ein Gegenstand", "statt zwei."], font(82, True),
               lh=90, track=-2.0)
     text(img, (m, y + 32), "Flasche und Napf sind eins.", font(30), MUTED)
@@ -72,7 +72,7 @@ def link():
     stelle(img, flasche(FARBE), hoehe=498, cx=958, boden_y=534,
            a_blur=34, a_h=0.085)
 
-    text(img, (m, 56), "LET'SDRINK", font(18, True), MUTED, track=3.2)
+    text(img, (m, 56), "Let'sDrink", font(22, True), MUTED, track=0.4)
     y = block(img, (m, 186), ["Ein Gegenstand", "statt zwei."], font(64, True),
               lh=70, track=-1.6)
     text(img, (m, y + 24), "Flasche und Napf sind eins.", font(25), MUTED)

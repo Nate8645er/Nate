@@ -13,8 +13,12 @@ def hochformat(W, H, m, *, hoehe, boden_y, regel_y, giant_h, giant_w,
     stelle(img, flasche(FARBE), hoehe=hoehe, cx=W / 2, boden_y=boden_y,
            kontakt=0.30, ambient=0.11, a_blur=max(20, hoehe // 16))
 
-    text(img, (m, m if H < 1500 else 280), "LET'SDRINK", font(brand_s, True),
-         MUTED, track=brand_s * 0.17)
+    # Markenschreibweise wie im Shop: "Let'sDrink", nicht gesperrte
+    # Versalien. In "LET'SDRINK" mit 0.17 em Sperrung stand der
+    # Apostroph als eigenes Zeichen und die Zeile las sich als
+    # "LET' SDRINK".
+    text(img, (m, m if H < 1500 else 280), "Let'sDrink",
+         font(brand_s + 4, True), MUTED, track=0.4)
 
     linie(img, m, regel_y, W - m, (216, 213, 207))
     gs = fit_ink_height("550 ml", giant_h, True, track=-2.0, max_breite=giant_w)
@@ -38,7 +42,7 @@ def link():
            kontakt=0.30, ambient=0.11, a_blur=30)
 
     sx, ex = 540, W - m
-    text(img, (sx, 92), "LET'SDRINK", font(18, True), MUTED, track=3.1)
+    text(img, (sx, 92), "Let'sDrink", font(22, True), MUTED, track=0.4)
     linie(img, sx, 236, ex, (216, 213, 207))
     gs = fit_ink_height("550 ml", 104, True, track=-2.0, max_breite=ex - sx)
     text_ink(img, sx, 268, "550 ml", font(gs, True), TEXT, track=-gs * 0.02)

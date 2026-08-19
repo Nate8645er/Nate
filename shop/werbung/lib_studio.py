@@ -95,42 +95,87 @@ def stelle(base, bild, *, hoehe, cx, boden_y, winkel=0.0, mit_schatten=True, **s
 
 
 # --- Typografie --------------------------------------------------------
-def _tw(draw, txt, f, track):
-    return draw.textlength(txt, font=f) + track * max(0, len(txt) - 1)
+def _tw(draw, txt, f, track, wort=0.0):
+    return (draw.textlength(txt, font=f) + track * max(0, len(txt) - 1)
+            + wort * txt.count(" "))
 
 
-def text(base, xy, txt, f, fill=TEXT, track=0.0, anchor="ls"):
-    """Text mit echter Laufweite. anchor: l/m/r + s(baseline-frei, top-basiert)."""
+def wortbonus(f):
+    """Zusaetzlicher Wortabstand nach Schriftgroesse - optische Groesse.
+
+    Alte Regel aus dem Bleisatz: kleiner Grad braucht mehr Wortabstand,
+    grosser Grad weniger. In Auszeichnungsgroessen wirkt ein weiter
+    Wortabstand loecherig, im Kleingedruckten laufen die Woerter sonst
+    zusammen.
+
+    Gewaehlt: 0.06 em bei 24 px und darunter, linear auf 0 bei 64 px.
+    Bei 24 px sind das 1.4 px, bei 40 px 0.9 px, ab 64 px nichts.
+    """
+    s = getattr(f, "size", 0)
+    if s >= 64:
+        return 0.0
+    anteil = 0.06 * min(1.0, (64 - s) / 40.0)
+    return s * anteil
+
+
+def text(base, xy, txt, f, fill=TEXT, track=0.0, anchor="ls", wort=None):
+    """Text mit echter Laufweite.
+
+    anchor: l/m/r + s(baseline-frei, top-basiert)
+    wort:   zusaetzliche Pixel NUR auf Leerzeichen.
+            None = automatisch nach Groesse (siehe wortbonus).
+            0.0  = ausdruecklich keiner.
+
+    WARUM ES "wort" GIBT
+    Am 19.8.2026 nachgemessen: Outfit setzt das Leerzeichen auf 0.208 em.
+    Zum Vergleich IBM Plex Sans 0.236, Fraunces 0.205 - Outfit ist also
+    kein Ausreisser, aber am unteren Rand. In kleinen Groessen, etwa in
+    der Merkmalliste von E-fakten bei 24 px auf 1080 px Breite, laufen
+    dadurch Woerter optisch zusammen ("Der Napfist fest angebaut").
+
+    Negative Laufweite verschaerft das zusaetzlich, weil sie auf jedes
+    Zeichen wirkt - auch auf das Leerzeichen. Deshalb wird die Laufweite
+    hier auf Leerzeichen NICHT angewandt und stattdessen "wort" addiert.
+    """
+    if wort is None:
+        wort = wortbonus(f)
     d = ImageDraw.Draw(base)
     x, y = xy
-    total = _tw(d, txt, f, track)
+    total = _tw(d, txt, f, track, wort)
     ha = anchor[0]
     if ha == "m":
         x -= total / 2
     elif ha == "r":
         x -= total
-    if track == 0:
+    if track == 0 and wort == 0:
         d.text((x, y), txt, font=f, fill=fill)
     else:
         for ch in txt:
             d.text((x, y), ch, font=f, fill=fill)
-            x += d.textlength(ch, font=f) + track
+            if ch == " ":
+                x += d.textlength(ch, font=f) + wort
+            else:
+                x += d.textlength(ch, font=f) + track
     return total
 
 
-def block(base, xy, zeilen, f, *, lh, fill=TEXT, track=0.0, anchor="l"):
+def block(base, xy, zeilen, f, *, lh, fill=TEXT, track=0.0, anchor="l",
+          wort=None):
     x, y = xy
     for z in zeilen:
-        text(base, (x, y), z, f, fill=fill, track=track, anchor=anchor + "s")
+        text(base, (x, y), z, f, fill=fill, track=track, anchor=anchor + "s",
+             wort=wort)
         y += lh
     return y
 
 
-def ink(txt, f, track=0.0):
+def ink(txt, f, track=0.0, wort=None):
     """Tatsaechliche Tintenbox relativ zum Zeichen-Ursprung (x, y-top)."""
+    if wort is None:
+        wort = wortbonus(f)
     probe = ImageDraw.Draw(Image.new("L", (8, 8)))
     b = f.getbbox(txt)
-    return (b[0], b[1], _tw(probe, txt, f, track), b[3] - b[1])
+    return (b[0], b[1], _tw(probe, txt, f, track, wort), b[3] - b[1])
 
 
 def text_ink(base, x, ink_top, txt, f, fill=TEXT, track=0.0, anchor="l"):

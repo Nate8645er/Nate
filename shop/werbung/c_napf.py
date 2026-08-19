@@ -25,7 +25,7 @@ def quadrat():
     img.paste(im, (round(cx - im.width / 2), top), im)
     fuge = top + FUGE_REL * hoehe                       # = 751
 
-    text(img, (m, m), "LET'SDRINK", font(20, True), MUTED, track=3.4)
+    text(img, (m, m), "Let'sDrink", font(24, True), MUTED, track=0.4)
     block(img, (m, fuge - 214), ["Der Napf ist", "fest angebaut."],
           font(74, True), lh=82, track=-1.8)
 
@@ -49,7 +49,7 @@ def story():
     top = 1570 - hoehe
     fuge = top + FUGE_REL * hoehe
 
-    text(img, (m, 276), "LET'SDRINK", font(22, True), MUTED, track=3.8)
+    text(img, (m, 276), "Let'sDrink", font(26, True), MUTED, track=0.4)
     block(img, (m, 372), ["Der Napf ist", "fest angebaut."],
           font(96, True), lh=104, track=-2.4)
 
@@ -75,7 +75,7 @@ def link():
     cx = 902
     img.paste(im, (round(cx - im.width / 2), top), im)
 
-    text(img, (m, 54), "LET'SDRINK", font(18, True), MUTED, track=3.2)
+    text(img, (m, 54), "Let'sDrink", font(22, True), MUTED, track=0.4)
     block(img, (m, 232), ["Der Napf ist", "fest angebaut."],
           font(62, True), lh=68, track=-1.5)
 

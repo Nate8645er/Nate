@@ -24,7 +24,7 @@ def quadrat():
     W = H = 1080
     m = 76
     img = studio_bg(W, H)
-    text(img, (m, 76), "LET'SDRINK", font(20, True), MUTED, track=3.4)
+    text(img, (m, 76), "Let'sDrink", font(24, True), MUTED, track=0.4)
     text(img, (m, 196), "Sechs Farben.", font(92, True), TEXT, track=-2.4)
     text(img, (m, 308), "550 ml", font(28), MUTED)
 
@@ -40,7 +40,7 @@ def story():
     W, H = 1080, 1920
     m = 64
     img = studio_bg(W, H)
-    text(img, (m + 20, 280), "LET'SDRINK", font(22, True), MUTED, track=3.8)
+    text(img, (m + 20, 280), "Let'sDrink", font(26, True), MUTED, track=0.4)
     text(img, (m + 20, 380), "Sechs", font(118, True), TEXT, track=-3.0)
     text(img, (m + 20, 508), "Farben.", font(118, True), TEXT, track=-3.0)
     text(img, (m + 20, 690), "550 ml", font(30), MUTED)
@@ -60,7 +60,7 @@ def link():
     W, H = 1200, 628
     m = 64
     img = studio_bg(W, H)
-    text(img, (m, 62), "LET'SDRINK", font(18, True), MUTED, track=3.2)
+    text(img, (m, 62), "Let'sDrink", font(22, True), MUTED, track=0.4)
     text(img, (m, 152), "Sechs", font(70, True), TEXT, track=-1.8)
     text(img, (m, 228), "Farben.", font(70, True), TEXT, track=-1.8)
     text(img, (m, 330), "550 ml", font(25), MUTED)

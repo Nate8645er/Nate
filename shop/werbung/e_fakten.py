@@ -27,7 +27,7 @@ def quadrat():
     stelle(img, flasche(FARBE), hoehe=650, cx=852, boden_y=866,
            a_w=1.32, a_blur=38)
 
-    text(img, (m, m), "LET'SDRINK", font(20, True), MUTED, track=3.4)
+    text(img, (m, m), "Let'sDrink", font(24, True), MUTED, track=0.4)
     text(img, (m, 190), "Auf einen Blick.", font(60, True), TEXT, track=-1.5)
 
     ende = liste(img, m, 340, 566, font(27), zeile_h=70, pad=21)
@@ -43,7 +43,7 @@ def story():
     stelle(img, flasche(FARBE), hoehe=740, cx=540, boden_y=1000,
            a_w=1.42, a_blur=46)
 
-    text(img, (m, 288), "LET'SDRINK", font(22, True), MUTED, track=3.8)
+    text(img, (m, 288), "Let'sDrink", font(26, True), MUTED, track=0.4)
     ende = liste(img, m, 1094, W - 2 * m, font(31), zeile_h=80, pad=24)
 
     text_ink(img, m, ende + 58, "CHF 37.91", font(66, True), TEXT, track=-1.5)
@@ -59,7 +59,7 @@ def link():
     stelle(img, flasche(FARBE), hoehe=456, cx=1002, boden_y=528,
            a_w=1.28, a_blur=32)
 
-    text(img, (m, 54), "LET'SDRINK", font(18, True), MUTED, track=3.2)
+    text(img, (m, 54), "Let'sDrink", font(22, True), MUTED, track=0.4)
     text(img, (m, 116), "Auf einen Blick.", font(44, True), TEXT, track=-1.1)
 
     ende = liste(img, m, 208, 600, font(24), zeile_h=56, pad=16)

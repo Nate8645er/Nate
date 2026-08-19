@@ -13,7 +13,7 @@ def quadrat():
     img = studio_bg(W, H, horizon=828)
     stelle(img, flasche(FARBE), hoehe=742, cx=792, boden_y=884)
 
-    text(img, (m, m), "LET'SDRINK", font(20, True), MUTED, track=3.4)
+    text(img, (m, m), "Let'sDrink", font(24, True), MUTED, track=0.4)
     y = block(img, (m, 372), ["Eine Hand", "reicht."], font(96, True),
               lh=104, track=-2.4)
     text(img, (m, y + 36), SUB, font(29), MUTED)
@@ -31,7 +31,7 @@ def story():
     stelle(img, flasche(FARBE), hoehe=740, cx=560, boden_y=1414,
            a_blur=46, a_w=1.5)
 
-    text(img, (m, 270), "LET'SDRINK", font(22, True), MUTED, track=3.8)
+    text(img, (m, 270), "Let'sDrink", font(26, True), MUTED, track=0.4)
     block(img, (m, 372), ["Eine Hand", "reicht."], font(104, True),
           lh=112, track=-2.6)
 
@@ -51,7 +51,7 @@ def link():
     stelle(img, flasche(FARBE), hoehe=498, cx=958, boden_y=534,
            a_blur=34, a_h=0.085)
 
-    text(img, (m, 56), "LET'SDRINK", font(18, True), MUTED, track=3.2)
+    text(img, (m, 56), "Let'sDrink", font(22, True), MUTED, track=0.4)
     y = block(img, (m, 196), ["Eine Hand", "reicht."], font(78, True),
               lh=84, track=-2.0)
     text(img, (m, y + 26), SUB, font(25), MUTED)
