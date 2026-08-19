@@ -6,9 +6,18 @@ Kein erfundener Inhalt: nur echte Freisteller + freigegebene Aussagen.
 import os
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
-SRC = "/tmp/claude-0/-home-user-Nate/2d96a9a6-93ca-5da3-99c5-55dbdd35f6e9/scratchpad/amber/hoch"
-OUT = "/tmp/claude-0/-home-user-Nate/2d96a9a6-93ca-5da3-99c5-55dbdd35f6e9/scratchpad/werbung"
-FDIR = os.path.join(OUT, "_fonts")
+# Pfade relativ zu dieser Datei. Vorher standen hier absolute Pfade in
+# ein Sitzungsverzeichnis, das laengst weg ist - die Skripte liefen
+# dadurch scheinbar durch, schrieben aber ins Leere. Am 19.8.2026
+# gemerkt, als die Bilder nach dem Neubau immer noch den alten Preis
+# und die falsche Adresse trugen.
+HIER = os.path.dirname(os.path.abspath(__file__))
+SRC  = os.path.join(HIER, "frei-sauber")
+OUT  = HIER
+# Die Schriften liegen bei den Anzeigen, nicht hier - im Ordner
+# "schriften" stehen nur die beiden Webfonts des Shops.
+FDIR = os.path.abspath(os.path.join(HIER, "..", "..",
+                                    "marketing", "anzeigen", "quelle"))
 
 # --- Palette -----------------------------------------------------------
 WEISS   = (255, 255, 255)
@@ -33,7 +42,10 @@ def font(size, bold=False):
 
 
 def flasche(name="tuerkis"):
-    return Image.open(os.path.join(SRC, "a-flasche-%s.webp" % name)).convert("RGBA")
+    # Die Freisteller heissen im Ordner schlicht "tuerkis.png". Frueher
+    # stand hier "a-flasche-%s.webp" aus einem Sitzungsverzeichnis, das
+    # es nicht mehr gibt.
+    return Image.open(os.path.join(SRC, "%s.png" % name)).convert("RGBA")
 
 
 # --- Hintergrund -------------------------------------------------------

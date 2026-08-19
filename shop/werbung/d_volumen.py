@@ -22,9 +22,9 @@ def hochformat(W, H, m, *, hoehe, boden_y, regel_y, giant_h, giant_w,
              TEXT, track=-gs * 0.02)
 
     text(img, (m, foot_y), "Sechs Farben", font(foot_s), MUTED)
-    text(img, (m, foot_y + round(foot_s * 1.55)), "katzenufos.com",
+    text(img, (m, foot_y + round(foot_s * 1.55)), "letsdrink-pet.com",
          font(foot_s), MUTED, track=0.6)
-    text(img, (W - m, foot_y - round(price_s * 0.14)), "CHF 39.90",
+    text(img, (W - m, foot_y - round(price_s * 0.14)), "CHF 37.91",
          font(price_s, True), TEXT, anchor="rs")
     speichern(img, name)
 
@@ -44,8 +44,8 @@ def link():
     text_ink(img, sx, 268, "550 ml", font(gs, True), TEXT, track=-gs * 0.02)
 
     text(img, (sx, 424), "Sechs Farben", font(24), MUTED)
-    text_ink(img, sx, 476, "CHF 39.90", font(34, True), TEXT, track=-0.7)
-    text(img, (sx, 534), "katzenufos.com", font(23), MUTED, track=0.6)
+    text_ink(img, sx, 476, "CHF 37.91", font(34, True), TEXT, track=-0.7)
+    text(img, (sx, 534), "letsdrink-pet.com", font(23), MUTED, track=0.6)
     speichern(img, "D-volumen_1200x628.png")
 
 

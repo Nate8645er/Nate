@@ -31,8 +31,8 @@ def quadrat():
     text(img, (m, 190), "Auf einen Blick.", font(60, True), TEXT, track=-1.5)
 
     ende = liste(img, m, 340, 566, font(27), zeile_h=70, pad=21)
-    text_ink(img, m, ende + 54, "CHF 39.90", font(54, True), TEXT, track=-1.1)
-    text(img, (m, ende + 132), "katzenufos.com", font(24), MUTED, track=0.6)
+    text_ink(img, m, ende + 54, "CHF 37.91", font(54, True), TEXT, track=-1.1)
+    text(img, (m, ende + 132), "letsdrink-pet.com", font(24), MUTED, track=0.6)
     speichern(img, "E-fakten_1080x1080.png")
 
 
@@ -46,8 +46,8 @@ def story():
     text(img, (m, 288), "LET'SDRINK", font(22, True), MUTED, track=3.8)
     ende = liste(img, m, 1094, W - 2 * m, font(31), zeile_h=80, pad=24)
 
-    text_ink(img, m, ende + 58, "CHF 39.90", font(66, True), TEXT, track=-1.5)
-    text(img, (W - m, ende + 74), "katzenufos.com", font(28), MUTED,
+    text_ink(img, m, ende + 58, "CHF 37.91", font(66, True), TEXT, track=-1.5)
+    text(img, (W - m, ende + 74), "letsdrink-pet.com", font(28), MUTED,
          track=0.6, anchor="rs")
     speichern(img, "E-fakten_1080x1920.png")
 
@@ -63,8 +63,8 @@ def link():
     text(img, (m, 116), "Auf einen Blick.", font(44, True), TEXT, track=-1.1)
 
     ende = liste(img, m, 208, 600, font(24), zeile_h=56, pad=16)
-    text_ink(img, m, ende + 34, "CHF 39.90", font(38, True), TEXT, track=-0.8)
-    text(img, (m + 296, ende + 44), "katzenufos.com", font(23), MUTED, track=0.6)
+    text_ink(img, m, ende + 34, "CHF 37.91", font(38, True), TEXT, track=-0.8)
+    text(img, (m + 296, ende + 44), "letsdrink-pet.com", font(23), MUTED, track=0.6)
     speichern(img, "E-fakten_1200x628.png")
 
 
