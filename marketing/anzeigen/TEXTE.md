@@ -320,19 +320,29 @@ das Zahlungsmittel. Bevor die erste Anzeige startet, muss der Shop
 nachziehen — sonst steht in der Anzeige ein Betrag, der an der Kasse
 nicht verlangt wird.
 
-**Was dafür nötig ist (Entscheid Nate):**
+**Entscheid Nate am 19.8.2026: „Im Bild. Nur."**
 
-1. Automatischen Rabatt „Mengenrabatt ab 1 Flasche" (5 %) abschalten.
-   Die Staffeln ab 2, 3, 5, 7 und 9 Flaschen bleiben unberührt – das
-   sind echte Mengenrabatte.
-2. `snippets/ld-preis.liquid` auf den Rohpreis stellen. Die Datei sagt
-   selbst, welche Zeile das ist: die Zuweisung von `ld_echt` auf
-   `{{ roh }}`.
+Also nur die Werbemittel auf 39.90, der Shop bleibt unangetastet.
+Der 5-Prozent-Rabatt läuft weiter, die Kasse verlangt weiter 37.91.
 
-**Beides muss zusammen passieren.** Nur den Rabatt abschalten hiesse:
-Shop zeigt weiter 37.91, Kasse verlangt 39.90 – die schädliche
-Richtung, und die verstösst gegen die Preisbekanntgabeverordnung.
-Nur das Snippet ändern hiesse: Shop zeigt 39.90, Kasse verlangt 37.91.
+**Was das bedeutet – die Richtung stimmt:**
+
+| | |
+|---|---|
+| Anzeige verspricht | CHF 39.90 |
+| Kasse verlangt | CHF 37.91 |
+| Für den Kunden | 1.99 weniger als angekündigt |
+
+Der Kunde zahlt weniger als in der Anzeige – nicht mehr. Das ist die
+harmlose Richtung. Die Preisbekanntgabeverordnung schützt davor, dass
+an der Kasse MEHR verlangt wird als angeschrieben; ein Kunde, der
+unten weniger zahlt, ist nicht getäuscht, sondern positiv überrascht.
+
+**Nicht gemacht, weil Nate es nicht wollte:** den Rabatt
+„Mengenrabatt ab 1 Flasche" abschalten und `ld-preis.liquid` auf den
+Rohpreis stellen. Wer das später doch will, braucht beides zusammen –
+nur eines von beiden erzeugt die schädliche Richtung (Shop zeigt
+37.91, Kasse verlangt 39.90).
 
 Die anderen Sätze nennen keinen Preis und überleben jede
 Preisänderung unverändert. Für die Bilder gilt seit heute dasselbe an
