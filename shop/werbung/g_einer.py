@@ -24,7 +24,7 @@ dauerhaft gestrichen, hier auf Grau wechseln.
 from lib_studio import *
 
 FARBE = "rosa"
-SUB = "550 ml  ·  Sechs Farben"
+SUB = "Für Hund und Katze  ·  550 ml"
 
 
 def quadrat():
@@ -37,6 +37,7 @@ def quadrat():
     y = block(img, (m, 348), ["Ein Gegenstand", "statt zwei."], font(76, True),
               lh=84, track=-1.9)
     text(img, (m, y + 34), "Flasche und Napf sind eins.", font(29), MUTED)
+    text(img, (m, y + 76), SUB, font(25), MUTED)
 
     linie(img, m, H - m - 64, W - m)
     text(img, (m, H - m - 34), "letsdrink-pet.com", font(24), MUTED, track=0.6)
@@ -76,6 +77,7 @@ def link():
     y = block(img, (m, 186), ["Ein Gegenstand", "statt zwei."], font(64, True),
               lh=70, track=-1.6)
     text(img, (m, y + 24), "Flasche und Napf sind eins.", font(25), MUTED)
+    text(img, (m, y + 60), SUB, font(22), MUTED)
 
     linie(img, m, H - m - 56, 640)
     text(img, (m, H - m - 32), "letsdrink-pet.com", font(23), MUTED, track=0.6)

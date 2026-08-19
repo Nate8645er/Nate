@@ -27,7 +27,7 @@ dasselbe.
 from lib_studio import *
 
 FARBE = "gruen"
-SUB = "550 ml  ·  Sechs Farben"
+SUB = "Für Hund und Katze  ·  550 ml"
 
 
 def quadrat():
@@ -40,6 +40,7 @@ def quadrat():
     y = block(img, (m, 348), ["Der Rest", "läuft", "zurück."], font(88, True),
               lh=96, track=-2.2)
     text(img, (m, y + 34), "Kein Wasser, das du wegkippst.", font(29), MUTED)
+    text(img, (m, y + 76), SUB, font(25), MUTED)
 
     linie(img, m, H - m - 64, W - m)
     text(img, (m, H - m - 34), "letsdrink-pet.com", font(24), MUTED, track=0.6)
@@ -78,6 +79,7 @@ def link():
     y = block(img, (m, 176), ["Der Rest läuft", "zurück."], font(72, True),
               lh=78, track=-1.8)
     text(img, (m, y + 24), "Kein Wasser, das du wegkippst.", font(25), MUTED)
+    text(img, (m, y + 60), SUB, font(22), MUTED)
 
     linie(img, m, H - m - 56, 640)
     text(img, (m, H - m - 32), "letsdrink-pet.com", font(23), MUTED, track=0.6)

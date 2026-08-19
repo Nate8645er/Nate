@@ -7,6 +7,7 @@ from lib_studio import *
 FARBE = "rosa"
 FAKTEN = ["550 ml",
           "Sechs Farben",
+          "Für Hund und Katze",
           "Der Napf ist fest angebaut.",
           "Gratisversand in der Schweiz",
           "14 Tage Rückgabe"]

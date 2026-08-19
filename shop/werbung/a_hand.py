@@ -4,7 +4,7 @@ Story haelt die Story-Sicherheitszone (Inhalt zwischen y=260 und y=1620)."""
 from lib_studio import *
 
 FARBE = "tuerkis"
-SUB = "550 ml  ·  Sechs Farben"
+SUB = "Für Hund und Katze  ·  550 ml"
 
 
 def quadrat():
