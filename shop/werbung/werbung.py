@@ -35,6 +35,7 @@ ROTE LINIEN (aus ENTWURF-A, gelten auch fuer Werbung):
 """
 import os
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
+from lib_studio import PREIS
 
 HIER = os.path.dirname(os.path.abspath(__file__))
 FREI = HIER + "/frei-sauber"
@@ -181,7 +182,7 @@ def motiv_knopf(fmt):
     else:
         fl = flasche("tuerkis", int(max(360, fussy - y - 70)))
         mit_schatten(im, fl, (B - fl.width) // 2, int(y) + 40)
-    d.text((rand, fussy), "550 ml · sechs Farben · CHF 37.91", font=fk, fill=t)
+    d.text((rand, fussy), "550 ml · sechs Farben · " + PREIS, font=fk, fill=t)
     return im
 
 
@@ -235,7 +236,7 @@ def motiv_farben(fmt):
             x += b.width + luft
         oben += hoehe + 40
 
-    d.text((rand, fussy), "Jede 550 ml · jede CHF 37.91", font=fk, fill=t)
+    d.text((rand, fussy), "Jede 550 ml · jede " + PREIS, font=fk, fill=t)
     return im
 
 
@@ -258,10 +259,10 @@ def motiv_preis(fmt):
     groesse = int(B * (0.125 if quer else 0.165))
     while groesse > 40:
         fp = titel(groesse, 800)
-        if d.textlength("CHF 37.91", font=fp) <= spalte:
+        if d.textlength(PREIS, font=fp) <= spalte:
             break
         groesse -= 4
-    d.text((rand, y), "CHF 37.91", font=fp, fill=t)
+    d.text((rand, y), PREIS, font=fp, fill=t)
     y += fp.size * 1.06
 
     fs = satz(int(B * 0.035))

@@ -30,6 +30,21 @@ GHOST   = (236, 234, 229)   # Typo-Grundschicht
 
 FARBEN = ["tuerkis", "gruen", "rosa", "grau", "schwarz", "weiss"]
 
+# DER PREIS - EINE STELLE, NICHT SIEBENUNDZWANZIG
+#
+# Am 19.8.2026 stand "CHF 37.91" an 27 Stellen in 9 Dateien. Nate
+# musste sagen "Der preis soll 39.90 sein", damit es auffiel. Ein
+# Betrag, der in jeder Datei einzeln steht, ist ein Betrag, den man
+# beim naechsten Mal wieder irgendwo vergisst - und ein falscher Preis
+# in der Anzeige ist der teuerste Fehler, den dieser Ordner machen
+# kann: die Preisbekanntgabeverordnung will den Betrag, der wirklich
+# faellig wird.
+#
+# Aendert sich der Preis, aendert sich diese eine Zeile. Danach alle
+# Motive neu bauen - "python3 bogen.py" zeigt hinterher, ob alle elf
+# dieselbe Zahl tragen.
+PREIS = "CHF 39.90"
+
 _fcache = {}
 
 

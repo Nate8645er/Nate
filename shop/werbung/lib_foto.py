@@ -38,7 +38,8 @@ Produkt.
 """
 import os
 from PIL import Image, ImageDraw
-from lib_studio import HIER, font, text, block, fit_font, speichern
+from lib_studio import (HIER, PREIS, font, text, block, fit_font,
+                        speichern)
 
 TIERE = os.path.join(HIER, "tiere")
 
@@ -238,7 +239,7 @@ def hoch(W, H, *, bild, kopf, unterzeile, name, anker=0.5):
                                   fill=(120, 122, 126))
     text(img, (m, fuss_y + round(preis_gr * 0.22)), "letsdrink-pet.com",
          font(fuss_gr), (208, 208, 212), track=0.6)
-    text(img, (W - m, fuss_y), "CHF 37.91", font(preis_gr, True), WEISS,
+    text(img, (W - m, fuss_y), PREIS, font(preis_gr, True), WEISS,
          anchor="rs")
     _pruefe(name, a, werte, ziele)
     speichern(img, name)
@@ -308,7 +309,7 @@ def quer_voll(W, H, *, bild, kopf, unterzeile, name, anker=0.5, hell=False):
                                   fill=regel_f)
     text(img, (m, fuss_y + round(preis_gr * 0.20)), "letsdrink-pet.com",
          font(fuss_gr), fuss_f, track=0.6)
-    text(img, (m + spalte, fuss_y), "CHF 37.91", font(preis_gr, True), preis_f,
+    text(img, (m + spalte, fuss_y), PREIS, font(preis_gr, True), preis_f,
          anchor="rs")
     _pruefe(name, a, werte, ziele)
     speichern(img, name)
@@ -403,7 +404,7 @@ def hoch_hell(W, H, *, bild, kopf, unterzeile, name, anker=0.5):
     # FUSSZEILE GANZ NACH UNTEN, NICHT DIREKT UNTER DIE UNTERZEILE.
     # Erste Fassung stellte sie gleich hinter den Block - sie landete
     # damit genau auf den Flaschendeckeln: "letsdrink-pet.com" auf der
-    # tuerkisen Kappe, "CHF 37.91" auf der weissen. Gemessen war es in
+    # tuerkisen Kappe, PREIS auf der weissen. Gemessen war es in
     # Ordnung (der Grund dort ist hell), zu sehen war es trotzdem als
     # Beschriftung quer ueber die Ware. Unten steht sie frei.
     fuss_y = H - round(H * 0.062) - fuss_gr
@@ -436,7 +437,7 @@ def hoch_hell(W, H, *, bild, kopf, unterzeile, name, anker=0.5):
                                   fill=(200, 198, 193))
     text(img, (m, fuss_y + round(preis_gr * 0.22)), "letsdrink-pet.com",
          font(fuss_gr), TINTE_MATT, track=0.6)
-    text(img, (W - m, fuss_y), "CHF 37.91", font(preis_gr, True), TINTE,
+    text(img, (W - m, fuss_y), PREIS, font(preis_gr, True), TINTE,
          anchor="rs")
     _pruefe(name, a, werte, ziele)
     speichern(img, name)

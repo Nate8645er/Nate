@@ -11,7 +11,7 @@ nachgelesen, nicht aus dem Gedächtnis geschrieben:
 
 | Angabe | Beleg auf der Seite |
 |---|---|
-| CHF 37.91 | Preis im HTML und in den strukturierten Daten |
+| CHF 37.91 | Preis im HTML und in den strukturierten Daten (Stand 18.8.2026 — siehe „Der Preis" unten) |
 | 550 ml | Produktname und Antwort „Wie viel passt hinein?" |
 | sechs Farben | Rosa, Schwarz, Grau, Türkis, Grün, Weiss |
 | Gratisversand Schweiz | dreimal im Seitentext |
@@ -80,7 +80,7 @@ Gratisversand Schweiz
 ```
 Der Napf ist fest an der Flasche. Kein zweites Gefäss im Rucksack, kein Suchen nach einem Brunnen. 550 ml, sechs Farben.
 
-CHF 37.91, Gratisversand in der Schweiz.
+CHF 39.90, Gratisversand in der Schweiz.
 ```
 
 **Überschrift**
@@ -92,7 +92,7 @@ Der Napf ist schon dran
 **Beschreibung**
 
 ```
-CHF 37.91, Versand gratis
+CHF 39.90, Versand gratis
 ```
 
 ---
@@ -295,12 +295,45 @@ Produktseiten-Adresse fest eingebrannt und lassen sich nicht ändern.
 Es braucht vier neue. Die Bilder liegen schon auf der Shopify-CDN und
 werden wiederverwendet — kein neuer Upload.
 
-## Wenn sich der Preis ändert
+## Der Preis — 39.90 gegen 37.91
 
-CHF 37.91 steht in Satz 2. Ändert Nate den Preis im Shop, muss dieser
-Text mitgeändert werden – sonst steht in der Anzeige ein Betrag, der
-an der Kasse nicht mehr stimmt. Die Preisbekanntgabeverordnung will
-den Betrag, der wirklich fällig wird.
+Nate am 19.8.2026: „Der preis soll 39.90 sein."
 
-Die anderen drei Sätze nennen keinen Preis und überleben jede
-Preisänderung unverändert.
+**Nachgemessen, bevor etwas geändert wurde:**
+
+| | |
+|---|---|
+| Listenpreis aller sechs Varianten in Shopify | **CHF 39.90** |
+| Automatischer Rabatt „Mengenrabatt ab 1 Flasche" | **5 %, aktiv seit 11.8.2026** |
+| Betrag an der Kasse für eine Flasche | **CHF 37.91** |
+| Angezeigt auf der Produktseite (live geprüft) | **CHF 37.91** |
+
+Die 37.91 waren also nicht falsch: `snippets/ld-preis.liquid` rechnet
+den Listenpreis bewusst auf den Betrag herunter, der wirklich fällig
+wird. Ein Rabatt, der ab der ERSTEN Flasche für alle gilt, ist aber
+kein Rabatt – er ist ein niedrigerer Preis im Kostüm. Genau er hat
+diese Verwirrung erzeugt.
+
+**Alle Werbemittel und Texte stehen jetzt auf CHF 39.90.** Das ist
+gefahrlos, weil noch keine Anzeige läuft: auf dem Werbekonto fehlt
+das Zahlungsmittel. Bevor die erste Anzeige startet, muss der Shop
+nachziehen — sonst steht in der Anzeige ein Betrag, der an der Kasse
+nicht verlangt wird.
+
+**Was dafür nötig ist (Entscheid Nate):**
+
+1. Automatischen Rabatt „Mengenrabatt ab 1 Flasche" (5 %) abschalten.
+   Die Staffeln ab 2, 3, 5, 7 und 9 Flaschen bleiben unberührt – das
+   sind echte Mengenrabatte.
+2. `snippets/ld-preis.liquid` auf den Rohpreis stellen. Die Datei sagt
+   selbst, welche Zeile das ist: die Zuweisung von `ld_echt` auf
+   `{{ roh }}`.
+
+**Beides muss zusammen passieren.** Nur den Rabatt abschalten hiesse:
+Shop zeigt weiter 37.91, Kasse verlangt 39.90 – die schädliche
+Richtung, und die verstösst gegen die Preisbekanntgabeverordnung.
+Nur das Snippet ändern hiesse: Shop zeigt 39.90, Kasse verlangt 37.91.
+
+Die anderen Sätze nennen keinen Preis und überleben jede
+Preisänderung unverändert. Für die Bilder gilt seit heute dasselbe an
+einer Stelle: `lib_studio.PREIS`.

@@ -20,7 +20,7 @@ def quadrat():
 
     linie(img, m, H - m - 64, W - m)
     text(img, (m, H - m - 34), "letsdrink-pet.com", font(24), MUTED, track=0.6)
-    text(img, (W - m, H - m - 39), "CHF 37.91", font(30, True), TEXT, anchor="rs")
+    text(img, (W - m, H - m - 39), PREIS, font(30, True), TEXT, anchor="rs")
     speichern(img, "A-hand_1080x1080.png")
 
 
@@ -38,7 +38,7 @@ def story():
     linie(img, m, 1486, W - m)
     text(img, (m, 1516), SUB, font(30), MUTED)
     text(img, (m, 1560), "Gratisversand in der Schweiz", font(30), MUTED)
-    text(img, (W - m, 1508), "CHF 37.91", font(44, True), TEXT, anchor="rs")
+    text(img, (W - m, 1508), PREIS, font(44, True), TEXT, anchor="rs")
     text(img, (W - m, 1562), "letsdrink-pet.com", font(28), MUTED,
          track=0.6, anchor="rs")
     speichern(img, "A-hand_1080x1920.png")
@@ -58,7 +58,7 @@ def link():
 
     linie(img, m, H - m - 56, 640)
     text(img, (m, H - m - 32), "letsdrink-pet.com", font(23), MUTED, track=0.6)
-    text(img, (640, H - m - 37), "CHF 37.91", font(29, True), TEXT, anchor="rs")
+    text(img, (640, H - m - 37), PREIS, font(29, True), TEXT, anchor="rs")
     speichern(img, "A-hand_1200x628.png")
 
 

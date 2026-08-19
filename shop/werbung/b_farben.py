@@ -32,7 +32,7 @@ def quadrat():
 
     linie(img, m, H - m - 62, W - m)
     text(img, (m, H - m - 33), "letsdrink-pet.com", font(24), MUTED, track=0.6)
-    text(img, (W - m, H - m - 38), "CHF 37.91", font(30, True), TEXT, anchor="rs")
+    text(img, (W - m, H - m - 38), PREIS, font(30, True), TEXT, anchor="rs")
     speichern(img, "B-farben_1080x1080.png")
 
 
@@ -52,7 +52,7 @@ def story():
     text(img, (m + 20, 1462), "Gratisversand in der Schweiz", font(28), MUTED)
     text(img, (m + 20, 1506), "14 Tage Rückgabe", font(28), MUTED)
     text(img, (m + 20, 1550), "letsdrink-pet.com", font(28), MUTED, track=0.6)
-    text(img, (W - m - 20, 1456), "CHF 37.91", font(46, True), TEXT, anchor="rs")
+    text(img, (W - m - 20, 1456), PREIS, font(46, True), TEXT, anchor="rs")
     speichern(img, "B-farben_1080x1920.png")
 
 
@@ -66,7 +66,7 @@ def link():
     text(img, (m, 330), "Für Hund und Katze  ·  550 ml", font(25), MUTED)
 
     linie(img, m, 402, 356)
-    text_ink(img, m, 428, "CHF 37.91", font(32, True), TEXT, track=-0.7)
+    text_ink(img, m, 428, PREIS, font(32, True), TEXT, track=-0.7)
     text(img, (m, 484), "Gratisversand in der Schweiz", font(22), MUTED)
     text(img, (m, 518), "letsdrink-pet.com", font(22), MUTED, track=0.6)
 

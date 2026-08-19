@@ -33,7 +33,7 @@ def quadrat():
     linie(img, m, round(fuge), rechts)
     text(img, (m, fuge + 24), "Für Hund und Katze  ·  550 ml", font(26), MUTED)
 
-    text_ink(img, m, 916, "CHF 37.91", font(38, True), TEXT, track=-0.8)
+    text_ink(img, m, 916, PREIS, font(38, True), TEXT, track=-0.8)
     text(img, (m, 986), "letsdrink-pet.com", font(24), MUTED, track=0.6)
     speichern(img, "C-napf_1080x1080.png")
 
@@ -58,7 +58,7 @@ def story():
     text(img, (m, fuge + 26), "Für Hund und Katze  ·  550 ml", font(30), MUTED)
     text(img, (m, fuge + 70), "Sechs Farben", font(30), MUTED)
 
-    text_ink(img, m, 1436, "CHF 37.91", font(56, True), TEXT, track=-1.2)
+    text_ink(img, m, 1436, PREIS, font(56, True), TEXT, track=-1.2)
     text(img, (m, 1540), "letsdrink-pet.com", font(28), MUTED, track=0.6)
     speichern(img, "C-napf_1080x1920.png")
 
@@ -82,7 +82,7 @@ def link():
     linie(img, m, fuge_ziel, round(cx - im.width / 2) - 26)
     text(img, (m, fuge_ziel + 22), "Für Hund und Katze  ·  550 ml", font(24), MUTED)
 
-    text_ink(img, m, H - m - 44, "CHF 37.91", font(32, True), TEXT, track=-0.7)
+    text_ink(img, m, H - m - 44, PREIS, font(32, True), TEXT, track=-0.7)
     text(img, (m + 230, H - m - 40), "letsdrink-pet.com", font(23), MUTED, track=0.6)
     speichern(img, "C-napf_1200x628.png")
 
