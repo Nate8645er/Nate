@@ -244,6 +244,62 @@ erst melden duerfen, nachdem die ganze Kette durch war.
 Der Anzeigensatz bleibt stehen - er kostet nichts und ist fertig, sobald
 der Pixel haengt. Dann fehlen nur noch fuenf Aufrufe fuer die Anzeigen.
 
+## 19.8.2026: Umzug auf das private Werbekonto
+
+Der Business Manager von KatzenUfos verlangt eine Verifizierung, die an
+einer Telefonnummer haengt, die es nicht mehr gibt. Das Pixel-Teilen
+laeuft ausschliesslich ueber den Business Manager - also ist dieser Weg
+zu. Nate hat entschieden, nicht weiter daran zu arbeiten, sondern
+umzuziehen. Richtige Entscheidung: stundenlang eine Mauer verhandeln
+lohnt nicht, wenn daneben eine offene Tuer ist.
+
+**Neues Zuhause: Werbekonto `1597012881615534` (Nate Murseli), kein
+Unternehmen dahinter.** Genau das ist hier der Vorteil - ein Pixel, den
+dieses Konto selbst anlegt, gehoert ihm, und die Berechtigungsfrage
+entsteht gar nicht erst.
+
+**Was der Umzug NICHT kostet, nachgeprueft:**
+
+| | |
+|---|---|
+| Seite `Lets'drink` `1189244220947958` | bleibt - Nate ist als Person Administrator, geprueft ueber `ads_get_user_pages` |
+| Bilder | bleiben - liegen auf der Shopify-CDN, ueber `image_url` wiederverwendbar |
+| Texte | bleiben |
+| Pixel-Historie | weg, war aber ueber vier Websites vermischt und unbrauchbar |
+| Zahlungsmittel | muss neu hinterlegt werden |
+
+**Angelegt am 19.8.2026 auf `1597012881615534`, alles PAUSED:**
+
+| Was | ID |
+|---|---|
+| Kampagne `Let'sDrink · Verkauf · Start CH` | `52618860410982` |
+| S1 Farben · Startseite | `2138644983741588` |
+| S2 Hund · Startseite | `1248205507404043` |
+| S3 Hand · Startseite | `2076890522944384` |
+| S4 Rucksack · Startseite · der ehrliche | `1850551252989388` |
+| S5 Hund · Startseite · Restwasser | `1091666063808328` |
+
+Kampagne mit CHF 20 Tagesbudget auf Kampagnenebene,
+LOWEST_COST_WITHOUT_CAP. Die fuenf Werbemittel zeigen auf die
+Startseite, Absender ist dieselbe Seite wie vorher.
+
+**Offen, und nur Nate kann es:**
+
+1. Pixel anlegen - Events Manager, oben `1597012881615534` waehlen,
+   links das ⊕, Web, Name `Let'sDrink`
+2. Zahlungsmittel auf `1597012881615534` hinterlegen
+3. Shopify, Facebook-Kanal, Datenfreigabe auf den neuen Pixel stellen
+
+**Dann ich:** Anzeigensatz mit dem neuen Pixel plus die fuenf Anzeigen.
+Zwei Aufrufe und sechs Minuten.
+
+### Was im alten Konto liegen bleibt
+
+Kampagne `120250903005380251`, Anzeigensatz `120250908761910251` und
+neun Werbemittel im Konto `1524822076060042`. Alles pausiert, nichts
+davon kostet etwas. Falls Nate den Zugang je zurueckbekommt, ist es
+weiterhin da.
+
 ## Was noch fehlt
 
 1. **Pixel dem Werbekonto zuweisen.** Ohne das kein Anzeigensatz mit
