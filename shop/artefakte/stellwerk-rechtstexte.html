@@ -1,0 +1,484 @@
+<title>Stellwerk Rechtstexte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+
+<style>
+  :root {
+    --grund:#F4F5F3; --flaeche:#FFFFFF; --flaeche-2:#E9EBE7; --linie:#D3D7CF;
+    --tinte:#14171A; --matt:#5B6268;
+    --halt:#B32217; --halt-grund:#FBEAE8; --halt-linie:#EBC2BC;
+    --fahrt:#1C6B3C; --fahrt-grund:#E9F2EC; --fahrt-linie:#BCD8C6;
+    --warn:#9A6407; --warn-grund:#FAF1DF; --warn-linie:#E8D3A8;
+    --stahl:#2C3E50;
+    --schatten:0 1px 2px rgba(20,23,26,.05), 0 10px 26px -14px rgba(20,23,26,.24);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --grund:#0E1113; --flaeche:#171B1E; --flaeche-2:#1F2427; --linie:#2E3438;
+      --tinte:#EAEEF0; --matt:#98A2A8;
+      --halt:#F2867A; --halt-grund:#2A1512; --halt-linie:#57281F;
+      --fahrt:#6FCB93; --fahrt-grund:#122318; --fahrt-linie:#254A32;
+      --warn:#E5B458; --warn-grund:#2A2110; --warn-linie:#584521;
+      --stahl:#8FA6BB;
+      --schatten:0 1px 2px rgba(0,0,0,.45), 0 10px 26px -14px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"] {
+    --grund:#0E1113; --flaeche:#171B1E; --flaeche-2:#1F2427; --linie:#2E3438;
+    --tinte:#EAEEF0; --matt:#98A2A8;
+    --halt:#F2867A; --halt-grund:#2A1512; --halt-linie:#57281F;
+    --fahrt:#6FCB93; --fahrt-grund:#122318; --fahrt-linie:#254A32;
+    --warn:#E5B458; --warn-grund:#2A2110; --warn-linie:#584521;
+    --stahl:#8FA6BB;
+    --schatten:0 1px 2px rgba(0,0,0,.45), 0 10px 26px -14px rgba(0,0,0,.7);
+  }
+
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--grund); color:var(--tinte);
+         font-family:"Public Sans", ui-sans-serif, system-ui, sans-serif;
+         font-size:17px; line-height:1.62; -webkit-text-size-adjust:100%; }
+  .blatt { max-width:700px; margin:0 auto; padding:34px 20px 96px;
+           display:flex; flex-direction:column; gap:34px; }
+
+  .augenbraue { font-family:"IBM Plex Mono",monospace; font-size:11.5px; font-weight:600;
+                letter-spacing:.15em; text-transform:uppercase; color:var(--matt); margin:0; }
+  h1 { font-family:Archivo, sans-serif; font-weight:800;
+       font-size:clamp(2rem,8vw,2.9rem); line-height:1.03;
+       letter-spacing:-.028em; margin:0; text-wrap:balance; }
+  .vorspann { margin:0; color:var(--matt); font-size:1.04rem; }
+  .kopf { display:flex; flex-direction:column; gap:13px; }
+  h2 { font-family:Archivo, sans-serif; font-weight:700;
+       font-size:clamp(1.35rem,5.2vw,1.7rem); line-height:1.15;
+       letter-spacing:-.02em; margin:0; text-wrap:balance; }
+  h3 { font-family:Archivo, sans-serif; font-weight:700; font-size:1.05rem;
+       margin:0; letter-spacing:-.01em; }
+  p { margin:0; }
+  section { display:flex; flex-direction:column; gap:16px; }
+  .marke-klein { font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:600;
+                 letter-spacing:.15em; text-transform:uppercase; color:var(--matt);
+                 margin:0 0 -8px; }
+
+  .signal { border-radius:6px; padding:20px 22px; display:flex;
+            flex-direction:column; gap:12px; border-left-width:4px; border-left-style:solid; }
+  .signal.halt { background:var(--halt-grund); border:1px solid var(--halt-linie); border-left-color:var(--halt); }
+  .signal.warn { background:var(--warn-grund); border:1px solid var(--warn-linie); border-left-color:var(--warn); }
+  .signal.halt h3 { color:var(--halt); }
+  .signal.warn h3 { color:var(--warn); }
+  .signal p { font-size:1rem; }
+  .signal-kopf { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .schild { font-family:"IBM Plex Mono",monospace; font-size:10.5px; font-weight:600;
+            letter-spacing:.13em; text-transform:uppercase; padding:4px 9px;
+            border-radius:3px; color:#fff; white-space:nowrap; }
+  .schild.halt { background:var(--halt); }
+  .schild.warn { background:var(--warn); }
+
+  .dok { background:var(--flaeche); border:1px solid var(--linie);
+         border-radius:6px; overflow:hidden; box-shadow:var(--schatten); }
+  .dok-leiste { display:flex; align-items:center; justify-content:space-between;
+                gap:12px; padding:11px 12px 11px 17px;
+                background:var(--flaeche-2); border-bottom:1px solid var(--linie); }
+  .dok-titel { font-family:"IBM Plex Mono",monospace; font-size:10.5px;
+               letter-spacing:.13em; text-transform:uppercase; color:var(--matt); }
+  button.kopieren { font-family:"Public Sans",sans-serif; font-size:.86rem;
+                    font-weight:600; padding:6px 13px; border-radius:4px;
+                    border:1px solid var(--linie); background:var(--flaeche);
+                    color:var(--tinte); cursor:pointer; white-space:nowrap; }
+  button.kopieren:hover { background:var(--flaeche-2); }
+  button.kopieren:focus-visible { outline:3px solid var(--stahl); outline-offset:2px; }
+  button.kopieren[data-fertig="ja"] { background:var(--fahrt); color:#fff; border-color:transparent; }
+  .dok pre { margin:0; padding:17px; overflow-x:auto; max-height:520px; overflow-y:auto; }
+  .dok code { font-family:"IBM Plex Mono",monospace; font-size:12.5px;
+              line-height:1.72; white-space:pre-wrap; word-break:break-word; color:var(--tinte); }
+
+  .luecken { background:var(--flaeche); border:1px solid var(--linie);
+             border-radius:6px; overflow:hidden; }
+  .luecke { display:flex; gap:13px; padding:13px 17px; border-top:1px solid var(--linie);
+            align-items:flex-start; }
+  .luecke:first-child { border-top:0; }
+  .luecke-code { flex:0 0 auto; font-family:"IBM Plex Mono",monospace; font-size:.83rem;
+                 background:var(--warn-grund); color:var(--warn); padding:3px 8px;
+                 border-radius:3px; font-weight:600; }
+  .luecke p { font-size:.94rem; color:var(--matt); }
+  .luecke p b { color:var(--tinte); font-weight:600; }
+
+  .fuss { border-top:1px solid var(--linie); padding-top:20px; color:var(--matt);
+          font-size:.91rem; display:flex; flex-direction:column; gap:9px; }
+  .fuss strong { color:var(--tinte); }
+
+  @media (prefers-reduced-motion:reduce) { * { transition:none !important; } }
+</style>
+
+<div class="blatt">
+
+  <header class="kopf">
+    <p class="augenbraue">Stellwerk · Impressum, Datenschutz, AGB</p>
+    <h1>Drei Texte — und eine Warnung davor</h1>
+    <p class="vorspann">
+      Alles hier ist zum Einfügen fertig. Was ich nicht wissen kann, steht
+      in eckigen Klammern und ist erfunden-frei — ich habe keine einzige
+      Angabe geraten.
+    </p>
+  </header>
+
+  <div class="signal halt">
+    <div class="signal-kopf">
+      <span class="schild halt">Zuerst lesen</span>
+      <h3>Du hast dir die zwei heikelsten Branchen überhaupt ausgesucht</h3>
+    </div>
+    <p>
+      Beim Schreiben ist mir aufgefallen, was deine Zielgruppe eigentlich
+      bedeutet — und das ist wichtiger als jeder dieser Texte.
+    </p>
+    <p>
+      <strong>Arztpraxen und Zahnarztpraxen.</strong> Wer dort Anrufe
+      annimmt und Termine verwaltet, verarbeitet Gesundheitsdaten. Die
+      gelten in der Schweiz als besonders schützenswerte Personendaten
+      und in der EU als besondere Kategorie. Das ist die höchste
+      Schutzstufe, die es gibt.
+    </p>
+    <p>
+      <strong>Anwaltskanzleien.</strong> Was dort über das Telefon geht,
+      fällt unter das Berufsgeheimnis. Ein Anwalt darf einen Dienstleister
+      nur unter engen Bedingungen einbinden — er macht sich sonst selbst
+      strafbar. In der Schweiz steht das in Artikel 321 des
+      Strafgesetzbuchs.
+    </p>
+    <p>
+      Das heisst nicht, dass es nicht geht. Es heisst: <strong>fang mit
+      Handwerk und Treuhand an</strong> — dieselbe Not, dieselbe
+      Zahlungsbereitschaft, ein Bruchteil des Risikos. Praxen und
+      Kanzleien kommen dazu, wenn du einen Anwalt bezahlt hast, der dir
+      die Verträge dafür macht.
+    </p>
+  </div>
+
+  <div class="signal warn">
+    <div class="signal-kopf">
+      <span class="schild warn">Vorsicht</span>
+      <h3>Die Adresse im Impressum</h3>
+    </div>
+    <p>
+      Bei Let'sDrink wolltest du keine Wohnadresse in den Rechtstexten,
+      und das war richtig. Hier geht es leider nicht: Deutschland und
+      Österreich verlangen im Impressum eine ladungsfähige Anschrift, und
+      ein Postfach genügt dafür nicht.
+    </p>
+    <p>
+      Zwei saubere Wege: eine Geschäftsadresse mieten (in Rapperswil-Jona
+      ab etwa 30 Franken im Monat), oder erst nur in der Schweiz
+      verkaufen, wo die Anforderungen milder sind. Bis dahin bleibt die
+      Zeile in Klammern stehen.
+    </p>
+  </div>
+
+  <section>
+    <p class="marke-klein">Dokument 1</p>
+    <h2>Impressum</h2>
+    <div class="dok">
+      <div class="dok-leiste">
+        <span class="dok-titel">Impressum · Fusszeile verlinken</span>
+        <button class="kopieren" type="button" data-ziel="d1">Kopieren</button>
+      </div>
+      <pre><code id="d1">Impressum
+
+Verantwortlich für diese Website und Anbieter der Dienstleistung:
+
+[Vollständiger Vor- und Nachname]
+Stellwerk
+[Strasse und Hausnummer]
+[PLZ] Rapperswil-Jona
+Schweiz
+
+E-Mail: [geschäftliche E-Mail-Adresse]
+Telefon: [Telefonnummer]
+
+Rechtsform: [Einzelunternehmen / GmbH — zutreffendes eintragen]
+Handelsregister: [UID-Nummer, falls eingetragen — sonst diese Zeile löschen]
+Mehrwertsteuer: [MWST-Nummer, falls pflichtig — sonst diese Zeile löschen]
+
+Verantwortlich für den Inhalt: [Vollständiger Name], Anschrift wie oben.
+
+Haftung für Inhalte
+Die Inhalte dieser Seite wurden mit Sorgfalt erstellt. Für die
+Richtigkeit, Vollständigkeit und Aktualität wird keine Gewähr
+übernommen.
+
+Haftung für Links
+Diese Seite kann Verweise auf externe Websites enthalten. Auf deren
+Inhalte haben wir keinen Einfluss und übernehmen dafür keine Haftung.
+Für die Inhalte verlinkter Seiten ist deren Betreiber verantwortlich.
+
+Urheberrecht
+Die auf dieser Website veröffentlichten Inhalte unterliegen dem
+schweizerischen Urheberrecht. Jede Verwendung ausserhalb der Grenzen
+des Urheberrechts bedarf der vorherigen schriftlichen Zustimmung.</code></pre>
+    </div>
+  </section>
+
+  <section>
+    <p class="marke-klein">Dokument 2</p>
+    <h2>Datenschutzerklärung</h2>
+    <div class="dok">
+      <div class="dok-leiste">
+        <span class="dok-titel">Datenschutz · Fusszeile verlinken</span>
+        <button class="kopieren" type="button" data-ziel="d2">Kopieren</button>
+      </div>
+      <pre><code id="d2">Datenschutzerklärung
+
+Stand: [Datum eintragen]
+
+1. Verantwortliche Stelle
+
+[Vollständiger Name], Stellwerk, [Strasse], [PLZ] Rapperswil-Jona,
+Schweiz. E-Mail: [geschäftliche E-Mail-Adresse].
+
+2. Geltungsbereich
+
+Diese Erklärung gilt für diese Website. Für die Verarbeitung von Daten
+im Auftrag unserer Kundinnen und Kunden gilt zusätzlich die separate
+Auftragsverarbeitungsvereinbarung (Ziffer 6).
+
+3. Welche Daten wir auf dieser Website bearbeiten
+
+Beim Aufruf der Website übermittelt Ihr Browser technisch notwendige
+Angaben: IP-Adresse, Datum und Uhrzeit, aufgerufene Seite, Browsertyp.
+Diese Angaben sind zum Betrieb und zur Sicherheit der Seite nötig und
+werden nach [Anzahl] Tagen gelöscht.
+
+Wenn Sie uns über das Kontaktformular oder per E-Mail schreiben,
+bearbeiten wir die von Ihnen angegebenen Daten, um Ihre Anfrage zu
+beantworten. Wir bewahren diese Nachrichten so lange auf, wie es für
+die Bearbeitung und allfällige Rückfragen nötig ist.
+
+4. Rechtsgrundlagen
+
+Wir bearbeiten Personendaten gestützt auf das Schweizer
+Datenschutzgesetz. Soweit die Datenschutz-Grundverordnung der EU
+anwendbar ist, stützen wir uns auf die Erfüllung eines Vertrags, auf
+unser berechtigtes Interesse am sicheren Betrieb der Website sowie auf
+Ihre Einwilligung, wo eine solche eingeholt wird.
+
+5. Weitergabe an Dritte
+
+Wir geben Personendaten nur weiter, soweit dies zur Erbringung unserer
+Leistung nötig ist oder wir gesetzlich dazu verpflichtet sind. Für den
+Betrieb setzen wir Dienstleister ein:
+
+[Hier jeden eingesetzten Dienst mit Zweck und Sitz auflisten, zum
+Beispiel Hosting, E-Mail-Versand, Zahlungsabwicklung, Sprachmodelle.
+Diese Liste muss vollständig sein und der Wirklichkeit entsprechen.]
+
+Befinden sich Dienstleister ausserhalb der Schweiz und der EU, sorgen
+wir für einen angemessenen Schutz, in der Regel über
+Standardvertragsklauseln.
+
+6. Bearbeitung im Auftrag unserer Kundschaft
+
+Erbringen wir Leistungen für einen Betrieb, bearbeiten wir dessen
+Daten ausschliesslich in dessen Auftrag und nach dessen Weisung. Die
+Einzelheiten regelt eine separate Auftragsverarbeitungsvereinbarung,
+die vor Beginn der Zusammenarbeit abgeschlossen wird. Verantwortlich
+gegenüber den betroffenen Personen bleibt in diesem Fall der Betrieb.
+
+7. Ihre Rechte
+
+Sie haben das Recht auf Auskunft über die zu Ihnen bearbeiteten Daten,
+auf Berichtigung, auf Löschung und auf Herausgabe oder Übertragung.
+Wenden Sie sich dafür an die unter Ziffer 1 genannte Adresse. Sie
+können sich zudem bei der zuständigen Aufsichtsbehörde beschweren.
+
+8. Sicherheit
+
+Wir treffen angemessene technische und organisatorische Massnahmen,
+um Ihre Daten vor unbefugtem Zugriff, Verlust und Missbrauch zu
+schützen.
+
+9. Änderungen
+
+Wir können diese Erklärung anpassen. Massgebend ist die jeweils auf
+dieser Website veröffentlichte Fassung.</code></pre>
+    </div>
+  </section>
+
+  <section>
+    <p class="marke-klein">Dokument 3</p>
+    <h2>AGB für die Pilotphase</h2>
+    <div class="dok">
+      <div class="dok-leiste">
+        <span class="dok-titel">AGB · Fusszeile verlinken</span>
+        <button class="kopieren" type="button" data-ziel="d3">Kopieren</button>
+      </div>
+      <pre><code id="d3">Allgemeine Geschäftsbedingungen (Pilotphase)
+
+Stand: [Datum eintragen]
+
+1. Geltungsbereich
+
+Diese Bedingungen gelten für alle Leistungen von Stellwerk,
+[Vollständiger Name], [Strasse], [PLZ] Rapperswil-Jona (nachfolgend
+"wir"), gegenüber Unternehmen, Selbständigen und Behörden. Wir
+erbringen keine Leistungen an Konsumentinnen und Konsumenten.
+
+2. Gegenstand
+
+Wir stellen digitale Assistenzleistungen bereit, die eingehende
+Anfragen entgegennehmen, sortieren und weiterleiten sowie bei der
+Terminverwaltung unterstützen. Der genaue Umfang ergibt sich aus der
+Auftragsbestätigung.
+
+3. Pilotphase — ausdrücklicher Hinweis
+
+Die Leistung befindet sich im Aufbau. Der Kunde nimmt zur Kenntnis:
+
+a) Es besteht keine zugesicherte Verfügbarkeit und keine zugesicherte
+   Reaktionszeit.
+b) Funktionen können sich ändern, hinzukommen oder wegfallen.
+c) Ausfälle und Fehlverhalten sind möglich.
+d) Der Kunde führt in eigener Verantwortung eine Rückfallebene, damit
+   Anfragen auch bei Ausfall bearbeitet werden.
+
+Der reduzierte Preis der Pilotphase ist die Gegenleistung für diese
+Einschränkungen.
+
+4. AUSSCHLUSS FÜR NOTFÄLLE UND FRISTGEBUNDENES
+
+Die Leistung darf nicht eingesetzt werden für die Entgegennahme von
+Notfällen, medizinischen Dringlichkeiten oder Meldungen, an die
+gesetzliche oder gerichtliche Fristen geknüpft sind. Der Kunde stellt
+sicher, dass für solche Fälle jederzeit ein direkter Weg zu einem
+Menschen besteht und dass darauf gut sichtbar hingewiesen wird.
+
+5. Mitwirkung des Kunden
+
+Der Kunde stellt die nötigen Zugänge und Angaben bereit, hält sie
+aktuell und informiert die eigenen Kundinnen und Kunden darüber, dass
+Anfragen mit technischer Unterstützung bearbeitet werden.
+
+6. Datenbearbeitung
+
+Bearbeiten wir Personendaten des Kunden, geschieht dies ausschliesslich
+in dessen Auftrag. Vor Beginn wird eine
+Auftragsverarbeitungsvereinbarung abgeschlossen. Sie geht diesen
+Bedingungen vor.
+
+Besonders schützenswerte Personendaten sowie Angaben, die einem
+Berufsgeheimnis unterliegen, dürfen nur bearbeitet werden, wenn dies
+vorgängig schriftlich vereinbart wurde.
+
+7. Preise und Zahlung
+
+Es gelten die bei Vertragsschluss vereinbarten Preise. Die Rechnung
+wird monatlich im Voraus gestellt und ist innert [Anzahl] Tagen zahlbar.
+Alle Preise verstehen sich [in Schweizer Franken, exklusive allfälliger
+Mehrwertsteuer].
+
+8. Laufzeit und Kündigung
+
+Der Vertrag läuft auf unbestimmte Zeit und kann von beiden Seiten
+jederzeit auf das Ende eines Monats gekündigt werden. Die Kündigung
+bedarf der Textform.
+
+9. Haftung
+
+Wir haften für Schäden, die wir absichtlich oder grobfahrlässig
+verursachen. Im Übrigen ist die Haftung auf den Betrag beschränkt, den
+der Kunde in den letzten zwölf Monaten bezahlt hat. Für entgangenen
+Gewinn, entgangene Aufträge und mittelbare Schäden haften wir nicht.
+Die Haftung für Personenschäden bleibt in jedem Fall unberührt.
+
+10. Geheimhaltung
+
+Beide Seiten behandeln vertrauliche Angaben der anderen Seite
+vertraulich, auch nach Ende des Vertrags.
+
+11. Änderungen
+
+Wir können diese Bedingungen ändern. Änderungen werden dem Kunden
+mindestens [Anzahl] Tage im Voraus mitgeteilt. Widerspricht er nicht
+innert dieser Frist, gelten sie als angenommen.
+
+12. Anwendbares Recht und Gerichtsstand
+
+Es gilt schweizerisches Recht unter Ausschluss des Übereinkommens der
+Vereinten Nationen über Verträge über den internationalen Warenkauf.
+Gerichtsstand ist [Ort eintragen], Schweiz.</code></pre>
+    </div>
+  </section>
+
+  <section>
+    <p class="marke-klein">Bevor du es einfügst</p>
+    <h2>Was du ausfüllen musst</h2>
+    <div class="luecken">
+      <div class="luecke">
+        <span class="luecke-code">Name</span>
+        <p><b>Vor- und Nachname, ausgeschrieben.</b> Im Impressum geht kein Vorname allein — anders als bei den Let'sDrink-Texten.</p>
+      </div>
+      <div class="luecke">
+        <span class="luecke-code">Adresse</span>
+        <p><b>Strasse und Hausnummer.</b> Für Deutschland und Österreich zwingend, Postfach genügt nicht. Siehe Warnung oben.</p>
+      </div>
+      <div class="luecke">
+        <span class="luecke-code">Kontakt</span>
+        <p><b>Eine geschäftliche E-Mail und eine Telefonnummer.</b> Nicht die polsia.app-Adresse — die gehört dir nicht.</p>
+      </div>
+      <div class="luecke">
+        <span class="luecke-code">Rechtsform</span>
+        <p><b>Einzelunternehmen oder GmbH.</b> Zeilen zu Handelsregister und Mehrwertsteuer nur, wenn es sie wirklich gibt — sonst löschen.</p>
+      </div>
+      <div class="luecke">
+        <span class="luecke-code">Dienste</span>
+        <p><b>In der Datenschutzerklärung, Ziffer 5.</b> Jeder Dienst mit Zweck und Sitz. Die Liste muss stimmen, sonst ist die ganze Erklärung wertlos.</p>
+      </div>
+      <div class="luecke">
+        <span class="luecke-code">Fristen</span>
+        <p><b>Aufbewahrung, Zahlungsziel, Ankündigungsfrist.</b> Übliche Werte: 30 Tage, 30 Tage, 30 Tage.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="fuss">
+    <p>
+      <strong>Was diese Texte sind:</strong> ein sorgfältiger Entwurf,
+      der die üblichen Punkte abdeckt und nichts erfindet. Was sie nicht
+      sind: eine Rechtsberatung. Ich bin nicht dein Anwalt.
+    </p>
+    <p>
+      <strong>Wo eine Stunde beim Anwalt sich wirklich lohnt:</strong>
+      sobald die erste Praxis oder Kanzlei unterschreibt. Dann brauchst
+      du eine Auftragsverarbeitungsvereinbarung, die dem Berufsgeheimnis
+      standhält — und die schreibt man nicht aus einer Vorlage.
+    </p>
+    <p>
+      <strong>Ziffer 4 ist die wichtigste im ganzen Dokument.</strong>
+      Ein digitaler Empfang, der einen Notfall verpasst, ist der einzige
+      Fehler in diesem Geschäft, der sich nicht mit Geld reparieren
+      lässt. Lass die Ziffer stehen, auch wenn ein Kunde fragt.
+    </p>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll('button.kopieren').forEach(function (k) {
+    k.addEventListener('click', function () {
+      var text = document.getElementById(k.dataset.ziel).textContent;
+      function melden() {
+        k.textContent = 'Kopiert'; k.dataset.fertig = 'ja';
+        setTimeout(function () { k.textContent = 'Kopieren'; k.dataset.fertig = 'nein'; }, 2000);
+      }
+      function ersatz() {
+        var f = document.createElement('textarea');
+        f.value = text; f.setAttribute('readonly', '');
+        f.style.position = 'fixed'; f.style.opacity = '0';
+        document.body.appendChild(f); f.select();
+        try { document.execCommand('copy'); melden(); }
+        catch (e) { k.textContent = 'Von Hand markieren'; }
+        document.body.removeChild(f);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(melden, ersatz);
+      } else { ersatz(); }
+    });
+  });
+</script>
