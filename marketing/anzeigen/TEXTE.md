@@ -192,6 +192,68 @@ wörtlich auf der Seite.
 
 ---
 
+## Satz 6 – zum Motiv „Trinken, ohne Napf zu suchen" (J)
+
+Gehört zum Foto vom Spaziergang: ein Hund trinkt mitten im Park aus
+dem angebauten Napf. Der Text sagt genau das, was das Bild zeigt, und
+nichts darüber hinaus.
+
+**Primärtext**
+
+```
+Der Napf ist an der Flasche dran. Kein zweites Teil, das du einpackst und zu Hause vergisst. 550 ml, sechs Farben.
+
+Gratisversand in der Schweiz, 14 Tage Rückgaberecht.
+```
+
+**Überschrift**
+
+```
+Der Napf ist schon dran
+```
+
+**Beschreibung**
+
+```
+550 ml · Für Hund und Katze
+```
+
+114 von 125 Zeichen, 23 von 40, 27 von 30 – nachgemessen.
+
+---
+
+## Satz 7 – zum Motiv „Mit auf die Wanderung" (K)
+
+Gehört zum Foto vor den Berner Alpen. Es ist das einzige Motiv, auf
+dem die Schweiz zu sehen ist – deshalb nennt der Text den Grund, aus
+dem man in den Bergen Wasser mitnimmt, statt eine Eigenschaft
+aufzuzählen. Das Zurücklaufen ist dieselbe belegte Aussage wie in
+Satz 5, hier nur an einem Ort, an dem sie zählt.
+
+**Primärtext**
+
+```
+Nicht überall steht ein Brunnen. 550 ml dabei, der Napf ist schon dran, und was dein Hund stehen lässt, läuft zurück.
+
+Gratisversand in der Schweiz, 14 Tage Rückgaberecht.
+```
+
+**Überschrift**
+
+```
+Wasser für unterwegs
+```
+
+**Beschreibung**
+
+```
+550 ml · Gratisversand CH
+```
+
+117 von 125 Zeichen, 20 von 40, 25 von 30 – nachgemessen.
+
+---
+
 ## Ziel der Anzeigen — korrigiert
 
 Alle vier zeigen auf die **Startseite**:

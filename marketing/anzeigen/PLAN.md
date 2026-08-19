@@ -340,3 +340,76 @@ aussehend und aktivierbar, wuerde aber auf das falsche Ziel
 optimieren. Eine Falle zu bauen, die aussieht wie ein fertiger
 Aufbau, spart fuenf Minuten und kostet im schlechtesten Fall das
 Budget einer Woche.
+
+## 19.8.2026: elf Motive statt neun — und zwei eigene Fehler
+
+Nate: „Wrstell neue bilder und mach draus werbe bilder."
+
+### Erzeugen ging nicht — zwei Gruende, beide gemessen
+
+**1. Die Flasche darf nicht erzeugt sein.** Erzeugte Umgebung mit der
+echten Flasche darin waere erlaubt gewesen. Eine erzeugte Flasche nie:
+wer bestellt, muss bekommen, was er gesehen hat. Genau daran ist am
+selben Tag der 30-Sekunden-Film gescheitert (cremefarbener Koerper,
+eingepraegte Pfote — ein anderes Modell).
+
+**2. Das Guthaben reicht nicht.** Nachgesehen statt vermutet:
+
+| | |
+|---|---|
+| Guthaben Higgsfield | **1.29 Credits** |
+| Kosten `marketing_studio_image`, 1k, eine Aufnahme | **2 Credits** |
+| Freikontingent `unlim` | nicht verfuegbar |
+
+Es reicht also nicht fuer ein einziges Bild. Nate hat zugleich gesagt,
+er koenne momentan kein Guthaben aufladen — eine Aufforderung zum
+Nachladen waere daher keine Antwort, sondern eine Ausrede.
+
+### Was stattdessen gemacht wurde
+
+Im Ordner `shop/werbung/tiere` lagen vier Fotos aus Nates eigenem
+Shop, zwei davon unbenutzt. Beide gegen den Freisteller geprueft —
+klarer Koerper, tuerkiser Napf, Pfotenknopf, zwei Schloss-Zeichen:
+dieselbe Flasche.
+
+| Motiv | Bild | Aussage |
+|---|---|---|
+| **J-spaziergang** | Vizsla trinkt im Park aus dem Napf | „Trinken, ohne Napf zu suchen." |
+| **K-berg** | Hund und Wanderer vor den Berner Alpen | „Mit auf die Wanderung." |
+
+K ist das erste und einzige Motiv, auf dem die **Schweiz** zu sehen
+ist. Keine der deutschen Vergleichsanzeigen hat so ein Bild.
+
+Damit: **11 Motive in 3 Formaten = 33 Dateien.** Texte dazu als
+Satz 6 und Satz 7 in TEXTE.md, Laengen nachgemessen.
+
+### Zwei Fehler in meiner eigenen Arbeit von gestern
+
+**Das Querformat von H-tiere und I-katze war kaputt.** Bei 52 Prozent
+Fotoanteil bleiben von 628 Pixeln 301 fuer den Text; die zweizeilige
+Ueberschrift in 95 px braucht allein 190. Die Ueberschrift lief unten
+aus dem Bild, die Trennlinie ging quer durch „und Katze." und die
+Adresse lag darunter. Quadrat und Hochformat stimmten — ich hatte das
+Querformat nach dem Rendern schlicht nicht angesehen.
+
+Behoben, nicht ueberklebt: Querformat hat jetzt ein eigenes Layout
+(Foto links, Text rechts). Nebenbei wird auch der Anschnitt besser —
+624x628 ist fast quadratisch, das Tier behaelt den Kopf, waehrend ein
+1200x327-Streifen ihn abschneidet.
+
+**Beim ersten Neubau kam derselbe Fehler zweimal wieder**, einmal
+waagrecht (K's Unterzeile lief rechts raus und endete als „in der
+Schw"), einmal senkrecht (J hat drei Kopfzeilen, das Layout rechnete
+mit zwei). Beides sind Masse, die ich geraten statt gerechnet hatte.
+Jetzt rechnet der Bau:
+
+- Schriftgroessen werden aus der verfuegbaren Breite abgeleitet und
+  bei einer Untergrenze abgebrochen statt unleserlich klein gesetzt.
+- Die Fotohoehe ergibt sich aus dem, was der Text wirklich braucht.
+  Eine Zeile mehr im Kopf schiebt das Foto nach oben, statt den Text
+  aus dem Bild.
+- Wird das Foto dabei kleiner als ein Drittel, bricht der Bau ab,
+  statt still etwas Kaputtes zu speichern.
+
+Dazu `bogen.py`: baut pro Format einen Kontaktbogen mit allen elf
+Motiven nebeneinander. Beide Fehler waeren darauf sofort aufgefallen.

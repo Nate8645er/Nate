@@ -5,3 +5,5 @@
 # ausserhalb des Repositoriums; landet trotzdem etwas hier, bleibt es
 # unversioniert.
 scratchpad/
+__pycache__/
+*.pyc
