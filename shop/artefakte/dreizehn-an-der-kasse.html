@@ -1,0 +1,355 @@
+<title>Dreizehn an der Kasse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+
+<style>
+  :root {
+    --grund:      #F5F7F6;
+    --flaeche:    #FFFFFF;
+    --flaeche-2:  #ECF1F0;
+    --linie:      #D6E0DE;
+    --tinte:      #101E1D;
+    --matt:       #556765;
+    --marke:      #23716D;
+    --marke-satt: #45B6B2;
+    --alarm:      #A8341A;
+    --alarm-grund:#FBEDE9;
+    --alarm-linie:#E8BFB2;
+    --balken-leer:#E1E8E7;
+    --schatten:   0 1px 2px rgba(16,30,29,.05), 0 8px 24px -12px rgba(16,30,29,.16);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --grund:#0C1514; --flaeche:#14201F; --flaeche-2:#1B2827; --linie:#293937;
+      --tinte:#E9F1F0; --matt:#95A8A6; --marke:#5FCBC6; --marke-satt:#45B6B2;
+      --alarm:#F2836A; --alarm-grund:#2A1512; --alarm-linie:#5A2C22;
+      --balken-leer:#22302E;
+      --schatten:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"] {
+    --grund:#0C1514; --flaeche:#14201F; --flaeche-2:#1B2827; --linie:#293937;
+    --tinte:#E9F1F0; --matt:#95A8A6; --marke:#5FCBC6; --marke-satt:#45B6B2;
+    --alarm:#F2836A; --alarm-grund:#2A1512; --alarm-linie:#5A2C22;
+    --balken-leer:#22302E;
+    --schatten:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--grund); color: var(--tinte);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size: 17px; line-height: 1.62; -webkit-text-size-adjust: 100%;
+  }
+  .blatt {
+    max-width: 680px; margin: 0 auto; padding: 40px 20px 96px;
+    display: flex; flex-direction: column; gap: 40px;
+  }
+
+  .augenbraue {
+    font-family: "IBM Plex Mono", monospace; font-size: 12px; font-weight: 600;
+    letter-spacing: .13em; text-transform: uppercase; color: var(--marke); margin: 0;
+  }
+  h1 {
+    font-family: Outfit, sans-serif; font-weight: 700;
+    font-size: clamp(2rem, 8.5vw, 2.9rem); line-height: 1.04;
+    letter-spacing: -.022em; text-wrap: balance; margin: 0;
+  }
+  .vorspann { margin: 0; color: var(--matt); font-size: 1.06rem; }
+  .kopf { display: flex; flex-direction: column; gap: 14px; }
+
+  /* --- Trichter ----------------------------------------------------- */
+  .trichter {
+    background: var(--flaeche); border: 1px solid var(--linie);
+    border-radius: 12px; padding: 22px 20px; box-shadow: var(--schatten);
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .trichter-kopf {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 12px; flex-wrap: wrap;
+    font-family: "IBM Plex Mono", monospace; font-size: 11.5px;
+    letter-spacing: .11em; text-transform: uppercase; color: var(--matt);
+  }
+  .stufe { display: flex; flex-direction: column; gap: 7px; }
+  .stufe-zeile {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  }
+  .stufe-name { font-weight: 600; font-size: 1rem; }
+  .stufe-zahl {
+    font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums;
+    font-weight: 600; font-size: 1.02rem;
+  }
+  .stufe-zahl small { color: var(--matt); font-weight: 400; margin-left: 8px; }
+  .balken { height: 9px; border-radius: 999px; background: var(--balken-leer); overflow: hidden; }
+  .balken i { display: block; height: 100%; border-radius: 999px; background: var(--marke); }
+  .stufe.tot .stufe-name,
+  .stufe.tot .stufe-zahl { color: var(--alarm); }
+  .stufe.tot .balken { background: var(--alarm-grund); border: 1px solid var(--alarm-linie); height: 11px; }
+
+  /* --- Kasten ------------------------------------------------------- */
+  .kasten {
+    border-radius: 12px; padding: 20px 22px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .kasten.alarm { background: var(--alarm-grund); border: 1px solid var(--alarm-linie); }
+  .kasten.ruhig { background: var(--flaeche); border: 1px solid var(--linie); }
+  .kasten h2 {
+    font-family: Outfit, sans-serif; font-weight: 700; font-size: 1.14rem;
+    margin: 0; letter-spacing: -.012em;
+  }
+  .kasten.alarm h2 { color: var(--alarm); }
+  .kasten p { margin: 0; font-size: 1rem; }
+  .kasten.ruhig p { color: var(--matt); }
+  .kasten.ruhig p strong { color: var(--tinte); }
+
+  section { display: flex; flex-direction: column; gap: 20px; }
+  .marke-klein {
+    font-family: "IBM Plex Mono", monospace; font-size: 11.5px; font-weight: 600;
+    letter-spacing: .13em; text-transform: uppercase; color: var(--matt);
+    margin: 0 0 -12px;
+  }
+  h2.gross {
+    font-family: Outfit, sans-serif; font-weight: 700;
+    font-size: clamp(1.45rem, 5.5vw, 1.85rem); line-height: 1.14;
+    letter-spacing: -.018em; margin: 0; text-wrap: balance;
+  }
+
+  /* --- Ausgeschlossen ----------------------------------------------- */
+  .geprueft { display: flex; flex-direction: column; gap: 2px; }
+  .geprueft-zeile {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 13px 0; border-top: 1px solid var(--linie);
+  }
+  .geprueft-zeile:first-child { border-top: 0; }
+  .haken {
+    flex: 0 0 auto; width: 22px; height: 22px; border-radius: 999px;
+    display: grid; place-items: center; margin-top: 2px;
+    font-family: "IBM Plex Mono", monospace; font-size: 12px; font-weight: 600;
+  }
+  .haken.ok   { background: var(--flaeche-2); color: var(--marke); }
+  .haken.offen{ background: var(--alarm-grund); color: var(--alarm); border: 1px solid var(--alarm-linie); }
+  .geprueft-text { flex: 1; }
+  .geprueft-text b { font-weight: 600; }
+  .geprueft-text span { display: block; color: var(--matt); font-size: .94rem; margin-top: 2px; }
+
+  /* --- Schritte ----------------------------------------------------- */
+  ol.schritte {
+    list-style: none; counter-reset: s; margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  ol.schritte > li {
+    counter-increment: s; position: relative;
+    padding: 14px 0 14px 46px; border-top: 1px solid var(--linie);
+  }
+  ol.schritte > li:first-child { border-top: 0; }
+  ol.schritte > li::before {
+    content: counter(s); position: absolute; left: 0; top: 14px;
+    width: 30px; height: 30px; display: grid; place-items: center;
+    border-radius: 999px; background: var(--flaeche-2); color: var(--marke);
+    font-family: "IBM Plex Mono", monospace; font-size: 13px; font-weight: 600;
+  }
+  ol.schritte .neben { display: block; margin-top: 4px; color: var(--matt); font-size: .93rem; }
+  ol.schritte strong { font-weight: 600; }
+
+  a.knopf {
+    display: inline-flex; align-items: center; gap: 8px; margin-top: 8px;
+    padding: 11px 16px; background: var(--marke); color: var(--grund);
+    text-decoration: none; border-radius: 8px; font-weight: 600;
+    font-size: .95rem; line-height: 1.2; word-break: break-word;
+  }
+  a.knopf:hover { filter: brightness(1.08); }
+  a.knopf:focus-visible { outline: 3px solid var(--marke-satt); outline-offset: 3px; }
+
+  .fuss {
+    border-top: 1px solid var(--linie); padding-top: 22px;
+    color: var(--matt); font-size: .92rem;
+  }
+  .fuss p { margin: 0 0 10px; }
+  .fuss p:last-child { margin-bottom: 0; }
+  .fuss strong { color: var(--tinte); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="blatt">
+
+  <header class="kopf">
+    <p class="augenbraue">Let'sDrink · Befund vom 19.8.2026</p>
+    <h1>Dreizehn standen an der Kasse</h1>
+    <p class="vorspann">
+      Und keiner ist bis zum ersten Eingabefeld gekommen. Das ist keine
+      Überzeugungsfrage — das ist eine Sperre. Und sie kostet dich jede
+      Bestellung, die du bisher hättest haben können.
+    </p>
+  </header>
+
+  <div class="trichter">
+    <div class="trichter-kopf">
+      <span>Der Weg durch den Laden</span>
+      <span>60 Tage</span>
+    </div>
+
+    <div class="stufe">
+      <div class="stufe-zeile">
+        <span class="stufe-name">Besuche</span>
+        <span class="stufe-zahl">2325</span>
+      </div>
+      <div class="balken"><i style="width:100%"></i></div>
+    </div>
+
+    <div class="stufe">
+      <div class="stufe-zeile">
+        <span class="stufe-name">In den Warenkorb</span>
+        <span class="stufe-zahl">45 <small>1,9 % der Besuche</small></span>
+      </div>
+      <div class="balken"><i style="width:14%"></i></div>
+    </div>
+
+    <div class="stufe">
+      <div class="stufe-zeile">
+        <span class="stufe-name">Kasse geöffnet</span>
+        <span class="stufe-zahl">13 <small>29 % der Warenkörbe</small></span>
+      </div>
+      <div class="balken"><i style="width:29%"></i></div>
+    </div>
+
+    <div class="stufe tot">
+      <div class="stufe-zeile">
+        <span class="stufe-name">Bezahlt</span>
+        <span class="stufe-zahl">0 <small>von 13</small></span>
+      </div>
+      <div class="balken"></div>
+    </div>
+  </div>
+
+  <div class="kasten alarm">
+    <h2>Warum null von dreizehn kein Zufall ist</h2>
+    <p>
+      Wenn ein Laden nur nicht überzeugt, kommen von dreizehn trotzdem
+      drei bis sechs durch. Null, und zwar in jeder einzelnen der zehn
+      Wochen, in denen jemand an der Kasse stand — das passiert nicht
+      durch Zögern.
+    </p>
+    <p>
+      Dazu der zweite Befund: <strong>null abgebrochene Kassen</strong>.
+      Shopify legt eine an, sobald jemand seine E-Mail eintippt. Es gibt
+      keine einzige. Die dreizehn haben die Kasse geöffnet und sind
+      gegangen, bevor sie das erste Feld ausgefüllt haben.
+    </p>
+  </div>
+
+  <section>
+    <p class="marke-klein">Was ich ausgeschlossen habe</p>
+    <h2 class="gross">Vier Verdächtige, drei entlastet</h2>
+
+    <div class="geprueft">
+      <div class="geprueft-zeile">
+        <span class="haken ok">✓</span>
+        <span class="geprueft-text">
+          <b>Versand Schweiz</b>
+          <span>Zone „Domestic", Gratisversand, aktiv. Nachgemessen.</span>
+        </span>
+      </div>
+      <div class="geprueft-zeile">
+        <span class="haken ok">✓</span>
+        <span class="geprueft-text">
+          <b>Versand Ausland</b>
+          <span>Europa und International, je CHF 1.50, beide aktiv.</span>
+        </span>
+      </div>
+      <div class="geprueft-zeile">
+        <span class="haken ok">✓</span>
+        <span class="geprueft-text">
+          <b>Der Warenkorb funktioniert</b>
+          <span>Selbst durchgespielt: Flasche hinzugefügt, Kasse hat geöffnet, HTTP 200.</span>
+        </span>
+      </div>
+      <div class="geprueft-zeile">
+        <span class="haken offen">?</span>
+        <span class="geprueft-text">
+          <b>Die Zahlung</b>
+          <span>Bleibt übrig. Und dort sehe ich von aussen nur Wallets — Shop Pay, Apple Pay, Google Pay. Kein TWINT.</span>
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="marke-klein">Zwanzig Sekunden, und wir wissen es</p>
+    <h2 class="gross">Was du nachsehen musst</h2>
+
+    <ol class="schritte">
+      <li>
+        Shopify öffnen, <strong>Einstellungen → Zahlungen</strong>
+        <a class="knopf" href="https://admin.shopify.com/store/i0m1xi-h5/settings/payments">Direkt dorthin →</a>
+      </li>
+      <li>
+        <strong>Steht dort ein aktiver Anbieter?</strong>
+        <span class="neben">
+          Shopify Payments muss vollständig eingerichtet sein — mit
+          Identitätsprüfung und Bankverbindung. Steht dort „Einrichtung
+          abschliessen", „Aktion erforderlich" oder gar nichts, dann
+          konnte niemand bezahlen. Das wäre die Erklärung für alle
+          dreizehn.
+        </span>
+      </li>
+      <li>
+        <strong>Ist TWINT dabei?</strong>
+        <span class="neben">
+          In der Schweiz zahlen rund fünf von neun Millionen Menschen mit
+          TWINT. Ein Schweizer Laden ohne TWINT verliert Käufer, die
+          bezahlen wollten. Das erklärt nicht alle dreizehn — aber es
+          erklärt einige.
+        </span>
+      </li>
+      <li>
+        <strong>Mach eine Testbestellung.</strong>
+        <span class="neben">
+          Leg eine Flasche in den Korb und geh bis zum Bezahlen. Was
+          steht dort? Ein Screenshot davon sagt mehr als jede Abfrage,
+          die ich von aussen machen kann.
+        </span>
+      </li>
+    </ol>
+  </section>
+
+  <div class="kasten ruhig">
+    <h2>Zur Frage nach dem zweiten Geschäft</h2>
+    <p>
+      <strong>Heute noch Geld verdienen geht mit keinem Modell.</strong>
+      Nicht mit Dropshipping, nicht mit Print-on-Demand, nicht mit einer
+      Agentur. Wer das verspricht, verkauft einen Kurs.
+    </p>
+    <p>
+      Und hier liegt der Grund, warum ein zweites Geschäft gerade der
+      teuerste Schritt wäre: <strong>du hast 2325 Besucher gehabt und
+      45 Warenkörbe.</strong> Das Interesse ist da. Was fehlt, ist der
+      letzte Meter. Ein neuer Laden fängt wieder bei null Besuchern an —
+      und hätte dieselbe Kasse.
+    </p>
+    <p>
+      Wenn wirklich ein zweites Standbein soll: ein zweites Produkt im
+      gleichen Laden, für dieselben Hunde- und Katzenhalter. Gleiche
+      Anzeigen, gleiche Kasse, gleiche Besucher. Das ist der einzige
+      Weg, der auf dem aufbaut, was du schon bezahlt hast.
+    </p>
+  </div>
+
+  <div class="fuss">
+    <p>
+      <strong>Woher die Zahlen kommen:</strong> Shopifys eigene
+      Trichterdaten über 60 Tage, abgerufen am 19.8.2026, nicht geschätzt.
+      Die Wochenaufschlüsselung zeigt sechs Wochen mit Kassenbesuchen und
+      jede Woche null Abschlüsse.
+    </p>
+    <p>
+      <strong>Was ich vorher falsch hatte:</strong> Ich hatte einmal
+      geschrieben, der Abbruch liege nicht an der Kasse — gestützt auf
+      Pixeldaten, die alle Ereignisse in einzelne Stunden gebündelt
+      zeigten. Diese Zahlen hier kommen direkt von Shopify und sind
+      belastbarer. Der Abbruch liegt an der Kasse.
+    </p>
+  </div>
+
+</div>
