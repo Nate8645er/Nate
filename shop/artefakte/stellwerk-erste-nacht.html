@@ -1,0 +1,402 @@
+<title>Stellwerk, erste Nacht</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+
+<style>
+  :root {
+    --grund:#F4F5F3; --flaeche:#FFFFFF; --flaeche-2:#E9EBE7; --linie:#D3D7CF;
+    --tinte:#14171A; --matt:#5B6268;
+    --halt:#B32217; --halt-grund:#FBEAE8; --halt-linie:#EBC2BC;
+    --fahrt:#1C6B3C; --fahrt-grund:#E9F2EC; --fahrt-linie:#BCD8C6;
+    --warn:#9A6407; --warn-grund:#FAF1DF; --warn-linie:#E8D3A8;
+    --stahl:#2C3E50;
+    --schatten:0 1px 2px rgba(20,23,26,.05), 0 10px 26px -14px rgba(20,23,26,.24);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --grund:#0E1113; --flaeche:#171B1E; --flaeche-2:#1F2427; --linie:#2E3438;
+      --tinte:#EAEEF0; --matt:#98A2A8;
+      --halt:#F2867A; --halt-grund:#2A1512; --halt-linie:#57281F;
+      --fahrt:#6FCB93; --fahrt-grund:#122318; --fahrt-linie:#254A32;
+      --warn:#E5B458; --warn-grund:#2A2110; --warn-linie:#584521;
+      --stahl:#8FA6BB;
+      --schatten:0 1px 2px rgba(0,0,0,.45), 0 10px 26px -14px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"] {
+    --grund:#0E1113; --flaeche:#171B1E; --flaeche-2:#1F2427; --linie:#2E3438;
+    --tinte:#EAEEF0; --matt:#98A2A8;
+    --halt:#F2867A; --halt-grund:#2A1512; --halt-linie:#57281F;
+    --fahrt:#6FCB93; --fahrt-grund:#122318; --fahrt-linie:#254A32;
+    --warn:#E5B458; --warn-grund:#2A2110; --warn-linie:#584521;
+    --stahl:#8FA6BB;
+    --schatten:0 1px 2px rgba(0,0,0,.45), 0 10px 26px -14px rgba(0,0,0,.7);
+  }
+
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--grund); color:var(--tinte);
+         font-family:"Public Sans", ui-sans-serif, system-ui, sans-serif;
+         font-size:17px; line-height:1.62; -webkit-text-size-adjust:100%; }
+  .blatt { max-width:690px; margin:0 auto; padding:34px 20px 96px;
+           display:flex; flex-direction:column; gap:36px; }
+
+  .augenbraue { font-family:"IBM Plex Mono",monospace; font-size:11.5px; font-weight:600;
+                letter-spacing:.15em; text-transform:uppercase; color:var(--matt); margin:0; }
+  h1 { font-family:Archivo, sans-serif; font-weight:800;
+       font-size:clamp(2.1rem,8.5vw,3rem); line-height:1.02;
+       letter-spacing:-.028em; margin:0; text-wrap:balance; }
+  .vorspann { margin:0; color:var(--matt); font-size:1.05rem; }
+  .kopf { display:flex; flex-direction:column; gap:13px; }
+
+  h2 { font-family:Archivo, sans-serif; font-weight:700;
+       font-size:clamp(1.4rem,5.5vw,1.8rem); line-height:1.14;
+       letter-spacing:-.02em; margin:0; text-wrap:balance; }
+  h3 { font-family:Archivo, sans-serif; font-weight:700; font-size:1.06rem;
+       margin:0; letter-spacing:-.01em; }
+  p { margin:0; }
+  section { display:flex; flex-direction:column; gap:18px; }
+  .marke-klein { font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:600;
+                 letter-spacing:.15em; text-transform:uppercase; color:var(--matt);
+                 margin:0 0 -10px; }
+
+  /* --- Signal ------------------------------------------------------- */
+  .signal { border-radius:6px; padding:20px 22px; display:flex;
+            flex-direction:column; gap:12px; border-left-width:4px;
+            border-left-style:solid; }
+  .signal.halt  { background:var(--halt-grund);  border:1px solid var(--halt-linie);  border-left-color:var(--halt); }
+  .signal.warn  { background:var(--warn-grund);  border:1px solid var(--warn-linie);  border-left-color:var(--warn); }
+  .signal.fahrt { background:var(--fahrt-grund); border:1px solid var(--fahrt-linie); border-left-color:var(--fahrt); }
+  .signal-kopf { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .schild { font-family:"IBM Plex Mono",monospace; font-size:10.5px; font-weight:600;
+            letter-spacing:.13em; text-transform:uppercase; padding:4px 9px;
+            border-radius:3px; color:#fff; white-space:nowrap; }
+  .schild.halt  { background:var(--halt); }
+  .schild.warn  { background:var(--warn); }
+  .schild.fahrt { background:var(--fahrt); }
+  .signal.halt h3  { color:var(--halt); }
+  .signal.warn h3  { color:var(--warn); }
+  .signal.fahrt h3 { color:var(--fahrt); }
+  .signal p { font-size:1rem; }
+  .zitat { font-family:"IBM Plex Mono",monospace; font-size:.9rem;
+           background:var(--flaeche); border:1px solid var(--linie);
+           border-radius:4px; padding:10px 13px; }
+
+  /* --- Knopfreihe --------------------------------------------------- */
+  .knoepfe { display:flex; flex-direction:column; gap:0;
+             background:var(--flaeche); border:1px solid var(--linie);
+             border-radius:6px; overflow:hidden; box-shadow:var(--schatten); }
+  .knopf-zeile { display:flex; gap:14px; padding:15px 18px;
+                 border-top:1px solid var(--linie); align-items:flex-start; }
+  .knopf-zeile:first-child { border-top:0; }
+  .knopf-rang { flex:0 0 26px; font-family:"IBM Plex Mono",monospace;
+                font-size:13px; font-weight:600; color:var(--matt); padding-top:2px; }
+  .knopf-text { flex:1; }
+  .knopf-name { font-family:"IBM Plex Mono",monospace; font-size:.88rem;
+                font-weight:600; letter-spacing:.06em; display:inline-block;
+                background:var(--flaeche-2); padding:3px 8px; border-radius:3px;
+                margin-bottom:5px; }
+  .knopf-text p { color:var(--matt); font-size:.95rem; }
+  .knopf-text p b { color:var(--tinte); font-weight:600; }
+  .knopf-zeile.nein .knopf-name { background:var(--halt-grund); color:var(--halt); }
+  .knopf-zeile.jetzt .knopf-name { background:var(--fahrt-grund); color:var(--fahrt); }
+
+  /* --- Textbaustein ------------------------------------------------- */
+  .baustein { background:var(--flaeche); border:1px solid var(--linie);
+              border-radius:6px; overflow:hidden; }
+  .baustein-leiste { display:flex; align-items:center; justify-content:space-between;
+                     gap:12px; padding:10px 12px 10px 16px;
+                     background:var(--flaeche-2); border-bottom:1px solid var(--linie); }
+  .baustein-titel { font-family:"IBM Plex Mono",monospace; font-size:10.5px;
+                    letter-spacing:.12em; text-transform:uppercase; color:var(--matt); }
+  button.kopieren { font-family:"Public Sans",sans-serif; font-size:.86rem;
+                    font-weight:600; padding:6px 13px; border-radius:4px;
+                    border:1px solid var(--linie); background:var(--flaeche);
+                    color:var(--tinte); cursor:pointer; white-space:nowrap; }
+  button.kopieren:hover { background:var(--flaeche-2); }
+  button.kopieren:focus-visible { outline:3px solid var(--stahl); outline-offset:2px; }
+  button.kopieren[data-fertig="ja"] { background:var(--fahrt); color:#fff; border-color:transparent; }
+  .baustein pre { margin:0; padding:16px; overflow-x:auto; }
+  .baustein code { font-family:"IBM Plex Mono",monospace; font-size:12.5px;
+                   line-height:1.7; white-space:pre; color:var(--tinte); }
+
+  .gegen { display:grid; grid-template-columns:1fr; gap:10px; }
+  @media (min-width:560px) { .gegen { grid-template-columns:1fr 1fr; } }
+  .gegen-karte { border:1px solid var(--linie); border-radius:6px; padding:15px 17px;
+                 background:var(--flaeche); display:flex; flex-direction:column; gap:6px; }
+  .gegen-karte .kopfzeile { font-family:"IBM Plex Mono",monospace; font-size:10.5px;
+                            font-weight:600; letter-spacing:.12em; text-transform:uppercase; }
+  .gegen-karte.raus .kopfzeile { color:var(--halt); }
+  .gegen-karte.rein .kopfzeile { color:var(--fahrt); }
+  .gegen-karte p { font-size:.96rem; }
+
+  .fuss { border-top:1px solid var(--linie); padding-top:20px; color:var(--matt);
+          font-size:.91rem; display:flex; flex-direction:column; gap:9px; }
+  .fuss strong { color:var(--tinte); }
+
+  @media (prefers-reduced-motion:reduce) { * { transition:none !important; } }
+</style>
+
+<div class="blatt">
+
+  <header class="kopf">
+    <p class="augenbraue">Stellwerk · 19.8.2026, 23 Uhr</p>
+    <h1>Drei Dinge, bevor das jemand sieht</h1>
+    <p class="vorspann">
+      Was du in einer Stunde gebaut hast, ist ernst zu nehmen: die
+      Positionierung sitzt, der Wettbewerbsvergleich nennt echte Gegner,
+      die Seite liest sich professionell. Genau deshalb sind die drei
+      Sachen unten wichtig — eine gute Fassade mit einem falschen Detail
+      ist schlimmer als gar keine.
+    </p>
+  </header>
+
+  <div class="signal halt">
+    <div class="signal-kopf">
+      <span class="schild halt">Halt</span>
+      <h3>Auf deiner Seite steht eine Zahl, die es nicht gibt</h3>
+    </div>
+    <p class="zitat">Live-Feed — „Heute: 87 Anfragen"</p>
+    <p>
+      Stellwerk hat null Kunden. Diese 87 sind erfunden. Das ist dieselbe
+      rote Linie, die wir bei Let'sDrink den ganzen Tag gehalten haben —
+      und hier wiegt sie schwerer, weil du an <strong>Anwaltskanzleien</strong>
+      verkaufst. Von allen Berufsgruppen erkennt genau die einen
+      erfundenen Zähler.
+    </p>
+    <p>
+      Dazu kommt: in Deutschland und der Schweiz ist eine erfundene
+      Nutzungszahl irreführende Werbung. Das ist kein Stilproblem,
+      sondern abmahnfähig.
+    </p>
+  </div>
+
+  <div class="signal halt">
+    <div class="signal-kopf">
+      <span class="schild halt">Halt</span>
+      <h3>Kein Impressum, keine Datenschutzerklärung, keine AGB</h3>
+    </div>
+    <p>
+      Du verkaufst an Deutschland, Österreich und die Schweiz. In
+      Deutschland ist das Impressum für eine gewerbliche Seite Pflicht,
+      in Österreich ebenso, in der Schweiz verlangt das Gesetz gegen
+      unlauteren Wettbewerb klare Identität und Kontakt.
+    </p>
+    <p>
+      Eine Seite ohne Impressum, die deutschen Kanzleien Software
+      verkauft, ist die einfachste Abmahnung, die es gibt. Text dafür
+      steht weiter unten.
+    </p>
+  </div>
+
+  <div class="signal warn">
+    <div class="signal-kopf">
+      <span class="schild warn">Vorsicht</span>
+      <h3>Vier Zahlen, die noch nichts belegen</h3>
+    </div>
+    <p>
+      „Anrufqualifizierung in unter 90 Sekunden", „Erstsortierung in 60
+      Sekunden", „drei bis fünf Wochen bis zum Live-Betrieb", „CHF 590
+      pro Monat je Rolle". Das Produkt existiert noch nicht — es gibt
+      keine Telefonanlage, keine Kalenderanbindung, nichts.
+    </p>
+    <p>
+      Das ist nicht schlimm, solange die Seite es sagt. Schlimm wird es,
+      wenn jemand die 590 zahlt und ein Empfangsdienst erwartet. Der
+      ehrliche Weg heisst <strong>Pilotphase</strong> — und der verkauft
+      sogar besser, weil er einen Grund liefert, warum es günstig ist.
+    </p>
+  </div>
+
+  <section>
+    <p class="marke-klein">Ersetzen, nicht löschen</p>
+    <h2>Was rausgeht und was reinkommt</h2>
+    <div class="gegen">
+      <div class="gegen-karte raus">
+        <span class="kopfzeile">Raus</span>
+        <p>„Heute: 87 Anfragen"</p>
+      </div>
+      <div class="gegen-karte rein">
+        <span class="kopfzeile">Rein</span>
+        <p>Der Live-Feed ganz weg. Oder ehrlich beschriftet: „Beispielansicht — so sieht das Dashboard im Betrieb aus."</p>
+      </div>
+      <div class="gegen-karte raus">
+        <span class="kopfzeile">Raus</span>
+        <p>„Wo Stellwerk heute schon sinnvoll eingesetzt wird"</p>
+      </div>
+      <div class="gegen-karte rein">
+        <span class="kopfzeile">Rein</span>
+        <p>„Wofür Stellwerk gebaut ist" — sagt dasselbe, behauptet aber keine Kunden.</p>
+      </div>
+      <div class="gegen-karte raus">
+        <span class="kopfzeile">Raus</span>
+        <p>„CHF 590/Monat pro aktiver KI-Rolle"</p>
+      </div>
+      <div class="gegen-karte rein">
+        <span class="kopfzeile">Rein</span>
+        <p>„Pilotphase: CHF 290/Monat je Rolle für die ersten fünf Betriebe. Danach CHF 590." Ein Grund, jetzt zu kaufen, der nicht erfunden ist.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="marke-klein">Reihenfolge</p>
+    <h2>Was du drückst</h2>
+
+    <div class="knoepfe">
+      <div class="knopf-zeile jetzt">
+        <span class="knopf-rang">1</span>
+        <span class="knopf-text">
+          <span class="knopf-name">AUTO MODE aus</span>
+          <p>Jetzt sofort. Er läuft noch <b>zwölf Stunden</b> und baut gerade weiter auf einer Seite, die eine erfundene Zahl trägt und kein Impressum hat. Jede Stunde erzeugt mehr Text auf einem schiefen Fundament. Erst reparieren, dann laufen lassen.</p>
+        </span>
+      </div>
+      <div class="knopf-zeile jetzt">
+        <span class="knopf-rang">2</span>
+        <span class="knopf-text">
+          <span class="knopf-name">NEW TASK</span>
+          <p>Ein Auftrag mit dem Text unten: die drei Sachen korrigieren und Impressum, Datenschutz und AGB anlegen. Das ist die einzige Arbeit, die heute Nacht zählt.</p>
+        </span>
+      </div>
+      <div class="knopf-zeile">
+        <span class="knopf-rang">3</span>
+        <span class="knopf-text">
+          <span class="knopf-name">SETUP PAYMENTS</span>
+          <p>Danach. Du hast heute gesehen, was passiert, wenn das fehlt: <b>dreizehn Leute an der Kasse, null Bezahlungen.</b> Mach den Fehler nicht zweimal am selben Tag.</p>
+        </span>
+      </div>
+      <div class="knopf-zeile">
+        <span class="knopf-rang">4</span>
+        <span class="knopf-text">
+          <span class="knopf-name">TWEET</span>
+          <p>Der Text ist gut. Kostet nichts, schadet nichts. Mach ihn, wann du willst.</p>
+        </span>
+      </div>
+      <div class="knopf-zeile nein">
+        <span class="knopf-rang">✕</span>
+        <span class="knopf-text">
+          <span class="knopf-name">COLD OUTREACH</span>
+          <p><b>Heute nicht.</b> Drei Gründe, jeder für sich genügt: Werbe-E-Mail ohne vorherige Einwilligung ist in Deutschland und der Schweiz unzulässig — bei Kanzleien als Empfänger die schlechteste denkbare Wahl. Die Absenderadresse endet auf polsia.app und ist eine Stunde alt, also landet alles im Spam. Und die Seite, auf die du verlinkst, hat noch kein Impressum.</p>
+        </span>
+      </div>
+      <div class="knopf-zeile nein">
+        <span class="knopf-rang">✕</span>
+        <span class="knopf-text">
+          <span class="knopf-name">NIGHTSHIFT</span>
+          <p>Erst wenn du einmal gesehen hast, was die Agenten unbeaufsichtigt produzieren. Heute Nacht ist der falsche Zeitpunkt, das herauszufinden.</p>
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="marke-klein">Für Schritt 2</p>
+    <h2>Der Auftrag zum Einfügen</h2>
+
+    <div class="baustein">
+      <div class="baustein-leiste">
+        <span class="baustein-titel">New Task · Text</span>
+        <button class="kopieren" type="button" id="k1">Kopieren</button>
+      </div>
+      <pre><code id="t1">Fix the public website before any outreach. Four changes, in this order.
+
+1. REMOVE ALL FABRICATED NUMBERS.
+The live feed shows "Heute: 87 Anfragen". Stellwerk has zero customers.
+Delete the counter, or label the whole panel clearly as a mockup:
+"Beispielansicht - so sieht das Dashboard im Betrieb aus."
+Never display usage, customer or result figures that did not happen.
+
+2. REPHRASE ANY CLAIM OF EXISTING USE.
+"Wo Stellwerk heute schon sinnvoll eingesetzt wird" implies live
+customers. Change to "Wofuer Stellwerk gebaut ist".
+
+3. ADD THE LEGAL PAGES. The site sells to Germany, Austria and
+Switzerland and currently has none. Create and link in the footer:
+- Impressum
+- Datenschutzerklaerung
+- AGB
+Leave every field that needs a real address, phone number, commercial
+register entry or VAT number as a clearly marked placeholder in square
+brackets. Do not invent any of them.
+
+4. CHANGE THE PRICE FRAMING TO A PILOT.
+Replace "CHF 590/Monat pro aktiver KI-Rolle" with:
+"Pilotphase: CHF 290 pro Monat je Rolle fuer die ersten fuenf Betriebe.
+Danach CHF 590." State plainly that the product is in build-out and
+what a pilot customer gets and does not get.
+
+HARD RULES
+- German, Swiss spelling. Never the character sz-ligature, always ss.
+- No invented customers, reviews, ratings, case studies or numbers.
+- No urgency, countdowns or artificial scarcity.
+- State no capability the product does not have today.
+- Do not send any email to anyone outside this account.</code></pre>
+    </div>
+  </section>
+
+  <div class="signal fahrt">
+    <div class="signal-kopf">
+      <span class="schild fahrt">Fahrt</span>
+      <h3>Was daran wirklich gut ist</h3>
+    </div>
+    <p>
+      Damit das nicht untergeht: die Positionierung ist schärfer als bei
+      den meisten finanzierten Startups. „Nicht für den Vertrieb,
+      sondern für Ihren Empfang" trennt dich in einem Satz von 11x, von
+      Artisan, von allen Vertriebs-Agenten. Der Satz im Tweet über den
+      langweiligen, profitablen Mittelbau ist ein besseres Argument als
+      das meiste, was in dem Feld verkauft wird.
+    </p>
+    <p>
+      Das Fundament stimmt. Es müssen nur die vier erfundenen Steine
+      raus, bevor jemand darauf tritt.
+    </p>
+  </div>
+
+  <div class="fuss">
+    <p>
+      <strong>Wie ich das geprüft habe:</strong> deine Seite unter
+      stellwerk-nuxust.polsia.io aufgerufen und den Inhalt gelesen —
+      Überschriften, Preise, Zahlen, Fusszeile. Die Feststellung „kein
+      Impressum, keine Datenschutzerklärung, keine AGB" stammt daher,
+      dass die Seite keine solchen Links führt.
+    </p>
+    <p>
+      <strong>Was ich nicht bin:</strong> dein Anwalt. Die rechtlichen
+      Hinweise hier sind der Stand, den ein sorgfältiger Laie kennen
+      muss — kein Gutachten. Sobald du wirklich an deutsche Kanzleien
+      verkaufst, lohnt sich eine Stunde bei jemandem, der das darf.
+    </p>
+    <p>
+      <strong>Und was ich nicht sehen kann:</strong> Polsia läuft auf
+      deiner Seite, ich sitze nicht darin. Was die Agenten heute Nacht
+      erzeugen, sehe ich nur, wenn du es mir zeigst.
+    </p>
+  </div>
+
+</div>
+
+<script>
+  (function () {
+    var k = document.getElementById('k1'), t = document.getElementById('t1');
+    k.addEventListener('click', function () {
+      var text = t.textContent;
+      function melden() {
+        k.textContent = 'Kopiert'; k.dataset.fertig = 'ja';
+        setTimeout(function () { k.textContent = 'Kopieren'; k.dataset.fertig = 'nein'; }, 2000);
+      }
+      function ersatz() {
+        var f = document.createElement('textarea');
+        f.value = text; f.setAttribute('readonly', '');
+        f.style.position = 'fixed'; f.style.opacity = '0';
+        document.body.appendChild(f); f.select();
+        try { document.execCommand('copy'); melden(); }
+        catch (e) { k.textContent = 'Von Hand markieren'; }
+        document.body.removeChild(f);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(melden, ersatz);
+      } else { ersatz(); }
+    });
+  })();
+</script>

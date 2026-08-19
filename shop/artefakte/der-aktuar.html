@@ -1,0 +1,476 @@
+<title>Der Aktuar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Public+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+
+<style>
+  :root {
+    --papier:   #F2F3F0;
+    --blatt:    #FFFFFF;
+    --blatt-2:  #E8EAE5;
+    --linie:    #D2D6CE;
+    --linie-2:  #B9BFB4;
+    --tinte:    #16191C;
+    --matt:     #5A6169;
+    --amt:      #1F3A6E;
+    --amt-hell: #6E93D6;
+    --stempel:  #A32A22;
+    --stempel-grund:#F7EAE8;
+    --schatten: 0 1px 2px rgba(22,25,28,.05), 0 10px 28px -14px rgba(22,25,28,.22);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --papier:#101315; --blatt:#171B1E; --blatt-2:#1E2327; --linie:#2C3237;
+      --linie-2:#3D454B; --tinte:#ECEFF1; --matt:#98A2AB;
+      --amt:#8FB0EC; --amt-hell:#6E93D6;
+      --stempel:#F08A7E; --stempel-grund:#2A1614;
+      --schatten:0 1px 2px rgba(0,0,0,.45), 0 10px 28px -14px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"] {
+    --papier:#101315; --blatt:#171B1E; --blatt-2:#1E2327; --linie:#2C3237;
+    --linie-2:#3D454B; --tinte:#ECEFF1; --matt:#98A2AB;
+    --amt:#8FB0EC; --amt-hell:#6E93D6;
+    --stempel:#F08A7E; --stempel-grund:#2A1614;
+    --schatten:0 1px 2px rgba(0,0,0,.45), 0 10px 28px -14px rgba(0,0,0,.7);
+  }
+
+  * { box-sizing:border-box; }
+  body {
+    margin:0; background:var(--papier); color:var(--tinte);
+    font-family:"Public Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size:17px; line-height:1.65; -webkit-text-size-adjust:100%;
+  }
+  .blatt { max-width:700px; margin:0 auto; padding:36px 20px 96px;
+           display:flex; flex-direction:column; gap:38px; }
+
+  /* --- Protokollkopf ------------------------------------------------ */
+  .protokoll-kopf {
+    background:var(--blatt); border:1px solid var(--linie);
+    border-radius:4px; box-shadow:var(--schatten); overflow:hidden;
+  }
+  .kopf-band {
+    background:var(--amt); color:var(--papier);
+    padding:9px 18px;
+    font-family:"IBM Plex Mono", monospace; font-size:11px; font-weight:600;
+    letter-spacing:.16em; text-transform:uppercase;
+    display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  }
+  .kopf-innen { padding:24px 22px 22px; display:flex; flex-direction:column; gap:18px; }
+  h1 {
+    font-family:Newsreader, Georgia, serif; font-weight:600;
+    font-size:clamp(2.2rem, 9vw, 3.2rem); line-height:1.02;
+    letter-spacing:-.015em; margin:0; text-wrap:balance;
+  }
+  .untertitel {
+    font-family:Newsreader, Georgia, serif; font-style:italic;
+    font-size:1.16rem; color:var(--matt); margin:0;
+  }
+  .kopf-felder { display:flex; flex-direction:column; gap:0; }
+  .feld {
+    display:flex; gap:14px; padding:8px 0; border-top:1px solid var(--linie);
+    font-size:.95rem;
+  }
+  .feld:first-child { border-top:0; }
+  .feld dt {
+    flex:0 0 108px; color:var(--matt);
+    font-family:"IBM Plex Mono", monospace; font-size:11px; font-weight:600;
+    letter-spacing:.1em; text-transform:uppercase; padding-top:4px;
+  }
+  .feld dd { margin:0; flex:1; }
+
+  /* --- Traktandum --------------------------------------------------- */
+  .traktandum { display:flex; flex-direction:column; gap:16px; }
+  .trakt-nr {
+    display:flex; align-items:baseline; gap:12px;
+  }
+  .nr {
+    font-family:"IBM Plex Mono", monospace; font-size:12px; font-weight:600;
+    color:var(--amt); letter-spacing:.1em; white-space:nowrap;
+    padding-top:2px;
+  }
+  h2 {
+    font-family:Newsreader, Georgia, serif; font-weight:600;
+    font-size:clamp(1.5rem, 6vw, 1.95rem); line-height:1.14;
+    letter-spacing:-.012em; margin:0; text-wrap:balance;
+  }
+  p { margin:0; }
+  .traktandum > p + p { margin-top:-4px; }
+
+  .hervor {
+    font-family:Newsreader, Georgia, serif; font-size:1.3rem; line-height:1.4;
+    color:var(--amt); border-left:3px solid var(--amt); padding-left:18px;
+    margin:2px 0;
+  }
+
+  /* --- Zahlenreihe -------------------------------------------------- */
+  .zahlen { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; }
+  .zahl-karte {
+    background:var(--blatt); border:1px solid var(--linie); border-radius:4px;
+    padding:16px 18px; display:flex; flex-direction:column; gap:3px;
+  }
+  .zahl-wert {
+    font-family:Newsreader, Georgia, serif; font-weight:600; font-size:2rem;
+    line-height:1; color:var(--amt); font-variant-numeric:tabular-nums;
+  }
+  .zahl-was { font-size:.9rem; color:var(--matt); line-height:1.35; }
+
+  /* --- Angebotstabelle ---------------------------------------------- */
+  .angebot { border:1px solid var(--linie); border-radius:4px; overflow:hidden;
+             background:var(--blatt); box-shadow:var(--schatten); }
+  .angebot-zeile {
+    display:flex; gap:16px; padding:16px 18px; border-top:1px solid var(--linie);
+    align-items:flex-start; flex-wrap:wrap;
+  }
+  .angebot-zeile:first-child { border-top:0; }
+  .angebot-zeile.haupt { background:var(--blatt-2); }
+  .angebot-text { flex:1 1 210px; }
+  .angebot-text b { display:block; font-weight:700; font-size:1.02rem; }
+  .angebot-text span { display:block; color:var(--matt); font-size:.93rem; margin-top:3px; }
+  .angebot-preis {
+    font-family:Newsreader, Georgia, serif; font-weight:600; font-size:1.35rem;
+    color:var(--amt); white-space:nowrap; font-variant-numeric:tabular-nums;
+  }
+  .angebot-preis small {
+    display:block; font-family:"Public Sans",sans-serif; font-size:.72rem;
+    font-weight:400; color:var(--matt); letter-spacing:.04em;
+    text-transform:uppercase; margin-top:2px;
+  }
+
+  /* --- Rechnung ----------------------------------------------------- */
+  .rechnung { background:var(--blatt-2); border-radius:4px; padding:18px 20px;
+              display:flex; flex-direction:column; gap:0; }
+  .r-zeile { display:flex; justify-content:space-between; gap:12px; padding:8px 0;
+             border-top:1px solid var(--linie); font-size:.97rem; }
+  .r-zeile:first-child { border-top:0; }
+  .r-zeile span:last-child { font-family:"IBM Plex Mono",monospace;
+                             font-variant-numeric:tabular-nums; font-weight:600; }
+  .r-zeile.summe { border-top:2px solid var(--amt); margin-top:6px; padding-top:12px;
+                   font-weight:700; }
+  .r-zeile.summe span:last-child { color:var(--amt); font-size:1.2rem; }
+
+  /* --- Schritte ----------------------------------------------------- */
+  ol.schritte { list-style:none; counter-reset:s; margin:0; padding:0;
+                display:flex; flex-direction:column; gap:0; }
+  ol.schritte > li { counter-increment:s; position:relative;
+                     padding:15px 0 15px 42px; border-top:1px solid var(--linie); }
+  ol.schritte > li:first-child { border-top:0; }
+  ol.schritte > li::before {
+    content:counter(s) "."; position:absolute; left:0; top:15px;
+    font-family:"IBM Plex Mono",monospace; font-size:13px; font-weight:600;
+    color:var(--amt);
+  }
+  ol.schritte .neben { display:block; margin-top:5px; color:var(--matt); font-size:.94rem; }
+  ol.schritte strong { font-weight:700; }
+  .du { color:var(--stempel); font-weight:700; }
+
+  /* --- Warnung ------------------------------------------------------ */
+  .offen {
+    background:var(--stempel-grund); border:1px solid var(--linie);
+    border-left:3px solid var(--stempel); border-radius:4px;
+    padding:18px 20px; display:flex; flex-direction:column; gap:12px;
+  }
+  .offen h3 { font-family:"Public Sans",sans-serif; font-weight:700;
+              font-size:1rem; margin:0; color:var(--stempel); }
+  .offen p { font-size:.97rem; }
+
+  .beschluss {
+    background:var(--amt); color:var(--papier); border-radius:4px;
+    padding:24px 22px; display:flex; flex-direction:column; gap:12px;
+  }
+  .beschluss .marke {
+    font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:600;
+    letter-spacing:.16em; text-transform:uppercase; opacity:.75;
+  }
+  .beschluss h2 { color:var(--papier); }
+  .beschluss p { font-size:1.02rem; }
+  .beschluss strong { color:#fff; }
+  :root[data-theme="dark"] .beschluss,
+  :root:not([data-theme="light"]) .beschluss { color:#0D1013; }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .beschluss { color:var(--papier); } }
+  :root[data-theme="dark"] .beschluss h2 { color:#0D1013; }
+  :root[data-theme="dark"] .beschluss strong { color:#0D1013; }
+
+  .fuss { border-top:1px solid var(--linie); padding-top:20px;
+          color:var(--matt); font-size:.9rem; display:flex;
+          flex-direction:column; gap:9px; }
+  .fuss strong { color:var(--tinte); }
+  .fuss a { color:var(--amt); }
+
+  @media (prefers-reduced-motion:reduce) { * { transition:none !important; } }
+</style>
+
+<div class="blatt">
+
+  <div class="protokoll-kopf">
+    <div class="kopf-band">
+      <span>Geschäftsidee</span>
+      <span>Nr. 1 / 2026</span>
+    </div>
+    <div class="kopf-innen">
+      <h1>Der Aktuar</h1>
+      <p class="untertitel">
+        Das Amt, das in jedem Schweizer Verein niemand will — und das
+        eine Maschine besser macht als jeder Freiwillige um 23 Uhr.
+      </p>
+      <dl class="kopf-felder">
+        <div class="feld"><dt>Ort</dt><dd>Rapperswil-Jona und Umgebung</dd></div>
+        <div class="feld"><dt>Markt</dt><dd>Rund 100 000 Vereine in der Schweiz</dd></div>
+        <div class="feld"><dt>Startkapital</dt><dd>Keines</dd></div>
+        <div class="feld"><dt>Umsatzart</dt><dd>Wiederkehrend, monatlich</dd></div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="traktandum">
+    <div class="trakt-nr"><span class="nr">Traktandum 1</span></div>
+    <h2>Die Beobachtung</h2>
+    <p>
+      Jeder Schweizer Verein hat einen <strong>Aktuar</strong> — den, der
+      das Protokoll schreibt. Es ist das Amt, das an jeder
+      Generalversammlung am längsten unbesetzt bleibt. Nicht weil es
+      schwer ist, sondern weil es der Job ist, den man nach einem
+      Zehnstundentag noch macht: zwei Stunden Sitzung anhören, tippen,
+      formulieren, verschicken.
+    </p>
+    <p class="hervor">
+      Das Protokoll ist die langweiligste Arbeit im Verein — und
+      gleichzeitig die, die eine Maschine am besten kann.
+    </p>
+    <p>
+      Aufnahme rein, sauberes Protokoll raus. Beschlüsse als Beschlüsse,
+      Pendenzen als Pendenzen, mit Namen und Fristen. In einer Stunde
+      statt in einer Woche.
+    </p>
+  </div>
+
+  <div class="traktandum">
+    <div class="trakt-nr"><span class="nr">Traktandum 2</span></div>
+    <h2>Warum das niemand macht</h2>
+    <p>
+      Weil ein einzelner Verein ein zu kleiner Kunde ist. Für eine Agentur
+      lohnt sich ein Auftrag über 60 Franken nicht — die Offerte kostet
+      schon mehr. Also macht es niemand, und der Aktuar sitzt weiter am
+      Küchentisch.
+    </p>
+    <p>
+      Für dich ist genau das der Vorteil: <strong>bei dir kostet ein
+      Protokoll fast nichts in der Herstellung.</strong> Was für eine
+      Agentur ein Verlustgeschäft ist, ist für dich der ganze Markt.
+    </p>
+
+    <div class="zahlen">
+      <div class="zahl-karte">
+        <span class="zahl-wert">100 000</span>
+        <span class="zahl-was">Vereine in der Schweiz, geschätzt</span>
+      </div>
+      <div class="zahl-karte">
+        <span class="zahl-wert">18 000</span>
+        <span class="zahl-was">davon Sportvereine</span>
+      </div>
+      <div class="zahl-karte">
+        <span class="zahl-wert">2,1</span>
+        <span class="zahl-was">Sportvereine je 1000 Einwohner — in Deutschland 1</span>
+      </div>
+      <div class="zahl-karte">
+        <span class="zahl-wert">≈ 57</span>
+        <span class="zahl-was">Sportvereine allein in Rapperswil-Jona, hochgerechnet</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="traktandum">
+    <div class="trakt-nr"><span class="nr">Traktandum 3</span></div>
+    <h2>Das Angebot</h2>
+    <p>
+      Nicht alles auf einmal. Du fängst mit <strong>einer einzigen
+      Sache</strong> an, die sofort einleuchtet, und wächst erst dann.
+    </p>
+
+    <div class="angebot">
+      <div class="angebot-zeile haupt">
+        <span class="angebot-text">
+          <b>Das Protokoll</b>
+          <span>Aufnahme der Sitzung rein, fertiges Protokoll innert 24 Stunden raus. Beschlüsse, Pendenzen mit Namen und Frist, zum Unterschreiben bereit.</span>
+        </span>
+        <span class="angebot-preis">60.–<small>je Sitzung</small></span>
+      </div>
+      <div class="angebot-zeile">
+        <span class="angebot-text">
+          <b>Das Sekretariat</b>
+          <span>Alle Protokolle, Einladungen mit Traktandenliste, Mitgliederliste gepflegt, Beitragsrechnungen und Mahnungen.</span>
+        </span>
+        <span class="angebot-preis">120.–<small>je Monat</small></span>
+      </div>
+      <div class="angebot-zeile">
+        <span class="angebot-text">
+          <b>Der Jahresbericht</b>
+          <span>Aus allen Protokollen des Jahres ein sauberer Bericht für die GV. Der Teil, vor dem sich jeder Präsident im Januar fürchtet.</span>
+        </span>
+        <span class="angebot-preis">250.–<small>einmalig</small></span>
+      </div>
+    </div>
+
+    <p style="color:var(--matt); font-size:.94rem;">
+      Preise sind mein Vorschlag, keine Marktzahl. Sie liegen bewusst
+      unter der Schmerzgrenze, an der ein Vorstand eine Abstimmung
+      braucht — ein Präsident kann 60 Franken allein entscheiden.
+    </p>
+  </div>
+
+  <div class="traktandum">
+    <div class="trakt-nr"><span class="nr">Traktandum 4</span></div>
+    <h2>Warum es wiederkehrt</h2>
+    <p>
+      Das ist der Unterschied zu allem, worüber wir vorher gesprochen
+      haben. Ein Werbebild verkaufst du einmal. Ein Verein hat
+      <strong>jeden Monat eine Vorstandssitzung</strong> — und die hat er
+      nächstes Jahr auch noch.
+    </p>
+
+    <div class="rechnung">
+      <div class="r-zeile"><span>20 Vereine × 120.–</span><span>2400.–</span></div>
+      <div class="r-zeile"><span>Deine Kosten</span><span>0.–</span></div>
+      <div class="r-zeile"><span>Aufwand je Verein und Monat</span><span>ca. 20 Min.</span></div>
+      <div class="r-zeile summe"><span>Pro Monat, wiederkehrend</span><span>2400.–</span></div>
+    </div>
+
+    <p>
+      Und die Vereinskasse ist eine Kasse, die zahlt. Mitgliederbeiträge,
+      Gemeindebeiträge, Sponsoren — an der GV wird das Budget bewilligt,
+      und ab dann ist die Position drin.
+    </p>
+  </div>
+
+  <div class="traktandum">
+    <div class="trakt-nr"><span class="nr">Traktandum 5</span></div>
+    <h2>Der eigentliche Schatz</h2>
+    <p class="hervor">
+      Vereinspräsidenten kennen einander.
+    </p>
+    <p>
+      Das ist das dichteste Empfehlungsnetz der Schweiz. Der Präsident vom
+      Turnverein sitzt mit dem vom Fussballclub und dem von der
+      Musikgesellschaft am selben Tisch, wenn die Gemeinde einlädt. Ein
+      zufriedener Kunde bringt dir nicht einen weiteren — er bringt dir
+      eine Vorstellung bei fünfzehn.
+    </p>
+    <p>
+      Deshalb ist der erste Verein so viel mehr wert als die 120 Franken.
+      Nimm ihn notfalls für drei Monate gratis.
+    </p>
+  </div>
+
+  <div class="traktandum">
+    <div class="trakt-nr"><span class="nr">Traktandum 6</span></div>
+    <h2>Der erste Kunde</h2>
+    <ol class="schritte">
+      <li>
+        <strong>Auf der Gemeindeseite die Vereinsliste öffnen.</strong>
+        <span class="neben">
+          Jede Schweizer Gemeinde führt eine. Rapperswil-Jona hat Dutzende
+          — Turnvereine, Musikgesellschaften, Samariter, Trachtengruppen,
+          Quartiervereine. Präsident und Adresse stehen meist dabei.
+          <span class="du">Machst du.</span>
+        </span>
+      </li>
+      <li>
+        <strong>Einen aussuchen und mir sagen.</strong>
+        <span class="neben">
+          Am besten einen mittelgrossen. Zu klein heisst kein Budget, zu
+          gross heisst schon eine Lösung. <span class="du">Machst du.</span>
+        </span>
+      </li>
+      <li>
+        <strong>Ich baue ein Musterprotokoll.</strong>
+        <span class="neben">
+          Aus einer erfundenen Sitzung dieses Vereins — mit seinem Namen,
+          seinen echten Traktanden aus der letzten Einladung. Er sieht
+          nicht ein Angebot, er sieht sein eigenes Protokoll.
+          <span style="color:var(--amt); font-weight:700;">Mache ich.</span>
+        </span>
+      </li>
+      <li>
+        <strong>Anrufen. Nicht mailen.</strong>
+        <span class="neben">
+          «Grüezi, ich habe gesehen, Sie suchen einen Aktuar. Ich schicke
+          Ihnen ein Muster — sagen Sie mir einfach, ob es taugt.»
+          <span class="du">Machst du. Und das ist der ganze schwere Teil.</span>
+        </span>
+      </li>
+    </ol>
+  </div>
+
+  <div class="traktandum">
+    <div class="trakt-nr"><span class="nr">Traktandum 7</span></div>
+    <h2>Was zu klären ist</h2>
+
+    <div class="offen">
+      <h3>Aufnehmen darf man nicht einfach</h3>
+      <p>
+        Eine Sitzung mitschneiden geht nur, wenn alle im Raum es wissen
+        und einverstanden sind. Das gehört zu Beginn jeder Sitzung ins
+        Protokoll — ein Satz, dann ist es sauber.
+      </p>
+    </div>
+
+    <div class="offen">
+      <h3>Mitgliederlisten sind Personendaten</h3>
+      <p>
+        Sobald du Adressen und Beiträge verwaltest, brauchst du mit dem
+        Verein eine schriftliche Vereinbarung darüber, was du mit den
+        Daten machen darfst. Kein Hexenwerk, aber es muss existieren,
+        bevor die erste Liste bei dir liegt.
+      </p>
+    </div>
+
+    <div class="offen">
+      <h3>Der Verkauf hat eine Saison</h3>
+      <p>
+        Vereine bewilligen ihr Budget an der Generalversammlung, meist
+        zwischen Januar und März. Wer im Februar fragt, kommt ins Budget.
+        Wer im Juli fragt, hört «nächstes Jahr». Für dieses Jahr heisst
+        das: die 60 Franken je Sitzung verkaufen, nicht das Abo — die
+        laufen aus der Kasse, nicht aus dem Budget.
+      </p>
+    </div>
+  </div>
+
+  <div class="beschluss">
+    <span class="marke">Beschluss</span>
+    <h2>Sag mir einen Verein.</h2>
+    <p>
+      Nur den Namen. Ich schaue mir seine Seite an, nehme seine echten
+      Traktanden und baue ein <strong>Musterprotokoll</strong>, das
+      aussieht, als käme es von ihm.
+    </p>
+    <p>
+      Dann hast du in zehn Minuten etwas in der Hand, das ein Präsident
+      versteht, ohne dass du ein Wort erklären musst.
+    </p>
+  </div>
+
+  <div class="fuss">
+    <p>
+      <strong>Woher die Zahlen kommen:</strong> Die rund 100 000 Vereine
+      und die 18 000 Sportvereine stammen von
+      <a href="https://www.vitaminb.ch/vereinsglossar/anzahl-vereine-in-der-schweiz/">vitamin B</a>
+      und dem
+      <a href="https://www.swissolympic.ch/dam/jcr:e13bfb8d-92a6-41a3-89e4-b80d30c2d23c/Vereinsstudie%202022_DE_Web.pdf">Swiss-Olympic-Vereinsbericht</a>.
+      Eine genaue Zahl gibt es nicht, weil nur ein Teil im Handelsregister
+      steht.
+    </p>
+    <p>
+      <strong>Was gerechnet und nicht gemessen ist:</strong> die 57
+      Sportvereine für Rapperswil-Jona. Das ist die Quote von 2,1 je 1000
+      Einwohner mal rund 27 000 Einwohner — eine Hochrechnung, keine
+      Zählung. Die echte Zahl steht auf der Vereinsliste der Gemeinde,
+      und die ist Schritt eins.
+    </p>
+    <p>
+      <strong>Was ich nicht behaupte:</strong> dass das leicht wird. Der
+      Teil, den keine Maschine übernimmt, ist der Anruf.
+    </p>
+  </div>
+
+</div>
