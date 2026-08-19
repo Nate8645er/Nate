@@ -283,15 +283,37 @@ Kampagne mit CHF 20 Tagesbudget auf Kampagnenebene,
 LOWEST_COST_WITHOUT_CAP. Die fuenf Werbemittel zeigen auf die
 Startseite, Absender ist dieselbe Seite wie vorher.
 
+### Pixel angelegt, Anzeigensatz steht
+
+Nate hat den Pixel angelegt: **`883186891300328`**, Name `Let'sDrink`,
+Eigentuemer das Werbekonto `1597012881615534`. Damit ist die
+Berechtigungssperre weg - der Pixel wurde im `promoted_object`
+anstandslos angenommen.
+
+| Was | ID |
+|---|---|
+| Anzeigensatz `CH · breit 25-65 · Warenkorb` | `52618872406182` |
+
+CH, 25-65, breit ohne Interessen, Optimierung auf In-den-Warenkorb.
+
+**Der naechste Fehler ist ein anderer - und ein kleinerer.** Beim
+Anlegen der ersten Anzeige:
+
+```
+No Payment Method: Update payment method
+```
+
+Diesmal habe ich die ganze Kette getestet, bevor ich Erfolg melde -
+Lehre aus gestern. Der Pixel geht durch, es fehlt nur das
+Zahlungsmittel.
+
 **Offen, und nur Nate kann es:**
 
-1. Pixel anlegen - Events Manager, oben `1597012881615534` waehlen,
-   links das ⊕, Web, Name `Let'sDrink`
-2. Zahlungsmittel auf `1597012881615534` hinterlegen
-3. Shopify, Facebook-Kanal, Datenfreigabe auf den neuen Pixel stellen
+1. Zahlungsmittel auf `1597012881615534` hinterlegen -
+   Werbeanzeigenmanager-App, Konto-Auswahl, `Abrechnung und Zahlungen`
+2. Shopify, Facebook-Kanal, Datenfreigabe auf `883186891300328` stellen
 
-**Dann ich:** Anzeigensatz mit dem neuen Pixel plus die fuenf Anzeigen.
-Zwei Aufrufe und sechs Minuten.
+**Dann ich:** die fuenf Anzeigen. Fuenf Aufrufe.
 
 ### Was im alten Konto liegen bleibt
 
