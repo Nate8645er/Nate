@@ -1,0 +1,653 @@
+<title>Meta-Pixel einbauen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+
+<style>
+  :root {
+    --grund:      #F5F7F6;
+    --flaeche:    #FFFFFF;
+    --flaeche-2:  #ECF1F0;
+    --linie:      #D6E0DE;
+    --tinte:      #101E1D;
+    --matt:       #556765;
+    --marke:      #23716D;
+    --marke-satt: #45B6B2;
+    --warn-grund: #FBF0EA;
+    --warn-linie: #E7C4AE;
+    --warn-tinte: #8C3F1B;
+    --code-grund: #101E1D;
+    --code-tinte: #DCE8E6;
+    --code-matt:  #7C918F;
+    --schatten:   0 1px 2px rgba(16,30,29,.05), 0 8px 24px -12px rgba(16,30,29,.16);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --grund:      #0C1514;
+      --flaeche:    #14201F;
+      --flaeche-2:  #1B2827;
+      --linie:      #293937;
+      --tinte:      #E9F1F0;
+      --matt:       #95A8A6;
+      --marke:      #5FCBC6;
+      --marke-satt: #45B6B2;
+      --warn-grund: #2A1912;
+      --warn-linie: #573325;
+      --warn-tinte: #F0A883;
+      --code-grund: #08100F;
+      --code-tinte: #DCE8E6;
+      --code-matt:  #6E8382;
+      --schatten:   0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --grund:      #0C1514;
+    --flaeche:    #14201F;
+    --flaeche-2:  #1B2827;
+    --linie:      #293937;
+    --tinte:      #E9F1F0;
+    --matt:       #95A8A6;
+    --marke:      #5FCBC6;
+    --marke-satt: #45B6B2;
+    --warn-grund: #2A1912;
+    --warn-linie: #573325;
+    --warn-tinte: #F0A883;
+    --code-grund: #08100F;
+    --code-tinte: #DCE8E6;
+    --code-matt:  #6E8382;
+    --schatten:   0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--grund);
+    color: var(--tinte);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.62;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .blatt {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 40px 20px 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  /* --- Kopf --------------------------------------------------------- */
+  .kopf { display: flex; flex-direction: column; gap: 14px; }
+
+  .augenbraue {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--marke);
+    margin: 0;
+  }
+
+  h1 {
+    font-family: Outfit, ui-sans-serif, system-ui, sans-serif;
+    font-weight: 700;
+    font-size: clamp(2rem, 8.5vw, 2.9rem);
+    line-height: 1.04;
+    letter-spacing: -.022em;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  .vorspann { margin: 0; color: var(--matt); font-size: 1.06rem; }
+
+  /* --- Befund-Zeilen ------------------------------------------------ */
+  .befund {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: var(--flaeche);
+    border: 1px solid var(--linie);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--schatten);
+  }
+  .befund-zeile {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 12px;
+    padding: 14px 18px;
+    border-top: 1px solid var(--linie);
+  }
+  .befund-zeile:first-child { border-top: 0; }
+  .befund-was { flex: 1 1 190px; color: var(--matt); font-size: .95rem; }
+  .befund-wert {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .95rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    word-break: break-all;
+  }
+  .befund-wert.alt  { color: var(--warn-tinte); }
+  .befund-wert.neu  { color: var(--marke); }
+
+  /* --- Warnkasten --------------------------------------------------- */
+  .achtung {
+    background: var(--warn-grund);
+    border: 1px solid var(--warn-linie);
+    border-radius: 10px;
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .achtung h2 {
+    font-family: Outfit, sans-serif;
+    font-weight: 700;
+    font-size: 1.12rem;
+    margin: 0;
+    color: var(--warn-tinte);
+    letter-spacing: -.01em;
+  }
+  .achtung p { margin: 0; font-size: 1rem; }
+
+  /* --- Abschnitt ---------------------------------------------------- */
+  section { display: flex; flex-direction: column; gap: 20px; }
+
+  .marke-klein {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--matt);
+    margin: 0 0 -12px;
+  }
+
+  h2.gross {
+    font-family: Outfit, sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.45rem, 5.5vw, 1.85rem);
+    line-height: 1.14;
+    letter-spacing: -.018em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  /* --- Die drei Wege ------------------------------------------------ */
+  .wege { display: flex; flex-direction: column; gap: 12px; }
+
+  .weg {
+    background: var(--flaeche);
+    border: 1px solid var(--linie);
+    border-radius: 10px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .weg.empfohlen {
+    border-color: var(--marke);
+    border-width: 1.5px;
+    background: var(--flaeche);
+  }
+  .weg-kopf {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .weg-name { font-weight: 600; font-size: 1.02rem; }
+  .schild {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .schild.ja   { background: var(--marke); color: var(--grund); }
+  .schild.hmm  { background: var(--flaeche-2); color: var(--matt); }
+  .weg-haken { margin: 0; color: var(--matt); font-size: .95rem; }
+
+  /* --- Schritte ----------------------------------------------------- */
+  ol.schritte {
+    list-style: none;
+    counter-reset: s;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  ol.schritte > li {
+    counter-increment: s;
+    position: relative;
+    padding: 14px 0 14px 46px;
+    border-top: 1px solid var(--linie);
+  }
+  ol.schritte > li:first-child { border-top: 0; }
+  ol.schritte > li::before {
+    content: counter(s);
+    position: absolute;
+    left: 0;
+    top: 14px;
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--flaeche-2);
+    color: var(--marke);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  ol.schritte strong { font-weight: 600; }
+  ol.schritte .neben {
+    display: block;
+    margin-top: 4px;
+    color: var(--matt);
+    font-size: .93rem;
+  }
+
+  a.knopf {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 11px 16px;
+    background: var(--marke);
+    color: var(--grund);
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: .95rem;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+  a.knopf:hover { filter: brightness(1.08); }
+  a.knopf:focus-visible { outline: 3px solid var(--marke-satt); outline-offset: 3px; }
+
+  /* --- Code --------------------------------------------------------- */
+  .code-block {
+    background: var(--code-grund);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--linie);
+  }
+  .code-leiste {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px 10px 16px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .code-titel {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--code-matt);
+  }
+  button.kopieren {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: .88rem;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 7px;
+    border: 1px solid rgba(255,255,255,.16);
+    background: rgba(255,255,255,.07);
+    color: var(--code-tinte);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  button.kopieren:hover { background: rgba(255,255,255,.13); }
+  button.kopieren:focus-visible { outline: 3px solid var(--marke-satt); outline-offset: 2px; }
+  button.kopieren[data-fertig="ja"] { background: var(--marke-satt); color: #08100F; border-color: transparent; }
+
+  .code-block pre {
+    margin: 0;
+    padding: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .code-block code {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12.5px;
+    line-height: 1.72;
+    color: var(--code-tinte);
+    white-space: pre;
+  }
+
+  /* --- Kann / kann nicht -------------------------------------------- */
+  .bilanz { display: flex; flex-direction: column; gap: 12px; }
+  .karte {
+    background: var(--flaeche);
+    border: 1px solid var(--linie);
+    border-radius: 10px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .karte h3 {
+    margin: 0;
+    font-family: Outfit, sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -.01em;
+  }
+  .karte h3 .zeichen { color: var(--marke); }
+  .karte h3 .zeichen.nein { color: var(--warn-tinte); }
+  .karte p { margin: 0; font-size: .97rem; color: var(--matt); }
+  .karte p strong { color: var(--tinte); font-weight: 600; }
+
+  .fuss {
+    border-top: 1px solid var(--linie);
+    padding-top: 22px;
+    color: var(--matt);
+    font-size: .92rem;
+  }
+  .fuss p { margin: 0 0 8px; }
+  .fuss p:last-child { margin-bottom: 0; }
+
+  code.inline {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: .88em;
+    background: var(--flaeche-2);
+    padding: 2px 6px;
+    border-radius: 5px;
+    word-break: break-all;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+
+<div class="blatt">
+
+  <header class="kopf">
+    <p class="augenbraue">Let'sDrink · Meta</p>
+    <h1>Pixel einbauen, ohne Umweg</h1>
+    <p class="vorspann">
+      Einmal einfügen, speichern, fertig. Danach zählt der Laden, was
+      deine Besucher wirklich tun — und die nächste Kampagne kann darauf
+      lernen.
+    </p>
+  </header>
+
+  <div class="befund">
+    <div class="befund-zeile">
+      <span class="befund-was">Der Laden meldet heute an</span>
+      <span class="befund-wert alt">1978393872804216</span>
+    </div>
+    <div class="befund-zeile">
+      <span class="befund-was">Die Anzeigen brauchen aber</span>
+      <span class="befund-wert neu">883186891300328</span>
+    </div>
+    <div class="befund-zeile">
+      <span class="befund-was">Ereignisse bisher</span>
+      <span class="befund-wert alt">null</span>
+    </div>
+  </div>
+
+  <div class="achtung">
+    <h2>Warum das nicht warten sollte</h2>
+    <p>
+      Der Pixel im Laden gehört zum gesperrten KatzenUfo-Konto. Dein
+      Werbekonto darf ihn nicht einmal lesen. Solange das so bleibt,
+      läuft jeder Besucher durch, ohne gezählt zu werden — und die
+      Anzeigen können nur auf Klicks optimieren statt auf Warenkorb
+      oder Kauf.
+    </p>
+  </div>
+
+  <section>
+    <p class="marke-klein">Drei Wege führen ans Ziel</p>
+    <h2 class="gross">Zwei können dich aussperren, einer nicht</h2>
+
+    <div class="wege">
+      <div class="weg">
+        <div class="weg-kopf">
+          <span class="weg-name">Shopify-Kanal → Datenfreigabe</span>
+          <span class="schild hmm">unsicher</span>
+        </div>
+        <p class="weg-haken">
+          Der neue Pixel taucht dort nur auf, wenn der Kanal am richtigen
+          Facebook-Konto hängt. Kann sein, muss nicht.
+        </p>
+      </div>
+
+      <div class="weg">
+        <div class="weg-kopf">
+          <span class="weg-name">Meta → Partner-Integration</span>
+          <span class="schild hmm">unsicher</span>
+        </div>
+        <p class="weg-haken">
+          Führt auf business.facebook.com — genau die Ecke, die dich mit
+          der alten Telefonnummer schon einmal ausgesperrt hat.
+        </p>
+      </div>
+
+      <div class="weg empfohlen">
+        <div class="weg-kopf">
+          <span class="weg-name">Kundenereignis in Shopify</span>
+          <span class="schild ja">funktioniert immer</span>
+        </div>
+        <p class="weg-haken">
+          Kein Facebook-Login, kein Business Manager, keine Verbindung
+          zwischen den beiden Diensten. Nur Code im Laden, der an die
+          Pixelnummer meldet.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="marke-klein">Sechs Schritte, etwa zwei Minuten</p>
+    <h2 class="gross">So setzt du es ein</h2>
+
+    <ol class="schritte">
+      <li>
+        Shopify öffnen, <strong>Einstellungen → Kundenereignisse</strong>
+        <a class="knopf" href="https://admin.shopify.com/store/i0m1xi-h5/settings/customer_events">Direkt dorthin →</a>
+      </li>
+      <li>
+        Oben rechts auf <strong>Benutzerdefiniertes Pixel hinzufügen</strong>
+      </li>
+      <li>
+        Als Namen <strong>Meta Pixel Let'sDrink</strong> eintragen
+      </li>
+      <li>
+        Beim <strong>Kundenschutz</strong> zweimal umstellen: Berechtigung
+        auf <strong>erforderlich</strong>, Beschränkung auf
+        <strong>Marketing</strong>.
+        <span class="neben">
+          Damit feuert der Pixel nur mit Zustimmung. Das ist nicht
+          Vorsicht um der Vorsicht willen — ein Marketing-Pixel ohne
+          Zustimmung ist genau das, was das Datenschutzgesetz meint.
+        </span>
+      </li>
+      <li>
+        Den Code unten in das grosse Feld einfügen
+      </li>
+      <li>
+        <strong>Speichern</strong>, dann <strong>Verbinden</strong> —
+        und einmal deine Startseite aufrufen.
+        <span class="neben">
+          Sag mir danach Bescheid. Ich sehe in derselben Abfrage nach,
+          die bisher „null" gemeldet hat.
+        </span>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <p class="marke-klein">Schritt 5</p>
+    <h2 class="gross">Der Code</h2>
+
+    <div class="code-block">
+      <div class="code-leiste">
+        <span class="code-titel">Pixel 883186891300328</span>
+        <button class="kopieren" type="button" id="kopf-knopf">Kopieren</button>
+      </div>
+      <pre><code id="code">// Meta Pixel für Let'sDrink — Pixelnummer 883186891300328
+
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];
+t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window,document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+
+fbq('init', '883186891300328');
+
+// Seite angesehen
+analytics.subscribe('page_viewed', () =&gt; {
+  fbq('track', 'PageView');
+});
+
+// Produkt angesehen
+analytics.subscribe('product_viewed', (event) =&gt; {
+  const v = event.data.productVariant;
+  fbq('track', 'ViewContent', {
+    content_ids: [v.id],
+    content_name: v.product.title,
+    content_type: 'product',
+    value: v.price.amount,
+    currency: v.price.currencyCode
+  });
+});
+
+// In den Warenkorb — darauf lernt die nächste Kampagne
+analytics.subscribe('product_added_to_cart', (event) =&gt; {
+  const l = event.data.cartLine;
+  fbq('track', 'AddToCart', {
+    content_ids: [l.merchandise.id],
+    content_name: l.merchandise.product.title,
+    content_type: 'product',
+    value: l.cost.totalAmount.amount,
+    currency: l.cost.totalAmount.currencyCode
+  });
+});
+
+// Kasse begonnen
+analytics.subscribe('checkout_started', (event) =&gt; {
+  const c = event.data.checkout;
+  fbq('track', 'InitiateCheckout', {
+    value: c.totalPrice.amount,
+    currency: c.totalPrice.currencyCode,
+    num_items: c.lineItems.length
+  });
+});
+
+// Kauf abgeschlossen
+analytics.subscribe('checkout_completed', (event) =&gt; {
+  const c = event.data.checkout;
+  fbq('track', 'Purchase', {
+    content_ids: c.lineItems.map(i =&gt; i.variant.id),
+    content_type: 'product',
+    value: c.totalPrice.amount,
+    currency: c.totalPrice.currencyCode,
+    num_items: c.lineItems.length
+  });
+});</code></pre>
+    </div>
+  </section>
+
+  <section>
+    <p class="marke-klein">Ehrlich gerechnet</p>
+    <h2 class="gross">Was dieser Weg kann — und was nicht</h2>
+
+    <div class="bilanz">
+      <div class="karte">
+        <h3><span class="zeichen">Kann</span> — fünf Ereignisse mit Betrag</h3>
+        <p>
+          Seitenaufruf, Produktansicht, <strong>Warenkorb</strong>,
+          Kassenstart und <strong>Kauf</strong>, jeweils mit Betrag und
+          Währung. Das ist mehr, als der Shopify-Kanal im Browser meldet:
+          dort feuert „Produkt angesehen" nur auf Produktseiten und lässt
+          die Startseite aus. Genau diese Messlücke hat die 1,3 Prozent
+          erzeugt, die ich fälschlich für ein Verkaufsproblem gehalten
+          habe.
+        </p>
+      </div>
+
+      <div class="karte">
+        <h3><span class="zeichen nein">Kann nicht</span> — die Conversions API</h3>
+        <p>
+          Das ist der zweite, serverseitige Kanal, der auch meldet, wenn
+          ein Browser blockt. Den gibt es nur über die Partner-Integration.
+          Für den Anfang reicht der Browserkanal: er genügt, damit eine
+          Kampagne auf Warenkorb oder Kauf lernen kann.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="fuss">
+    <p>
+      <strong>Doppelte Zählung?</strong> Nein. Der Shopify-Kanal meldet an
+      <code class="inline">1978393872804216</code>, dieser Code an
+      <code class="inline">883186891300328</code>. Zwei verschiedene Pixel,
+      keine Überschneidung.
+    </p>
+    <p>
+      Falls die Partner-Integration bei Meta später doch klappt, muss
+      dieser Code wieder heraus — sonst zählt derselbe Kauf zweimal.
+    </p>
+  </div>
+
+</div>
+
+<script>
+  (function () {
+    const knopf = document.getElementById('kopf-knopf');
+    const code = document.getElementById('code');
+
+    function melden() {
+      knopf.textContent = 'Kopiert';
+      knopf.dataset.fertig = 'ja';
+      setTimeout(function () {
+        knopf.textContent = 'Kopieren';
+        knopf.dataset.fertig = 'nein';
+      }, 2000);
+    }
+
+    knopf.addEventListener('click', function () {
+      const text = code.textContent;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(melden, ersatz);
+      } else {
+        ersatz();
+      }
+
+      // Aelteres Verfahren, falls die Zwischenablage gesperrt ist -
+      // auf dem Handy im eingebetteten Fenster kommt das vor.
+      function ersatz() {
+        const feld = document.createElement('textarea');
+        feld.value = text;
+        feld.setAttribute('readonly', '');
+        feld.style.position = 'fixed';
+        feld.style.opacity = '0';
+        document.body.appendChild(feld);
+        feld.select();
+        try { document.execCommand('copy'); melden(); }
+        catch (e) { knopf.textContent = 'Von Hand markieren'; }
+        document.body.removeChild(feld);
+      }
+    });
+  })();
+</script>
