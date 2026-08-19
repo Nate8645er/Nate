@@ -366,7 +366,8 @@ TUERKIS_TIEF = dunkler(TUERKIS, 4.0, PAPIER)
 
 
 
-def hoch_hell(W, H, *, bild, kopf, unterzeile, name, anker=0.5):
+def hoch_hell(W, H, *, bild, kopf, unterzeile, name, anker=0.5,
+              ziel=None):
     """Text OBEN auf hellem Schleier, Produkt unten unberuehrt.
 
     WARUM ES DIESE ZWEITE FASSUNG BRAUCHT
@@ -440,7 +441,12 @@ def hoch_hell(W, H, *, bild, kopf, unterzeile, name, anker=0.5):
     text(img, (W - m, fuss_y), PREIS, font(preis_gr, True), TINTE,
          anchor="rs")
     _pruefe(name, a, werte, ziele)
-    speichern(img, name)
+    # ziel: freier Pfad statt des Standardordners - gebraucht fuer den
+    # Abspann des Videos, der im Unterordner "video" liegt.
+    if ziel:
+        img.convert("RGB").save(ziel, "PNG", optimize=True)
+        return ziel
+    return speichern(img, name)
 
 
 def alle_drei_hell(*, bild, anker, kopf, unterzeile, praefix):

@@ -26,16 +26,23 @@ DREI BEFUNDE AUS DER PRUEFUNG
    Rahmen, Text steht auf den Baendern darueber und darunter. Ein
    1:1-Zuschnitt haette 490 auf 1080 gestreckt, Faktor 2.2 - matsch.
 
-3. DER TON KOMMT WEG. Meta spielt Anzeigen stumm an, und Musik in
-   einem fremd produzierten Film ist die haeufigste Urheberrechts-
-   falle bei Videoanzeigen. Ohne Ton faellt das Risiko ganz weg und
-   die Anzeige verliert nichts.
+3. DER TON BLEIBT - AUF NATES ANSAGE. Erste Fassung lief stumm:
+   Meta spielt Anzeigen stumm an, und Musik in einem fremd
+   produzierten Film ist die haeufigste Urheberrechtsfalle bei
+   Videoanzeigen. Nate am 19.8.2026: "Benutz den sound vom video."
+   Also bleibt er. Das aendert nichts an Befund 4 - es macht ihn nur
+   wichtiger, weil jetzt Bild UND Musik daran haengen.
 
-OFFEN UND NUR VON NATE ZU BEANTWORTEN: woher der Film stammt und ob
-er ihn verwenden darf. Lieferanten geben Haendlern solche Filme
-haeufig ausdruecklich frei - dann ist alles in Ordnung. Stammt er von
-einer fremden Marke, kann Meta die Anzeige sperren. Diese Datei baut
-die Fassungen, sie veroeffentlicht nichts.
+   Sauber gemacht heisst: der Ton bekommt am Schluss einen Ausklang
+   von 0.8 Sekunden, und der Abspann traegt eine echte Stille-Spur.
+   Ohne beides reisst die Musik am Schnitt hart ab, und ohne Tonspur
+   im Abspann laesst sich gar nicht erst zusammensetzen.
+
+4. OFFEN UND NUR VON NATE ZU BEANTWORTEN: woher der Film stammt und ob
+   er ihn verwenden darf. Lieferanten geben Haendlern solche Filme
+   haeufig ausdruecklich frei - dann ist alles in Ordnung. Stammt er
+   von einer fremden Marke, kann Meta die Anzeige sperren. Diese
+   Datei baut die Fassungen, sie veroeffentlicht nichts.
 """
 import os
 import subprocess
@@ -53,8 +60,23 @@ MATT = (208, 208, 212)
 FILM_B = 1080                 # Filmbreite im Rahmen
 FILM_H = 596                  # 888x490 auf 1080 skaliert, gerade Zahl
 
+# Ton: eine Einstellung fuer beide Abschnitte. Zusammensetzen mit
+# "-c copy" geht nur, wenn Haupteil und Abspann dieselbe Tonspur-Form
+# haben - gleiche Abtastrate, gleiche Kanalzahl, gleicher Kodierer.
+TON = ["-c:a", "aac", "-b:a", "160k", "-ar", "44100", "-ac", "2"]
+ENDE = 2.6                   # Sekunden Abspann
+UEBER = 0.45                 # Sekunden Ueberblendung Film -> Abspann.
+                             # 0.7 war zu lang: waehrend der Blende standen
+                             # das Band des Films und der Text des Abspanns
+                             # gleichzeitig da und lasen sich als
+                             # Doppelbelichtung.
+
 KOPF = ["Für Hund", "und Katze."]
 SUB = "550 ml  ·  Sechs Farben"
+KOPF_ENDE = ["Sechs Farben.", "Ein Napf."]
+SUB_ENDE = "Für Hund und Katze  ·  550 ml"
+HERO = os.path.join(HIER, "tiere", "letsdrink-hero-banner.jpg")
+HERO_MITTE = 760              # Bildzeile, um die der Ausschnitt zentriert
 
 
 def _plan(W, H, kopf_gr, mit_sub):
@@ -111,7 +133,8 @@ def _passt(W, H):
     s_oben, s_unten = _schutz(W, H)
     breite = W - 2 * round(W * 0.074)
     deckel = min(round(W * 0.086),
-                 min(fit_font(z, breite, True, track=-2.0) for z in KOPF))
+                 min(fit_font(z, breite, True, track=-2.0)
+                     for z in KOPF + KOPF_ENDE))
     for mit_sub in (True, False):
         gr = deckel
         while gr >= round(W * 0.042):
@@ -141,13 +164,19 @@ def _passt(W, H):
                      % (W, H))
 
 
-def rahmen(W, H, name):
-    """Rahmen mit durchsichtigem Fenster, in dem spaeter der Film liegt."""
+def rahmen(W, H, name, *, kopf=None, sub=None, foto=None):
+    """Rahmen mit Fenster. Ohne foto durchsichtig (fuer den Film),
+    mit foto gleich gefuellt (fuer den Abspann)."""
+    kopf = kopf or KOPF
+    sub = sub or SUB
     p = _passt(W, H)
     oben = p["oben"]
     img = Image.new("RGBA", (W, H), GRUND + (255,))
     d = ImageDraw.Draw(img)
-    d.rectangle([0, oben, W, oben + p["film_h"]], fill=(0, 0, 0, 0))
+    if foto is None:
+        d.rectangle([0, oben, W, oben + p["film_h"]], fill=(0, 0, 0, 0))
+    else:
+        img.paste(_streifen(foto, W, p["film_h"]), (0, oben))
 
     m = round(W * 0.074)
     breite = W - 2 * m
@@ -157,10 +186,10 @@ def rahmen(W, H, name):
     text(img, (m, y), "Let'sDrink", font(p["marke_gr"], True),
          (236, 236, 238), track=0.6)
     y += round(p["marke_gr"] * 1.35) + p["nach_marke"]
-    y = block(img, (m, y), KOPF, font(p["kopf_gr"], True), lh=p["lh"],
+    y = block(img, (m, y), kopf, font(p["kopf_gr"], True), lh=p["lh"],
               fill=WEISS, track=-p["kopf_gr"] * 0.028)
     if p["mit_sub"]:
-        text(img, (m, y + p["nach_kopf"]), SUB, font(p["sub_gr"]), MATT)
+        text(img, (m, y + p["nach_kopf"]), sub, font(p["sub_gr"]), MATT)
         y += p["nach_kopf"] + round(p["sub_gr"] * 1.4)
     y += p["vor_regel"]
     d.rectangle([m, y, m + breite, y], fill=(120, 122, 126))
@@ -170,7 +199,7 @@ def rahmen(W, H, name):
     text(img, (m + breite, y), PREIS, font(p["preis_gr"], True), WEISS,
          anchor="rs")
     pfad = os.path.join(AUS, name)
-    img.save(pfad, "PNG")
+    img.convert("RGB" if foto else "RGBA").save(pfad, "PNG")
     s_oben, s_unten = _schutz(W, H)
     print("     %dx%d  Kopf %d px, Band %d px, Film %d px ab %d px%s%s"
           % (W, H, p["kopf_gr"], p["hoehe"], p["film_h"], oben,
@@ -179,38 +208,66 @@ def rahmen(W, H, name):
     return pfad, oben, p["film_h"], p["fuellen"]
 
 
+def _streifen(pfad, W, hoehe):
+    """Ausschnitt aus dem Sechs-Farben-Bild - IMMER ueber die volle Breite.
+
+    WARUM NICHT EINFACH FUELLEN
+
+    Erster Versuch nahm denselben Weg wie die Standbilder: Bild auf das
+    Format bringen, ueberstehende Seiten wegschneiden. Im Hochformat
+    fielen dabei zwei der sechs Flaschen weg - ausgerechnet auf dem
+    Bild, das "Sechs Farben" sagt. Deshalb bleibt die Breite hier
+    unangetastet und beschnitten wird nur oben und unten, zentriert um
+    die Reihe der Flaschen.
+    """
+    im = Image.open(pfad).convert("RGB")
+    band = round(im.width * hoehe / W)
+    band = min(band, im.height)
+    y = max(0, min(im.height - band, round(HERO_MITTE - band / 2)))
+    return im.crop((0, y, im.width, y + band)).resize((W, hoehe), Image.LANCZOS)
+
+
 def abspann(W, H, name):
-    """Zwei Sekunden Standbild am Schluss: Marke, Preis, Adresse."""
-    img = Image.new("RGB", (W, H), GRUND)
-    d = ImageDraw.Draw(img)
-    m = round(W * 0.074)
-    bh = max(3, round(W * 0.0037))
-    kopf_gr = min(round(W * 0.098),
-                  min(fit_font(z, W - 2 * m, True, track=-2.0) for z in KOPF))
-    lh = round(kopf_gr * 1.04)
-    ganz = bh + round(H * 0.030) + round(W * 0.024 * 2.0) + lh * len(KOPF) \
-        + round(H * 0.028) + round(W * 0.028)
-    y = round((H - ganz) / 2)
+    """Schluss: dieselbe Anordnung wie der Film, nur anderes Bild.
 
-    d.rectangle([m, y, m + round(W * 0.068), y + bh - 1], fill=TUERKIS)
-    y += bh + round(H * 0.030)
-    text(img, (m, y), "Let'sDrink", font(round(W * 0.024), True),
-         (236, 236, 238), track=0.6)
-    y += round(W * 0.024 * 2.0)
-    y = block(img, (m, y), KOPF, font(kopf_gr, True), lh=lh, fill=WEISS,
-              track=-kopf_gr * 0.028)
-    text(img, (m, y + round(H * 0.028)), SUB, font(round(W * 0.028)), MATT)
+    WARUM ER SO AUSSIEHT
 
-    fy = H - round(H * 0.090)
-    d.rectangle([m, fy - round(H * 0.040), W - m, fy - round(H * 0.040)],
-                fill=(120, 122, 126))
-    text(img, (m, fy + round(W * 0.030 * 0.22)), "letsdrink-pet.com",
-         font(round(W * 0.022)), MATT, track=0.6)
-    text(img, (W - m, fy), PREIS, font(round(W * 0.030), True), WEISS,
-         anchor="rs")
-    p = os.path.join(AUS, name)
-    img.save(p, "PNG")
-    return p
+    Erste Fassung war Text auf Schwarz - Marke, Ueberschrift, Preis,
+    sonst nichts. Nate hat einen Auszug geschickt: "schau das am
+    schluss vom video entwas gutes kommt ein bild von den 6 farben und
+    so". Er hat recht - der letzte Eindruck ist der, mit dem jemand
+    weggeht, und ein leeres schwarzes Feld ist keiner.
+
+    Zweiter Versuch nahm das Bild ganzflaechig auf hellem Grund. Das
+    sah gut aus, sprang aber vom dunklen Film hart ins Helle, und
+    waehrend der Blende standen zwei verschiedene Textbloecke
+    uebereinander - eine Doppelbelichtung.
+
+    Jetzt traegt der Abspann denselben Rahmen wie der Film: gleicher
+    Grund, gleiche Bandhoehe, Text an derselben Stelle. Die Blende
+    wechselt nur noch das Bild im Fenster und die Zeile darunter. Nichts
+    springt, nichts ueberlagert sich.
+    """
+    pfad = os.path.join(AUS, name)
+    img, _, _, _ = rahmen(W, H, name, kopf=KOPF_ENDE, sub=SUB_ENDE,
+                          foto=HERO)
+    return pfad
+
+
+def filmlaenge():
+    """Laenge der Quelle in Sekunden - fuer den Ausklang gebraucht.
+
+    ffprobe steht in dieser Umgebung nicht zur Verfuegung, deshalb
+    ueber ffmpeg: einmal ohne Ausgabe durchlaufen lassen und die
+    gemeldete Dauer lesen.
+    """
+    r = subprocess.run(["ffmpeg", "-hide_banner", "-i", QUELLE],
+                       capture_output=True, text=True)
+    for zeile in r.stderr.splitlines():
+        if "Duration:" in zeile:
+            h, mi, se = zeile.split("Duration:")[1].split(",")[0].strip().split(":")
+            return int(h) * 3600 + int(mi) * 60 + float(se)
+    raise ValueError("Laenge von %s nicht lesbar" % QUELLE)
 
 
 def lauf(*teile):
@@ -222,35 +279,39 @@ def bauen(W, H, kuerzel):
     os.makedirs(AUS, exist_ok=True)
     rp, oben, fh, fuellen = rahmen(W, H, "rahmen-%s.png" % kuerzel)
     ap = abspann(W, H, "abspann-%s.png" % kuerzel)
-    haupt = os.path.join(AUS, "_h-%s.mp4" % kuerzel)
-    ende = os.path.join(AUS, "_e-%s.mp4" % kuerzel)
     ziel = os.path.join(AUS, "letsdrink-video-%s.mp4" % kuerzel)
 
-    # Film auf volle Breite, in den Rahmen setzen, Rahmen darueber, Ton weg.
+    dauer = filmlaenge()
+    start = dauer - UEBER                    # hier beginnt die Blende
+    gesamt = dauer + ENDE - UEBER
+
     if fuellen:
-        skal = "scale=-2:%d,crop=%d:%d,setsar=1[v]" % (fh, W, fh)
+        skal = "scale=-2:%d,crop=%d:%d" % (fh, W, fh)
     else:
-        skal = "scale=%d:%d,setsar=1[v]" % (FILM_B, fh)
-    lauf("-i", QUELLE, "-i", rp, "-filter_complex",
-         "[0:v]%s;"
-         "[v]pad=%d:%d:0:%d:color=0x0B0D0F[p];"
-         "[p][1:v]overlay=0:0,format=yuv420p[o]"
-         % (skal, W, H, oben),
-         "-map", "[o]", "-an", "-r", "30",
-         "-c:v", "libx264", "-preset", "slow", "-crf", "19", haupt)
+        skal = "scale=%d:%d" % (FILM_B, fh)
 
-    lauf("-loop", "1", "-t", "2", "-i", ap, "-vf",
-         "scale=%d:%d,format=yuv420p" % (W, H),
-         "-r", "30", "-c:v", "libx264", "-preset", "slow", "-crf", "19", ende)
-
-    liste = os.path.join(AUS, "_l-%s.txt" % kuerzel)
-    with open(liste, "w") as f:
-        for t in (haupt, ende):
-            f.write("file '%s'\n" % t)
-    lauf("-f", "concat", "-safe", "0", "-i", liste, "-c", "copy", ziel)
-    for t in (haupt, ende, liste):
-        os.remove(t)
-    print("  ->", os.path.basename(ziel), "%dx%d" % (W, H))
+    # EIN Durchlauf statt drei. Vorher wurden Haupteil und Abspann
+    # einzeln kodiert und mit "-c copy" aneinandergehaengt; eine
+    # Ueberblendung geht so nicht, weil sie beide Spuren gleichzeitig
+    # braucht. Ausserdem spart es zwei Kodierungen.
+    lauf("-i", QUELLE, "-i", rp,
+         "-loop", "1", "-framerate", "30", "-t", "%.2f" % ENDE, "-i", ap,
+         "-filter_complex",
+         "[0:v]%s,fps=30,setsar=1[v];"
+         "[v]pad=%d:%d:0:%d:color=0x0B0D0F[pd];"
+         "[pd][1:v]overlay=0:0[fr];"
+         "[2:v]scale=%d:%d,fps=30,setsar=1[ab];"
+         "[fr][ab]xfade=transition=fade:duration=%.2f:offset=%.2f,"
+         "format=yuv420p[o];"
+         "[0:a]afade=t=out:st=%.2f:d=%.2f,aresample=44100,"
+         "apad=whole_dur=%.2f[a]"
+         % (skal, W, H, oben, W, H, UEBER, start,
+            max(0.0, start - 0.15), UEBER + 0.15, gesamt),
+         "-map", "[o]", "-map", "[a]", "-t", "%.2f" % gesamt, "-r", "30",
+         "-c:v", "libx264", "-preset", "slow", "-crf", "19",
+         *TON, "-movflags", "+faststart", ziel)
+    print("  ->", os.path.basename(ziel), "%dx%d, %.1f s mit Ton"
+          % (W, H, gesamt))
     return ziel
 
 

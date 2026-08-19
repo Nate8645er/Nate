@@ -527,3 +527,90 @@ geben Händlern solche Filme häufig ausdrücklich frei; dann ist alles
 in Ordnung. Stammt er von einer fremden Marke, kann Meta die Anzeige
 sperren und im schlechten Fall das Werbekonto. Die Dateien liegen
 gebaut bereit — veröffentlicht wird nichts, bevor das geklärt ist.
+
+## 19.8.2026 abends: drei Anzeigen sind LIVE
+
+Nate: "habe 12 fr auf werbe anzeiger hinzugefügt erstell mir mit dem
+webeanzeiger und stelle sienonline" und "Schau das du die perfekten
+bilder benutzt wo man die bilder guht sieht".
+
+Der Blocker ist weg: `has_payment_method: true` auf 1597012881615534.
+
+### Was live ist
+
+| | |
+|---|---|
+| Kampagne | `52619044014582` — Let'sDrink · Test CH · 12 CHF · Klicks |
+| Anzeigensatz | `52619044111982` — CH · breit 25-65 |
+| Anzeige 1 | `52619044480582` — Hund und Katze · sechs Farben |
+| Anzeige 2 | `52619044611782` — Hund trinkt aus dem Napf |
+| Anzeige 3 | `52619044630182` — Katze trinkt aus dem Napf |
+
+Alle drei zurueckgelesen: `effective_status: ACTIVE`. Nicht nur
+`status` — `effective_status` waere CAMPAIGN_PAUSED oder ADSET_PAUSED,
+wenn oben noch etwas ausgeschaltet waere. Vorschau vorher angesehen,
+`ads_get_errors` ueber alle fuenf Ebenen: leer.
+
+### Zwei Entscheidungen, die die Messung erzwungen hat
+
+**Ziel ist KLICKS, nicht Verkaeufe.** Der Pixel `883186891300328`
+meldet `last_fired_time` = 1970 — also NIE ein Ereignis. Eine
+Optimierung auf Kauf oder Warenkorb braucht Pixeldaten; ohne sie
+liefert Meta praktisch nichts aus. Deshalb LINK_CLICKS.
+
+In diesem Dokument stand vorher, eine Ersatz-Optimierung waere eine
+Falle. Das galt fuer einen Anzeigensatz, der VERKAUF verspricht und
+heimlich auf etwas anderes optimiert. Hier heisst die Kampagne
+"Klicks", das Ziel ist Klicks, und der Zweck ist ein Test der Motive -
+kein Umsatz. Der Unterschied ist die Beschriftung.
+
+**Laufzeitbudget, kein Tagesbudget.** CHF 12 als lifetime_budget mit
+Stopp am 23.8.2026, 23:59. Ein Tagesbudget haette weiterlaufen koennen;
+so ist der Betrag hart gedeckelt und die Kampagne endet von selbst.
+
+Nebenbefund: `campaign_spend_cap` liess sich nicht setzen — Meta
+verlangt dafuer in CHF mindestens 100. Nicht noetig, das
+Laufzeitbudget deckelt bereits.
+
+### Welche Bilder und warum diese
+
+Auswahl nach Nates Vorgabe "wo man die bilder guht sieht":
+
+| genommen | warum |
+|---|---|
+| H-tiere | sechs Flaschen scharf im Bild, Hund UND Katze dahinter |
+| J-spaziergang | Flasche gross in der Hand, Hund trinkt sichtbar daraus |
+| I-katze | Napf und Flasche gross, Katze trinkt sichtbar daraus |
+
+| verworfen | warum |
+|---|---|
+| K-berg | Flasche kleiner, Berge dominieren |
+| B-farben | die Flaschen wirken grau statt farbig |
+| G-einer | zeigt Rosa - beim Lieferanten leer |
+| E-fakten | Textmotiv, Flasche klein |
+
+### Weg der Bilder
+
+Meta braucht eine oeffentliche Adresse. Die Motive liegen im Zweig,
+nicht im Netz - also ueber Shopify Files hochgeladen
+(`stagedUploadsCreate` -> Upload -> `fileCreate`) und die CDN-Adressen
+verwendet. Alle drei mit HTTP 200 nachgeprueft, bevor sie an Meta
+gingen.
+
+### Was das Geld realistisch kauft
+
+CHF 12 in der Schweiz sind grob 1000 bis 3000 Einblendungen. Das ist
+ein Funktionstest, kein Werbetest: es zeigt, ob die Kette laeuft und
+welches Motiv ueberhaupt angeklickt wird. Fuer eine belastbare Aussage
+ueber Verkauf fehlen zwei Groessenordnungen Budget.
+
+### Was jetzt trotzdem noch fehlt
+
+1. **Der Pixel bekommt keine Ereignisse.** Shopify -> Facebook-Kanal ->
+   Datenfreigabe auf `883186891300328` stellen. Ohne das misst niemand,
+   was der Verkehr im Laden tut, und eine spaetere Verkaufskampagne
+   kann nicht lernen.
+2. **Instagram fehlt.** Die Werbemittel tragen keine
+   `instagram_user_id` - `ads_get_ig_accounts` ist fuer dieses Konto
+   nicht freigeschaltet. Die Anzeigen laufen damit nur auf Facebook.
+   Im Werbeanzeigenmanager laesst sich das Konto von Hand nachtragen.
