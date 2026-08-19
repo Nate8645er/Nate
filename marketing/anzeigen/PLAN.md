@@ -413,3 +413,60 @@ Jetzt rechnet der Bau:
 
 Dazu `bogen.py`: baut pro Format einen Kontaktbogen mit allen elf
 Motiven nebeneinander. Beide Fehler waeren darauf sofort aufgefallen.
+
+## 19.8.2026 spaeter: "dise sehen zu amateur aus" — Fotomotive neu gebaut
+
+Nate ueber H, I, J und K: "Neue werbe bilder dise sehen zu amateur
+aus." Er hatte recht, und der Beweis lag im eigenen Ordner: neben
+A-hand und B-farben sahen die vier Fotomotive wie eine Vorlage aus.
+
+**Was daran billig aussah** — Foto in einem Rechteck oben, Text in
+einem weissen Kasten unten, dazwischen eine harte Naht. Rechts neben
+der Ueberschrift ein totes weisses Feld. Zwei Haelften ohne
+gemeinsamen Grund.
+
+**Warum es so gebaut war** — weil ich beim ersten Versuch gemessen
+hatte, dass weisse Schrift auf hellem Fell nur 1.62 zu 1 Kontrast
+haelt, und daraus den falschen Schluss gezogen habe. Die Antwort auf
+zu wenig Kontrast ist nicht, das Foto in einen Kasten zu sperren,
+sondern einen Verlauf darunterzulegen.
+
+### Der neue Aufbau (`lib_foto.py`)
+
+Foto randlos ueber die ganze Flaeche, Text darauf, Verlauf dazwischen.
+Die Deckkraft des Verlaufs wird **gesucht statt gewaehlt**: probeweise
+ueberlagern, auf dem Ergebnis den hellsten Bereich hinter jeder Zeile
+messen (92. Perzentil), kleinste Deckkraft nehmen, die ueberall haelt.
+So bleibt das Foto so hell wie moeglich und die Schrift trotzdem
+sicher. Gemessene Werte, alle ueber der Grenze:
+
+| Motiv | Deckung | schwaechster Kontrast |
+|---|---|---|
+| H-tiere (hell) | 0.30 | 3.7 (Balken, Grenze 3.0) |
+| I-katze | 0.50–0.65 | 3.3 |
+| J-spaziergang | 0.55 | 4.0 |
+| K-berg | 0.65–0.70 | 3.2 |
+
+### Drei Dinge, die die Messung erzwungen hat
+
+**Das Markentuerkis kann auf Weiss nicht bestehen.** #45B6B2 hat
+Leuchtdichte 0.375; gegen hellen Grund sind das 2.3 zu 1, und fuer
+3 zu 1 muesste es unter 0.268 liegen. Das ist keine Einstellung,
+sondern eine Obergrenze. Es traegt jetzt einen kurzen Akzentbalken
+statt Schrift — als Flaeche gilt 3 zu 1 — und fuer die helle Fassung
+wird ein tieferer Ton **abgeleitet**: `dunkler(TUERKIS, 4.0, PAPIER)`
+= #338784, gemessen 4.04 zu 1.
+
+**Der Anlauf des Verlaufs gehoert oberhalb des Textes.** Erste Fassung
+liess ihn am oberen Rand des Textblocks beginnen: selbst bei voller
+Deckkraft noch 1.1 zu 1 an der obersten Zeile, weil der Schleier dort
+absichtlich fast durchsichtig ist.
+
+**H-tiere braucht die umgekehrte Behandlung.** Es ist kein
+Stimmungsbild, sondern ein Produktfoto: sechs Flaschen auf hellem
+Karton. Der dunkle Verlauf lag genau auf den Flaschen — gemessen
+richtig, gestalterisch falsch. Dort laeuft es jetzt hell: Schleier von
+oben, dunkle Schrift, untere Bildhaelfte unberuehrt. Im Querformat
+liegen dieselben Flaschen unter der Textspalte, also gilt es dort
+auch — beim ersten Durchgang hatte ich nur das Quadrat umgestellt und
+das Querformat wieder nicht angesehen.

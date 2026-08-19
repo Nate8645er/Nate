@@ -40,7 +40,7 @@ Kein Wort ueber Dichtigkeit, Material, Masse, Gewicht oder Spuelmaschine
 versand und die Zeile "Fuer Hund und Katze", damit auch auf den beiden
 Hundemotiven steht, dass es fuer beide Tiere ist.
 """
-from h_tiere import alle_drei
+from lib_foto import alle_drei
 
 # --- J: der Alltag - Spaziergang, Hund trinkt aus dem Napf --------------
 J_KOPF = ["Trinken,", "ohne Napf", "zu suchen."]
