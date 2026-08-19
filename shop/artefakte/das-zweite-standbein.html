@@ -1,0 +1,454 @@
+<title>Das zweite Standbein</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+
+<style>
+  :root {
+    --grund:#F5F7F6; --flaeche:#FFFFFF; --flaeche-2:#ECF1F0; --linie:#D6E0DE;
+    --tinte:#101E1D; --matt:#556765; --marke:#23716D; --marke-satt:#45B6B2;
+    --alarm:#A8341A; --alarm-grund:#FBEDE9; --alarm-linie:#E8BFB2;
+    --zitat:#1B2A29;
+    --schatten:0 1px 2px rgba(16,30,29,.05), 0 8px 24px -12px rgba(16,30,29,.16);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --grund:#0C1514; --flaeche:#14201F; --flaeche-2:#1B2827; --linie:#293937;
+      --tinte:#E9F1F0; --matt:#95A8A6; --marke:#5FCBC6; --marke-satt:#45B6B2;
+      --alarm:#F2836A; --alarm-grund:#2A1512; --alarm-linie:#5A2C22;
+      --zitat:#E9F1F0;
+      --schatten:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"] {
+    --grund:#0C1514; --flaeche:#14201F; --flaeche-2:#1B2827; --linie:#293937;
+    --tinte:#E9F1F0; --matt:#95A8A6; --marke:#5FCBC6; --marke-satt:#45B6B2;
+    --alarm:#F2836A; --alarm-grund:#2A1512; --alarm-linie:#5A2C22;
+    --zitat:#E9F1F0;
+    --schatten:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+
+  * { box-sizing:border-box; }
+  body {
+    margin:0; background:var(--grund); color:var(--tinte);
+    font-family:"IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size:17px; line-height:1.62; -webkit-text-size-adjust:100%;
+  }
+  .blatt { max-width:680px; margin:0 auto; padding:40px 20px 96px;
+           display:flex; flex-direction:column; gap:44px; }
+
+  .augenbraue { font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600;
+                letter-spacing:.13em; text-transform:uppercase; color:var(--marke); margin:0; }
+  h1 { font-family:Outfit,sans-serif; font-weight:700;
+       font-size:clamp(2rem,8.5vw,2.9rem); line-height:1.04;
+       letter-spacing:-.022em; text-wrap:balance; margin:0; }
+  .vorspann { margin:0; color:var(--matt); font-size:1.06rem; }
+  .kopf { display:flex; flex-direction:column; gap:14px; }
+
+  section { display:flex; flex-direction:column; gap:20px; }
+  .marke-klein { font-family:"IBM Plex Mono",monospace; font-size:11.5px; font-weight:600;
+                 letter-spacing:.13em; text-transform:uppercase; color:var(--matt);
+                 margin:0 0 -12px; }
+  h2.gross { font-family:Outfit,sans-serif; font-weight:700;
+             font-size:clamp(1.45rem,5.5vw,1.85rem); line-height:1.14;
+             letter-spacing:-.018em; margin:0; text-wrap:balance; }
+  h3 { font-family:Outfit,sans-serif; font-weight:700; font-size:1.08rem;
+       margin:0; letter-spacing:-.012em; }
+  p { margin:0; }
+
+  /* --- Urteil ------------------------------------------------------- */
+  .urteil {
+    background:var(--alarm-grund); border:1px solid var(--alarm-linie);
+    border-radius:12px; padding:22px; display:flex; flex-direction:column; gap:14px;
+  }
+  .urteil .zahl {
+    font-family:Outfit,sans-serif; font-weight:700; font-size:2.6rem;
+    line-height:1; color:var(--alarm); letter-spacing:-.03em;
+  }
+  .urteil p { font-size:1rem; }
+  .urteil strong { color:var(--alarm); }
+
+  /* --- Stimmen ------------------------------------------------------ */
+  .stimmen { display:flex; flex-direction:column; gap:12px; }
+  .stimme {
+    background:var(--flaeche); border:1px solid var(--linie);
+    border-radius:10px; padding:18px 20px;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .stimme-name {
+    font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:600;
+    letter-spacing:.11em; text-transform:uppercase; color:var(--marke);
+  }
+  .stimme blockquote {
+    margin:0; font-size:1.02rem; line-height:1.55; color:var(--zitat);
+    font-style:italic;
+  }
+  .stimme.haupt { border-color:var(--marke); border-width:1.5px; }
+  .stimme.haupt blockquote { font-size:1.1rem; font-style:normal; font-weight:600; }
+
+  /* --- Angebot ------------------------------------------------------ */
+  .pakete { display:flex; flex-direction:column; gap:12px; }
+  .paket {
+    background:var(--flaeche); border:1px solid var(--linie); border-radius:12px;
+    padding:20px 22px; display:flex; flex-direction:column; gap:12px;
+    box-shadow:var(--schatten);
+  }
+  .paket.gross { border-color:var(--marke); border-width:1.5px; }
+  .paket-kopf { display:flex; justify-content:space-between; align-items:baseline;
+                gap:14px; flex-wrap:wrap; }
+  .preis { font-family:Outfit,sans-serif; font-weight:700; font-size:1.6rem;
+           letter-spacing:-.02em; color:var(--marke); white-space:nowrap;
+           font-variant-numeric:tabular-nums; }
+  .paket ul { margin:0; padding-left:20px; display:flex; flex-direction:column; gap:5px; }
+  .paket li { font-size:.98rem; color:var(--matt); }
+  .paket li b { color:var(--tinte); font-weight:600; }
+  .liefer { font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:600;
+            letter-spacing:.1em; text-transform:uppercase; color:var(--matt); }
+
+  /* --- Rechnung ----------------------------------------------------- */
+  .rechnung {
+    background:var(--flaeche-2); border-radius:12px; padding:20px 22px;
+    display:flex; flex-direction:column; gap:2px;
+  }
+  .rechnung-zeile {
+    display:flex; justify-content:space-between; gap:12px;
+    padding:9px 0; border-top:1px solid var(--linie); font-size:.98rem;
+  }
+  .rechnung-zeile:first-child { border-top:0; }
+  .rechnung-zeile span:last-child {
+    font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
+    font-weight:600;
+  }
+  .rechnung-zeile.summe { border-top:1.5px solid var(--marke); margin-top:6px;
+                          padding-top:12px; font-weight:600; }
+  .rechnung-zeile.summe span:last-child { color:var(--marke); font-size:1.15rem; }
+
+  /* --- Schritte ----------------------------------------------------- */
+  ol.schritte { list-style:none; counter-reset:s; margin:0; padding:0;
+                display:flex; flex-direction:column; gap:4px; }
+  ol.schritte > li { counter-increment:s; position:relative;
+                     padding:15px 0 15px 46px; border-top:1px solid var(--linie); }
+  ol.schritte > li:first-child { border-top:0; }
+  ol.schritte > li::before {
+    content:counter(s); position:absolute; left:0; top:15px;
+    width:30px; height:30px; display:grid; place-items:center;
+    border-radius:999px; background:var(--flaeche-2); color:var(--marke);
+    font-family:"IBM Plex Mono",monospace; font-size:13px; font-weight:600;
+  }
+  ol.schritte .neben { display:block; margin-top:4px; color:var(--matt); font-size:.93rem; }
+  ol.schritte strong { font-weight:600; }
+  .wer { color:var(--alarm); font-weight:600; }
+
+  /* --- Kundenliste -------------------------------------------------- */
+  .kunden { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:8px; }
+  .kunde {
+    background:var(--flaeche); border:1px solid var(--linie); border-radius:8px;
+    padding:11px 13px; font-size:.94rem;
+  }
+  .kunde b { display:block; font-weight:600; }
+  .kunde span { color:var(--matt); font-size:.87rem; }
+
+  /* --- Textvorlage -------------------------------------------------- */
+  .vorlage {
+    background:var(--flaeche); border:1px solid var(--linie); border-radius:12px;
+    overflow:hidden;
+  }
+  .vorlage-leiste {
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:11px 12px 11px 18px; border-bottom:1px solid var(--linie);
+    background:var(--flaeche-2);
+  }
+  .vorlage-titel { font-family:"IBM Plex Mono",monospace; font-size:11px;
+                   letter-spacing:.1em; text-transform:uppercase; color:var(--matt); }
+  button.kopieren {
+    font-family:"IBM Plex Sans",sans-serif; font-size:.88rem; font-weight:600;
+    padding:7px 14px; border-radius:7px; border:1px solid var(--linie);
+    background:var(--flaeche); color:var(--tinte); cursor:pointer; white-space:nowrap;
+  }
+  button.kopieren:hover { background:var(--flaeche-2); }
+  button.kopieren:focus-visible { outline:3px solid var(--marke-satt); outline-offset:2px; }
+  button.kopieren[data-fertig="ja"] { background:var(--marke); color:var(--grund); border-color:transparent; }
+  .vorlage p { padding:0 18px; font-size:1rem; }
+  .vorlage p:first-of-type { padding-top:18px; }
+  .vorlage p:last-of-type { padding-bottom:18px; }
+  .vorlage .abstand { height:12px; }
+
+  .fuss { border-top:1px solid var(--linie); padding-top:22px;
+          color:var(--matt); font-size:.92rem; display:flex;
+          flex-direction:column; gap:10px; }
+  .fuss strong { color:var(--tinte); }
+
+  @media (prefers-reduced-motion:reduce) { * { transition:none !important; } }
+</style>
+
+<div class="blatt">
+
+  <header class="kopf">
+    <p class="augenbraue">Let'sDrink · 19.8.2026</p>
+    <h1>Das zweite Standbein</h1>
+    <p class="vorspann">
+      Du wolltest wissen, ob KI-Agenten ein Geschäft für dich führen können.
+      Ich habe vier fremde Modelle gefragt — Kimi K3, GPT-5.6, Grok 4.6 und
+      Qwen3 Max. Keines wusste, was die anderen antworten.
+    </p>
+  </header>
+
+  <div class="urteil">
+    <span class="zahl">4 von 4</span>
+    <p>
+      <strong>sagen: nein.</strong> Es gibt im August 2026 kein
+      Geschäftsmodell, bei dem KI-Agenten weitgehend autonom Umsatz
+      erzeugen. Die Begründung war bei allen vieren dieselbe: Agenten
+      automatisieren <em>Arbeit</em> — nicht Vertrauen, nicht Nachfrage,
+      nicht Zahlung.
+    </p>
+  </div>
+
+  <section>
+    <p class="marke-klein">Was das Team gesagt hat</p>
+    <h2 class="gross">Der Satz, der die Sache erledigt</h2>
+
+    <div class="stimmen">
+      <div class="stimme haupt">
+        <span class="stimme-name">Kimi K3</span>
+        <blockquote>
+          Wenn jemand einen Agenten hätte, der autonom Geld druckt, würde
+          er ihn skalieren statt Videos darüber zu verkaufen — die Videos
+          SIND das Geschäftsmodell.
+        </blockquote>
+      </div>
+      <div class="stimme">
+        <span class="stimme-name">Grok 4.6</span>
+        <blockquote>
+          Agenten automatisieren Text, Bilder, Code — nicht
+          Zahlungsbereitschaft, Vertrauen und Auslieferung. Die Videos
+          verkaufen Tools und Hoffnung.
+        </blockquote>
+      </div>
+      <div class="stimme">
+        <span class="stimme-name">GPT-5.6</span>
+        <blockquote>
+          Sie automatisieren Arbeit, aber nicht Vertrauen, Nachfrage und
+          Zahlung.
+        </blockquote>
+      </div>
+      <div class="stimme">
+        <span class="stimme-name">Qwen3 Max</span>
+        <blockquote>
+          Alle bestehenden Systeme benötigen ständige menschliche
+          Anpassung, Rechtssicherheit und Kapital für Skalierung.
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="marke-klein">Und was sie stattdessen empfehlen</p>
+    <h2 class="gross">Auch da waren sich alle vier einig</h2>
+    <p>
+      Verkaufe eine <strong>klar begrenzte Leistung an kleine Betriebe in
+      Rapperswil-Jona.</strong> Du gewinnst die Kunden von Hand — zu Fuss,
+      am Telefon, per Nachricht. Ich liefere die Arbeit in Stunden. Kein
+      Werbebudget nötig. Genau das haben alle vier unabhängig
+      vorgeschlagen, mit Preisen zwischen CHF 150 und 590.
+    </p>
+    <p>
+      <strong>Dein echter Vorteil ist nicht „KI".</strong> Den hat jeder.
+      Dein Vorteil ist, dass du am selben Tag lieferst, wofür eine Agentur
+      zwei Wochen und CHF 2000 verlangt — und dass die Maschine dafür seit
+      heute steht: Foto rein, elf Motive in drei Formaten raus, Kontrast
+      gemessen, Text sitzt.
+    </p>
+  </section>
+
+  <section>
+    <p class="marke-klein">Dein Angebot</p>
+    <h2 class="gross">Zwei Pakete, mehr nicht</h2>
+
+    <div class="pakete">
+      <div class="paket">
+        <div class="paket-kopf">
+          <h3>Bildpaket</h3>
+          <span class="preis">CHF 190</span>
+        </div>
+        <ul>
+          <li><b>5 Werbemotive</b> in je 3 Formaten — 15 fertige Dateien</li>
+          <li>Für Feed, Story und Banner, alles massgenau</li>
+          <li><b>5 Anzeigentexte</b> dazu, Längen geprüft</li>
+          <li>Schrift lesbar gemessen, nicht geschätzt</li>
+        </ul>
+        <span class="liefer">Lieferung am selben Tag</span>
+      </div>
+
+      <div class="paket gross">
+        <div class="paket-kopf">
+          <h3>Bildpaket + Anzeige läuft</h3>
+          <span class="preis">CHF 490</span>
+        </div>
+        <ul>
+          <li>Alles aus dem Bildpaket</li>
+          <li><b>Meta-Werbekonto eingerichtet</b>, Kampagne aufgebaut</li>
+          <li>Zielgruppe, Budget und Laufzeit gesetzt</li>
+          <li><b>Anzeige geht live</b>, Bericht nach einer Woche</li>
+          <li>Werbebudget zahlt der Kunde selbst</li>
+        </ul>
+        <span class="liefer">Lieferung in 48 Stunden</span>
+      </div>
+    </div>
+
+    <div class="rechnung">
+      <div class="rechnung-zeile"><span>3 × Bildpaket</span><span>CHF 570</span></div>
+      <div class="rechnung-zeile"><span>1 × Anzeige läuft</span><span>CHF 490</span></div>
+      <div class="rechnung-zeile"><span>Deine Kosten</span><span>CHF 0</span></div>
+      <div class="rechnung-zeile summe"><span>Nach vier Aufträgen</span><span>CHF 1060</span></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="marke-klein">Wen du ansprichst</p>
+    <h2 class="gross">Betriebe, die etwas zu zeigen haben</h2>
+    <p>
+      Nicht jeder Betrieb braucht Werbebilder. Am besten funktionieren die,
+      die ein <strong>Produkt im Regal</strong> haben — da wirkt ein
+      Freisteller sofort. Dienstleister brauchen andere Bilder und sind der
+      schwierigere Verkauf.
+    </p>
+    <div class="kunden">
+      <div class="kunde"><b>Tierläden</b><span>Du kennst die Sprache schon</span></div>
+      <div class="kunde"><b>Hundesalons</b><span>Dieselben Kunden wie du</span></div>
+      <div class="kunde"><b>Bäckereien</b><span>Produkt, täglich neu</span></div>
+      <div class="kunde"><b>Metzgereien</b><span>Fotos meist alt</span></div>
+      <div class="kunde"><b>Blumenläden</b><span>Ware ist das Bild</span></div>
+      <div class="kunde"><b>Kleine Modeläden</b><span>Wechselnde Ware</span></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="marke-klein">Was du heute Abend machst</p>
+    <h2 class="gross">Vier Schritte, keiner davon kostet Geld</h2>
+
+    <ol class="schritte">
+      <li>
+        <strong>Zwanzig Betriebe notieren.</strong>
+        <span class="neben">
+          Google Maps, Rapperswil-Jona, die Liste oben durchgehen. Schau
+          dir ihre Instagram-Seite an. Wer schlechte Fotos hat, ist dein
+          Kunde. <span class="wer">Das machst du.</span>
+        </span>
+      </li>
+      <li>
+        <strong>Drei davon aussuchen und mir sagen.</strong>
+        <span class="neben">
+          Ich baue für jeden ein <strong>gratis Musterbild</strong> aus
+          einem Foto, das schon auf seiner Seite steht. Kein Auftrag, kein
+          Risiko — nur ein Bild, das er sofort versteht.
+          <span class="wer">Das mache ich.</span>
+        </span>
+      </li>
+      <li>
+        <strong>Hingehen oder schreiben.</strong>
+        <span class="neben">
+          Mit dem Musterbild in der Hand. Der Text unten ist fertig.
+          <span class="wer">Das machst du — und das ist der schwere Teil.</span>
+        </span>
+      </li>
+      <li>
+        <strong>Bei Zusage: liefern, TWINT kassieren.</strong>
+        <span class="neben">
+          Ich baue das Paket am selben Tag. Du gibst es ab und wirst
+          bezahlt.
+        </span>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <p class="marke-klein">Schritt 3</p>
+    <h2 class="gross">Was du schreibst</h2>
+
+    <div class="vorlage">
+      <div class="vorlage-leiste">
+        <span class="vorlage-titel">Nachricht · kurz halten</span>
+        <button class="kopieren" type="button" id="knopf">Kopieren</button>
+      </div>
+      <div id="text">
+        <p>Grüezi <em>[Name]</em></p>
+        <div class="abstand"></div>
+        <p>
+          Ich habe Ihnen ein Werbebild aus einem Ihrer eigenen Produktfotos
+          gemacht — einfach so, damit Sie sehen, wie es aussieht. Hängt
+          unten dran.
+        </p>
+        <div class="abstand"></div>
+        <p>
+          Falls es Ihnen gefällt: Ich mache Ihnen fünf davon in drei
+          Formaten für Instagram und Facebook, mit passenden Texten. CHF 190,
+          Lieferung am selben Tag.
+        </p>
+        <div class="abstand"></div>
+        <p>Wenn nicht, behalten Sie das Bild trotzdem.</p>
+        <div class="abstand"></div>
+        <p>Freundliche Grüsse<br>Nate</p>
+      </div>
+    </div>
+
+    <p style="color:var(--matt); font-size:.95rem;">
+      Kurz, keine Versprechen, kein Druck — und du gibst zuerst etwas, bevor
+      du etwas willst. Das ist der ganze Trick.
+    </p>
+  </section>
+
+  <div class="fuss">
+    <p>
+      <strong>Wie das Urteil zustande kam:</strong> Sechs Modelle über den
+      OmniRoute-Server gefragt, alle mit demselben Text und ohne Kenntnis
+      voneinander. Vier haben geantwortet — Kimi K3, GPT-5.6, Grok 4.6,
+      Qwen3 Max. DeepSeek V4 gab 403, Gemini 3.1 gab 502. Die Zitate sind
+      wörtlich.
+    </p>
+    <p>
+      <strong>Was ich nicht behaupte:</strong> dass das leicht wird. Drei
+      der vier haben geschrieben, dass du für zwei bis drei Abschlüsse
+      etwa dreissig Kontakte brauchst. Der Teil, den keine KI dir abnimmt,
+      ist genau der, der zählt.
+    </p>
+    <p>
+      <strong>Und zwei von vieren haben es unaufgefordert gesagt:</strong>
+      reparier zuerst die Kasse. Dreizehn Leute standen dort und konnten
+      nicht bezahlen — das ist Geld, das schon auf dem Tisch lag.
+    </p>
+  </div>
+
+</div>
+
+<script>
+  (function () {
+    var knopf = document.getElementById('knopf');
+    var block = document.getElementById('text');
+    knopf.addEventListener('click', function () {
+      var teile = [];
+      block.querySelectorAll('p').forEach(function (p) { teile.push(p.innerText); });
+      var text = teile.join('\n\n');
+      function melden() {
+        knopf.textContent = 'Kopiert';
+        knopf.dataset.fertig = 'ja';
+        setTimeout(function () {
+          knopf.textContent = 'Kopieren';
+          knopf.dataset.fertig = 'nein';
+        }, 2000);
+      }
+      function ersatz() {
+        var f = document.createElement('textarea');
+        f.value = text; f.setAttribute('readonly', '');
+        f.style.position = 'fixed'; f.style.opacity = '0';
+        document.body.appendChild(f); f.select();
+        try { document.execCommand('copy'); melden(); }
+        catch (e) { knopf.textContent = 'Von Hand markieren'; }
+        document.body.removeChild(f);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(melden, ersatz);
+      } else { ersatz(); }
+    });
+  })();
+</script>
