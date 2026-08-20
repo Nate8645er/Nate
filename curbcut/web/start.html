@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Curbcut &ndash; Barrierefreiheit im Quelltext pruefen</title>
+<meta name="description" content="Prueft das ausgelieferte HTML einer Webseite auf die sechs Fehlerarten, die 96 Prozent aller Barrierefreiheits-Verstoesse ausmachen. Kein Overlay. Sagt, an welcher Stelle im Quelltext es hakt.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Literata:opsz,wght@7..72,400;7..72,600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+  :root{
+    --grund:#E9EAE5; --flaeche:#F8F8F5; --tief:#DEDFD8; --linie:#C6C8BE;
+    --tinte:#16191C; --matt:#585E63; --leise:#7C838A;
+    --mark:#C8930A; --mark-flaeche:#F7EDD2; --mark-linie:#E3CE93;
+    --sperr:#A81E16; --sperr-flaeche:#F8E7E5; --sperr-linie:#E6BDB8;
+    --frei:#256039; --frei-flaeche:#E4EFE8; --frei-linie:#B5D3C0;
+    --schatten:0 1px 2px rgba(22,25,28,.05),0 14px 30px -20px rgba(22,25,28,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --grund:#0F1113; --flaeche:#181B1E; --tief:#202427; --linie:#31373B;
+      --tinte:#E9EBEC; --matt:#9BA3A9; --leise:#79828A;
+      --mark:#E8B833; --mark-flaeche:#2A2210; --mark-linie:#544319;
+      --sperr:#F08A80; --sperr-flaeche:#2B1512; --sperr-linie:#57271F;
+      --frei:#6FC994; --frei-flaeche:#11241A; --frei-linie:#25492F;
+      --schatten:0 1px 2px rgba(0,0,0,.5),0 14px 30px -20px rgba(0,0,0,.85);
+    }
+  }
+  :root[data-theme="dark"]{
+      --grund:#0F1113; --flaeche:#181B1E; --tief:#202427; --linie:#31373B;
+      --tinte:#E9EBEC; --matt:#9BA3A9; --leise:#79828A;
+      --mark:#E8B833; --mark-flaeche:#2A2210; --mark-linie:#544319;
+      --sperr:#F08A80; --sperr-flaeche:#2B1512; --sperr-linie:#57271F;
+      --frei:#6FC994; --frei-flaeche:#11241A; --frei-linie:#25492F;
+      --schatten:0 1px 2px rgba(0,0,0,.5),0 14px 30px -20px rgba(0,0,0,.85);
+  }
+
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--grund);color:var(--tinte);
+       font-family:"Literata",Georgia,serif;font-size:17px;line-height:1.66;}
+  .huelle{max-width:880px;margin:0 auto;padding:0 20px 90px;}
+
+  .kopfband{display:flex;align-items:center;gap:11px;padding:30px 0 0;}
+  .rippen{display:flex;gap:4px;}
+  .rippen i{width:5px;height:20px;border-radius:1px;background:var(--mark);}
+  .rippen i:nth-child(2){opacity:.62;} .rippen i:nth-child(3){opacity:.34;}
+  .name{font-family:"IBM Plex Mono",monospace;font-size:12px;
+        letter-spacing:.22em;text-transform:uppercase;color:var(--matt);}
+
+  h1{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;
+     font-size:clamp(34px,6.4vw,60px);line-height:1.04;letter-spacing:-.028em;
+     margin:44px 0 18px;text-wrap:balance;max-width:17ch;}
+  .lead{font-size:clamp(17px,2.1vw,20px);color:var(--matt);max-width:60ch;
+        margin:0 0 30px;}
+
+  /* Das Pruefformular - der wichtigste Teil der Seite */
+  form{display:flex;gap:9px;flex-wrap:wrap;margin:0 0 10px;max-width:620px;}
+  label.feld{flex:1 1 300px;display:flex;flex-direction:column;gap:5px;}
+  label.feld > span{font-family:"IBM Plex Mono",monospace;font-size:11px;
+       letter-spacing:.12em;text-transform:uppercase;color:var(--matt);}
+  input[type=url]{
+    width:100%;padding:13px 15px;font-size:16px;font-family:inherit;
+    background:var(--flaeche);color:var(--tinte);
+    border:1px solid var(--linie);border-radius:3px;
+  }
+  input[type=url]:focus{outline:2px solid var(--mark);outline-offset:1px;
+                        border-color:var(--mark);}
+  button{
+    align-self:flex-end;padding:13px 24px;font-size:16px;font-weight:600;
+    font-family:"Bricolage Grotesque",system-ui,sans-serif;
+    background:var(--tinte);color:var(--grund);
+    border:1px solid var(--tinte);border-radius:3px;cursor:pointer;
+  }
+  button:hover{background:var(--matt);border-color:var(--matt);}
+  button:focus-visible{outline:2px solid var(--mark);outline-offset:2px;}
+  button[disabled]{opacity:.55;cursor:progress;}
+  .klein{font-size:13.5px;color:var(--leise);max-width:60ch;margin:0 0 46px;}
+
+  h2{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:700;
+     font-size:clamp(21px,2.7vw,27px);letter-spacing:-.016em;
+     margin:46px 0 12px;text-wrap:balance;}
+  h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:600;
+     font-size:17px;margin:22px 0 6px;}
+  p{margin:0 0 14px;max-width:64ch;}
+  strong{font-weight:600;}
+
+  .kasten{background:var(--flaeche);border:1px solid var(--linie);
+          border-radius:3px;padding:19px 21px;margin:18px 0;
+          box-shadow:var(--schatten);}
+  .kasten.mark{background:var(--mark-flaeche);border-color:var(--mark-linie);}
+  .kasten p:last-child{margin-bottom:0;}
+  .kopfzeile{font-family:"IBM Plex Mono",monospace;font-size:11px;
+    letter-spacing:.15em;text-transform:uppercase;font-weight:600;
+    margin-bottom:8px;color:var(--mark);}
+
+  /* Befund */
+  #befund{margin:0 0 40px;}
+  .kranz{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+    gap:1px;background:var(--linie);border:1px solid var(--linie);
+    border-radius:3px;overflow:hidden;margin-bottom:16px;}
+  .kranz div{background:var(--flaeche);padding:15px 14px;}
+  .kranz b{display:block;font-family:"IBM Plex Mono",monospace;font-weight:600;
+    font-size:26px;line-height:1;font-variant-numeric:tabular-nums;
+    margin-bottom:5px;}
+  .kranz span{font-size:12.5px;color:var(--matt);line-height:1.4;}
+
+  .fund{border:1px solid var(--linie);border-left:4px solid var(--linie);
+        border-radius:3px;background:var(--flaeche);padding:14px 16px;
+        margin-bottom:9px;}
+  .fund.sperrend{border-left-color:var(--sperr);}
+  .fund.ernst{border-left-color:var(--mark);}
+  .fund .titel{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;
+       font-size:16px;display:flex;gap:9px;align-items:baseline;
+       flex-wrap:wrap;margin-bottom:3px;}
+  .stufe{font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:600;
+    letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;
+    border-radius:2px;border:1px solid;}
+  .stufe.sperrend{color:var(--sperr);background:var(--sperr-flaeche);
+                  border-color:var(--sperr-linie);}
+  .stufe.ernst{color:var(--mark);background:var(--mark-flaeche);
+               border-color:var(--mark-linie);}
+  .stufe.hinweis{color:var(--matt);background:var(--tief);
+                 border-color:var(--linie);}
+  .fund .wo{font-size:13px;color:var(--leise);margin-bottom:8px;}
+  .fund pre{font-family:"IBM Plex Mono",monospace;font-size:12.5px;
+    background:var(--tief);border-radius:2px;padding:8px 10px;margin:0 0 8px;
+    overflow-x:auto;white-space:pre;color:var(--matt);}
+  .fund .rat{font-size:14.5px;margin:0;}
+
+  .rollen{overflow-x:auto;border:1px solid var(--linie);border-radius:3px;
+          margin:16px 0;}
+  table{border-collapse:collapse;width:100%;font-size:14.5px;
+        background:var(--flaeche);}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--linie);}
+  th{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;
+     letter-spacing:.09em;text-transform:uppercase;color:var(--matt);
+     background:var(--tief);white-space:nowrap;}
+  tr:last-child td{border-bottom:none;}
+  td.z{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;
+       white-space:nowrap;}
+
+  ul{padding-left:20px;max-width:64ch;} li{margin-bottom:6px;}
+  li::marker{color:var(--mark);}
+  footer{border-top:1px solid var(--linie);margin-top:50px;padding-top:20px;
+         font-size:13.5px;color:var(--matt);}
+  @media (prefers-reduced-motion:no-preference){
+    .fund{animation:auf .3s ease both;}
+    @keyframes auf{from{opacity:0;transform:translateY(5px);}}
+  }
+</style>
+</head>
+<body>
+<div class="huelle">
+
+<header class="kopfband">
+  <span class="rippen"><i></i><i></i><i></i></span>
+  <span class="name">Curbcut</span>
+</header>
+
+<h1>Ist deine Seite fuer alle bedienbar?</h1>
+<p class="lead">Tippe die Adresse ein. Du bekommst in ein paar Sekunden die
+Stellen im Quelltext, an denen es hakt &ndash; nicht eine Liste mit 113 Zeilen,
+sondern die Handvoll Stellen, an denen wirklich etwas zu tun ist.</p>
+
+<form id="form">
+  <label class="feld" for="url">
+    <span>Adresse der Seite</span>
+    <input type="url" id="url" name="url" required
+           placeholder="https://deine-seite.ch"
+           autocomplete="url" spellcheck="false">
+  </label>
+  <button type="submit" id="knopf">Pruefen</button>
+</form>
+<p class="klein">Kostenlos, ohne Anmeldung. Wir speichern die Adresse nicht.
+Geprueft wird das HTML, das dein Server ausliefert.</p>
+
+<div id="befund" role="status" aria-live="polite"></div>
+
+<h2>Warum ein Widget nicht hilft</h2>
+<p>Was heute meistens verkauft wird, ist ein Skript, das die fertige Seite im
+Browser nachtraeglich zurechtbiegt. Das klingt bequem und hat einen
+technischen Haken: <strong>Wer prueft, liest das HTML, das dein Server
+schickt</strong> &ndash; nicht das, was ein Skript daraus im Browser macht.</p>
+<p>Die Folge ist gut belegt. Rund ein Viertel der Klagen 2024 traf Seiten, auf
+denen bereits so ein Widget lief. Die US&#8209;Handelsbehoerde hat einen
+grossen Anbieter im April 2025 zu einer Million Dollar verurteilt, weil er
+versprochen hatte, sein Werkzeug mache jede Seite konform.</p>
+
+<div class="kasten mark">
+  <div class="kopfzeile">Was Curbcut nicht behauptet</div>
+  <p>Dass deine Seite danach rechtskonform ist. Das kann kein Programm
+  feststellen. Automatisch pruefbar ist der Teil der Kriterien, der die grosse
+  Masse der Fehler ausmacht &ndash; Tastaturbedienung, Reihenfolge und
+  Verstaendlichkeit muss ein Mensch beurteilen. Wer dir etwas anderes
+  verspricht, verspricht zu viel.</p>
+</div>
+
+<h2>Sechs Fehler, 96 Prozent</h2>
+<p>Es gibt 87 Kriterien in WCAG&nbsp;2.2. Sechs davon machen den Grossteil
+aller gemessenen Verstoesse aus. Curbcut prueft diese sechs &ndash; und prueft
+sie richtig, statt fuenfzig halb.</p>
+<div class="rollen">
+<table>
+  <tr><th>Fehler</th><th>Wie oft</th><th>Was passiert</th></tr>
+  <tr><td>Zu wenig Kontrast</td><td class="z">83.9%</td>
+      <td>Text verschwindet fuer alle, deren Augen nachlassen</td></tr>
+  <tr><td>Bild ohne Alternativtext</td><td class="z">53.1%</td>
+      <td>Das Bild existiert fuer Blinde nicht</td></tr>
+  <tr><td>Feld ohne Beschriftung</td><td class="z">51.0%</td>
+      <td>Formular wird blind ausgefuellt</td></tr>
+  <tr><td>Link ohne Text</td><td class="z">46.3%</td>
+      <td>Vorgelesen wird nur &bdquo;Link&ldquo;</td></tr>
+  <tr><td>Schaltflaeche ohne Text</td><td class="z">30.6%</td>
+      <td>Der Knopf ist nicht bedienbar</td></tr>
+  <tr><td>Keine Sprachangabe</td><td class="z">13.5%</td>
+      <td>Deutsch wird englisch vorgelesen</td></tr>
+</table>
+</div>
+<p class="klein">Anteil der Seiten mit diesem Fehler. Quelle: WebAIM Million
+2026, eine Auswertung der eine Million meistbesuchten Startseiten. 95,9
+Prozent davon fielen durch.</p>
+
+<h2>Was es kostet</h2>
+<div class="rollen">
+<table>
+  <tr><th>Plan</th><th>Seiten</th><th>Preis</th><th>Enthalten</th></tr>
+  <tr><td>Einzelseite</td><td class="z">1</td><td class="z">CHF 19</td>
+      <td>Taegliche Pruefung, Meldung bei Neuem</td></tr>
+  <tr><td>Auftritt</td><td class="z">10</td><td class="z">CHF 49</td>
+      <td>dazu: Verlauf und Ausdruck als Nachweis</td></tr>
+  <tr><td>Agentur</td><td class="z">50</td><td class="z">CHF 149</td>
+      <td>dazu: Sammelbericht ueber alle Kundenseiten</td></tr>
+</table>
+</div>
+<p>Monatlich kuendbar. Die einmalige Pruefung oben bleibt kostenlos &ndash;
+bezahlt wird fuer das, was danach passiert: dass jemand jeden Tag hinschaut
+und sich meldet, <strong>bevor</strong> es jemand anderes tut.</p>
+
+<h3>Warum ueberhaupt ein Abo</h3>
+<p>Barrierefreiheit ist kein Zustand, den man einmal herstellt. Jemand tauscht
+ein Bild aus und vergisst den Alternativtext. Der Baukasten bekommt eine neue
+Fassung und aendert eine Farbe. Die Seite war am Montag in Ordnung und ist am
+Freitag wieder angreifbar. Ein einmaliger Bericht ist ein Foto von einem
+Fluss.</p>
+
+<footer>
+  <p>Curbcut prueft das ausgelieferte HTML. Es ist keine Rechtsauskunft und
+  ersetzt keine Pruefung von Hand.</p>
+  <p>Der Name kommt von der abgesenkten Bordsteinkante. Sie wurde fuer
+  Rollstuehle gebaut &ndash; und wird heute von Kinderwagen, Rollkoffern und
+  Velos benutzt. Das ist der ganze Gedanke.</p>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  var form = document.getElementById("form");
+  var feld = document.getElementById("url");
+  var knopf = document.getElementById("knopf");
+  var raum = document.getElementById("befund");
+
+  // Der Befund enthaelt HTML von einer fremden Seite - woertlich, damit
+  // der Betreiber seinen eigenen Code wiedererkennt. Genau deshalb muss
+  // hier jedes Zeichen entschaerft werden, bevor es in die Seite geht.
+  function sicher(t){
+    var d = document.createElement("div");
+    d.textContent = t == null ? "" : String(t);
+    return d.innerHTML;
+  }
+
+  // In einem Attribut reicht das nicht: dort bricht ein einzelnes
+  // Anfuehrungszeichen aus dem Wert aus und der Rest wird als Markup
+  // gelesen. Fuer die Stufen gibt es ohnehin nur drei gueltige Werte -
+  // also gar nicht erst escapen, sondern gegen die Liste pruefen und
+  // alles andere verwerfen. Eine Auswahl ist sicherer als eine Filterung.
+  var STUFEN = {sperrend:"sperrend", ernst:"ernst", hinweis:"hinweis"};
+  function stufe(x){ return STUFEN[x] || "hinweis"; }
+
+  function meldung(text, art){
+    raum.innerHTML = '<div class="kasten' + (art ? " " + art : "") + '">' +
+      '<p>' + sicher(text) + '</p></div>';
+  }
+
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    var url = feld.value.trim();
+    if(!url) return;
+    knopf.disabled = true;
+    knopf.textContent = "Liest ...";
+    meldung("Die Seite wird gelesen. Das dauert ein paar Sekunden.");
+
+    fetch("/pruefen?url=" + encodeURIComponent(url))
+      .then(function(r){ return r.json(); })
+      .then(zeigen)
+      .catch(function(){
+        meldung("Die Pruefung hat nicht geklappt. Versuch es noch einmal.");
+      })
+      .then(function(){
+        knopf.disabled = false;
+        knopf.textContent = "Pruefen";
+      });
+  });
+
+  function zeigen(d){
+    if(d.fehler){ return meldung(d.fehler); }
+
+    if(!d.stellen){
+      raum.innerHTML =
+        '<div class="kasten"><div class="kopfzeile" style="color:var(--frei)">' +
+        'Nichts gefunden</div>' +
+        '<p>Auf <strong>' + sicher(d.url) + '</strong> wurde keiner der sechs ' +
+        'haeufigsten Fehler gefunden. Das ist selten &ndash; und es heisst ' +
+        'nicht, dass die Seite barrierefrei ist. Ein Teil der Kriterien ' +
+        'laesst sich nur von Hand pruefen.</p></div>';
+      return;
+    }
+
+    var h = '<div class="kranz">' +
+      '<div><b>' + d.stellen + '</b><span>Stellen im Quelltext</span></div>' +
+      '<div><b>' + d.vorkommen + '</b><span>Vorkommen auf der Seite</span></div>' +
+      '<div><b>' + d.sperrend + '</b><span>davon sperren die Bedienung</span></div>' +
+      '</div>';
+
+    d.funde.forEach(function(f){
+      var st = stufe(f.schwere);
+      h += '<div class="fund ' + st + '">' +
+        '<div class="titel">' + sicher(f.titel) +
+          '<span class="stufe ' + st + '">' +
+          (st === "sperrend" ? "sperrend" :
+           st === "ernst" ? "ernst" : "Hinweis") + '</span>' +
+          '<span class="stufe hinweis">WCAG ' + sicher(f.kriterium) + '</span>' +
+        '</div>' +
+        '<div class="wo">' + sicher(f.wo) + '</div>' +
+        '<pre>' + sicher(f.stelle) + '</pre>' +
+        '<p class="rat">' + sicher(f.rat) + '</p></div>';
+    });
+
+    if(d.mehr){
+      h += '<div class="kasten"><p>... und ' + d.mehr +
+           ' weitere Stellen.</p></div>';
+    }
+    raum.innerHTML = h;
+  }
+})();
+</script>
+</body>
+</html>

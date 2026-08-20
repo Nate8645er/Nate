@@ -1,0 +1,599 @@
+<title>Curbcut</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+
+<style>
+  :root {
+    --grund:#E9EAE5; --flaeche:#F8F8F5; --tief:#DEDFD8; --linie:#C6C8BE;
+    --tinte:#16191C; --matt:#585E63; --leise:#7C838A;
+    --mark:#C8930A; --mark-flaeche:#F7EDD2; --mark-linie:#E3CE93;
+    --sperr:#A81E16; --sperr-flaeche:#F8E7E5; --sperr-linie:#E6BDB8;
+    --frei:#256039; --frei-flaeche:#E4EFE8; --frei-linie:#B5D3C0;
+    --schatten:0 1px 2px rgba(22,25,28,.05), 0 12px 28px -18px rgba(22,25,28,.3);
+    --spur:120px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --grund:#0F1113; --flaeche:#181B1E; --tief:#202427; --linie:#31373B;
+      --tinte:#E9EBEC; --matt:#9BA3A9; --leise:#79828A;
+      --mark:#E8B833; --mark-flaeche:#2A2210; --mark-linie:#544319;
+      --sperr:#F08A80; --sperr-flaeche:#2B1512; --sperr-linie:#57271F;
+      --frei:#6FC994; --frei-flaeche:#11241A; --frei-linie:#25492F;
+      --schatten:0 1px 2px rgba(0,0,0,.5), 0 12px 28px -18px rgba(0,0,0,.8);
+    }
+  }
+  :root[data-theme="dark"] {
+    --grund:#0F1113; --flaeche:#181B1E; --tief:#202427; --linie:#31373B;
+    --tinte:#E9EBEC; --matt:#9BA3A9; --leise:#79828A;
+    --mark:#E8B833; --mark-flaeche:#2A2210; --mark-linie:#544319;
+    --sperr:#F08A80; --sperr-flaeche:#2B1512; --sperr-linie:#57271F;
+    --frei:#6FC994; --frei-flaeche:#11241A; --frei-linie:#25492F;
+    --schatten:0 1px 2px rgba(0,0,0,.5), 0 12px 28px -18px rgba(0,0,0,.8);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--grund); color:var(--tinte);
+    font-family:"Literata",Georgia,serif; font-size:17px; line-height:1.68;
+    -webkit-text-size-adjust:100%;
+  }
+  .huelle{max-width:1000px;margin:0 auto;padding:0 20px 96px;}
+
+  /* Die Leitspur: das taktile Leitsystem am Bahnsteig, als Struktur.
+     Sie fuehrt durch das Dokument und markiert jeden Abschnitt. */
+  .spur{display:grid;grid-template-columns:var(--spur) 1fr;gap:0;}
+  .marke{
+    position:relative;padding-top:38px;
+    border-right:1px solid var(--linie);
+  }
+  .marke span{
+    position:sticky;top:24px;display:block;padding-right:18px;
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:12px;letter-spacing:.1em;color:var(--leise);
+    text-align:right;text-transform:uppercase;
+  }
+  .marke::after{
+    content:"";position:absolute;top:44px;right:-4.5px;
+    width:8px;height:8px;border-radius:50%;
+    background:var(--mark);
+  }
+  .inhalt{padding:34px 0 26px 34px;min-width:0;}
+
+  @media (max-width:760px){
+    .spur{grid-template-columns:1fr;}
+    .marke{border-right:none;border-top:1px solid var(--linie);
+           padding-top:20px;}
+    .marke span{position:static;text-align:left;padding:0;}
+    .marke::after{top:-4.5px;right:auto;left:0;}
+    .inhalt{padding:12px 0 22px;}
+  }
+
+  /* Kopf */
+  header{padding:76px 0 18px;}
+  .zeichen{
+    display:flex;align-items:center;gap:12px;margin-bottom:26px;
+  }
+  .rippen{display:flex;gap:4px;}
+  .rippen i{display:block;width:5px;height:22px;border-radius:1px;
+            background:var(--mark);opacity:.9;}
+  .rippen i:nth-child(2){opacity:.62;}
+  .rippen i:nth-child(3){opacity:.34;}
+  .wort{font-family:"IBM Plex Mono",monospace;font-size:12px;
+        letter-spacing:.22em;text-transform:uppercase;color:var(--matt);}
+  h1{
+    font-family:"Bricolage Grotesque",system-ui,sans-serif;
+    font-weight:800;font-size:clamp(40px,7.4vw,74px);line-height:1.02;
+    letter-spacing:-.028em;margin:0 0 20px;text-wrap:balance;
+  }
+  .unter{font-size:clamp(18px,2.3vw,21px);color:var(--matt);
+         max-width:62ch;margin:0 0 34px;}
+
+  h2{
+    font-family:"Bricolage Grotesque",system-ui,sans-serif;
+    font-weight:700;font-size:clamp(23px,3vw,31px);line-height:1.14;
+    letter-spacing:-.018em;margin:0 0 14px;text-wrap:balance;
+  }
+  h3{
+    font-family:"Bricolage Grotesque",system-ui,sans-serif;
+    font-weight:600;font-size:18px;margin:26px 0 8px;letter-spacing:-.008em;
+  }
+  p{margin:0 0 15px;max-width:66ch;}
+  strong{font-weight:600;}
+  a{color:var(--tinte);text-underline-offset:3px;
+    text-decoration-color:var(--mark);text-decoration-thickness:2px;}
+  a:focus-visible{outline:2px solid var(--mark);outline-offset:3px;border-radius:2px;}
+
+  ul{margin:0 0 15px;padding-left:20px;max-width:66ch;}
+  li{margin-bottom:7px;}
+  li::marker{color:var(--mark);}
+
+  /* Zahlenband */
+  .band{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:1px;background:var(--linie);border:1px solid var(--linie);
+    border-radius:3px;overflow:hidden;margin:24px 0 8px;
+  }
+  .zahl{background:var(--flaeche);padding:18px 16px;}
+  .zahl b{
+    display:block;font-family:"IBM Plex Mono",monospace;font-weight:600;
+    font-size:29px;line-height:1;letter-spacing:-.02em;
+    font-variant-numeric:tabular-nums;margin-bottom:7px;
+  }
+  .zahl span{display:block;font-size:13px;color:var(--matt);line-height:1.42;}
+
+  /* Kasten */
+  .kasten{
+    background:var(--flaeche);border:1px solid var(--linie);
+    border-radius:3px;padding:20px 22px;margin:20px 0;
+    box-shadow:var(--schatten);
+  }
+  .kasten p:last-child,.kasten ul:last-child{margin-bottom:0;}
+  .kasten.mark{background:var(--mark-flaeche);border-color:var(--mark-linie);}
+  .kasten.sperr{background:var(--sperr-flaeche);border-color:var(--sperr-linie);}
+  .kasten.frei{background:var(--frei-flaeche);border-color:var(--frei-linie);}
+  .kopfzeile{
+    font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.15em;
+    text-transform:uppercase;margin-bottom:9px;font-weight:600;
+  }
+  .kasten.mark .kopfzeile{color:var(--mark);}
+  .kasten.sperr .kopfzeile{color:var(--sperr);}
+  .kasten.frei .kopfzeile{color:var(--frei);}
+
+  /* Gestorbene Ideen */
+  .tot{
+    border:1px solid var(--linie);border-radius:3px;padding:16px 18px;
+    margin-bottom:12px;background:var(--tief);
+  }
+  .tot h4{
+    margin:0 0 6px;font-family:"Bricolage Grotesque",sans-serif;
+    font-weight:600;font-size:16px;color:var(--matt);
+    text-decoration:line-through;text-decoration-color:var(--sperr);
+    text-decoration-thickness:2px;
+  }
+  .tot p{margin:0;font-size:14.5px;color:var(--matt);}
+
+  /* Tabellen */
+  .rollen{overflow-x:auto;margin:18px 0;
+          border:1px solid var(--linie);border-radius:3px;}
+  table{border-collapse:collapse;width:100%;font-size:14.5px;
+        background:var(--flaeche);}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--linie);
+        vertical-align:top;}
+  th{
+    font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;
+    letter-spacing:.09em;text-transform:uppercase;color:var(--matt);
+    background:var(--tief);white-space:nowrap;
+  }
+  tr:last-child td{border-bottom:none;}
+  td.z{font-family:"IBM Plex Mono",monospace;
+       font-variant-numeric:tabular-nums;white-space:nowrap;}
+
+  code{
+    font-family:"IBM Plex Mono",monospace;font-size:.87em;
+    background:var(--tief);padding:1px 5px;border-radius:2px;
+  }
+
+  /* Schritte */
+  ol.schritte{counter-reset:s;list-style:none;padding:0;margin:18px 0 0;
+              max-width:none;}
+  ol.schritte li{
+    counter-increment:s;position:relative;padding:12px 0 12px 46px;
+    border-top:1px solid var(--linie);margin:0;max-width:70ch;
+  }
+  ol.schritte li::before{
+    content:counter(s,decimal-leading-zero);position:absolute;left:0;top:12px;
+    font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;
+    color:var(--mark);letter-spacing:.04em;
+  }
+  ol.schritte b{font-weight:600;}
+  ol.schritte em{font-style:normal;color:var(--matt);font-size:14.5px;
+                 display:block;margin-top:2px;}
+
+  footer{
+    border-top:1px solid var(--linie);margin-top:52px;padding-top:22px;
+    font-size:14px;color:var(--matt);
+  }
+</style>
+
+<div class="huelle">
+
+<header>
+  <div class="zeichen">
+    <span class="rippen"><i></i><i></i><i></i></span>
+    <span class="wort">Bericht an Nate &middot; 19. August 2026</span>
+  </div>
+  <h1>Curbcut</h1>
+  <p class="unter">Ein drittes Geschaeft. Es prueft, ob eine Webseite fuer
+  Menschen mit Behinderung bedienbar ist &ndash; und sagt, an welcher Stelle
+  im Quelltext es hakt. Der Markt dafuer wurde am 28. Juni 2025 per Gesetz
+  erzeugt, und die verbreitete Loesung faellt gerade vor Gericht durch.</p>
+
+  <div class="band">
+    <div class="zahl"><b>94%</b><span>der von mir gelesenen Schweizer Seiten
+      haben Fehler. Eigene Messung, 18 Seiten.</span></div>
+    <div class="zahl"><b>6.&ndash;</b><span>Betriebskosten im Monat, in Franken.
+      Nicht pro Kunde &ndash; insgesamt.</span></div>
+    <div class="zahl"><b>0</b><span>Verkaufsgespraeche noetig. Das war bei
+      beiden bisherigen Anlaeufen der Engpass.</span></div>
+    <div class="zahl"><b>2</b><span>Ideen sind vorher gestorben. Beide am
+      selben Muster.</span></div>
+  </div>
+</header>
+
+<div class="spur">
+
+<!-- ============================================ -->
+<div class="marke"><span>Zuerst</span></div>
+<div class="inhalt">
+  <h2>Zwei Ideen sind gestorben, bevor diese uebrig blieb</h2>
+  <p>Ich habe sieben fremde Modelle in vier Runden befragt &ndash; GPT&#8209;5.6,
+  Kimi&nbsp;K3, Gemini&nbsp;3.7, Qwen3&#8209;Max, DeepSeek&nbsp;V4, Grok&nbsp;4.6
+  und Mistral&nbsp;Large. Nicht um mir zuzustimmen, sondern um sich gegenseitig
+  zu zerlegen. Zwei Ideen haben das nicht ueberlebt.</p>
+
+  <div class="tot">
+    <h4>Ein Werkzeug, das kaputte Bauablaeufe automatisch repariert</h4>
+    <p>Sechs von sieben Modellen setzten das auf Platz&nbsp;1. Ich habe
+    nachgesehen: GitHub liefert genau diese Funktion seit Mai&nbsp;2026 selbst
+    aus. Der Konsens war einstimmig und falsch.</p>
+  </div>
+  <div class="tot">
+    <h4>Sicherheitspruefung fuer Leute, die mit AI Apps bauen</h4>
+    <p>Meine eigene Idee. Im Angriffslauf haben sieben von sieben sie
+    getoetet. Kimi&nbsp;K3 am schaerfsten: dieselbe Leiche liege auch hier im
+    Keller &ndash; Supabase und Lovable haetten solche Pruefungen bereits gratis
+    eingebaut. Er hatte recht.</p>
+  </div>
+
+  <div class="kasten mark">
+    <div class="kopfzeile">Das Muster dahinter</div>
+    <p><strong>Wer ein Loch in einer Plattform stopft, wird von der Plattform
+    gefressen.</strong> Das ist die Lehre aus beiden Toten. Die dritte Idee
+    musste einen Druck haben, der nicht von einer Plattform kommt.</p>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<div class="marke"><span>Das Geschaeft</span></div>
+<div class="inhalt">
+  <h2>Was Curbcut ist</h2>
+  <p>Ein Abo, das eine Webseite jeden Tag darauf prueft, ob sie fuer Menschen
+  mit Behinderung bedienbar ist. Es meldet sich, wenn etwas Neues kaputtgeht
+  &ndash; und sagt nicht nur <em>dass</em>, sondern <em>wo im Quelltext</em>
+  und <em>was genau hin muss</em>.</p>
+
+  <h3>Warum ausgerechnet das</h3>
+  <p>Seit dem 28.&nbsp;Juni&nbsp;2025 ist der European Accessibility Act
+  durchsetzbar. Er gilt nach dem Marktortprinzip: Es zaehlt, wo die Kunden
+  sind, nicht wo die Firma sitzt. Ein Schweizer Shop, der nach Deutschland
+  liefert, faellt darunter. Bussen reichen bis EUR&nbsp;100'000, in einzelnen
+  Laendern hoeher.</p>
+  <p>Und es wird wirklich vollstreckt: Ein franzoesisches Gericht hat
+  Carrefour zu EUR&nbsp;500 Zwangsgeld pro Tag verurteilt. Norwegen verhaengte
+  NOK&nbsp;50'000 taeglich gegen ein Gesundheitsportal. Die schwedische
+  Aufsicht hat erste Verfahren gegen Onlinehandel eroeffnet, die
+  niederlaendische auditiert seit Fruehjahr 2026 und verschickt weltweit
+  Auskunftsersuchen.</p>
+
+  <div class="kasten sperr">
+    <div class="kopfzeile">Die Luecke im Markt</div>
+    <p>Was heute verkauft wird, sind <strong>Overlay-Widgets</strong>: ein
+    Skript, das die fertige Seite im Browser nachtraeglich zurechtbiegt. Das
+    funktioniert nicht, und zwar aus einem technischen Grund &ndash; wer prueft,
+    liest das HTML, das der Server schickt, nicht den vom Widget veraenderten
+    Baum im Browser.</p>
+    <p>Die Folge: Rund ein Viertel der Klagen 2024 traf Seiten, auf denen so
+    ein Widget bereits lief. Es schuetzt nicht, es markiert. Die
+    US&#8209;Handelsbehoerde hat einen grossen Anbieter im April&nbsp;2025 zu
+    1&nbsp;Mio&nbsp;USD verurteilt, weil er das Gegenteil versprach.</p>
+    <p>Wer es richtig machen will, zahlt heute ab USD&nbsp;400 im Monat fuer
+    eine Enterprise-Plattform. <strong>Dazwischen ist nichts.</strong> Genau
+    dort sitzt Curbcut.</p>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<div class="marke"><span>Kunde</span></div>
+<div class="inhalt">
+  <h2>Wer zahlt</h2>
+  <p>Nicht &bdquo;KMU&ldquo;. Konkret: der Mensch, der eine Webseite betreut und
+  gerade gelesen hat, dass Bussen verhaengt werden. Drei Sorten:</p>
+  <ul>
+    <li><strong>Betreiber eines Onlineshops oder Dienstes mit Kunden in der
+    EU</strong>, ueber der Kleinstschwelle (ab 10&nbsp;Mitarbeitenden oder
+    EUR&nbsp;2&nbsp;Mio&nbsp;Umsatz). Die Ausnahme darunter ist der Grund,
+    warum die Zielgruppe scharf ist statt beliebig.</li>
+    <li><strong>Kleine Webagenturen</strong> mit zwanzig, fuenfzig Kundenseiten.
+    Fuer sie ist es kein Kostenpunkt, sondern ein Verkaufsargument gegenueber
+    ihren eigenen Kunden &ndash; und der Agenturplan ist der beste Hebel: ein
+    Kunde bringt fuenfzig Seiten mit.</li>
+    <li><strong>Oeffentliche Stellen und Vereine</strong>, die ohnehin
+    berichtspflichtig sind und einen Nachweis brauchen.</li>
+  </ul>
+</div>
+
+<!-- ============================================ -->
+<div class="marke"><span>Produkt</span></div>
+<div class="inhalt">
+  <h2>Was schon laeuft</h2>
+  <p>Das ist kein Konzept. Der Kern ist gebaut, getestet und an echten Seiten
+  im Netz gemessen.</p>
+
+  <div class="rollen">
+  <table>
+    <tr><th>Baustein</th><th>Was er tut</th><th>Stand</th></tr>
+    <tr><td><code>farbe.py</code></td><td>Misst Kontrast nach WCAG und
+      berechnet die kleinstmoegliche Korrektur &ndash; Schrift, Hintergrund oder
+      Deckkraft</td><td>laeuft</td></tr>
+    <tr><td><code>regeln.py</code></td><td>Die sechs Fehlerarten, die zusammen
+      rund 96 Prozent aller Verstoesse ausmachen</td><td>laeuft</td></tr>
+    <tr><td><code>seite.py</code></td><td>Liest das ausgelieferte HTML samt
+      verknuepfter Stildateien</td><td>laeuft</td></tr>
+    <tr><td><code>bauteile.py</code></td><td>Buendelt, was dieselbe Ursache
+      hat</td><td>laeuft</td></tr>
+    <tr><td><code>waechter.py</code></td><td>Taegliche Ueberwachung, meldet nur
+      Neues</td><td>laeuft</td></tr>
+    <tr><td><code>rechnung.py</code></td><td>Kosten, Margen, drei
+      Faelle</td><td>laeuft</td></tr>
+    <tr><td>Bezahlung</td><td>Paddle als Merchant of Record</td>
+      <td>noch nicht</td></tr>
+    <tr><td>Webseite</td><td>Landingpage mit Sofort-Pruefung</td>
+      <td>noch nicht</td></tr>
+  </table>
+  </div>
+
+  <div class="kasten frei">
+    <div class="kopfzeile">Der Unterschied, der zaehlt</div>
+    <p>Ein Test an 20min.ch ergab <strong>113 Befunde</strong>. Davon waren 53
+    derselbe Knopf, der neben jedem Artikel steht. Im Quelltext ist das
+    <strong>eine Stelle</strong>.</p>
+    <p>Die verbreiteten Pruefwerkzeuge legen dem Betreiber die Liste mit 113
+    Zeilen hin. Die arbeitet niemand ab &ndash; sie wird weggeklickt, und danach
+    ist die Seite so unzugaenglich wie vorher. Curbcut sagt: fuenf Stellen.
+    Das kann man am Donnerstagnachmittag erledigen.</p>
+  </div>
+
+  <h3>Was es bewusst nicht behauptet</h3>
+  <p>Nie, dass eine Seite rechtskonform ist. Das kann kein Programm
+  feststellen &ndash; Tastaturbedienung, Reihenfolge, Verstaendlichkeit braucht
+  einen Menschen. Genau dieses Versprechen hat den Overlay-Anbieter die
+  Million gekostet. Wer es wiederholt, macht denselben Fehler.</p>
+</div>
+
+<!-- ============================================ -->
+<div class="marke"><span>Messung</span></div>
+<div class="inhalt">
+  <h2>Eigene Zahlen, nicht zitierte</h2>
+  <p>Ich habe 30 Schweizer Adressen angefragt. 18 liessen sich lesen, 12
+  sperren automatische Zugriffe. Von den 18:</p>
+
+  <div class="band">
+    <div class="zahl"><b>17/18</b><span>hatten mindestens einen Fehler
+      (94&nbsp;Prozent)</span></div>
+    <div class="zahl"><b>12/18</b><span>hatten Fehler, die die Bedienung
+      sperren (67&nbsp;Prozent)</span></div>
+    <div class="zahl"><b>373</b><span>Vorkommen insgesamt</span></div>
+    <div class="zahl"><b>71</b><span>Stellen im Quelltext &ndash; 5.3 Vorkommen
+      je Stelle</span></div>
+  </div>
+
+  <p>Zur Einordnung: Die WebAIM-Million-Auswertung von einer Million
+  Startseiten kommt unabhaengig auf 95,9&nbsp;Prozent. Meine 94 liegen dicht
+  daneben &ndash; das Werkzeug misst also richtig. Die Rohdaten liegen im Repo
+  unter <code>curbcut/betrieb/reihe.json</code>.</p>
+
+  <div class="rollen">
+  <table>
+    <tr><th>Fehlerart</th><th>bei mir</th><th>WebAIM</th></tr>
+    <tr><td>Zu wenig Kontrast</td><td class="z">72%</td><td class="z">83.9%</td></tr>
+    <tr><td>Link ohne erkennbaren Text</td><td class="z">50%</td><td class="z">46.3%</td></tr>
+    <tr><td>Bild ohne Alternativtext</td><td class="z">44%</td><td class="z">53.1%</td></tr>
+    <tr><td>Schaltflaeche ohne Text</td><td class="z">44%</td><td class="z">30.6%</td></tr>
+    <tr><td>Eingabefeld ohne Beschriftung</td><td class="z">44%</td><td class="z">51.0%</td></tr>
+    <tr><td>Seite ohne Sprachangabe</td><td class="z">11%</td><td class="z">13.5%</td></tr>
+  </table>
+  </div>
+  <p>Beim ersten Durchlauf fand ich Kontrastfehler nur auf 22&nbsp;Prozent der
+  Seiten &ndash; ein Viertel dessen, was WebAIM misst. Der Unterschied war nicht
+  die Wirklichkeit, sondern meine eigene Blindheit: Farben stehen fast nie im
+  HTML, sondern in der verknuepften Stildatei, und die hatte ich nicht
+  geladen. Nach der Korrektur: 72&nbsp;Prozent.</p>
+</div>
+
+<!-- ============================================ -->
+<div class="marke"><span>Preise</span></div>
+<div class="inhalt">
+  <h2>Was es kostet</h2>
+  <div class="rollen">
+  <table>
+    <tr><th>Plan</th><th>Preis</th><th>Seiten</th><th>bleibt</th><th>Marge</th></tr>
+    <tr><td>Einzelseite</td><td class="z">CHF&nbsp;19</td><td class="z">1</td>
+        <td class="z">17.28</td><td class="z">91%</td></tr>
+    <tr><td>Auftritt</td><td class="z">CHF&nbsp;49</td><td class="z">10</td>
+        <td class="z">43.30</td><td class="z">88%</td></tr>
+    <tr><td>Agentur</td><td class="z">CHF&nbsp;149</td><td class="z">50</td>
+        <td class="z">127.33</td><td class="z">85%</td></tr>
+  </table>
+  </div>
+  <p>&bdquo;Bleibt&ldquo; ist nach Rechenzeit und nach der Gebuehr von Paddle
+  (5&nbsp;Prozent plus 50&nbsp;Rappen). Die Pruefung selbst braucht kein
+  Sprachmodell &ndash; das sind sechs Regeln in Python, Kosten praktisch null. Ein
+  Modell kostet nur, wenn ein Kunde Alternativtexte erzeugen laesst, und das
+  liegt im Rappenbereich pro Bild.</p>
+
+  <div class="kasten">
+    <div class="kopfzeile">Der eigentliche Punkt</div>
+    <p>Das Geschaeft kostet <strong>CHF 6 im Monat</strong> &ndash; Domain und
+    ein kleiner Server. Wenn niemand kauft, verliert Nate CHF&nbsp;72 im Jahr.
+    Es gibt kein Warenlager, keine Vorauszahlung an einen Lieferanten, nichts
+    was verdirbt. Der Einsatz ist Zeit, nicht Geld.</p>
+    <p>Zum Vergleich: Der Shopify-Laden kostet CHF&nbsp;27 im Monat
+    Grundgebuehr und hat in 2325 Besuchen null Bestellungen erzeugt. Dieses
+    Geschaeft ist im Betrieb billiger als das, was schon laeuft.</p>
+  </div>
+
+  <h3>Drei Faelle nach zwoelf Monaten</h3>
+  <p>Die Kundenzahlen sind Annahmen. Niemand kann sie wissen, und ich tue
+  nicht so.</p>
+  <div class="rollen">
+  <table>
+    <tr><th>Fall</th><th>Kunden</th><th>Umsatz/Monat</th><th>Gewinn/Monat</th><th>im Jahr</th></tr>
+    <tr><td>vorsichtig</td><td class="z">25</td><td class="z">625</td>
+        <td class="z">556</td><td class="z">6'672</td></tr>
+    <tr><td>mittel</td><td class="z">88</td><td class="z">2'812</td>
+        <td class="z">2'495</td><td class="z">29'942</td></tr>
+    <tr><td>gut</td><td class="z">305</td><td class="z">10'445</td>
+        <td class="z">9'256</td><td class="z">111'077</td></tr>
+  </table>
+  </div>
+  <p>Millionen pro Monat, wie du gefragt hast, steht hier nicht. Ich koennte
+  eine Tabelle bauen, in der das rauskommt &ndash; sie waere erfunden. Was hier
+  steht, ist rechenbar.</p>
+</div>
+
+<!-- ============================================ -->
+<div class="marke"><span>Vertrieb</span></div>
+<div class="inhalt">
+  <h2>Wie Kunden kommen, ohne dass du verkaufst</h2>
+  <p>Das ist die Frage, an der beide bisherigen Anlaeufe gescheitert sind.
+  Nicht am Produkt &ndash; am Kanal. Darum steht sie hier nicht am Ende.</p>
+
+  <ol class="schritte">
+    <li><b>Die kostenlose Pruefung ist der Vertrieb.</b>
+      <em>Adresse eingeben, Befund sehen. Wer erfaehrt, dass seine Seite
+      zwoelf sperrende Fehler hat und dass Bussen verhaengt werden, braucht
+      kein Verkaufsgespraech mehr. Das Werkzeug macht das Problem sichtbar,
+      das vorher unsichtbar war.</em></li>
+    <li><b>Der Befund ist teilbar.</b>
+      <em>Jede Pruefung erzeugt eine Seite mit fester Adresse. Eine Agentur,
+      die einem Kunden zeigen will, warum eine Sanierung noetig ist, schickt
+      diesen Link. Damit verbreitet der Kunde das Werkzeug, nicht Nate.</em></li>
+    <li><b>Suchverkehr statt Werbung.</b>
+      <em>Fuer jede der sechs Fehlerarten eine Seite, die erklaert, was sie
+      bedeutet und wie man sie behebt &ndash; mit echtem Inhalt, nicht
+      Fuellmaterial. Wer &bdquo;alt-Text fehlt&ldquo; sucht, hat das Problem
+      schon.</em></li>
+    <li><b>Die eigene Messung als Anlass.</b>
+      <em>&bdquo;Ich habe 30 Schweizer Seiten geprueft, 94 Prozent hatten
+      Fehler&ldquo; &ndash; das ist ein Befund, ueber den geredet wird. Er ist
+      echt, nachrechenbar, und die Rohdaten liegen offen.</em></li>
+  </ol>
+
+  <div class="kasten mark">
+    <div class="kopfzeile">Was ich nicht verspreche</div>
+    <p>Dass das reicht. Es gibt hier keinen Marktplatz wie einen App-Store mit
+    eingebauter Suche &ndash; das ist die echte Schwaeche dieses Plans, und ich
+    sage sie lieber jetzt als in drei Monaten. Der Ausgleich ist, dass der
+    Kaufgrund von aussen kommt: nicht Neugier, sondern eine Frist mit einer
+    Busse dahinter.</p>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<div class="marke"><span>Betrieb</span></div>
+<div class="inhalt">
+  <h2>Wer was macht</h2>
+  <p>Du hast eine Agenten-Hierarchie gewuenscht. Ich zeichne dir kein
+  Organigramm mit neunzehn Kaestchen, von denen achtzehn nichts tun. Was
+  wirklich laeuft:</p>
+
+  <div class="rollen">
+  <table>
+    <tr><th>Rolle</th><th>Wer</th><th>Wie oft</th></tr>
+    <tr><td>Pruefen und ueberwachen</td><td><code>waechter.py</code>, ohne
+      Sprachmodell</td><td>taeglich</td></tr>
+    <tr><td>Alternativtexte vorschlagen</td><td>Gemini Flash Lite, ueber
+      OmniRoute</td><td>auf Abruf</td></tr>
+    <tr><td>Zweitmeinung bei Entscheidungen</td><td>die sieben fremden
+      Modelle, <code>rat.py</code></td><td>bei Weggabelungen</td></tr>
+    <tr><td>Zahlen auswerten</td><td><code>reihe.py</code> und
+      <code>rechnung.py</code></td><td>woechentlich</td></tr>
+    <tr><td>Bauen und reparieren</td><td>Claude Code</td><td>laufend</td></tr>
+    <tr><td>Entscheiden</td><td><strong>Nate</strong></td><td>immer</td></tr>
+  </table>
+  </div>
+  <p>Die Modell-Flotte hat sich in diesem Projekt schon bezahlt gemacht: Sie
+  hat meine eigene Idee getoetet, bevor ich Wochen hineingesteckt hatte. Das
+  ist der Wert von fremden Modellen &ndash; Claude, der Claude prueft, findet
+  nichts.</p>
+</div>
+
+<!-- ============================================ -->
+<div class="marke"><span>Risiken</span></div>
+<div class="inhalt">
+  <h2>Was schiefgehen kann</h2>
+  <div class="kasten sperr">
+    <div class="kopfzeile">Das groesste Risiko</div>
+    <p><strong>Wieder null Kunden.</strong> Es gibt keinen Marktplatz, der
+    Nachfrage liefert. Wenn niemand die kostenlose Pruefung findet, passiert
+    dasselbe wie zweimal zuvor. Der Unterschied ist der Kaufgrund von aussen
+    &ndash; aber ein Unterschied ist keine Garantie.</p>
+  </div>
+  <ul>
+    <li><strong>Haftung.</strong> Wenn das Werkzeug einen Fehler uebersieht
+    und der Kunde wird belangt. Deshalb steht in jedem Befund, dass es keine
+    Rechtsauskunft ist und die Pruefung von Hand nicht ersetzt. Das ist keine
+    Formalie, das ist die Existenzgrundlage.</li>
+    <li><strong>Fehlalarme.</strong> Wer zehn falsche Befunde sieht, glaubt
+    auch dem elften nicht. Beim Test an deinem eigenen Laden hat mein Werkzeug
+    einen erfunden &ndash; ich habe die Regel entfernt, die ihn erzeugt hat.</li>
+    <li><strong>Grosse Anbieter ziehen nach.</strong> Sie koennten den Preis
+    senken. Aber sie haben ein Vertriebsmodell mit Aussendienst, und das
+    traegt CHF&nbsp;19 im Monat nicht.</li>
+    <li><strong>Die Vollstreckung schlaeft ein.</strong> Wenn die Behoerden
+    die Sache liegen lassen, verschwindet der Kaufgrund. Danach muesste man
+    ueber Nutzen verkaufen statt ueber Pflicht &ndash; das ist deutlich
+    schwerer.</li>
+  </ul>
+</div>
+
+<!-- ============================================ -->
+<div class="marke"><span>Als naechstes</span></div>
+<div class="inhalt">
+  <h2>Die zehn naechsten Schritte</h2>
+  <ol class="schritte">
+    <li><b>Landingpage mit Sofort-Pruefung bauen</b>
+      <em>Ein Feld, eine Adresse, ein Befund. Das ist Produkt und Vertrieb in
+      einem. &mdash; ich</em></li>
+    <li><b>Den Befund als teilbare Seite gestalten</b>
+      <em>Feste Adresse, sauber gesetzt, mit dem Bauteil-Bogen. &mdash; ich</em></li>
+    <li><b>Domain pruefen und sichern</b>
+      <em>curbcut.com sieht frei aus, das muss aber jemand kaufen. &mdash; du,
+      rund CHF 12 im Jahr</em></li>
+    <li><b>Paddle-Konto eroeffnen</b>
+      <em>Als Einzelperson, ohne Firma. Paddle uebernimmt als Merchant of
+      Record die Steuerpflicht weltweit. &mdash; du</em></li>
+    <li><b>Server aufsetzen und den Waechter stuendlich laufen lassen</b>
+      <em>&mdash; ich, sobald die Domain steht</em></li>
+    <li><b>Sechs Erklaerseiten schreiben</b>
+      <em>Eine je Fehlerart, echter Inhalt. Das ist der Suchverkehr. &mdash; ich</em></li>
+    <li><b>Die Messreihe auf 300 Seiten ausweiten</b>
+      <em>Mit 300 statt 18 wird die Zahl belastbar genug, um sie
+      herzuzeigen. &mdash; ich</em></li>
+    <li><b>Zwanzig Agenturen in der Ostschweiz pruefen und die Befunde
+      bereitlegen</b>
+      <em>Kein Anschreiben. Nur bereitliegen, falls du es willst. &mdash; ich</em></li>
+    <li><b>Rechtstexte fuer Curbcut</b>
+      <em>Impressum, Datenschutz, AGB &ndash; mit dem Haftungsausschluss als
+      Kernstueck. &mdash; ich</em></li>
+    <li><b>Entscheiden, ob Curbcut ueberhaupt weitergeht</b>
+      <em>Du hast jetzt drei Geschaefte und zwei davon bei null Umsatz. Das
+      ist die ehrlichste Frage auf dieser Liste. &mdash; du</em></li>
+  </ol>
+</div>
+
+</div>
+
+<footer>
+  <p>Alle Zahlen in diesem Bericht sind entweder eigene Messungen &ndash; die
+  Rohdaten liegen im Repo &ndash; oder nachschlagbare Listenpreise. Die
+  Kundenzahlen in den drei Faellen sind als Annahmen gekennzeichnet. Es gibt
+  hier keine Erfolgsgarantie und keine erfundene Zahl.</p>
+  <p><strong>Der Punkt, ueber den ich am meisten nachgedacht habe:</strong>
+  Punkt&nbsp;10 auf der Liste steht dort nicht aus Hoeflichkeit. Zwei
+  Geschaefte bei null Umsatz und ein drittes anzufangen, ist ein Muster, das
+  ich benennen muss, auch wenn du mich gebeten hast, es zu bauen.</p>
+</footer>
+
+</div>
