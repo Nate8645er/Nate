@@ -112,10 +112,13 @@ def meldung(w, neu, gewachsen):
     for t in neu[:5]:
         from befund import DIE_SECHS
         titel = DIE_SECHS[t.art][0]
-        wo = (f"{t.anzahl} Mal" if t.anzahl > 1 else "einmal")
-        zeilen.append(f"  NEU: {titel} ({wo}, Zeile {t.erster.zeile})")
+        # beschreiben() statt der rohen Zeilennummer: Ein Kontrastfehler
+        # aus einer Stildatei hat keine Zeile im HTML, und intern steht
+        # dort dann 0. In der Meldung las sich das als "Zeile 0" - eine
+        # Angabe, die es nicht gibt und die niemand nachschlagen kann.
+        zeilen.append(f"  NEU: {titel} - {t.beschreiben()}")
         zeilen.append(f"       {t.erster.stelle[:90]}")
-        zeilen.append(f"       {t.erster.vorschlag[:150]}")
+        zeilen.append(f"       {t.erster.vorschlag[:160]}")
         zeilen.append("")
 
     if len(neu) > 5:

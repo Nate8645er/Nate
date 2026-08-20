@@ -1,0 +1,114 @@
+# Der taegliche Lauf.
+#
+# Das hier ist der Unterschied zwischen "gebaut" und "laeuft". Bis dieser
+# Zeitplan existierte, stand im Stand jeder ueberwachten Seite: "letzter
+# Lauf: nie". Der Waechter war fertig und hat trotzdem nichts getan,
+# weil ihn niemand gestartet hat.
+#
+# WARUM GITHUB UND NICHT EIN SERVER
+# Ein Server kostet Geld und muss bezahlt werden, bevor ein einziger
+# Kunde da ist. Dieses Repo ist oeffentlich, und fuer oeffentliche Repos
+# sind die Laeufe unbegrenzt gratis. Damit laeuft die Ueberwachung ab
+# heute, ohne dass jemand etwas einrichtet oder bezahlt.
+#
+# WAS DAS NICHT IST
+# Kein Agent, der ein Unternehmen fuehrt. Ein Zeitplan, der ein
+# Python-Skript startet. Das Skript braucht kein Sprachmodell - es sind
+# sechs Regeln. Der Unterschied ist wichtig, weil das Wort "AI-Agent"
+# gerade sehr viel verspricht und sehr wenig meint.
+
+name: Curbcut Waechter
+
+on:
+  schedule:
+    # 06:12 UTC. Nicht zur vollen Stunde, weil dann alle laufen und
+    # GitHub die Laeufe in die Warteschlange schiebt.
+    - cron: "12 6 * * *"
+  workflow_dispatch:        # damit man ihn von Hand ausloesen kann
+
+permissions:
+  contents: write           # Stand zurueckschreiben
+  issues: write             # Befund als Meldung anlegen
+
+concurrency:
+  group: curbcut-waechter
+  cancel-in-progress: false
+
+jobs:
+  wachen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Wachen pruefen
+        id: lauf
+        run: |
+          cd curbcut
+          python3 - <<'PYEOF' | tee /tmp/befund.txt
+          import sys, datetime
+          sys.path.insert(0, "betrieb")
+          sys.path.insert(0, "kern")
+          from waechter import runde
+
+          def zahm(text):
+              """Fremdes HTML aus einer ueberwachten Seite entschaerfen.
+
+              Der Befund zitiert den Quelltext der geprueften Seite
+              woertlich - das ist Absicht, damit der Betreiber seinen
+              eigenen Code wiedererkennt. Dieser Text kommt aber von
+              einem fremden Server und darf hier nichts ausloesen.
+
+              Drei Backticks im Zitat wuerden den Code-Block schliessen
+              und den Rest als Markdown ausfuehren lassen. Also werden
+              sie ersetzt, bevor der Text die Meldung erreicht.
+              """
+              return (text.replace("`", "ˋ")
+                          .replace("\r", ""))
+
+          heute = datetime.date.today().isoformat()
+          for e in runde(heute):
+              if e["fehler"]:
+                  print(f"## {zahm(e['url'])}\n\n{zahm(e['fehler'])}\n")
+              elif e["meldung"]:
+                  print(f"## {zahm(e['url'])}\n")
+                  print("```text")
+                  print(zahm(e["meldung"]))
+                  print("```\n")
+          PYEOF
+
+      - name: Stand sichern
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          if git diff --quiet -- curbcut/betrieb/stand.json; then
+            echo "Stand unveraendert."
+          else
+            git config user.name "Curbcut Waechter"
+            git config user.email "noreply@github.com"
+            git add curbcut/betrieb/stand.json
+            git commit -m "Waechter: Stand vom $(date -u +%F)"
+            git push
+          fi
+
+      - name: Melden, wenn etwas Neues da ist
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Nur melden, wenn wirklich etwas drinsteht. Ein Dienst, der
+          # taeglich "alles unveraendert" schickt, landet nach zwei
+          # Wochen im Spam - und dann kommt auch die Meldung nicht mehr
+          # an, die zaehlt.
+          if [ -s /tmp/befund.txt ]; then
+            gh issue create \
+              --title "Curbcut: Neue Befunde am $(date -u +%F)" \
+              --body-file /tmp/befund.txt \
+              --label "curbcut" || true
+          else
+            echo "Nichts Neues. Keine Meldung."
+          fi

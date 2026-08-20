@@ -7,22 +7,19 @@
    "leerknopf|button|sc-772ea215-4|swiper-button-prev": 3,
    "leerknopf|button|sc-772ea215-4|swiper-button-next": 3,
    "alt|img": 51,
-   "kontrast|htm": 2,
-   "kontrast|html": 2,
+   "kontrast|?": 4,
    "alt|img|sc-547864ca-0": 3
   },
   "stumm": [],
-  "letzter_lauf": "",
+  "letzter_lauf": "2026-08-20",
   "fehlversuche": 0
  },
  "nate:https://www.letsdrink-pet.com": {
   "url": "https://www.letsdrink-pet.com",
   "kunde": "nate",
-  "bekannt": {
-   "kontrast|?": 1
-  },
+  "bekannt": {},
   "stumm": [],
-  "letzter_lauf": "",
+  "letzter_lauf": "2026-08-20",
   "fehlversuche": 0
  }
 }

@@ -115,7 +115,9 @@ class Bauteil:
             if self.erster.zeile == 0:
                 return "in einer Stildatei (nicht im HTML)"
             return f"an einer Stelle (Zeile {self.erster.zeile})"
-        z = self.zeilen
+        z = [x for x in self.zeilen if x > 0]
+        if not z:
+            return f"{self.anzahl} Mal, in einer Stildatei (nicht im HTML)"
         wo = (f"Zeile {z[0]}" if len(z) == 1
               else f"Zeilen {z[0]} bis {z[-1]}")
         return (f"{self.anzahl} Mal eingebunden, {wo} - im Quelltext "
