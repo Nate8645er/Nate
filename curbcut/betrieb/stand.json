@@ -1,0 +1,28 @@
+{
+ "probe:https://www.20min.ch": {
+  "url": "https://www.20min.ch",
+  "kunde": "probe",
+  "bekannt": {
+   "leerknopf|button|sc-116b3fce-0": 53,
+   "leerknopf|button|sc-772ea215-4|swiper-button-prev": 3,
+   "leerknopf|button|sc-772ea215-4|swiper-button-next": 3,
+   "alt|img": 51,
+   "kontrast|htm": 2,
+   "kontrast|html": 2,
+   "alt|img|sc-547864ca-0": 3
+  },
+  "stumm": [],
+  "letzter_lauf": "",
+  "fehlversuche": 0
+ },
+ "nate:https://www.letsdrink-pet.com": {
+  "url": "https://www.letsdrink-pet.com",
+  "kunde": "nate",
+  "bekannt": {
+   "kontrast|?": 1
+  },
+  "stumm": [],
+  "letzter_lauf": "",
+  "fehlversuche": 0
+ }
+}

@@ -1,0 +1,259 @@
+[
+ {
+  "url": "www.20min.ch",
+  "zeilen": 586,
+  "vorkommen": 117,
+  "stellen": 6,
+  "sperrend": 3,
+  "arten": {
+   "alt": 54,
+   "leerknopf": 59,
+   "kontrast": 4
+  }
+ },
+ {
+  "url": "www.migros.ch",
+  "zeilen": 140,
+  "vorkommen": 6,
+  "stellen": 2,
+  "sperrend": 0,
+  "arten": {
+   "sprache": 1,
+   "kontrast": 5
+  }
+ },
+ {
+  "url": "www.post.ch",
+  "zeilen": 1295,
+  "vorkommen": 18,
+  "stellen": 1,
+  "sperrend": 0,
+  "arten": {
+   "kontrast": 18
+  }
+ },
+ {
+  "url": "www.blick.ch",
+  "zeilen": 1009,
+  "vorkommen": 2,
+  "stellen": 1,
+  "sperrend": 1,
+  "arten": {
+   "leerlink": 2
+  }
+ },
+ {
+  "url": "www.nzz.ch",
+  "zeilen": 459,
+  "vorkommen": 1,
+  "stellen": 1,
+  "sperrend": 0,
+  "arten": {
+   "kontrast": 1
+  }
+ },
+ {
+  "url": "www.tagesanzeiger.ch",
+  "fehler": "Der Server antwortete mit Code 302."
+ },
+ {
+  "url": "www.srf.ch",
+  "zeilen": 6617,
+  "vorkommen": 1,
+  "stellen": 1,
+  "sperrend": 0,
+  "arten": {
+   "kontrast": 1
+  }
+ },
+ {
+  "url": "www.coop.ch",
+  "fehler": "Der Server hat die Anfrage abgewiesen (Code 403). Viele grosse Seiten sperren automatische Zugriffe. Das sagt "
+ },
+ {
+  "url": "www.galaxus.ch",
+  "fehler": "Die Seite hat nach 25 Sekunden nicht geantwortet."
+ },
+ {
+  "url": "www.zalando.ch",
+  "zeilen": 360,
+  "vorkommen": 3,
+  "stellen": 2,
+  "sperrend": 1,
+  "arten": {
+   "label": 1,
+   "kontrast": 2
+  }
+ },
+ {
+  "url": "www.interdiscount.ch",
+  "fehler": "Der Server hat die Anfrage abgewiesen (Code 403). Viele grosse Seiten sperren automatische Zugriffe. Das sagt "
+ },
+ {
+  "url": "www.manor.ch",
+  "zeilen": 323,
+  "vorkommen": 11,
+  "stellen": 4,
+  "sperrend": 3,
+  "arten": {
+   "leerlink": 4,
+   "leerknopf": 4,
+   "label": 2,
+   "kontrast": 1
+  }
+ },
+ {
+  "url": "www.brack.ch",
+  "fehler": "Die Seite hat nach 25 Sekunden nicht geantwortet."
+ },
+ {
+  "url": "www.microspot.ch",
+  "fehler": "Der Server hat die Anfrage abgewiesen (Code 403). Viele grosse Seiten sperren automatische Zugriffe. Das sagt "
+ },
+ {
+  "url": "www.ottos.ch",
+  "zeilen": 97,
+  "vorkommen": 16,
+  "stellen": 2,
+  "sperrend": 0,
+  "arten": {
+   "alt": 16
+  }
+ },
+ {
+  "url": "www.landi.ch",
+  "zeilen": 450,
+  "vorkommen": 56,
+  "stellen": 10,
+  "sperrend": 4,
+  "arten": {
+   "sprache": 1,
+   "alt": 20,
+   "leerlink": 4,
+   "leerknopf": 1,
+   "label": 1,
+   "kontrast": 29
+  }
+ },
+ {
+  "url": "www.jumbo.ch",
+  "fehler": "Der Server hat die Anfrage abgewiesen (Code 403). Viele grosse Seiten sperren automatische Zugriffe. Das sagt "
+ },
+ {
+  "url": "www.bauhaus.ch",
+  "fehler": "Der Server hat die Anfrage abgewiesen (Code 403). Viele grosse Seiten sperren automatische Zugriffe. Das sagt "
+ },
+ {
+  "url": "www.transa.ch",
+  "zeilen": 164,
+  "vorkommen": 1,
+  "stellen": 1,
+  "sperrend": 1,
+  "arten": {
+   "label": 1
+  }
+ },
+ {
+  "url": "www.ochsner-sport.ch",
+  "fehler": "Keine Verbindung zu www.ochsner-sport.ch: [Errno 104] Connection reset by peer"
+ },
+ {
+  "url": "www.orellfuessli.ch",
+  "fehler": "Der Server hat die Anfrage abgewiesen (Code 403). Viele grosse Seiten sperren automatische Zugriffe. Das sagt "
+ },
+ {
+  "url": "www.exlibris.ch",
+  "zeilen": 783,
+  "vorkommen": 24,
+  "stellen": 7,
+  "sperrend": 5,
+  "arten": {
+   "alt": 4,
+   "leerlink": 6,
+   "leerknopf": 1,
+   "label": 2,
+   "kontrast": 11
+  }
+ },
+ {
+  "url": "www.mediamarkt.ch",
+  "fehler": "Der Server hat die Anfrage abgewiesen (Code 403). Viele grosse Seiten sperren automatische Zugriffe. Das sagt "
+ },
+ {
+  "url": "www.lidl.ch",
+  "zeilen": 129,
+  "vorkommen": 28,
+  "stellen": 7,
+  "sperrend": 6,
+  "arten": {
+   "leerlink": 1,
+   "leerknopf": 24,
+   "kontrast": 3
+  }
+ },
+ {
+  "url": "www.aldi-suisse.ch",
+  "fehler": "Der Server hat die Anfrage abgewiesen (Code 403). Viele grosse Seiten sperren automatische Zugriffe. Das sagt "
+ },
+ {
+  "url": "www.denner.ch",
+  "zeilen": 101,
+  "vorkommen": 9,
+  "stellen": 5,
+  "sperrend": 3,
+  "arten": {
+   "alt": 5,
+   "leerlink": 1,
+   "leerknopf": 2,
+   "kontrast": 1
+  }
+ },
+ {
+  "url": "www.volg.ch",
+  "zeilen": 165,
+  "vorkommen": 11,
+  "stellen": 8,
+  "sperrend": 6,
+  "arten": {
+   "alt": 1,
+   "leerlink": 4,
+   "leerknopf": 2,
+   "label": 2,
+   "kontrast": 2
+  }
+ },
+ {
+  "url": "www.spar.ch",
+  "zeilen": 2131,
+  "vorkommen": 35,
+  "stellen": 9,
+  "sperrend": 7,
+  "arten": {
+   "alt": 1,
+   "leerlink": 2,
+   "leerknopf": 11,
+   "label": 1,
+   "kontrast": 20
+  }
+ },
+ {
+  "url": "news.ycombinator.com",
+  "zeilen": 3,
+  "vorkommen": 34,
+  "stellen": 4,
+  "sperrend": 2,
+  "arten": {
+   "alt": 2,
+   "leerlink": 31,
+   "label": 1
+  }
+ },
+ {
+  "url": "example.com",
+  "zeilen": 2,
+  "vorkommen": 0,
+  "stellen": 0,
+  "sperrend": 0,
+  "arten": {}
+ }
+]
