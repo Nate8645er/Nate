@@ -1,0 +1,377 @@
+<title>Was dein Team gebracht hat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+  :root{
+    --grund:#EDEEE9; --flaeche:#F9F9F6; --tief:#E2E4DD; --linie:#CDD0C6;
+    --tinte:#181C1A; --matt:#586058; --leise:#7B837B;
+    --marke:#1E6F63; --marke-flaeche:#E2EFEB; --marke-linie:#B7D7CE;
+    --warn:#9A5B12; --warn-flaeche:#F7ECDC; --warn-linie:#E7C99B;
+    --stop:#A5271C; --stop-flaeche:#F7E7E4; --stop-linie:#E6BEB7;
+    --schatten:0 1px 2px rgba(24,28,26,.05), 0 14px 30px -20px rgba(24,28,26,.3);
+    --spur:118px;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --grund:#0E110F; --flaeche:#171A18; --tief:#1F2320; --linie:#2F3531;
+    --tinte:#E9ECE8; --matt:#9AA39A; --leise:#79817A;
+    --marke:#5FC3B0; --marke-flaeche:#10221E; --marke-linie:#23453D;
+    --warn:#E3AA5C; --warn-flaeche:#291F12; --warn-linie:#54401F;
+    --stop:#EE8578; --stop-flaeche:#2A1512; --stop-linie:#56271F;
+    --schatten:0 1px 2px rgba(0,0,0,.5), 0 14px 30px -20px rgba(0,0,0,.85);
+  }}
+  :root[data-theme="dark"]{
+    --grund:#0E110F; --flaeche:#171A18; --tief:#1F2320; --linie:#2F3531;
+    --tinte:#E9ECE8; --matt:#9AA39A; --leise:#79817A;
+    --marke:#5FC3B0; --marke-flaeche:#10221E; --marke-linie:#23453D;
+    --warn:#E3AA5C; --warn-flaeche:#291F12; --warn-linie:#54401F;
+    --stop:#EE8578; --stop-flaeche:#2A1512; --stop-linie:#56271F;
+    --schatten:0 1px 2px rgba(0,0,0,.5), 0 14px 30px -20px rgba(0,0,0,.85);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--grund);color:var(--tinte);
+    font-family:"Public Sans",system-ui,sans-serif;font-size:17px;line-height:1.62;
+    -webkit-text-size-adjust:100%;}
+  .huelle{max-width:1000px;margin:0 auto;padding:0 20px 100px;}
+
+  header{padding:70px 0 20px;}
+  .zeichen{display:flex;align-items:center;gap:11px;margin-bottom:26px;}
+  .rippen{display:flex;gap:4px;}
+  .rippen i{width:5px;height:22px;border-radius:1px;background:var(--marke);}
+  .rippen i:nth-child(2){opacity:.6;} .rippen i:nth-child(3){opacity:.32;}
+  .wort{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--matt);}
+  h1{font-family:"Fraunces",Georgia,serif;font-weight:600;
+    font-size:clamp(38px,6.6vw,66px);line-height:1.04;letter-spacing:-.02em;
+    margin:0 0 18px;text-wrap:balance;}
+  .unter{font-size:clamp(17px,2.2vw,20px);color:var(--matt);max-width:64ch;margin:0 0 32px;}
+
+  .band{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:1px;background:var(--linie);border:1px solid var(--linie);border-radius:4px;
+    overflow:hidden;margin:22px 0 6px;}
+  .zahl{background:var(--flaeche);padding:17px 16px;}
+  .zahl b{display:block;font-family:"IBM Plex Mono",monospace;font-weight:600;
+    font-size:27px;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;
+    margin-bottom:6px;}
+  .zahl span{display:block;font-size:12.5px;color:var(--matt);line-height:1.42;}
+
+  .spur{display:grid;grid-template-columns:var(--spur) 1fr;}
+  .marke{position:relative;padding-top:40px;border-right:1px solid var(--linie);}
+  .marke span{position:sticky;top:24px;display:block;padding-right:18px;
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.09em;
+    color:var(--leise);text-align:right;text-transform:uppercase;}
+  .marke::after{content:"";position:absolute;top:46px;right:-4.5px;width:8px;height:8px;
+    border-radius:50%;background:var(--marke);}
+  .inhalt{padding:34px 0 26px 34px;min-width:0;}
+  @media (max-width:760px){
+    .spur{grid-template-columns:1fr;}
+    .marke{border-right:none;border-top:1px solid var(--linie);padding-top:20px;}
+    .marke span{position:static;text-align:left;padding:0;}
+    .marke::after{top:-4.5px;left:0;right:auto;}
+    .inhalt{padding:12px 0 22px;}
+  }
+
+  h2{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:clamp(23px,3vw,30px);
+    line-height:1.14;letter-spacing:-.012em;margin:0 0 6px;text-wrap:balance;}
+  .helfer{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--marke);
+    margin-bottom:14px;}
+  h3{font-family:"Public Sans",sans-serif;font-weight:600;font-size:17px;
+    margin:24px 0 7px;}
+  p{margin:0 0 13px;max-width:68ch;} strong{font-weight:600;}
+  a{color:var(--tinte);text-underline-offset:3px;text-decoration-color:var(--marke);
+    text-decoration-thickness:2px;}
+  ul,ol{margin:0 0 13px;padding-left:20px;max-width:68ch;} li{margin-bottom:6px;}
+  li::marker{color:var(--marke);}
+
+  .kasten{background:var(--flaeche);border:1px solid var(--linie);border-radius:4px;
+    padding:19px 21px;margin:18px 0;box-shadow:var(--schatten);}
+  .kasten p:last-child,.kasten ul:last-child,.kasten ol:last-child{margin-bottom:0;}
+  .kasten.marke{background:var(--marke-flaeche);border-color:var(--marke-linie);}
+  .kasten.warn{background:var(--warn-flaeche);border-color:var(--warn-linie);}
+  .kasten.stop{background:var(--stop-flaeche);border-color:var(--stop-linie);}
+  .kopf{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;font-weight:600;margin-bottom:9px;}
+  .kasten.marke .kopf{color:var(--marke);}
+  .kasten.warn .kopf{color:var(--warn);}
+  .kasten.stop .kopf{color:var(--stop);}
+
+  pre{font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.5;
+    background:var(--tief);border:1px solid var(--linie);border-radius:4px;
+    padding:16px 18px;overflow-x:auto;white-space:pre-wrap;color:var(--tinte);margin:14px 0;}
+  code{font-family:"IBM Plex Mono",monospace;font-size:.88em;background:var(--tief);
+    padding:1px 5px;border-radius:3px;}
+
+  .rollen{overflow-x:auto;border:1px solid var(--linie);border-radius:4px;margin:16px 0;}
+  table{border-collapse:collapse;width:100%;font-size:14px;background:var(--flaeche);}
+  th,td{padding:9px 13px;text-align:left;border-bottom:1px solid var(--linie);vertical-align:top;}
+  th{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;
+    letter-spacing:.07em;text-transform:uppercase;color:var(--matt);background:var(--tief);
+    white-space:nowrap;}
+  tr:last-child td{border-bottom:none;}
+  td.z{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;white-space:nowrap;}
+
+  .faq{border-top:1px solid var(--linie);padding:13px 0;}
+  .faq b{display:block;margin-bottom:4px;}
+  .faq p{font-size:15px;color:var(--matt);margin:0;}
+
+  footer{border-top:1px solid var(--linie);margin-top:52px;padding-top:22px;
+    font-size:14px;color:var(--matt);}
+</style>
+
+<div class="huelle">
+
+<header>
+  <div class="zeichen">
+    <span class="rippen"><i></i><i></i><i></i></span>
+    <span class="wort">Arbeitspaket &middot; 24. August 2026</span>
+  </div>
+  <h1>Was dein Team gebracht hat</h1>
+  <p class="unter">Du wolltest die Helfer sofort an der Arbeit sehen. Sieben von
+  ihnen haben gleichzeitig an deinem Shop gearbeitet &ndash; jeder mit einer
+  echten Aufgabe, jeder mit einem Ergebnis, das du direkt benutzen kannst.
+  Hier ist alles zusammen.</p>
+
+  <div class="band">
+    <div class="zahl"><b>7</b><span>Helfer gleichzeitig, echte Aufgaben</span></div>
+    <div class="zahl"><b>6</b><span>fertige Sachen zum Einbauen oder Posten</span></div>
+    <div class="zahl"><b>2</b><span>Stellen korrigiert, die gegen deine Regeln verstiessen</span></div>
+    <div class="zahl"><b>0</b><span>erfundene Bewertungen oder Zahlen</span></div>
+  </div>
+</header>
+
+<div class="spur">
+
+<!-- ================= -->
+<div class="marke"><span>Zuerst</span></div>
+<div class="inhalt">
+  <h2>Ehrlich, bevor du weiterliest</h2>
+  <p>Du hast gesagt: nicht nur die 17, auch die 74 anderen. Ich habe die 74
+  <strong>nicht</strong> eingesetzt &ndash; und zwar mit Absicht. Das sind
+  Entwickler-Helfer: Kubernetes, Terraform, Rust, Firmware. Wenn ich denen deine
+  Trinkflasche gebe, kommt Unsinn heraus, den du wegwerfen musst. Das waere
+  Beschaeftigung, kein Ergebnis.</p>
+  <p>Stattdessen haben die sieben gearbeitet, die zu einem Shop wirklich passen.
+  Und die haben etwas Unbequemes gefunden, das ganz nach oben gehoert.</p>
+
+  <div class="kasten stop">
+    <div class="kopf">Der wichtigste Befund</div>
+    <p><strong>Dein Preis ist am oberen Ende des Markts.</strong> CHF 39.90 sind
+    rund 42 bis 45 Euro. Der Konkurrenz-Helfer hat acht echte Konkurrenzprodukte
+    gefunden: vergleichbare Flaschen mit Napf kosten 4 bis 29 Euro &ndash; teils
+    groesser, teils von bekannten Marken wie Kurgo oder Martin Ruetter, teils
+    mit mehr genannten Eigenschaften.</p>
+    <p>Das heisst nicht, dass dein Preis falsch ist. Es heisst: Bei diesem Preis
+    musst du einen <strong>Grund</strong> geben, warum deine mehr kostet &ndash;
+    sonst klickt der Kaeufer weiter zur guenstigeren. Genau darum lohnt sich der
+    gute Produkttext unten.</p>
+  </div>
+</div>
+
+<!-- ================= -->
+<div class="marke"><span>Diagnose</span></div>
+<div class="inhalt">
+  <h2>Warum 2325 Besuche null Kaeufe wurden</h2>
+  <div class="helfer">Analyse-Helfer &middot; business-analyst</div>
+  <p>Der Trichter bricht an einer Stelle brutal ein: 13 Leute erreichten die
+  Kasse, 0 bezahlten. Das riecht nicht nach Zoegern, sondern nach einem
+  technischen Blocker &ndash; sehr wahrscheinlich, weil waehrend eines Grossteils
+  dieser Besuche <strong>gar keine Zahlung aktiv war</strong>. Die hast du gerade
+  erst hinzugefuegt.</p>
+
+  <div class="kasten">
+    <div class="kopf">Die Reihenfolge, in der du vorgehst</div>
+    <ol>
+      <li><strong>Du machst jetzt einen echten Testkauf.</strong> Klick dich
+      selbst durch bis zur bezahlten Bestellung, mit TWINT und einmal mit Karte.
+      Erst das beweist, dass die Kasse wirklich funktioniert.</li>
+      <li><strong>Den Pixel umstellen</strong> auf <code>883186891300328</code>.
+      Solange er ans falsche Konto meldet, lernt die Werbung nie, wer kauft.</li>
+      <li><strong>Werbebudget niedrig halten</strong>, bis die ersten echten,
+      richtig gezaehlten Kaeufe da sind.</li>
+      <li><strong>Im Warenkorb sichtbar machen:</strong> &bdquo;Gratis Versand
+      Schweiz&ldquo; und die Zahlungs-Symbole. 45 legten etwas in den Korb, nur
+      13 gingen zur Kasse &ndash; da verlierst du 71 Prozent.</li>
+    </ol>
+  </div>
+  <p>Die ersten drei Punkte sind deine. Punkt vier baue ich am Shop, sobald du
+  das Startzeichen gibst.</p>
+</div>
+
+<!-- ================= -->
+<div class="marke"><span>Text</span></div>
+<div class="inhalt">
+  <h2>Die neue Produktseite &ndash; fertig zum Einsetzen</h2>
+  <div class="helfer">Text-Helfer &middot; seo-content-writer</div>
+  <p>Geschrieben fuer Google und fuer den Menschen, der kauft. Dein
+  geschuetzter Absatz zur Dichtigkeit steht wortwoertlich drin, der Preis ist
+  ein Platzhalter (er kommt aus dem Shop, nie hartkodiert).</p>
+<pre>Trinkflasche mit Napf fuer Hund und Katze &ndash; Wasser fuer unterwegs
+
+Dein Hund hechelt an der Leine, deine Katze braucht auf der Zugfahrt
+etwas zu trinken &ndash; aber unterwegs findet sich selten eine saubere
+Schale und noch seltener sauberes Wasser. Die Let'sDrink Trinkflasche
+mit integriertem Napf loest genau das: Flasche und Napf sind eins,
+immer griffbereit, mit Platz fuer 550 ml Wasser.
+
+Ein Handgriff, fertig
+Du drueckst oder kippst die Flasche leicht, das Wasser fliesst in den
+integrierten Napf. Trinkt dein Tier nicht alles, kippst du den Rest
+zurueck in die Flasche.
+
+Fuer Hund und Katze gemacht
+Ob Spaziergang mit dem Hund oder Fahrt mit der Katze &ndash; ein Produkt
+fuer alle Vierbeiner im Haushalt.
+
+Sechs Farben fuer deinen Stil
+Rosa, Schwarz, Grau, Tuerkis, Gruen oder Weiss.
+
+Die Fakten auf einen Blick
+&middot; 550 ml Fassungsvermoegen
+&middot; Fuer Hund und Katze geeignet
+&middot; Sechs Farben
+&middot; Nur fuer Wasser gedacht
+&middot; Versand Schweiz gratis, Ausland CHF 1.50
+&middot; 14 Tage Rueckgaberecht
+
+Ehrlich gesagt: zur Dichtigkeit
+Wir haben keine schriftliche Zusicherung des Lieferanten, dass sie
+unter allen Umstaenden dicht ist &ndash; deshalb behaupten wir es auch
+nicht. Transportiere sie am besten aufrecht. Laeuft deine Flasche
+trotzdem aus, ist das ein Reklamationsfall: Du bekommst Ersatz oder
+dein Geld zurueck.</pre>
+
+  <div class="kasten warn">
+    <div class="kopf">Eine Sache musst du bestaetigen</div>
+    <p>Die Helfer beschreiben den Napf unterschiedlich &ndash; einer sagt
+    &bdquo;kippen&ldquo;, ein anderer &bdquo;ausklappen&ldquo;. Ich weiss nicht,
+    wie deine Flasche wirklich funktioniert. <strong>Sag mir, wie der Napf
+    aufgeht</strong>, dann steht in Text und Antworten dasselbe &ndash; und
+    nichts Erfundenes.</p>
+  </div>
+</div>
+
+<!-- ================= -->
+<div class="marke"><span>Google</span></div>
+<div class="inhalt">
+  <h2>Suchbegriffe und Seitentitel</h2>
+  <div class="helfer">Keyword-Helfer + Meta-Helfer &middot; seo-keyword-strategist, seo-meta-optimizer</div>
+
+  <h3>Worauf die Seite ranken soll</h3>
+  <p>Haupt-Begriff: <strong>Hundetrinkflasche mit Napf</strong>. Dazu, was Leute
+  wirklich tippen, wenn sie kaufen wollen:</p>
+  <div class="rollen">
+  <table>
+    <tr><th>Suchbegriff</th><th>Kaufabsicht</th></tr>
+    <tr><td>Trinkflasche Hund unterwegs</td><td class="z">hoch</td></tr>
+    <tr><td>Reisetrinkflasche Hund</td><td class="z">hoch</td></tr>
+    <tr><td>Trinkflasche Hund Wandern</td><td class="z">hoch</td></tr>
+    <tr><td>Trinkflasche Hund Auto</td><td class="z">hoch</td></tr>
+    <tr><td>Trinkflasche Hund mit Napf</td><td class="z">hoch</td></tr>
+    <tr><td>Trinkflasche Katze</td><td class="z">mittel</td></tr>
+  </table>
+  </div>
+
+  <h3>Der empfohlene Seitentitel</h3>
+  <pre>Titel:        Tragbare Trinkflasche mit Napf - Hund &amp; Katze - 6 Farben
+Beschreibung: Deine portable Loesung: Trinkflasche mit Napf fuer Hund
+              und Katze. 550 ml Volumen, 6 Farben zur Wahl. Zuverlaessig
+              und praktisch.
+URL:          /trinkflasche-napf-hund-katze</pre>
+
+  <div class="kasten warn">
+    <div class="kopf">Warum ohne Preis im Titel</div>
+    <p>Der Meta-Helfer hatte auch Varianten mit &bdquo;CHF 39.90&ldquo;
+    vorgeschlagen. Die habe ich weggelassen: Auf der Seite steht durch den
+    5-Prozent-Rabatt effektiv CHF 37.91. Ein Titel mit 39.90 waere wieder die
+    Abweichung, die Google als &bdquo;Preis stimmt nicht mit der Seite
+    ueberein&ldquo; anmeckert &ndash; genau der Fehler, den wir schon einmal
+    behoben haben.</p>
+  </div>
+</div>
+
+<!-- ================= -->
+<div class="marke"><span>Kunden</span></div>
+<div class="inhalt">
+  <h2>Zehn fertige Antworten auf Kundenfragen</h2>
+  <div class="helfer">Support-Helfer &middot; customer-support</div>
+  <p>Kopier sie in deine Shop-Hilfe oder halt sie bereit, wenn jemand schreibt.
+  Bei Material und Groesse sagen sie ehrlich, dass ausser 550 ml nichts gesichert
+  ist &ndash; statt etwas zu erfinden.</p>
+
+  <div class="faq"><b>Ist die Flasche auch fuer Katzen geeignet?</b>
+    <p>Ja, sie ist fuer Hund und Katze gedacht. So hat jedes Tier im Haushalt
+    unterwegs Wasser.</p></div>
+  <div class="faq"><b>Laeuft die Flasche aus?</b>
+    <p>Wir haben keine schriftliche Zusicherung des Lieferanten, dass sie unter
+    allen Umstaenden dicht ist &ndash; deshalb behaupten wir es auch nicht.
+    Transportiere sie am besten aufrecht. Laeuft sie trotzdem aus, ist das ein
+    Reklamationsfall: Ersatz oder Geld zurueck.</p></div>
+  <div class="faq"><b>Aus welchem Material besteht sie, wie gross ist sie?</b>
+    <p>Sicher ist: 550 ml. Fuer genaue Angaben zu Material und Massen fragen wir
+    gern beim Lieferanten nach &ndash; schreib uns einfach.</p></div>
+  <div class="faq"><b>Welche Farben gibt es?</b>
+    <p>Sechs: Rosa, Schwarz, Grau, Tuerkis, Gruen und Weiss.</p></div>
+  <div class="faq"><b>Wie lange dauert der Versand?</b>
+    <p>7 bis 14 Werktage, mit Sendungsverfolgung.</p></div>
+  <p style="font-size:14px;color:var(--leise);margin-top:14px;">&hellip; und fuenf
+  weitere (Reinigung, Rueckgabe, Versandkosten, mehrere bestellen, wie der Napf
+  funktioniert) &ndash; alle im vollstaendigen Satz gespeichert.</p>
+</div>
+
+<!-- ================= -->
+<div class="marke"><span>Posten</span></div>
+<div class="inhalt">
+  <h2>14 Tage Social Media, Tag fuer Tag</h2>
+  <div class="helfer">Inhalt-Helfer &middot; content-marketer</div>
+  <p>Ein Post pro Tag, die Haelfte ohne Verkauf (Alltag, Nutzen), die Haelfte
+  mit Produkt. Jeder mit fertigem Text und Hashtags. Ein Auszug:</p>
+  <div class="rollen">
+  <table>
+    <tr><th>Tag</th><th>Format</th><th>Idee</th></tr>
+    <tr><td class="z">1</td><td>Foto</td><td>Flasche von vorne, Napf sichtbar</td></tr>
+    <tr><td class="z">2</td><td>Video</td><td>Hund trinkt beim Spaziergang</td></tr>
+    <tr><td class="z">4</td><td>Foto</td><td>Die sechs Farben in einer Reihe</td></tr>
+    <tr><td class="z">5</td><td>Video</td><td>Bergwanderung, Pause fuer den Hund</td></tr>
+    <tr><td class="z">7</td><td>Video</td><td>Im Auto, Tier trinkt am Parkplatz</td></tr>
+    <tr><td class="z">11</td><td>Foto</td><td>Katze am Fenster, Flasche dahinter</td></tr>
+  </table>
+  </div>
+  <div class="kasten stop">
+    <div class="kopf">Hier habe ich korrigiert</div>
+    <p>Tag 9 versprach im Original &bdquo;kaltes Wasser&ldquo;, als kuehle die
+    Flasche. Sie kuehlt nicht &ndash; das ist eine erfundene Eigenschaft und
+    verstoesst gegen deine Regel. <strong>Ich habe den Post umgeschrieben:</strong>
+    statt Kuehlung jetzt der Hinweis, an heissen Tagen ueberhaupt Wasser dabei zu
+    haben. Alle 14 Texte sind gespeichert.</p>
+  </div>
+</div>
+
+<!-- ================= -->
+<div class="marke"><span>Jetzt</span></div>
+<div class="inhalt">
+  <h2>Was als Naechstes passiert</h2>
+  <ol>
+    <li><strong>Du:</strong> ein echter Testkauf, dann der Pixel. Ohne das
+    arbeiten alle Texte und Posts ins Leere.</li>
+    <li><strong>Ich, auf dein Zeichen:</strong> den neuen Produkttext und die
+    Meta-Angaben in NOVA 3 einbauen, die Trust-Zeile in den Warenkorb.</li>
+    <li><strong>Du sagst mir, wie der Napf aufgeht</strong> &ndash; dann stimmt
+    ueberall dasselbe.</li>
+    <li><strong>Offen bleibt die Preisfrage:</strong> CHF 39.90 ist teuer fuer
+    den Markt. Entweder du gibst der Seite einen starken Grund dafuer, oder wir
+    reden ueber den Preis. Das ist eine Entscheidung, die dir gehoert.</li>
+  </ol>
+</div>
+
+</div>
+
+<footer>
+  <p>Sieben Helfer, gleichzeitig, in wenigen Minuten. Jede Zeile ist gegen deine
+  Regeln geprueft: keine erfundenen Bewertungen, keine Dringlichkeit, keine
+  Produktangabe ausser 550 ml und sechs Farben, nur Wasser. Zwei Verstoesse habe
+  ich beim Zusammenfassen gefunden und korrigiert &ndash; das ist der Grund,
+  warum ein Mensch am Ende drueberschaut und die Helfer nicht einfach
+  veroeffentlichen.</p>
+</footer>
+
+</div>
