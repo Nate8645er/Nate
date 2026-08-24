@@ -1,0 +1,294 @@
+<title>Nachschub vom Team</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+  :root{
+    --grund:#EDEEE9; --flaeche:#F9F9F6; --tief:#E2E4DD; --linie:#CDD0C6;
+    --tinte:#181C1A; --matt:#586058; --leise:#7B837B;
+    --marke:#1E6F63; --marke-flaeche:#E2EFEB; --marke-linie:#B7D7CE;
+    --warn:#9A5B12; --warn-flaeche:#F7ECDC; --warn-linie:#E7C99B;
+    --schatten:0 1px 2px rgba(24,28,26,.05), 0 14px 30px -20px rgba(24,28,26,.3);
+    --spur:118px;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --grund:#0E110F; --flaeche:#171A18; --tief:#1F2320; --linie:#2F3531;
+    --tinte:#E9ECE8; --matt:#9AA39A; --leise:#79817A;
+    --marke:#5FC3B0; --marke-flaeche:#10221E; --marke-linie:#23453D;
+    --warn:#E3AA5C; --warn-flaeche:#291F12; --warn-linie:#54401F;
+    --schatten:0 1px 2px rgba(0,0,0,.5), 0 14px 30px -20px rgba(0,0,0,.85);
+  }}
+  :root[data-theme="dark"]{
+    --grund:#0E110F; --flaeche:#171A18; --tief:#1F2320; --linie:#2F3531;
+    --tinte:#E9ECE8; --matt:#9AA39A; --leise:#79817A;
+    --marke:#5FC3B0; --marke-flaeche:#10221E; --marke-linie:#23453D;
+    --warn:#E3AA5C; --warn-flaeche:#291F12; --warn-linie:#54401F;
+    --schatten:0 1px 2px rgba(0,0,0,.5), 0 14px 30px -20px rgba(0,0,0,.85);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--grund);color:var(--tinte);
+    font-family:"Public Sans",system-ui,sans-serif;font-size:17px;line-height:1.62;
+    -webkit-text-size-adjust:100%;}
+  .huelle{max-width:1000px;margin:0 auto;padding:0 20px 100px;}
+  header{padding:70px 0 16px;}
+  .zeichen{display:flex;align-items:center;gap:11px;margin-bottom:26px;}
+  .rippen{display:flex;gap:4px;}
+  .rippen i{width:5px;height:22px;border-radius:1px;background:var(--marke);}
+  .rippen i:nth-child(2){opacity:.6;} .rippen i:nth-child(3){opacity:.32;}
+  .wort{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--matt);}
+  h1{font-family:"Fraunces",Georgia,serif;font-weight:600;
+    font-size:clamp(38px,6.6vw,64px);line-height:1.05;letter-spacing:-.02em;
+    margin:0 0 16px;text-wrap:balance;}
+  .unter{font-size:clamp(17px,2.2vw,20px);color:var(--matt);max-width:62ch;margin:0 0 20px;}
+
+  .spur{display:grid;grid-template-columns:var(--spur) 1fr;}
+  .marke{position:relative;padding-top:40px;border-right:1px solid var(--linie);}
+  .marke span{position:sticky;top:24px;display:block;padding-right:18px;
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.09em;
+    color:var(--leise);text-align:right;text-transform:uppercase;}
+  .marke::after{content:"";position:absolute;top:46px;right:-4.5px;width:8px;height:8px;
+    border-radius:50%;background:var(--marke);}
+  .inhalt{padding:34px 0 26px 34px;min-width:0;}
+  @media (max-width:760px){
+    .spur{grid-template-columns:1fr;}
+    .marke{border-right:none;border-top:1px solid var(--linie);padding-top:20px;}
+    .marke span{position:static;text-align:left;padding:0;}
+    .marke::after{top:-4.5px;left:0;right:auto;}
+    .inhalt{padding:12px 0 22px;}
+  }
+  h2{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:clamp(23px,3vw,30px);
+    line-height:1.14;letter-spacing:-.012em;margin:0 0 5px;text-wrap:balance;}
+  .helfer{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--marke);margin-bottom:14px;}
+  h3{font-family:"Public Sans",sans-serif;font-weight:600;font-size:17px;margin:22px 0 6px;}
+  h4{font-family:"Public Sans",sans-serif;font-weight:600;font-size:15px;margin:16px 0 4px;color:var(--matt);}
+  p{margin:0 0 13px;max-width:68ch;} strong{font-weight:600;}
+  a{color:var(--tinte);text-underline-offset:3px;text-decoration-color:var(--marke);text-decoration-thickness:2px;}
+  ul,ol{margin:0 0 13px;padding-left:20px;max-width:68ch;} li{margin-bottom:6px;}
+  li::marker{color:var(--marke);}
+  .kasten{background:var(--flaeche);border:1px solid var(--linie);border-radius:4px;
+    padding:19px 21px;margin:18px 0;box-shadow:var(--schatten);}
+  .kasten p:last-child{margin-bottom:0;}
+  .kasten.marke{background:var(--marke-flaeche);border-color:var(--marke-linie);}
+  .kasten.warn{background:var(--warn-flaeche);border-color:var(--warn-linie);}
+  .kopf{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;font-weight:600;margin-bottom:9px;}
+  .kasten.marke .kopf{color:var(--marke);} .kasten.warn .kopf{color:var(--warn);}
+  .rechnung{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;
+    background:var(--linie);border:1px solid var(--linie);border-radius:4px;overflow:hidden;margin:16px 0;}
+  .rechnung div{background:var(--flaeche);padding:16px;}
+  .rechnung b{display:block;font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:24px;
+    line-height:1;font-variant-numeric:tabular-nums;margin-bottom:6px;color:var(--marke);}
+  .rechnung span{font-size:12.5px;color:var(--matt);line-height:1.4;}
+  .skript{border:1px solid var(--linie);border-radius:4px;background:var(--flaeche);
+    padding:16px 18px;margin:14px 0;}
+  .skript .nr{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--marke);
+    letter-spacing:.1em;text-transform:uppercase;}
+  .skript b.t{display:block;font-family:"Fraunces",serif;font-size:19px;margin:2px 0 8px;}
+  .skript .hook{font-style:italic;color:var(--tinte);margin:0 0 8px;}
+  .skript .cap{font-size:14px;color:var(--matt);margin:8px 0 0;}
+  footer{border-top:1px solid var(--linie);margin-top:52px;padding-top:22px;font-size:14px;color:var(--matt);}
+</style>
+
+<div class="huelle">
+
+<header>
+  <div class="zeichen">
+    <span class="rippen"><i></i><i></i><i></i></span>
+    <span class="wort">Nachschub &middot; 24. August 2026</span>
+  </div>
+  <h1>Was drei Helfer noch gebracht haben</h1>
+  <p class="unter">Du wolltest sehen, was die Helfer sonst noch koennen. Drei haben
+  gleichzeitig gearbeitet: ein Blogartikel fuer Google, die Preisrechnung, und
+  fuenf Videoskripte zum Selberdrehen. Alles gegen deine Regeln geprueft &ndash;
+  drei Stellen habe ich korrigiert.</p>
+</header>
+
+<div class="spur">
+
+<!-- ===== BLOG ===== -->
+<div class="marke"><span>Fuer Google</span></div>
+<div class="inhalt">
+  <h2>Blogartikel: Wie viel Wasser braucht ein Hund unterwegs?</h2>
+  <div class="helfer">Text-Helfer &middot; seo-content-writer</div>
+  <p>So ein Artikel zieht Leute ueber Google auf deine Seite, die dann die Flasche
+  sehen. Ich habe ihn von der Sie-Form auf <strong>Du</strong> umgestellt, damit er
+  wie der Rest des Shops klingt.</p>
+
+  <h3>Wie viel Wasser braucht ein Hund unterwegs?</h3>
+  <p>Dein Hund hechelt nach der halben Runde im Park, obwohl er zu Hause kaum am
+  Napf nippt &ndash; ist das normal, oder sollte er unterwegs mehr trinken? Die
+  Antwort haengt von mehreren Dingen ab, die sich mit ein paar Faustregeln gut
+  einschaetzen lassen.</p>
+
+  <h4>Wie viel braucht er grundsaetzlich?</h4>
+  <p>Als grobe Orientierung: Ein gesunder Hund trinkt taeglich etwa 40 bis 100
+  Milliliter Wasser pro Kilogramm Koerpergewicht, wenn er Trockenfutter bekommt.
+  Bei Nassfutter, das selbst viel Fluessigkeit enthaelt, liegt der zusaetzliche
+  Bedarf oft niedriger. Ein 20-Kilo-Hund koennte an einem normalen Tag also
+  irgendwo zwischen 800 Millilitern und zwei Litern trinken &ndash; die Spanne ist
+  bewusst gross, weil so viel mitspielt.</p>
+  <p>Das sind Richtwerte, keine medizinischen Grenzwerte. Trinkt dein Hund
+  auffaellig mehr oder deutlich weniger als sonst, sprich mit deinem Tierarzt
+  &ndash; ploetzliche Veraenderungen im Trinkverhalten koennen ein Signal sein.</p>
+
+  <h4>Was den Bedarf unterwegs beeinflusst</h4>
+  <ul>
+    <li><strong>Groesse und Gewicht:</strong> Groessere Hunde brauchen absolut mehr
+    als kleine Rassen.</li>
+    <li><strong>Temperatur:</strong> Bei Waerme steigt der Verlust durchs Hecheln
+    spuerbar. An einem heissen Tag kann es ein Vielfaches sein.</li>
+    <li><strong>Aktivitaet:</strong> Wandern, Joggen, langes Spielen kosten
+    Fluessigkeit. Je laenger und anstrengender, desto wichtiger die Trinkpausen.</li>
+    <li><strong>Fell und Rasse:</strong> Hunde mit dichtem Fell oder kurzer Nase
+    (Mops, Bulldogge) ueberhitzen schneller.</li>
+  </ul>
+
+  <h4>Praktische Tipps</h4>
+  <p><strong>Kurze Runde:</strong> Bei 20 bis 30 Minuten und normalen Temperaturen
+  reicht Trinken vor und nach dem Spaziergang meist. <strong>Wanderung:</strong>
+  Plane feste Pausen ein, etwa alle 30 bis 60 Minuten, und biete Wasser an, bevor
+  dein Hund erschoepft wirkt &ndash; Hunde trinken oft zu spaet.
+  <strong>Auto:</strong> Lass deinen Hund nie allein im geparkten Wagen und biete
+  bei Zwischenstopps Wasser an. <strong>Heisse Tage:</strong> Spaziergaenge in die
+  kuehleren Morgen- und Abendstunden legen.</p>
+
+  <h4>Wasser einfach mitnehmen</h4>
+  <p>In der Praxis scheitert das Trinken unterwegs oft an der Umsetzung: eine
+  normale Flasche und ein separater Napf sind zusaetzliches Gewicht, und ohne Napf
+  laesst sich schlecht anbieten. Eine tragbare Trinkflasche mit integriertem Napf
+  loest genau das &ndash; Wasser und Trinkgefaess in einem Teil, ob Spaziergang,
+  Wanderung oder Auto. Bei Let'sDrink gibt es so ein Modell mit 550 ml in sechs
+  Farben, nur fuer Wasser gedacht.</p>
+
+  <div class="kasten warn">
+    <div class="kopf">Wichtig unter dem Artikel</div>
+    <p>Dieser Artikel ersetzt keine tieraerztliche Beratung. Die Richtwerte sind
+    Faustregeln und koennen je nach Rasse und Gesundheit abweichen. Bei
+    Unsicherheit frag deinen Tierarzt.</p>
+  </div>
+</div>
+
+<!-- ===== PREIS ===== -->
+<div class="marke"><span>Preis</span></div>
+<div class="inhalt">
+  <h2>Die Preisrechnung: 39.90 gegen 34.90 gegen 29.90</h2>
+  <div class="helfer">Startup-Helfer &middot; startup-analyst</div>
+  <p><strong>Ehrlich vorweg:</strong> Ich kenne deinen Einkaufspreis nicht &ndash;
+  darum ist das nur eine Umsatzrechnung, keine Gewinnrechnung. Sie sagt: wie viel
+  mehr Stueck du verkaufen musst, um denselben Umsatz zu halten.</p>
+
+  <div class="rechnung">
+    <div><b>+33 %</b><span>mehr Stueck noetig, wenn du auf CHF 29.90 senkst. Aus
+      100 Flaschen muessen 134 werden.</span></div>
+    <div><b>+14 %</b><span>mehr Stueck bei CHF 34.90. Aus 100 werden 115.</span></div>
+    <div><b>&asymp;EUR 31</b><span>sind 29.90 &ndash; immer noch teurer als fast die
+      ganze Konkurrenz (4 bis 29 Euro).</span></div>
+  </div>
+
+  <div class="kasten marke">
+    <div class="kopf">Der Satz, der zaehlt</div>
+    <p>Selbst bei CHF 29.90 bist du <strong>nicht der Guenstigste</strong>. Du
+    gewinnst den Preiskampf also gar nicht &ndash; du verlierst nur Marge. Ueber
+    den Preis zu konkurrieren ist fuer einen kleinen Schweizer Shop der schwaechste
+    Hebel. Vertrauen, Service, Gratisversand und Ehrlichkeit tragen mehr.</p>
+  </div>
+
+  <h3>Was du zuerst tun solltest, bevor du am Preis drehst</h3>
+  <p>Der Preis ist wahrscheinlich <strong>nicht</strong> dein Problem. Null Kaeufe
+  bei laufendem Shop deutet fast immer auf einen technischen Bruch hin, nicht auf
+  fuenf Franken Unterschied. In dieser Reihenfolge:</p>
+  <ol>
+    <li><strong>Zahlung testen</strong> &ndash; selbst einmal echt durchkaufen.</li>
+    <li><strong>Pixel pruefen</strong> &ndash; meldet er ans richtige Konto?</li>
+    <li><strong>Kommt ueberhaupt Traffic?</strong> Null Kaeufe kann auch null
+    Besucher heissen.</li>
+  </ol>
+  <p>Erst wenn Zahlung, Tracking und Traffic sauber sind und Leute nachweislich im
+  Warenkorb abspringen, ergibt ein Preistest Sinn. Vorher loest du ein Problem, das
+  du noch gar nicht bestaetigt hast.</p>
+</div>
+
+<!-- ===== VIDEOS ===== -->
+<div class="marke"><span>Videos</span></div>
+<div class="inhalt">
+  <h2>Fuenf Kurzvideos zum Selberdrehen</h2>
+  <div class="helfer">Inhalt-Helfer &middot; content-marketer</div>
+  <p>Je 10 bis 20 Sekunden, mit Handy und deinem eigenen Tier machbar. Jedes mit
+  Hook, Einstellungen und Caption.</p>
+
+  <div class="skript">
+    <div class="nr">Skript 1 &middot; Spaziergang in der Hitze</div>
+    <p class="hook">&bdquo;Wenn dein Hund nach 5 Minuten Spaziergang schon durstig ist&hellip;&ldquo;</p>
+    <p>Hund laeuft in der Sonne, sichtlich am Hecheln &rarr; Hand holt die Flasche
+    aus dem Rucksack &rarr; Hund trinkt aus dem Napf (nah) &rarr; zufriedener Hund,
+    weiter geht&rsquo;s.</p>
+    <p class="cap">Unterwegs immer Wasser dabei &ndash; ohne extra Napf zu schleppen.
+    550 ml fuer Hund und Katze. #LetsdrinkPet #Hundewasser #Spaziergang #Hundelife</p>
+  </div>
+
+  <div class="skript">
+    <div class="nr">Skript 2 &middot; Katze im Transport</div>
+    <p class="hook">&bdquo;Meine Katze findet alles doof &ndash; nur beim Trinken hat sie Geschmack.&ldquo;</p>
+    <p>Katze sitzt skeptisch in der Transportbox &rarr; Flasche mit Napf davor
+    &rarr; Katze schnuppert, trinkt dann doch &rarr; zufriedene Katze.</p>
+    <p class="cap">Der Transport wird zur Katzenpflicht &ndash; wer kennt&rsquo;s?
+    Und trotzdem: Wasser muss sein. #Katzenleben #Katzen #Transport #Katzenhumor</p>
+  </div>
+
+  <div class="skript">
+    <div class="nr">Skript 3 &middot; Wanderung mit dem Hund</div>
+    <p class="hook">&bdquo;Vier Stunden Wanderung, mein Hund, 550 ml Wasser &ndash; reicht das?&ldquo;</p>
+    <p>Berglandschaft, Hund vorne &rarr; Rucksack auf, Flasche raus (Farbe sichtbar)
+    &rarr; Hund trinkt am Weg &rarr; frisch weiter.</p>
+    <p class="cap">550 ml fuer die Etappe zwischendurch oder die Feierabendrunde.
+    #Wandern #Hundefreunde #Berglife #Unterwegs #Natur</p>
+  </div>
+
+  <div class="skript">
+    <div class="nr">Skript 4 &middot; Welche Farbe?</div>
+    <p class="hook">&bdquo;Warum wir von jeder Farbe eine haben? Weil mein Hund Geschmack hat.&ldquo;</p>
+    <p>Alle sechs Farben nebeneinander &rarr; Hund schnuppert daran &rarr; schnelle
+    Schnitte durch die Farben in verschiedenen Situationen &rarr; alle zusammen,
+    Hund im Hintergrund.</p>
+    <p class="cap">Rosa, Schwarz, Grau, Tuerkis, Gruen oder Weiss &ndash; welche ist
+    deine? #LetsdrinkPet #Farben #Hundelife #Katzenfreunde</p>
+  </div>
+
+  <div class="skript">
+    <div class="nr">Skript 5 &middot; Autofahrt</div>
+    <p class="hook">&bdquo;Autofahrt mit Hund &ndash; der lose Napf kippt bei jeder Kurve um. Heute anders.&ldquo;</p>
+    <p>Hund im Auto, ein loser Wassernapf kippt um &rarr; Flasche aus dem Seitenfach,
+    Napf bereit &rarr; Hund trinkt sauber aus dem integrierten Napf &rarr;
+    zufriedener Hund, Fahrt geht weiter.</p>
+    <p class="cap">Kein loser Napf, der bei jeder Kurve umkippt. Unterwegs mit der
+    Flasche &ndash; fuer Hund und Katze, nur Wasser. #Auto #Hundereisen #Unterwegs</p>
+  </div>
+
+  <div class="kasten warn">
+    <div class="kopf">Was ich in den Videoskripten korrigiert habe</div>
+    <ul>
+      <li>Der Hashtag stand als <code>#LetssDrink</code> (doppeltes s) drin &ndash;
+      korrigiert zu <code>#LetsdrinkPet</code>, wie in deinem Video.</li>
+      <li>Skript 1 hatte einen Tippfehler (&bdquo;schwechend&ldquo;) &ndash; zu
+      &bdquo;am Hecheln&ldquo;.</li>
+      <li>Skript 5 versprach urspruenglich &bdquo;Polster bleiben trocken&ldquo;.
+      Das grenzt an ein Dichtigkeitsversprechen, das wir bewusst nicht geben. Jetzt
+      geht es nur noch um den <strong>losen</strong> Napf, der umkippt &ndash; das
+      loest die Flasche mit dem festen Napf ehrlich, ohne etwas ueber Auslaufen zu
+      behaupten.</li>
+    </ul>
+  </div>
+</div>
+
+</div>
+
+<footer>
+  <p>Drei Helfer, gleichzeitig, in wenigen Minuten. Jede Zeile gegen deine Regeln
+  geprueft: keine erfundenen Bewertungen oder Zahlen, keine Kuehlung, keine
+  Dichtigkeit versprochen, nur Wasser, kein scharfes s. Der Blog steht bereit fuer
+  deinen Shop-Blog, die Videoskripte fuers Handy, die Preisrechnung fuer deine
+  Entscheidung &ndash; die dir gehoert.</p>
+</footer>
+
+</div>
