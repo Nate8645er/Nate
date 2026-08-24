@@ -1,0 +1,83 @@
+# JARVIS configuration example.
+# Copy to ~/.jarvis/config.yaml (or pass --config). Environment variables
+# override everything here (prefix JARVIS_, nesting with __).
+
+assistant_name: JARVIS
+user_name: Sir
+language: en          # answers default to this language
+log_level: INFO
+
+llm:
+  # Leave default_provider empty for automatic model selection across all
+  # healthy providers. Set it to pin one (anthropic, openai, gemini, ollama,
+  # lmstudio, openrouter, deepseek, mistral, local).
+  default_provider: null
+  default_model: null
+  temperature: 0.7
+  max_tokens: 4096
+  prefer_local: false   # true = favour Ollama/LM Studio when available
+  max_cost_tier: 3      # 0 local/free … 3 premium
+  providers:
+    ollama:
+      base_url: "http://127.0.0.1:11434/v1"
+    local:
+      base_url: "http://127.0.0.1:8080/v1"   # llama.cpp / vLLM / LocalAI
+
+memory:
+  vector_backend: auto        # auto | chroma | local
+  embedding_provider: null    # e.g. openai or ollama; null = offline hashing embedder
+  rag_top_k: 6
+
+voice:
+  enabled: false
+  wake_word: jarvis
+  stt_model: large-v3         # faster-whisper model
+  stt_device: auto            # auto | cuda | cpu
+  tts_backend: auto           # auto | piper | xtts | coqui | none
+  tts_voice: null             # piper voice model path or XTTS speaker name
+  tts_speaker_wav: null       # reference WAV for XTTS voice cloning
+  allow_interruption: true
+
+vision:
+  enabled: false
+  camera_index: 0
+  ocr_languages: "eng+deu"
+
+desktop:
+  enabled: false
+  allowed_directories: []     # empty = home directory only
+
+browser:
+  enabled: false
+  headless: true
+  browser: chromium
+
+api:
+  host: 127.0.0.1
+  port: 8765
+  # auth_token: change-me     # enable bearer auth for the HTTP API
+
+gui:
+  theme: jarvis
+  accent_color: "#28c8ff"
+  secondary_color: "#ffb02e"
+  transparency: 0.92
+  fps: 60
+
+security:
+  default_policy: ask         # allow | ask | deny for unlisted capabilities
+  audit_log: true
+
+plugins:
+  enabled: true
+  hot_reload: true
+  directories:
+    - plugins                 # resolved inside the data dir; absolute paths allowed
+  mcp_servers: {}
+    # filesystem:
+    #   command: npx
+    #   args: ["-y", "@modelcontextprotocol/server-filesystem", "/home/me/docs"]
+    # remote:
+    #   url: "https://example.com/mcp"
+  rest_plugins: []
+    # - rest/openmeteo.yaml
