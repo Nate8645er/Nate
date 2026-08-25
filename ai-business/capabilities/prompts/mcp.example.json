@@ -1,0 +1,29 @@
+{
+  "_hinweis": "VORLAGE OHNE SECRETS. Alle Werte sind Platzhalter. Echte Keys NIEMALS ins Repo. In OpenCode/Claude jeweils neu authentifizieren.",
+  "mcpServers": {
+    "github": {
+      "type": "http-or-stdio",
+      "env": { "GITHUB_TOKEN": "REQUIRED_BY_USER" }
+    },
+    "shopify": {
+      "type": "connector-oauth",
+      "env": { "SHOPIFY_STORE": "REQUIRED_BY_USER", "SHOPIFY_ACCESS": "REQUIRED_BY_USER" }
+    },
+    "meta-ads": {
+      "type": "connector-oauth",
+      "env": { "META_ACCESS_TOKEN": "REQUIRED_BY_USER", "META_AD_ACCOUNT_ID": "REQUIRED_BY_USER" }
+    },
+    "dsers":   { "type": "connector-oauth", "auth": "OAuth accounts.dsers.com" },
+    "gmail":   { "type": "connector-oauth", "auth": "OAuth Google" },
+    "gdrive":  { "type": "connector-oauth", "auth": "OAuth Google" },
+    "higgsfield": { "type": "connector", "env": { "HIGGSFIELD_API_KEY": "REQUIRED_BY_USER" }, "kostenpflichtig": true },
+    "chatplace":  { "type": "connector", "env": { "CHATPLACE_API_KEY": "REQUIRED_BY_USER" } }
+  },
+  "lokal": {
+    "omniroute": {
+      "url": "http://localhost:20128/v1/chat/completions",
+      "env": { "OPENROUTER_API_KEY": "REQUIRED_BY_USER" },
+      "start": "tools/omniroute-autostart.sh"
+    }
+  }
+}
