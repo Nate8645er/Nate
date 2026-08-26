@@ -286,9 +286,21 @@ def bauen(W, H, kuerzel):
     gesamt = dauer + ENDE - UEBER
 
     if fuellen:
-        skal = "scale=-2:%d,crop=%d:%d" % (fh, W, fh)
+        # force_original_aspect_ratio=increase deckt beide Faelle ab:
+        # ein breites Quellvideo (Skalieren nach Hoehe laesst die Breite
+        # ueberstehen) genauso wie ein bereits hochkantes (Skalieren nach
+        # Breite laesst die Hoehe ueberstehen) - "scale=-2:hoehe" allein
+        # ging nur bei einer breiten Quelle gut und riss bei einem
+        # hochkanten Video (720x1280) mit negativer Restbreite ab.
+        skal = ("scale=%d:%d:force_original_aspect_ratio=increase,"
+                "crop=%d:%d" % (W, fh, W, fh))
     else:
-        skal = "scale=%d:%d" % (FILM_B, fh)
+        # Dieselbe Ursache wie oben: reines "scale=B:hoehe" ohne
+        # Seitenverhaeltnis-Erhalt war fuer die alte breite Quelle (fast)
+        # unsichtbar, zerrte das hochkante Video aber sichtbar breit -
+        # der Deckel wirkte gestaucht. Auch hier decken statt strecken.
+        skal = ("scale=%d:%d:force_original_aspect_ratio=increase,"
+                "crop=%d:%d" % (FILM_B, fh, FILM_B, fh))
 
     # EIN Durchlauf statt drei. Vorher wurden Haupteil und Abspann
     # einzeln kodiert und mit "-c copy" aneinandergehaengt; eine
