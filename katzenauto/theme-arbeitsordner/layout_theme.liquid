@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="de-CH" data-geldform="{{ shop.money_format | strip_html | escape }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <meta name="color-scheme" content="light">
+
+  {%- liquid
+    assign ist_start = false
+    if template.name == 'index'
+      assign ist_start = true
+    endif
+    assign lp = all_products['katzenauto-plusch-sportwagen-bett-fur-katzen']
+    assign lv = lp.selected_or_first_available_variant
+    assign kauf_hier = false
+    if ist_start or template.name == 'product'
+      assign kauf_hier = true
+    endif
+    assign kaufziel = routes.root_url
+    if lp != empty
+      assign kaufziel = lp.url
+    endif
+    if kauf_hier
+      assign kaufziel = '#kaufen'
+    endif
+  -%}
+{%- comment -%}
+  DER PREIS
+
+  Anders als beim alten Trinkflaschen-Shop laeuft fuer Katzenauto KEIN
+  automatischer Rabatt (geprueft in der Shopify-Admin: alle im Konto
+  hinterlegten Rabatte sind EXPIRED). Deshalb steht ueberall der echte
+  Variantenpreis, ohne Prozentrechnung. Kommt spaeter ein echter
+  automatischer Rabatt dazu, muss die Rechnung hier wieder rein - sonst
+  zeigt der Shop einen Preis, den die Kasse nicht verlangt (Preis-
+  bekanntgabeverordnung).
+{%- endcomment -%}
+{%- assign lv_ab = lv.price -%}
+
+{%- comment -%}
+  DIE PFOTE - MARKENZEICHEN STATT DES ALTEN WASSERTROPFENS.
+
+  Der alte Shop war eine Trinkflasche, das Zeichen ein Tropfen. Fuer
+  ein Plueschauto ergibt ein Tropfen keinen Sinn mehr. Eine einfache
+  Pfote passt zu jedem Tierprodukt und bleibt so schlicht wie das
+  Original: eine <svg>, kein Bild, kein Ladezeitkosten.
+{%- endcomment -%}
+{%- capture pfote -%}<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><ellipse cx="7.3" cy="8.6" rx="2.1" ry="2.6"/><ellipse cx="12" cy="6.3" rx="2.2" ry="2.7"/><ellipse cx="16.7" cy="8.6" rx="2.1" ry="2.6"/><path d="M12 12.4c-3 0-6.2 2.3-6.2 5.1 0 1.5 1.2 2.7 2.7 2.7 1 0 1.9-.5 2.6-1 .3-.2.6-.4.9-.4s.6.2.9.4c.7.5 1.6 1 2.6 1 1.5 0 2.7-1.2 2.7-2.7 0-2.8-3.2-5.1-6.2-5.1Z"/></svg>{%- endcapture -%}
+
+  {%- capture t -%}{% if ist_start %}Katzenauto – Plüsch-Sportwagenbett für Katzen{% else %}{{ page_title }} – Katzenauto{% endif %}{%- endcapture -%}
+  {%- capture b -%}{% if page_description %}{{ page_description }}{% else %}Plüsch-Sportwagenbett im Sportwagen-Design, für Katze und Hund. Weicher Kurzplüsch, rutschfester Boden, Kissen abnehmbar waschbar. Gratisversand in der Schweiz.{% endif %}{%- endcapture -%}
+  <title>{{ t | strip | escape }}</title>
+  <meta name="description" content="{{ b | strip_html | strip | truncatewords: 22, '' | truncate: 158, '…' | escape }}">
+  <link rel="canonical" href="{{ canonical_url }}">
+  <meta name="robots" content="{% if template.name == 'cart' or template.name == 'search' or template.name == '404' %}noindex,follow{% else %}index,follow,max-image-preview:large{% endif %}">
+
+  <meta property="og:type" content="{% if template.name == 'product' %}product{% else %}website{% endif %}">
+  <meta property="og:title" content="{{ t | strip | escape }}">
+  <meta property="og:description" content="{{ b | strip_html | strip | truncatewords: 22, '' | truncate: 158, '…' | escape }}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  {%- if lp != empty -%}
+    <meta property="og:image" content="https://cdn.shopify.com/s/files/1/1017/4686/8601/files/k-hero.webp?v=1787858410">
+  {%- endif -%}
+  <meta name="twitter:card" content="summary_large_image">
+
+  {%- comment -%}
+    Organisation ohne aggregateRating und ohne review: der Shop hat
+    null Bestellungen. Eine erfundene Bewertung ist nach UWG Art. 3
+    unlauter - und Shopify sperrt Stores dafuer.
+  {%- endcomment -%}
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Organization","name":"Katzenauto",
+   "url":"{{ shop.url }}/","email":"yourcatlove.info@gmail.com",
+   "address":{"@type":"PostalAddress","addressLocality":"Rapperswil-Jona",
+   "addressRegion":"SG","addressCountry":"CH"}}
+  </script>
+  {%- if template.name == 'product' and product != empty -%}
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Product",
+   "name":{{ product.title | json }},
+   "description":{{ product.description | strip_html | truncate: 300 | json }},
+   "brand":{"@type":"Brand","name":"Katzenauto"},
+   "offers":{"@type":"Offer","priceCurrency":{{ cart.currency.iso_code | json }},
+     "price":"{{ product.selected_or_first_available_variant.price | divided_by: 100.0 }}",
+     "availability":"https://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}",
+     "url":"{{ shop.url }}{{ product.url }}",
+     "shippingDetails":{"@type":"OfferShippingDetails",
+       "shippingRate":{"@type":"MonetaryAmount","value":"0","currency":"CHF"},
+       "shippingDestination":{"@type":"DefinedRegion","addressCountry":"CH"},
+       "deliveryTime":{"@type":"ShippingDeliveryTime",
+         "handlingTime":{"@type":"QuantitativeValue","minValue":1,"maxValue":2,"unitCode":"DAY"},
+         "transitTime":{"@type":"QuantitativeValue","minValue":7,"maxValue":14,"unitCode":"DAY"}}},
+     "hasMerchantReturnPolicy":{"@type":"MerchantReturnPolicy",
+       "applicableCountry":"CH",
+       "returnPolicyCategory":"https://schema.org/MerchantReturnFiniteReturnWindow",
+       "merchantReturnDays":14,
+       "returnMethod":"https://schema.org/ReturnByMail",
+       "returnFees":"https://schema.org/ReturnShippingFees"}}}
+  </script>
+  {%- endif -%}
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23171412'/%3E%3Cellipse cx='7.3' cy='9.1' rx='2.3' ry='2.8' fill='%23FFFFFF'/%3E%3Cellipse cx='12' cy='6.6' rx='2.4' ry='2.9' fill='%23FFFFFF'/%3E%3Cellipse cx='16.7' cy='9.1' rx='2.3' ry='2.8' fill='%23FFFFFF'/%3E%3Cpath d='M12 13c-3.2 0-6.6 2.4-6.6 5.4 0 1.6 1.3 2.9 2.9 2.9 1 0 2-.5 2.7-1 .4-.3.7-.4 1-.4s.6.1 1 .4c.7.5 1.7 1 2.7 1 1.6 0 2.9-1.3 2.9-2.9C18.6 15.4 15.2 13 12 13Z' fill='%23FFFFFF'/%3E%3C/svg%3E">
+
+  <link rel="preload" as="font" type="font/woff2" href="{{ 'a-sans.woff2' | asset_url | split: '?' | first }}" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="{{ 'a-sans-bold.woff2' | asset_url | split: '?' | first }}" crossorigin>
+  {%- if kauf_hier -%}
+    <link rel="preload" as="image" href="https://cdn.shopify.com/s/files/1/1017/4686/8601/files/k-hero.webp?v=1787858410" fetchpriority="high">
+  {%- endif -%}
+
+  {{ 'n-nova.css' | asset_url | stylesheet_tag }}
+
+  <script src="{{ 'n-nova.js' | asset_url }}" defer></script>
+
+  {%- comment -%}
+    INTRO-VORHANG: bleibt ausgeschaltet, wie im Original-Theme. Text
+    fuer den Fall, dass er wieder eingeschaltet wird, ist trotzdem auf
+    Katzenauto umgestellt (siehe unten im body).
+  {%- endcomment -%}
+  {%- assign vorhang_aus = true -%}
+
+  {%- if ist_start and vorhang_aus == false -%}
+  <script>
+    (function () {
+      var w = window, d = document;
+      try {
+        if (w.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        if (sessionStorage.getItem("n-vorhang")) return;
+        sessionStorage.setItem("n-vorhang", "1");
+      } catch (e) { return; }
+      d.documentElement.classList.add("n-intro");
+      var weg = function () {
+        d.documentElement.classList.remove("n-intro");
+        d.removeEventListener("keydown", taste, true);
+        d.removeEventListener("click", weg, true);
+        w.removeEventListener("wheel", weg, true);
+        w.removeEventListener("touchmove", weg, true);
+      };
+      var taste = function (e) {
+        if (e.key === "Escape" || e.key === "Enter" || e.key === " ") weg();
+      };
+      d.addEventListener("keydown", taste, true);
+      d.addEventListener("click", weg, true);
+      w.addEventListener("wheel", weg, { capture: true, passive: true });
+      w.addEventListener("touchmove", weg, { capture: true, passive: true });
+      w.setTimeout(weg, 4000);
+    })();
+  </script>
+  {%- endif -%}
+
+  {{ content_for_header }}
+</head>
+<body>
+  <a class="n-sr" href="#inhalt">Zum Inhalt springen</a>
+
+  {%- if ist_start and vorhang_aus == false -%}
+  <div class="n-vorhang" data-vorhang aria-hidden="true">
+    <div class="n-vorhang__mitte">
+      <p class="n-vorhang__marke">Katzenauto</p>
+      <p class="n-vorhang__claim">Ade, Karton.</p>
+      <div class="n-vorhang__strich"></div>
+    </div>
+    <button class="n-vorhang__weg" type="button" data-vorhang-weg tabindex="-1">Überspringen</button>
+  </div>
+  {%- endif -%}
+
+  <header class="n-kopf" data-kopf>
+    <div class="n-huelle n-kopf__innen">
+      <a class="n-marke" href="{{ routes.root_url }}">
+        {{ pfote }}
+        Katzenauto
+      </a>
+
+      <nav class="n-nav" aria-label="Hauptnavigation">
+        <a href="{{ kaufziel }}">Shop</a>
+        <a href="/pages/ueber-uns">Warum wir</a>
+        <a href="/pages/faq">FAQ</a>
+        <a href="/pages/contact">Kontakt</a>
+      </nav>
+
+      <div class="n-kopf__rechts">
+        <a class="n-icon" href="{{ routes.cart_url }}" data-lade-auf aria-label="Warenkorb öffnen">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5.5 7h13l-1.1 11.1a2 2 0 0 1-2 1.9H8.6a2 2 0 0 1-2-1.9Z"/>
+            <path d="M9 7V5.6a3 3 0 0 1 6 0V7"/>
+          </svg>
+          <span class="n-zahl" data-korbzahl {% if cart.item_count == 0 %}hidden{% endif %}>{{ cart.item_count }}</span>
+        </a>
+        <button class="n-icon n-burger" type="button" data-mnav-auf aria-expanded="false" aria-label="Menü öffnen">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="n-mnav" data-mnav aria-label="Menü" aria-hidden="true">
+    <div class="n-mnav__kopf">
+      <a class="n-marke" href="{{ routes.root_url }}">
+        {{ pfote }}
+        Katzenauto
+      </a>
+      <button class="n-icon n-mzu" type="button" data-mnav-zu aria-label="Menü schliessen">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
+    </div>
+
+    {%- if lp != empty -%}
+      <a class="n-mnav__produkt" href="{{ lp.url }}">
+        <span class="n-mnav__bild">
+          <img src="https://cdn.shopify.com/s/files/1/1017/4686/8601/files/k-hero.webp?v=1787858410" alt=""
+               width="620" height="770" loading="lazy" decoding="async">
+        </span>
+        <span class="n-mnav__pt">
+          <b>Katzenauto</b>
+          <span>Plüsch-Sportwagenbett · {{ lv_ab | money }}</span>
+        </span>
+        <svg class="n-mnav__pfeil" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+      </a>
+    {%- endif -%}
+
+    <div class="n-mnav__liste">
+      <a class="n-mnav__z" style="--i:0" href="/pages/ueber-uns">Warum wir</a>
+      <a class="n-mnav__z" style="--i:1" href="/pages/faq">Häufige Fragen</a>
+      <a class="n-mnav__z" style="--i:2" href="/pages/versand-rueckgabe">Versand &amp; Rückgabe</a>
+      <a class="n-mnav__z" style="--i:3" href="/pages/contact">Kontakt</a>
+    </div>
+
+    <div class="n-mnav__fuss">
+      {%- if lp != empty and lv.available -%}
+        <a class="n-knopf n-knopf--voll" href="{{ lp.url }}">Zum Katzenauto · {{ lv_ab | money }}</a>
+      {%- endif -%}
+      <p class="n-mnav__hinweis">
+        Versand in der Schweiz gratis · 14 Tage Rückgabe
+      </p>
+    </div>
+  </nav>
+
+  {%- comment -%} ============================================ FRAGEN-CHAT {%- endcomment -%}
+  <div hidden data-wissen-quelle>{% render 'n-wissen', quelle: true %}</div>
+
+  <button class="n-chat__auf" type="button" data-chat-auf
+          aria-label="Häufige Fragen öffnen"
+          aria-expanded="false" aria-controls="n-chat">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.8L3 21l1.9-4.9A8.4 8.4 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.5 8.5 0 0 1 21 11.5Z"/>
+    </svg>
+    <span>Fragen?</span>
+  </button>
+
+  <aside class="n-chat" id="n-chat" data-chat aria-label="Häufige Fragen" hidden>
+    <div class="n-chat__kopf">
+      <span class="n-chat__wer">
+        <b>Häufige Fragen</b>
+        <span>Antworten direkt aus dem Shop</span>
+      </span>
+      <button class="n-icon" type="button" data-chat-zu aria-label="Schliessen">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="n-chat__lauf" data-chat-lauf role="log" aria-live="polite"></div>
+
+    <div class="n-chat__wahl" data-chat-wahl></div>
+
+    <div class="n-chat__fuss">
+      <p>Nichts dabei?</p>
+      <a class="n-knopf n-knopf--klein n-knopf--voll" href="/pages/contact">Nate direkt fragen</a>
+    </div>
+  </aside>
+
+  <main id="inhalt" tabindex="-1">
+    {{ content_for_layout }}
+  </main>
+
+  {%- comment -%} ==================================== WARENKORB-SCHUBLADE {%- endcomment -%}
+  <div class="n-schleier" data-schleier></div>
+  <aside class="n-lade" data-lade aria-hidden="true" aria-label="Warenkorb">
+    <div class="n-lade__kopf">
+      <b>Warenkorb</b>
+      <button class="n-icon" type="button" data-lade-zu aria-label="Warenkorb schliessen">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="n-lade__leib" data-lade-leib>
+      <div class="n-lade__leer"><p>Dein Warenkorb ist leer.</p></div>
+    </div>
+
+    <div class="n-lade__fuss" data-lade-fuss {% if cart.item_count == 0 %}hidden{% endif %}>
+      <div class="n-summe"><span>Zwischensumme</span><span data-lade-summe>{{ cart.items_subtotal_price | money }}</span></div>
+      <div class="n-summe"><span>Versand</span><span>Schweiz gratis · Ausland CHF 1.50</span></div>
+      <p class="n-summe n-summe--klein">Den Endbetrag siehst du an der Kasse, sobald deine Adresse steht.</p>
+      <a class="n-knopf n-knopf--voll" href="{{ routes.cart_url }}/checkout">Zur Kasse</a>
+      <ul class="n-lade__sicher">
+        <li>
+          <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>
+          Gratisversand CH
+        </li>
+        <li>
+          <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>
+          14 Tage Rückgabe
+        </li>
+      </ul>
+
+      {%- if shop.enabled_payment_types.size > 0 -%}
+        <div class="n-bez">
+          <span class="n-bez__wort">Bezahlen mit</span>
+          <ul class="n-bez__liste">
+            {%- for art in shop.enabled_payment_types -%}
+              <li><img class="n-bez__sym" src="{{ art | payment_type_img_url }}"
+                       alt="{{ art | replace: '_', ' ' }}"
+                       width="38" height="24" loading="lazy" decoding="async"></li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+    </div>
+  </aside>
+
+  {%- comment -%}
+    Mitlaufende Kaufleiste, nur auf dem Handy und nur dort, wo es etwas
+    zu kaufen gibt.
+  {%- endcomment -%}
+  {%- if kauf_hier and lp != empty -%}
+    <div class="n-leiste" data-leiste>
+      <div class="n-huelle n-leiste__innen">
+        <div class="n-leiste__bild">
+          <img src="https://cdn.shopify.com/s/files/1/1017/4686/8601/files/k-hero.webp?v=1787858410" alt=""
+               width="620" height="770" data-leistenbild loading="lazy" decoding="async">
+        </div>
+        <div class="n-leiste__text">
+          <b>Katzenauto</b>
+          <span>Plüsch-Sportwagenbett</span>
+        </div>
+        <button class="n-knopf n-knopf--klein" type="submit" form="kaufen" data-kaufknopf
+                {% unless lv.available %}disabled{% endunless %}>
+          {%- if lv.available -%}Kaufen{%- else -%}Nicht lieferbar{%- endif -%}
+        </button>
+      </div>
+    </div>
+  {%- endif -%}
+
+  <footer class="n-fuss">
+    <div class="n-huelle">
+      <div class="n-fuss__raster">
+        <div>
+          <a class="n-marke" href="{{ routes.root_url }}" style="margin:0 0 .8rem">
+            {{ pfote }}
+            Katzenauto
+          </a>
+          <p style="margin:0;max-width:34ch">
+            Ein Produkt, sorgfältig ausgesucht. Betrieben von einer Person
+            in Rapperswil-Jona.
+          </p>
+        </div>
+        <div>
+          <h2>Shop</h2>
+          <ul>
+            <li><a href="{{ kaufziel }}">Katzenauto</a></li>
+            <li><a href="/pages/ueber-uns">Warum wir</a></li>
+            <li><a href="/pages/faq">Häufige Fragen</a></li>
+            <li><a href="{{ routes.cart_url }}">Warenkorb</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Rechtliches</h2>
+          <ul>
+            <li><a href="/pages/versand-rueckgabe">Versand &amp; Rückgabe</a></li>
+            <li><a href="/pages/contact">Kontakt</a></li>
+            <li><a href="/pages/impressum">Impressum</a></li>
+            <li><a href="/pages/agb">AGB</a></li>
+            <li><a href="/pages/datenschutz">Datenschutz</a></li>
+            <li><a href="/pages/data-sharing-opt-out">Cookies &amp; Datenweitergabe</a></li>
+          </ul>
+        </div>
+      </div>
+      {%- if shop.enabled_payment_types.size > 0 -%}
+        <div class="n-bez n-bez--fuss">
+          <span class="n-bez__wort">Bezahlen mit</span>
+          <ul class="n-bez__liste">
+            {%- for art in shop.enabled_payment_types -%}
+              <li><img class="n-bez__sym" src="{{ art | payment_type_img_url }}"
+                       alt="{{ art | replace: '_', ' ' }}"
+                       width="38" height="24" loading="lazy" decoding="async"></li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+
+      <div class="n-fuss__unten">
+        @Katzenauto
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

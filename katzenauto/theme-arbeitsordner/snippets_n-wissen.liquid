@@ -1,0 +1,145 @@
+{%- comment -%}
+  snippets/n-wissen.liquid — DIE EINE WAHRHEIT (Katzenauto)
+
+  Neu geschrieben fuer den Markenwechsel. Dieselbe Regel wie vorher:
+  eine Quelle, der Chat unten rechts liest ausschliesslich hieraus und
+  hat keinen eigenen Text.
+
+  WAS HIER NICHT HINEIN DARF
+  Keine Angabe, die der Lieferant nicht macht. Insbesondere KEIN
+  Maximalgewicht - der Lieferant widerspricht sich zwischen Fliesstext
+  (20 kg) und der eigenen, beim Bildzuschnitt entfernten Grafik
+  (30 lbs / ~13.6 kg). Bis das geklaert ist, nennen wir keine Zahl.
+  Keine erfundenen Bewertungen, keine Dringlichkeit.
+{%- endcomment -%}
+
+{%- assign wp = all_products['katzenauto-plusch-sportwagen-bett-fur-katzen'] -%}
+{%- assign wv = wp.selected_or_first_available_variant -%}
+
+<div class="n-fragen"{% if quelle %} data-wissen{% endif %}>
+
+  <details class="n-frage" open>
+    <summary>Wie gross ist es?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="n-frage__inhalt">
+      <p>Rund 61 × 38 cm (Länge × Breite), nach den Massangaben auf dem
+         Produktfoto des Herstellers. Passt für kleine bis
+         mittelgrosse Katzen und kleine Hunde.</p>
+    </div>
+  </details>
+
+  <details class="n-frage">
+    <summary>Was kostet der Versand, und wie lange dauert er?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="n-frage__inhalt">
+      <p>Innerhalb der Schweiz ist der Versand gratis. In die übrigen
+         Länder kostet er CHF 1.50. Die Lieferzeit beträgt 7 bis 14
+         Werktage, mit Sendungsverfolgung per E-Mail.</p>
+    </div>
+  </details>
+
+  <details class="n-frage">
+    <summary>Und wenn es mir nicht gefällt?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="n-frage__inhalt">
+      <p>
+        Du hast 14 Tage Rückgaberecht, ohne Begründung. Schreib mir über das
+        <a href="/pages/contact">Kontaktformular</a>, dann klären wir die
+        Rücksendung. Die Rücksendekosten trägst du. Die Einzelheiten stehen
+        unter <a href="/pages/versand-rueckgabe">Versand &amp; Rückgabe</a>.
+      </p>
+    </div>
+  </details>
+
+  <details class="n-frage">
+    <summary>Geht das auch für Hunde?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="n-frage__inhalt">
+      <p>Ja – für kleine bis mittelgrosse Hunde genauso wie für
+         Katzen.</p>
+    </div>
+  </details>
+
+  {%- comment -%}
+    BEWUSST KEINE ZAHL. Siehe Begruendung im Kopf dieser Datei.
+  {%- endcomment -%}
+  <details class="n-frage">
+    <summary>Wie viel Gewicht hält es aus?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="n-frage__inhalt">
+      <p>Dazu widerspricht sich unsere Lieferantenangabe (20 kg im
+         Fliesstext, deutlich weniger auf der Produktgrafik). Bis das
+         geklärt ist, nennen wir lieber keine Zahl als eine falsche.
+         Für eine ausgewachsene Hauskatze bis mittelgrosse Katze ist
+         es gedacht.</p>
+    </div>
+  </details>
+
+  <details class="n-frage">
+    <summary>Woraus besteht es?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="n-frage__inhalt">
+      <p>Kurzplüsch-Bezug, mit rutschfesten Noppen an der Unterseite.
+         Weitere Materialangaben (z. B. genaue Füllung) liegen uns
+         vom Lieferanten nicht vor.</p>
+    </div>
+  </details>
+
+  <details class="n-frage">
+    <summary>Wie reinige ich es?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="n-frage__inhalt">
+      <p>Das Kissen ist abnehmbar und bei niedriger Temperatur
+         waschbar. Zum Aussenbezug selbst liegt uns keine Angabe zur
+         Maschinenwäsche vor – von Hand reinigen ist auf der sicheren
+         Seite.</p>
+    </div>
+  </details>
+
+  <details class="n-frage">
+    <summary>Gibt es das in mehreren Farben?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="n-frage__inhalt">
+      <p>Aktuell in einer Ausführung, orange und schwarz, zum Preis
+         von {{ wv.price | money }}.</p>
+    </div>
+  </details>
+
+  {%- if shop.enabled_payment_types.size > 0 -%}
+    <details class="n-frage">
+      <summary>Womit kann ich bezahlen?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
+      <div class="n-frage__inhalt">
+        <p>
+          {%- for art in shop.enabled_payment_types -%}
+            {%- case art -%}
+              {%- when 'master' -%}Mastercard
+              {%- when 'american_express' -%}American Express
+              {%- when 'paypal' -%}PayPal
+              {%- when 'apple_pay' -%}Apple&nbsp;Pay
+              {%- when 'google_pay' -%}Google&nbsp;Pay
+              {%- when 'shopify_pay' -%}Shop&nbsp;Pay
+              {%- when 'unionpay' -%}UnionPay
+              {%- when 'visa' -%}Visa
+              {%- else -%}{{- art | replace: '_', ' ' | capitalize -}}
+            {%- endcase -%}
+            {%- unless forloop.last -%}, {% endunless -%}
+          {%- endfor -%}.
+        </p>
+      </div>
+    </details>
+  {%- endif -%}
+
+  <details class="n-frage">
+    <summary>Warum stehen hier keine Bewertungen?<span class="n-frage__zeichen" aria-hidden="true"></span></summary>
+    <div class="n-frage__inhalt">
+      <p>
+        Weil ich keine veröffentliche. Bis jetzt gibt es ohnehin keine –
+        der Shop ist neu –, aber auch später kommen hier keine hin.
+      </p>
+      <p>
+        Rückmeldungen nehme ich per E-Mail entgegen und behalte sie für
+        mich. Wer mir schreibt, schreibt mir und nicht dem Internet – ich
+        gebe seine Worte nicht weiter. Und eine Bewertung, die ich selbst
+        auf meine eigene Seite stelle, kannst du nicht überprüfen. Ich
+        möchte dich nicht vor die Wahl stellen, mir das glauben zu müssen.
+      </p>
+      <p>
+        Was ich mit deiner Rückmeldung mache: Wenn etwas hier falsch
+        steht, ändere ich den Text. Das siehst du dann an dieser Stelle.
+      </p>
+    </div>
+  </details>
+
+</div>

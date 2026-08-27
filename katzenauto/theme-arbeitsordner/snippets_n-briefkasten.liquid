@@ -1,0 +1,57 @@
+{%- comment -%}
+  snippets/n-briefkasten.liquid — die E-Mail-Anmeldung (Katzenauto)
+
+  Vereinfacht gegenüber der Let'sDrink-Fassung: kein erzeugter
+  Kurzfilm (der zeigte den Flaschen-Mechanismus, das gibt es hier
+  nicht), stattdessen das freigestellte Studiobild als Hintergrund.
+  Copy ohne "Neue Farben" - Katzenauto hat eine Variante.
+
+  Dasselbe Versprechen wie vorher: kein Rabatt-Köder, kein fester
+  Rhythmus. Der Inhaber schreibt allein und hat null Bestellungen -
+  woechentliche Tipps wird es nicht geben.
+{%- endcomment -%}
+
+<div class="n-brief">
+  <div class="n-brief__bild"
+       style="background-image:url(https://cdn.shopify.com/s/files/1/1017/4686/8601/files/k-hero.webp?v=1787858410);background-size:cover;background-position:center">
+  </div>
+
+  <div class="n-brief__text">
+    <span class="n-auge">Bleib in Verbindung</span>
+    <h2 class="n-titel">Ich melde mich, wenn es Neues gibt.</h2>
+    <p class="n-unter">
+      Echte Rückmeldungen von Kundinnen und Kunden, Antworten auf
+      Fragen, die oft kommen. Kein fester Rhythmus – nur dann, wenn
+      es wirklich etwas zu sagen gibt.
+    </p>
+
+    {%- form 'customer', class: 'n-brief__form' -%}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      {%- if form.posted_successfully? -%}
+        <p class="n-brief__ok" role="status">
+          Danke. Du bekommst eine E-Mail zur Bestätigung –
+          erst danach stehst du auf der Liste.
+        </p>
+      {%- else -%}
+        <label class="n-sr" for="n-brief-mail">Deine E-Mail-Adresse</label>
+        <div class="n-brief__zeile">
+          <input class="n-brief__feld" id="n-brief-mail"
+                 type="email" name="contact[email]"
+                 placeholder="deine@adresse.ch"
+                 autocomplete="email" required>
+          <button class="n-knopf n-knopf--klein" type="submit">Eintragen</button>
+        </div>
+        {%- if form.errors -%}
+          <p class="n-brief__fehler" role="alert">
+            {{ form.errors.messages['email'] | default: 'Bitte prüf die Adresse noch einmal.' }}
+          </p>
+        {%- endif -%}
+        <p class="n-brief__klein">
+          Abmelden geht jederzeit mit einem Klick in jeder E-Mail.
+          Wie ich mit deiner Adresse umgehe, steht im
+          <a href="/pages/datenschutz">Datenschutz</a>.
+        </p>
+      {%- endif -%}
+    {%- endform -%}
+  </div>
+</div>

@@ -1,0 +1,201 @@
+{%- comment -%}
+  sections/n-start.liquid — KATZENAUTO, Startseite
+
+  Neu aufgebaut fuer den Markenwechsel von Let'sDrink (Trinkflasche) zu
+  Katzenauto (Pluesch-Sportwagenbett). Das alte n-start.liquid war eng
+  an sechs Flaschenfarben, Mengenstaffeln und eine automatische
+  Rabattkette gebunden, die es fuer dieses Produkt nicht gibt - deshalb
+  ist das hier eine neue Datei und keine Anpassung der alten.
+
+  WAS BLEIBT: die Haltung des Shops. Keine erfundenen Bewertungen (der
+  Shop hat null Bestellungen), kein Preis ausser dem echten Liquid-Preis,
+  keine Produktangabe, die der Lieferant nicht belegt.
+
+  EIN VARIANTE, EIN PREIS. Katzenauto hat aktuell genau eine Variante
+  ("Weiss"), keine automatischen Rabatte (geprueft: alle im Konto
+  hinterlegten sind EXPIRED). Deshalb keine Farbgalerie, keine
+  Mengenstaffel - anders als beim alten Shop waere das hier erfundene
+  Auswahl, die es nicht gibt.
+
+  ZWEI BILDER, ZWEI ZWECKE:
+    k-hero.webp  - freigestellte KI-Studioaufnahme (Higgsfield, direkter
+                   Modellaufruf ohne Preset, vor Verwendung Bild fuer
+                   Bild gegen das echte Lieferantenfoto geprueft: Form,
+                   Farbe, Raeder, Kopfstuetzen identisch, kein erfundener
+                   Text). Zeigt das Produkt klar, ohne Ablenkung.
+    k-real.webp  - das echte Lieferantenfoto mit Hund und Katze im
+                   Produkt und den echten Massangaben (24"/15") des
+                   Lieferanten. Beantwortet die Groessenfrage, die jede
+                   Kaeuferin zuerst hat - genau wie frueher das Hand-Bild
+                   bei der Flasche.
+{%- endcomment -%}
+
+{%- liquid
+  assign lp = all_products['katzenauto-plusch-sportwagen-bett-fur-katzen']
+  assign v = lp.selected_or_first_available_variant
+-%}
+
+{%- capture haken -%}<svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>{%- endcapture -%}
+
+{%- comment -%} ============================================== 1 · HERO {%- endcomment -%}
+<section class="n-hero">
+  <div class="n-huelle n-hero__raster">
+
+    <div class="n-buehne n-buehne--grund" data-buehne>
+      <span class="n-grund" aria-hidden="true">
+        <img src="https://cdn.shopify.com/s/files/1/1017/4686/8601/files/k-hero.webp?v=1787858410" alt="Katzenauto: oranges Plüsch-Sportwagenbett für Katzen, freigestellt"
+             width="620" height="770" fetchpriority="high" decoding="async">
+      </span>
+    </div>
+
+    <div>
+      <h1 class="n-riese" data-auf>Ade, Karton. <em>Katzenauto ist da.</em></h1>
+      <p class="n-lead" data-auf="klein">
+        Plüsch-Sportwagenbett für Katzen – ein Ruheplatz, kein Karton.
+      </p>
+
+      <form method="post" action="{{ routes.cart_add_url }}" id="kaufen" data-kaufform data-auf="klein">
+        <input type="hidden" name="form_type" value="product">
+        <input type="hidden" name="utf8" value="✓">
+        <input type="hidden" name="items[0][id]" value="{{ v.id }}" data-variantenfeld>
+        <input type="hidden" name="items[0][quantity]" value="1">
+
+        <p class="n-preis">
+          <b>{{ v.price | money }}</b>
+          <span>Endpreis</span>
+        </p>
+
+        <div class="n-cta">
+          <button class="n-knopf" type="submit" data-leiste-anker data-kaufknopf
+                  {% unless v.available %}disabled{% endunless %}>
+            {%- if v.available -%}<span data-knopftext>In den Warenkorb · {{ v.price | money }}</span>{%- else -%}Zurzeit nicht lieferbar{%- endif -%}
+          </button>
+          <a class="n-textlink" href="#groesse">Erst die Grösse ansehen</a>
+        </div>
+
+        <ul class="n-mini">
+          <li>{{ haken }} Gratisversand Schweiz · 7–14 Werktage</li>
+          <li>{{ haken }} 14 Tage Rückgabe · Rücksendung zahlst du</li>
+          <li>{{ haken }} Beschädigt an? Ersatz oder Geld zurück</li>
+          <li>{{ haken }} Nate antwortet selbst, in der Regel innerhalb eines Werktags</li>
+        </ul>
+      </form>
+    </div>
+
+  </div>
+</section>
+
+{%- comment -%} ==================================== 2 · WAS ES IST {%- endcomment -%}
+<section class="n-block n-block--tief">
+  <div class="n-huelle">
+    <div class="n-kopfz n-kopfz--mitte" data-auf>
+      <span class="n-auge">Das Produkt</span>
+      <h2 class="n-titel">Ein Sportwagen fürs Wohnzimmer.</h2>
+    </div>
+    <ol class="n-schritte" data-staffel>
+      <li data-auf="klein" style="--nr:0">
+        <b>Weicher Plüsch.</b>
+        <span>Kuscheliges Kurzplüsch, angenehm für Pfoten und Fell.</span>
+      </li>
+      <li data-auf="klein" style="--nr:1">
+        <b>Nachgebildete Details.</b>
+        <span>Räder, Scheinwerfer, Kopfstützen im Sportwagen-Design.</span>
+      </li>
+      <li data-auf="klein" style="--nr:2">
+        <b>Rutschfester Boden.</b>
+        <span>Noppen an der Unterseite halten das Bett an Ort und Stelle.</span>
+      </li>
+      <li data-auf="klein" style="--nr:3">
+        <b>Abnehmbar &amp; waschbar.</b>
+        <span>Das Kissen lässt sich abnehmen und bei niedriger Temperatur waschen.</span>
+      </li>
+    </ol>
+  </div>
+</section>
+
+{%- comment -%}
+  ================================== 3 · GROESSE, EHRLICH GEZEIGT
+
+  Das echte Lieferantenfoto statt einer Behauptung. Die Massangaben im
+  Bild (24"/15") sind die Angaben des Lieferanten selbst - wir fuegen
+  keine eigene Zahl hinzu, die wir nicht nachgemessen haben.
+
+  Zum Maximalgewicht bewusst KEINE Zahl: der Lieferant widerspricht sich
+  zwischen Fliesstext (20 kg) und der eigenen Grafik (30 lbs / ~13.6 kg).
+  Bis das geklaert ist, steht hier "kleine bis mittelgrosse Katzen" statt
+  einer Zahl, die falsch sein koennte.
+{%- endcomment -%}
+<section class="n-block" id="groesse">
+  <div class="n-huelle">
+    <div class="n-kopfz n-kopfz--mitte" data-auf>
+      <span class="n-auge">Grösse</span>
+      <h2 class="n-titel">So sieht es wirklich aus.</h2>
+      <p class="n-unter">
+        Das echte Lieferantenfoto, unbearbeitet – mit den Massangaben
+        des Herstellers. Passt für kleine bis mittelgrosse Katzen.
+      </p>
+    </div>
+    <figure class="n-real-bild" data-auf="klein" style="max-width:560px;margin-inline:auto">
+      <img src="https://cdn.shopify.com/s/files/1/1017/4686/8601/files/k-real.webp?v=1787858410"
+           alt="Echtes Lieferantenfoto: Hund und Katze sitzen im Katzenauto, mit den Massangaben des Herstellers"
+           width="900" height="703" loading="lazy" decoding="async"
+           style="width:100%;height:auto;border-radius:16px">
+    </figure>
+  </div>
+</section>
+
+{%- comment -%}
+  ==================================== 4 · KEINE ERFUNDENEN BEWERTUNGEN
+
+  Dieselbe Haltung wie beim alten Shop: null Bestellungen, also keine
+  Sterne, keine Kundenfotos, kein Sozialer-Beweis-Theater. Eine ehrliche
+  Zeile statt eines leeren Rahmens.
+{%- endcomment -%}
+<section class="n-block" style="padding-top:0">
+  <div class="n-huelle">
+    <p class="n-unter" style="text-align:center;max-width:52ch;margin-inline:auto">
+      Hier stehen noch keine Bewertungen – dieser Shop ist neu und hat
+      noch keine Bestellungen. Sobald echte Kundinnen und Kunden
+      berichten, kommt das hierher. Nichts wird erfunden.
+    </p>
+  </div>
+</section>
+
+{%- comment -%} ========================================= 5 · DAS BAND {%- endcomment -%}
+<section class="n-block" style="padding-bottom:0">
+  <div class="n-huelle">
+    <ul class="n-band" data-auf>
+      <li class="n-band__p">
+        <b>Versand</b>
+        <p>In die Schweiz gratis, 7–14 Werktage. In die übrigen Länder
+           kommen CHF 1.50 dazu.</p>
+      </li>
+      <li class="n-band__p">
+        <b>Rückgabe</b>
+        <p>14 Tage, ohne dass du einen Grund nennen musst.
+           Der Rückweg steht bei <a href="/pages/versand-rueckgabe">Versand &amp; Rückgabe</a>.</p>
+      </li>
+      <li class="n-band__p">
+        <b>Antworten</b>
+        <p>Ein Produkt, ein Mensch. Ich schreibe die Antworten selbst –
+           auch die, in denen steht, dass ich etwas nicht weiss.
+           <a href="/pages/faq">Alle Fragen</a>.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+{%- comment -%} ================================== 6 · BRIEFKASTEN {%- endcomment -%}
+<section class="n-block">
+  <div class="n-huelle">
+    {% render 'n-briefkasten' %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Katzenauto Startseite",
+  "settings": [],
+  "presets": [{ "name": "Katzenauto Startseite" }]
+}
+{% endschema %}
