@@ -1,0 +1,187 @@
+<title>Feierabend für Handwerker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+
+<style>
+:root{
+  --grund:#FAF9F5; --flaeche:#F0EEE6; --tinte:#17190F;
+  --gedaempft:#5F6356; --linie:#DCD9CD;
+  --akzent:#C4761B; --dunkel:#14150F; --hell:#F2EFE6;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --grund:#14150F; --flaeche:#1E201A; --tinte:#F2EFE6;
+    --gedaempft:#9B9B8E; --linie:#2E3128;
+    --akzent:#E8A147; --dunkel:#0C0D08; --hell:#F2EFE6;
+  }
+}
+:root[data-theme="dark"]{
+  --grund:#14150F; --flaeche:#1E201A; --tinte:#F2EFE6;
+  --gedaempft:#9B9B8E; --linie:#2E3128;
+  --akzent:#E8A147; --dunkel:#0C0D08; --hell:#F2EFE6;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--grund);color:var(--tinte);
+  font-family:"Source Serif 4",Georgia,serif;
+  font-size:19px;line-height:1.6;-webkit-font-smoothing:antialiased;
+  padding:0 22px 100px;
+}
+.bahn{max-width:700px;margin:0 auto}
+h1,h2,h3{font-family:Archivo,"Helvetica Neue",sans-serif;
+  letter-spacing:-.022em;text-wrap:balance}
+
+/* Hero */
+.hero{padding:84px 0 60px}
+.marke{font-family:Archivo,sans-serif;font-size:13px;font-weight:700;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--akzent);
+  margin-bottom:30px}
+h1{font-size:clamp(38px,7vw,62px);font-weight:700;line-height:1.05}
+.vorspann{font-size:22px;color:var(--gedaempft);margin-top:26px;max-width:32ch}
+
+/* Beispiel */
+.beispiel{
+  background:var(--dunkel);color:var(--hell);
+  border-radius:16px;padding:34px 32px;margin:46px 0;
+}
+.beispiel .gesagt{
+  font-size:23px;font-style:italic;line-height:1.4;
+  border-left:3px solid var(--akzent);padding-left:20px;margin-bottom:26px;
+}
+.beispiel .pfeil{font-family:Archivo,sans-serif;font-size:12px;
+  font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--akzent);margin-bottom:16px}
+.beispiel dl{display:grid;grid-template-columns:auto 1fr;
+  gap:11px 22px;font-size:17px}
+.beispiel dt{font-family:Archivo,sans-serif;font-size:12px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:#96958A;
+  align-self:center}
+
+section{padding:54px 0;border-top:1px solid var(--linie)}
+h2{font-size:clamp(27px,4.4vw,36px);font-weight:700;margin-bottom:20px}
+h3{font-size:19px;font-weight:600;margin:30px 0 8px}
+p{margin-bottom:18px}p:last-child{margin-bottom:0}
+
+.schritte{display:grid;gap:26px;margin-top:30px}
+.schritt{display:grid;grid-template-columns:44px 1fr;gap:20px;align-items:start}
+.schritt .nr{font-family:Archivo,sans-serif;font-size:15px;font-weight:700;
+  color:var(--akzent);border:2px solid var(--akzent);border-radius:50%;
+  width:40px;height:40px;display:flex;align-items:center;
+  justify-content:center}
+.schritt p{margin:0;font-size:18px}
+.schritt b{font-family:Archivo,sans-serif;font-weight:600;display:block;
+  margin-bottom:4px}
+
+.ehrlich{background:var(--flaeche);border-radius:14px;padding:30px 32px;
+  margin-top:28px}
+.ehrlich ul{list-style:none;display:grid;gap:13px}
+.ehrlich li{padding-left:26px;position:relative;font-size:17px;
+  color:var(--gedaempft)}
+.ehrlich li::before{content:"—";position:absolute;left:0;
+  color:var(--akzent);font-weight:700}
+
+.preis{border:2px solid var(--tinte);border-radius:16px;
+  padding:36px 34px;margin-top:30px}
+.preis .zahl{font-family:Archivo,sans-serif;font-size:56px;font-weight:700;
+  letter-spacing:-.03em;line-height:1}
+.preis .je{font-size:17px;color:var(--gedaempft);margin-top:8px}
+.preis hr{border:none;border-top:1px solid var(--linie);margin:26px 0}
+.preis .pilot{font-size:17px}
+.preis .pilot b{font-family:Archivo,sans-serif;font-weight:600}
+
+.cta{background:var(--dunkel);color:var(--hell);border-radius:16px;
+  padding:40px 34px;margin-top:34px;text-align:center}
+.cta h2{color:var(--hell);margin-bottom:14px}
+.cta p{color:#B9B8AC;max-width:38ch;margin:0 auto 26px}
+.knopf{display:inline-block;background:var(--akzent);color:#17190F;
+  font-family:Archivo,sans-serif;font-weight:700;font-size:18px;
+  padding:17px 34px;border-radius:11px;text-decoration:none}
+.knopf:focus-visible{outline:3px solid var(--hell);outline-offset:3px}
+
+footer{padding-top:44px;font-size:15px;color:var(--gedaempft);
+  text-align:center}
+</style>
+
+<div class="bahn">
+
+<div class="hero">
+  <p class="marke">Feierabend</p>
+  <h1>Der Rapport ist geschrieben, bevor du im Büro bist.</h1>
+  <p class="vorspann">Sprich im Auto, was du gemacht hast. Den Rest erledigt es.</p>
+</div>
+
+<div class="beispiel">
+  <p class="gesagt">„Fertig bi de Familie Meier, drü Stund, zwei Liter Grundierig und e Rolle Abdeckband."</p>
+  <p class="pfeil">Wird zu</p>
+  <dl>
+    <dt>Kunde</dt><dd>Meier</dd>
+    <dt>Stunden</dt><dd>3.00</dd>
+    <dt>Arbeit</dt><dd>Grundierung aufgetragen</dd>
+    <dt>Material</dt><dd>Grundierung 2 l, Abdeckband 1 Rolle</dd>
+  </dl>
+</div>
+
+<section>
+  <h2>So läuft es</h2>
+  <div class="schritte">
+    <div class="schritt"><div class="nr">1</div>
+      <p><b>Sprechen</b>Link auf dem Handy öffnen, Knopf drücken, reden. Dialekt ist in Ordnung.</p></div>
+    <div class="schritt"><div class="nr">2</div>
+      <p><b>Kurz prüfen</b>Der Rapport erscheint ausgefüllt. Stimmt etwas nicht, korrigierst du es in zwei Sekunden.</p></div>
+    <div class="schritt"><div class="nr">3</div>
+      <p><b>Fertig</b>Die Stunden landen direkt in deinem bexio. Niemand tippt sie ab.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Für Betriebe mit bexio</h2>
+  <p>bexio kann Buchhaltung und Rechnungen. Was es nicht kann: Rapporte von der Baustelle einsammeln. Genau diese Lücke schliesst Feierabend — und lässt alles andere, wie es ist.</p>
+  <p>Kein Wechsel, keine neue Buchhaltung, keine Schulung. Deine Zahlen bleiben, wo sie sind.</p>
+
+  <h3>Ohne bexio geht es auch</h3>
+  <p>Dann sammelt Feierabend die Rapporte und schickt dir am Freitag die Wochenübersicht — nach Auftrag geordnet, bereit zum Verrechnen.</p>
+</section>
+
+<section>
+  <h2>Was es nicht macht</h2>
+  <p>Damit du nachher nicht überrascht bist:</p>
+  <div class="ehrlich">
+    <ul>
+      <li>Keine Rechnungen, keine Offerten, keine Buchhaltung. Dafür hast du bereits etwas.</li>
+      <li>Keine Stempeluhr und keine Standortverfolgung deiner Leute.</li>
+      <li>Keine Rangliste, wer wie viele Stunden macht. Ausgewertet wird nach Auftrag, nicht nach Person.</li>
+      <li>Es versteht nicht jedes Wort. Deshalb siehst du den Rapport, bevor er gespeichert wird — und bei fehlenden Angaben fragt es nach, statt zu raten.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>Was mit deinen Daten passiert</h2>
+  <p>Die Aufnahme <strong>verlässt dein Handy nicht.</strong> Dein Telefon wandelt Gesprochenes selbst in Text um — es wird keine Sprachdatei auf einen Server geladen und keine gespeichert.</p>
+  <p>Bevor der Text zur Auswertung geht, werden die Namen deiner Kunden durch Platzhalter ersetzt. Wer die Rapporte auswertet, sieht „Kunde 7", nicht „Familie Meier".</p>
+</section>
+
+<section>
+  <h2>Preis</h2>
+  <div class="preis">
+    <div class="zahl">CHF 12.–</div>
+    <div class="je">pro Mitarbeiter und Monat · mindestens CHF 49.– pro Betrieb</div>
+    <hr>
+    <p class="pilot"><b>Pilotbetriebe:</b> CHF 500.– einmalig für zwölf Monate. Dafür bestimmst du mit, was gebaut wird, und ich bin am Telefon, wenn etwas klemmt.</p>
+  </div>
+  <p style="margin-top:22px;font-size:17px;color:var(--gedaempft)">Zum Vergleich, damit du es nicht selbst suchen musst: e-rapport.ch bietet Spracherfassung ab CHF 12.50 pro Mitarbeiter — dort inklusive Zeiterfassung und Rechnungsstellung, dafür als komplette Umstellung. Feierabend ist der schmale Aufsatz auf das, was du schon hast.</p>
+</section>
+
+<div class="cta">
+  <h2>Zehn Minuten, unverbindlich</h2>
+  <p>Schick mir eine Sprachnachricht, wie du sie normal sprichst. Du bekommst den fertigen Rapport zurück. Kostet nichts, keine Anmeldung.</p>
+  <a class="knopf" href="mailto:beamswiss@gmail.com?subject=Feierabend%20ausprobieren">Ausprobieren</a>
+</div>
+
+<footer>
+  <p>Feierabend · Rapperswil-Jona</p>
+</footer>
+
+</div>

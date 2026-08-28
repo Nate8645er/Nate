@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14150F">
+<title>Feierabend</title>
+<style>
+/* Gebaut fuer die Baustelle: grosse Ziele, hoher Kontrast, einhaendig
+   bedienbar. Wer Handschuhe traegt, trifft keine 40-Pixel-Knoepfe. */
+:root{
+  --grund:#14150F; --flaeche:#1E201A; --rand:#2E3128;
+  --text:#F2EFE6; --gedaempft:#96958A;
+  --akzent:#E08A2B; --gut:#5FA672; --warn:#C4553D;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{
+  background:var(--grund);color:var(--text);
+  font:17px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  padding:env(safe-area-inset-top) 20px calc(28px + env(safe-area-inset-bottom));
+  min-height:100vh;
+}
+.bahn{max-width:520px;margin:0 auto;padding-top:26px}
+h1{font-size:21px;font-weight:700;letter-spacing:-.01em}
+.kopf{display:flex;justify-content:space-between;align-items:baseline;
+  margin-bottom:30px}
+.kopf .wer{font-size:13px;color:var(--gedaempft)}
+.karte{background:var(--flaeche);border:1px solid var(--rand);
+  border-radius:14px;padding:22px;margin-bottom:16px}
+label{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--gedaempft);margin-bottom:9px;font-weight:600}
+input,textarea,select{
+  width:100%;background:var(--grund);color:var(--text);
+  border:1px solid var(--rand);border-radius:10px;
+  padding:15px;font-size:17px;font-family:inherit;min-height:52px}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--akzent);
+  outline-offset:1px;border-color:transparent}
+textarea{min-height:88px;resize:vertical}
+.feld{margin-bottom:18px}
+button{
+  width:100%;border:none;border-radius:12px;padding:19px;
+  font-size:18px;font-weight:600;font-family:inherit;
+  background:var(--akzent);color:#1A1503;min-height:60px;cursor:pointer}
+button:disabled{opacity:.45}
+button.leise{background:transparent;color:var(--gedaempft);
+  border:1px solid var(--rand)}
+button:focus-visible{outline:3px solid var(--text);outline-offset:2px}
+.reihe{display:flex;gap:12px;margin-top:10px}
+.reihe button{margin:0}
+
+/* Aufnahmeknopf: bewusst gross genug, um ihn ohne Hinsehen zu treffen */
+.mikro{
+  width:200px;height:200px;border-radius:50%;margin:26px auto;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--akzent);color:#1A1503;font-size:19px;font-weight:700;
+  border:none;padding:0;text-align:center;line-height:1.3}
+.mikro.laeuft{background:var(--warn);color:#fff;
+  animation:puls 1.4s ease-in-out infinite}
+@keyframes puls{0%,100%{transform:scale(1)}50%{transform:scale(1.045)}}
+@media (prefers-reduced-motion:reduce){.mikro.laeuft{animation:none}}
+
+.hinweis{font-size:14px;color:var(--gedaempft);text-align:center;
+  margin-top:6px;min-height:22px}
+.gehoert{background:var(--flaeche);border-left:3px solid var(--akzent);
+  border-radius:0 10px 10px 0;padding:15px 17px;margin:18px 0;
+  font-size:15px;color:var(--gedaempft);font-style:italic}
+.frage{background:rgba(224,138,43,.12);border:1px solid var(--akzent);
+  border-radius:10px;padding:15px 17px;margin-bottom:18px;font-size:16px}
+.meldung{border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:15px}
+.meldung.fehler{background:rgba(196,85,61,.16);border:1px solid var(--warn)}
+.meldung.ok{background:rgba(95,166,114,.14);border:1px solid var(--gut)}
+.eintrag{display:flex;justify-content:space-between;gap:14px;
+  padding:15px 0;border-bottom:1px solid var(--rand)}
+.eintrag:last-child{border-bottom:none}
+.eintrag .k{font-weight:600}
+.eintrag .d{font-size:13px;color:var(--gedaempft);margin-top:3px}
+.eintrag .h{font-variant-numeric:tabular-nums;white-space:nowrap;
+  color:var(--akzent);font-weight:700}
+.weg{display:none}
+.fuss{text-align:center;font-size:12px;color:var(--gedaempft);
+  margin-top:28px;letter-spacing:.08em}
+</style>
+</head>
+<body>
+<div class="bahn">
+
+  <!-- Anmeldung -->
+  <div id="anmeldung">
+    <div class="kopf"><h1>Feierabend</h1></div>
+    <div class="karte">
+      <p style="margin-bottom:20px;color:var(--gedaempft);font-size:15px">
+        Gib den Code ein, den du vom Betrieb bekommen hast.</p>
+      <div class="feld">
+        <label for="code">Zugangscode</label>
+        <input id="code" autocomplete="off" autocapitalize="characters"
+               spellcheck="false" inputmode="text" placeholder="z. B. K7M2QP">
+      </div>
+      <button id="anmeldenKnopf">Anmelden</button>
+      <div id="anmeldeFehler"></div>
+    </div>
+  </div>
+
+  <!-- Aufnahme -->
+  <div id="aufnahme" class="weg">
+    <div class="kopf">
+      <h1>Rapport</h1>
+      <span class="wer" id="werBinIch"></span>
+    </div>
+    <div id="meldungen"></div>
+    <button class="mikro" id="mikro">Drücken<br>und sprechen</button>
+    <p class="hinweis" id="hinweis">Zum Beispiel: „Fertig bei Meier,
+      drei Stunden, zwei Liter Grundierung."</p>
+    <div id="gehoert" class="gehoert weg"></div>
+    <div class="reihe">
+      <button class="leise" id="tippenStatt">Lieber tippen</button>
+    </div>
+    <div class="karte weg" id="tippfeld">
+      <div class="feld">
+        <label for="freitext">Was hast du gemacht?</label>
+        <textarea id="freitext" placeholder="Fertig bei Meier, drei Stunden…"></textarea>
+      </div>
+      <button id="textSenden">Rapport erstellen</button>
+    </div>
+  </div>
+
+  <!-- Pruefen -->
+  <div id="pruefen" class="weg">
+    <div class="kopf"><h1>Stimmt das?</h1></div>
+    <div id="frageFeld"></div>
+    <div class="karte">
+      <div class="feld"><label for="pKunde">Kunde</label>
+        <input id="pKunde" list="kundenListe" autocomplete="off">
+        <datalist id="kundenListe"></datalist></div>
+      <div class="feld"><label for="pStunden">Stunden</label>
+        <input id="pStunden" type="number" step="0.25" min="0.25" max="16"
+               inputmode="decimal"></div>
+      <div class="feld"><label for="pDatum">Datum</label>
+        <input id="pDatum" type="date"></div>
+      <div class="feld"><label for="pArbeit">Arbeit</label>
+        <input id="pArbeit" autocomplete="off"></div>
+      <div class="feld"><label for="pMaterial">Material</label>
+        <input id="pMaterial" autocomplete="off"
+               placeholder="mit Komma trennen"></div>
+      <div class="feld" style="margin-bottom:22px">
+        <label for="pFolge">Folgetermin</label>
+        <input id="pFolge" autocomplete="off"></div>
+      <button id="speichern">Rapport speichern</button>
+      <div class="reihe">
+        <button class="leise" id="verwerfen">Nochmals</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Uebersicht -->
+  <div id="uebersicht" class="weg">
+    <div class="kopf"><h1>Diese Woche</h1>
+      <span class="wer" id="wocheTotal"></span></div>
+    <div class="karte" id="wocheListe"></div>
+    <button id="neuerRapport">Neuer Rapport</button>
+    <div class="reihe">
+      <button class="leise" id="abmelden">Abmelden</button>
+    </div>
+  </div>
+
+  <p class="fuss">FEIERABEND</p>
+</div>
+
+<script>
+// Die Sprache wird IM BROWSER erkannt. Das Audio verlaesst das Geraet
+// nicht - es erreicht unseren Server nie. Nur der fertige Text geht raus,
+// und dort werden die Kundennamen ersetzt, bevor ein Modell ihn sieht.
+const S = {code:null, entwurf:null, kunden:[]};
+const $ = id => document.getElementById(id);
+const zeig = id => { for (const a of ['anmeldung','aufnahme','pruefen','uebersicht'])
+  $(a).classList.toggle('weg', a !== id); };
+
+// Alles, was aus dem Transkript, aus der Datenbank oder aus bexio kommt,
+// ist Fremdtext. Ein Kunde darf "Meier <img onerror=...>" heissen, ohne
+// dass daraus Code wird - deshalb hier ausschliesslich textContent und
+// gebaute Knoten, nie zusammengesetztes HTML.
+function kasten(klasse, text) {
+  const d = document.createElement('div');
+  d.className = klasse;
+  d.textContent = text;
+  return d;
+}
+
+function melde(text, art) {
+  const ziel = $('meldungen');
+  ziel.replaceChildren(kasten('meldung ' + art, text));
+  setTimeout(() => ziel.replaceChildren(), 6000);
+}
+
+async function ruf(pfad, optionen = {}) {
+  const kopf = Object.assign({'Content-Type':'application/json'},
+                             optionen.headers || {});
+  if (S.code) kopf['X-Code'] = S.code;
+  const antwort = await fetch(pfad, Object.assign({}, optionen, {headers:kopf}));
+  const daten = await antwort.json().catch(() => ({}));
+  if (!antwort.ok) throw new Error(daten.fehler || 'Es hat nicht geklappt.');
+  return daten;
+}
+
+// ----- Anmeldung
+$('anmeldenKnopf').onclick = async () => {
+  const code = $('code').value.trim().toUpperCase();
+  if (!code) return;
+  try {
+    S.code = code;
+    const wer = await ruf('/api/anmelden',
+      {method:'POST', body:JSON.stringify({code})});
+    localStorage.setItem('feierabend_code', code);
+    $('werBinIch').textContent = wer.name + ' · ' + wer.betrieb;
+    await ladeKunden();
+    zeig('aufnahme');
+  } catch (e) {
+    S.code = null;
+    $('anmeldeFehler').replaceChildren(kasten('meldung fehler', e.message));
+  }
+};
+
+async function ladeKunden() {
+  try {
+    const d = await ruf('/api/kunden');
+    S.kunden = d.kunden || [];
+    $('kundenListe').replaceChildren(...S.kunden.map(k => {
+      const o = document.createElement('option');
+      o.value = k.name;          // setzt den Wert, baut kein Markup
+      return o;
+    }));
+  } catch (e) { /* Kundenstamm ist optional */ }
+}
+
+// ----- Spracherkennung
+const Erkennung = window.SpeechRecognition || window.webkitSpeechRecognition;
+let erkenner = null, laeuft = false;
+
+if (!Erkennung) {
+  $('mikro').disabled = true;
+  $('hinweis').textContent =
+    'Dieser Browser kann keine Sprache erkennen. Nutze „Lieber tippen".';
+}
+
+$('mikro').onclick = () => {
+  if (!Erkennung) return;
+  if (laeuft) { erkenner.stop(); return; }
+  erkenner = new Erkennung();
+  // de-CH wird nicht ueberall unterstuetzt; de-DE ist der sichere Rueckfall.
+  erkenner.lang = 'de-CH';
+  erkenner.interimResults = true;
+  erkenner.continuous = false;
+
+  let text = '';
+  erkenner.onstart = () => {
+    laeuft = true;
+    $('mikro').classList.add('laeuft');
+    $('mikro').innerHTML = 'Ich höre…<br>nochmals drücken';
+    $('hinweis').textContent = 'Sprich normal. Dialekt ist in Ordnung.';
+    $('gehoert').classList.remove('weg');
+  };
+  erkenner.onresult = e => {
+    text = Array.from(e.results).map(r => r[0].transcript).join(' ');
+    $('gehoert').textContent = text;
+  };
+  erkenner.onerror = e => {
+    melde(e.error === 'not-allowed'
+      ? 'Mikrofon nicht freigegeben. In den Browser-Einstellungen erlauben.'
+      : 'Ich habe nichts verstanden. Nochmals?', 'fehler');
+  };
+  erkenner.onend = async () => {
+    laeuft = false;
+    $('mikro').classList.remove('laeuft');
+    $('mikro').innerHTML = 'Drücken<br>und sprechen';
+    if (text.trim()) await entwurfHolen(text);
+    else $('hinweis').textContent = 'Nichts gehört. Nochmals drücken.';
+  };
+  try { erkenner.start(); } catch (e) { melde('Start nicht möglich.', 'fehler'); }
+};
+
+$('tippenStatt').onclick = () => $('tippfeld').classList.toggle('weg');
+$('textSenden').onclick = async () => {
+  const t = $('freitext').value.trim();
+  if (t) await entwurfHolen(t);
+};
+
+// ----- Entwurf
+async function entwurfHolen(text) {
+  $('hinweis').textContent = 'Einen Moment…';
+  try {
+    const e = await ruf('/api/entwurf',
+      {method:'POST', body:JSON.stringify({text})});
+    S.entwurf = e;
+    $('pKunde').value = e.kunde || '';
+    $('pStunden').value = e.stunden ?? '';
+    $('pDatum').value = e.datum;
+    $('pArbeit').value = e.taetigkeiten || '';
+    $('pMaterial').value = (e.material || []).join(', ');
+    $('pFolge').value = e.folgetermin || '';
+    // e.rueckfrage enthaelt einen Namen aus dem Transkript - Fremdtext.
+    $('frageFeld').replaceChildren(
+      ...(e.rueckfrage ? [kasten('frage', e.rueckfrage)] : []));
+    zeig('pruefen');
+    // Auf das fehlende Feld springen, statt es suchen zu lassen.
+    if ((e.fehlend || []).includes('kunde')) $('pKunde').focus();
+    else if ((e.fehlend || []).includes('stunden')) $('pStunden').focus();
+  } catch (err) {
+    $('hinweis').textContent = 'Zum Beispiel: „Fertig bei Meier, drei Stunden."';
+    melde(err.message, 'fehler');
+  }
+}
+
+// ----- Speichern
+$('speichern').onclick = async () => {
+  const daten = {
+    datum: $('pDatum').value,
+    kunde: $('pKunde').value.trim(),
+    stunden: parseFloat($('pStunden').value),
+    taetigkeiten: $('pArbeit').value.trim(),
+    material: $('pMaterial').value.split(',').map(s => s.trim()).filter(Boolean),
+    folgetermin: $('pFolge').value.trim(),
+  };
+  if (!daten.kunde) { melde('Kunde fehlt.', 'fehler'); $('pKunde').focus(); return; }
+  if (!(daten.stunden >= 0.25)) { melde('Stunden fehlen.', 'fehler');
+    $('pStunden').focus(); return; }
+  try {
+    await ruf('/api/rapport', {method:'POST', body:JSON.stringify(daten)});
+    $('freitext').value = ''; $('gehoert').textContent = '';
+    await ladeWoche();
+    zeig('uebersicht');
+  } catch (e) { melde(e.message, 'fehler'); }
+};
+
+$('verwerfen').onclick = () => zeig('aufnahme');
+$('neuerRapport').onclick = () => { $('gehoert').classList.add('weg');
+  zeig('aufnahme'); };
+$('abmelden').onclick = () => {
+  localStorage.removeItem('feierabend_code'); S.code = null;
+  $('code').value = ''; zeig('anmeldung');
+};
+
+// ----- Woche
+async function ladeWoche() {
+  try {
+    const a = await ruf('/api/auswertung?tage=7');
+    $('wocheTotal').textContent = a.stunden_total + ' h';
+    if (!a.je_kunde.length) {
+      const p = document.createElement('p');
+      p.style.color = 'var(--gedaempft)';
+      p.textContent = 'Noch keine Rapporte diese Woche.';
+      $('wocheListe').replaceChildren(p);
+      return;
+    }
+    // Kundennamen stammen aus dem bexio-Import - Fremdtext, also Knoten
+    // bauen statt HTML zusammensetzen.
+    $('wocheListe').replaceChildren(...a.je_kunde.map(k => {
+      const zeile = document.createElement('div');
+      zeile.className = 'eintrag';
+      const links = document.createElement('div');
+      links.appendChild(kasten('k', k.kunde));
+      links.appendChild(kasten('d', k.rapporte + ' Rapport'
+        + (k.rapporte > 1 ? 'e' : '')));
+      zeile.appendChild(links);
+      zeile.appendChild(kasten('h', k.stunden + ' h'));
+      return zeile;
+    }));
+  } catch (e) { /* still */ }
+}
+
+// Wiederanmeldung: Der Code steht im Geraet, nicht in einem Cookie -
+// der Handwerker soll ihn nicht jeden Morgen eintippen muessen.
+(async () => {
+  const gespeichert = localStorage.getItem('feierabend_code');
+  if (!gespeichert) return;
+  try {
+    S.code = gespeichert;
+    const wer = await ruf('/api/anmelden',
+      {method:'POST', body:JSON.stringify({code:gespeichert})});
+    $('werBinIch').textContent = wer.name + ' · ' + wer.betrieb;
+    await ladeKunden(); await ladeWoche();
+    zeig('aufnahme');
+  } catch (e) { S.code = null; localStorage.removeItem('feierabend_code'); }
+})();
+</script>
+</body>
+</html>

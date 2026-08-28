@@ -1,3 +1,8 @@
 # Erzeugte Medien: reproduzierbar aus werkzeuge/video_bauen.py,
 # gehoeren nicht als Binaerdatei in die Versionsverwaltung.
 *.mp4
+
+# Laufzeitdaten: enthalten echte Kunden- und Rapportdaten.
+*.db
+__pycache__/
+*.pyc

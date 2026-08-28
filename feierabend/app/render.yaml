@@ -1,0 +1,37 @@
+# Feierabend bei Render aufsetzen.
+#
+# Auf render.com: New -> Blueprint -> dieses Repository waehlen.
+#
+# WICHTIG: Der Free-Tier hat KEINE dauerhafte Festplatte. Die SQLite-Datei
+# wird bei jedem Deployment zurueckgesetzt - alle Rapporte weg. Fuer echte
+# Kunden ist ein Disk (Starter-Plan) oder eine verwaltete PostgreSQL
+# zwingend. Zum Vorzeigen im Verkaufsgespraech reicht Free.
+services:
+  - type: web
+    name: feierabend
+    runtime: python
+    plan: starter
+    rootDir: feierabend/app
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/status
+    disk:
+      name: daten
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      # Pflicht. Ohne Schluessel kann kein Rapport erstellt werden.
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      # Pflicht: die oeffentliche Adresse, sonst schlaegt der
+      # bexio-Rueckruf fehl.
+      - key: FEIERABEND_URL
+        sync: false
+      # Datenbank auf die dauerhafte Platte legen, nicht ins Abbild.
+      - key: FEIERABEND_DB
+        value: /var/data/feierabend.db
+      # Optional: erst noetig, wenn ein Kunde bexio verbinden will.
+      - key: BEXIO_CLIENT_ID
+        sync: false
+      - key: BEXIO_CLIENT_SECRET
+        sync: false
