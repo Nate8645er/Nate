@@ -1,8 +1,56 @@
 # Feierabend — Arbeitsrapporte per Sprachnachricht
 
 **Datum:** 2026-08-28
-**Status:** Entwurf, wartet auf Validierung
+**Status:** ⚠️ **In dieser Form gestoppt.** Die Marktanalyse hat die
+Grundannahme widerlegt — siehe „Das Marktergebnis" weiter unten. Architektur
+und Datenschutzteil bleiben gültig und wiederverwendbar; die
+Produktpositionierung nicht.
 **Autor:** Nate, mit Claude Code
+
+---
+
+## Das Marktergebnis — zuerst, weil es alles andere überstimmt
+
+**Die vermutete Lücke existiert nicht.** Schweizerdeutscher Sprachrapport mit
+KI-Feldextraktion ist 2026 bereits Marktware:
+
+| Anbieter | Was er kann | Preis |
+|---|---|---|
+| **e-rapport.ch** | „Rapportiere uf Schwyzerdütsch", Sprachagent füllt Felder — in allen Tarifen enthalten | **CHF 12.50** je Mitarbeiter/Monat, inkl. GAV-Zeiterfassung, QR-Rechnung, Buchhaltung |
+| **Baunex** | Sprachassistent auf Schweizerdeutsch, KI füllt Kunde/Projekt/Positionen | ab CHF 24 je Benutzer/Monat, inkl. Offerte, Beleg-OCR |
+| **HERO** (DE) | Sprachaufnahme → strukturierte Zeiten und Arbeiten | nicht öffentlich |
+
+Das geplante Produkt kann **weniger** als e-rapport und müsste deshalb
+**billiger** als CHF 12.50 verkauft werden — bei gleichem Vertriebsaufwand je
+Kunde. Das ist keine Nische, das ist eine schlechtere Fassung eines
+bestehenden Angebots.
+
+### Der Einwand, der schwerer wiegt als der Wettbewerb
+
+Der letzte Versuch scheiterte an Ausführung und Vertrieb, nicht an Technik —
+in 90 Tagen ging kein Produkt live. Feierabend ist ein technisch reizvolles
+Vorhaben mit vier Monaten Bauvorlauf. **Es liefert vier Monate legitimen
+Grund, nicht zu verkaufen.** Das ist dieselbe Falle wie beim Store, nur
+schöner tapeziert.
+
+### Was stattdessen zu prüfen wäre
+
+Die einzige belegbare Funktionslücke bei einem Anbieter mit Reichweite:
+**bexio** hat keinen Rapport-Workflow, keine strukturierte Stundenerfassung je
+Position, keine Materialerfassung mit Preislistenanbindung. Ein Aufsatz für
+Handwerksbetriebe mit bexio hätte einen Kaufgrund und mit dem bexio
+Marketplace einen budgetlosen Kanal.
+
+### Die Vorbedingung, die vor jeder weiteren Zeile Code gilt
+
+**20 Gespräche, davon 3 Vorauszahlungen à CHF 500 innerhalb von 6 Wochen.**
+Kommen sie nicht zusammen, ist das die Antwort — und sie kostet sechs Wochen
+statt zwölf Monate. Die manuelle Vorstufe genügt dafür: Sprachnachricht rein,
+von Hand korrigiert, Rapport raus. Ein Wochenende Arbeit.
+
+Der eigentliche Vorteil liegt ohnehin nicht in der Technik und nicht im Preis,
+sondern darin, morgens um 6:45 am Abholmarkt des Grosshandels zu stehen, wo
+die Zielgruppe wartet und gesprächsbereit ist.
 
 ---
 
