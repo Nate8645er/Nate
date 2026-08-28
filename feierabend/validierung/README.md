@@ -29,6 +29,31 @@ der Shopify-Verlauf — dort wurde vier Monate lang gebaut und nie verkauft.
 Das ist der Frühindikator, und er schlägt an, lange bevor die sechs Wochen um
 sind.
 
+## Der Zuschnitt, der geprüft wird: bexio-Aufsatz
+
+Die Marktanalyse hat eine einzige belegbare Funktionslücke gefunden: **bexio
+hat keinen Rapport-Workflow**, keine strukturierte Stundenerfassung je
+Position, keine Materialerfassung mit Preislistenanbindung.
+
+Nachgeprüft in der bexio-Dokumentation: Die API erlaubt **Schreibzugriff** —
+`postCreate timesheet`, dazu Projekte, Aufträge und Rechnungspositionen, über
+OAuth 2.0 für Drittanbieter. Der Zuschnitt ist technisch machbar.
+
+Damit lautet dein Satz nicht mehr „ich baue einen Sprachassistenten", sondern:
+
+> **„Die Stunden landen direkt in Ihrem bexio, ohne dass jemand tippt."**
+
+Und die Qualifizierungsfrage an der Tür ist: *„Arbeiten Sie mit bexio?"*
+
+**Trotzdem gilt: nicht bauen, bevor jemand zahlt.** Dass es technisch geht,
+ist keine Antwort auf die Frage, ob es jemand kauft.
+
+## Deine 26 Betriebe
+
+In `akquise.md` liegen 26 ausführende Handwerksbetriebe aus Rapperswil-Jona,
+nach Gewerk sortiert, mit Spalten zum Nachführen. Das sind deine zwanzig
+Gespräche mit Reserve — recherchiert aus dem öffentlichen Gewerbeverzeichnis.
+
 ## Wie du an die Gespräche kommst
 
 **Der Abholmarkt, 6:45 Uhr.** Debrunner Acifer, Sanitas Troesch, regionale
