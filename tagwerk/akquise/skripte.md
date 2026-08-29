@@ -9,8 +9,12 @@ Callcenter, und dann ist das Gespräch nach acht Sekunden vorbei.
 
 Ziel ist **nicht** verkaufen. Ziel ist ein Vorgespräch von zwanzig Minuten.
 
-> „Grüezi, Nate Meier aus Jona. Ich habe eine kurze Frage, dauert dreissig
-> Sekunden — passt es gerade?"
+> „Grüezi, Nate [Nachname] aus Jona. Ich habe eine kurze Frage, dauert
+> dreissig Sekunden — passt es gerade?"
+
+*(Den Nachnamen kenne ich nicht und erfinde ihn nicht. Beim ersten Anruf
+selbst einsetzen — mit vollem Namen klingt es nach Nachbar, mit
+Vornamen allein nach Callcenter.)*
 >
 > *(Warten. Wenn nein: „Wann passt es besser?" und auflegen.)*
 >
@@ -136,7 +140,7 @@ Kein Ja auf den Rückruf = kein Interesse. Weiterziehen.
 > Passt Ihnen [Wochentag] oder [Wochentag]?
 >
 > Freundliche Grüsse
-> Nate Meier
+> Nate [Nachname]
 > [Telefon] · [Website]
 
 Kurz halten. Keine Broschüre, keine Anhänge, keine Bilder.
