@@ -8,6 +8,8 @@
 
 import json
 import os
+import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -97,6 +99,28 @@ class FuellenTest(unittest.TestCase):
         self.assertEqual(e["offen"], ["betrag"])
         self.assertIn("{{betrag}}", self._inhalt(self.ziel))
 
+    def test_zeilenumbruch_wird_zu_odf_umbruch(self):
+        # Der Fehler, den erst der Blick ins fertige PDF gezeigt hat: ein
+        # rohes "\n" im XML ist fuer ODF nur Leerraum. Drei Positionen
+        # standen dadurch in einer einzigen Zeile.
+        vorlage.fuellen(self.vorlage, self.ziel,
+                        {"name": "a\nb\nc", "betrag": "1"})
+        inhalt = self._inhalt(self.ziel)
+        self.assertEqual(inhalt.count("<text:line-break/>"), 2)
+        self.assertNotIn("a\nb", inhalt)
+
+    def test_tab_wird_zu_odf_tab(self):
+        vorlage.fuellen(self.vorlage, self.ziel,
+                        {"name": "links\trechts", "betrag": "1"})
+        self.assertIn("<text:tab/>", self._inhalt(self.ziel))
+
+    def test_umbruch_wird_nicht_doppelt_escaped(self):
+        # Reihenfolge zaehlt: erst escapen, dann uebersetzen. Sonst
+        # stuende "&lt;text:line-break/&gt;" im Dokument.
+        vorlage.fuellen(self.vorlage, self.ziel,
+                        {"name": "a\nb", "betrag": "1"})
+        self.assertNotIn("&lt;text:line-break", self._inhalt(self.ziel))
+
     def test_ergebnis_bleibt_gueltiges_zip(self):
         vorlage.fuellen(self.vorlage, self.ziel,
                         {"name": "Meier", "betrag": "1"})
@@ -150,6 +174,12 @@ class RechnungTest(unittest.TestCase):
         self.assertIn("Grundieren", w["positionen"])
         self.assertIn("810.00", w["positionen"])
         self.assertEqual(len(w["positionen"].splitlines()), 3)
+
+    def test_positionen_haben_spalten(self):
+        # Ohne Tabs stehen die Betraege nicht untereinander.
+        w = offerte_ctl.werte_aufbereiten(self._daten())
+        for zeile in w["positionen"].splitlines():
+            self.assertEqual(zeile.count("\t"), 2)
 
 
 class CliTest(unittest.TestCase):
@@ -211,6 +241,52 @@ class BackendTest(unittest.TestCase):
         self.assertTrue(os.path.exists(pdf))
         with open(pdf, "rb") as f:
             self.assertEqual(f.read(4), b"%PDF")
+
+
+class EndeZuEndeTest(unittest.TestCase):
+    """Prueft, was der Kunde sieht - nicht, was das Programm meldet.
+
+    Der Umbruch-Fehler ist an keinem Rueckgabewert aufgefallen. Alle
+    Werte waren im Dokument, das Dokument war gueltig, der Exit-Code
+    war 0 - und trotzdem standen drei Positionen in einer Zeile. Nur
+    der Text aus dem fertigen PDF zeigt so etwas.
+    """
+
+    def test_positionen_stehen_auf_eigenen_zeilen(self):
+        if not backend.verfuegbar():
+            self.skipTest("LibreOffice nicht installiert")
+        if not shutil.which("pdftotext"):
+            self.skipTest("pdftotext nicht installiert (poppler-utils)")
+
+        ordner = tempfile.mkdtemp()
+        v = os.path.join(ordner, "v.odt")
+        offerte_ctl.main(["vorlage-neu", v])
+        daten = os.path.join(ordner, "d.json")
+        with open(daten, "w", encoding="utf-8") as f:
+            json.dump({"firma": "F", "firma_adresse": "A", "kunde": "K",
+                       "kunde_adresse": "A", "nummer": "9", "ort": "O",
+                       "datum": "D", "einleitung": "E", "gueltig_bis": "G",
+                       "unterschrift": "U", "mwst_satz": 8.1,
+                       "positionen": [
+                           {"menge": "1", "einheit": "St",
+                            "bezeichnung": "Erste", "preis": 100},
+                           {"menge": "2", "einheit": "St",
+                            "bezeichnung": "Zweite", "preis": 200},
+                           {"menge": "3", "einheit": "St",
+                            "bezeichnung": "Dritte", "preis": 300}]}, f)
+        self.assertEqual(
+            offerte_ctl.main(["erstellen", v, daten, "--ausgabe", ordner]), 0)
+
+        text = subprocess.run(
+            ["pdftotext", "-layout", os.path.join(ordner, "offerte-9.pdf"),
+             "-"], capture_output=True, text=True, timeout=60).stdout
+        zeilen = [z for z in text.splitlines() if "Erste" in z or
+                  "Zweite" in z or "Dritte" in z]
+        self.assertEqual(len(zeilen), 3, "Positionen stehen nicht auf "
+                         "eigenen Zeilen:\n%s" % text)
+        self.assertIn("600.00", text)   # Total exkl.
+        self.assertIn("48.60", text)    # MwSt 8.1%
+        self.assertIn("648.60", text)   # Total inkl.
 
 
 if __name__ == "__main__":

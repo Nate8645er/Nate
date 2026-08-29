@@ -45,6 +45,15 @@ CONTENT_RAHMEN = """<?xml version="1.0" encoding="UTF-8"?>
   <style:style style:name="Fett" style:family="paragraph">
    <style:text-properties fo:font-weight="bold"/>
   </style:style>
+  <style:style style:name="Positionen" style:family="paragraph">
+   <style:paragraph-properties>
+    <style:tab-stops>
+     <style:tab-stop style:position="2.4cm"/>
+     <style:tab-stop style:position="16cm" style:type="right"
+      style:leader-style="dotted" style:leader-text="."/>
+    </style:tab-stops>
+   </style:paragraph-properties>
+  </style:style>
  </office:automatic-styles>
  <office:body><office:text>%s</office:text></office:body>
 </office:document-content>
@@ -55,8 +64,23 @@ class VorlagenFehler(Exception):
     """Vorlage fehlerhaft oder nicht lesbar."""
 
 
-def _absatz(text, stil=None):
+def _xml_text(text):
+    """Text fuer ODF aufbereiten: escapen, Umbrueche und Tabs uebersetzen.
+
+    ODF sammelt Leerraum zusammen: ein "\\n" im XML ist fuer den Leser
+    kein Zeilenumbruch, und zwei Leerzeichen sind eines. Wer eine Liste
+    von Positionen mit "\\n" verbindet, bekommt deshalb alle Zeilen in
+    einer einzigen Zeile - der Text stimmt, das Dokument ist trotzdem
+    unbrauchbar. Deshalb werden Umbruch und Tab in die ODF-Elemente
+    uebersetzt, die dafuer vorgesehen sind.
+    """
     sicher = saxutils.escape(text)
+    sicher = sicher.replace("\t", "<text:tab/>")
+    return sicher.replace("\n", "<text:line-break/>")
+
+
+def _absatz(text, stil=None):
+    sicher = _xml_text(text)
     if stil:
         return '<text:p text:style-name="%s">%s</text:p>' % (stil, sicher)
     return "<text:p>%s</text:p>" % sicher
@@ -127,7 +151,7 @@ def fuellen(vorlage, ziel, werte, streng=True):
         name = treffer.group(1)
         if name not in werte:
             return treffer.group(0)
-        return saxutils.escape(str(werte[name]))
+        return _xml_text(str(werte[name]))
 
     neu = PLATZHALTER.sub(ersetze, inhalt)
 

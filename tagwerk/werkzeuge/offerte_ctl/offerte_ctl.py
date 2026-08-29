@@ -48,7 +48,7 @@ STANDARDVORLAGE = [
     "{{einleitung}}",
     "",
     ("Leistungen", "Fett"),
-    "{{positionen}}",
+    ("{{positionen}}", "Positionen"),
     "",
     ("Total exkl. MwSt: CHF {{total}}", "Fett"),
     "MwSt {{mwst_satz}}%: CHF {{mwst_betrag}}",
@@ -60,8 +60,12 @@ STANDARDVORLAGE = [
     "{{unterschrift}}",
 ]
 
-# Wird als {{positionen}} eingesetzt: eine Zeile je Leistung.
-POSITION_FORMAT = "%(menge)s %(einheit)s  %(bezeichnung)s  CHF %(preis)s"
+# Wird als {{positionen}} eingesetzt: eine Zeile je Leistung. Die Tabs
+# treffen die Tabulatoren des Absatzstils "Positionen" - Menge links,
+# Bezeichnung eingerueckt, Betrag rechtsbuendig. Mit Leerzeichen statt
+# Tabs stuenden die Betraege krumm untereinander, weil ODF mehrfache
+# Leerzeichen zu einem zusammenzieht.
+POSITION_FORMAT = "%(menge)s %(einheit)s\t%(bezeichnung)s\tCHF %(preis)s"
 
 
 def positionen_rendern(positionen):
