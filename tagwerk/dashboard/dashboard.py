@@ -239,10 +239,20 @@ def main(argumente):
         print("status.json fehlt.")
         return 1
     d = laden()
-    if "--html" in argumente:
-        print("Geschrieben: %s" % seite_bauen(d))
-    else:
-        terminal(d)
+    try:
+        if "--html" in argumente:
+            print("Geschrieben: %s" % seite_bauen(d))
+        else:
+            terminal(d)
+    except BrokenPipeError:
+        # Passiert bei "dashboard.py | head". Kein Fehler, sondern der
+        # Leser hat genug gesehen - ohne diesen Fang steht ein
+        # Stapelabzug unter der Ausgabe und sieht nach Absturz aus.
+        try:
+            sys.stdout.close()
+        except BrokenPipeError:
+            pass
+        os._exit(0)
     return 0
 
 

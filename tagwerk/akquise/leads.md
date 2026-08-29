@@ -27,7 +27,45 @@ Kandidaten — gleiche Betriebsgrösse, andere Zeitfresser.
 
 ---
 
-## Maler und Gipser
+## ANRUFLISTE — verifiziert
+
+Diese sieben habe ich einzeln über die Detailseiten des Gewerbeverzeichnisses
+geprüft. Adresse und Telefon stehen dort so, wie sie hier stehen.
+**Trotzdem beim Wählen kurz gegenhören, ob der Betrieb noch existiert** — ein
+Verzeichnis ist nie tagesaktuell.
+
+Reihenfolge nach Betriebsgrösse: oben nimmt der Inhaber selbst ab.
+
+| # | Betrieb | Telefon | Ort | Ansprechperson | Status |
+|---|---|---|---|---|---|
+| 1 | Rüegg Malergeschäft | +41 55 212 42 28 | Stampfstrasse 77, 8645 Jona | Marcel Rüegg | offen |
+| 2 | Urban Hüppi Malerarbeiten | +41 55 212 36 57 | Tägernaustrasse 59, 8645 Jona | — | offen |
+| 3 | Bisig Schreinerei | +41 55 212 60 68 | Stampfstrasse 81, 8645 Jona | — | offen |
+| 4 | LuXXboden Durmisi | +41 79 340 99 57 | Oberwiesstrasse 8, 8645 Jona | Amdija Durmisi | offen |
+| 5 | Frei Bedachungen GmbH | +41 79 425 98 80 | Buechstrasse 41, 8645 Jona | Jürg Frei | offen |
+| 6 | Kurt Schmucki GmbH | +41 55 283 36 66 | Engelhölzlistrasse 7g, 8645 Rapperswil-Jona | — | offen |
+| 7 | Ruedi Forrer GmbH | +41 55 246 48 60 | Curtibergstrasse 102, 8646 Wagen | — | offen |
+
+**Nummer 4 und 5 sind Handynummern.** Die gehen fast sicher direkt an den
+Inhaber — dort zuerst anrufen, wenn du wenig Zeit hast.
+
+**E-Mail nur nach dem Telefonat**, nie davor:
+`info@malerrueegg.ch` · `info@malerhueppi.ch` ·
+`schreinerei.bis@bluewin.ch` · `info@luxxboden.ch` ·
+`frei-dach@bluewin.ch` · `info@schmucki-plaettli.ch` ·
+`info@schreinerei-forrer.ch`
+
+**Elektro Kuriger GmbH** (Neue Jonastrasse 59, 8640 Rapperswil) steht im
+Verzeichnis ohne Telefonnummer. Nummer selbst suchen oder überspringen.
+
+---
+
+## Weitere Betriebe — Nummern noch nicht geprüft
+
+Falls die ersten sieben nicht reichen. Detailseiten liegen unter
+`gewerbeverzeichnis-rj.ch/Unternehmen/<Firmenname_mit_Unterstrichen>`.
+
+### Maler und Gipser
 
 | Betrieb | Telefon | Website | Zeitfresser (im Gespräch erfragt) | Kanal | Status |
 |---|---|---|---|---|---|

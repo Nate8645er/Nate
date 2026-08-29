@@ -22,7 +22,7 @@
   },
   "trichter": {
     "leads_recherchiert": 26,
-    "nummern_geprueft": 0,
+    "nummern_geprueft": 7,
     "angerufen": 0,
     "erreicht": 0,
     "vorgespraech_vereinbart": 0,
@@ -42,10 +42,10 @@
     "baustunden_diese_woche": 0
   },
   "naechste_aktionen": [
-    "Telefonnummern der ersten fuenf Betriebe pruefen (leads.md)",
-    "Telefonnummer auf der Website eintragen - steht aktuell als Platzhalter",
-    "IBAN fuer die QR-Rechnung hinterlegen",
-    "Fuenf Anrufe zwischen 16:30 und 17:30"
+    "Anrufen: 7 verifizierte Nummern in akquise/leads.md, 16:30-17:30",
+    "Bei 4 und 5 anfangen - Handynummern, gehen direkt an den Inhaber",
+    "Telefonnummer auf der Website eintragen - steht als Platzhalter",
+    "IBAN fuer die QR-Rechnung hinterlegen"
   ],
   "blockiert": [
     "Erster Anruf - kann nur Nate selbst machen"
