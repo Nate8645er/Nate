@@ -1,0 +1,53 @@
+{
+  "_hinweis": "Einzige Wahrheitsquelle fuer das Dashboard. Von Hand pflegen. Nichts hier darf geschaetzt oder gerundet sein - eine erfundene Zahl macht das ganze Dashboard wertlos.",
+  "stand": "2026-08-28",
+  "business": "Tagwerk",
+  "angebot": {
+    "beschreibung": "Ein Arbeitstag, drei Automatisierungen",
+    "preis_gruendung_chf": 480,
+    "preis_regulaer_chf": 780,
+    "gruendungsplaetze_total": 3,
+    "gruendungsplaetze_vergeben": 0
+  },
+  "website": {
+    "url": "https://claude.ai/code/artifact/5eead97a-8f14-4034-b6a6-db41dc31c091",
+    "erreichbar": true,
+    "geprueft_am": "2026-08-28",
+    "eigene_domain": false
+  },
+  "zahlung": {
+    "weg": "QR-Rechnung, 10 Tage netto",
+    "eingerichtet": false,
+    "offener_schritt": "IBAN und Firmendaten fuer die QR-Rechnung hinterlegen"
+  },
+  "trichter": {
+    "leads_recherchiert": 26,
+    "nummern_geprueft": 0,
+    "angerufen": 0,
+    "erreicht": 0,
+    "vorgespraech_vereinbart": 0,
+    "vorgespraech_gefuehrt": 0,
+    "angebot_gemacht": 0,
+    "kunden": 0,
+    "absagen": 0
+  },
+  "geld": {
+    "umsatz_chf": 0,
+    "kosten_chf": 0,
+    "gewinn_chf": 0,
+    "kostenpositionen": []
+  },
+  "zeit": {
+    "verkaufsstunden_diese_woche": 0,
+    "baustunden_diese_woche": 0
+  },
+  "naechste_aktionen": [
+    "Telefonnummern der ersten fuenf Betriebe pruefen (leads.md)",
+    "Telefonnummer auf der Website eintragen - steht aktuell als Platzhalter",
+    "IBAN fuer die QR-Rechnung hinterlegen",
+    "Fuenf Anrufe zwischen 16:30 und 17:30"
+  ],
+  "blockiert": [
+    "Erster Anruf - kann nur Nate selbst machen"
+  ]
+}

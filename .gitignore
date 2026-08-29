@@ -6,3 +6,6 @@
 *.db
 __pycache__/
 *.pyc
+
+# Dashboard-Ausgabe, wird aus status.json erzeugt
+tagwerk/dashboard/dashboard.html

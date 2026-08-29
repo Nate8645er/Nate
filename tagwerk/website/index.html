@@ -1,0 +1,274 @@
+<title>Tagwerk Automatisierung</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;600&display=swap">
+
+<style>
+:root{
+  --papier:#FBFAF7;
+  --flaeche:#F1EFE9;
+  --tinte:#1C1F21;
+  --gedaempft:#616669;
+  --linie:#E4E2DC;
+  --akzent:#1F5A62;
+  --akzent-hell:#2E7B85;
+  --tief:#16302F;
+  --tief-text:#F2F1EC;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --papier:#131614;
+    --flaeche:#1C201E;
+    --tinte:#EFEEE9;
+    --gedaempft:#9AA09D;
+    --linie:#2A2F2C;
+    --akzent:#5FA9AF;
+    --akzent-hell:#7BC3C8;
+    --tief:#0C1918;
+    --tief-text:#F2F1EC;
+  }
+}
+:root[data-theme="dark"]{
+  --papier:#131614;
+  --flaeche:#1C201E;
+  --tinte:#EFEEE9;
+  --gedaempft:#9AA09D;
+  --linie:#2A2F2C;
+  --akzent:#5FA9AF;
+  --akzent-hell:#7BC3C8;
+  --tief:#0C1918;
+  --tief-text:#F2F1EC;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--papier);color:var(--tinte);
+  font-family:"Source Sans 3",-apple-system,sans-serif;
+  font-size:19px;line-height:1.6;-webkit-font-smoothing:antialiased;
+  padding:0 24px 0;
+}
+.bahn{max-width:680px;margin:0 auto}
+h1,h2,h3{font-family:"Bricolage Grotesque","Helvetica Neue",sans-serif;
+  letter-spacing:-.02em;text-wrap:balance}
+
+/* Kopf */
+.kopfzeile{display:flex;justify-content:space-between;align-items:center;
+  padding:26px 0;border-bottom:1px solid var(--linie)}
+.wortmarke{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;
+  font-size:21px;letter-spacing:-.02em}
+.wortmarke span{color:var(--akzent)}
+.kopfzeile .ort{font-size:15px;color:var(--gedaempft)}
+
+/* Hero */
+.hero{padding:70px 0 56px}
+h1{font-size:clamp(36px,6.4vw,56px);font-weight:700;line-height:1.08}
+.hero .unter{font-size:22px;color:var(--gedaempft);margin-top:22px;
+  max-width:34ch}
+.neu{display:inline-block;background:var(--flaeche);color:var(--akzent);
+  font-size:15px;font-weight:600;padding:9px 16px;border-radius:7px;
+  margin-bottom:26px}
+
+section{padding:52px 0;border-top:1px solid var(--linie)}
+h2{font-size:clamp(26px,4.2vw,34px);font-weight:700;margin-bottom:20px}
+h3{font-size:19px;font-weight:600;margin-bottom:6px}
+p{margin-bottom:17px}p:last-child{margin-bottom:0}
+strong{font-weight:600}
+
+.zitat{font-size:22px;line-height:1.42;border-left:4px solid var(--akzent);
+  padding-left:22px;margin:26px 0;color:var(--tinte)}
+
+.punkte{display:grid;gap:22px;margin-top:26px}
+.punkt{display:grid;grid-template-columns:34px 1fr;gap:16px;
+  align-items:start}
+.punkt .zahl{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;
+  font-size:16px;color:var(--akzent);border:2px solid var(--akzent);
+  border-radius:50%;width:32px;height:32px;display:flex;
+  align-items:center;justify-content:center;margin-top:2px}
+.punkt p{margin:0;font-size:18px;color:var(--gedaempft)}
+
+.liste{display:grid;gap:14px;margin-top:24px;list-style:none}
+.liste li{padding-left:28px;position:relative;color:var(--gedaempft)}
+.liste li::before{content:"";position:absolute;left:0;top:11px;
+  width:13px;height:2px;background:var(--akzent)}
+.liste li b{color:var(--tinte);font-weight:600}
+
+/* Preis */
+.preis{border:2px solid var(--tinte);border-radius:16px;padding:34px 32px;
+  margin-top:8px}
+.preis .betrag{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;
+  font-size:52px;letter-spacing:-.03em;line-height:1}
+.preis .alt{font-size:19px;color:var(--gedaempft);margin-top:10px}
+.preis .alt s{opacity:.75}
+.preis hr{border:none;border-top:1px solid var(--linie);margin:24px 0}
+.preis .drin{font-size:17px;color:var(--gedaempft)}
+
+.warn{background:var(--flaeche);border-radius:12px;padding:22px 26px;
+  margin-top:26px;font-size:17px;color:var(--gedaempft)}
+.warn b{color:var(--tinte)}
+
+/* FAQ */
+details{border-bottom:1px solid var(--linie);padding:18px 0}
+details summary{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;
+  font-size:19px;cursor:pointer;list-style:none;display:flex;
+  justify-content:space-between;gap:16px;align-items:center}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"+";color:var(--akzent);font-size:24px;
+  font-weight:500;line-height:1}
+details[open] summary::after{content:"–"}
+details summary:focus-visible{outline:2px solid var(--akzent);
+  outline-offset:4px;border-radius:3px}
+details p{margin-top:14px;color:var(--gedaempft);font-size:18px}
+
+/* Abschluss */
+.abschluss{background:var(--tief);color:var(--tief-text);border-radius:18px;
+  padding:52px 38px;margin:60px 0 80px;text-align:center}
+.abschluss h2{color:var(--tief-text);margin-bottom:16px}
+.abschluss p{color:#A8B3B1;max-width:36ch;margin:0 auto 26px}
+.knopf{display:inline-block;background:var(--akzent-hell);color:#08201F;
+  font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:19px;
+  padding:17px 34px;border-radius:10px;text-decoration:none}
+.knopf:focus-visible{outline:3px solid var(--tief-text);outline-offset:3px}
+.abschluss .direkt{margin-top:22px;font-size:17px;color:#A8B3B1}
+.abschluss .direkt a{color:var(--tief-text)}
+
+footer{padding:0 0 60px;font-size:15px;color:var(--gedaempft);
+  text-align:center}
+</style>
+
+<div class="bahn">
+
+<div class="kopfzeile">
+  <div class="wortmarke">Tag<span>werk</span></div>
+  <div class="ort">Rapperswil-Jona</div>
+</div>
+
+<div class="hero">
+  <p class="neu">Neuer Dienst — ich nehme drei Gründungskunden auf</p>
+  <h1>Ein Arbeitstag. Drei Handgriffe, die du nie wieder selbst machst.</h1>
+  <p class="unter">Für Betriebe, die täglich dieselbe Arbeit von Hand
+    erledigen und niemanden haben, der es anders hinstellt.</p>
+</div>
+
+<section>
+  <h2>Das Problem</h2>
+  <p class="zitat">„Ich tippe jeden Freitagabend dieselben Zahlen ab. Und am
+    Montag schreibe ich zum vierten Mal diese Woche dieselbe Offerte."</p>
+  <p>Es sind nie die grossen Dinge. Es sind zwanzig Minuten hier, eine halbe
+    Stunde dort — jede Woche, das ganze Jahr. Man weiss, dass es auch anders
+    ginge. Nur hat man weder Zeit noch jemanden, der es einrichtet.</p>
+</section>
+
+<section>
+  <h2>Was ich mache</h2>
+  <p>Ich nehme mir einen Arbeitstag für deinen Betrieb und automatisiere die
+    drei Aufgaben, die am meisten Zeit fressen. Mit den Programmen, die du
+    schon hast, oder mit kostenlosen. Danach läuft es ohne mich weiter.</p>
+  <div class="punkte">
+    <div class="punkt"><div class="zahl">1</div>
+      <div><h3>Vorgespräch, 20 Minuten</h3>
+        <p>Wir suchen die drei Aufgaben und rechnen zusammen aus, was sie
+          dich heute kosten. Kostenlos und unverbindlich.</p></div></div>
+    <div class="punkt"><div class="zahl">2</div>
+      <div><h3>Ein Arbeitstag</h3>
+        <p>Ich baue sie. Vor Ort oder aus der Ferne. Du brauchst etwa eine
+          Stunde für Rückfragen.</p></div></div>
+    <div class="punkt"><div class="zahl">3</div>
+      <div><h3>Übergabe, 30 Minuten</h3>
+        <p>Es läuft, du weisst wie, und du bekommst eine Anleitung auf
+          Deutsch. Zwei Wochen Nachbesserung sind dabei.</p></div></div>
+  </div>
+</section>
+
+<section>
+  <h2>Was das oft ist</h2>
+  <ul class="liste">
+    <li><b>Offerten</b> — Vorlage mit Textbausteinen statt jedes Mal neu schreiben</li>
+    <li><b>Anfragen per Mail</b> — sortiert, weitergeleitet, Antwort schon entworfen</li>
+    <li><b>Stundenzettel</b> — Übertrag in die Buchhaltung, ohne Abtippen</li>
+    <li><b>Termine</b> — Buchungslink mit Kalenderabgleich statt Telefonschlaufe</li>
+    <li><b>Immer dieselben Kundenfragen</b> — einmal beantwortet, danach automatisch</li>
+  </ul>
+  <p style="margin-top:24px">Du wählst drei. Wenn eine davon technisch nicht
+    geht, sage ich das im Vorgespräch — nicht hinterher.</p>
+</section>
+
+<section>
+  <h2>Was du davon hast</h2>
+  <ul class="liste">
+    <li><b>Kein Abo.</b> Einmal bezahlt, fertig. Keine monatliche Gebühr.</li>
+    <li><b>Keine Abhängigkeit.</b> Kein Passwort bei mir, keine Software, die nur ich bedienen kann.</li>
+    <li><b>Keine neuen Lizenzkosten.</b> Ich arbeite mit dem, was du hast, oder mit kostenlosen Werkzeugen.</li>
+    <li><b>Fester Preis.</b> Keine Offerte, keine Überraschung auf der Rechnung.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Preis</h2>
+  <div class="preis">
+    <div class="betrag">CHF 480.–</div>
+    <div class="alt">für die ersten drei Gründungskunden · danach
+      <s>CHF 780.–</s></div>
+    <hr>
+    <p class="drin">Enthalten: Vorgespräch, ein voller Arbeitstag, drei
+      Automatisierungen, Anleitung auf Deutsch, zwei Wochen Nachbesserung.
+      Rechnung mit QR-Einzahlschein, 10 Tage netto — zahlbar nach der
+      Übergabe.</p>
+  </div>
+  <div class="warn">
+    <b>Der reduzierte Preis hat einen Grund.</b> Tagwerk ist neu. Es gibt
+    noch keine Kundenstimmen, keine Referenzen und keine Fallbeispiele —
+    deshalb steht hier auch keine. Die Gegenleistung für den tieferen Preis
+    ist, dass du mich als Referenz nennen lässt, wenn du zufrieden bist. Bist
+    du es nicht, zahlst du nichts.
+  </div>
+</section>
+
+<section>
+  <h2>Häufige Fragen</h2>
+
+  <details><summary>Und wenn nichts Brauchbares dabei herauskommt?</summary>
+    <p>Dann zahlst du nicht. Das kann ich anbieten, weil ich noch nie einen
+      solchen Tag verkauft habe — es ist also weder ein Erfahrungswert noch
+      ein Versprechen aus der Praxis, sondern schlicht das Risiko, das ich
+      trage statt du.</p></details>
+
+  <details><summary>Kann das nicht ChatGPT?</summary>
+    <p>Teilweise ja. Der Unterschied ist, dass es danach ohne dich läuft,
+      statt dass du jedes Mal von Hand nachfragst und kopierst.</p></details>
+
+  <details><summary>Brauche ich neue Software?</summary>
+    <p>Nein, wenn es sich vermeiden lässt. Ich arbeite mit dem, was im
+      Betrieb schon vorhanden ist, und sonst mit kostenlosen Werkzeugen.
+      Wenn eine Aufgabe nur mit einem kostenpflichtigen Programm lösbar ist,
+      sage ich das vorher und du entscheidest.</p></details>
+
+  <details><summary>Wie lange dauert es, bis es läuft?</summary>
+    <p>Ein Arbeitstag. In der Regel innerhalb einer Woche nach dem
+      Vorgespräch.</p></details>
+
+  <details><summary>Was, wenn ich später Änderungen brauche?</summary>
+    <p>Zwei Wochen Nachbesserung sind enthalten. Danach entweder selbst —
+      dafür ist die Anleitung da — oder auf Zuruf gegen Stundenansatz. Kein
+      Vertrag, keine Bindung.</p></details>
+
+  <details><summary>Bist du versichert, gibt es einen Vertrag?</summary>
+    <p>Es gibt eine schriftliche Auftragsbestätigung mit Umfang, Preis und
+      Termin, bevor gearbeitet wird. Alles Weitere klären wir im
+      Vorgespräch.</p></details>
+</section>
+
+<div class="abschluss">
+  <h2>Zwanzig Minuten, unverbindlich</h2>
+  <p>Erzähl mir, was dich jede Woche am meisten Zeit kostet. Wenn ich es
+    nicht lösen kann, sage ich es dir.</p>
+  <a class="knopf" href="mailto:beamswiss@gmail.com?subject=Tagwerk%20Vorgespr%C3%A4ch">Vorgespräch anfragen</a>
+  <p class="direkt">Oder direkt anrufen —
+    <a href="tel:">Telefonnummer eintragen</a></p>
+</div>
+
+<footer>
+  <p>Tagwerk · Rapperswil-Jona · Impressum und Datenschutz folgen vor dem
+    ersten Auftrag</p>
+</footer>
+
+</div>
