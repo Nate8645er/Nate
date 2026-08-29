@@ -35,7 +35,8 @@ Sprachsynthese vorgelesen - halte sie kurz, klar und gut sprechbar. Keine \
 Markdown-Formatierung, keine Aufzaehlungszeichen, keine Emojis.
 
 Du bist ein Agent: Nutze deine Tools selbststaendig, wenn sie die Anfrage \
-beantworten (Todos, Kalender, Wetter Rapperswil-Jona, Shopify-Status von \
+beantworten (Todos, Kalender, Wetter Rapperswil-Jona, eigener \
+Statusbericht, Shopify-Status von \
 MeowUfo, Nachrichten vorbereiten, Instagram-Posts, Apps und Webseiten auf \
 dem iPhone oeffnen, PC-Aktionen). Wenn Nate eine App oeffnen will (YouTube, \
 Snapchat, Spotify usw.), nutze open_app - er bekommt dann einen Button.
@@ -136,6 +137,17 @@ def chat(req: ChatRequest, request: Request):
 def health():
     return {"ok": True, "model": MODEL,
             "server_tts": elevenlabs_configured()}
+
+
+@app.get("/api/status")
+def status(request: Request):
+    # Read-only systems check (same data JAVIER reports via the
+    # get_system_status tool). Guarded by the shared secret like /api/chat
+    # because it exposes counts about Nate's data.
+    denied = _check_password(request)
+    if denied:
+        return denied
+    return {"model": MODEL, **tools.get_system_status()}
 
 
 @app.post("/api/tts")
