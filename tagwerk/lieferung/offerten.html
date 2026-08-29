@@ -1,0 +1,797 @@
+<title>Offerten schreiben</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.2.1/jspdf.umd.min.js"
+        integrity="sha384-qovJwSBbRDPP5cEjCp8S0UP66wrvnjaa60XMOGzTNanrThcrGfXfnZkvgY8N1KT3"
+        crossorigin="anonymous"></script>
+
+<style>
+:root{
+  --grund:#EFF1EE;
+  --flaeche:#FBFCFA;
+  --tinte:#16211F;
+  --gedaempft:#5C6764;
+  --linie:#DBE0DB;
+  --linie-stark:#C3CAC4;
+  --petrol:#1F5A62;
+  --petrol-flaeche:#E3EBEA;
+  --warn:#8E5241;
+  --warn-flaeche:#F5E7E2;
+  --papier:#FFFFFF;
+  --papier-tinte:#111111;
+  --papier-schatten:rgba(22,33,31,.14);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --grund:#121817;
+    --flaeche:#1A2120;
+    --tinte:#E9EDE9;
+    --gedaempft:#9BA5A0;
+    --linie:#2B3432;
+    --linie-stark:#3C4644;
+    --petrol:#66AFB5;
+    --petrol-flaeche:#1B2E30;
+    --warn:#D0937F;
+    --warn-flaeche:#2E211D;
+    --papier:#F7F7F5;
+    --papier-tinte:#111111;
+    --papier-schatten:rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  --grund:#121817;
+  --flaeche:#1A2120;
+  --tinte:#E9EDE9;
+  --gedaempft:#9BA5A0;
+  --linie:#2B3432;
+  --linie-stark:#3C4644;
+  --petrol:#66AFB5;
+  --petrol-flaeche:#1B2E30;
+  --warn:#D0937F;
+  --warn-flaeche:#2E211D;
+  --papier:#F7F7F5;
+  --papier-tinte:#111111;
+  --papier-schatten:rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--grund);color:var(--tinte);
+  font-family:Archivo,"Helvetica Neue",Arial,sans-serif;
+  font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  padding:0 20px 70px
+}
+.bahn{max-width:1140px;margin:0 auto}
+
+h1{font-size:24px;font-weight:700;letter-spacing:-.02em}
+h2{font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--gedaempft)}
+
+.kopfzeile{display:flex;justify-content:space-between;align-items:center;
+  gap:20px;flex-wrap:wrap;padding:24px 0 20px;
+  border-bottom:1px solid var(--linie)}
+.marke{font-size:12px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--petrol)}
+.betrieb{font-size:14px;color:var(--gedaempft)}
+.betrieb b{color:var(--tinte);font-weight:600}
+
+.werkbank{display:grid;grid-template-columns:1fr 1fr;gap:34px;
+  align-items:start;padding-top:26px}
+@media (max-width:900px){.werkbank{grid-template-columns:1fr;gap:26px}}
+
+.spalte{display:grid;gap:22px}
+.karte{background:var(--flaeche);border:1px solid var(--linie);
+  border-radius:12px;padding:18px 18px 20px;display:grid;gap:14px}
+
+label{display:grid;gap:5px;font-size:13px;font-weight:600;
+  color:var(--gedaempft)}
+input,textarea{
+  font-family:inherit;font-size:15px;color:var(--tinte);
+  background:var(--grund);border:1px solid var(--linie-stark);
+  border-radius:7px;padding:9px 11px;width:100%
+}
+textarea{resize:vertical;min-height:66px;line-height:1.45}
+input:focus,textarea:focus{outline:2px solid var(--petrol);
+  outline-offset:-1px;border-color:var(--petrol)}
+input[type="number"]{font-variant-numeric:tabular-nums}
+.paar{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:520px){.paar{grid-template-columns:1fr}}
+
+/* Positionen */
+.pos{display:grid;grid-template-columns:64px 78px 1fr 92px 32px;gap:8px;
+  align-items:end}
+.pos .kopf{font-size:11px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--gedaempft)}
+.pos input{padding:8px 9px;font-size:14px}
+@media (max-width:640px){
+  .pos{grid-template-columns:1fr 1fr;gap:8px}
+  .pos .weg{display:none}
+  .pos .breit{grid-column:1 / -1}
+}
+.weck{
+  font-family:inherit;font-size:18px;line-height:1;cursor:pointer;
+  background:none;color:var(--gedaempft);border:1px solid var(--linie-stark);
+  border-radius:7px;height:37px;width:32px
+}
+.weck:hover{color:var(--warn);border-color:var(--warn)}
+.weck:focus-visible{outline:2px solid var(--petrol);outline-offset:2px}
+
+button.tat{
+  font-family:inherit;font-weight:600;cursor:pointer;border-radius:8px;
+  padding:11px 16px;font-size:15px;border:1px solid var(--linie-stark);
+  background:var(--grund);color:var(--tinte)
+}
+button.tat:focus-visible{outline:2px solid var(--petrol);outline-offset:2px}
+button.haupt{background:var(--petrol);color:var(--flaeche);
+  border-color:var(--petrol);font-weight:700}
+button.haupt[disabled]{opacity:.45;cursor:not-allowed}
+.tatreihe{display:flex;gap:10px;flex-wrap:wrap}
+
+.summen{display:grid;gap:7px;font-variant-numeric:tabular-nums;
+  border-top:1px solid var(--linie);padding-top:14px}
+.summen div{display:flex;justify-content:space-between;gap:16px;font-size:15px}
+.summen .gross{font-size:19px;font-weight:700;border-top:1px solid var(--linie);
+  padding-top:9px;margin-top:3px}
+.summen .hinweis{font-size:12px;color:var(--gedaempft);display:block}
+
+.hinweiskasten{background:var(--warn-flaeche);color:var(--warn);
+  border-radius:9px;padding:12px 14px;font-size:14px;font-weight:600}
+.hinweiskasten:empty{display:none}
+
+/* Papier */
+.papier{
+  background:var(--papier);color:var(--papier-tinte);
+  border-radius:3px;box-shadow:0 3px 18px var(--papier-schatten);
+  padding:40px 38px;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size:13px;line-height:1.5;min-height:520px
+}
+.papier .absender{font-size:17px;font-weight:700;margin-bottom:2px}
+.papier .klein{color:#555;font-size:12px}
+.papier .an{margin:34px 0 26px}
+.papier .titel{font-weight:700;font-size:14px}
+.papier .ortdatum{color:#555;margin-bottom:22px;font-size:12px}
+.papier .einleitung{margin-bottom:24px}
+.papier .rubrik{font-weight:700;margin-bottom:9px;padding-bottom:5px;
+  border-bottom:1px solid #CCC}
+.papier table{width:100%;border-collapse:collapse;
+  font-variant-numeric:tabular-nums}
+.papier td{padding:4px 0;vertical-align:top}
+.papier td.menge{white-space:nowrap;width:88px;color:#333}
+.papier td.geld{text-align:right;white-space:nowrap;width:108px}
+.papier .summenblock{margin-top:18px;padding-top:11px;border-top:1px solid #CCC;
+  font-variant-numeric:tabular-nums}
+.papier .summenblock div{display:flex;justify-content:space-between;
+  padding:2px 0}
+.papier .summenblock .fett{font-weight:700}
+.papier .fuss{margin-top:30px;color:#333}
+.papier .leer{color:#999;font-style:italic}
+
+details.anleitung{background:var(--flaeche);border:1px solid var(--linie);
+  border-radius:12px;padding:16px 18px;margin-top:34px}
+details.anleitung summary{font-size:16px;font-weight:700;cursor:pointer;
+  list-style:none;display:flex;justify-content:space-between;
+  align-items:center;gap:16px}
+details.anleitung summary::-webkit-details-marker{display:none}
+details.anleitung summary::after{content:"+";color:var(--petrol);
+  font-size:22px;line-height:1}
+details.anleitung[open] summary::after{content:"\2013"}
+details.anleitung summary:focus-visible{outline:2px solid var(--petrol);
+  outline-offset:3px;border-radius:3px}
+.anleitung ol{margin:14px 0 0 20px;display:grid;gap:9px;font-size:15px}
+.anleitung p{margin-top:14px;font-size:14px;color:var(--gedaempft)}
+.anleitung b{color:var(--tinte)}
+
+footer{margin-top:30px;padding-top:16px;border-top:1px solid var(--linie);
+  font-size:12px;color:var(--gedaempft)}
+</style>
+
+<div class="bahn">
+
+<div class="kopfzeile">
+  <div>
+    <div class="marke">Tagwerk</div>
+    <h1>Offerten schreiben</h1>
+  </div>
+  <div class="betrieb" id="betriebzeile"></div>
+</div>
+
+<div class="werkbank">
+
+  <div class="spalte">
+
+    <details class="karte" id="einstellungen">
+      <summary style="cursor:pointer;font-weight:700;list-style:none">
+        Ihr Betrieb — einmal ausfüllen</summary>
+      <label>Firma
+        <input id="e-firma" placeholder="Rüegg Malergeschäft"></label>
+      <label>Adresse, PLZ, Ort
+        <input id="e-adresse" placeholder="Stampfstrasse 77, 8645 Jona"></label>
+      <div class="paar">
+        <label>Unterschrift
+          <input id="e-unterschrift" placeholder="M. Rüegg"></label>
+        <label>Ort für die Offerte
+          <input id="e-ort" placeholder="Jona"></label>
+      </div>
+      <div class="paar">
+        <label>MwSt-Satz in %
+          <input id="e-mwst" type="number" step="0.1" min="0" value="0"></label>
+        <label>Nächste Offertnummer
+          <input id="e-nummer" placeholder="2026-001"></label>
+      </div>
+      <p style="font-size:13px;color:var(--gedaempft)">
+        Wer nicht mehrwertsteuerpflichtig ist, lässt den Satz auf 0 — dann
+        erscheint keine MwSt-Zeile auf der Offerte.</p>
+    </details>
+
+    <div class="karte">
+      <h2>Kunde</h2>
+      <label>Name
+        <input id="k-name" placeholder="Meier &amp; Co AG"></label>
+      <label>Adresse, PLZ, Ort
+        <input id="k-adresse" placeholder="Zürcherstrasse 14, 8640 Rapperswil"></label>
+      <div class="paar">
+        <label>Datum <input id="k-datum" type="date"></label>
+        <label>Gültig bis <input id="k-gueltig" type="date"></label>
+      </div>
+      <label>Einleitungssatz
+        <textarea id="k-einleitung"></textarea></label>
+    </div>
+
+    <div class="karte">
+      <h2>Leistungen</h2>
+      <div class="pos" aria-hidden="true">
+        <div class="kopf">Menge</div>
+        <div class="kopf">Einheit</div>
+        <div class="kopf">Bezeichnung</div>
+        <div class="kopf">CHF</div>
+        <div class="kopf weg"></div>
+      </div>
+      <div id="positionen" style="display:grid;gap:8px"></div>
+      <div class="tatreihe">
+        <button class="tat" id="plus" type="button">+ Zeile</button>
+      </div>
+      <div class="summen" id="summen"></div>
+    </div>
+
+    <div class="hinweiskasten" id="hinweis"></div>
+
+    <div class="tatreihe">
+      <button class="tat haupt" id="sichern" type="button">Als PDF sichern</button>
+      <button class="tat" id="drucken" type="button">Drucken</button>
+      <button class="tat" id="neu" type="button">Neue Offerte</button>
+    </div>
+
+  </div>
+
+  <div class="papier" id="papier"></div>
+
+</div>
+
+<details class="anleitung">
+  <summary>Anleitung</summary>
+  <ol>
+    <li>Oben <b>Ihr Betrieb</b> einmal ausfüllen. Das bleibt gespeichert,
+      Sie müssen es nie wieder eintippen.</li>
+    <li>Kunde und Adresse eintragen. Datum steht schon, gültig bis ist
+      automatisch dreissig Tage später.</li>
+    <li>Für jede Leistung eine Zeile: Menge, Einheit, was gemacht wird,
+      Betrag. Mit <b>+ Zeile</b> kommt eine weitere dazu.</li>
+    <li>Rechts sehen Sie die fertige Offerte mitlaufen. <b>Die Summen
+      rechnet das Programm</b> — Sie tippen kein Total mehr ein.</li>
+    <li><b>Als PDF sichern</b> und die Datei dem Kunden schicken.</li>
+    <li><b>Neue Offerte</b> leert die Felder und zählt die Offertnummer
+      eine weiter.</li>
+  </ol>
+  <p><b>Wo liegen meine Daten?</b> Alles bleibt in diesem Browser, auf
+    diesem Gerät. Nichts geht ins Internet, niemand sonst sieht es. Wenn
+    Sie den Browserverlauf mit Website-Daten löschen, sind auch die
+    Betriebsangaben weg — dann einmal neu eintippen.</p>
+  <p><b>Etwas stimmt nicht?</b> Melden Sie sich. Zwei Wochen Nachbesserung
+    sind im Preis enthalten.</p>
+</details>
+
+<footer>
+  Tagwerk · Rapperswil-Jona — läuft ohne Internet, ohne Abo, ohne Konto.
+</footer>
+
+</div>
+
+<script>
+"use strict";
+
+var SCHL_BETRIEB = "tagwerk-offerte-betrieb-v1";
+var EINLEITUNG = "Gerne unterbreiten wir Ihnen folgende Offerte.";
+
+function lesen(schluessel, vorgabe){
+  try{
+    var roh = localStorage.getItem(schluessel);
+    return roh ? JSON.parse(roh) : vorgabe;
+  }catch(e){ return vorgabe; }
+}
+function schreiben(schluessel, wert){
+  try{ localStorage.setItem(schluessel, JSON.stringify(wert)); }catch(e){}
+}
+
+var betrieb = lesen(SCHL_BETRIEB, {
+  firma:"", adresse:"", unterschrift:"", ort:"", mwst:0, nummer:""
+});
+
+/* ---------------------------------------------------------- Hilfsmittel */
+
+function chf(betrag){
+  // Schweizer Schreibweise: 1'234.50
+  var n = (Math.round(betrag * 100) / 100).toFixed(2);
+  var teile = n.split(".");
+  return teile[0].replace(/\B(?=(\d{3})+(?!\d))/g, "'") + "." + teile[1];
+}
+
+function datumCH(iso){
+  if(!iso) return "";
+  var t = iso.split("-");
+  return t.length === 3 ? t[2] + "." + t[1] + "." + t[0] : iso;
+}
+
+function heute(){ return new Date().toISOString().slice(0,10); }
+function inTagen(n){
+  var d = new Date();
+  d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0,10);
+}
+
+function naechsteNummer(nr){
+  // "2026-001" -> "2026-002". Was nicht so aussieht, bleibt unberuehrt.
+  var m = /^(.*?)(\d+)$/.exec(nr || "");
+  if(!m) return nr || "";
+  var ziffern = m[2];
+  var weiter = String(parseInt(ziffern, 10) + 1);
+  while(weiter.length < ziffern.length) weiter = "0" + weiter;
+  return m[1] + weiter;
+}
+
+function el(id){ return document.getElementById(id); }
+
+/* ------------------------------------------------------------ Positionen */
+
+var positionen = [];
+
+function zeileBauen(pos, index){
+  var reihe = document.createElement("div");
+  reihe.className = "pos";
+
+  function feld(schluessel, platzhalter, art, klasse){
+    var i = document.createElement("input");
+    i.value = pos[schluessel];
+    i.placeholder = platzhalter;
+    if(art) i.type = art;
+    if(art === "number"){ i.step = "0.05"; i.min = "0"; }
+    if(klasse) i.className = klasse;
+    i.setAttribute("aria-label", platzhalter + ", Zeile " + (index + 1));
+    i.addEventListener("input", function(){
+      pos[schluessel] = i.value;
+      zeichnen();
+    });
+    return i;
+  }
+
+  reihe.appendChild(feld("menge", "45", "text"));
+  reihe.appendChild(feld("einheit", "m2", "text"));
+  reihe.appendChild(feld("bezeichnung", "Wände grundieren", "text", "breit"));
+  reihe.appendChild(feld("preis", "0.00", "number"));
+
+  var weg = document.createElement("button");
+  weg.type = "button";
+  weg.className = "weck";
+  weg.textContent = "×";
+  weg.setAttribute("aria-label", "Zeile " + (index + 1) + " entfernen");
+  weg.addEventListener("click", function(){
+    positionen.splice(index, 1);
+    if(positionen.length === 0) positionen.push(leereZeile());
+    zeichnenAlles();
+  });
+  reihe.appendChild(weg);
+  return reihe;
+}
+
+function leereZeile(){
+  return {menge:"", einheit:"", bezeichnung:"", preis:""};
+}
+
+function positionenZeichnen(){
+  var behaelter = el("positionen");
+  behaelter.replaceChildren.apply(
+    behaelter, positionen.map(zeileBauen));
+}
+
+/* --------------------------------------------------------------- Rechnen */
+
+function gefuellte(){
+  return positionen.filter(function(p){
+    return p.bezeichnung.trim() !== "" || parseFloat(p.preis) > 0;
+  });
+}
+
+function rechnen(){
+  var netto = 0;
+  gefuellte().forEach(function(p){
+    var z = parseFloat(p.preis);
+    if(!isNaN(z)) netto += z;
+  });
+  netto = Math.round(netto * 100) / 100;
+  var satz = parseFloat(betrieb.mwst) || 0;
+  var mwst = Math.round(netto * satz) / 100;
+  return {netto:netto, satz:satz, mwst:mwst, brutto:netto + mwst};
+}
+
+/* ------------------------------------------------------------- Bemaengeln */
+
+function fehlt(){
+  var f = [];
+  if(!betrieb.firma.trim()) f.push("Ihre Firma");
+  if(!el("k-name").value.trim()) f.push("Name des Kunden");
+  if(gefuellte().length === 0) f.push("mindestens eine Leistung");
+  var ohnePreis = gefuellte().filter(function(p){
+    return p.bezeichnung.trim() !== "" && !(parseFloat(p.preis) > 0);
+  });
+  if(ohnePreis.length) f.push("ein Betrag bei „" +
+    ohnePreis[0].bezeichnung.trim() + "“");
+  return f;
+}
+
+/* --------------------------------------------------------------- Vorschau */
+
+function daten(){
+  return {
+    firma: betrieb.firma.trim(),
+    firmaAdresse: betrieb.adresse.trim(),
+    unterschrift: betrieb.unterschrift.trim(),
+    ort: betrieb.ort.trim(),
+    nummer: betrieb.nummer.trim(),
+    kunde: el("k-name").value.trim(),
+    kundeAdresse: el("k-adresse").value.trim(),
+    datum: el("k-datum").value,
+    gueltig: el("k-gueltig").value,
+    einleitung: el("k-einleitung").value.trim(),
+    zeilen: gefuellte(),
+    summe: rechnen()
+  };
+}
+
+function zeile(text, klasse){
+  var d = document.createElement("div");
+  if(klasse) d.className = klasse;
+  d.textContent = text;
+  return d;
+}
+
+function platzhalter(text){
+  var d = document.createElement("div");
+  d.className = "leer";
+  d.textContent = text;
+  return d;
+}
+
+function vorschauZeichnen(){
+  var d = daten();
+  var teile = [];
+
+  teile.push(d.firma ? zeile(d.firma, "absender")
+    : platzhalter("Ihre Firma — oben eintragen"));
+  if(d.firmaAdresse) teile.push(zeile(d.firmaAdresse, "klein"));
+
+  var an = document.createElement("div");
+  an.className = "an";
+  if(d.kunde){
+    an.appendChild(zeile(d.kunde));
+    if(d.kundeAdresse) an.appendChild(zeile(d.kundeAdresse));
+  }else{
+    an.appendChild(platzhalter("Kunde — links eintragen"));
+  }
+  teile.push(an);
+
+  teile.push(zeile("Offerte " + (d.nummer || ""), "titel"));
+  teile.push(zeile(
+    (d.ort ? d.ort + ", " : "") + datumCH(d.datum), "ortdatum"));
+  if(d.einleitung) teile.push(zeile(d.einleitung, "einleitung"));
+
+  teile.push(zeile("Leistungen", "rubrik"));
+
+  if(d.zeilen.length){
+    var tabelle = document.createElement("table");
+    d.zeilen.forEach(function(p){
+      var tr = document.createElement("tr");
+      var m = document.createElement("td");
+      m.className = "menge";
+      m.textContent = (p.menge + " " + p.einheit).trim();
+      var b = document.createElement("td");
+      b.textContent = p.bezeichnung;
+      var g = document.createElement("td");
+      g.className = "geld";
+      // Genau wie im PDF - die Vorschau muss zeigen, was rausgeht.
+      g.textContent = "CHF " + chf(parseFloat(p.preis) || 0);
+      tr.appendChild(m); tr.appendChild(b); tr.appendChild(g);
+      tabelle.appendChild(tr);
+    });
+    teile.push(tabelle);
+  }else{
+    teile.push(platzhalter("Noch keine Leistung erfasst"));
+  }
+
+  var block = document.createElement("div");
+  block.className = "summenblock";
+  function summenzeile(text, betrag, fett){
+    var r = document.createElement("div");
+    if(fett) r.className = "fett";
+    var a = document.createElement("span"); a.textContent = text;
+    var b = document.createElement("span");
+    b.textContent = "CHF " + chf(betrag);
+    r.appendChild(a); r.appendChild(b);
+    return r;
+  }
+  if(d.summe.satz > 0){
+    block.appendChild(summenzeile("Total exkl. MwSt", d.summe.netto));
+    block.appendChild(summenzeile(
+      "MwSt " + d.summe.satz + "%", d.summe.mwst));
+    block.appendChild(summenzeile("Total inkl. MwSt", d.summe.brutto, true));
+  }else{
+    block.appendChild(summenzeile("Total", d.summe.netto, true));
+  }
+  teile.push(block);
+
+  var fuss = document.createElement("div");
+  fuss.className = "fuss";
+  if(d.gueltig){
+    fuss.appendChild(zeile(
+      "Diese Offerte ist gültig bis " + datumCH(d.gueltig) + "."));
+  }
+  fuss.appendChild(document.createElement("br"));
+  fuss.appendChild(zeile("Freundliche Grüsse"));
+  if(d.unterschrift) fuss.appendChild(zeile(d.unterschrift));
+  teile.push(fuss);
+
+  var papier = el("papier");
+  papier.replaceChildren.apply(papier, teile);
+}
+
+function summenZeichnen(){
+  var s = rechnen();
+  var kasten = el("summen");
+  var teile = [];
+  function reihe(text, betrag, klasse){
+    var r = document.createElement("div");
+    if(klasse) r.className = klasse;
+    var a = document.createElement("span"); a.textContent = text;
+    var b = document.createElement("span");
+    b.textContent = "CHF " + chf(betrag);
+    r.appendChild(a); r.appendChild(b);
+    return r;
+  }
+  if(s.satz > 0){
+    teile.push(reihe("Total exkl. MwSt", s.netto));
+    teile.push(reihe("MwSt " + s.satz + "%", s.mwst));
+    teile.push(reihe("Total inkl. MwSt", s.brutto, "gross"));
+  }else{
+    teile.push(reihe("Total", s.netto, "gross"));
+  }
+  var h = document.createElement("span");
+  h.className = "hinweis";
+  h.textContent = "Aus den Zeilen gerechnet — nicht eingetippt.";
+  teile.push(h);
+  kasten.replaceChildren.apply(kasten, teile);
+}
+
+function hinweisZeichnen(){
+  var f = fehlt();
+  el("hinweis").textContent = f.length
+    ? "Fehlt noch: " + f.join(", ") + "."
+    : "";
+  el("sichern").disabled = f.length > 0;
+}
+
+function betriebzeile(){
+  var z = el("betriebzeile");
+  z.replaceChildren();
+  if(betrieb.firma.trim()){
+    var b = document.createElement("b");
+    b.textContent = betrieb.firma.trim();
+    z.appendChild(document.createTextNode("Offerte "));
+    var nr = document.createElement("b");
+    nr.textContent = betrieb.nummer || "";
+    z.appendChild(nr);
+    z.appendChild(document.createTextNode(" · "));
+    z.appendChild(b);
+  }else{
+    z.textContent = "Bitte zuerst „Ihr Betrieb“ ausfüllen";
+  }
+}
+
+function zeichnen(){
+  vorschauZeichnen();
+  summenZeichnen();
+  hinweisZeichnen();
+  betriebzeile();
+}
+function zeichnenAlles(){
+  positionenZeichnen();
+  zeichnen();
+}
+
+/* ------------------------------------------------------------------- PDF */
+
+function pdfBauen(){
+  var d = daten();
+  var doc = new window.jspdf.jsPDF({unit:"mm", format:"a4"});
+  var L = 20, R = 190, y = 24;
+
+  function schreib(text, groesse, fett, x, breite){
+    doc.setFontSize(groesse);
+    doc.setFont("helvetica", fett ? "bold" : "normal");
+    var zeilen = breite ? doc.splitTextToSize(text, breite) : [text];
+    zeilen.forEach(function(z){
+      if(y > 272){ doc.addPage(); y = 24; }
+      doc.text(z, x === undefined ? L : x, y);
+      y += groesse * 0.42 + 1.6;
+    });
+  }
+  function rechts(text, groesse, fett, oben){
+    doc.setFontSize(groesse);
+    doc.setFont("helvetica", fett ? "bold" : "normal");
+    doc.text(text, R, oben, {align:"right"});
+  }
+
+  schreib(d.firma, 15, true);
+  if(d.firmaAdresse) schreib(d.firmaAdresse, 10, false);
+
+  y += 14;
+  schreib(d.kunde, 11, false);
+  if(d.kundeAdresse) schreib(d.kundeAdresse, 11, false);
+
+  y += 12;
+  schreib("Offerte " + d.nummer, 12, true);
+  schreib((d.ort ? d.ort + ", " : "") + datumCH(d.datum), 10, false);
+
+  if(d.einleitung){ y += 6; schreib(d.einleitung, 11, false, L, R - L); }
+
+  y += 9;
+  schreib("Leistungen", 11, true);
+  doc.setDrawColor(180);
+  doc.line(L, y - 3, R, y - 3);
+  y += 2;
+
+  doc.setFontSize(10.5);
+  d.zeilen.forEach(function(p){
+    if(y > 262){ doc.addPage(); y = 24; }
+    doc.setFont("helvetica", "normal");
+    doc.text((p.menge + " " + p.einheit).trim(), L, y);
+    var text = doc.splitTextToSize(p.bezeichnung, 92);
+    doc.text(text, L + 24, y);
+    doc.text("CHF " + chf(parseFloat(p.preis) || 0), R, y, {align:"right"});
+    y += Math.max(text.length, 1) * 5 + 1.4;
+  });
+
+  y += 4;
+  doc.line(L, y, R, y);
+  y += 7;
+  if(d.summe.satz > 0){
+    doc.setFont("helvetica", "normal"); doc.setFontSize(10.5);
+    doc.text("Total exkl. MwSt", L, y);
+    rechts("CHF " + chf(d.summe.netto), 10.5, false, y); y += 5.6;
+    doc.text("MwSt " + d.summe.satz + "%", L, y);
+    rechts("CHF " + chf(d.summe.mwst), 10.5, false, y); y += 6.6;
+    doc.setFont("helvetica", "bold"); doc.setFontSize(12);
+    doc.text("Total inkl. MwSt", L, y);
+    rechts("CHF " + chf(d.summe.brutto), 12, true, y); y += 8;
+  }else{
+    doc.setFont("helvetica", "bold"); doc.setFontSize(12);
+    doc.text("Total", L, y);
+    rechts("CHF " + chf(d.summe.netto), 12, true, y); y += 8;
+  }
+
+  y += 8;
+  if(d.gueltig){
+    schreib("Diese Offerte ist gültig bis " + datumCH(d.gueltig) + ".",
+      10.5, false);
+  }
+  y += 7;
+  schreib("Freundliche Grüsse", 10.5, false);
+  y += 4;
+  if(d.unterschrift) schreib(d.unterschrift, 10.5, false);
+
+  return doc;
+}
+
+function dateiname(){
+  var nr = (betrieb.nummer || "ohne-nummer").replace(/[^\w.-]+/g, "-");
+  return "offerte-" + nr + ".pdf";
+}
+
+/* ---------------------------------------------------------------- Bedienung */
+
+var speichern = null;
+claude.use("downloads").then(function(d){
+  speichern = d;
+  if(!d){
+    el("sichern").textContent = "PDF öffnen";
+  }
+}).catch(function(){});
+
+el("sichern").addEventListener("click", function(){
+  if(fehlt().length) return;
+  var doc;
+  try{
+    doc = pdfBauen();
+  }catch(e){
+    el("hinweis").textContent =
+      "Die PDF liess sich nicht erzeugen. Bitte über Drucken versuchen.";
+    return;
+  }
+  if(speichern){
+    speichern.save({filename: dateiname(), data: doc.output("blob")})
+      .then(function(){
+        el("hinweis").textContent = "";
+      })
+      .catch(function(fehler){
+        var text = fehler && fehler.code === "declined"
+          ? ""
+          : "Speichern hat nicht geklappt. Bitte Drucken benutzen.";
+        el("hinweis").textContent = text;
+      });
+  }else{
+    // Kein Speichern moeglich: die PDF im eigenen Fenster zeigen,
+    // von dort laesst sie sich sichern oder drucken.
+    try{ doc.output("dataurlnewwindow"); }
+    catch(e){ window.print(); }
+  }
+});
+
+el("drucken").addEventListener("click", function(){ window.print(); });
+
+el("plus").addEventListener("click", function(){
+  positionen.push(leereZeile());
+  zeichnenAlles();
+});
+
+el("neu").addEventListener("click", function(){
+  betrieb.nummer = naechsteNummer(betrieb.nummer);
+  el("e-nummer").value = betrieb.nummer;
+  schreiben(SCHL_BETRIEB, betrieb);
+  el("k-name").value = "";
+  el("k-adresse").value = "";
+  el("k-datum").value = heute();
+  el("k-gueltig").value = inTagen(30);
+  el("k-einleitung").value = EINLEITUNG;
+  positionen = [leereZeile(), leereZeile(), leereZeile()];
+  zeichnenAlles();
+  el("k-name").focus();
+});
+
+/* Einstellungen an den Speicher binden */
+[["e-firma","firma"],["e-adresse","adresse"],
+ ["e-unterschrift","unterschrift"],["e-ort","ort"],
+ ["e-mwst","mwst"],["e-nummer","nummer"]].forEach(function(paar){
+  var feld = el(paar[0]);
+  feld.value = betrieb[paar[1]];
+  feld.addEventListener("input", function(){
+    betrieb[paar[1]] = feld.value;
+    schreiben(SCHL_BETRIEB, betrieb);
+    zeichnen();
+  });
+});
+
+["k-name","k-adresse","k-datum","k-gueltig","k-einleitung"]
+  .forEach(function(id){
+    el(id).addEventListener("input", zeichnen);
+  });
+
+/* Erster Start */
+el("k-datum").value = heute();
+el("k-gueltig").value = inTagen(30);
+el("k-einleitung").value = EINLEITUNG;
+if(!betrieb.nummer){
+  betrieb.nummer = new Date().getFullYear() + "-001";
+  el("e-nummer").value = betrieb.nummer;
+}
+if(!betrieb.firma.trim()) el("einstellungen").open = true;
+positionen = [leereZeile(), leereZeile(), leereZeile()];
+zeichnenAlles();
+</script>
