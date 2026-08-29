@@ -11,6 +11,7 @@
 #   python3 dashboard.py          Terminal
 #   python3 dashboard.py --html   erzeugt dashboard.html
 
+import html
 import json
 import os
 import sys
@@ -94,7 +95,19 @@ def terminal(d):
     print()
 
 
-def html(d):
+def _sicher(wert):
+    """Fremdtext fuer HTML entschaerfen.
+
+    Alles aus status.json ist Fremdtext - auch wenn es aktuell nur Nate
+    dort eintraegt. Ein Firmenname wie "Meier & Co <GmbH>" aus dem
+    Gewerbeverzeichnis zerlegt sonst die Seite, und sobald die Datei
+    einmal aus einer anderen Quelle gefuellt wird, waere es eine Luecke
+    statt eines Schoenheitsfehlers.
+    """
+    return html.escape(str(wert), quote=True)
+
+
+def seite_bauen(d):
     t, g, z = d["trichter"], d["geld"], d["zeit"]
     hoechst = max(t.get(k, 0) for k, _ in TRICHTER) or 1
 
@@ -104,19 +117,22 @@ def html(d):
             wert = t.get(schluessel, 0)
             breite = 100 * wert / hoechst if wert else 0
             klasse = " ziel" if schluessel == "kunden" else ""
+            # name und klasse stammen aus TRICHTER, breite und wert sind
+            # Zahlen - alles davon steht im Code, nicht in status.json.
             aus.append(
                 '<div class="stufe%s"><div class="n">%s</div>'
                 '<div class="bar"><i style="width:%.1f%%"></i></div>'
-                '<div class="w">%d</div></div>' % (klasse, name, breite, wert))
+                '<div class="w">%d</div></div>'
+                % (klasse, _sicher(name), breite, wert))
         return "".join(aus)
 
     def liste(eintraege, leer):
         if not eintraege:
-            return '<li class="leer">%s</li>' % leer
-        return "".join("<li>%s</li>" % e for e in eintraege)
+            return '<li class="leer">%s</li>' % _sicher(leer)
+        return "".join("<li>%s</li>" % _sicher(e) for e in eintraege)
 
     seite = HTML_VORLAGE % {
-        "stand": d["stand"],
+        "stand": _sicher(d["stand"]),
         "stufen": zeilen(),
         "absagen": t.get("absagen", 0),
         "umsatz": g["umsatz_chf"],
@@ -124,12 +140,12 @@ def html(d):
         "gewinn": g["gewinn_chf"],
         "verkauf": z["verkaufsstunden_diese_woche"],
         "bauen": z["baustunden_diese_woche"],
-        "engpass": naechster_engpass(t),
+        "engpass": _sicher(naechster_engpass(t)),
         "aktionen": liste(d["naechste_aktionen"], "keine"),
         "blockiert": liste(d.get("blockiert", []), "nichts"),
         "web": "erreichbar" if d["website"]["erreichbar"] else "NICHT erreichbar",
         "zahlung": "eingerichtet" if d["zahlung"]["eingerichtet"]
-                   else "offen — " + d["zahlung"]["offener_schritt"],
+                   else "offen — " + _sicher(d["zahlung"]["offener_schritt"]),
         "plaetze": "%d von %d vergeben" % (
             d["angebot"]["gruendungsplaetze_vergeben"],
             d["angebot"]["gruendungsplaetze_total"]),
@@ -224,7 +240,7 @@ def main(argumente):
         return 1
     d = laden()
     if "--html" in argumente:
-        print("Geschrieben: %s" % html(d))
+        print("Geschrieben: %s" % seite_bauen(d))
     else:
         terminal(d)
     return 0
