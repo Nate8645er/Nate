@@ -1,6 +1,6 @@
 {
   "_hinweis": "Einzige Wahrheitsquelle fuer das Dashboard. Von Hand pflegen. Nichts hier darf geschaetzt oder gerundet sein - eine erfundene Zahl macht das ganze Dashboard wertlos.",
-  "stand": "2026-08-28",
+  "stand": "2026-08-29",
   "business": "Tagwerk",
   "angebot": {
     "beschreibung": "Ein Arbeitstag, drei Automatisierungen",
@@ -12,8 +12,12 @@
   "website": {
     "url": "https://claude.ai/code/artifact/5eead97a-8f14-4034-b6a6-db41dc31c091",
     "erreichbar": true,
-    "geprueft_am": "2026-08-28",
+    "geprueft_am": "2026-08-29",
     "eigene_domain": false
+  },
+  "anrufblatt": {
+    "url": "https://claude.ai/code/artifact/c0b9573d-1870-40f0-b576-4bb4084f5aa6",
+    "zweck": "Die sieben Nummern zum Antippen plus Skript - fuer das Handy waehrend der Anrufstunde"
   },
   "zahlung": {
     "weg": "QR-Rechnung, 10 Tage netto",
@@ -42,10 +46,10 @@
     "baustunden_diese_woche": 0
   },
   "naechste_aktionen": [
-    "Anrufen: 7 verifizierte Nummern in akquise/leads.md, 16:30-17:30",
-    "Bei 4 und 5 anfangen - Handynummern, gehen direkt an den Inhaber",
-    "Telefonnummer auf der Website eintragen - steht als Platzhalter",
-    "IBAN fuer die QR-Rechnung hinterlegen"
+    "Anrufblatt auf dem Handy oeffnen, Nummer 4 antippen - Handynummer",
+    "Danach 5, dann 1 bis 3, 6, 7 - Reihenfolge steht im Blatt",
+    "Nachname im Skript einsetzen, bevor der erste Anruf rausgeht",
+    "IBAN fuer die QR-Rechnung hinterlegen - erst noetig, wenn jemand zusagt"
   ],
   "blockiert": [
     "Erster Anruf - kann nur Nate selbst machen"
