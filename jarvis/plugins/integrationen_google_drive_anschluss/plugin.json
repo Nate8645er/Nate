@@ -1,0 +1,11 @@
+{
+  "id": "integrationen_google_drive_anschluss",
+  "name": "Google-Drive-Anschluss",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Google-Drive-Anschluss“ aus der Katalog-Kategorie „Integrationen“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

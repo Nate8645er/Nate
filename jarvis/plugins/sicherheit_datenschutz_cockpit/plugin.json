@@ -1,0 +1,11 @@
+{
+  "id": "sicherheit_datenschutz_cockpit",
+  "name": "Datenschutz-Cockpit",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Datenschutz-Cockpit“ aus der Katalog-Kategorie „Sicherheit“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

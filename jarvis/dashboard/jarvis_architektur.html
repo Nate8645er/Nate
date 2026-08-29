@@ -1,0 +1,148 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>J.A.R.V.I.S. — Systemarchitektur</title>
+<meta name="description" content="JARVIS Systemarchitektur im roten HUD-Look. Das Gehirn ist Fable 5, nicht Haiku.">
+<style>
+  :root{
+    --bg:#08060a; --panel:rgba(30,8,8,0.42); --edge:rgba(255,90,40,0.35);
+    --accent:#ff5a28; --accent-2:#ffb020; --hot:#ff2d2d; --text:#ffd9c7; --muted:#b07a68;
+    --ok:#37f0a0; --blue:#5aa9ff; --green:#4ade80; --purple:#b98cff; --amber:#ffc247;
+    --mono:"SFMono-Regular","Consolas","Roboto Mono",ui-monospace,monospace;
+    --sans:"Segoe UI",system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    background:
+      radial-gradient(1000px 600px at 50% -8%, rgba(255,70,30,0.16), transparent 60%),
+      radial-gradient(800px 500px at 50% 120%, rgba(255,130,20,0.10), transparent 60%),
+      var(--bg);
+    color:var(--text); font-family:var(--sans); min-height:100vh; padding:22px 16px 60px;
+  }
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;
+    background:repeating-linear-gradient(to bottom,rgba(255,255,255,0.02) 0 1px,transparent 1px 3px);
+    mix-blend-mode:overlay;opacity:.5;}
+  .wrap{max-width:1080px;margin:0 auto;position:relative;z-index:1;}
+  header{text-align:center;border:1px solid var(--edge);border-radius:14px;padding:16px;
+    background:linear-gradient(180deg,rgba(255,70,30,0.10),rgba(0,0,0,0.20));box-shadow:0 0 30px rgba(255,70,30,0.10) inset;}
+  header h1{margin:0;letter-spacing:6px;font-size:clamp(20px,4vw,32px);}
+  header .sub{font-family:var(--mono);color:var(--muted);font-size:12px;letter-spacing:2px;margin-top:6px;}
+  header .brainline{margin-top:10px;font-family:var(--mono);font-size:13px;color:var(--accent-2);}
+  header .brainline b{color:var(--accent);}
+
+  .layer{margin:22px 0;}
+  .layer-label{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;text-align:center;margin-bottom:10px;}
+  .group{border:1px dashed var(--edge);border-radius:14px;padding:14px;background:var(--panel);}
+  .group-title{font-family:var(--mono);font-size:12px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;margin:0 0 12px;text-align:center;}
+  .row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
+  .cols2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:760px){.cols2{grid-template-columns:1fr;}}
+
+  .box{flex:1;min-width:170px;border:1px solid var(--edge);border-radius:12px;padding:12px 14px;background:rgba(0,0,0,0.28);text-align:center;}
+  .box .t{font-weight:700;font-size:14px;}
+  .box .d{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4;}
+  .box.blue{border-color:rgba(90,169,255,.5);box-shadow:0 0 16px rgba(90,169,255,.12) inset;}
+  .box.green{border-color:rgba(74,222,128,.5);box-shadow:0 0 16px rgba(74,222,128,.12) inset;}
+  .box.purple{border-color:rgba(185,140,255,.5);box-shadow:0 0 16px rgba(185,140,255,.12) inset;}
+  .box.amber{border-color:rgba(255,194,71,.5);box-shadow:0 0 16px rgba(255,194,71,.12) inset;}
+  .box.user{max-width:220px;margin:0 auto;flex:none;border-color:var(--accent);}
+
+  /* Das Gehirn: Fable 5 mit gluehendem Kern */
+  .brain{position:relative;border:1.5px solid var(--accent);background:radial-gradient(120px 90px at 50% 40%,rgba(255,90,30,0.22),rgba(0,0,0,0.30));box-shadow:0 0 28px rgba(255,90,30,0.35);}
+  .brain .core{width:40px;height:40px;border-radius:50%;margin:2px auto 8px;
+    background:radial-gradient(circle at 50% 45%,#fff2d0 0%,var(--accent-2) 24%,var(--accent) 52%,var(--hot) 82%,#5a0d05 100%);
+    box-shadow:0 0 26px rgba(255,90,30,0.6);animation:pulse 2.4s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{transform:scale(1);filter:brightness(1);}50%{transform:scale(1.08);filter:brightness(1.25);}}
+  .brain .tag{display:inline-block;margin-top:6px;font-family:var(--mono);font-size:10px;letter-spacing:1px;color:#1a0603;background:var(--accent-2);border-radius:999px;padding:2px 8px;font-weight:800;}
+  .brain .old{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:6px;}
+  .brain .old s{color:#8a5a4a;}
+
+  .flow{display:flex;flex-direction:column;align-items:center;gap:2px;margin:6px 0;}
+  .arrow{color:var(--accent);font-size:20px;line-height:1;}
+  .arrow .lbl{font-family:var(--mono);font-size:11px;color:var(--accent-2);letter-spacing:1px;}
+  .note{text-align:center;font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:8px;}
+  footer{text-align:center;color:var(--muted);font-size:11px;margin-top:26px;line-height:1.6;}
+  code{color:var(--accent-2);}
+  a{color:var(--accent);}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>J.A.R.V.I.S. — SYSTEMARCHITEKTUR</h1>
+    <div class="sub">PERSÖNLICHER KI-ASSISTENT · SPRACHSTEUERUNG</div>
+    <div class="brainline">🧠 Gehirn: <b>Fable 5</b> (<code>claude-fable-5</code>) — nicht Haiku</div>
+  </header>
+
+  <!-- Nutzer -->
+  <div class="layer">
+    <div class="box user"><div class="t">🧑 Nutzer</div><div class="d">spricht &amp; hört</div></div>
+  </div>
+  <div class="flow"><div class="arrow">▼ <span class="lbl">Sprache</span></div></div>
+
+  <!-- Chrome Browser -->
+  <div class="layer">
+    <div class="group">
+      <div class="group-title">🌐 Chrome Browser</div>
+      <div class="row">
+        <div class="box blue"><div class="t">Sprache zu Text</div><div class="d">Web Speech API</div></div>
+        <div class="box blue"><div class="t">JARVIS Orb UI</div><div class="d">Arc-Reactor-Kern</div></div>
+        <div class="box green"><div class="t">Audio-Ausgabe</div><div class="d">Sprachantwort</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="flow"><div class="arrow">▼ <span class="lbl">Audio / Aktion</span></div></div>
+
+  <!-- Lokaler Server -->
+  <div class="layer">
+    <div class="group">
+      <div class="group-title">🖥️ Lokaler Server (Bridge)</div>
+      <div class="row">
+        <div class="box purple"><div class="t">Systemprompt</div><div class="d">Auftrag ans Gehirn</div></div>
+        <div class="box green"><div class="t">Sprachausgabe</div><div class="d">Text → Stimme</div></div>
+        <div class="box purple"><div class="t">Aktions-System</div><div class="d">Agent + Werkzeuge</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow">
+    <div class="arrow">▼ <span class="lbl">denkt →  ← Stimme</span></div>
+  </div>
+
+  <!-- Externe Services + Lokale Tools -->
+  <div class="layer cols2">
+    <div class="group">
+      <div class="group-title">☁️ Externe Services</div>
+      <div class="row">
+        <div class="box brain">
+          <div class="core"></div>
+          <div class="t">🧠 Claude AI — Fable 5</div>
+          <div class="d">denkt · plant · entscheidet</div>
+          <span class="tag">DAS GEHIRN</span>
+          <div class="old">vorher: <s>Haiku</s> → jetzt Fable 5</div>
+        </div>
+        <div class="box green"><div class="t">Text-to-Speech</div><div class="d">Browser-TTS / ElevenLabs</div></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-title">🛠️ Lokale Tools</div>
+      <div class="row">
+        <div class="box amber"><div class="t">Browser-Steuerung</div><div class="d">Playwright</div></div>
+        <div class="box"><div class="t">Bildschirm sehen</div><div class="d">Claude Vision</div></div>
+        <div class="box"><div class="t">Shopify</div><div class="d">Produkte · Rabatte · Analytics</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">startet: Spotify · VS Code · Obsidian · Jarvis &nbsp;·&nbsp; Antwort geht als Stimme zurück an den Nutzer</div>
+
+  <div class="note" style="margin-top:16px;color:var(--accent-2)">
+    ✔ Echt eingebaut in JARVIS: <code>open_jarvis/agent/system.py</code> (JarvisSystem) ·
+    <code>python3 -m open_jarvis.agent --architecture</code> · Server-Endpunkt <code>GET /architecture</code>
+  </div>
+  <footer>
+    Deterministische, ehrliche Architektur — das Gehirn ist <b>Fable 5</b>
+    (<code>agent/models.py → BRAIN_MODEL_KEY</code>). Details:
+    <code>docs/SYSTEMARCHITEKTUR.md</code>. Für das Denken mit Fable 5 wird ein
+    <code>ANTHROPIC_API_KEY</code> genutzt; ohne Schlüssel plant JARVIS lokal weiter.
+  </footer>
+</div>

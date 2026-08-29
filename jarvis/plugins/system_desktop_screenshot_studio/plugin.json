@@ -1,0 +1,11 @@
+{
+  "id": "system_desktop_screenshot_studio",
+  "name": "Screenshot-Studio",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Screenshot-Studio“ aus der Katalog-Kategorie „System & Desktop“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

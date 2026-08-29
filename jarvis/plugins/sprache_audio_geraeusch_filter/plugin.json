@@ -1,0 +1,11 @@
+{
+  "id": "sprache_audio_geraeusch_filter",
+  "name": "Geraeusch-Filter",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Geraeusch-Filter“ aus der Katalog-Kategorie „Sprache & Audio“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

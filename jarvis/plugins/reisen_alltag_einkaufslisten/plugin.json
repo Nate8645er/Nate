@@ -1,0 +1,11 @@
+{
+  "id": "reisen_alltag_einkaufslisten",
+  "name": "Einkaufslisten",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Einkaufslisten“ aus der Katalog-Kategorie „Reisen & Alltag“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

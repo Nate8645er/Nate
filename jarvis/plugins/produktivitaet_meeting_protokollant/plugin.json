@@ -1,0 +1,11 @@
+{
+  "id": "produktivitaet_meeting_protokollant",
+  "name": "Meeting-Protokollant",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Meeting-Protokollant“ aus der Katalog-Kategorie „Produktivitaet“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

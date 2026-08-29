@@ -1,0 +1,11 @@
+{
+  "id": "daten_berichte_prognose_modul",
+  "name": "Prognose-Modul",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Prognose-Modul“ aus der Katalog-Kategorie „Daten & Berichte“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

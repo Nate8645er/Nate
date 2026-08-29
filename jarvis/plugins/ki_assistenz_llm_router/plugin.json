@@ -1,0 +1,11 @@
+{
+  "id": "ki_assistenz_llm_router",
+  "name": "LLM-Router",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „LLM-Router“ aus der Katalog-Kategorie „KI & Assistenz“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

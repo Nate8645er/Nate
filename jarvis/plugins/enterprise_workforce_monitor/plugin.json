@@ -1,0 +1,11 @@
+{
+  "id": "enterprise_workforce_monitor",
+  "name": "Workforce-Monitor",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Workforce-Monitor“ aus der Katalog-Kategorie „Enterprise“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

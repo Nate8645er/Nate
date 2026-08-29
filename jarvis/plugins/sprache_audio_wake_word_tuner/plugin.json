@@ -1,0 +1,11 @@
+{
+  "id": "sprache_audio_wake_word_tuner",
+  "name": "Wake-Word-Tuner",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Wake-Word-Tuner“ aus der Katalog-Kategorie „Sprache & Audio“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

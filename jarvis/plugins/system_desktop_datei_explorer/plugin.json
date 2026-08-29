@@ -1,0 +1,11 @@
+{
+  "id": "system_desktop_datei_explorer",
+  "name": "Datei-Explorer",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Datei-Explorer“ aus der Katalog-Kategorie „System & Desktop“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

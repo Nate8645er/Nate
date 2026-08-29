@@ -1,0 +1,11 @@
+{
+  "id": "wissen_recherche_boersen_news",
+  "name": "Boersen-News",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Boersen-News“ aus der Katalog-Kategorie „Wissen & Recherche“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

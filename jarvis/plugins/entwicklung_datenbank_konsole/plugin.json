@@ -1,0 +1,11 @@
+{
+  "id": "entwicklung_datenbank_konsole",
+  "name": "Datenbank-Konsole",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Datenbank-Konsole“ aus der Katalog-Kategorie „Entwicklung“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

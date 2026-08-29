@@ -1,0 +1,11 @@
+{
+  "id": "sprache_audio_diktier_modus",
+  "name": "Diktier-Modus",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Diktier-Modus“ aus der Katalog-Kategorie „Sprache & Audio“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

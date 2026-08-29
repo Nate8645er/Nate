@@ -1,0 +1,11 @@
+{
+  "id": "integrationen_notion_sync",
+  "name": "Notion-Sync",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Notion-Sync“ aus der Katalog-Kategorie „Integrationen“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

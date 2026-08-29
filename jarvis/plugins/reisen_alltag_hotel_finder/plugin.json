@@ -1,0 +1,11 @@
+{
+  "id": "reisen_alltag_hotel_finder",
+  "name": "Hotel-Finder",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Hotel-Finder“ aus der Katalog-Kategorie „Reisen & Alltag“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "produktivitaet_kalender_sync",
+  "name": "Kalender-Sync",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Kalender-Sync“ aus der Katalog-Kategorie „Produktivitaet“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

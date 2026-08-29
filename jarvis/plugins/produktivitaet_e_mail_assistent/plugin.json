@@ -1,0 +1,11 @@
+{
+  "id": "produktivitaet_e_mail_assistent",
+  "name": "E-Mail-Assistent",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „E-Mail-Assistent“ aus der Katalog-Kategorie „Produktivitaet“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

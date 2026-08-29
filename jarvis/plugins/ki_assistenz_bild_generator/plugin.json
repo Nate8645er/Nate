@@ -1,0 +1,11 @@
+{
+  "id": "ki_assistenz_bild_generator",
+  "name": "Bild-Generator",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Bild-Generator“ aus der Katalog-Kategorie „KI & Assistenz“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

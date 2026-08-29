@@ -1,0 +1,11 @@
+{
+  "id": "enterprise_kpi_zentrale",
+  "name": "KPI-Zentrale",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „KPI-Zentrale“ aus der Katalog-Kategorie „Enterprise“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

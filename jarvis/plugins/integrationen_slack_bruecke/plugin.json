@@ -1,0 +1,11 @@
+{
+  "id": "integrationen_slack_bruecke",
+  "name": "Slack-Bruecke",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Slack-Bruecke“ aus der Katalog-Kategorie „Integrationen“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

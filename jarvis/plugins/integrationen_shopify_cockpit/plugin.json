@@ -1,0 +1,11 @@
+{
+  "id": "integrationen_shopify_cockpit",
+  "name": "Shopify-Cockpit",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Shopify-Cockpit“ aus der Katalog-Kategorie „Integrationen“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "bildung_lernen_code_dojo",
+  "name": "Code-Dojo",
+  "version": "1.0.0",
+  "entrypoint": "main.py",
+  "description": "JARVIS-Plugin „Code-Dojo“ aus der Katalog-Kategorie „Bildung & Lernen“ mit deutschen Sprachbefehlen.",
+  "permissions": [
+    "commands.register",
+    "ui.notify"
+  ]
+}
