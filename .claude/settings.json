@@ -29,6 +29,12 @@
         "source": "github",
         "repo": "openai/codex-plugin-cc"
       }
+    },
+    "cli-anything": {
+      "source": {
+        "source": "github",
+        "repo": "HKUDS/CLI-Anything"
+      }
     }
   },
   "enabledPlugins": {
@@ -56,6 +62,7 @@
     "api-scaffolding@claude-code-workflows": true,
     "application-performance@claude-code-workflows": true,
     "comprehensive-review@claude-code-workflows": true,
-    "cicd-automation@claude-code-workflows": true
+    "cicd-automation@claude-code-workflows": true,
+    "cli-anything@cli-anything": true
   }
 }
