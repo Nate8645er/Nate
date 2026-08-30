@@ -35,11 +35,11 @@
 
 ## Website
 
-**STATUS: IN ORDNUNG** — Status 200 in 0.41 s
+**STATUS: NICHT GEPRÜFT** — mit `--pruefen` aufrufen.
 
 ## Produktstand — was gebaut ist und was nicht
 
-- ✓ **pruefwerkzeug:** fertig, 39 Tests gruen, an echten Websites verifiziert
+- ✓ **pruefwerkzeug:** fertig, 45 Tests gruen, an echten Websites verifiziert, Security-Review durchlaufen
 - ✓ **bericht:** fertig
 - ✗ **automatischer ki abruf:** NICHT GEBAUT - keine Zugaenge, kein Budget
 - ✗ **kundenportal:** NICHT GEBAUT

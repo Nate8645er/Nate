@@ -13,7 +13,6 @@
 
 import html.parser
 import json
-import re
 
 import netz
 
@@ -97,7 +96,11 @@ def gesperrt(gruppen, kennung, pfad="/"):
                 continue
             muster = "/"
         if pfad.startswith(muster.rstrip("*")):
-            laenge = len(muster)
+            # Die Laenge muss dieselbe sein, auf die auch verglichen
+            # wurde. Sonst schlaegt "Disallow: /*" ein gleichwertiges
+            # "Allow: /", und der Bericht meldet einem zahlenden Kunden
+            # eine Sperre, die es nicht gibt.
+            laenge = len(muster.rstrip("*"))
             if treffer is None or laenge > treffer[1] or (
                     laenge == treffer[1] and art == "allow"):
                 treffer = (art, laenge)
@@ -185,10 +188,14 @@ def jsonld_typen(rohblöcke):
     for roh in rohblöcke:
         try:
             daten = json.loads(roh)
-        except (ValueError, TypeError):
+            eintraege = list(_abflachen(daten))
+        except (ValueError, TypeError, RecursionError):
+            # RecursionError gehoert dazu: tief verschachteltes JSON-LD
+            # auf einer fremden Seite darf das ganze Audit nicht
+            # abbrechen. Ein kaputter Block ist ein Befund.
             kaputt += 1
             continue
-        for eintrag in _abflachen(daten):
+        for eintrag in eintraege:
             t = eintrag.get("@type")
             if isinstance(t, list):
                 typen.extend(str(x) for x in t)

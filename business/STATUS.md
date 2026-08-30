@@ -29,6 +29,6 @@
 | Umsatz CHF | 0.00 |
 | Kosten CHF | 0.00 |
 | Gewinn CHF | 0.00 |
-| Website | IN ORDNUNG |
+| Website | NICHT GEPRÜFT |
 
 *Stand 30.08.2026. Erzeugt aus operations/status.json.*

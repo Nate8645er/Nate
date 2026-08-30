@@ -13,18 +13,79 @@
 #     gesetzt und der Bericht sagt spaeter, was nicht geprueft werden
 #     konnte.
 
-import gzip
+import ipaddress
 import socket
 import ssl
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
+import zlib
 
 KENNUNG = ("Mozilla/5.0 (compatible; CITED-Audit/1.0; "
            "+Sichtbarkeitspruefung im Auftrag des Seitenbetreibers)")
 ZEITLIMIT = 20
 MAX_BYTES = 3 * 1024 * 1024
+# Obergrenze fuer die ENTPACKTEN Daten. MAX_BYTES begrenzt nur, was vom
+# Netz kommt; drei Megabyte gzip lassen sich zu mehreren Gigabyte
+# aufblasen und wuerden den Prozess umbringen.
+MAX_ENTPACKT = 24 * 1024 * 1024
+
+SCHEMATA = ("http", "https")
+
+
+class ZielFehler(ValueError):
+    """Das Ziel darf nicht abgerufen werden."""
+
+
+def _adresse_erlaubt(url):
+    """Zeigt die URL auf eine oeffentliche Adresse?
+
+    Ohne diese Pruefung kann jemand als "Domain" 169.254.169.254
+    eintragen und sich ueber den Bericht die Zugangsdaten des
+    Cloud-Metadatendienstes ausliefern lassen. Das Werkzeug ruft
+    fremdbestimmte Adressen ab - damit ist das kein theoretischer Fall,
+    sondern der Normalfall.
+    """
+    host = urllib.parse.urlsplit(url).hostname
+    if not host:
+        return False, "Kein Hostname in %s" % url
+    try:
+        infos = socket.getaddrinfo(host, None)
+    except socket.gaierror as e:
+        return False, "Domain nicht auflösbar: %s" % e
+    for eintrag in infos:
+        adresse = eintrag[4][0]
+        try:
+            ip = ipaddress.ip_address(adresse)
+        except ValueError:
+            return False, "Adresse nicht lesbar: %s" % adresse
+        if (ip.is_private or ip.is_loopback or ip.is_link_local
+                or ip.is_reserved or ip.is_multicast or ip.is_unspecified):
+            return False, ("%s zeigt auf die interne Adresse %s - "
+                           "solche Ziele werden nicht abgerufen"
+                           % (host, adresse))
+    return True, None
+
+
+class _SichereWeiterleitung(urllib.request.HTTPRedirectHandler):
+    """Prueft jeden Weiterleitungsschritt erneut.
+
+    Sonst genuegt eine oeffentliche Domain, die auf 169.254.169.254
+    weiterleitet, um die Pruefung beim ersten Aufruf zu umgehen.
+    """
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        if urllib.parse.urlsplit(newurl).scheme not in SCHEMATA:
+            raise urllib.error.URLError(
+                "Weiterleitung auf ein nicht erlaubtes Schema: %s" % newurl)
+        erlaubt, grund = _adresse_erlaubt(newurl)
+        if not erlaubt:
+            raise urllib.error.URLError("Weiterleitung abgelehnt: %s" % grund)
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+_OEFFNER = urllib.request.build_opener(_SichereWeiterleitung())
 
 
 class Antwort:
@@ -50,17 +111,37 @@ class Antwort:
             " FEHLER: %s" % self.fehler if self.fehler else "")
 
 
-def _entpacken(rohdaten, kodierung):
-    if kodierung and "gzip" in kodierung.lower():
-        try:
-            return gzip.decompress(rohdaten)
-        except OSError:
-            return rohdaten
-    return rohdaten
+def _entpacken(rohdaten, kodierung, grenze=MAX_ENTPACKT):
+    """gzip auspacken, aber nur bis zur Grenze.
+
+    gzip.decompress() kennt keine Obergrenze. Ein Server, der drei
+    Megabyte stark redundanter Daten schickt, erzeugt daraus mehrere
+    Gigabyte im Speicher und beendet den Prozess - und mit ihm jedes
+    parallel laufende Audit.
+    """
+    if not (kodierung and "gzip" in kodierung.lower()):
+        return rohdaten
+    try:
+        entpacker = zlib.decompressobj(16 + zlib.MAX_WBITS)
+        heraus = bytearray()
+        for anfang in range(0, len(rohdaten), 65536):
+            heraus += entpacker.decompress(
+                rohdaten[anfang:anfang + 65536], grenze - len(heraus))
+            if len(heraus) >= grenze:
+                break
+        return bytes(heraus)
+    except (OSError, zlib.error):
+        return rohdaten
 
 
 def holen(url, zeitlimit=ZEITLIMIT):
     """Eine Seite holen. Gibt immer eine Antwort zurueck, nie eine Ausnahme."""
+    if urllib.parse.urlsplit(url).scheme not in SCHEMATA:
+        return Antwort(url, fehler="Nur http und https werden abgerufen")
+    erlaubt, grund = _adresse_erlaubt(url)
+    if not erlaubt:
+        return Antwort(url, fehler=grund)
+
     anfrage = urllib.request.Request(url, headers={
         "User-Agent": KENNUNG,
         "Accept": "text/html,application/xhtml+xml,text/plain,*/*",
@@ -69,7 +150,7 @@ def holen(url, zeitlimit=ZEITLIMIT):
     })
     start = time.time()
     try:
-        with urllib.request.urlopen(anfrage, timeout=zeitlimit) as a:
+        with _OEFFNER.open(anfrage, timeout=zeitlimit) as a:
             roh = a.read(MAX_BYTES)
             roh = _entpacken(roh, a.headers.get("Content-Encoding"))
             zeichensatz = a.headers.get_content_charset() or "utf-8"
@@ -114,6 +195,12 @@ def domain_normalisieren(eingabe):
     if "://" not in eingabe:
         eingabe = "https://" + eingabe
     teile = urllib.parse.urlsplit(eingabe)
+    # Ohne diese Pruefung kaeme "file://localhost/etc" durch, und der
+    # naechste Aufruf laese eine Datei vom eigenen Server statt einer
+    # fremden Website.
+    if teile.scheme not in SCHEMATA:
+        raise ValueError("Nur http und https werden unterstuetzt: %s"
+                         % eingabe)
     if not teile.netloc:
         raise ValueError("Domain nicht lesbar: %s" % eingabe)
     return urllib.parse.urlunsplit((teile.scheme, teile.netloc, "", "", ""))

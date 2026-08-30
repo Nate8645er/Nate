@@ -86,6 +86,56 @@ class RobotsTest(unittest.TestCase):
         self.assertTrue(technik.gesperrt(g, "GPTBot", "/intern"))
 
 
+class SicherheitTest(unittest.TestCase):
+    """Funde aus dem Security-Review. Jeder Test hielt einen echten Fehler.
+
+    Das Werkzeug ruft fremdbestimmte Adressen ab und verarbeitet
+    fremdes HTML. Jeder dieser Faelle war vorhanden und ausnutzbar.
+    """
+
+    def test_interne_adressen_werden_nicht_abgerufen(self):
+        # Sonst laesst sich ueber den "Kunden"-Eingabewert der
+        # Cloud-Metadatendienst auslesen und landet im Bericht.
+        for ziel in ("http://169.254.169.254/latest/meta-data/",
+                     "http://127.0.0.1/", "http://10.0.0.5/",
+                     "http://localhost:8080/"):
+            a = netz.holen(ziel, zeitlimit=5)
+            self.assertIsNotNone(a.fehler, ziel)
+            self.assertIsNone(a.status, ziel)
+
+    def test_fremde_schemata_werden_abgelehnt(self):
+        for eingabe in ("file://localhost/etc/passwd", "ftp://example.com",
+                        "gopher://example.com"):
+            with self.assertRaises(ValueError, msg=eingabe):
+                netz.domain_normalisieren(eingabe)
+
+    def test_holen_lehnt_fremdes_schema_ab(self):
+        a = netz.holen("file:///etc/hostname")
+        self.assertIsNotNone(a.fehler)
+        self.assertEqual(a.text, "")
+
+    def test_gzip_wird_begrenzt_entpackt(self):
+        # Eine Zip-Bombe darf Speicher kosten, aber nicht beliebig viel.
+        import zlib
+        bombe = zlib.compressobj(9, zlib.DEFLATED, 16 + zlib.MAX_WBITS)
+        roh = bombe.compress(b"A" * (50 * 1024 * 1024)) + bombe.flush()
+        heraus = netz._entpacken(roh, "gzip", grenze=1024)
+        self.assertLessEqual(len(heraus), 1024 + 65536)
+
+    def test_wildcard_schlaegt_gleichwertiges_allow_nicht(self):
+        # Der teuerste Fehler: ein falscher "gesperrt"-Befund im
+        # Bericht eines zahlenden Kunden.
+        g = technik.robots_lesen(
+            "User-agent: OAI-SearchBot\nDisallow: /*\nAllow: /\n")
+        self.assertFalse(technik.gesperrt(g, "OAI-SearchBot", "/"))
+
+    def test_tiefes_jsonld_stuerzt_nicht_ab(self):
+        tief = "[" * 60000 + "]" * 60000
+        typen, kaputt = technik.jsonld_typen([tief])
+        self.assertEqual(typen, [])
+        self.assertEqual(kaputt, 1)
+
+
 class HtmlTest(unittest.TestCase):
 
     def setUp(self):
