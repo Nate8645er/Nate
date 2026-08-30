@@ -12,11 +12,12 @@
 
 **BLOCKERS:**
 
-- Zielfirmenliste - kann nur Nate erstellen
+- Zielfirmenliste - Websuche war am Sitzungslimit, Aufgabe offen
 - Erster Anruf - kann nur Nate machen
 - Domainkauf - braucht ausdrueckliche Genehmigung (ca. CHF 15/Jahr)
+- Impressum und Datenschutzerklaerung - fehlen auf der Website
 
-**NEXT ACTION:** 25 Zielfirmen sammeln: Treuhand, Zahnaerzte, Anwaelte, Immobilienverwaltung im Raum Rapperswil-Jona und Zuerich Oberland
+**NEXT ACTION:** MARKTVALIDIERUNG: 25 Zielfirmen sammeln, dann fuer die ersten 5 'cited.py pruefen' laufen lassen
 
 **REAL-WORLD METRICS:**
 
@@ -29,6 +30,6 @@
 | Umsatz CHF | 0.00 |
 | Kosten CHF | 0.00 |
 | Gewinn CHF | 0.00 |
-| Website | NICHT GEPRÜFT |
+| Website | IN ORDNUNG |
 
 *Stand 30.08.2026. Erzeugt aus operations/status.json.*

@@ -35,7 +35,7 @@
 
 ## Website
 
-**STATUS: NICHT GEPRÜFT** — mit `--pruefen` aufrufen.
+**STATUS: IN ORDNUNG** — Status 200 in 0.63 s
 
 ## Produktstand — was gebaut ist und was nicht
 
@@ -52,16 +52,17 @@
 
 ## Blockiert
 
-- Zielfirmenliste - kann nur Nate erstellen
+- Zielfirmenliste - Websuche war am Sitzungslimit, Aufgabe offen
 - Erster Anruf - kann nur Nate machen
 - Domainkauf - braucht ausdrueckliche Genehmigung (ca. CHF 15/Jahr)
+- Impressum und Datenschutzerklaerung - fehlen auf der Website
 
 ## Nächste Aktion
 
-**25 Zielfirmen sammeln: Treuhand, Zahnaerzte, Anwaelte, Immobilienverwaltung im Raum Rapperswil-Jona und Zuerich Oberland**
+**MARKTVALIDIERUNG: 25 Zielfirmen sammeln, dann fuer die ersten 5 'cited.py pruefen' laufen lassen**
 
-- Fuer die ersten 5 den Kurzbefund erstellen: python3 cited.py pruefen <domain>
-- Pruefen ob die Annahme traegt: mindestens 3 von 5 unter 70 Prozent oder Crawler gesperrt
+- Abbruchkriterium pruefen: mindestens 3 von 5 unter 70 Prozent oder Antwort-Crawler gesperrt - sonst Zielgruppe wechseln, nicht das Skript
+- MWSt-Pflicht klaeren, bevor die erste Rechnung rausgeht (business/legal/OFFEN.md)
 - Erst danach anrufen, 16:30-17:30
 
 ---
