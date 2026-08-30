@@ -1,0 +1,55 @@
+{
+  "_hinweis": "Einzige Wahrheitsquelle. Von Hand gepflegt. Keine Zahl hier darf geschaetzt sein - eine erfundene Zahl macht jeden Bericht wertlos, der daraus entsteht.",
+  "stand": "2026-08-29",
+  "unternehmen": "CITED",
+  "phase": "Phase 8 - erster Kunde",
+  "ziel": "Erster zahlender Kunde",
+  "website": {
+    "url": "https://claude.ai/code/artifact/0bfcdd4e-fafe-4ab0-bb24-42407c197ee9",
+    "veroeffentlicht": true,
+    "eigene_domain": false,
+    "domain_kandidat": "cited.ch",
+    "domain_registriert": false
+  },
+  "trichter": {
+    "zielfirmen_gesammelt": 0,
+    "geprueft": 0,
+    "qualifiziert": 0,
+    "angerufen": 0,
+    "erreicht": 0,
+    "termin_vereinbart": 0,
+    "termin_gefuehrt": 0,
+    "angebot_gestellt": 0,
+    "kunden": 0,
+    "absagen": 0
+  },
+  "geld": {
+    "umsatz_chf": 0,
+    "kosten_chf": 0,
+    "gewinn_chf": 0,
+    "wiederkehrend_chf_monat": 0,
+    "kostenpositionen": []
+  },
+  "zeit_diese_woche": {
+    "verkaufsstunden": 0,
+    "baustunden": 0
+  },
+  "produkt": {
+    "pruefwerkzeug": "fertig, 39 Tests gruen, an echten Websites verifiziert",
+    "bericht": "fertig",
+    "automatischer_ki_abruf": "NICHT GEBAUT - keine Zugaenge, kein Budget",
+    "kundenportal": "NICHT GEBAUT",
+    "rechnungsstellung": "NICHT GEBAUT - erste Rechnungen von Hand"
+  },
+  "blockiert": [
+    "Zielfirmenliste - kann nur Nate erstellen",
+    "Erster Anruf - kann nur Nate machen",
+    "Domainkauf - braucht ausdrueckliche Genehmigung (ca. CHF 15/Jahr)"
+  ],
+  "naechste_aktionen": [
+    "25 Zielfirmen sammeln: Treuhand, Zahnaerzte, Anwaelte, Immobilienverwaltung im Raum Rapperswil-Jona und Zuerich Oberland",
+    "Fuer die ersten 5 den Kurzbefund erstellen: python3 cited.py pruefen <domain>",
+    "Pruefen ob die Annahme traegt: mindestens 3 von 5 unter 70 Prozent oder Crawler gesperrt",
+    "Erst danach anrufen, 16:30-17:30"
+  ]
+}
