@@ -9,3 +9,9 @@ __pycache__/
 
 # Dashboard-Ausgabe, wird aus status.json erzeugt
 tagwerk/dashboard/dashboard.html
+
+# Fremdcode: AgentCrow wird aus dem ZIP gebaut, nicht mitversioniert.
+vendor/agentcrow-main/node_modules/
+vendor/agentcrow-main/dist/
+vendor/backup-*/
+vendor/agentcrow-main/
