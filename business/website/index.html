@@ -1,0 +1,417 @@
+<title>CITED — Werden Sie genannt?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
+
+<style>
+:root{
+  --papier:#FCFCFA;
+  --flaeche:#F4F5F2;
+  --tinte:#15191B;
+  --matt:#5B6569;
+  --linie:#E2E4E0;
+  --linie-stark:#C8CCC6;
+  --akzent:#123A44;
+  --akzent-hell:#1C5A68;
+  --ja:#2F6B4F;
+  --ja-f:#E7F0EA;
+  --nein:#9A3F2C;
+  --nein-f:#F8E9E4;
+  --tief:#0E2429;
+  --tief-text:#EFF1EE;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --papier:#101314;
+    --flaeche:#191E1F;
+    --tinte:#ECEEEA;
+    --matt:#98A19F;
+    --linie:#262C2D;
+    --linie-stark:#3A4243;
+    --akzent:#6FB3BE;
+    --akzent-hell:#8DC9D2;
+    --ja:#7BBE97;
+    --ja-f:#16281F;
+    --nein:#D08E77;
+    --nein-f:#2A1D18;
+    --tief:#0A1B1F;
+    --tief-text:#EFF1EE;
+  }
+}
+:root[data-theme="dark"]{
+  --papier:#101314;
+  --flaeche:#191E1F;
+  --tinte:#ECEEEA;
+  --matt:#98A19F;
+  --linie:#262C2D;
+  --linie-stark:#3A4243;
+  --akzent:#6FB3BE;
+  --akzent-hell:#8DC9D2;
+  --ja:#7BBE97;
+  --ja-f:#16281F;
+  --nein:#D08E77;
+  --nein-f:#2A1D18;
+  --tief:#0A1B1F;
+  --tief-text:#EFF1EE;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--papier);color:var(--tinte);
+  font-family:Archivo,"Helvetica Neue",Arial,sans-serif;
+  font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  padding:0 22px 0;
+}
+.bahn{max-width:660px;margin:0 auto}
+.breit{max-width:840px;margin:0 auto}
+
+h1,h2,h3{letter-spacing:-.021em;text-wrap:balance}
+h1{font-size:clamp(33px,5.6vw,48px);font-weight:700;line-height:1.08}
+h2{font-size:clamp(25px,3.6vw,31px);font-weight:700;margin-bottom:16px}
+h3{font-size:19px;font-weight:600;margin-bottom:5px}
+p{margin-bottom:16px}p:last-child{margin-bottom:0}
+strong{font-weight:600}
+a{color:var(--akzent)}
+.marke{font-size:12px;font-weight:700;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--akzent)}
+.augenbraue{font-size:12px;font-weight:700;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--matt);margin-bottom:14px}
+
+/* Kopf */
+.kopfzeile{display:flex;justify-content:space-between;align-items:baseline;
+  gap:18px;padding:24px 0 20px;border-bottom:2px solid var(--tinte)}
+.kopfzeile .ort{font-size:14px;color:var(--matt)}
+
+/* Befundkarte als Aufmacher */
+.aufmacher{padding:44px 0 8px}
+.karte{border:1px solid var(--linie-stark);border-radius:12px;
+  background:var(--flaeche);padding:22px 22px 20px;
+  font-variant-numeric:tabular-nums}
+.karte .zeile{display:flex;justify-content:space-between;gap:14px;
+  align-items:baseline;padding:9px 0;border-bottom:1px solid var(--linie)}
+.karte .zeile:last-child{border-bottom:none;padding-bottom:0}
+.karte .frage{font-family:Newsreader,Georgia,serif;font-size:17px;
+  line-height:1.35}
+.wert{font-size:11px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;padding:4px 9px;border-radius:4px;
+  white-space:nowrap;flex:none}
+.wert.nein{background:var(--nein-f);color:var(--nein)}
+.wert.ja{background:var(--ja-f);color:var(--ja)}
+.karte .fuss{margin-top:16px;padding-top:14px;
+  border-top:1px solid var(--linie-stark);font-size:13px;color:var(--matt)}
+.beispielmarke{display:inline-block;font-size:11px;font-weight:700;
+  letter-spacing:.11em;text-transform:uppercase;color:var(--matt);
+  border:1px solid var(--linie-stark);border-radius:4px;padding:3px 8px;
+  margin-bottom:14px}
+
+.these{font-family:Newsreader,Georgia,serif;font-size:clamp(21px,3vw,25px);
+  line-height:1.42;color:var(--tinte);margin-top:30px}
+.unterzeile{color:var(--matt);margin-top:18px;font-size:18px;max-width:44ch}
+
+section{padding:56px 0;border-top:1px solid var(--linie)}
+section:first-of-type{border-top:none}
+
+.zitat{font-family:Newsreader,Georgia,serif;font-size:23px;line-height:1.4;
+  border-left:3px solid var(--akzent);padding-left:22px;margin:24px 0}
+
+/* Zahlen */
+.zahlen{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+  margin-top:26px}
+@media (max-width:600px){.zahlen{grid-template-columns:1fr}}
+.zahl{border:1px solid var(--linie);border-radius:10px;padding:17px 18px}
+.zahl .gross{font-size:33px;font-weight:700;line-height:1;
+  font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.zahl .was{font-size:13px;color:var(--matt);margin-top:8px;line-height:1.4}
+
+/* Schritte */
+.schritte{display:grid;gap:22px;margin-top:26px;counter-reset:s}
+.schritt{display:grid;grid-template-columns:34px 1fr;gap:17px;
+  align-items:start;counter-increment:s}
+.schritt::before{content:counter(s);font-size:14px;font-weight:700;
+  color:var(--akzent);border:1.5px solid var(--akzent);border-radius:50%;
+  width:32px;height:32px;display:flex;align-items:center;
+  justify-content:center;margin-top:1px}
+.schritt p{color:var(--matt);font-size:16px;margin:3px 0 0}
+
+.liste{list-style:none;display:grid;gap:13px;margin-top:22px}
+.liste li{padding-left:26px;position:relative;color:var(--matt)}
+.liste li::before{content:"";position:absolute;left:0;top:12px;width:13px;
+  height:2px;background:var(--akzent)}
+.liste li b{color:var(--tinte);font-weight:600}
+
+/* Preise */
+.stufen{display:grid;gap:14px;margin-top:26px}
+.stufe{border:1px solid var(--linie);border-radius:12px;padding:20px 22px}
+.stufe.haupt{border:2px solid var(--tinte)}
+.stufe .oben{display:flex;justify-content:space-between;gap:16px;
+  align-items:baseline;flex-wrap:wrap}
+.stufe .name{font-weight:700;font-size:19px}
+.stufe .preis{font-size:27px;font-weight:700;letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.stufe .klein{font-size:14px;color:var(--matt);margin-top:9px}
+.stufe .drin{font-size:15px;color:var(--matt);margin-top:13px;
+  padding-top:13px;border-top:1px solid var(--linie)}
+
+.kasten{background:var(--flaeche);border-radius:11px;padding:20px 22px;
+  margin-top:24px;font-size:16px;color:var(--matt)}
+.kasten b{color:var(--tinte)}
+
+details{border-bottom:1px solid var(--linie);padding:17px 0}
+summary{font-weight:600;font-size:18px;cursor:pointer;list-style:none;
+  display:flex;justify-content:space-between;gap:16px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--akzent);font-size:24px;line-height:1}
+details[open] summary::after{content:"\2013"}
+summary:focus-visible{outline:2px solid var(--akzent);outline-offset:4px;
+  border-radius:3px}
+details p{margin-top:13px;color:var(--matt);font-size:16px}
+
+.abschluss{background:var(--tief);color:var(--tief-text);border-radius:16px;
+  padding:46px 34px;margin:56px 0 0}
+.abschluss h2{color:var(--tief-text)}
+.abschluss p{color:#A9B7B9;max-width:40ch}
+.knopf{display:inline-block;background:var(--tief-text);color:var(--tief);
+  font-weight:700;font-size:18px;padding:16px 30px;border-radius:9px;
+  text-decoration:none;margin-top:22px}
+.knopf:focus-visible{outline:3px solid var(--tief-text);outline-offset:3px}
+.abschluss .klein{font-size:15px;color:#A9B7B9;margin-top:18px}
+.abschluss .klein a{color:var(--tief-text)}
+
+footer{padding:34px 0 60px;font-size:14px;color:var(--matt)}
+footer .reihe{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:14px}
+footer a{color:var(--matt)}
+.quellen{font-size:13px;line-height:1.55;margin-top:16px}
+.quellen a{word-break:break-word}
+</style>
+
+<div class="bahn">
+
+<div class="kopfzeile">
+  <div class="marke">CITED</div>
+  <div class="ort">Rapperswil-Jona</div>
+</div>
+
+<div class="aufmacher">
+  <div class="beispielmarke">Beispiel eines Befunds</div>
+  <div class="karte">
+    <div class="zeile">
+      <span class="frage">„Welches Treuhandbüro in Rapperswil kannst du
+        empfehlen?“</span>
+      <span class="wert nein">nicht genannt</span></div>
+    <div class="zeile">
+      <span class="frage">„Wer macht Buchhaltung für KMU am oberen
+        Zürichsee?“</span>
+      <span class="wert nein">nicht genannt</span></div>
+    <div class="zeile">
+      <span class="frage">„Ich suche einen Treuhänder in der Region
+        Jona.“</span>
+      <span class="wert nein">nicht genannt</span></div>
+    <div class="zeile">
+      <span class="frage">Technische Auffindbarkeit für
+        Antwortsysteme</span>
+      <span class="wert nein">41 %</span></div>
+    <div class="fuss">Musterfirma, zur Veranschaulichung. Ein echter
+      Befund enthält die Antworten im Wortlaut und nennt die Firmen, die
+      stattdessen empfohlen wurden.</div>
+  </div>
+
+  <h1 style="margin-top:34px">Werden Sie genannt?</h1>
+  <p class="these">Ihre Kunden googeln nicht mehr. Sie fragen. Und die
+    Antwort nennt drei Firmen.</p>
+  <p class="unterzeile">CITED misst, ob KI-Antworten Ihr Unternehmen
+    nennen — und sorgt dafür, dass sie es tun.</p>
+</div>
+
+<section>
+  <div class="augenbraue">Das Problem</div>
+  <h2>Es gibt keine Fehlermeldung, wenn KI Sie übergeht</h2>
+  <p>Ihre Rankings sind unverändert. Ihre Website läuft. Es kommt keine
+    Warnung, keine Rechnung, kein Hinweis. Nur allmählich weniger
+    Anfragen — und niemand kann sagen, woran es liegt.</p>
+  <p>Der Grund ist, dass die Suchmaschine inzwischen selbst antwortet.
+    Sie nennt zwei, drei Firmen. Wer nicht dabei ist, landet nicht auf
+    Seite zwei. Er kommt gar nicht vor.</p>
+
+  <div class="zahlen">
+    <div class="zahl"><div class="gross">−61 %</div>
+      <div class="was">Klickrate bei Suchanfragen mit KI-Übersicht</div></div>
+    <div class="zahl"><div class="gross">80–83 %</div>
+      <div class="was">dieser Anfragen enden ohne einen einzigen Klick</div></div>
+    <div class="zahl"><div class="gross">−38 %</div>
+      <div class="was">Google-Verweis-Traffic bei Verlagen im Jahresvergleich</div></div>
+  </div>
+  <p style="font-size:14px;color:var(--matt);margin-top:16px">Quellen
+    unten auf der Seite. Wir erfinden keine Zahlen.</p>
+</section>
+
+<section>
+  <div class="augenbraue">Die Lösung</div>
+  <h2>Ein Befund, kein Kennwert</h2>
+  <p>Wir stellen die Fragen, die Ihre Kunden stellen — bei ChatGPT,
+    Perplexity, Google AI und den übrigen. Wir halten die Antworten im
+    Wortlaut fest und zählen, wie oft Sie darin vorkommen.</p>
+  <p>Parallel prüfen wir maschinell, ob diese Systeme Ihre Website
+    überhaupt lesen können. Das ist der Teil, an dem die meisten
+    scheitern — und der einzige, den man zuverlässig reparieren kann.</p>
+  <p class="zitat">Am Ende steht kein Dashboard, sondern ein Dokument mit
+    sechs Massnahmen, sortiert nach Wirkung.</p>
+</section>
+
+<section>
+  <div class="augenbraue">Was geprüft wird</div>
+  <h2>Neun Felder, maschinell und wiederholbar</h2>
+  <ul class="liste">
+    <li><b>Crawler-Zugang</b> — sperrt Ihre <code>robots.txt</code> die
+      Antwortsysteme aus? Der häufigste und teuerste Einzelfehler.</li>
+    <li><b>Lesbarer Inhalt</b> — sehen die Systeme Text, oder ist Ihre
+      Seite für sie leer, weil alles erst im Browser entsteht?</li>
+    <li><b>Strukturierte Daten</b> — ist maschinenlesbar hinterlegt, wer
+      Sie sind, was Sie tun und wo?</li>
+    <li><b>Fragen-Antwort-Struktur</b> — steht Ihr Wissen in dem Format,
+      das Antwortsysteme übernehmen?</li>
+    <li><b>llms.txt, Titel, Beschreibung, Sitemap, Erreichbarkeit</b> —
+      die Grundlagen, die überraschend oft fehlen.</li>
+  </ul>
+  <div class="kasten"><b>Reproduzierbar.</b> Dieselbe Prüfung, dieselbe
+    Website, dasselbe Ergebnis. Sie können jede Feststellung selbst
+    nachprüfen — wir zeigen Ihnen wie.</div>
+</section>
+
+<section>
+  <div class="augenbraue">Ablauf</div>
+  <h2>Fünf Arbeitstage</h2>
+  <div class="schritte">
+    <div class="schritt"><div><h3>Kurzbefund</h3>
+      <p>Kostenlos, bevor wir überhaupt miteinander sprechen. Wenn er gut
+        ausfällt, melden wir uns nicht — dann gibt es nichts zu
+        verkaufen.</p></div></div>
+    <div class="schritt"><div><h3>Gespräch, 20 Minuten</h3>
+      <p>Wir gehen den Befund gemeinsam durch. Sie sehen die Antwort, in
+        der Ihre Mitbewerber stehen.</p></div></div>
+    <div class="schritt"><div><h3>Audit</h3>
+      <p>Zwölf Fragen über alle relevanten Systeme, vollständige
+        technische Prüfung, Wettbewerbsvergleich, Massnahmenliste.</p></div></div>
+    <div class="schritt"><div><h3>Besprechung, 45 Minuten</h3>
+      <p>Das Dokument Seite für Seite. Danach entscheiden Sie, ob wir die
+        Massnahmen umsetzen.</p></div></div>
+    <div class="schritt"><div><h3>Nachmessung nach vier Wochen</h3>
+      <p>Kostenlos. Dieselbe Prüfung, damit sichtbar wird, was sich
+        verändert hat — auch wenn sich nichts verändert hat.</p></div></div>
+  </div>
+</section>
+
+<section>
+  <div class="augenbraue">Preise</div>
+  <h2>Festpreis, kein Retainer</h2>
+  <div class="stufen">
+    <div class="stufe">
+      <div class="oben"><span class="name">Kurzbefund</span>
+        <span class="preis">CHF 0</span></div>
+      <div class="klein">Fünf Fragen, drei Systeme, technische
+        Schnellprüfung. Eine Seite.</div>
+    </div>
+    <div class="stufe haupt">
+      <div class="oben"><span class="name">Audit</span>
+        <span class="preis">CHF 790</span></div>
+      <div class="klein">Gründungspreis für die ersten drei Kunden,
+        danach CHF 1'200.</div>
+      <div class="drin">Zwölf Fragen über alle relevanten Systeme,
+        Antworten im Wortlaut · vollständige technische Prüfung ·
+        Wettbewerbsvergleich · Massnahmen nach Wirkung sortiert ·
+        45 Minuten Besprechung · Rechnung nach der Besprechung,
+        10 Tage netto.</div>
+    </div>
+    <div class="stufe">
+      <div class="oben"><span class="name">Umsetzung</span>
+        <span class="preis">ab CHF 2'400</span></div>
+      <div class="klein">Wir bauen ein, was das Audit gefunden hat —
+        mit Messung vorher und nachher.</div>
+    </div>
+    <div class="stufe">
+      <div class="oben"><span class="name">Beobachtung</span>
+        <span class="preis">CHF 290<span style="font-size:16px">/Mt.</span></span></div>
+      <div class="klein">Monatliche Wiederholung derselben Messung,
+        Verlauf und Konkurrenzvergleich. Monatlich kündbar.</div>
+    </div>
+  </div>
+  <div class="kasten"><b>Warum der Gründungspreis günstiger ist.</b>
+    CITED ist neu. Es gibt noch keine Kundenstimmen, keine Referenzen und
+    keine Fallzahlen — deshalb steht hier auch keine. Die Gegenleistung
+    für den tieferen Preis ist, dass wir Sie als Referenz nennen dürfen,
+    wenn Sie zufrieden sind.</div>
+</section>
+
+<section>
+  <div class="augenbraue">Häufige Fragen</div>
+  <h2>Was Sie wissen sollten</h2>
+
+  <details><summary>Können Sie garantieren, dass ChatGPT uns nennt?</summary>
+    <p><b>Nein.</b> Niemand kann das — kein Anbieter kontrolliert, was
+      ein KI-System antwortet. Wir können messen, ob es geschieht, und
+      die Hindernisse beseitigen, die es sicher verhindern. Wer mehr
+      verspricht, verkauft etwas, das er nicht hat.</p></details>
+
+  <details><summary>Fragen Sie die KI-Systeme automatisch ab?</summary>
+    <p><b>Nein, und das steht so auch im Bericht.</b> Die technische
+      Prüfung läuft vollautomatisch und ist jederzeit wiederholbar. Die
+      Antworten der KI-Systeme werden von Hand gestellt und im Wortlaut
+      erfasst. Dadurch ist jede Zahl auf eine nachlesbare Antwort
+      zurückführbar statt auf eine Schätzung.</p></details>
+
+  <details><summary>Ist das nicht einfach SEO?</summary>
+    <p>Nein. SEO optimiert auf Rangplätze. Wir messen Nennungen. Das ist
+      eine andere Zahl, und in vielen Branchen bewegt sie sich inzwischen
+      unabhängig vom Ranking. Fragen Sie Ihre Agentur, bei wie vielen
+      KI-Antworten Sie genannt werden. Wenn sie die Zahl hat, brauchen
+      Sie uns nicht.</p></details>
+
+  <details><summary>Was, wenn bei uns alles in Ordnung ist?</summary>
+    <p>Dann sagen wir das und stellen keine Rechnung. Der Kurzbefund
+      entsteht, bevor wir Sie kontaktieren — fällt er gut aus, melden wir
+      uns gar nicht erst.</p></details>
+
+  <details><summary>Wie lange dauert es?</summary>
+    <p>Fünf Arbeitstage vom Auftrag bis zur Besprechung. Der Kurzbefund
+      liegt am selben Tag vor.</p></details>
+
+  <details><summary>Was passiert mit unseren Daten?</summary>
+    <p>Wir prüfen ausschliesslich öffentlich zugängliche Seiten Ihrer
+      Website — dieselben, die jeder Besucher sieht. Kein Zugang zu Ihren
+      Systemen, keine Zugangsdaten, keine Kundendaten. Der Bericht geht
+      an Sie und wird nicht ohne Ihre schriftliche Zustimmung gezeigt.</p></details>
+
+  <details><summary>Brauchen wir dafür eine neue Website?</summary>
+    <p>In den meisten Fällen nicht. Die häufigsten Mängel sind
+      Konfiguration, nicht Gestaltung: eine Zeile in der
+      <code>robots.txt</code>, fehlende strukturierte Daten, Inhalte die
+      nur im Browser entstehen. Wenn ein Neubau nötig wäre, sagen wir das
+      im Gespräch — nicht hinterher.</p></details>
+</section>
+
+<div class="abschluss">
+  <h2>Zwanzig Minuten, unverbindlich</h2>
+  <p>Schreiben Sie uns Ihre Domain. Sie bekommen den Kurzbefund — auch
+    dann, wenn daraus kein Auftrag wird.</p>
+  <a class="knopf" href="mailto:beamswiss@gmail.com?subject=CITED%20Kurzbefund&amp;body=Unsere%20Domain%3A%20">Kurzbefund anfragen</a>
+  <p class="klein">Oder direkt schreiben an
+    <a href="mailto:beamswiss@gmail.com">beamswiss@gmail.com</a>.
+    Antwort am selben Werktag.</p>
+</div>
+
+<footer>
+  <div class="reihe">
+    <span><b>CITED</b> · Rapperswil-Jona, Schweiz</span>
+    <a href="mailto:beamswiss@gmail.com">beamswiss@gmail.com</a>
+  </div>
+  <p style="font-size:14px">Impressum, Datenschutzerklärung und AGB
+    folgen vor dem ersten Auftrag. Bis dahin gilt: Wir verarbeiten
+    ausschliesslich öffentlich abrufbare Website-Daten sowie die
+    Kontaktangaben, die Sie uns selbst schicken.</p>
+  <div class="quellen">
+    <b>Quellen der Zahlen oben:</b><br>
+    <a href="https://thedigitalbloom.com/learn/organic-traffic-crisis-report-2026-update/">The Digital Bloom — Organic Traffic Crisis Report, 2026 Update</a> ·
+    <a href="https://www.marketscale.com/industries/marketing-tech/ai-answer-engine-visibility-becomes-a-measurable-discipline-as-geo-platforms-multiply-in-2026">MarketScale — AI answer-engine visibility, 2026</a>
+  </div>
+</footer>
+
+</div>

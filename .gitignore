@@ -1,0 +1,18 @@
+# Erzeugte Medien: reproduzierbar aus werkzeuge/video_bauen.py,
+# gehoeren nicht als Binaerdatei in die Versionsverwaltung.
+*.mp4
+
+# Laufzeitdaten: enthalten echte Kunden- und Rapportdaten.
+*.db
+__pycache__/
+*.pyc
+
+# Dashboard-Ausgabe, wird aus status.json erzeugt
+tagwerk/dashboard/dashboard.html
+
+# Fremdcode: AgentCrow wird aus dem ZIP gebaut, nicht mitversioniert.
+vendor/agentcrow-main/node_modules/
+vendor/agentcrow-main/dist/
+vendor/backup-*/
+vendor/agentcrow-main/
+kurs-puffer.json
