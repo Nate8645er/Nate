@@ -497,6 +497,196 @@ class BacktestTest(unittest.TestCase):
         self.assertLessEqual(dd, 1.0)
 
 
+class SignalTest(unittest.TestCase):
+    """Die Signal-Engine darf niemals eine Zahl erfinden."""
+
+    def test_ohne_daten_gibt_es_keine_zahl(self):
+        from krypto.analyse import signale
+        for w in (signale.marktmomentum(),
+                  signale.liquiditaet(),
+                  signale.nachrichten_momentum(),
+                  signale.soziale_stimmung()):
+            self.assertFalse(w.vollstaendig, w.name)
+            self.assertEqual(w.anzeige(), signale.FEHLT)
+            self.assertTrue(w.fehlend, "%s nennt keinen Grund" % w.name)
+
+    def test_kein_neutraler_ersatzwert(self):
+        """Der gefaehrlichste Fehler waere eine 50 fuer 'weiss nicht' -
+        die sieht in einer Tabelle aus wie eine Messung."""
+        from krypto.analyse import signale
+        self.assertIsNone(signale.marktmomentum().punkte)
+
+    def test_werte_bleiben_zwischen_null_und_hundert(self):
+        from krypto.analyse import signale
+        for a in (-99, -10, 0, 5, 100, 5000):
+            w = signale.marktmomentum(aend_24h=a, aend_7d=a)
+            self.assertGreaterEqual(w.punkte, 0.0)
+            self.assertLessEqual(w.punkte, 100.0)
+
+    def test_wash_trading_muster_senkt_liquiditaet(self):
+        from krypto.analyse import signale
+        gesund = signale.liquiditaet(1_000_000, 400_000, 5_000_000)
+        auffaellig = signale.liquiditaet(1_000_000, 40_000_000, 5_000_000)
+        self.assertLess(auffaellig.punkte, gesund.punkte)
+
+    def test_vollstaendigkeit_wird_ehrlich_gezaehlt(self):
+        from krypto.analyse import signale
+        z = signale.zusammenstellen([
+            signale.liquiditaet(1_000_000, 400_000, 5_000_000),
+            signale.soziale_stimmung()])
+        self.assertEqual(z["gemessen"], 1)
+        self.assertEqual(z["gesamt"], 2)
+        self.assertIn("SOCIAL_SENTIMENT", z["fehlend"])
+
+
+class TokenRisikoTest(unittest.TestCase):
+
+    def test_zu_wenig_daten_ist_unknown(self):
+        from krypto.analyse import token_risiko
+        b = token_risiko.bewerten(liq_usd=500_000)
+        self.assertEqual(b.stufe, "UNKNOWN")
+
+    def test_frisches_duennes_paar_ist_extrem(self):
+        from krypto.analyse import token_risiko
+        b = token_risiko.bewerten(liq_usd=5_000, volumen_24h=900_000,
+                                  marktkapital=1_000_000, fdv=50_000_000,
+                                  alter_tage=0.3, kaeufe=800, verkaeufe=20,
+                                  aend_24h=900)
+        self.assertEqual(b.stufe, "EXTREME")
+
+    def test_solider_wert_ist_low(self):
+        from krypto.analyse import token_risiko
+        b = token_risiko.bewerten(liq_usd=40_000_000, volumen_24h=8_000_000,
+                                  marktkapital=900_000_000,
+                                  fdv=1_000_000_000, alter_tage=700,
+                                  kaeufe=5000, verkaeufe=4800, aend_24h=2.0)
+        self.assertEqual(b.stufe, "LOW")
+
+    def test_ungeprueftes_steht_auch_bei_low_dabei(self):
+        """Gerade bei LOW muss dastehen, was NICHT geprueft wurde -
+        sonst liest sich 'LOW RISK' als 'sicher'."""
+        from krypto.analyse import token_risiko
+        b = token_risiko.bewerten(liq_usd=40_000_000, volumen_24h=8_000_000,
+                                  marktkapital=900_000_000,
+                                  fdv=1_000_000_000, alter_tage=700,
+                                  kaeufe=5000, verkaeufe=4800, aend_24h=2.0)
+        text = b.bericht()
+        self.assertIn("Honeypot", text)
+        self.assertIn("keine Garantie", text)
+
+    def test_scam_risk_wird_nie_erfunden(self):
+        from krypto.analyse import signale
+        w = signale.Wert("SCAM_RISK", None, fehlend=["kein Schluessel"])
+        self.assertEqual(w.anzeige(), signale.FEHLT)
+
+
+class PaarauswahlTest(unittest.TestCase):
+    """Regression aus dem ersten Lauf gegen echte Daten."""
+
+    class FakePaar:
+        def __init__(self, liq, vol):
+            self.liquiditaet, self.volumen_24h = liq, vol
+
+    def test_toter_pool_mit_viel_tiefe_wird_nicht_gewaehlt(self):
+        """PENGU, 08.09.2026: das liquideste Paar hatte 44 Mio USD Tiefe
+        und zwei Trades am Tag. Der ganze Befund stand daraufhin voller
+        NICHT VERFUEGBAR."""
+        from krypto.quellen import dexscreener
+        tot = self.FakePaar(44_000_000, 0)
+        lebendig = self.FakePaar(3_500_000, 1_600_000)
+        gewaehlt = dexscreener.bestes_paar([tot, lebendig])
+        self.assertIs(gewaehlt, lebendig)
+
+    def test_winziger_pool_gewinnt_nicht_durch_einen_grossen_trade(self):
+        from krypto.quellen import dexscreener
+        winzig = self.FakePaar(3_000, 9_000_000)
+        solide = self.FakePaar(2_000_000, 500_000)
+        self.assertIs(dexscreener.bestes_paar([winzig, solide]), solide)
+
+    def test_ohne_handel_entscheidet_die_tiefe(self):
+        from krypto.quellen import dexscreener
+        a = self.FakePaar(100_000, 0)
+        b = self.FakePaar(900_000, 0)
+        self.assertIs(dexscreener.bestes_paar([a, b]), b)
+
+    def test_leere_liste(self):
+        from krypto.quellen import dexscreener
+        self.assertIsNone(dexscreener.bestes_paar([]))
+
+
+class KursabgleichTest(unittest.TestCase):
+    """Zwei Quellen statt einer, bevor Geld gebunden wird."""
+
+    def _mit_kurs(self, wert):
+        from krypto.quellen import defillama, netz
+
+        def falle(cid, frische=120):
+            if wert is None:
+                raise netz.QuellFehler("Zweitquelle aus")
+            return wert, {"quelle": "test"}
+        return defillama, falle
+
+    def test_uebereinstimmung(self):
+        d, falle = self._mit_kurs(100.0)
+        echt, d.kurs = d.kurs, falle
+        try:
+            einig, abw, _ = d.kurs_abgleich("x", 100.5)
+        finally:
+            d.kurs = echt
+        self.assertTrue(einig)
+
+    def test_abweichung_wird_erkannt(self):
+        d, falle = self._mit_kurs(100.0)
+        echt, d.kurs = d.kurs, falle
+        try:
+            einig, abw, text = d.kurs_abgleich("x", 130.0)
+        finally:
+            d.kurs = echt
+        self.assertFalse(einig)
+        self.assertIn("weichen", text)
+
+    def test_ausgefallene_zweitquelle_ist_nicht_true(self):
+        """Der entscheidende Fall: ein nicht durchgefuehrter Abgleich
+        darf niemals als bestandener Abgleich gelten. Deshalb None,
+        nicht True - und der Aufrufer prueft auf 'is not True'."""
+        d, falle = self._mit_kurs(None)
+        echt, d.kurs = d.kurs, falle
+        try:
+            einig, abw, text = d.kurs_abgleich("x", 100.0)
+        finally:
+            d.kurs = echt
+        self.assertIsNone(einig)
+        self.assertIsNot(einig, True)
+        self.assertIn("nicht erreichbar", text)
+
+
+class KettenTest(unittest.TestCase):
+
+    def test_schreibende_rpc_methoden_werden_abgelehnt(self):
+        """Der Riegel, der verhindert, dass dieses System jemals eine
+        Transaktion sendet - auch nicht durch einen Tippfehler."""
+        from krypto.quellen import netz
+        for methode in ("eth_sendTransaction", "eth_sendRawTransaction",
+                        "personal_unlockAccount", "eth_sign",
+                        "sendTransaction"):
+            with self.assertRaises(netz.QuellFehler):
+                netz.rpc("https://example.invalid", methode)
+
+    def test_lesende_methode_kommt_durch_die_pruefung(self):
+        from krypto.quellen import netz
+        try:
+            netz.rpc("https://nicht.erreichbar.invalid", "eth_blockNumber")
+        except netz.QuellFehler as e:
+            self.assertNotIn("Leseliste", str(e))
+        else:
+            self.fail("unerreichbarer Host haette scheitern muessen")
+
+    def test_unbekannte_kette(self):
+        from krypto.quellen import ketten, netz
+        with self.assertRaises(netz.QuellFehler):
+            ketten.hoehe("erfundenechain")
+
+
 class SicherheitTest(unittest.TestCase):
     """Befunde aus dem /cso-Audit, als Test festgenagelt."""
 

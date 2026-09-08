@@ -406,6 +406,18 @@ def befehl_paper(args):
             print("%-8s NO TRADE  %s" % (symbol,
                                          b.kurzbegruendung()[:52]))
             continue
+        # Zweite Quelle, bevor Geld gebunden wird. Ein einzelner Kurs
+        # ist eine Behauptung; zwei uebereinstimmende sind eine
+        # Messung. Bei Uneinigkeit - oder wenn der Abgleich gar nicht
+        # stattfand - wird nicht gekauft.
+        from krypto.quellen import defillama
+        einig, abw, text = defillama.kurs_abgleich(k.id, k.kurs)
+        if einig is not True:
+            print("%-8s ABGELEHNT Kursabgleich: %s" % (symbol, text[:52]))
+            protokoll.risiko("kursabgleich-fehlgeschlagen", coin=k.id,
+                             einig=einig, abweichung=abw, text=text)
+            continue
+
         stop, ziel = bw.stop_und_ziel(k.kurs, b.werte.get("atr14"))
         g = groesse.berechnen(d.gesamtwert(), d.geld, k.kurs, stop)
         pruef = wache.order_pruefen(d, symbol, k.kurs, stop, g.menge)
@@ -427,6 +439,100 @@ def befehl_paper(args):
     print("Depotwert %.2f  Geld %.2f  Positionen %d"
           % (k["gesamtwert"], k["geld"], k["offene_positionen"]))
     print("Kein echtes Geld bewegt. Live-Handel ist gesperrt.")
+    return 0
+
+
+def befehl_token(args):
+    """TOKEN_RESEARCHER + alle Analyse-Rollen auf einen Wert."""
+    from krypto import fomo as f
+    b = f.analysieren(args.begriff, kette=args.kette)
+    print(b.bericht())
+    return 0 if b.paar is not None else 1
+
+
+def befehl_fomo(args):
+    """'Was ist gerade interessant?'"""
+    from krypto import fomo as f
+    _kopf("KRYPTO - LAGE")
+    d = f.lage()
+
+    ag = d["angst_gier"]
+    print("Marktstimmung   %s" % (
+        "%d/100 (%s)" % (ag["wert"], ag["einstufung"]) if ag
+        else "NICHT VERFUEGBAR"))
+    if ag and ag["wert"] >= 75:
+        print("                Extreme Gier. Historisch die Phase, in der "
+              "am meisten gekauft\n                und am meisten verloren "
+              "wird.")
+
+    print("\nAUFMERKSAMKEIT (CoinGecko-Trendliste)")
+    _linie()
+    if not d["trends"]:
+        print("  NICHT VERFUEGBAR")
+    for i, t in enumerate(d["trends"][:10], 1):
+        print("  %2d. %-8s %-24s Rang Marktkapital %s"
+              % (i, t["symbol"], (t["name"] or "")[:24],
+                 t["rang_marktkapital"] or "-"))
+
+    print("\nSCHLAGZEILEN")
+    _linie()
+    if not d["schlagzeilen"]:
+        print("  NICHT VERFUEGBAR")
+    for e in d["schlagzeilen"][:10]:
+        print("  [%-14s] %s" % (e["quelle"], e["titel"][:66]))
+
+    print("\nQUELLEN")
+    _linie()
+    for name, h in d["quellen"].items():
+        print("  %-16s %s, Alter %ds" % (name, h.get("quelle"),
+                                         h.get("alter_s", 0)))
+    if d["luecken"]:
+        print("\nNICHT ABRUFBAR")
+        _linie()
+        for l in d["luecken"]:
+            print("  - %s" % l)
+    _linie()
+    print("Trendliste heisst: viele suchen danach. Nicht: es steigt.")
+    return 0
+
+
+def befehl_chains(args):
+    """ONCHAIN_ANALYST: welche Ketten antworten wirklich?"""
+    from krypto.quellen import ketten
+    _kopf("KRYPTO - KETTEN (nur lesend)")
+    stand = ketten.erreichbarkeit()
+    ok = 0
+    for name, s in stand.items():
+        if s["ok"]:
+            ok += 1
+            print("  %-11s ERREICHBAR   Block %s" % (name, s["hoehe"]))
+        else:
+            print("  %-11s NICHT DA     %s" % (name, s["grund"][:48]))
+    _linie()
+    print("%d von %d Ketten erreichbar." % (ok, len(stand)))
+    print("Dieses System kann auf keine davon schreiben - die "
+          "RPC-Methodenliste\nenthaelt ausschliesslich lesende Aufrufe.")
+    return 0 if ok else 1
+
+
+def befehl_news(args):
+    """NEWS_ANALYST."""
+    from krypto.quellen import nachrichten
+    _kopf("KRYPTO - SCHLAGZEILEN")
+    eintraege, herkunft, fehlend = nachrichten.alle(grenze=args.anzahl)
+    for e in eintraege[:args.anzahl]:
+        print("[%-14s] %s" % (e["quelle"], e["titel"][:70]))
+    _linie()
+    print("%d Schlagzeilen aus %d Quellen." % (len(eintraege), len(herkunft)))
+    if args.begriffe:
+        print("\nERWAEHNUNGEN")
+        for k, v in nachrichten.erwaehnungen(
+                eintraege, args.begriffe.split(",")).items():
+            print("  %-10s %d" % (k, v["anzahl"]))
+            for t in v["titel"]:
+                print("             %s" % t[:60])
+    for f in fehlend:
+        print("NICHT ABRUFBAR: %s" % f)
     return 0
 
 
@@ -531,6 +637,22 @@ def bauen():
     v.add_argument("symbol")
     v.add_argument("--coin", help="CoinGecko-Kennung, falls abweichend")
     v.set_defaults(f=befehl_verkaufen)
+
+    to = u.add_parser("token", help="Ein Token ueber alle Quellen pruefen")
+    to.add_argument("begriff", help="Symbol, Name oder Tokenadresse")
+    to.add_argument("--kette", help="ethereum, solana, base, ...")
+    to.set_defaults(f=befehl_token)
+
+    fo = u.add_parser("fomo", help="Was ist gerade interessant?")
+    fo.set_defaults(f=befehl_fomo)
+
+    ch = u.add_parser("chains", help="Erreichbarkeit aller Ketten")
+    ch.set_defaults(f=befehl_chains)
+
+    nw = u.add_parser("news", help="Schlagzeilen und Erwaehnungen")
+    nw.add_argument("--anzahl", type=int, default=20)
+    nw.add_argument("--begriffe", help="kommagetrennt, z.B. BTC,ETH,SOL")
+    nw.set_defaults(f=befehl_news)
 
     ki = u.add_parser("kill", help="Notbremse ziehen oder loesen")
     ki.add_argument("--loesen", action="store_true")

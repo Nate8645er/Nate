@@ -36,10 +36,48 @@ Als Slash-Befehle in Claude Code: `/crypto-status`, `/crypto-health`,
 `/crypto-signals`, `/crypto-risk`, `/crypto-backtest`, `/crypto-paper`,
 `/crypto-positions`, `/crypto-performance`, `/crypto-kill`.
 
+## FOMO-Schicht: Discovery, Signale, Token-Risiko
+
+Zweiter Teil des Systems. Beantwortet nicht „soll ich BTC kaufen",
+sondern „was ist dieser Token, und komme ich wieder raus".
+
+```bash
+python3 -m krypto.cli fomo               # Trend, Stimmung, Schlagzeilen
+python3 -m krypto.cli token PENGU        # ein Token über alle Quellen
+python3 -m krypto.cli chains             # welche der 9 Ketten antworten
+python3 -m krypto.cli news --begriffe BTC,SOL
+python3 -m krypto.status --schreiben     # gemessener Statusbericht
+```
+
+**Acht Signale, 0–100:** `FOMO_SIGNAL`, `MARKET_MOMENTUM`,
+`ONCHAIN_STRENGTH`, `LIQUIDITY`, `SOCIAL_SENTIMENT`, `NEWS_MOMENTUM`,
+`RISK`, `SCAM_RISK`. Fehlt eine Eingabe, steht dort `DATA_INCOMPLETE` —
+keine 50 als „neutral". Eine 50 aus fehlenden Daten sieht in einer
+Tabelle aus wie eine Messung, und genau das ist der Unterschied
+zwischen einem Werkzeug und einer Attrappe.
+
+**Fünf Risikostufen:** LOW, MEDIUM, HIGH, EXTREME, UNKNOWN. `UNKNOWN`
+ist gefährlicher als `HIGH`, weil es aussieht wie „nichts gefunden".
+Jeder Befund führt mit, was **nicht** geprüft werden konnte — auch bei
+LOW. Ohne diese Liste liest sich LOW als „sicher", und das ist es nie.
+
+**14 Agenten** unter `.claude/agents/fomo-*.md`, koordiniert von
+`fomo-orchestrator`.
+
 ## Aufbau
 
 | Datei | Zuständig für |
 |---|---|
+| `quellen/netz.py` | HTTP und JSON-RPC mit Positivliste lesender Methoden |
+| `quellen/dexscreener.py` | DEX-Paare, Liquidität, Volumen, Alter |
+| `quellen/ketten.py` | 9 Blockchains, nur lesend |
+| `quellen/defillama.py` | TVL und **Zweitkurs zum Abgleich** |
+| `quellen/stimmung.py` | Fear-and-Greed, Trendliste |
+| `quellen/nachrichten.py` | RSS, Erwähnungszählung |
+| `analyse/signale.py` | die acht Kennzahlen |
+| `analyse/token_risiko.py` | fünf Risikostufen, Betrugsmuster |
+| `fomo.py` | Orchestrator über alle Quellen |
+| `status.py` | erzeugt `CRYPTO-AI-STATUS.md` durch echte Anfragen |
 | `konfig.py` | alle Zahlen, die über Geld entscheiden, an einer Stelle |
 | `daten/quelle.py` | CoinGecko, Puffer, Drosselung, ehrliche Fehler |
 | `daten/pruefung.py` | ist diese Zeitreihe rechenbar? |
