@@ -115,7 +115,8 @@ def markt(anzahl=50, waehrung=None):
     waehrung = waehrung or konfig.WAEHRUNG
     pfad = ("/coins/markets?vs_currency=%s&order=market_cap_desc"
             "&per_page=%d&page=1&sparkline=false"
-            "&price_change_percentage=24h,7d" % (waehrung, int(anzahl)))
+            "&price_change_percentage=24h,7d"
+            % (urllib.parse.quote(str(waehrung), safe=""), int(anzahl)))
     daten, herkunft = _holen(pfad, "markets")
     if not isinstance(daten, list):
         raise DatenFehler("Unerwartete Antwort auf %s: %s"
@@ -132,8 +133,14 @@ def kerzen(coin_id, tage=30, waehrung=None):
     06.09.2026 mit days=30 -> 180 Kerzen bestaetigt.
     """
     waehrung = waehrung or konfig.WAEHRUNG
+    # safe="" ist hier keine Kosmetik: mit der Vorgabe safe="/" laesst
+    # quote() Schraegstriche durch, und eine Kennung wie "a/../../x"
+    # wuerde den API-Pfad umbiegen. Der Host bleibt zwar fest, aber
+    # eine Kennung, die irgendwann aus einer Datei statt von Hand
+    # kommt, waere damit ein offenes Scheunentor.
     pfad = "/coins/%s/ohlc?vs_currency=%s&days=%d" % (
-        urllib.parse.quote(str(coin_id)), waehrung, int(tage))
+        urllib.parse.quote(str(coin_id), safe=""),
+        urllib.parse.quote(str(waehrung), safe=""), int(tage))
     daten, herkunft = _holen(pfad, "ohlc")
     if not isinstance(daten, list) or not daten:
         raise DatenFehler("Keine Kerzen fuer %s." % coin_id)

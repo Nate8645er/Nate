@@ -497,6 +497,59 @@ class BacktestTest(unittest.TestCase):
         self.assertLessEqual(dd, 1.0)
 
 
+class SicherheitTest(unittest.TestCase):
+    """Befunde aus dem /cso-Audit, als Test festgenagelt."""
+
+    def test_kennung_kann_den_api_pfad_nicht_umbiegen(self):
+        """quote() laesst mit der Vorgabe safe='/' Schraegstriche durch.
+        Eine Kennung wie 'a/../../x' haette damit den Pfad veraendert."""
+        from krypto.daten import quelle
+        gesehen = []
+
+        def falle(pfad, art, frisch_erzwingen=False):
+            gesehen.append(pfad)
+            return [[1, 1.0, 1.0, 1.0, 1.0]], {"quelle": "test", "alter_s": 0}
+
+        echt, quelle._holen = quelle._holen, falle
+        try:
+            quelle.kerzen("a/../../evil")
+        finally:
+            quelle._holen = echt
+        self.assertEqual(gesehen[0].count("/"), 3)   # /coins/<id>/ohlc
+        self.assertIn("a%2F..%2F..%2Fevil", gesehen[0])
+
+    def test_waehrung_aus_der_umgebung_wird_kodiert(self):
+        from krypto.daten import quelle
+        gesehen = []
+
+        def falle(pfad, art, frisch_erzwingen=False):
+            gesehen.append(pfad)
+            return [], {"quelle": "test", "alter_s": 0}
+
+        echt, quelle._holen = quelle._holen, falle
+        try:
+            quelle.markt(anzahl=5, waehrung="usd&admin=1")
+        finally:
+            quelle._holen = echt
+        self.assertNotIn("&admin=1", gesehen[0])
+
+    def test_zugangsdaten_sind_gitignoriert(self):
+        """Ein .env im Arbeitsverzeichnis darf nie versionierbar sein."""
+        wurzel = os.path.dirname(os.path.dirname(
+            os.path.dirname(os.path.abspath(__file__))))
+        pfad = os.path.join(wurzel, ".gitignore")
+        if not os.path.exists(pfad):
+            self.skipTest("kein .gitignore im Wurzelverzeichnis")
+        text = open(pfad, encoding="utf-8").read()
+        for muster in (".env", "*.pem", "*.key"):
+            self.assertIn(muster, text, "%s fehlt in .gitignore" % muster)
+
+    def test_es_gibt_nur_eine_netzwerkadresse(self):
+        from krypto.daten import quelle
+        self.assertTrue(quelle.BASIS.startswith("https://"))
+        self.assertEqual(quelle.BASIS, "https://api.coingecko.com/api/v3")
+
+
 class ProtokollTest(unittest.TestCase):
 
     def test_schluessel_werden_geschwaerzt(self):
