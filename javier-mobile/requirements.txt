@@ -1,6 +1,17 @@
-fastapi
-uvicorn
-anthropic
-python-dotenv
-requests
-qrcode
+# Versionen eingegrenzt statt offen gelassen.
+#
+# Vorher stand hier nur der nackte Paketname. Damit zieht jedes Deployment
+# bei Render die jeweils neueste Fassung - der Dienst laeuft also
+# potenziell mit anderem Code als beim letzten Mal, ohne dass sich im
+# Repository etwas geaendert haette. Das ist weder reproduzierbar noch
+# gegen eine kompromittierte Abhaengigkeit abgesichert.
+#
+# Obergrenze jeweils auf den naechsten Hauptstand: Sicherheitsflicken
+# kommen weiterhin automatisch, ein Bruch durch eine neue Hauptversion
+# nicht.
+fastapi>=0.110,<1.0
+uvicorn>=0.27,<1.0
+anthropic>=0.40,<1.0
+python-dotenv>=1.0,<2.0
+requests>=2.31,<3.0
+qrcode>=7.4,<9.0

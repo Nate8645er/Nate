@@ -1,10 +1,13 @@
 # JAVIER MOBILE - FastAPI backend with Anthropic tool-use agent loop.
 # Run via start.bat or: python server.py
 
+import hmac
 import json
 import os
 import socket
 import sys
+import time
+from collections import defaultdict
 
 from dotenv import load_dotenv
 
@@ -70,10 +73,50 @@ def get_client():
     return anthropic.Anthropic()
 
 
+def _im_netz():
+    """Laeuft der Dienst oeffentlich erreichbar (Render setzt PORT)?"""
+    return "PORT" in os.environ
+
+
 def _check_password(request):
+    # Fehlendes Passwort ist ein FEHLER, keine Freigabe. Frueher galt
+    # hier "if password and ..." - ohne gesetztes JAVIER_PASSWORD entfiel
+    # die Pruefung komplett, und da die Variable in render.yaml auf
+    # sync: false steht, genuegte einmal Vergessen beim Deployment fuer
+    # einen offenen Endpunkt mit gueltigem Anthropic-Key.
     password = os.environ.get("JAVIER_PASSWORD", "")
-    if password and request.headers.get("x-javier-key", "") != password:
+    if not password:
+        if _im_netz():
+            return JSONResponse(
+                {"error": "server misconfigured: JAVIER_PASSWORD not set"},
+                status_code=503)
+        return None  # lokal im eigenen WLAN weiterhin ohne Passwort
+    geliefert = request.headers.get("x-javier-key", "")
+    # Konstante Laufzeit: sonst laesst sich das Passwort zeichenweise
+    # erraten.
+    if not hmac.compare_digest(password, geliefert):
         return JSONResponse({"error": "unauthorized"}, status_code=401)
+    return None
+
+
+# Einfache Ratenbegrenzung je Absender. Ohne sie kann ein Angreifer mit
+# gueltigem Passwort - oder bei einer Fehlkonfiguration jeder - beliebig
+# viele Agent-Durchlaeufe ausloesen und den API-Kredit abbrennen.
+_anfragen = defaultdict(list)
+RATE_FENSTER_SEKUNDEN = 60
+RATE_MAX_ANFRAGEN = 20
+
+
+def _rate_limit(request):
+    absender = request.client.host if request.client else "unbekannt"
+    jetzt = time.monotonic()
+    grenze = jetzt - RATE_FENSTER_SEKUNDEN
+    letzte = [t for t in _anfragen[absender] if t > grenze]
+    if len(letzte) >= RATE_MAX_ANFRAGEN:
+        _anfragen[absender] = letzte
+        return JSONResponse({"error": "zu viele Anfragen"}, status_code=429)
+    letzte.append(jetzt)
+    _anfragen[absender] = letzte
     return None
 
 
@@ -90,6 +133,9 @@ def chat(req: ChatRequest, request: Request):
     denied = _check_password(request)
     if denied:
         return denied
+    gebremst = _rate_limit(request)
+    if gebremst:
+        return gebremst
     client = get_client()
     messages = [{"role": m.role, "content": m.content} for m in req.messages]
     frontend_actions = []
@@ -238,6 +284,15 @@ if __name__ == "__main__":
     cloud = "PORT" in os.environ
     https = os.path.exists(CERT_FILE) and os.path.exists(KEY_FILE)
     if cloud:
+        # Im Netz ohne Passwort gar nicht erst starten. Ein Dienst, der
+        # sich mit einer Warnung im Protokoll oeffentlich hinstellt, wird
+        # uebersehen - einer, der nicht startet, nicht.
+        if not os.environ.get("JAVIER_PASSWORD"):
+            print("JAVIER_PASSWORD fehlt. Im Cloud-Betrieb ist das "
+                  "zwingend - sonst koennte jeder mit der URL auf deinen "
+                  "Anthropic-Key zugreifen.")
+            print("Bei Render unter Environment setzen und neu deployen.")
+            sys.exit(1)
         print("JAVIER startet im Cloud-Modus auf Port %d." % port)
         uvicorn.run(app, host="0.0.0.0", port=port)
     elif https:

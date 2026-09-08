@@ -1,0 +1,35 @@
+# Zugangsdaten. Diese Zeilen stehen bewusst zuoberst.
+#
+# Der Capital.com-MCP-Server wird mit "cp .env.example .env" eingerichtet.
+# Ohne diese Regel wuerde ein spaeteres "git add -A" einen handelsfaehigen
+# API-Schluessel in die Versionsverwaltung schreiben - und ein Push macht
+# ihn oeffentlich. Der Schluessel laesst sich danach nur noch widerrufen,
+# nicht zurueckholen.
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+*.pem
+*.key
+credentials.json
+secrets.json
+
+# Erzeugte Medien: reproduzierbar aus werkzeuge/video_bauen.py,
+# gehoeren nicht als Binaerdatei in die Versionsverwaltung.
+*.mp4
+
+# Laufzeitdaten: enthalten echte Kunden- und Rapportdaten.
+*.db
+__pycache__/
+*.pyc
+
+# Dashboard-Ausgabe, wird aus status.json erzeugt
+tagwerk/dashboard/dashboard.html
+
+# Fremdcode: AgentCrow wird aus dem ZIP gebaut, nicht mitversioniert.
+vendor/agentcrow-main/node_modules/
+vendor/agentcrow-main/dist/
+vendor/backup-*/
+vendor/agentcrow-main/
+kurs-puffer.json

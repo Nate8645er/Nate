@@ -1,0 +1,7 @@
+# Laufzeitzustand und Protokolle gehoeren nicht ins Repository.
+# Das Papierdepot ist Zustand dieser Maschine, kein Quelltext - und
+# Protokolle koennen im Fehlerfall Fremddaten enthalten.
+logs/
+zustand/
+*.pyc
+__pycache__/
