@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JARVIS // SICHERHEIT</title>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#040703">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="JARVIS">
+<link rel="apple-touch-icon" href="/static/icons/jarvis-180.png">
+<script>if("serviceWorker"in navigator){addEventListener("load",function(){navigator.serviceWorker.register("/sw.js").catch(function(){})})}</script>
+</head>
+<body>
+<header>
+  <h1>JARVIS <span style="color:var(--dim)">//</span> SICHERHEIT</h1>
+  <nav><a href="/">START</a><a href="/uebersicht">ÜBERSICHT</a><a href="/gehirn">GEHIRN</a><a href="/mitarbeiter">MITARBEITER</a><a href="/werkzeuge">WERKZEUGE</a><a href="/autopilot">AUTOPILOT</a><a class="here" href="/sicherheit">SICHERHEIT</a><a href="/schluessel">SCHLÜSSEL</a><a href="/zugaenge">ZUGÄNGE</a><a href="/handy">HANDY</a><a href="/kurzbefehle">KURZBEFEHLE</a></nav>
+  <button id="fable" onclick="fableKey()" style="margin-left:10px">FABLE 5</button>
+  <span class="sys mono" id="clock"></span>
+  <span class="sys"><span class="dot"></span><span id="mode">ONLINE</span></span>
+</header>
+<div class="tickerwrap"><div class="ticker mono" id="ticker">SICHERHEIT WIRD GELADEN …</div></div>
+
+<div class="grid2">
+  <div>
+    <div class="panel">
+      <h2><b>SCHUTZSTATUS</b> // WINDOWS DEFENDER &amp; FIREWALL</h2>
+      <div id="statustile" style="font-size:22px; font-weight:800; margin:4px 0 10px"></div>
+      <div id="checks"></div>
+      <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:10px">
+        <button onclick="sec('check','JETZT PRÜFEN')">🔍 JETZT PRÜFEN</button>
+        <button onclick="sec('signatures','SIGNATUREN AKTUALISIEREN')">🛡 SIGNATUREN AKTUALISIEREN</button>
+        <button onclick="sec('scan','SCAN STARTEN')">🦠 VIREN-SCAN</button>
+        <button onclick="sec('threats','BEDROHUNGEN ABRUFEN')">📋 BEDROHUNGEN</button>
+        <button onclick="sec('remove','BEDROHUNGEN ENTFERNEN')">🧹 ENTFERNEN</button>
+        <button onclick="sec('update','WINDOWS-UPDATE')">⬇ WINDOWS-UPDATE SUCHEN</button>
+      </div>
+      <div id="secres" class="logs mono" style="max-height:120px; margin-top:8px"></div>
+    </div>
+
+    <div class="panel" style="margin-top:10px">
+      <h2><b>MONITOR</b> // AUTOMATISCHER 30-MINUTEN-CHECK</h2>
+      <div class="kv"><span>Läuft</span><b id="m_on">–</b></div>
+      <div class="kv"><span>Intervall</span><b id="m_int">–</b></div>
+      <div class="kv"><span>Checks gesamt</span><b id="m_n">–</b></div>
+      <div class="kv"><span>Letzter Check</span><b id="m_time">–</b></div>
+      <div class="kv"><span>Letzter Status</span><b id="m_status">–</b></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="panel">
+      <h2><b>BODYGUARDS</b> // ASSISTENTEN VON MICROSOFT DEFENDER</h2>
+      <div id="bgstat" style="font-size:11.5px; color:var(--dim); margin-bottom:8px"></div>
+      <div class="teamgrid" id="guards"></div>
+      <div id="bgfix" style="font-size:11px; color:var(--green); margin-top:8px"></div>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>ALARME</b> // ERKANNTE PROBLEME</h2>
+      <div id="alarme" style="font-size:12.5px"></div>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>VERLAUF</b> // LETZTE CHECKS</h2>
+      <div id="verlauf" class="logs mono" style="max-height:320px"></div>
+    </div>
+  </div>
+</div>
+
+<div class="honest"><b>EHRLICHKEITS-PROTOKOLL:</b> JARVIS ist kein eigener Virenscanner. Es nutzt und überwacht
+die echten Windows-Schutzmechanismen (Microsoft Defender, Firewall, Windows-Update) — prüft alle 30 Minuten,
+aktualisiert Signaturen und alarmiert bei Problemen. Echtzeit-Erkennung/-Blockade leistet Defender selbst.
+Scan/Update/Signaturen brauchen die PC-Freischaltung (JARVIS_ALLOW_PC=1).</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const fmt = n => Number(n).toLocaleString('de-CH');
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+setInterval(() => $('clock').textContent = new Date().toLocaleString('de-CH'), 1000);
+
+function renderReport(r) {
+  const sicher = r.status === 'sicher';
+  $('statustile').innerHTML = r.status === 'alarm'
+    ? '<span style="color:var(--red)">⚠ ALARM</span>'
+    : (sicher ? '<span style="color:var(--green)">✅ SYSTEM SICHER</span>'
+              : '<span style="color:var(--dim)">– unbekannt</span>');
+  const rows = [];
+  const yn = v => v === true ? '<b style="color:var(--green)">AN</b>'
+                 : v === false ? '<b style="color:var(--red)">AUS</b>' : '<b>–</b>';
+  if (r.plattform === 'nicht-windows') {
+    rows.push(['Plattform', 'nicht Windows — Defender-Prüfung nur unter Windows']);
+    rows.push(['RAM-Auslastung', (r.ram_prozent ?? '–') + '%']);
+  } else {
+    rows.push(['Defender aktiv', yn(r.defender_an)]);
+    rows.push(['Echtzeitschutz', yn(r.echtzeitschutz)]);
+    rows.push(['Firewall (alle Profile)', yn(r.firewall_alle_an)]);
+    rows.push(['Bedrohungen', (r.bedrohungen ?? 0) > 0
+      ? `<b style="color:var(--red)">${r.bedrohungen}</b>` : '<b style="color:var(--green)">0</b>']);
+    rows.push(['Signatur-Alter', (r.signatur_alter_tage ?? '–') + ' Tage']);
+  }
+  $('checks').innerHTML = rows.map(([k, v]) =>
+    `<div class="kv"><span>${k}</span><span>${v}</span></div>`).join('');
+  $('alarme').innerHTML = (r.probleme && r.probleme.length)
+    ? r.probleme.map(p => `<div style="color:var(--red); padding:3px 0">⚠ ${esc(p)}</div>`).join('')
+    : '<div style="color:var(--green)">Keine Probleme erkannt.</div>';
+}
+
+async function tick() {
+  try {
+    const s = await (await fetch('/api/state')).json();
+    $('mode').textContent = 'ONLINE // ' + s.modell_modus.toUpperCase();
+    const sec = s.sicherheit || {};
+    $('m_on').textContent = sec.laeuft ? 'ja' : 'nein';
+    $('m_int').textContent = (sec.intervall_min ?? '–') + ' Min';
+    $('m_n').textContent = fmt(sec.checks_gesamt || 0);
+    $('m_time').textContent = sec.letzter_check || '–';
+    $('m_status').innerHTML = sec.letzter_status === 'alarm'
+      ? '<span style="color:var(--red)">ALARM</span>'
+      : sec.letzter_status === 'sicher' ? '<span style="color:var(--green)">sicher</span>' : '–';
+    if (sec.letzter_bericht && sec.letzter_bericht.zeit) renderReport(sec.letzter_bericht);
+    const bg = s.bodyguards || {};
+    $('bgstat').innerHTML = `${bg.aktiv ? '<b style="color:var(--green)">AKTIV 24/7</b>' : 'gestoppt'} · ` +
+      `${bg.anzahl || 0} Wächter · assistieren <b style="color:var(--amber2)">${esc(bg.assistiert || 'Microsoft Defender')}</b> · ` +
+      `Patrouille alle ${bg.intervall_min} Min · ${fmt(bg.patrouillen || 0)} Runden · ` +
+      `Selbstheilung: ${esc(bg.selbstheilung || '')}`;
+    $('guards').innerHTML = (bg.waechter || []).map(g => {
+      const al = g.status === 'ALARM';
+      return `<div class="teamcard${al ? '' : ' hot'}" style="${al ? 'border-color:var(--red)' : ''}">
+        <div class="n">${esc(g.posten)}</div>
+        <div style="font-size:12px; color:var(--txt)">${esc(g.name)}</div>
+        <div style="font-size:11px; color:${al ? 'var(--red)' : 'var(--green)'}">${al ? '⚠ ALARM' : '● ' + esc(g.status)}</div>
+      </div>`; }).join('');
+    $('bgfix').innerHTML = (bg.letzte_fixes && bg.letzte_fixes.length)
+      ? '🛠 Automatisch behoben: ' + bg.letzte_fixes.map(esc).join(', ') : '';
+    $('verlauf').innerHTML = (sec.verlauf || []).map(v =>
+      `<div>[${v.zeit || '–'}] ${v.status === 'alarm'
+        ? '<span class="warn">ALARM</span> ' + esc((v.probleme || []).join(', '))
+        : '<span style="color:var(--green)">ok</span>'}</div>`).join('') || '<div>Noch keine Checks.</div>';
+    $('ticker').textContent = (` ▲ SICHERHEIT: Monitor ${sec.laeuft ? 'AKTIV' : 'AUS'} ` +
+      `● Intervall ${sec.intervall_min}min ● Checks ${fmt(sec.checks_gesamt || 0)} ` +
+      `● Status ${(sec.letzter_status || '–').toUpperCase()} ● `).repeat(3);
+  } catch (e) { $('mode').textContent = 'VERBINDUNG GETRENNT'; }
+}
+setInterval(tick, 3000); tick();
+
+async function sec(action, label) {
+  $('secres').textContent = '… ' + label + ' läuft';
+  try {
+    const r = await (await fetch('/api/security/' + action, { method: 'POST' })).json();
+    if (action === 'check') { renderReport(r); $('secres').textContent = 'Prüfung abgeschlossen: ' + (r.status || '').toUpperCase(); }
+    else $('secres').textContent = r.ergebnis || JSON.stringify(r);
+  } catch (e) { $('secres').textContent = 'Fehler: ' + e; }
+  tick();
+}
+</script>
+<script src="/static/fable.js"></script>
+</body>
+</html>

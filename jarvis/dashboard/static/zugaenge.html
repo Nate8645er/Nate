@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JARVIS // ZUGÄNGE</title>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#040703">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="JARVIS">
+<link rel="apple-touch-icon" href="/static/icons/jarvis-180.png">
+<script>if("serviceWorker"in navigator){addEventListener("load",function(){navigator.serviceWorker.register("/sw.js").catch(function(){})})}</script>
+</head>
+<body>
+<header>
+  <h1>JARVIS <span style="color:var(--dim)">//</span> ZUGÄNGE</h1>
+  <nav><a href="/">START</a><a href="/gehirn">GEHIRN</a><a href="/mitarbeiter">MITARBEITER</a><a href="/werkzeuge">WERKZEUGE</a><a href="/autopilot">AUTOPILOT</a><a href="/sicherheit">SICHERHEIT</a><a href="/schluessel">SCHLÜSSEL</a><a class="here" href="/zugaenge">ZUGÄNGE</a><a href="/handy">HANDY</a><a href="/kurzbefehle">KURZBEFEHLE</a></nav>
+  <span class="sys mono" id="clock"></span>
+  <span class="sys"><span class="dot"></span><span id="mode">ONLINE</span></span>
+</header>
+<div class="tickerwrap"><div class="ticker mono" id="ticker">PLATTFORM-LOGINS — JARVIS MELDET SICH FÜR DICH AN ●</div></div>
+
+<div class="grid2">
+  <div>
+    <div class="panel">
+      <h2><b>NEUER ZUGANG</b> // PLATTFORM ANMELDEN</h2>
+      <div id="s_add" style="font-size:12px; margin-bottom:6px; color:var(--dim)">
+        Plattform wählen, Benutzer + Passwort eintragen. JARVIS kennt die Login-Seiten der bekannten Dienste automatisch.
+      </div>
+      <form onsubmit="return addZugang(event)">
+        <input id="z_plat" list="presets" placeholder="Plattform (z. B. instagram)" autocomplete="off" style="flex:1">
+        <datalist id="presets"></datalist>
+      </form>
+      <form onsubmit="return addZugang(event)" style="margin-top:6px">
+        <input id="z_user" placeholder="Benutzername / E-Mail" autocomplete="off" style="flex:1">
+      </form>
+      <form onsubmit="return addZugang(event)" style="margin-top:6px">
+        <input id="z_pass" type="password" placeholder="Passwort" autocomplete="off" style="flex:1">
+        <button>SPEICHERN</button>
+      </form>
+      <details style="margin-top:8px">
+        <summary style="cursor:pointer; font-size:11px; color:var(--dim)">Unbekannte Plattform? Login-Adresse + Felder selbst angeben</summary>
+        <input id="z_login" placeholder="Login-URL (https://…/login)" autocomplete="off" style="width:100%; margin-top:6px">
+        <input id="z_usel" placeholder="Benutzer-Feld CSS-Selektor (optional)" autocomplete="off" style="width:100%; margin-top:6px">
+        <input id="z_psel" placeholder="Passwort-Feld CSS-Selektor (optional)" autocomplete="off" style="width:100%; margin-top:6px">
+        <input id="z_ssel" placeholder="Absenden-Button CSS-Selektor (optional)" autocomplete="off" style="width:100%; margin-top:6px">
+      </details>
+    </div>
+
+    <div class="panel" style="margin-top:10px">
+      <h2><b>ALLE ANMELDEN</b> // ÜBERALL EINLOGGEN</h2>
+      <div style="font-size:11px; color:var(--dim); margin-bottom:6px">
+        JARVIS loggt sich nacheinander in alle hinterlegten Konten ein. Die Sitzungen bleiben danach erhalten — du bleibst angemeldet.
+      </div>
+      <button onclick="loginAlle()">ÜBERALL EINLOGGEN</button>
+      <div id="s_alle" style="font-size:12px; margin-top:8px"></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="panel">
+      <h2><b>GESPEICHERTE ZUGÄNGE</b></h2>
+      <div id="liste" style="font-size:12px">Wird geladen…</div>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>SICHERHEIT</b> // WIE JARVIS DEINE DATEN SCHÜTZT</h2>
+      <div class="kv"><span>Speicherort</span><b>nur lokal (~/.jarvis)</b></div>
+      <div class="kv"><span>Verschlüsselung</span><b id="v_enc">–</b></div>
+      <div class="kv"><span>Master-Passwort</span><b id="v_mpw">–</b></div>
+      <div style="font-size:10.5px; color:var(--dim); margin-top:8px">
+        Passwörter werden verschlüsselt auf DIESEM PC gespeichert (0600-Datei) und nie gesendet.
+        Für maximalen Schutz: Master-Passwort setzen (Umgebungsvariable <span class="mono">JARVIS_VAULT_PW</span>).
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="honest"><b>EHRLICHKEITS-PROTOKOLL:</b> JARVIS füllt Benutzer + Passwort und sendet das Login-Formular ab.
+Erscheint danach ein <b>Bestätigungscode (2FA)</b> oder ein <b>Captcha</b>, machst DU diesen einen Schritt im sichtbaren
+Fenster — danach bleibt JARVIS dank gespeicherter Sitzung angemeldet. Manche Dienste (Banken, teils Instagram)
+blockieren Automatik aktiv; das kann fehlschlagen oder das Konto sperren. Nichts wird an Dritte gesendet.</div>
+
+<script>
+const $ = id => document.getElementById(id);
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+setInterval(() => $('clock').textContent = new Date().toLocaleString('de-CH'), 1000);
+
+async function refresh() {
+  try {
+    const d = await (await fetch('/api/zugaenge')).json();
+    $('presets').innerHTML = (d.presets||[]).map(p => '<option value="'+esc(p)+'">').join('');
+    $('v_enc').innerHTML = d.verschluesselt
+      ? '<span style="color:var(--green)">✅ AES/Fernet</span>'
+      : '<span style="color:#e8c98a">Base64 (cryptography fehlt)</span>';
+    $('v_mpw').textContent = d.master_passwort ? 'gesetzt' : 'nicht gesetzt';
+    const z = d.zugaenge || [];
+    if (!z.length) { $('liste').innerHTML = '<span style="color:var(--dim)">Noch keine Zugänge gespeichert.</span>'; return; }
+    $('liste').innerHTML = z.map(e =>
+      '<div class="kv" style="align-items:center">' +
+      '<span><b>' + esc(e.plattform) + '</b> — <span class="mono">' + esc(e.benutzer_maskiert) + '</span></span>' +
+      '<span><button onclick="loginEinzeln(\'' + esc(e.plattform) + '\')">Einloggen</button> ' +
+      '<button onclick="delZugang(\'' + esc(e.plattform) + '\')">Löschen</button></span></div>'
+    ).join('');
+  } catch (e) { $('mode').textContent = 'VERBINDUNG GETRENNT'; }
+}
+setInterval(refresh, 4000); refresh();
+
+async function addZugang(ev) {
+  ev.preventDefault();
+  const plat = $('z_plat').value.trim(), user = $('z_user').value.trim(), pass = $('z_pass').value;
+  if (!plat || !user || !pass) { $('s_add').textContent = 'Plattform, Benutzer und Passwort ausfüllen.'; return false; }
+  $('s_add').textContent = '… speichere';
+  const body = { plattform: plat, benutzer: user, passwort: pass,
+    login_url: $('z_login').value.trim(), user_sel: $('z_usel').value.trim(),
+    pass_sel: $('z_psel').value.trim(), submit_sel: $('z_ssel').value.trim() };
+  const r = await fetch('/api/zugaenge', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(body) });
+  if (r.ok) {
+    $('s_add').innerHTML = '<b style="color:var(--green)">✅ ' + esc(plat) + ' gespeichert</b>';
+    $('z_user').value=''; $('z_pass').value=''; $('z_plat').value='';
+    $('z_login').value=''; $('z_usel').value=''; $('z_psel').value=''; $('z_ssel').value='';
+    refresh();
+  } else { const t = await r.json().catch(()=>({})); $('s_add').innerHTML = '<b style="color:var(--red)">Fehler: ' + esc(t.detail||'ungültig') + '</b>'; }
+  return false;
+}
+async function delZugang(p) {
+  await fetch('/api/zugaenge/' + encodeURIComponent(p), { method:'DELETE' });
+  refresh();
+}
+async function loginEinzeln(p) {
+  const r = await fetch('/api/zugaenge/' + encodeURIComponent(p) + '/login', { method:'POST' });
+  const d = await r.json().catch(()=>({}));
+  alert(_beschreibe(p, d.ergebnis));
+}
+async function loginAlle() {
+  $('s_alle').textContent = '… JARVIS loggt sich überall ein (das kann etwas dauern)';
+  const r = await fetch('/api/zugaenge/alle/login', { method:'POST' });
+  const d = await r.json().catch(()=>({}));
+  const e = d.ergebnis;
+  if (e && e.eingeloggt_bei != null)
+    $('s_alle').innerHTML = '<b style="color:var(--green)">Fertig — ' + e.eingeloggt_bei + ' Konten bearbeitet.</b>';
+  else $('s_alle').textContent = typeof e === 'string' ? e : JSON.stringify(e);
+}
+function _beschreibe(p, e) {
+  if (!e) return p + ': keine Antwort';
+  if (typeof e === 'string') return p + ': ' + e;
+  return p + ': ' + (e.hinweis || e.status || JSON.stringify(e));
+}
+</script>
+</body>
+</html>

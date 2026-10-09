@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JARVIS // MITARBEITER</title>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#040703">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="JARVIS">
+<link rel="apple-touch-icon" href="/static/icons/jarvis-180.png">
+<script>if("serviceWorker"in navigator){addEventListener("load",function(){navigator.serviceWorker.register("/sw.js").catch(function(){})})}</script>
+</head>
+<body>
+<header>
+  <h1>JARVIS <span style="color:var(--dim)">//</span> MITARBEITER-TRACKER</h1>
+  <nav><a href="/">START</a><a href="/uebersicht">ÜBERSICHT</a><a href="/gehirn">GEHIRN</a><a class="here" href="/mitarbeiter">MITARBEITER</a><a href="/werkzeuge">WERKZEUGE</a><a href="/autopilot">AUTOPILOT</a><a href="/sicherheit">SICHERHEIT</a><a href="/schluessel">SCHLÜSSEL</a><a href="/zugaenge">ZUGÄNGE</a><a href="/handy">HANDY</a><a href="/kurzbefehle">KURZBEFEHLE</a></nav>
+  <button id="fable" onclick="fableKey()" style="margin-left:10px">FABLE 5</button>
+  <span class="sys mono" id="clock"></span>
+  <span class="sys"><span class="dot"></span><span id="mode">ONLINE</span></span>
+</header>
+<div class="tickerwrap"><div class="ticker mono" id="ticker">TRACKER WIRD INITIALISIERT …</div></div>
+
+<div class="grid2">
+  <!-- linke Spalte: Live-Tracker -->
+  <div>
+    <div class="panel">
+      <h2><b>BESTAND</b> // ORGANISATION IN ZAHLEN</h2>
+      <div class="tiles">
+        <div class="tile"><div class="l">Adressierbar / Ebene</div><div class="v" style="font-size:15px" id="t_space">–</div></div>
+        <div class="tile"><div class="l">Jetzt aktiv</div><div class="v" id="t_act">0</div></div>
+        <div class="tile"><div class="l">Wartend</div><div class="v" id="t_wait">0</div></div>
+        <div class="tile"><div class="l">Aktivierungen gesamt</div><div class="v" id="t_total">0</div></div>
+        <div class="tile ok"><div class="l">Erledigt</div><div class="v" id="t_done">0</div></div>
+        <div class="tile err"><div class="l">Fehler</div><div class="v" id="t_err">0</div></div>
+      </div>
+      <div style="font-size:10.5px; color:var(--dim); margin-top:6px">
+        Rekursiv: jeder Mitarbeiter führt ein eigenes Unternehmen mit wieder 100 Mrd. adressierbaren Mitarbeitern.
+      </div>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>BELEGSCHAFT-BETRIEB</b> // GESAMTE ORGANISATION AKTIVIEREN</h2>
+      <div style="display:flex; gap:8px; align-items:center">
+        <button id="wfbtn" onclick="toggleWorkforce()">▶ GANZE BELEGSCHAFT AKTIVIEREN</button>
+        <span id="wfstate" style="font-size:11px; color:var(--dim)">gestoppt</span>
+      </div>
+      <div class="tiles" style="margin-top:8px; grid-template-columns:repeat(4,1fr)">
+        <div class="tile"><div class="l">Durchlaufen</div><div class="v" style="font-size:15px" id="wf_total">0</div></div>
+        <div class="tile"><div class="l">Rate / Sek.</div><div class="v" style="font-size:15px" id="wf_rate">0</div></div>
+        <div class="tile"><div class="l">Wellen (parallel)</div><div class="v" style="font-size:15px" id="wf_waves">0</div></div>
+        <div class="tile"><div class="l">Abdeckung</div><div class="v" style="font-size:13px" id="wf_cov">0%</div></div>
+      </div>
+      <div style="font-size:10.5px; color:var(--dim); margin-top:6px" id="wf_hint">
+        Startet einen kontinuierlichen Betrieb, der in rollenden Wellen durch alle 100 Mrd. Mitarbeiter fegt.
+      </div>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>LIVE</b> // WER ARBEITET GERADE WO</h2>
+      <table><thead><tr><th>#</th><th>Mitarbeiter</th><th>Teamleiter</th><th>Team</th><th>Aufgabe</th><th>Status</th></tr></thead>
+      <tbody id="tasks"></tbody></table>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>TEAMS</b> // AKTIVITÄT NACH ABTEILUNG (LETZTE AUFGABEN)</h2>
+      <div class="teamgrid" id="teams"></div>
+    </div>
+  </div>
+
+  <!-- rechte Spalte: Suche + Explorer -->
+  <div>
+    <div class="panel">
+      <h2><b>SUCHE</b> // MITARBEITER IM ADRESSRAUM AUFRUFEN</h2>
+      <form onsubmit="return lookup(event)">
+        <input id="addr" placeholder="Adresse, z. B. 42 oder 42/777/31337" autocomplete="off">
+        <button>AUFRUFEN</button>
+      </form>
+      <div style="font-size:10.5px; color:var(--dim); margin-top:5px">
+        Jede Zahl von 0 bis 99'999'999'999, mit „/" beliebig tief in Unternehmen hinein.
+      </div>
+      <div id="emp"></div>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>EXPLORER</b> // VIRTUELLES UNTERNEHMEN ANSEHEN</h2>
+      <form onsubmit="return exploreOrg(event)">
+        <input id="orgaddr" placeholder="Chef-Adresse, z. B. 7" autocomplete="off">
+        <button>ÖFFNEN</button>
+      </form>
+      <div id="org"></div>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>TEAMS &amp; CHEFS</b> // 25 TEAMS, JE EIN TEAMLEITER</h2>
+      <div style="font-size:10.5px; color:var(--dim); margin-bottom:6px">
+        Jedes Unternehmen hat 25 Teams (Adressen 0–24 = die Chefs). Klick auf einen Chef öffnet ihn.
+      </div>
+      <div id="teamchefs"><div style="color:var(--dim); font-size:12px">Lade Teamleiter…</div></div>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>BESTENLISTE</b> // AUFSTEIGER DURCH ECHTE ARBEIT</h2>
+      <div style="font-size:10.5px; color:var(--dim); margin-bottom:6px">
+        Mitarbeiter sammeln echte Erfahrung (XP) für erledigte Aufgaben und steigen im Level.
+      </div>
+      <div id="board"><div style="color:var(--dim); font-size:12px">Noch keine Aufstiege — sobald Aufgaben erledigt werden, erscheinen hier die Besten.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="honest"><b>EHRLICHKEITS-PROTOKOLL:</b> „Adressierbar" heißt: prozedural berechenbar (0 Byte Speicher
+pro inaktivem Mitarbeiter). Wirklich gleichzeitig arbeiten können nur so viele Agenten, wie die Hardware zulässt —
+diese Zahl steht unter „Jetzt aktiv".</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const fmt = n => Number(n).toLocaleString('de-CH');
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+setInterval(() => $('clock').textContent = new Date().toLocaleString('de-CH'), 1000);
+
+async function tick() {
+  try {
+    const s = await (await fetch('/api/state')).json();
+    $('mode').textContent = 'ONLINE // ' + s.modell_modus.toUpperCase();
+    $('t_space').textContent = fmt(s.adressraum_pro_ebene);
+    $('t_act').textContent = s.aktive_agenten; $('t_wait').textContent = s.wartende_aufgaben;
+    $('t_total').textContent = fmt(s.aktivierte_agenten_gesamt);
+    $('t_done').textContent = fmt(s.fertig); $('t_err').textContent = s.fehler;
+    const all = [...s.aktive, ...s.letzte_aufgaben];
+    $('tasks').innerHTML = all.slice(0, 18).map(t =>
+      `<tr><td class="mono">${t.id}</td><td>${esc(t.agent || '—')}${t.demo ? ' <span class="demo">DEMO</span>' : ''}</td>` +
+      `<td style="color:var(--dim)">${esc((t.chef || '').split(' (')[0] || '—')}</td>` +
+      `<td>${esc(t.team || '')}</td>` +
+      `<td>${esc((t.beschreibung||'').slice(0, 42))}</td>` +
+      `<td><span class="tag ${t.status}">${t.status.toUpperCase()}</span></td></tr>`).join('');
+    const counts = {};
+    for (const t of all) if (t.team) counts[t.team] = (counts[t.team] || 0) + 1;
+    const activeTeams = new Set(s.aktive.map(t => t.team));
+    $('teams').innerHTML = Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([team, c]) =>
+      `<div class="teamcard${activeTeams.has(team) ? ' hot' : ''}"><div class="n">${esc(team)}</div><div class="c">${c}</div></div>`).join('')
+      || '<div style="color:var(--dim)">Noch keine Aktivität.</div>';
+    const wf = s.belegschaft || {};
+    $('wf_total').textContent = fmt(wf.durchlaufen || 0);
+    $('wf_rate').textContent = fmt(wf.rate_pro_s || 0);
+    $('wf_waves').textContent = wf.wellen || 0;
+    $('wf_cov').textContent = (wf.abdeckung_prozent || 0) + '%';
+    const btn = $('wfbtn');
+    btn.classList.toggle('on', !!wf.in_betrieb);
+    btn.textContent = wf.in_betrieb ? '⏹ BELEGSCHAFT-BETRIEB STOPPEN' : '▶ GANZE BELEGSCHAFT AKTIVIEREN';
+    $('wfstate').textContent = wf.in_betrieb
+      ? `IN BETRIEB · ${fmt(wf.durchlaufen)} durchlaufen · ETA für 100 Mrd: ${wf.eta_tage} Tage`
+      : 'gestoppt';
+    if (wf.in_betrieb && wf.stichprobe && wf.stichprobe.length)
+      $('wf_hint').innerHTML = 'Gerade aktiviert: ' + wf.stichprobe.slice(0, 3).map(e =>
+        `<b style="color:var(--amber2)">${esc(e.name)}</b> (${esc(e.team)})`).join(' · ');
+    $('ticker').textContent = (` ▲ TRACKER: ${s.aktive_agenten} AKTIV ● ${s.wartende_aufgaben} WARTEND ` +
+      `● ${fmt(s.aktivierte_agenten_gesamt)} AKTIVIERUNGEN GESAMT ● ADRESSRAUM ${fmt(s.adressraum_pro_ebene)}/EBENE ` +
+      `● TEAMS AKTIV: ${[...activeTeams].join(', ') || 'KEINE'} ● ZIEL ${fmt(s.finanzen.ziel_chf)} CHF · REAL ${s.finanzen.einnahmen_chf.toFixed(2)} CHF ● `).repeat(3);
+  } catch (e) { $('mode').textContent = 'VERBINDUNG GETRENNT'; }
+}
+setInterval(tick, 1500); tick();
+
+async function toggleWorkforce() {
+  const s = await (await fetch('/api/state')).json();
+  const on = s.belegschaft && s.belegschaft.in_betrieb;
+  await fetch('/api/workforce/' + (on ? 'stop' : 'start'), { method: 'POST' });
+  tick();
+}
+
+async function loadTeamChefs() {
+  try {
+    const d = await (await fetch('/api/teams')).json();
+    $('teamchefs').innerHTML = '<table><thead><tr><th>Team</th><th>Chef</th><th>Rang</th><th></th></tr></thead><tbody>' +
+      (d.teams || []).map(t =>
+        `<tr><td>${esc(t.team)}</td><td>${esc(t.chef)}</td>` +
+        `<td><b style="color:var(--amber2)">${esc(t.meisterschaft)} Lvl ${t.level}</b></td>` +
+        `<td><button style="font-size:10px" onclick="$('addr').value='${esc(t.chef_adresse)}';lookup(event)">ÖFFNEN</button></td></tr>`
+      ).join('') + '</tbody></table>';
+  } catch (e) {}
+}
+loadTeamChefs();
+
+async function loadBoard() {
+  try {
+    const d = await (await fetch('/api/fortschritt/top?limit=10')).json();
+    const b = d.bestenliste || [];
+    if (!b.length) return;
+    $('board').innerHTML = '<table><thead><tr><th>#</th><th>Mitarbeiter</th><th>Team</th>' +
+      '<th>Rang</th><th>Aufgaben</th><th>XP</th></tr></thead><tbody>' +
+      b.map((e, i) => `<tr><td class="mono">${i + 1}</td><td>${esc(e.name)}</td>` +
+        `<td>${esc(e.team)}</td><td><b style="color:var(--amber2)">${esc(e.meisterschaft)} Lvl ${e.level}</b></td>` +
+        `<td class="mono">${fmt(e.erledigt)}</td><td class="mono">${fmt(e.xp)}</td></tr>`).join('') +
+      '</tbody></table>';
+  } catch (e) {}
+}
+setInterval(loadBoard, 4000); loadBoard();
+
+async function lookup(ev) {
+  ev.preventDefault();
+  const a = $('addr').value.trim().replace(/\s/g, '');
+  if (!a) return false;
+  const r = await fetch('/api/employee/' + encodeURIComponent(a));
+  if (!r.ok) { $('emp').innerHTML = `<div class="empcard">Ungültige Adresse.</div>`; return false; }
+  const e = await r.json();
+  const bonus = e.bonus_level ? ` (+${e.bonus_level} durch ${e.erledigte_aufgaben} Aufgaben)` : '';
+  const chef = e.ist_teamleiter
+    ? '<span style="color:var(--green)">★ TEAMLEITER dieses Teams</span>'
+    : `Chef: <b>${esc(e.chef_name)}</b> <span style="color:var(--dim)">(Adr ${esc(e.chef_adresse)})</span>`;
+  $('emp').innerHTML = `<div class="empcard">
+    <b>${esc(e.name)}</b> — ${esc(e.rolle)}, Team ${esc(e.team)} (Ebene ${esc(e.ebene)})<br>
+    ${chef}<br>
+    <b style="color:var(--amber2)">${esc(e.meisterschaft)} · Level ${esc(e.level)}</b>${esc(bonus)}
+    · Erfahrung ${fmt(e.verdiente_xp + e.erfahrung_basis)} XP<br>
+    Spezialisierung: ${esc(e.spezialisierung)}<br>
+    Skills: ${esc(e.skills.join(', '))}<br>
+    Werkzeuge beherrscht: ${esc((e.werkzeuge_beherrscht||[]).join(', '))}<br>
+    Ziele: ${esc(e.ziele.join(' · '))}<br>
+    Priorität: ${esc(e.prioritaet)} · Plugins: ${esc(e.plugins_autorisiert.join(', '))}<br>
+    Eigenes Unternehmen: <b>${esc(e.eigenes_unternehmen)}</b>
+    (${fmt(e.adressierbare_mitarbeiter_im_eigenen_unternehmen)} adressierbare Mitarbeiter)
+    <div style="margin-top:6px"><button onclick="$('orgaddr').value='${esc(e.adresse)}';exploreOrg(event)">UNTERNEHMEN ÖFFNEN</button></div>
+  </div>`;
+  return false;
+}
+async function exploreOrg(ev) {
+  if (ev) ev.preventDefault();
+  const a = $('orgaddr').value.trim().replace(/\s/g, '');
+  if (!a) return false;
+  const r = await fetch('/api/org/' + encodeURIComponent(a) + '?count=12');
+  if (!r.ok) { $('org').innerHTML = `<div class="empcard">Ungültige Adresse.</div>`; return false; }
+  const o = await r.json();
+  $('org').innerHTML = `<div class="empcard">
+    <b>${esc(o.unternehmen)}</b> — Leitung: ${esc(o.leitung)}<br>
+    ${fmt(o.adressierbar)} adressierbare Mitarbeiter · Auszug:
+    <table style="margin-top:6px"><thead><tr><th>Adresse</th><th>Name</th><th>Rolle</th><th>Team</th></tr></thead><tbody>
+    ${o.mitarbeiter_auszug.map(m => `<tr><td class="mono" style="color:var(--dim)">${esc(m.adresse)}</td>` +
+      `<td>${esc(m.name)}</td><td>${esc(m.rolle)}</td><td>${esc(m.team)}</td></tr>`).join('')}
+    </tbody></table>
+    <div style="font-size:10px; color:var(--dim); margin-top:4px">Tipp: Adresse eines Mitarbeiters oben in die Suche
+    eingeben — auch er führt wieder ein eigenes Unternehmen.</div>
+  </div>`;
+  return false;
+}
+
+
+</script>
+<script src="/static/fable.js"></script>
+</body>
+</html>

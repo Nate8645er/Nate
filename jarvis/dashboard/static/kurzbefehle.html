@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JARVIS // KURZBEFEHLE</title>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#040703">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="JARVIS">
+<link rel="apple-touch-icon" href="/static/icons/jarvis-180.png">
+<script>if("serviceWorker"in navigator){addEventListener("load",function(){navigator.serviceWorker.register("/sw.js").catch(function(){})})}</script>
+</head>
+<body>
+<header>
+  <h1>JARVIS <span style="color:var(--dim)">//</span> KURZBEFEHLE</h1>
+  <nav><a href="/">START</a><a href="/gehirn">GEHIRN</a><a href="/zugaenge">ZUGÄNGE</a><a href="/handy">HANDY</a><a class="here" href="/kurzbefehle">KURZBEFEHLE</a></nav>
+  <span class="sys mono" id="clock"></span>
+  <span class="sys"><span class="dot"></span><span id="mode">ONLINE</span></span>
+</header>
+<div class="tickerwrap"><div class="ticker mono">„HEY SIRI, JARVIS" — DEIN IPHONE SPRICHT MIT JARVIS ●</div></div>
+
+<div class="grid2">
+  <div>
+    <div class="panel">
+      <h2><b>1 · TOKEN</b> // SCHÜTZT DEINEN ZUGANG</h2>
+      <div style="font-size:12px; color:var(--dim); margin-bottom:6px">
+        Das Token ist wie ein Passwort für den Kurzbefehl — nur wer es kennt, darf JARVIS steuern.
+      </div>
+      <div class="kv"><span>Status</span><b id="t_status">–</b></div>
+      <div id="t_box" style="display:none; margin-top:6px">
+        <div style="font-size:10px; color:var(--dim); letter-spacing:.16em">DEIN TOKEN</div>
+        <div id="t_val" class="mono" style="font-size:14px; color:var(--amber2); word-break:break-all; margin-top:3px"></div>
+      </div>
+      <button onclick="genToken()" style="margin-top:8px">TOKEN ERZEUGEN / ERNEUERN</button>
+    </div>
+
+    <div class="panel" style="margin-top:10px">
+      <h2><b>2 · ADRESSE FÜR DEN KURZBEFEHL</b></h2>
+      <div style="font-size:10px; color:var(--dim); letter-spacing:.16em">DIESE URL IN DEN KURZBEFEHL EINTRAGEN</div>
+      <div id="url" class="mono" style="font-size:13px; color:var(--amber2); word-break:break-all; margin-top:4px">…</div>
+      <button onclick="copy('url')" style="margin-top:8px">URL KOPIEREN</button>
+      <div style="font-size:10.5px; color:var(--dim); margin-top:8px" id="hosthint"></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="panel">
+      <h2><b>3 · KURZBEFEHL AUF DEM IPHONE ANLEGEN</b></h2>
+      <ol style="font-size:12.5px; line-height:1.7; padding-left:18px; margin:4px 0">
+        <li>App <b>Kurzbefehle</b> öffnen → <b>+</b> (neuer Kurzbefehl).</li>
+        <li>Aktion <b>„Text diktieren"</b> hinzufügen (das sagst du Siri).</li>
+        <li>Aktion <b>„Inhalte von URL abrufen"</b> hinzufügen:
+          <ul style="margin:3px 0">
+            <li><b>URL:</b> die Adresse von links (Punkt 2) — aber das <span class="mono">TEXT_HIER</span> am Ende <b>löschen</b>.</li>
+            <li>Auf <b>Methode</b> → <b>POST</b>.</li>
+            <li><b>Anfragetext</b> → <b>JSON</b> → Feld <span class="mono">text</span> = Variable <b>„Diktierter Text"</b>.</li>
+          </ul>
+        </li>
+        <li>Aktion <b>„Text vorlesen"</b> hinzufügen → Variable = Ergebnis der URL.</li>
+        <li>Oben Namen geben: <b>„JARVIS"</b>. Fertig ✓</li>
+      </ol>
+      <div style="font-size:11px; color:var(--dim)">Jetzt: <b>„Hey Siri, JARVIS"</b> → sag deinen Befehl → Siri liest JARVIS' Antwort vor.</div>
+    </div>
+
+    <div class="panel" style="margin-top:10px">
+      <h2><b>BEISPIEL-BEFEHLE</b> // WAS DU SAGEN KANNST</h2>
+      <div style="font-size:12px; line-height:1.7">
+        „Öffne YouTube" · „Spiel Lofi Musik auf YouTube" · „Logge dich bei Instagram ein" ·
+        „Such nach dem Wetter morgen" · „Was ist die Hauptstadt von Japan" · „Mach einen Screenshot"
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="honest"><b>EHRLICH:</b> Der Kurzbefehl schickt deinen gesprochenen Text an JARVIS und liest die Antwort vor.
+JARVIS läuft weiter dort, wo der Server läuft (PC / Tailscale / Cloud) — nur so weit reicht sein Zugriff.
+Damit JARVIS unterwegs erreichbar ist, muss der Server von außen erreichbar sein (Tailscale oder Cloud).
+Ohne Token kann jeder mit der URL JARVIS steuern — <b>setz darum ein Token</b>, sobald JARVIS aus dem Netz erreichbar ist.</div>
+
+<script>
+const $ = id => document.getElementById(id);
+setInterval(() => $('clock').textContent = new Date().toLocaleString('de-CH'), 1000);
+let TOKEN = '', BASE = '';
+
+async function refresh() {
+  try {
+    const t = await (await fetch('/api/shortcut/token')).json();
+    TOKEN = t.token || '';
+    $('t_status').innerHTML = t.gesetzt
+      ? '<span style="color:var(--green)">✅ gesetzt</span>'
+      : '<span style="color:#e8c98a">— noch keins (bitte erzeugen)</span>';
+    if (t.gesetzt) { $('t_box').style.display='block'; $('t_val').textContent = TOKEN; }
+    const h = await (await fetch('/api/handy')).json();
+    // Bevorzugt die aktuell im Browser genutzte Adresse (funktioniert auch für Tailscale/Cloud)
+    BASE = location.origin;
+    if (!h.lan_modus_aktiv && h.url) { /* Hinweis unten */ }
+    updateUrl();
+    $('hosthint').innerHTML = 'Vom iPhone aus musst du die Adresse nehmen, unter der JARVIS erreichbar ist: ' +
+      'im WLAN <span class="mono">' + (h.lan_ip ? ('http://'+h.lan_ip+':'+h.port) : '(Handy-Modus starten)') + '</span>, ' +
+      'unterwegs die Tailscale-/Cloud-Adresse.';
+  } catch (e) { $('mode').textContent = 'VERBINDUNG GETRENNT'; }
+}
+function updateUrl() {
+  const tokPart = TOKEN ? ('?token=' + encodeURIComponent(TOKEN)) : '';
+  $('url').textContent = BASE + '/api/shortcut' + tokPart + '  (POST, JSON: text=Diktierter Text)';
+}
+setInterval(refresh, 4000); refresh();
+
+async function genToken() {
+  const r = await fetch('/api/shortcut/token', { method:'POST', headers:{'content-type':'application/json'}, body:'{}' });
+  const d = await r.json();
+  TOKEN = d.token; refresh();
+}
+function copy(id) {
+  const s = $(id).textContent.split('  ')[0];
+  navigator.clipboard?.writeText(s).then(()=>{ $(id).style.color='var(--green)'; setTimeout(()=>$(id).style.color='var(--amber2)',800); },()=>{});
+}
+</script>
+</body>
+</html>
