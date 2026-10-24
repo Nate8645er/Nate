@@ -1,0 +1,65 @@
+{%- comment -%}
+  Bild + Text: Markenstory, Kaufargumente, "So funktioniert's".
+  Bildposition wählbar, optionale Checkliste als Blocks.
+{%- endcomment -%}
+<section class="image-text section{% if section.settings.soft_bg %} section--soft{% endif %}">
+  <div class="page-width image-text__grid{% if section.settings.image_position == 'right' %} image-text__grid--flip{% endif %}">
+    <div class="image-text__media reveal">
+      {%- if section.settings.image -%}
+        {%- assign it_alt = section.settings.image.alt | default: section.settings.title -%}
+        {{ section.settings.image
+          | image_url: width: 1100
+          | image_tag: widths: '550, 800, 1100', sizes: '(min-width: 750px) 50vw, 100vw', loading: 'lazy', class: 'image-text__img', alt: it_alt
+        }}
+      {%- else -%}
+        {%- comment -%} Fallback: mitgelieferte Galaxy-Illustration statt grauem Platzhalter {%- endcomment -%}
+        <img src="{{ 'cats-play-galaxy.png' | asset_url }}" alt="{{ section.settings.title | escape }}"
+          width="1200" height="1200" loading="lazy" class="image-text__img">
+      {%- endif -%}
+    </div>
+    <div class="image-text__content reveal">
+      {%- if section.settings.eyebrow != blank -%}<p class="section__eyebrow">{{ section.settings.eyebrow | escape }}</p>{%- endif -%}
+      <h2 class="section__title">{{ section.settings.title | escape }}</h2>
+      <div class="rte">{{ section.settings.text }}</div>
+      {%- if section.blocks.size > 0 -%}
+        <ul class="checklist" role="list">
+          {%- for block in section.blocks -%}
+            <li {{ block.shopify_attributes }}>{% render 'icon', name: 'check' %} {{ block.settings.text | escape }}</li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+      {%- if section.settings.cta_label != blank -%}
+        <a href="{{ section.settings.cta_link }}" class="btn btn--primary">{{ section.settings.cta_label | escape }}</a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Bild mit Text",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Bild" },
+    { "type": "select", "id": "image_position", "label": "Bildposition", "default": "left", "options": [
+      { "value": "left", "label": "Links" }, { "value": "right", "label": "Rechts" }
+    ] },
+    { "type": "text", "id": "eyebrow", "label": "Overline", "default": "Unsere Geschichte" },
+    { "type": "text", "id": "title", "label": "Titel", "default": "Warum es uns gibt" },
+    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Wir haben diesen Shop gegründet, weil wir überzeugt sind: Gute Produkte brauchen keine Kompromisse. Jedes Produkt in unserem Sortiment testen wir selbst, bevor es in den Shop kommt.</p>" },
+    { "type": "text", "id": "cta_label", "label": "Button-Text" },
+    { "type": "url", "id": "cta_link", "label": "Button-Link" },
+    { "type": "checkbox", "id": "soft_bg", "label": "Abgesetzter Hintergrund", "default": false }
+  ],
+  "blocks": [
+    {
+      "type": "check",
+      "name": "Checklisten-Punkt",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text", "default": "Von uns persönlich getestet" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [{ "name": "Bild mit Text" }]
+}
+{% endschema %}

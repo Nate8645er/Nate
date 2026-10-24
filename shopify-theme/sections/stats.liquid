@@ -1,0 +1,59 @@
+{%- comment -%}
+  Zahlen-Sektion mit Count-up-Animation (einmalig beim Sichtbarwerden).
+  Ehrlichkeits-Regel: nur belegbare Zahlen verwenden (UWG) – Garantie-Tage,
+  Lieferzeit, Akkulaufzeit. Keine erfundenen Kundenzahlen.
+{%- endcomment -%}
+<section class="stats section{% if section.settings.soft_bg %} section--soft{% endif %}">
+  <div class="page-width">
+    {%- if section.settings.title != blank -%}
+      <div class="section__head reveal">
+        <h2 class="section__title">{{ section.settings.title | escape }}</h2>
+      </div>
+    {%- endif -%}
+    <div class="stats__grid" style="--stats-cols: {{ section.blocks.size | at_most: 4 }};" data-reveal-stagger>
+      {%- for block in section.blocks -%}
+        <div class="stats__item reveal" {{ block.shopify_attributes }}>
+          <div class="stats__value">
+            {%- if block.settings.prefix != blank %}{{ block.settings.prefix | escape }}{% endif -%}
+            <span data-count-to="{{ block.settings.number }}">0</span>
+            {%- if block.settings.suffix != blank %}<span class="stats__suffix">{{ block.settings.suffix | escape }}</span>{% endif -%}
+          </div>
+          <p class="stats__label">{{ block.settings.label | escape }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Zahlen (Count-up)",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Titel" },
+    { "type": "checkbox", "id": "soft_bg", "label": "Abgesetzter Hintergrund", "default": false }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Zahl",
+      "settings": [
+        { "type": "text", "id": "prefix", "label": "Präfix (z. B. bis)" },
+        { "type": "number", "id": "number", "label": "Zahl", "default": 30 },
+        { "type": "text", "id": "suffix", "label": "Suffix (z. B. Tage)" },
+        { "type": "text", "id": "label", "label": "Beschriftung", "default": "Tage Geld-zurück-Garantie" }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "Zahlen (Count-up)",
+      "blocks": [
+        { "type": "stat", "settings": { "number": 30, "suffix": " Tage", "label": "Geld-zurück-Garantie auf jede Bestellung" } },
+        { "type": "stat", "settings": { "number": 14, "suffix": " Tage", "label": "Maximale Lieferzeit aus dem EU-Lager" } },
+        { "type": "stat", "settings": { "number": 100, "suffix": " %", "label": "Sendungsverfolgung bei jeder Lieferung" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

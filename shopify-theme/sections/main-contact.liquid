@@ -1,0 +1,58 @@
+{%- comment -%} Kontaktseite: Formular (nativ, E-Mails gehen an die Shop-Adresse) + Service-Versprechen {%- endcomment -%}
+<section class="contact section">
+  <div class="page-width page-width--narrow">
+    <h1 class="page__title">{{ page.title | escape }}</h1>
+    {%- if page.content != blank -%}
+      <div class="rte">{{ page.content }}</div>
+    {%- endif -%}
+
+    <div class="contact__grid">
+      {%- form 'contact', class: 'contact-form' -%}
+        {%- if form.posted_successfully? -%}
+          <p class="newsletter-form__success">{% render 'icon', name: 'check' %} {{ 'contact.success' | t }}</p>
+        {%- endif -%}
+        {%- if form.errors -%}
+          <p class="form-error">{{ 'contact.error' | t }}</p>
+        {%- endif -%}
+        <div class="contact-form__row">
+          <div class="field">
+            <label for="ContactName">{{ 'contact.name' | t }}</label>
+            <input id="ContactName" type="text" name="contact[name]" class="input" autocomplete="name" required>
+          </div>
+          <div class="field">
+            <label for="ContactEmail">{{ 'contact.email' | t }}</label>
+            <input id="ContactEmail" type="email" name="contact[email]" class="input" autocomplete="email" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="ContactOrder">{{ 'contact.order_number' | t }}</label>
+          <input id="ContactOrder" type="text" name="contact[Bestellnummer]" class="input">
+        </div>
+        <div class="field">
+          <label for="ContactMessage">{{ 'contact.message' | t }}</label>
+          <textarea id="ContactMessage" name="contact[body]" class="input" rows="6" required></textarea>
+        </div>
+        <button type="submit" class="btn btn--primary btn--lg">{{ 'contact.submit' | t }}</button>
+      {%- endform -%}
+
+      <aside class="contact__aside">
+        <h2 class="section__title section__title--sm">{{ section.settings.aside_title | escape }}</h2>
+        <ul class="checklist" role="list">
+          <li>{% render 'icon', name: 'clock' %} {{ section.settings.response_time | escape }}</li>
+          <li>{% render 'icon', name: 'mail' %} <a href="mailto:{{ shop.email }}">{{ shop.email }}</a></li>
+          <li>{% render 'icon', name: 'shield' %} {{ settings.guarantee_text | escape }}</li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Kontakt",
+  "settings": [
+    { "type": "text", "id": "aside_title", "label": "Seitenleisten-Titel", "default": "Wir sind für dich da" },
+    { "type": "text", "id": "response_time", "label": "Antwortzeit", "default": "Antwort innerhalb von 24 Stunden (Mo–Fr)" }
+  ]
+}
+{% endschema %}

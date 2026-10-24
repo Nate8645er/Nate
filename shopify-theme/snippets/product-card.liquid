@@ -1,0 +1,60 @@
+{%- comment -%}
+  Produktkarte für Grids (Bestseller, Kategorie, Empfehlungen, Suche).
+  Verwendung: {% render 'product-card', card_product: product, lazy: true, show_badge: true %}
+  - Lazy-Loading per Parameter (Above-the-fold-Karten: lazy: false)
+  - Zweites Bild als Hover (Desktop)
+  - Bewertungs-Sterne aus dem Standard-Metafield reviews.rating (füllt z. B. Judge.me)
+{%- endcomment -%}
+{%- liquid
+  assign loading_attr = 'lazy'
+  if lazy == false
+    assign loading_attr = 'eager'
+  endif
+  assign first_variant = card_product.selected_or_first_available_variant
+-%}
+<article class="product-card reveal">
+  <a href="{{ card_product.url }}" class="product-card__media" aria-label="{{ card_product.title | escape }}">
+    {%- if card_product.featured_image -%}
+      {{ card_product.featured_image
+        | image_url: width: 700
+        | image_tag:
+          widths: '360, 540, 700',
+          sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw',
+          loading: loading_attr,
+          class: 'product-card__img',
+          alt: card_product.featured_image.alt
+      }}
+      {%- if card_product.images[1] -%}
+        {{ card_product.images[1]
+          | image_url: width: 700
+          | image_tag: loading: 'lazy', class: 'product-card__img product-card__img--hover', alt: card_product.title
+        }}
+      {%- endif -%}
+    {%- else -%}
+      {{ 'product-1' | placeholder_svg_tag: 'product-card__img placeholder' }}
+    {%- endif -%}
+
+    {%- if show_badge != false -%}
+      {%- if first_variant.compare_at_price > first_variant.price -%}
+        <span class="badge badge--sale">{{ 'products.badges.sale' | t }}</span>
+      {%- elsif card_product.available == false -%}
+        <span class="badge badge--soldout">{{ 'products.badges.sold_out' | t }}</span>
+      {%- endif -%}
+    {%- endif -%}
+  </a>
+
+  <div class="product-card__info">
+    {%- assign rating = card_product.metafields.reviews.rating.value -%}
+    {%- if rating -%}
+      <div class="rating" aria-label="{{ rating.rating }} von 5 Sternen">
+        {%- for i in (1..5) -%}
+          <span class="rating__star{% if i > rating.rating %} rating__star--empty{% endif %}">{% render 'icon', name: 'star' %}</span>
+        {%- endfor -%}
+        {%- assign rating_count = card_product.metafields.reviews.rating_count.value -%}
+        {%- if rating_count %}<span class="rating__count">({{ rating_count }})</span>{% endif -%}
+      </div>
+    {%- endif -%}
+    <h3 class="product-card__title"><a href="{{ card_product.url }}">{{ card_product.title | escape }}</a></h3>
+    {% render 'price', product: card_product %}
+  </div>
+</article>

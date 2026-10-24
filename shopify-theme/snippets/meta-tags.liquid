@@ -1,0 +1,45 @@
+{%- comment -%}
+  SEO-Meta: Title, Description, Canonical, Open Graph, Twitter Cards.
+  Fallbacks sind so gebaut, dass jede Seite ohne manuelle Pflege einen sinnvollen
+  Title + eine Description bekommt. Individuelle Werte im Admin pflegen
+  (Produkt/Seite → Suchmaschinen-Listing bearbeiten).
+{%- endcomment -%}
+{%- liquid
+  assign og_title = page_title | default: shop.name
+  assign og_description = page_description | default: shop.description | default: shop.name
+  assign og_url = canonical_url | default: request.origin
+
+  if request.page_type == 'product'
+    assign og_image = product.featured_image
+  elsif request.page_type == 'collection'
+    assign og_image = collection.image | default: collection.products.first.featured_image
+  elsif request.page_type == 'article'
+    assign og_image = article.image
+  else
+    assign og_image = settings.logo
+  endif
+-%}
+<title>
+  {{- page_title -}}
+  {%- if current_page != 1 %} &ndash; {{ 'general.page' | t }} {{ current_page }}{% endif -%}
+  {%- unless page_title contains shop.name %} | {{ shop.name }}{% endunless -%}
+</title>
+<meta name="description" content="{{ og_description | strip_html | truncate: 158 | escape }}">
+<link rel="canonical" href="{{ canonical_url }}">
+
+<meta property="og:site_name" content="{{ shop.name | escape }}">
+<meta property="og:type" content="{% if request.page_type == 'product' %}product{% elsif request.page_type == 'article' %}article{% else %}website{% endif %}">
+<meta property="og:title" content="{{ og_title | escape }}">
+<meta property="og:description" content="{{ og_description | strip_html | truncate: 158 | escape }}">
+<meta property="og:url" content="{{ og_url }}">
+{%- if og_image -%}
+  <meta property="og:image" content="https:{{ og_image | image_url: width: 1200 }}">
+  <meta property="og:image:width" content="1200">
+{%- endif -%}
+{%- if request.page_type == 'product' -%}
+  <meta property="og:price:amount" content="{{ product.price | money_without_currency | strip_html }}">
+  <meta property="og:price:currency" content="{{ cart.currency.iso_code }}">
+{%- endif -%}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ og_title | escape }}">
+<meta name="twitter:description" content="{{ og_description | strip_html | truncate: 158 | escape }}">

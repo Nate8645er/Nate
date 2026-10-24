@@ -1,0 +1,29 @@
+{%- comment -%}
+  Gratisversand-Fortschrittsbalken (Warenkorb).
+  Schwelle: Theme-Settings → "Versand & Vertrauen". 0 = deaktiviert.
+{%- endcomment -%}
+{%- liquid
+  assign threshold = settings.free_shipping_threshold | times: 100
+-%}
+{%- if threshold > 0 -%}
+  {%- assign remaining = threshold | minus: cart.total_price -%}
+  <div class="shipping-bar" data-shipping-bar data-threshold="{{ threshold }}">
+    {%- if remaining > 0 -%}
+      {%- assign progress = cart.total_price | times: 100 | divided_by: threshold -%}
+      {%- assign remaining_money = remaining | money -%}
+      <p class="shipping-bar__text">
+        {% render 'icon', name: 'truck' %}
+        {{ 'cart.shipping_bar.remaining_html' | t: amount: remaining_money }}
+      </p>
+    {%- else -%}
+      {%- assign progress = 100 -%}
+      <p class="shipping-bar__text shipping-bar__text--reached">
+        {% render 'icon', name: 'check' %}
+        {{ 'cart.shipping_bar.reached' | t }}
+      </p>
+    {%- endif -%}
+    <div class="shipping-bar__track" role="progressbar" aria-valuenow="{{ progress | at_most: 100 }}" aria-valuemin="0" aria-valuemax="100">
+      <div class="shipping-bar__fill" style="width: {{ progress | at_most: 100 }}%"></div>
+    </div>
+  </div>
+{%- endif -%}

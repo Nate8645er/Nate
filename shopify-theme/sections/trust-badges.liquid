@@ -1,0 +1,59 @@
+{%- comment -%} Trust-Badges / Kaufargumente als Icon-Zeile (4 Spalten Desktop, 2 mobil) {%- endcomment -%}
+<section class="trust-badges section{% if section.settings.soft_bg %} section--soft{% endif %}">
+  <div class="page-width">
+    <ul class="trust-badges__grid" role="list">
+      {%- for block in section.blocks -%}
+        <li class="trust-badges__item reveal" {{ block.shopify_attributes }}>
+          <span class="trust-badges__icon">{% render 'icon', name: block.settings.icon %}</span>
+          <h3 class="trust-badges__title">{{ block.settings.title | escape }}</h3>
+          <p class="trust-badges__text">{{ block.settings.text | escape }}</p>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Trust-Badges",
+  "settings": [
+    { "type": "checkbox", "id": "soft_bg", "label": "Abgesetzter Hintergrund", "default": true }
+  ],
+  "blocks": [
+    {
+      "type": "badge",
+      "name": "Badge",
+      "settings": [
+        {
+          "type": "select", "id": "icon", "label": "Icon", "default": "truck",
+          "options": [
+            { "value": "truck", "label": "Versand" },
+            { "value": "shield", "label": "Garantie" },
+            { "value": "return", "label": "Rückgabe" },
+            { "value": "lock", "label": "Sicherheit" },
+            { "value": "heart", "label": "Herz" },
+            { "value": "package", "label": "Paket" },
+            { "value": "clock", "label": "Uhr" },
+            { "value": "check", "label": "Haken" },
+            { "value": "mail", "label": "E-Mail" }
+          ]
+        },
+        { "type": "text", "id": "title", "label": "Titel", "default": "Schneller Versand" },
+        { "type": "text", "id": "text", "label": "Text", "default": "Lieferung in 7–14 Tagen mit Sendungsverfolgung." }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "Trust-Badges",
+      "blocks": [
+        { "type": "badge", "settings": { "icon": "truck", "title": "Versand mit Tracking", "text": "Lieferung in 7–14 Tagen aus dem EU-Lager, inkl. Sendungsverfolgung." } },
+        { "type": "badge", "settings": { "icon": "shield", "title": "Geld-zurück-Garantie", "text": "30 Tage testen. Nicht zufrieden? Geld zurück, ohne Diskussion." } },
+        { "type": "badge", "settings": { "icon": "lock", "title": "Sicher bezahlen", "text": "SSL-verschlüsselt mit allen gängigen Zahlungsarten." } },
+        { "type": "badge", "settings": { "icon": "mail", "title": "Persönlicher Support", "text": "Echte Menschen antworten dir innerhalb von 24 Stunden." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

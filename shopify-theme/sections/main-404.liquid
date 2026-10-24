@@ -1,0 +1,16 @@
+{%- comment -%} 404-Seite: freundlich, mit Rückweg in den Shop {%- endcomment -%}
+<section class="section">
+  <div class="page-width page-width--narrow text-center empty-state">
+    <p class="section__eyebrow">404</p>
+    <h1 class="section__title">{{ 'general.404_title' | t }}</h1>
+    <p class="section__text">{{ 'general.404_text' | t }}</p>
+    <a href="{{ routes.root_url }}" class="btn btn--primary btn--lg">{{ 'general.404_cta' | t }}</a>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "404",
+  "settings": []
+}
+{% endschema %}

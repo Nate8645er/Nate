@@ -1,0 +1,13 @@
+{
+  "sections": {
+    "main": { "type": "main-page", "settings": {} },
+    "placeholder": {
+      "type": "rich-text",
+      "settings": {
+        "title": "",
+        "text": "<p><strong>⚠️ PLATZHALTER – vor dem Livegang anpassen!</strong></p><p>Firmenname / Inhaber:in<br>Strasse und Hausnummer<br>PLZ und Ort<br>Land</p><p>E-Mail: kontakt@deinshop.ch<br>Telefon: +41 00 000 00 00</p><p>Handelsregister-Nr. / UID: CHE-000.000.000 (falls vorhanden)<br>MwSt-Nr.: CHE-000.000.000 MWST (falls mehrwertsteuerpflichtig)</p><p><em>Hinweis: Die Pflichtangaben unterscheiden sich je nach Land (Schweiz, Deutschland, Österreich). Lass die endgültige Fassung rechtlich prüfen oder nutze einen Impressum-Generator für dein Land.</em></p>"
+      }
+    }
+  },
+  "order": ["main", "placeholder"]
+}

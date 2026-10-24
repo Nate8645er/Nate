@@ -1,0 +1,35 @@
+{%- comment -%}
+  Countdown-Banner (optional): läuft auf ein festes Enddatum.
+  Ehrlichkeits-Regel: nur für ECHTE, zeitlich begrenzte Aktionen verwenden –
+  Fake-Countdowns zerstören Vertrauen und sind in der Schweiz (UWG) heikel.
+  Nach Ablauf blendet sich die Section automatisch aus.
+{%- endcomment -%}
+<section class="countdown" style="background: {{ section.settings.bg_color }};" data-countdown data-end="{{ section.settings.end_date }}T{{ section.settings.end_time | default: '23:59' }}:00" hidden>
+  <div class="page-width countdown__inner">
+    <p class="countdown__label">{{ section.settings.label | escape }}</p>
+    <div class="countdown__timer" role="timer">
+      <span class="countdown__unit"><b data-cd-days>0</b><small>{{ 'general.countdown.days' | t }}</small></span>
+      <span class="countdown__unit"><b data-cd-hours>0</b><small>{{ 'general.countdown.hours' | t }}</small></span>
+      <span class="countdown__unit"><b data-cd-mins>0</b><small>{{ 'general.countdown.minutes' | t }}</small></span>
+      <span class="countdown__unit"><b data-cd-secs>0</b><small>{{ 'general.countdown.seconds' | t }}</small></span>
+    </div>
+    {%- if section.settings.cta_label != blank -%}
+      <a href="{{ section.settings.cta_link }}" class="btn btn--accent">{{ section.settings.cta_label | escape }}</a>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Countdown (Aktion)",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Aktions-Text", "default": "Sommer-Aktion: 10% auf alles mit Code SOMMER10" },
+    { "type": "text", "id": "end_date", "label": "Enddatum (JJJJ-MM-TT)", "default": "2026-12-31", "info": "Nur für echte Aktionen verwenden. Nach Ablauf verschwindet der Banner automatisch." },
+    { "type": "text", "id": "end_time", "label": "Uhrzeit (HH:MM)", "default": "23:59" },
+    { "type": "text", "id": "cta_label", "label": "Button-Text", "default": "Jetzt sichern" },
+    { "type": "url", "id": "cta_link", "label": "Button-Link" },
+    { "type": "color", "id": "bg_color", "label": "Hintergrund", "default": "#E8823A" }
+  ],
+  "presets": [{ "name": "Countdown (Aktion)" }]
+}
+{% endschema %}

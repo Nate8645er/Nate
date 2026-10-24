@@ -1,0 +1,118 @@
+{%- comment -%}
+  Warenkorb: Gratisversand-Fortschritt, Positionen mit Mengensteuerung,
+  Bestellnotiz, Upsell aus wählbarer Collection, Trust-Zeile, Checkout-CTA.
+  Mengenänderungen senden das Formular automatisch (kein fragiles AJAX nötig).
+{%- endcomment -%}
+<section class="cart section">
+  <div class="page-width page-width--narrow">
+    <h1 class="cart__title">{{ 'cart.title' | t }}</h1>
+
+    {%- if cart.item_count == 0 -%}
+      <div class="empty-state">
+        <p>{{ 'cart.empty' | t }}</p>
+        <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary btn--lg">{{ 'cart.continue_shopping' | t }}</a>
+      </div>
+    {%- else -%}
+
+      {% render 'free-shipping-bar' %}
+
+      <form action="{{ routes.cart_url }}" method="post" class="cart__form" data-cart-form>
+        <ul class="cart__lines" role="list">
+          {%- for item in cart.items -%}
+            <li class="cart-line">
+              <a href="{{ item.url }}" class="cart-line__media">
+                {%- if item.image -%}
+                  {{ item.image | image_url: width: 220 | image_tag: loading: 'lazy', class: 'cart-line__img', alt: item.title }}
+                {%- endif -%}
+              </a>
+              <div class="cart-line__info">
+                <a class="cart-line__title" href="{{ item.url }}">{{ item.product.title | escape }}</a>
+                {%- unless item.product.has_only_default_variant -%}
+                  <p class="cart-line__variant">{{ item.variant.title | escape }}</p>
+                {%- endunless -%}
+                <div class="cart-line__controls">
+                  <div class="qty" data-qty>
+                    <button type="button" class="qty__btn" data-qty-minus aria-label="{{ 'products.quantity_decrease' | t }}">{% render 'icon', name: 'minus' %}</button>
+                    <input class="qty__input" type="number" name="updates[]" value="{{ item.quantity }}" min="0" inputmode="numeric" data-cart-qty aria-label="{{ 'products.quantity' | t }}">
+                    <button type="button" class="qty__btn" data-qty-plus aria-label="{{ 'products.quantity_increase' | t }}">{% render 'icon', name: 'plus' %}</button>
+                  </div>
+                  <a class="cart-line__remove" href="{{ item.url_to_remove }}">{{ 'cart.remove' | t }}</a>
+                </div>
+              </div>
+              <div class="cart-line__price">
+                {%- if item.original_line_price != item.final_line_price -%}
+                  <s>{{ item.original_line_price | money }}</s>
+                {%- endif -%}
+                <span>{{ item.final_line_price | money }}</span>
+              </div>
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        <div class="cart__footer">
+          <div class="cart__note">
+            <label for="CartNote">{{ 'cart.note_label' | t }}</label>
+            <textarea id="CartNote" name="note" class="input" rows="3">{{ cart.note }}</textarea>
+          </div>
+
+          <div class="cart__summary">
+            <div class="cart__subtotal">
+              <span>{{ 'cart.subtotal' | t }}</span>
+              <strong>{{ cart.total_price | money }}</strong>
+            </div>
+            <p class="cart__tax-note">{{ 'cart.tax_note' | t }}</p>
+            <button type="submit" name="checkout" class="btn btn--accent btn--lg btn--block">
+              {% render 'icon', name: 'lock' %} {{ 'cart.checkout' | t }}
+            </button>
+            <ul class="cart__trust" role="list">
+              <li>{% render 'icon', name: 'shield' %} {{ settings.guarantee_text | escape }}</li>
+              <li>{% render 'icon', name: 'truck' %} {{ settings.shipping_text | escape }}</li>
+            </ul>
+            {%- if section.settings.show_payment_icons -%}
+              <ul class="footer__payments cart__payments" role="list" aria-label="{{ 'general.payment_methods' | t }}">
+                {%- for type in shop.enabled_payment_types -%}
+                  <li>{{ type | payment_type_svg_tag: class: 'payment-icon' }}</li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </div>
+        </div>
+      </form>
+
+      {%- comment -%} Upsell: Produkte aus wählbarer Collection, die noch nicht im Warenkorb liegen {%- endcomment -%}
+      {%- liquid
+        assign upsell_coll = section.settings.upsell_collection
+        assign shown = 0
+        assign cart_ids = cart.items | map: 'product_id' | join: ','
+        assign cart_ids = ',' | append: cart_ids | append: ','
+      -%}
+      {%- if upsell_coll != blank and upsell_coll.products.size > 0 -%}
+        <aside class="cart__upsell">
+          <h2 class="section__title section__title--sm">{{ section.settings.upsell_title | escape }}</h2>
+          <div class="product-grid product-grid--4 product-grid--compact">
+            {%- for upsell_product in upsell_coll.products -%}
+              {%- if shown >= 4 %}{% break %}{% endif -%}
+              {%- assign needle = ',' | append: upsell_product.id | append: ',' -%}
+              {%- unless cart_ids contains needle -%}
+                {% render 'product-card', card_product: upsell_product, lazy: true, show_badge: false %}
+                {%- assign shown = shown | plus: 1 -%}
+              {%- endunless -%}
+            {%- endfor -%}
+          </div>
+        </aside>
+      {%- endif -%}
+
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Warenkorb",
+  "settings": [
+    { "type": "checkbox", "id": "show_payment_icons", "label": "Zahlungsarten anzeigen", "default": true },
+    { "type": "text", "id": "upsell_title", "label": "Upsell-Titel", "default": "Kundinnen und Kunden kauften auch" },
+    { "type": "collection", "id": "upsell_collection", "label": "Upsell-Collection" }
+  ]
+}
+{% endschema %}

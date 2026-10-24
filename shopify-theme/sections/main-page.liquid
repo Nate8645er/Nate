@@ -1,0 +1,14 @@
+{%- comment -%} Standard-Seitentemplate: Titel + Rich-Text-Inhalt aus dem Admin {%- endcomment -%}
+<section class="page section">
+  <div class="page-width page-width--narrow">
+    <h1 class="page__title">{{ page.title | escape }}</h1>
+    <div class="page__content rte">{{ page.content }}</div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Seite",
+  "settings": []
+}
+{% endschema %}

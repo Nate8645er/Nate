@@ -1,0 +1,24 @@
+{%- comment -%}
+  Preis-Anzeige mit Streichpreis + Sale-Badge.
+  Verwendung: {% render 'price', product: product %} oder {% render 'price', variant: variant %}
+  Hinweis Schweiz (Preisbekanntgabeverordnung): Streichpreise nur verwenden, wenn der
+  Referenzpreis tatsächlich zuvor verlangt wurde.
+{%- endcomment -%}
+{%- liquid
+  if variant
+    assign price = variant.price
+    assign compare_price = variant.compare_at_price
+  else
+    assign target = product.selected_or_first_available_variant | default: product
+    assign price = target.price
+    assign compare_price = target.compare_at_price
+  endif
+-%}
+<div class="price{% if compare_price > price %} price--sale{% endif %}">
+  <span class="price__current" aria-label="{{ 'products.price.current' | t }}">{{ price | money }}</span>
+  {%- if compare_price > price -%}
+    <s class="price__compare" aria-label="{{ 'products.price.regular' | t }}">{{ compare_price | money }}</s>
+    {%- assign saving = compare_price | minus: price | times: 100 | divided_by: compare_price -%}
+    <span class="price__badge">&minus;{{ saving }}%</span>
+  {%- endif -%}
+</div>

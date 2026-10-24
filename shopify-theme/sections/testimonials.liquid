@@ -1,0 +1,67 @@
+{%- comment -%}
+  Bewertungen / Social Proof: Kartengrid mit Sternen, Zitat, Name, Verifiziert-Badge.
+  Inhalte über Blöcke pflegen. Für automatisch gesammelte Bewertungen:
+  Judge.me (Free-Plan) installieren – dessen Widgets ersetzen diese Section nicht,
+  sondern ergänzen sie auf der Produktseite.
+{%- endcomment -%}
+<section class="testimonials section{% if section.settings.soft_bg %} section--soft{% endif %}">
+  <div class="page-width">
+    <div class="section__head reveal">
+      {%- if section.settings.eyebrow != blank -%}<p class="section__eyebrow">{{ section.settings.eyebrow | escape }}</p>{%- endif -%}
+      <h2 class="section__title">{{ section.settings.title | escape }}</h2>
+    </div>
+
+    <div class="testimonials__grid">
+      {%- for block in section.blocks -%}
+        <figure class="testimonial reveal" {{ block.shopify_attributes }}>
+          <div class="rating" aria-label="{{ block.settings.stars }} von 5 Sternen">
+            {%- for i in (1..5) -%}
+              <span class="rating__star{% if i > block.settings.stars %} rating__star--empty{% endif %}">{% render 'icon', name: 'star' %}</span>
+            {%- endfor -%}
+          </div>
+          <blockquote class="testimonial__quote">{{ block.settings.quote | escape }}</blockquote>
+          <figcaption class="testimonial__meta">
+            <span class="testimonial__name">{{ block.settings.name | escape }}</span>
+            {%- if block.settings.verified -%}
+              <span class="testimonial__verified">{% render 'icon', name: 'check' %} {{ 'general.verified_buyer' | t }}</span>
+            {%- endif -%}
+          </figcaption>
+        </figure>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Bewertungen",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Overline", "default": "Bewertungen" },
+    { "type": "text", "id": "title", "label": "Titel", "default": "Das sagen unsere Kundinnen und Kunden" },
+    { "type": "checkbox", "id": "soft_bg", "label": "Abgesetzter Hintergrund", "default": true }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Bewertung",
+      "settings": [
+        { "type": "range", "id": "stars", "min": 1, "max": 5, "step": 1, "label": "Sterne", "default": 5 },
+        { "type": "textarea", "id": "quote", "label": "Zitat", "default": "Bin begeistert! Schnelle Lieferung und die Qualität ist deutlich besser als erwartet." },
+        { "type": "text", "id": "name", "label": "Name", "default": "Sandra M." },
+        { "type": "checkbox", "id": "verified", "label": "Verifizierter Kauf", "default": true }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Bewertungen",
+      "blocks": [
+        { "type": "testimonial", "settings": { "quote": "Bestellt, zwei Tage später geliefert. Die Qualität hat mich ehrlich überrascht – klare Empfehlung.", "name": "Sandra M.", "stars": 5 } },
+        { "type": "testimonial", "settings": { "quote": "Der Support hat meine Frage noch am selben Abend beantwortet. So stellt man sich einen Shop vor.", "name": "Reto K.", "stars": 5 } },
+        { "type": "testimonial", "settings": { "quote": "Schon das zweite Mal bestellt. Verpackung, Qualität, Lieferzeit – alles top.", "name": "Nadine B.", "stars": 5 } }
+      ]
+    }
+  ]
+}
+{% endschema %}

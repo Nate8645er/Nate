@@ -1,0 +1,36 @@
+# Holt die Original-Produktfotos vom Shopify-CDN in den Branch,
+# damit die Creative-Pipeline (creatives/galaxy_creatives.py & Studio-Bilder)
+# ohne direkten CDN-Zugriff aus der Sandbox damit arbeiten kann.
+# Manuell auslösbar (workflow_dispatch), committet nach creatives/source/.
+name: fetch-product-images
+on:
+  push:
+    branches:
+      - claude/shopify-premium-store-25gz8k
+    paths:
+      - '.github/workflows/fetch-product-images.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/shopify-premium-store-25gz8k
+      - name: Download product images from Shopify CDN
+        run: |
+          mkdir -p creatives/source
+          curl -fsSL -o creatives/source/produkt-weiss.png "https://cdn.shopify.com/s/files/1/1017/4686/8601/files/cat-toy-white-same-style.png?v=1782051956"
+          curl -fsSL -o creatives/source/produkt-rosa.png "https://cdn.shopify.com/s/files/1/1017/4686/8601/files/cat-toy-pink-only.png?v=1782051911"
+          curl -fsSL -o creatives/source/produkt-lifestyle.png "https://cdn.shopify.com/s/files/1/1017/4686/8601/files/ChatGPT_Image_6._Juli_2026_17_47_24.png?v=1783352899"
+          ls -la creatives/source
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add creatives/source
+          git diff --cached --quiet || git commit -m "Add source product images from Shopify CDN"
+          git push

@@ -1,0 +1,32 @@
+{%- comment -%} Newsletter-Section (Startseite): Anmeldung mit Anreiz (z. B. 10% Rabatt) {%- endcomment -%}
+<section class="newsletter-section section section--primary">
+  <div class="page-width page-width--narrow newsletter-section__inner reveal">
+    <h2 class="section__title">{{ section.settings.title | escape }}</h2>
+    <p class="section__text">{{ section.settings.text | escape }}</p>
+    {%- form 'customer', class: 'newsletter-form newsletter-form--center' -%}
+      {%- if form.posted_successfully? -%}
+        <p class="newsletter-form__success">{% render 'icon', name: 'check' %} {{ 'newsletter.success' | t }}</p>
+      {%- else -%}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        <div class="newsletter-form__row">
+          <label class="visually-hidden" for="SectionEmail">{{ 'newsletter.email' | t }}</label>
+          <input id="SectionEmail" type="email" name="contact[email]" class="input" placeholder="{{ 'newsletter.email' | t }}" required autocomplete="email">
+          <button type="submit" class="btn btn--accent">{{ 'newsletter.submit' | t }}</button>
+        </div>
+        <p class="newsletter-form__hint">{{ section.settings.hint | escape }}</p>
+      {%- endif -%}
+    {%- endform -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Titel", "default": "10% Rabatt auf deine erste Bestellung" },
+    { "type": "text", "id": "text", "label": "Text", "default": "Melde dich an und erhalte deinen Rabattcode direkt per E-Mail – plus exklusive Angebote vor allen anderen." },
+    { "type": "text", "id": "hint", "label": "Hinweis", "default": "Kein Spam. Abmeldung jederzeit möglich." }
+  ],
+  "presets": [{ "name": "Newsletter" }]
+}
+{% endschema %}

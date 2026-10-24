@@ -1,0 +1,84 @@
+{%- comment -%}
+  Kategorieseite: Banner mit Titel + Beschreibung, Sortierung,
+  Produktgrid mit Pagination. Filter über Shopify Search & Discovery
+  (kostenlose Shopify-App) ergänzbar.
+{%- endcomment -%}
+<section class="collection section">
+  <div class="page-width">
+
+    <header class="collection__head reveal">
+      <nav class="breadcrumb" aria-label="{{ 'general.breadcrumb' | t }}">
+        <a href="{{ routes.root_url }}">Home</a>
+        {% render 'icon', name: 'chevron-right' %}<span aria-current="page">{{ collection.title | escape }}</span>
+      </nav>
+      <h1 class="collection__title">{{ collection.title | escape }}</h1>
+      {%- if collection.description != blank -%}
+        <div class="collection__description rte">{{ collection.description }}</div>
+      {%- endif -%}
+    </header>
+
+    {%- paginate collection.products by section.settings.products_per_page -%}
+
+      <div class="collection__toolbar">
+        <p class="collection__count">{{ 'collections.product_count' | t: count: collection.products_count }}</p>
+        <form class="collection__sort" data-sort-form>
+          <label for="SortBy">{{ 'collections.sort_by' | t }}</label>
+          <select id="SortBy" name="sort_by" class="input input--select">
+            {%- for option in collection.sort_options -%}
+              <option value="{{ option.value }}"{% if option.value == collection.sort_by %} selected{% endif %}>{{ option.name }}</option>
+            {%- endfor -%}
+          </select>
+        </form>
+      </div>
+
+      {%- if collection.products.size > 0 -%}
+        <div class="product-grid product-grid--4">
+          {%- for product in collection.products -%}
+            {%- liquid
+              assign card_lazy = true
+              if forloop.index <= 4 and paginate.current_page == 1
+                assign card_lazy = false
+              endif
+            -%}
+            {% render 'product-card', card_product: product, lazy: card_lazy %}
+          {%- endfor -%}
+        </div>
+      {%- else -%}
+        <div class="empty-state">
+          <p>{{ 'collections.empty' | t }}</p>
+          <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary">{{ 'general.view_all' | t }}</a>
+        </div>
+      {%- endif -%}
+
+      {%- if paginate.pages > 1 -%}
+        <nav class="pagination" aria-label="{{ 'general.pagination' | t }}">
+          {%- if paginate.previous -%}
+            <a class="pagination__item" href="{{ paginate.previous.url }}" rel="prev" aria-label="{{ 'general.previous' | t }}">&larr;</a>
+          {%- endif -%}
+          {%- for part in paginate.parts -%}
+            {%- if part.is_link -%}
+              <a class="pagination__item" href="{{ part.url }}">{{ part.title }}</a>
+            {%- elsif part.title == paginate.current_page -%}
+              <span class="pagination__item is-current" aria-current="page">{{ part.title }}</span>
+            {%- else -%}
+              <span class="pagination__item pagination__item--gap">{{ part.title }}</span>
+            {%- endif -%}
+          {%- endfor -%}
+          {%- if paginate.next -%}
+            <a class="pagination__item" href="{{ paginate.next.url }}" rel="next" aria-label="{{ 'general.next' | t }}">&rarr;</a>
+          {%- endif -%}
+        </nav>
+      {%- endif -%}
+
+    {%- endpaginate -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Kategorieseite",
+  "settings": [
+    { "type": "range", "id": "products_per_page", "min": 8, "max": 24, "step": 4, "label": "Produkte pro Seite", "default": 12 }
+  ]
+}
+{% endschema %}

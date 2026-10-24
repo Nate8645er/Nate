@@ -1,0 +1,13 @@
+{
+  "sections": {
+    "main": { "type": "main-page", "settings": {} },
+    "placeholder": {
+      "type": "rich-text",
+      "settings": {
+        "title": "",
+        "text": "<p><strong>⚠️ PLATZHALTER – vor dem Livegang anpassen!</strong></p><p>Hier gehören die Widerrufsbelehrung bzw. die Rückgabebedingungen hin – abgestimmt auf das Zielland:</p><p><strong>Schweiz:</strong> Es gibt kein gesetzliches Widerrufsrecht im Onlinehandel. Ein freiwilliges Rückgaberecht (z. B. die 30-Tage-Geld-zurück-Garantie dieses Shops) muss hier klar und verbindlich beschrieben werden: Frist, Ablauf, Zustand der Ware, Kostentragung der Rücksendung, Erstattungsweg.</p><p><strong>Deutschland / Österreich / EU:</strong> Gesetzliches 14-tägiges Widerrufsrecht inkl. Muster-Widerrufsformular ist Pflicht.</p><p><em>Empfehlung: Vorlage für das Zielland verwenden und rechtlich prüfen lassen. Die Angaben müssen mit den Aussagen auf Produktseiten und FAQ übereinstimmen.</em></p>"
+      }
+    }
+  },
+  "order": ["main", "placeholder"]
+}

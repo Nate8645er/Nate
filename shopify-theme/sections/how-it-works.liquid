@@ -1,0 +1,52 @@
+{%- comment -%} „So funktioniert's": numerierte Schritte als Karten mit Hover-Lift {%- endcomment -%}
+<section class="how section{% if section.settings.soft_bg %} section--soft{% endif %}" id="so-funktionierts">
+  <div class="page-width">
+    <div class="section__head reveal">
+      {%- if section.settings.eyebrow != blank -%}<p class="section__eyebrow">{{ section.settings.eyebrow | escape }}</p>{%- endif -%}
+      <h2 class="section__title">{{ section.settings.title | escape }}</h2>
+      {%- if section.settings.text != blank -%}<p class="section__text">{{ section.settings.text | escape }}</p>{%- endif -%}
+    </div>
+    <div class="how__grid" data-reveal-stagger>
+      {%- for block in section.blocks -%}
+        <div class="how__item reveal" {{ block.shopify_attributes }}>
+          <span class="how__num">{{ forloop.index }}</span>
+          <h3 class="how__title">{{ block.settings.title | escape }}</h3>
+          <p class="how__text">{{ block.settings.text | escape }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "So funktioniert's",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Overline", "default": "Einschalten und loslassen" },
+    { "type": "text", "id": "title", "label": "Titel", "default": "So einfach geht's" },
+    { "type": "text", "id": "text", "label": "Text" },
+    { "type": "checkbox", "id": "soft_bg", "label": "Abgesetzter Hintergrund", "default": false }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Schritt",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Titel", "default": "Schritt" },
+        { "type": "text", "id": "text", "label": "Text", "default": "Beschreibung des Schritts." }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "So funktioniert's",
+      "blocks": [
+        { "type": "step", "settings": { "title": "Per USB aufladen", "text": "Einfach ans Ladekabel – kein Batteriekauf, keine Folgekosten." } },
+        { "type": "step", "settings": { "title": "Einschalten & hinstellen", "text": "Der Automatik-Modus wedelt in cleveren Intervallen, damit es nie langweilig wird." } },
+        { "type": "step", "settings": { "title": "Zurücklehnen", "text": "Deine Katze jagt, spielt und powert sich aus – auch wenn du nicht zu Hause bist." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

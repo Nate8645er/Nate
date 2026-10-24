@@ -1,0 +1,21 @@
+{
+  "type": "header",
+  "name": "Header-Gruppe",
+  "sections": {
+    "announcement": {
+      "type": "announcement-bar",
+      "blocks": {
+        "msg1": { "type": "announcement", "settings": { "text": "Versand aus EU-Lager mit Sendungsverfolgung" } },
+        "msg2": { "type": "announcement", "settings": { "text": "30 Tage Geld-zurück-Garantie" } },
+        "msg3": { "type": "announcement", "settings": { "text": "Sicher bezahlen mit TWINT, Karte & PayPal" } }
+      },
+      "block_order": ["msg1", "msg2", "msg3"],
+      "settings": {}
+    },
+    "header": {
+      "type": "header",
+      "settings": { "menu": "main-menu", "sticky": true }
+    }
+  },
+  "order": ["announcement", "header"]
+}

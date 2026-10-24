@@ -1,0 +1,23 @@
+{
+  "sections": {
+    "main": { "type": "main-page", "settings": {} },
+    "info": {
+      "type": "rich-text",
+      "settings": {
+        "title": "Versand & Lieferung",
+        "text": "<p><strong>Versand:</strong> Wir versenden aus unserem EU-Lager.</p><p><strong>Lieferzeit:</strong> 7–14 Tage nach Bestellung.</p><p><strong>Versandkosten:</strong> Werden dir im Checkout transparent angezeigt, bevor du bezahlst.</p><p><strong>Sendungsverfolgung:</strong> Jede Lieferung enthält eine Sendungsnummer. Du erhältst sie per E-Mail und kannst den Status jederzeit auf unserer Tracking-Seite prüfen.</p><p><strong>Hinweis:</strong> Diese Angaben vor dem Livegang an die tatsächlichen Versandkonditionen und Zielländer anpassen.</p>"
+      }
+    },
+    "trust": {
+      "type": "trust-badges",
+      "blocks": {
+        "b1": { "type": "badge", "settings": { "icon": "clock", "title": "7–14 Tage Lieferzeit", "text": "Versand aus dem EU-Lager, sorgfältig verpackt." } },
+        "b2": { "type": "badge", "settings": { "icon": "package", "title": "Sendungsverfolgung", "text": "Sendungsnummer per E-Mail, Status jederzeit einsehbar." } },
+        "b3": { "type": "badge", "settings": { "icon": "truck", "title": "Transparente Kosten", "text": "Alle Versandkosten siehst du im Checkout, bevor du bezahlst." } },
+        "b4": { "type": "badge", "settings": { "icon": "return", "title": "Einfache Rückgabe", "text": "30 Tage Geld-zurück-Garantie auf alle Produkte." } }
+      },
+      "block_order": ["b1", "b2", "b3", "b4"]
+    }
+  },
+  "order": ["main", "info", "trust"]
+}

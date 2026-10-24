@@ -1,0 +1,92 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero-galaxy",
+      "settings": {
+        "eyebrow": "Mission: glückliche Wohnungskatzen",
+        "heading": "Gelandet, um deine Katze zu bespielen",
+        "subheading": "Das MeowUFO fliegt vom Mond direkt in dein Wohnzimmer: Automatik-Modus, clevere Pausen, USB-Akku. Einschalten, hinstellen, zurücklehnen.",
+        "cta_primary_label": "Jetzt landen lassen",
+        "cta_primary_link": "/#kaufen",
+        "cta_secondary_label": "So funktioniert's",
+        "cta_secondary_link": "/#so-funktionierts",
+        "ufo_variant": "rosa",
+        "show_cats": true,
+        "show_trust_row": true
+      }
+    },
+    "trust": {
+      "type": "trust-badges",
+      "blocks": {
+        "b1": { "type": "badge", "settings": { "icon": "truck", "title": "Versand mit Tracking", "text": "Lieferung in 7–14 Tagen aus dem EU-Lager, inkl. Sendungsverfolgung." } },
+        "b2": { "type": "badge", "settings": { "icon": "shield", "title": "30 Tage Geld-zurück", "text": "Nicht überzeugt? Geld zurück, ohne Diskussion." } },
+        "b3": { "type": "badge", "settings": { "icon": "lock", "title": "Sicher bezahlen", "text": "SSL-verschlüsselt mit TWINT, Karte, PayPal und mehr." } },
+        "b4": { "type": "badge", "settings": { "icon": "mail", "title": "Persönlicher Support", "text": "Echte Menschen antworten dir innerhalb von 24 Stunden." } }
+      },
+      "block_order": ["b1", "b2", "b3", "b4"]
+    },
+    "buy": {
+      "type": "featured-product",
+      "settings": {
+        "product": "meowufo",
+        "eyebrow": "Der MeowUFO Federwedel",
+        "usp_list": "Automatik-Modus mit cleveren Pausen|USB-aufladbar, kein Batteriekauf|Weckt den natürlichen Jagdinstinkt|30 Tage Geld-zurück-Garantie"
+      }
+    },
+    "how": {
+      "type": "how-it-works",
+      "blocks": {
+        "s1": { "type": "step", "settings": { "title": "Per USB aufladen", "text": "Einfach ans Ladekabel – kein Batteriekauf, keine Folgekosten." } },
+        "s2": { "type": "step", "settings": { "title": "Einschalten & hinstellen", "text": "Der Automatik-Modus wedelt in cleveren Intervallen, damit es nie langweilig wird." } },
+        "s3": { "type": "step", "settings": { "title": "Zurücklehnen", "text": "Deine Katze jagt, spielt und powert sich aus – auch wenn du nicht zu Hause bist." } }
+      },
+      "block_order": ["s1", "s2", "s3"],
+      "settings": {
+        "eyebrow": "Einschalten und loslassen",
+        "title": "So einfach geht's",
+        "soft_bg": true
+      }
+    },
+    "story": {
+      "type": "image-with-text",
+      "blocks": {
+        "c1": { "type": "check", "settings": { "text": "Schluss mit schlechtem Gewissen beim Rausgehen" } },
+        "c2": { "type": "check", "settings": { "text": "Bewegung gegen Übergewicht und Langeweile" } },
+        "c3": { "type": "check", "settings": { "text": "Zwei Farben: Luna (Rosa) und Nova (Khaki)" } }
+      },
+      "block_order": ["c1", "c2", "c3"],
+      "settings": {
+        "eyebrow": "Warum ein Federwedel aus dem All?",
+        "title": "Wohnungskatzen brauchen Beute – jeden Tag",
+        "text": "<p>Katzen sind Jäger. Fehlt die tägliche Jagd, entstehen Langeweile, Übergewicht und Frust – vom zerkratzten Sofa bis zum nächtlichen Weckdienst. Der automatische Federwedel simuliert unberechenbare Beute und gibt deiner Katze das, was ihr Instinkt verlangt: jagen, lauern, fangen.</p>",
+        "image_position": "right",
+        "cta_label": "Jetzt für deine Katze holen",
+        "cta_link": "/#kaufen"
+      }
+    },
+    "stats": {
+      "type": "stats",
+      "blocks": {
+        "n1": { "type": "stat", "settings": { "number": 30, "suffix": " Tage", "label": "Geld-zurück-Garantie auf jede Bestellung" } },
+        "n2": { "type": "stat", "settings": { "number": 14, "prefix": "max. ", "suffix": " Tage", "label": "Lieferzeit aus dem EU-Lager, mit Tracking" } },
+        "n3": { "type": "stat", "settings": { "number": 2, "suffix": " Farben", "label": "Luna (Rosa) und Nova (Khaki)" } }
+      },
+      "block_order": ["n1", "n2", "n3"],
+      "settings": { "soft_bg": false }
+    },
+    "reviews": { "type": "testimonials" },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q1": { "type": "question", "settings": { "question": "Wie lange dauert der Versand?", "answer": "<p>Wir versenden aus dem EU-Lager. Die Lieferung dauert 7–14 Tage und enthält immer eine Sendungsverfolgung – du siehst jederzeit, wo dein Paket ist.</p>" } },
+        "q2": { "type": "question", "settings": { "question": "Ist das Spielzeug für jede Katze geeignet?", "answer": "<p>Ja – der Federwedel weckt den natürlichen Jagdinstinkt, den jede Katze hat. Besonders Wohnungskatzen profitieren, weil ihnen die tägliche Jagd fehlt. Junge wie ältere Katzen spielen damit in ihrem eigenen Tempo.</p>" } },
+        "q3": { "type": "question", "settings": { "question": "Wie lange hält der Akku?", "answer": "<p>Der Akku wird bequem per USB geladen – kein Batteriekauf nötig. Der Automatik-Modus arbeitet mit cleveren Pausen, das schont den Akku und hält das Spiel für deine Katze spannend.</p>" } },
+        "q4": { "type": "question", "settings": { "question": "Was, wenn meine Katze nicht damit spielt?", "answer": "<p>Dafür gibt es die 30-Tage-Geld-zurück-Garantie: teste den Federwedel in Ruhe. Springt der Funke nicht über, schreibst du uns eine kurze E-Mail und bekommst dein Geld zurück.</p>" } }
+      },
+      "block_order": ["q1", "q2", "q3", "q4"],
+      "settings": { "title": "Häufige Fragen", "open_first": true, "contact_hint": true }
+    },
+    "newsletter": { "type": "newsletter" }
+  },
+  "order": ["hero", "trust", "buy", "how", "story", "stats", "reviews", "faq", "newsletter"]
+}

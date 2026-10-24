@@ -1,0 +1,27 @@
+{%- comment -%} Übersicht aller Kategorien {%- endcomment -%}
+<section class="section">
+  <div class="page-width">
+    <h1 class="page__title">{{ 'collections.list_title' | t }}</h1>
+    <div class="collection-grid">
+      {%- for collection in collections -%}
+        <a href="{{ collection.url }}" class="collection-card reveal">
+          {%- if collection.image -%}
+            {{ collection.image | image_url: width: 700 | image_tag: loading: 'lazy', class: 'collection-card__img', alt: collection.title }}
+          {%- elsif collection.products.first.featured_image -%}
+            {{ collection.products.first.featured_image | image_url: width: 700 | image_tag: loading: 'lazy', class: 'collection-card__img', alt: collection.title }}
+          {%- else -%}
+            {{ 'collection-1' | placeholder_svg_tag: 'collection-card__img placeholder' }}
+          {%- endif -%}
+          <span class="collection-card__title">{{ collection.title | escape }} {% render 'icon', name: 'arrow-right' %}</span>
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Kategorien-Übersicht",
+  "settings": []
+}
+{% endschema %}
