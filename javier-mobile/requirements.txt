@@ -1,6 +1,8 @@
-fastapi
-uvicorn
-anthropic
-python-dotenv
-requests
-qrcode
+# Pinned to the versions verified in QA (2026-07); bump deliberately,
+# not implicitly on deploy.
+fastapi==0.139.2
+uvicorn==0.51.0
+anthropic==0.117.0
+python-dotenv==1.2.2
+requests==2.34.2
+qrcode==8.2

@@ -1,0 +1,17 @@
+{
+  "name": "meta-ads",
+  "description": "META ADS GODMODE — vollstaendiges Operating System fuer Meta-Werbung (Facebook + Instagram): Account-Struktur, Pixel/Conversions-API, Kampagnen-Frameworks, Creative-Strategie, Budget-Skalierung, KPI-Steuerung und Schweiz-Compliance. Harmoniert mit shopify-godmode (Store/Creatives) und ultra-enterprise-os (Orchestrierung).",
+  "version": "1.0.0",
+  "author": {
+    "name": "Nate",
+    "email": "beamswiss@gmail.com"
+  },
+  "keywords": [
+    "meta-ads",
+    "facebook-ads",
+    "instagram-ads",
+    "performance-marketing",
+    "ecommerce",
+    "shopify"
+  ]
+}

@@ -27,7 +27,7 @@ produktionsreife Endergebnis wird ausgeliefert.
 | `ultra-data-ml` | Data Science, ML/DL, AI Research, LLM-Integration |
 | `ultra-design` | UI/UX, Product Design, Zugaenglichkeit |
 | `ultra-business` | Strategie, Finance, Marketing, Sales, SEO, Content, Branding |
-| `ultra-docs` | Dokumentation, Legal-Hinweise, Projekt-Management |
+| `ultra-docs` | Dokumentation, Changelogs, Projekt-Management |
 
 ### 3 Commands
 
@@ -49,6 +49,15 @@ Dieses Repo ist gleichzeitig ein Plugin-Marketplace. In Claude Code:
 Danach Claude Code neu starten oder die Sitzung fortsetzen — Skill,
 Agenten und Commands sind dann verfuegbar (`/ultra`, `/ultra-team`,
 `/ultra-review`).
+
+**Hinweis zum `.claude/`-Spiegel:** Dieses Repo spiegelt Skill, Agenten
+und Commands zusaetzlich nach `.claude/` (Projekt-Ebene), damit sie in
+Sessions auf diesem Repo auch OHNE Plugin-Installation automatisch
+geladen werden (z. B. Claude Code im Web, wo der Marketplace nicht
+automatisch installiert wird). Regel: Aenderungen IMMER im
+Plugin-Verzeichnis machen und den Spiegel mit
+`cp -r ultra-enterprise-os/{agents,commands,skills} .claude/` aktuell
+halten — sonst entsteht Drift. Gleiches gilt fuer das Plugin `meta-ads`.
 
 ## Konfiguration
 
