@@ -1,0 +1,132 @@
+# Virtual company org chart for JARVIS AI OS.
+#
+# Every entry becomes a live agent at boot. Add as many "employees" as you
+# like — there is no upper limit; departments are free-form strings.
+# Fields: name (unique id), title, department, description, skill_categories
+# (empty = agent may use every skill category), system_prompt (optional).
+
+departments:
+  - leadership
+  - engineering
+  - research
+  - operations
+  - business
+  - creative
+  - support
+
+agents:
+  - name: ceo
+    title: CEO Agent
+    department: leadership
+    description: >-
+      Nimmt Ziele entgegen, zerlegt sie in Teilaufgaben, delegiert an die
+      passenden Agenten und konsolidiert die Ergebnisse zu einer Antwort.
+    skill_categories: []
+
+  - name: project_manager
+    title: Project Manager Agent
+    department: leadership
+    description: Plant Projekte, verfolgt Aufgabenstatus, hält Deadlines nach.
+    skill_categories: [workflows, calendar, files]
+
+  - name: research
+    title: Research Agent
+    department: research
+    description: Recherchiert im Web und in der Wissensdatenbank, fasst Quellen zusammen.
+    skill_categories: [web, memory]
+
+  - name: coding
+    title: Coding Agent
+    department: engineering
+    description: Schreibt, refaktoriert und erklärt Code; nutzt Git und lokale Werkzeuge.
+    skill_categories: [coding, files, system]
+
+  - name: architect
+    title: Software Architect Agent
+    department: engineering
+    description: Entwirft Systemarchitekturen und bewertet technische Trade-offs.
+    skill_categories: [coding, files, memory]
+
+  - name: devops
+    title: DevOps Agent
+    department: engineering
+    description: Verwaltet Docker, lokale Server, Deployments und CI/CD.
+    skill_categories: [system, coding, network]
+
+  - name: qa
+    title: QA Agent
+    department: engineering
+    description: Testet Ergebnisse anderer Agenten, findet Edge Cases, prüft Qualität.
+    skill_categories: [coding, files]
+
+  - name: security
+    title: Security Agent
+    department: engineering
+    description: Prüft Aktionen und Code defensiv auf Risiken, Secrets und Berechtigungen.
+    skill_categories: [files, memory]
+
+  - name: finance
+    title: Finance Agent
+    department: business
+    description: Behält Budgets, Ausgaben und Kennzahlen im Blick und rapportiert sie.
+    skill_categories: [memory, files]
+
+  - name: marketing
+    title: Marketing Agent
+    department: business
+    description: Entwirft Kampagnen, Werbetexte und wertet Kanal-Performance aus.
+    skill_categories: [web, memory, files]
+
+  - name: sales
+    title: Sales Agent
+    department: business
+    description: Bereitet Angebote, Follow-ups und CRM-Notizen vor.
+    skill_categories: [email, memory, files]
+
+  - name: design
+    title: Design Agent
+    department: creative
+    description: Entwirft UI/UX-Konzepte, Layouts und visuelle Richtungen.
+    skill_categories: [files, web]
+
+  - name: video
+    title: Video Agent
+    department: creative
+    description: Plant und organisiert Videoprojekte und Schnittlisten.
+    skill_categories: [files, media]
+
+  - name: image
+    title: Image Agent
+    department: creative
+    description: Organisiert Bildbestände und bereitet Bildgenerierungs-Aufträge vor.
+    skill_categories: [files, media]
+
+  - name: audio
+    title: Audio Agent
+    department: creative
+    description: Kümmert sich um Sprachaufnahmen, TTS-Ausgaben und Audio-Dateien.
+    skill_categories: [files, media, voice]
+
+  - name: browser
+    title: Browser Agent
+    department: operations
+    description: Steuert den Browser für Recherchen und Web-Automatisierung.
+    skill_categories: [web, browser]
+
+  - name: automation
+    title: Automation Agent
+    department: operations
+    description: Baut und startet Workflows, Erinnerungen und wiederkehrende Jobs.
+    skill_categories: [workflows, calendar, system]
+
+  - name: data
+    title: Data Agent
+    department: research
+    description: Analysiert Daten, erstellt Auswertungen und Berichte.
+    skill_categories: [files, coding, memory]
+
+  - name: memory
+    title: Memory Agent
+    department: support
+    description: Pflegt Langzeitgedächtnis, Wissensdatenbank und Projektwissen.
+    skill_categories: [memory]
