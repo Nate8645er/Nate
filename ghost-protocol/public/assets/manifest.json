@@ -1,0 +1,8 @@
+{
+  "comment": "Optional generated media. images: name → url for cinematic backdrops (title, ch1..ch6, end_delete, end_save, end_merge). sfx: name → url. Missing entries fall back to procedural art/synth.",
+  "images": {},
+  "sfx": {
+    "sfx_dash": "https://d8j0ntlcm91z4.cloudfront.net/user_399R3vZOGPTwqkc7yRG1y2HlS4O/hf_20260707_230528_95781007-7851-4b24-82e6-301a9e68c010.mp3",
+    "sfx_frag": "https://d8j0ntlcm91z4.cloudfront.net/user_399R3vZOGPTwqkc7yRG1y2HlS4O/hf_20260707_230536_bcb7af11-4262-43bf-b6b9-d7a33b766376.mp3"
+  }
+}

@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Ghost Protocol: Neon Maze</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#04040a}
+  canvas{display:block;touch-action:none}
+  #dev{position:fixed;top:4px;left:4px;color:#0f0;font:12px monospace;display:none;z-index:9;pointer-events:none}
+  #loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    color:#00e5ff;font:bold 18px 'Courier New',monospace;background:#04040a;z-index:8;
+    text-shadow:0 0 12px #00e5ff}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="dev"></div>
+<div id="loading">LOADING NEON GRID …</div>
+<script type="module">
+import { Game } from "./game.js";
+
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
+const DPR_CAP = 1.5;
+function resize() {
+  const dpr = Math.min(devicePixelRatio || 1, DPR_CAP);
+  canvas.width = innerWidth * dpr;
+  canvas.height = innerHeight * dpr;
+  canvas.style.width = innerWidth + "px";
+  canvas.style.height = innerHeight + "px";
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+addEventListener("resize", resize);
+addEventListener("orientationchange", resize);
+resize();
+
+const devEl = document.getElementById("dev");
+const dev = new URLSearchParams(location.search).has("dev");
+if (dev) devEl.style.display = "block";
+
+const game = new Game(canvas, devEl);
+window.__g = game; // dev/testing instrument: readable game state
+document.getElementById("loading").remove();
+
+// audio unlock on first gesture
+const unlock = () => { game.audio.init(); removeEventListener("keydown", unlock); removeEventListener("mousedown", unlock); };
+addEventListener("keydown", unlock);
+addEventListener("mousedown", unlock);
+
+// fixed-timestep loop; pause on blur
+const STEP = 1000 / 60;
+let acc = 0, last = performance.now(), blurPaused = false, frames = 0, fpsAt = last;
+addEventListener("blur", () => { blurPaused = true; });
+addEventListener("focus", () => { blurPaused = false; last = performance.now(); });
+
+function frame(now) {
+  requestAnimationFrame(frame);
+  if (blurPaused) return;
+  acc += Math.min(250, now - last);
+  last = now;
+  let steps = 0;
+  const t0 = performance.now();
+  while (acc >= STEP && steps < 5) {
+    game.update(STEP / 1000);
+    acc -= STEP;
+    steps++;
+  }
+  if (steps === 5) acc = 0; // spiral-of-death guard
+  game.render();
+  if (dev) {
+    frames++;
+    if (now - fpsAt >= 500) {
+      const fps = Math.round(frames * 1000 / (now - fpsAt));
+      frames = 0; fpsAt = now;
+      const ents = game.level ?
+        game.level.hunters.length + game.level.drones.length + game.level.particles.length +
+        game.level.bolts.length + game.level.ebolts.length + game.level.pickups.length : 0;
+      devEl.textContent = `${fps} fps · upd ${(performance.now() - t0).toFixed(1)}ms · ent ${ents} · ${game.screen}`;
+    }
+  }
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
