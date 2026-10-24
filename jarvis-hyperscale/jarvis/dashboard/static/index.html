@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JARVIS // COMMAND CENTER</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <h1>JARVIS <span style="color:var(--dim)">//</span> COMMAND CENTER</h1>
+  <nav><a href="/">START</a><a class="here" href="/uebersicht">ÜBERSICHT</a><a href="/gehirn">GEHIRN</a><a href="/mitarbeiter">MITARBEITER</a><a href="/werkzeuge">WERKZEUGE</a><a href="/autopilot">AUTOPILOT</a><a href="/sicherheit">SICHERHEIT</a><a href="/schluessel">SCHLÜSSEL</a><a href="/zugaenge">ZUGÄNGE</a></nav>
+  <button id="fable" onclick="fableKey()" style="margin-left:10px">FABLE 5</button>
+  <span class="sys mono" id="clock"></span>
+  <span class="sys"><span class="dot"></span><span id="mode">ONLINE</span></span>
+</header>
+<div class="tickerwrap"><div class="ticker mono" id="ticker">SYSTEM WIRD INITIALISIERT …</div></div>
+
+<div class="grid">
+  <!-- linke Spalte -->
+  <div>
+    <div class="panel">
+      <h2><b>ORBITAL</b> // NETZSTRUKTUR</h2>
+      <canvas class="globe" id="globe"></canvas>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>SYSTEM</b> // KERNWERTE</h2>
+      <div class="bars">
+        <div class="row"><label>CPU <span id="cpuv">–</span></label><div class="bar"><i id="cpu"></i></div></div>
+        <div class="row"><label>RAM <span id="ramv">–</span></label><div class="bar"><i id="ram"></i></div></div>
+        <div class="row"><label>AGENT-SLOTS <span id="slotv">–</span></label><div class="bar"><i id="slots"></i></div></div>
+      </div>
+      <div style="margin-top:8px">
+        <div class="kv"><span>Adressraum / Ebene</span><b id="space">–</b></div>
+        <div class="kv"><span>Aktivierungen gesamt</span><b id="acts">–</b></div>
+        <div class="kv"><span>Gedächtnis-Einträge</span><b id="mem">–</b></div>
+        <div class="kv"><span>Modell</span><b id="model">–</b></div>
+        <div class="kv"><span>Modus</span><b id="mmode">–</b></div>
+        <div class="kv"><span>Boss (orchestriert)</span><b id="bossm">–</b></div>
+        <div class="kv"><span>Worker (arbeitet)</span><b id="workerm">–</b></div>
+        <div class="kv"><span>Laufzeit</span><b id="uptime">–</b></div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>MODULE</b> // PLUGINS &amp; SKILLS</h2>
+      <div id="plugins" style="font-size:11.5px; color:var(--dim)"></div>
+    </div>
+  </div>
+
+  <!-- Mitte -->
+  <div>
+    <div class="panel">
+      <h2><b>OPERATIONS</b> // LIVE-KENNZAHLEN (ECHTE DATEN)</h2>
+      <div class="tiles">
+        <div class="tile"><div class="l">Aktive Agenten</div><div class="v" id="t_act">0</div></div>
+        <div class="tile"><div class="l">Warteschlange</div><div class="v" id="t_wait">0</div></div>
+        <div class="tile ok"><div class="l">Erledigt</div><div class="v" id="t_done">0</div></div>
+        <div class="tile err"><div class="l">Fehler</div><div class="v" id="t_err">0</div></div>
+        <div class="tile"><div class="l">Ø Auslastung</div><div class="v" id="t_util">0%</div></div>
+        <div class="tile"><div class="l">Ziel 1 Mrd. CHF — real erfasst</div><div class="v" style="font-size:15px" id="t_fin">0.00 CHF (0%)</div></div>
+      </div>
+      <canvas class="chart" id="chart" style="margin-top:10px"></canvas>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>EINSATZ</b> // AKTIVE AGENTEN &amp; AUFGABEN</h2>
+      <table><thead><tr><th>#</th><th>Mitarbeiter</th><th>Team</th><th>Aufgabe</th><th>Status</th></tr></thead>
+      <tbody id="tasks"></tbody></table>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>FEED</b> // SYSTEMLOG</h2>
+      <div class="logs mono" id="logs"></div>
+    </div>
+  </div>
+
+  <!-- rechte Spalte -->
+  <div>
+    <div class="panel">
+      <h2><b>REAKTOR</b> // SYSTEMZUSTAND</h2>
+      <div class="reactorwrap">
+        <svg width="190" height="190" viewBox="0 0 190 190">
+          <circle cx="95" cy="95" r="86" fill="none" stroke="#0d1f14" stroke-width="4"/>
+          <circle cx="95" cy="95" r="86" fill="none" stroke="var(--amber)" stroke-width="4"
+                  stroke-linecap="round" id="ring" stroke-dasharray="540 540"
+                  transform="rotate(-90 95 95)" style="filter:drop-shadow(0 0 8px rgba(43,255,102,.8)); transition:stroke-dasharray .8s"/>
+          <circle cx="95" cy="95" r="66" fill="none" stroke="#153a20" stroke-width="1"/>
+          <circle cx="95" cy="95" r="54" fill="rgba(43,255,102,.06)" stroke="#1e5230" stroke-width="1"/>
+          <text x="95" y="90" text-anchor="middle" font-size="30" font-weight="800"
+                fill="var(--amber2)" id="health" style="text-shadow:0 0 12px var(--amber)">–</text>
+          <text x="95" y="112" text-anchor="middle" font-size="8.5" letter-spacing="2.5" fill="var(--dim)">SYSTEMZUSTAND</text>
+        </svg>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>SPRACHE</b> // „HEY JARVIS"</h2>
+      <div style="display:flex; gap:6px">
+        <button id="wake" onclick="toggleWake()">🎤 WAKE WORD AUS</button>
+        <button onclick="listenOnce()">EINMAL ZUHÖREN</button>
+      </div>
+      <div id="voicestat" style="font-size:11px; color:var(--dim); margin-top:6px">
+        Browser-Spracherkennung (Edge/Chrome). Sage „Hey Jarvis", dann deinen Befehl.
+      </div>
+    </div>
+    <div class="panel" style="margin-top:10px">
+      <h2><b>KOMM</b> // CHAT MIT DER ORGANISATION</h2>
+      <div class="chat" id="chat"></div>
+      <form onsubmit="return sendTask(event)">
+        <input id="task" placeholder="Befehl an JARVIS…" autocomplete="off">
+        <button>SENDEN</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="honest"><b>EHRLICHKEITS-PROTOKOLL:</b> Alle Kennzahlen sind real gemessen (Agenten, Aufgaben, CPU/RAM).
+Es gibt keine Geld-Generierung — die Finanz-Kachel bleibt 0.00 CHF, bis eine echte Datenquelle angebunden ist.
+<span class="demo">DEMO</span>-markierte Aufgaben sind Beispiel-Aufgaben.</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const fmt = n => Number(n).toLocaleString('de-CH');
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+// ---- Globus (rotierende Drahtgitter-Sphäre) --------------------------------
+const gc = $('globe'), gx = gc.getContext('2d');
+let P = [];
+for (let i = 0; i < 320; i++) {
+  const t = Math.acos(1 - 2 * (i + .5) / 320), p = Math.PI * (1 + 5 ** .5) * i;
+  P.push([Math.sin(t) * Math.cos(p), Math.sin(t) * Math.sin(p), Math.cos(t)]);
+}
+let rot = 0;
+function globe() {
+  const w = gc.width = gc.clientWidth, h = gc.height = gc.clientHeight, R = Math.min(w, h) * .42;
+  gx.clearRect(0, 0, w, h); rot += .004;
+  const pts = P.map(([x, y, z]) => {
+    const X = x * Math.cos(rot) - z * Math.sin(rot), Z = x * Math.sin(rot) + z * Math.cos(rot);
+    return [w / 2 + X * R, h / 2 + y * R, Z];
+  });
+  gx.strokeStyle = 'rgba(43,255,102,.18)';
+  for (let i = 0; i < pts.length; i += 4) for (let j = i + 4; j < Math.min(i + 40, pts.length); j += 8) {
+    gx.beginPath(); gx.moveTo(pts[i][0], pts[i][1]); gx.lineTo(pts[j][0], pts[j][1]); gx.stroke();
+  }
+  for (const [x, y, z] of pts) {
+    gx.fillStyle = z > 0 ? 'rgba(125,255,168,.9)' : 'rgba(43,255,102,.25)';
+    gx.beginPath(); gx.arc(x, y, z > 0 ? 1.6 : 1, 0, 7); gx.fill();
+  }
+  requestAnimationFrame(globe);
+}
+globe();
+
+// ---- Verlaufs-Chart (echte CPU/RAM-Historie) --------------------------------
+const hist = { cpu: [], ram: [] };
+function chart() {
+  const c = $('chart'), x = c.getContext('2d');
+  const w = c.width = c.clientWidth, h = c.height = c.clientHeight;
+  x.clearRect(0, 0, w, h);
+  x.strokeStyle = '#123020'; for (let i = 1; i < 4; i++) { x.beginPath(); x.moveTo(0, h * i / 4); x.lineTo(w, h * i / 4); x.stroke(); }
+  const draw = (arr, col) => {
+    if (arr.length < 2) return;
+    x.strokeStyle = col; x.lineWidth = 1.6; x.beginPath();
+    arr.forEach((v, i) => { const px = i / (arr.length - 1) * w, py = h - v / 100 * h; i ? x.lineTo(px, py) : x.moveTo(px, py); });
+    x.stroke();
+  };
+  draw(hist.cpu, '#2bff66'); draw(hist.ram, '#7dffa8');
+}
+
+// ---- Live-Ticker -------------------------------------------------------------
+async function tick() {
+  try {
+    const s = await (await fetch('/api/state')).json();
+    $('mode').textContent = 'ONLINE // ' + s.modell_modus.toUpperCase();
+    $('cpu').style.width = s.cpu_prozent + '%'; $('cpuv').textContent = s.cpu_prozent + '%';
+    $('ram').style.width = s.ram_prozent + '%'; $('ramv').textContent = s.ram_prozent + '%';
+    const util = Math.round(s.aktive_agenten / s.max_parallel * 100);
+    $('slots').style.width = util + '%'; $('slotv').textContent = `${s.aktive_agenten}/${s.max_parallel}`;
+    $('space').textContent = fmt(s.adressraum_pro_ebene);
+    $('acts').textContent = fmt(s.aktivierte_agenten_gesamt);
+    $('mem').textContent = fmt(s.gedaechtnis_eintraege);
+    $('model').textContent = s.modell; $('mmode').textContent = s.modell_modus;
+    $('bossm').textContent = s.boss_modell || '–';
+    $('workerm').textContent = s.worker_modell || '–';
+    $('uptime').textContent = s.laufzeit_s + ' s';
+    $('t_act').textContent = s.aktive_agenten; $('t_wait').textContent = s.wartende_aufgaben;
+    $('t_done').textContent = fmt(s.fertig); $('t_err').textContent = s.fehler;
+    $('t_util').textContent = util + '%';
+    $('t_fin').textContent = s.finanzen.einnahmen_chf.toFixed(2) + ' CHF (' + s.finanzen.fortschritt_prozent + '%)';
+    const health = Math.max(0, 100 - Math.max(s.cpu_prozent, s.ram_prozent) / 2 - s.fehler);
+    $('health').textContent = Math.round(health) + '%';
+    $('ring').setAttribute('stroke-dasharray', `${540 * health / 100} 540`);
+    hist.cpu.push(s.cpu_prozent); hist.ram.push(s.ram_prozent);
+    if (hist.cpu.length > 120) { hist.cpu.shift(); hist.ram.shift(); }
+    chart();
+    $('ticker').textContent = (` ▲ AGENTEN AKTIV ${s.aktive_agenten}/${s.max_parallel} ` +
+      `● QUEUE ${s.wartende_aufgaben} ● ERLEDIGT ${fmt(s.fertig)} ● FEHLER ${s.fehler} ` +
+      `● ADRESSRAUM ${fmt(s.adressraum_pro_ebene)}/EBENE (REKURSIV) ● CPU ${s.cpu_prozent}% ● RAM ${s.ram_prozent}% ` +
+      `● GEDÄCHTNIS ${fmt(s.gedaechtnis_eintraege)} ● MODELL ${s.modell} [${s.modell_modus.toUpperCase()}] ● ZIEL ${fmt(s.finanzen.ziel_chf)} CHF · REAL ERFASST ${s.finanzen.einnahmen_chf.toFixed(2)} CHF (${s.finanzen.fortschritt_prozent}%) ● `).repeat(2);
+    $('tasks').innerHTML = [...s.aktive, ...s.letzte_aufgaben].slice(0, 14).map(t =>
+      `<tr><td class="mono">${t.id}</td><td>${esc(t.agent || '—')}${t.demo ? ' <span class="demo">DEMO</span>' : ''}</td>` +
+      `<td>${esc(t.team || '')}</td><td>${esc((t.beschreibung||'').slice(0, 60))}</td>` +
+      `<td><span class="tag ${t.status}">${t.status.toUpperCase()}</span></td></tr>`).join('');
+    $('logs').innerHTML = s.logs.slice(0, 40).map(l =>
+      `<div>[${l.ts}] <span class="${l.level}">${l.level.toUpperCase()}</span> ${esc(l.msg)}</div>`).join('');
+    $('plugins').innerHTML = s.plugins.map(p =>
+      `<div>◈ <b style="color:var(--amber2)">${esc(p.name)}</b> — ${esc(p.description)}</div>`).join('');
+  } catch (e) { $('mode').textContent = 'VERBINDUNG GETRENNT'; }
+}
+setInterval(tick, 1500); tick();
+setInterval(() => $('clock').textContent = new Date().toLocaleString('de-CH'), 1000);
+
+// ---- Chat + Aufgaben ----------------------------------------------------------
+function addMsg(cls, who, text) {
+  const d = document.createElement('div'); d.className = 'msg ' + cls;
+  d.innerHTML = (who ? `<div class="who">${esc(who)}</div>` : '') + esc(text);
+  $('chat').appendChild(d); $('chat').scrollTop = 1e9;
+  return d;
+}
+async function dispatch(text) {
+  addMsg('me', '', text);
+  const r = await fetch('/api/task', { method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ beschreibung: text }) });
+  if (!r.ok) {
+    const e = await r.json().catch(() => ({}));
+    addMsg('jv', 'JARVIS // SYSTEM', 'Abgelehnt: ' + (e.detail || r.status)); return;
+  }
+  const { id } = await r.json();
+  const d = addMsg('jv', 'JARVIS // AGENT WIRD ZUGEWIESEN', '…');
+  for (let i = 0; i < 120; i++) {
+    await new Promise(res => setTimeout(res, 1200));
+    const rt = await fetch('/api/task/' + id);
+    if (!rt.ok) { d.childNodes[1].textContent = '(Aufgabe nicht mehr auffindbar)'; return; }
+    const t = await rt.json();
+    if (t.status === 'fertig' || t.status === 'fehler') {
+      d.querySelector('.who').textContent = 'JARVIS // ' + (t.agent || 'SYSTEM');
+      let kette = '';
+      if (t.kette && t.kette.length) {
+        kette = '⛓ ' + t.kette.map(k => k.rolle + ': ' + k.name).join('  →  ');
+        if (t.mitwirkende && t.mitwirkende.length)
+          kette += '\n👥 Team wirkt mit: ' + t.mitwirkende.map(m => m.name).join(', ');
+        kette += '\n\n';
+      }
+      d.childNodes[1].textContent = kette + (t.ergebnis || '(kein Ergebnis)');
+      speak(t.ergebnis); return;
+    }
+  }
+  d.childNodes[1].textContent = '(Zeitüberschreitung)';
+}
+function sendTask(ev) { ev.preventDefault(); const v = $('task').value.trim();
+  if (v) { dispatch(v); $('task').value = ''; } return false; }
+
+// ---- Sprache: Wake Word "Hey Jarvis" + Sprachausgabe ---------------------------
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null, wakeOn = false;
+async function speak(text) {
+  if (!text) return;
+  try {
+    const r = await fetch('/api/voice/say', { method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ schluessel: text.slice(0, 2000) }) });
+    if (r.ok && r.status !== 204) {
+      const url = URL.createObjectURL(await r.blob());
+      const a = new Audio(url); a.onended = () => URL.revokeObjectURL(url);
+      a.play(); return;
+    }
+  } catch (e) {}
+  if (!window.speechSynthesis) return;
+  const u = new SpeechSynthesisUtterance(text.slice(0, 300));
+  u.lang = 'de-DE'; u.rate = 1.05; speechSynthesis.speak(u);
+}
+function startRec(continuous) {
+  if (!SR) { $('voicestat').textContent = 'Dieser Browser unterstützt keine Spracherkennung — bitte Edge oder Chrome nutzen.'; return; }
+  if (rec) rec.stop();
+  rec = new SR(); rec.lang = 'de-DE'; rec.continuous = continuous; rec.interimResults = false;
+  rec.onresult = e => {
+    const said = e.results[e.results.length - 1][0].transcript.trim();
+    $('voicestat').textContent = 'Gehört: „' + said + '"';
+    const lower = said.toLowerCase();
+    if (!wakeOn) { dispatch(said); return; }
+    const m = lower.match(/(?:hey|he|ok)?\s*(?:jarvis|dschárwis|jarwis|charvis)[,.!?]?\s*(.*)/);
+    if (m) { const cmd = m[1].trim();
+      if (cmd) dispatch(cmd); else { speak('Ja? Ich höre.'); $('voicestat').textContent = 'Wake Word erkannt — sprich deinen Befehl…'; } }
+  };
+  rec.onend = () => { if (wakeOn) try { rec.start(); } catch (e) {} };
+  rec.onerror = e => { $('voicestat').textContent = 'Mikrofon: ' + e.error +
+    (e.error === 'not-allowed' ? ' — bitte Mikrofon-Zugriff erlauben' : ''); };
+  try { rec.start(); } catch (e) {}
+}
+function toggleWake() {
+  wakeOn = !wakeOn;
+  try { localStorage.setItem('jarvisWake', wakeOn ? '1' : '0'); } catch (e) {}
+  $('wake').classList.toggle('on', wakeOn);
+  $('wake').textContent = wakeOn ? '🎤 WAKE WORD AN' : '🎤 WAKE WORD AUS';
+  if (wakeOn) { startRec(true); $('voicestat').textContent = 'Lausche dauerhaft auf „Hey Jarvis"…'; speak('Jarvis online.'); }
+  else if (rec) { rec.onend = null; rec.stop(); $('voicestat').textContent = 'Wake Word deaktiviert.'; }
+}
+function listenOnce() { wakeOn = false; $('wake').classList.remove('on');
+  $('voicestat').textContent = 'Ich höre — sprich jetzt…'; startRec(false); }
+// Beim Laden automatisch fortsetzen, wenn zuvor aktiviert (nach einmaliger Mikro-Freigabe)
+try {
+  if (localStorage.getItem('jarvisWake') === '1' && SR) {
+    wakeOn = true; $('wake').classList.add('on'); $('wake').textContent = '🎤 WAKE WORD AN';
+    $('voicestat').textContent = 'Lausche auf „Hey Jarvis"… (bei Bedarf Mikrofon erlauben)';
+    startRec(true);
+  }
+} catch (e) {}
+
+
+</script>
+<script src="/static/fable.js"></script>
+</body>
+</html>
