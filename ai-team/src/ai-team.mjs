@@ -283,6 +283,7 @@ Usage:
   ai-team start                 System hochfahren, Seats proben, Uebersicht
   ai-team agents                Seat-Status (NOT_INSTALLED/INSTALLED/EXECUTION_READY)
   ai-team task "<auftrag>"      Aufgabe zerlegen, an reale Seats routen, ausfuehren
+  ai-team council "<aufgabe>"   Round-Table: dieselbe Aufgabe an ALLE Seats, Diskussion [--rounds=2]
   ai-team status                Gespeicherte Tasks anzeigen
   ai-team bus [n]               Persistenten Gruppenchat anzeigen (default 30)
   ai-team probe <id>            Einen Seat einzeln proben
@@ -290,6 +291,84 @@ Usage:
 
 Grundsatz: Ein Agenten-"Ergebnis" ist IMMER echte CLI-Ausgabe eines realen Aufrufs.
 Ein fehlender/nicht angemeldeter Seat wird ehrlich als solcher gemeldet — nie simuliert.`);
+}
+
+// ---- council / round-table (no fixed roles; all seats equal) -------------
+function councilProposePrompt(request) {
+  return `TEAM-AUFGABE (Round-Table, KEINE festen Rollen): "${request}"
+Du bist ein gleichberechtigtes Mitglied eines KI-Teams (Claude, OpenCode, Codex, Grok).
+Antworte als DU SELBST. Erste Zeile GENAU: "MODELL: <dein echter Modellname>".
+Dann kompakt auf Deutsch: Analyse · Loesungsvorschlag · Belege/Annahmen · offene Fragen ans Team.
+Bestaetige am Ende, dass du diese Team-Nachricht erhalten hast.`;
+}
+function councilReviewPrompt(request, transcript) {
+  return `TEAM-AUFGABE: "${request}"
+Vorschlaege der anderen Teammitglieder (lies sie und reagiere darauf):
+---
+${transcript}
+---
+Erste Zeile GENAU: "MODELL: <dein echter Modellname>".
+Dann: Wo stimmst du zu? Wo widersprichst du (mit Begruendung)? Welche Fehler siehst du?
+Wie verbesserst du die GEMEINSAME Loesung? Kompakt, Deutsch.`;
+}
+
+function runCouncil(request, cfg, { rounds = 1, maxSeatCalls = 8 } = {}) {
+  ensureState();
+  const probes = Object.fromEntries(probeAll(cfg).map(p => [p.id, p]));
+  const ready = Object.keys(probes).filter(id => probes[id].state === 'EXECUTION_READY');
+  const blocked = Object.keys(probes).filter(id => probes[id].state !== 'EXECUTION_READY');
+  const id = tid();
+  console.log(C.b(`\n==  ai-team council ${id}`));
+  console.log(C.d(`  "${request}"`));
+  console.log(C.b('  Teilnehmer (EXECUTION READY): ') + (ready.length ? C.g(ready.join(', ')) : C.r('keine')));
+  if (blocked.length) console.log(C.y('  BLOCKED/MANUAL: ') + blocked.map(b => `${b}(${probes[b].state})`).join(', '));
+
+  const planned = ready.length * rounds;
+  console.log(C.d(`  geplante echte Aufrufe: ${planned} (Seats ${ready.length} x Runden ${rounds})`));
+  if (planned > maxSeatCalls) die(`Kostenschutz: ${planned} Aufrufe > Limit ${maxSeatCalls}. Senke --rounds oder Seat-Zahl.`);
+  if (ready.length === 0) {
+    busWrite({ agent: 'ai-team', task: request, status: 'blocked', result: 'kein Seat EXECUTION READY',
+      evidence: 'probeAll', nextAction: 'Seats lokal anmelden (opencode/codex/grok login)' });
+    console.log(C.r('  Kein einsatzbereiter Seat — Council nicht moeglich. Melde die Seats lokal an.'));
+    return;
+  }
+
+  busWrite({ agent: 'USER', task: request, status: 'council_open', nextAction: `broadcast an ${ready.join(',')}` });
+  const transcript = [];
+  for (let round = 1; round <= rounds; round++) {
+    console.log(C.b(`\n  -- Runde ${round} ${round === 1 ? '(Vorschlaege)' : '(Kreuz-Review)'} --`));
+    for (const seat of ready) {
+      const a = cfg.agents[seat];
+      if (a.costNote) console.log(C.y(`    ! ${seat}: ${a.costNote}`));
+      const prompt = round === 1 ? councilProposePrompt(request)
+        : councilReviewPrompt(request,
+            transcript.filter(t => t.round === round - 1).map(t => `[${t.seat}]\n${t.text}`).join('\n\n'));
+      process.stdout.write(`    ${seat} …`);
+      const inv = invokeAgent(seat, cfg, prompt);
+      if (inv.ok) {
+        console.log(C.g(`OK ${inv.ms}ms`));
+        transcript.push({ round, seat, text: inv.output });
+        busWrite({ agent: seat, role: 'Teammitglied (gleichberechtigt)', task: `council r${round}`,
+          result: inv.output.slice(0, 4000), evidence: `real CLI (${a.invoke.cmd}) exit 0 ${inv.ms}ms`,
+          status: 'done', nextAction: round < rounds ? 'review' : 'converge' });
+      } else {
+        console.log(C.r(inv.status));
+        transcript.push({ round, seat, text: `(keine Antwort: ${inv.status} — ${inv.reason})` });
+        busWrite({ agent: seat, role: 'Teammitglied', task: `council r${round}`, result: '',
+          evidence: `real CLI failed: ${inv.reason}`, status: inv.status.toLowerCase(), nextAction: 'Seat pruefen' });
+      }
+    }
+  }
+  const answered = transcript.filter(t => !t.text.startsWith('(keine Antwort')).length;
+  const task = { id, ts: nowISO(), mode: 'council', request, participants: ready, blocked, rounds, probes, transcript,
+    status: answered === 0 ? 'blocked' : ready.length >= 2 ? 'diskussion-mehrere-seats' : 'einzel-seat' };
+  writeFileSync(join(TASKS, id + '.json'), JSON.stringify(task, null, 2));
+  console.log('');
+  console.log(C.b('  Council gespeichert: ') + `ai-team/state/tasks/${id}.json`);
+  console.log(C.d('  Verlauf ansehen: ai-team bus'));
+  if (ready.length < 2)
+    console.log(C.y(`  Hinweis: nur ${ready.length} Seat live — echte Team-Diskussion entsteht erst mit >=2 angemeldeten Seats (lokal auf deinem PC).`));
+  return task;
 }
 
 // ---- main ----------------------------------------------------------------
@@ -311,6 +390,13 @@ function main() {
       const request = rest.join(' ').trim();
       if (!request) die('task needs text: ai-team task "<auftrag>"');
       return void runTask(request, cfg);
+    }
+    case 'council': {
+      const request = rest.filter(x => !x.startsWith('--')).join(' ').trim();
+      const roundsArg = rest.find(x => x.startsWith('--rounds='));
+      const rounds = roundsArg ? Math.max(1, Math.min(3, parseInt(roundsArg.split('=')[1], 10) || 1)) : 1;
+      if (!request) die('council needs text: ai-team council "<aufgabe>" [--rounds=2]');
+      return void runCouncil(request, cfg, { rounds });
     }
     case undefined:
     case 'help':

@@ -83,6 +83,7 @@
       },
       "invoke": { "cmd": "opencode", "args": ["run", "{PROMPT}"] },
       "billing": "subscription-or-api",
+      "costNote": "OpenCode ist ein CLI-Router, kein eigenes Modell: ein Aufruf nutzt das in OpenCode gewaehlte Modell (z.B. Claude/GPT) und kann so einen ZWEITEN Modellaufruf = Doppelkosten ausloesen. Modellwahl mit 'opencode models' / 'opencode auth list' pruefen; moeglichst ein separat kostenloses Modell waehlen.",
       "enabled": true
     }
   },
