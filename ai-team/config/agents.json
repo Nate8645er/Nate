@@ -1,0 +1,107 @@
+{
+  "version": "1.0.0",
+  "policy": {
+    "freeFirst": true,
+    "zeroUnapprovedApiCost": true,
+    "noAutomaticPaidFallback": true,
+    "noAutoMergeToProtected": true,
+    "protectedBranches": ["main", "master", "production", "live"],
+    "neverSimulateAgentReplies": true
+  },
+  "agents": {
+    "claude": {
+      "role": "LEAD ARCHITECT",
+      "responsibilities": [
+        "Projektarchitektur",
+        "Komplexe Programmierung",
+        "Code-Review",
+        "Sicherheitsanalyse",
+        "Fehlerbehebung",
+        "Technische Qualitaetssicherung",
+        "Koordination der Entwicklungsarbeiten"
+      ],
+      "adapter": "claude",
+      "probe": { "cmd": "claude", "args": ["--version"] },
+      "invoke": { "cmd": "claude", "args": ["-p", "{PROMPT}"] },
+      "billing": "subscription",
+      "enabled": true
+    },
+    "codex": {
+      "role": "DEVELOPMENT ENGINEER",
+      "responsibilities": [
+        "Entwicklung neuer Funktionen",
+        "Code-Optimierung",
+        "Refactoring",
+        "Automatisierte Tests",
+        "Fehlersuche",
+        "Dokumentation"
+      ],
+      "adapter": "codex",
+      "probe": {
+        "cmd": "codex",
+        "args": ["--version"],
+        "authFile": "~/.codex/auth.json"
+      },
+      "invoke": { "cmd": "codex", "args": ["exec", "{PROMPT}"] },
+      "billing": "subscription",
+      "enabled": true
+    },
+    "grok": {
+      "role": "RESEARCH & STRATEGY AGENT",
+      "responsibilities": [
+        "Recherche",
+        "Datenanalyse",
+        "Loesungsstrategien",
+        "Gegenseitige Qualitaetskontrolle",
+        "Projektbewertungen",
+        "Verbesserungsvorschlaege"
+      ],
+      "adapter": "grok",
+      "probe": {
+        "cmd": "grok",
+        "args": ["--version"],
+        "authEnv": "XAI_API_KEY"
+      },
+      "invoke": { "cmd": "grok", "args": ["-p", "{PROMPT}"] },
+      "billing": "subscription-or-api",
+      "enabled": true
+    },
+    "opencode": {
+      "role": "MULTI-MODEL EXECUTION HUB",
+      "responsibilities": [
+        "Verwaltung unterstuetzter KI-Modelle",
+        "Ausfuehrung zugewiesener Entwicklungsaufgaben",
+        "Modell-Routing",
+        "Integration vorhandener MCP-Server",
+        "Unterstuetzung der uebrigen Agenten"
+      ],
+      "adapter": "opencode",
+      "probe": {
+        "cmd": "opencode",
+        "args": ["--version"],
+        "authFile": "~/.local/share/opencode/auth.json"
+      },
+      "invoke": { "cmd": "opencode", "args": ["run", "{PROMPT}"] },
+      "billing": "subscription-or-api",
+      "enabled": true
+    }
+  },
+  "routing": {
+    "research": ["grok", "opencode", "claude"],
+    "architecture": ["claude", "grok"],
+    "implement": ["codex", "opencode", "claude"],
+    "test": ["opencode", "codex", "claude"],
+    "review": ["claude", "grok"],
+    "security": ["claude"],
+    "docs": ["codex", "claude"]
+  },
+  "bus": {
+    "backend": "jsonl",
+    "jsonlPath": "state/messages.jsonl",
+    "github": {
+      "enabled": false,
+      "repo": "Nate8645er/Nate",
+      "coordinationLabel": "ai-team"
+    }
+  }
+}
