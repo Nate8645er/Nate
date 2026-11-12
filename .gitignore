@@ -1,0 +1,7 @@
+# Lokale Claude-Code-/ecc-Logs & Maschinen-spezifische Konfiguration (nicht committen)
+.claude/command-history.log
+.claude/*.log
+.claude/*.jsonl
+.claude/settings.local.json
+.claude/backups/
+.claude/cache/
