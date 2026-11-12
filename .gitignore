@@ -1,2 +1,13 @@
 .claude/agent-metrics.jsonl
 .claude/command-history.log
+
+# Secrets: never commit
+.env
+.env.*
+!.env.example
+!.env.local.example
+*.pem
+*.key
+hyperliquid-bot/state/
+__pycache__/
+.pytest_cache/
