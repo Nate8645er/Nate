@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# ai-team launcher — resolves the repo-local orchestrator regardless of CWD.
+set -euo pipefail
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do
+  DIR="$(cd -P "$(dirname "$SOURCE")" >/dev/null 2>&1 && pwd)"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+BIN_DIR="$(cd -P "$(dirname "$SOURCE")" >/dev/null 2>&1 && pwd)"
+CORE="$BIN_DIR/../src/ai-team.mjs"
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "ai-team: Node.js wird benoetigt (node nicht gefunden auf PATH)." >&2
+  exit 1
+fi
+exec node "$CORE" "$@"

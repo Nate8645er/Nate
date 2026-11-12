@@ -1,0 +1,4 @@
+# Runtime state — do NOT commit (may contain task I/O / local notes).
+messages.jsonl
+tasks/
+!.gitignore
