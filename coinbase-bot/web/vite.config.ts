@@ -10,5 +10,17 @@ export default defineConfig({
       "/ws": { target: "ws://127.0.0.1:8787", ws: true },
     },
   },
-  build: { outDir: "dist", sourcemap: false },
+  build: {
+    outDir: "dist",
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ["react", "react-dom"],
+          charts: ["recharts"],
+          motion: ["framer-motion", "gsap"],
+        },
+      },
+    },
+  },
 });

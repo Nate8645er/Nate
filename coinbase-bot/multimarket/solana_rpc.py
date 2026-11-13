@@ -10,6 +10,8 @@ from __future__ import annotations
 import json
 import os
 import ssl
+import time
+import urllib.error
 import urllib.request
 from typing import Optional
 
@@ -32,21 +34,33 @@ def _ctx() -> ssl.SSLContext:
     return ctx
 
 
-def rpc_call(method: str, params: list, endpoint: str = PUBLIC_RPC, timeout: int = 20):
-    """One JSON-RPC call. Returns the `result` object or None on any error."""
+def rpc_call(method: str, params: list, endpoint: str = PUBLIC_RPC, timeout: int = 20,
+             retries: int = 3):
+    """One JSON-RPC call. Retries on rate limiting (HTTP 429/503) with backoff,
+    because the free public node throttles bursts. Returns the `result` object,
+    or None when the call genuinely fails - never a made-up value."""
     body = json.dumps(
         {"jsonrpc": "2.0", "id": 1, "method": method, "params": params}
     ).encode()
-    try:
-        req = urllib.request.Request(
-            endpoint,
-            data=body,
-            headers={"content-type": "application/json", "user-agent": _UA},
-        )
-        with urllib.request.urlopen(req, timeout=timeout, context=_ctx()) as resp:
-            return json.loads(resp.read().decode("utf-8")).get("result")
-    except Exception:
-        return None
+    delay = 1.5
+    for attempt in range(retries):
+        try:
+            req = urllib.request.Request(
+                endpoint,
+                data=body,
+                headers={"content-type": "application/json", "user-agent": _UA},
+            )
+            with urllib.request.urlopen(req, timeout=timeout, context=_ctx()) as resp:
+                return json.loads(resp.read().decode("utf-8")).get("result")
+        except urllib.error.HTTPError as exc:
+            if exc.code in (429, 503) and attempt < retries - 1:
+                time.sleep(delay)
+                delay *= 2
+                continue
+            return None
+        except Exception:
+            return None
+    return None
 
 
 def rpc_alive(endpoint: str = PUBLIC_RPC) -> bool:

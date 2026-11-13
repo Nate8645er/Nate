@@ -24,7 +24,8 @@ from decimal import Decimal as D
 from pathlib import Path
 from typing import Optional
 
-from fastapi import Depends, FastAPI, Header, HTTPException, Query, WebSocket, WebSocketDisconnect
+from fastapi import (Depends, FastAPI, Header, HTTPException, Query, Request,
+                     WebSocket, WebSocketDisconnect)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -33,13 +34,15 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from server.agents_map import AGENT_TO_STATION, connected_count, stations  # noqa: E402
+from server.auth import AuthStore, Session  # noqa: E402
+from multimarket import smart_money, social, whale  # noqa: E402
 from trading_team import RiskManager, paper_risk_config  # noqa: E402
 from trading_team.meeting import hold_meeting  # noqa: E402
 from trading_team.modes import AbsoluteLimits, ModeController, ModeError, TradingMode  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 STATE = ROOT / "state"
-TOKEN = os.environ.get("HYPERGROK_TOKEN") or secrets.token_urlsafe(24)
+AUTH = AuthStore.load()
 SYMBOLS = ["BTC-USD", "ETH-USD", "SOL-USD"]
 
 
@@ -148,15 +151,74 @@ app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http
                    allow_credentials=False, allow_methods=["GET", "POST"], allow_headers=["*"])
 
 
-def auth(authorization: str = Header(default="")) -> None:
-    if not authorization.startswith("Bearer ") or not secrets.compare_digest(
-            authorization[7:], TOKEN):
-        raise HTTPException(status_code=401, detail="Ungueltiges Token")
+def current_session(authorization: str = Header(default="")) -> Session:
+    """Any authenticated user. Raises 401 otherwise."""
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Anmeldung erforderlich")
+    session = AUTH.session(authorization[7:])
+    if session is None:
+        raise HTTPException(status_code=401, detail="Sitzung ungueltig oder abgelaufen")
+    return session
+
+
+def auth(session: Session = Depends(current_session)) -> Session:
+    return session
+
+
+def require_admin(session: Session = Depends(current_session),
+                  x_csrf_token: str = Header(default="")) -> Session:
+    """State-changing routes: admin role AND a matching CSRF token, which a
+    cross-site form cannot supply."""
+    if session.role != "admin":
+        AUTH.audit("forbidden", username=session.username, role=session.role)
+        raise HTTPException(status_code=403, detail="Rolle admin erforderlich")
+    if not secrets.compare_digest(x_csrf_token or "", session.csrf):
+        AUTH.audit("csrf_rejected", username=session.username)
+        raise HTTPException(status_code=403, detail="CSRF-Token fehlt oder falsch")
+    return session
 
 
 # --------------------------------------------------------------------------
 # REST
 # --------------------------------------------------------------------------
+
+
+@app.post("/api/login")
+def login(payload: dict, request: Request) -> dict:
+    ip = request.client.host if request.client else "-"
+    username = str(payload.get("username", ""))[:64]
+    password = str(payload.get("password", ""))[:256]
+    session = AUTH.login(username, password, ip)
+    if session is None:
+        raise HTTPException(status_code=401, detail="Anmeldung fehlgeschlagen")
+    return {"token": session.token, "csrf": session.csrf,
+            "role": session.role, "username": session.username}
+
+
+@app.post("/api/logout")
+def logout(session: Session = Depends(current_session)) -> dict:
+    AUTH.logout(session.token)
+    return {"ok": True}
+
+
+@app.get("/api/me", dependencies=[Depends(auth)])
+def me(session: Session = Depends(current_session)) -> dict:
+    return {"username": session.username, "role": session.role, "csrf": session.csrf}
+
+
+@app.get("/api/intel/whale", dependencies=[Depends(auth)])
+def intel_whale(mint: str = Query(..., min_length=32, max_length=64)) -> dict:
+    return whale.analyse(mint).to_dict()
+
+
+@app.get("/api/intel/smart_money", dependencies=[Depends(auth)])
+def intel_smart(mint: str = Query(..., min_length=32, max_length=64)) -> dict:
+    return smart_money.analyse(mint).to_dict()
+
+
+@app.get("/api/intel/social", dependencies=[Depends(auth)])
+def intel_social() -> dict:
+    return social.trending_assets().to_dict()
 
 
 @app.get("/api/health")
@@ -197,7 +259,7 @@ def scanner() -> dict:
             "tokens": data.get("scanner", []), "risk_events": data.get("risk_events", [])}
 
 
-@app.post("/api/balance/refresh", dependencies=[Depends(auth)])
+@app.post("/api/balance/refresh", dependencies=[Depends(require_admin)])
 def set_balance(value: float = Query(..., ge=0)) -> dict:
     """The real balance is read through the authorised Coinbase connector by the
     operator and handed in here; the server keeps no API key."""
@@ -207,7 +269,7 @@ def set_balance(value: float = Query(..., ge=0)) -> dict:
     return dict(BALANCE)
 
 
-@app.post("/api/meeting/run", dependencies=[Depends(auth)])
+@app.post("/api/meeting/run", dependencies=[Depends(require_admin)])
 async def run_meeting(symbol: str = Query("BTC-USD")) -> dict:
     """Run the existing eight-step meeting and stream each statement as an event."""
     if symbol not in SYMBOLS:
@@ -246,7 +308,7 @@ def _fetch_closes(symbol: str, n: int = 120) -> list:
         return []
 
 
-@app.post("/api/mode", dependencies=[Depends(auth)])
+@app.post("/api/mode", dependencies=[Depends(require_admin)])
 def set_mode(mode: str = Query(...)) -> dict:
     try:
         CONTROLLER.set_mode(TradingMode(mode))
@@ -257,7 +319,7 @@ def set_mode(mode: str = Query(...)) -> dict:
     return {"mode": CONTROLLER.mode.value}
 
 
-@app.post("/api/emergency_stop", dependencies=[Depends(auth)])
+@app.post("/api/emergency_stop", dependencies=[Depends(require_admin)])
 def emergency_stop(reason: str = Query("Dashboard")) -> dict:
     CONTROLLER.trigger_emergency_stop(reason)
     BUS.publish("emergency_stop", {"reason": reason})
@@ -271,9 +333,11 @@ def emergency_stop(reason: str = Query("Dashboard")) -> dict:
 
 @app.websocket("/ws")
 async def ws(socket: WebSocket, token: str = Query(""), since: int = Query(0)) -> None:
-    if not secrets.compare_digest(token, TOKEN):
+    session = AUTH.session(token)
+    if session is None:
         await socket.close(code=4401)
         return
+    AUTH.audit("ws_connected", username=session.username)
     await socket.accept()
     queue = BUS.subscribe()
     try:
@@ -319,8 +383,13 @@ def spa_fallback(request, exc):
 
 if __name__ == "__main__":
     import uvicorn
-    print("=" * 60)
-    print("HyperGrok backend. Dashboard-Token (nur hier, nie im Repo):")
-    print(f"  {TOKEN}")
-    print("=" * 60)
+    print("=" * 64)
+    password = AUTH.bootstrap_admin()
+    if password:
+        print("Erster Start: Admin-Konto angelegt.")
+        print("  Benutzer: admin")
+        print(f"  Passwort: {password}   <- einmalig, wird nirgends gespeichert")
+    else:
+        print(f"Bestehende Konten: {', '.join(AUTH.users) or 'keine'}")
+    print("=" * 64)
     uvicorn.run(app, host="127.0.0.1", port=8787, log_level="warning")

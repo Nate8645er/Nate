@@ -33,7 +33,7 @@ import {
   RiskCenter,
   Row,
 } from "./components/Panels";
-import { api, getToken, setToken } from "./lib/api";
+import { api, clearSession, getToken, storeSession } from "./lib/api";
 import { EventStream } from "./lib/ws";
 import type { AppState, ScannerToken, Statement, WsEvent } from "./lib/types";
 
@@ -85,8 +85,8 @@ export default function App() {
     } catch (e) {
       const m = (e as Error).message;
       if (m === "UNAUTHORIZED") {
+        clearSession();
         setTok("");
-        setToken("");
       }
       setErr(m);
     }
@@ -210,8 +210,7 @@ export default function App() {
   if (!token)
     return (
       <Login
-        onToken={(t) => {
-          setToken(t);
+        onLogin={(t: string) => {
           setTok(t);
         }}
       />
@@ -639,40 +638,47 @@ function BottomNav({
   );
 }
 
-function Login({ onToken }: { onToken: (t: string) => void }) {
-  const [value, setValue] = useState("");
+function Login({ onLogin }: { onLogin: (t: string) => void }) {
+  const [user, setUser] = useState("");
+  const [pass, setPass] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true); setError(null);
+    try {
+      const r = await api.login(user.trim(), pass);
+      storeSession(r.token, r.csrf, r.role);
+      onLogin(r.token);
+    } catch {
+      setError("Benutzername oder Passwort falsch.");
+    }
+    setBusy(false);
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (value.trim()) onToken(value.trim());
-        }}
-        className="w-full max-w-sm rounded-2xl border border-line bg-panel/70 p-6 backdrop-blur-xl"
-      >
+      <form onSubmit={submit}
+            className="w-full max-w-sm rounded-2xl border border-line bg-panel/70 p-6 backdrop-blur-xl">
         <h1 className="font-pixel text-[11px] leading-relaxed text-white">
           HYPER<span className="text-neon">GROK</span>
         </h1>
         <p className="mb-4 mt-2 text-xs text-white/50">
-          Dashboard-Token eingeben. Es wird beim Start des Backends einmalig in
-          der Server-Konsole angezeigt und niemals im Repository gespeichert.
+          Anmeldung erforderlich. Das Admin-Konto wird beim ersten Backend-Start
+          einmalig in der Server-Konsole angezeigt und nie im Repository gespeichert.
         </p>
-        <label htmlFor="tok" className="sr-only">
-          Token
-        </label>
-        <input
-          id="tok"
-          type="password"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          autoComplete="off"
-          className="w-full rounded-xl border border-line bg-black/40 px-3 py-2 font-mono text-sm text-white outline-none focus:border-cyan"
-        />
-        <button
-          type="submit"
-          className="mt-3 w-full rounded-xl border border-neon bg-neon/15 px-3 py-2 font-mono text-[11px] uppercase tracking-widest text-neon hover:bg-neon/25"
-        >
-          Anmelden
+        <label htmlFor="usr" className="mb-1 block text-[11px] text-white/50">Benutzer</label>
+        <input id="usr" value={user} onChange={(e) => setUser(e.target.value)} autoComplete="username"
+               className="mb-3 w-full rounded-xl border border-line bg-black/40 px-3 py-2 font-mono text-sm text-white outline-none focus:border-cyan" />
+        <label htmlFor="pwd" className="mb-1 block text-[11px] text-white/50">Passwort</label>
+        <input id="pwd" type="password" value={pass} onChange={(e) => setPass(e.target.value)}
+               autoComplete="current-password"
+               className="w-full rounded-xl border border-line bg-black/40 px-3 py-2 font-mono text-sm text-white outline-none focus:border-cyan" />
+        {error && <p className="mt-3 rounded-lg border border-loss/40 bg-loss/10 p-2 text-[11px] text-loss">{error}</p>}
+        <button type="submit" disabled={busy}
+          className="mt-4 w-full rounded-xl border border-neon bg-neon/15 px-3 py-2 font-mono text-[11px] uppercase tracking-widest text-neon hover:bg-neon/25 disabled:opacity-40">
+          {busy ? "..." : "Anmelden"}
         </button>
       </form>
     </div>
