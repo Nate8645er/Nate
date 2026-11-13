@@ -11,3 +11,4 @@
 hyperliquid-bot/state/
 __pycache__/
 .pytest_cache/
+coinbase-bot/state/
