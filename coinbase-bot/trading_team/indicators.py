@@ -53,15 +53,30 @@ def rsi(closes: Sequence, period: int = 14) -> float:
     return 100 - 100 / (1 + rs)
 
 
+def _ema_series(values: list[float], period: int) -> list[float]:
+    """Full EMA series aligned to `values` (index 0..period-2 are the running
+    SMA seed). Computed in one pass — O(n)."""
+    if len(values) < period:
+        raise ValueError("not enough data for EMA series")
+    k = 2 / (period + 1)
+    out = [float("nan")] * (period - 1)
+    e = sum(values[:period]) / period
+    out.append(e)
+    for price in values[period:]:
+        e = price * k + e * (1 - k)
+        out.append(e)
+    return out
+
+
 def macd(closes: Sequence, fast: int = 12, slow: int = 26, signal: int = 9) -> dict:
-    """MACD line, signal line, histogram."""
+    """MACD line, signal line, histogram. O(n): EMA series computed once."""
     c = _f(closes)
     if len(c) < slow + signal:
         raise ValueError("not enough data for MACD")
-    macd_series = []
-    for end in range(slow, len(c) + 1):
-        window = c[:end]
-        macd_series.append(ema(window, fast) - ema(window, slow))
+    ef = _ema_series(c, fast)
+    es = _ema_series(c, slow)
+    # MACD line only defined where the slow EMA exists.
+    macd_series = [ef[i] - es[i] for i in range(slow - 1, len(c))]
     sig = ema(macd_series, signal) if len(macd_series) >= signal else macd_series[-1]
     line = macd_series[-1]
     return {"macd": line, "signal": sig, "hist": line - sig}
