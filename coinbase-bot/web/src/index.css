@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+body {
+  margin: 0;
+  background:
+    radial-gradient(1200px 700px at 70% -10%, rgba(168,107,255,.10), transparent),
+    radial-gradient(900px 600px at 10% 110%, rgba(34,232,255,.08), transparent),
+    #04060f;
+  color: #e8eeff;
+  font-family: "Space Grotesk", ui-monospace, monospace;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+.pixel { image-rendering: pixelated; shape-rendering: crispEdges; }
+.scanlines::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(to bottom, rgba(0,0,0,.18) 0 1px, transparent 1px 3px);
+}
+.glass { background: rgba(255,255,255,.04); backdrop-filter: blur(14px); }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #1b2a4d; border-radius: 4px; }
+
+@keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-1.5px); } }
+@keyframes typing { 0%,100% { transform: translateY(0); } 50% { transform: translateY(1.5px); } }
+@keyframes blink { 0%,92%,100% { opacity: 1; } 95% { opacity: .25; } }
+@keyframes scan { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+@keyframes pulseGlow { 0%,100% { opacity: .35; } 50% { opacity: .9; } }
+.anim-bob { animation: bob 2.6s ease-in-out infinite; }
+.anim-typing { animation: typing .28s ease-in-out infinite; }
+.anim-blink { animation: blink 4s steps(1) infinite; }
+.anim-pulse { animation: pulseGlow 1.4s ease-in-out infinite; }
