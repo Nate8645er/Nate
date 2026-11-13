@@ -19,11 +19,16 @@ Strategy = Callable[[list], str]  # returns "BUY" | "SELL" | "HOLD"
 @dataclass(frozen=True)
 class BacktestResult:
     bars: int
-    trades: int
+    trades: int  # number of completed round trips (buy->sell)
     return_pct: float
     max_drawdown_pct: float
     fees_paid: float
     final_equity: float
+    win_rate_pct: float = 0.0
+    profit_factor: float = 0.0  # gross profit / gross loss; inf -> 999
+    net_pnl: float = 0.0
+    gross_profit: float = 0.0
+    gross_loss: float = 0.0
 
 
 def backtest(
@@ -36,11 +41,17 @@ def backtest(
     start_cash: float = 100.0,
 ) -> BacktestResult:
     """Long-flat backtest. Buys the full book on BUY, sells all on SELL.
-    Fees and slippage apply on every fill."""
+    Fees and slippage apply on every fill.
+
+    No look-ahead: at bar i the strategy only sees closes[:i+1] and the fill
+    happens at bar i's own price, never a future bar.
+    """
     prices = [float(c) for c in closes]
-    cash, units, fees, trades = start_cash, 0.0, 0.0, 0
+    cash, units, fees = start_cash, 0.0, 0.0
+    entry_cost = 0.0  # cash spent entering the open position
     peak_equity = start_cash
     max_dd = 0.0
+    round_trips: list[float] = []  # realised P&L per completed trade
     for i in range(warmup, len(prices)):
         window = prices[: i + 1]
         price = prices[i]
@@ -48,23 +59,34 @@ def backtest(
         if stance == "BUY" and units == 0.0 and cash > 0:
             exec_price = price * (1 + slippage_rate)
             fee = cash * fee_rate
+            entry_cost = cash
             units = (cash - fee) / exec_price
             fees += fee
             cash = 0.0
-            trades += 1
         elif stance == "SELL" and units > 0:
             exec_price = price * (1 - slippage_rate)
             gross = units * exec_price
             fee = gross * fee_rate
             cash = gross - fee
             fees += fee
+            round_trips.append(cash - entry_cost)  # net of both fees + slippage
             units = 0.0
-            trades += 1
+            entry_cost = 0.0
         equity = cash + units * price
         peak_equity = max(peak_equity, equity)
         if peak_equity > 0:
             max_dd = max(max_dd, (peak_equity - equity) / peak_equity)
     final_equity = cash + units * prices[-1]
+    wins = [p for p in round_trips if p > 0]
+    losses = [p for p in round_trips if p < 0]
+    gross_profit = sum(wins)
+    gross_loss = -sum(losses)
+    trades = len(round_trips)
+    win_rate = (len(wins) / trades * 100) if trades else 0.0
+    if gross_loss > 0:
+        profit_factor = gross_profit / gross_loss
+    else:
+        profit_factor = 999.0 if gross_profit > 0 else 0.0
     return BacktestResult(
         bars=len(prices) - warmup,
         trades=trades,
@@ -72,6 +94,11 @@ def backtest(
         max_drawdown_pct=max_dd * 100,
         fees_paid=fees,
         final_equity=final_equity,
+        win_rate_pct=win_rate,
+        profit_factor=profit_factor,
+        net_pnl=final_equity - start_cash,
+        gross_profit=gross_profit,
+        gross_loss=gross_loss,
     )
 
 

@@ -130,6 +130,17 @@ def test_overfitting_check_reports_degradation():
     assert report.in_sample_return is not None
 
 
+def test_backtest_reports_winrate_and_profit_factor():
+    res = backtest.backtest(uptrend() + downtrend() + uptrend(), sma_cross, warmup=10)
+    assert res.trades >= 1
+    assert 0.0 <= res.win_rate_pct <= 100.0
+    assert res.profit_factor >= 0.0
+    # net P&L must reconcile with final equity vs the 100 start cash
+    assert abs(res.net_pnl - (res.final_equity - 100.0)) < 1e-6
+    # gross profit/loss consistency
+    assert res.gross_profit >= 0 and res.gross_loss >= 0
+
+
 # ---- capital ceiling (Phase 5) -------------------------------------------
 
 
