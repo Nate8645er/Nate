@@ -26,6 +26,11 @@ import { AgentTerminal } from "./components/AgentTerminal";
 import { LiveActivityFeed } from "./components/LiveActivityFeed";
 import { ProfitChart, type Point } from "./components/ProfitChart";
 import {
+  LiveProfitPanel,
+  OrderHistoryPanel,
+  ReadinessPanel,
+} from "./components/LivePanels";
+import {
   ConnectorStatus,
   MarketScanner,
   ModeBadge,
@@ -437,25 +442,31 @@ export default function App() {
             )}
 
             {page === "profit" && (
-              <Panel title="Live Profit Monitor">
-                <ProfitChart data={[] as Point[]} label="P&L" />
-              </Panel>
+              <div className="grid gap-4 lg:grid-cols-2">
+                <Panel title="Live Profit Monitor — Echtgeld">
+                  <LiveProfitPanel refreshKey={state?.seq ?? 0} />
+                </Panel>
+                <Panel title="P&L-Verlauf">
+                  <ProfitChart data={[] as Point[]} label="P&L" />
+                </Panel>
+              </div>
             )}
 
             {page === "history" && (
               <Panel title="Trade History">
-                <Row k="Echte Orders in dieser Sitzung" v="0" />
-                <p className="mt-2 text-[11px] text-white/45">
-                  Der verifizierte Echtgeld-Round-Trip aus Phase 3 ist in
-                  docs/AUDIT_2026-11-13_coinbase_live_roundtrip.md dokumentiert.
-                </p>
+                <OrderHistoryPanel refreshKey={state?.seq ?? 0} />
               </Panel>
             )}
 
             {page === "risk" && state && (
-              <Panel title="Risk Center">
-                <RiskCenter state={state} />
-              </Panel>
+              <div className="grid gap-4 lg:grid-cols-2">
+                <Panel title="Risk Center">
+                  <RiskCenter state={state} />
+                </Panel>
+                <Panel title="Live Readiness Check">
+                  <ReadinessPanel />
+                </Panel>
+              </div>
             )}
 
             {page === "connectors" && (

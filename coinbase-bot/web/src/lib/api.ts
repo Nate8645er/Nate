@@ -1,4 +1,4 @@
-import type { AppState, ScannerToken } from "./types";
+import type { AppState, LiveOverview, Readiness, ScannerToken } from "./types";
 
 const TOKEN_KEY = "hypergrok_session";
 const CSRF_KEY = "hypergrok_csrf";
@@ -57,6 +57,9 @@ export const api = {
   runMeeting: (symbol: string) => request<any>(`/api/meeting/run?symbol=${encodeURIComponent(symbol)}`, { method: "POST" }),
   setMode: (mode: string) => request<{ mode: string }>(`/api/mode?mode=${encodeURIComponent(mode)}`, { method: "POST" }),
   emergencyStop: (reason: string) => request<any>(`/api/emergency_stop?reason=${encodeURIComponent(reason)}`, { method: "POST" }),
+  clearEmergencyStop: (reason: string) => request<any>(`/api/emergency_stop/clear?reason=${encodeURIComponent(reason)}`, { method: "POST" }),
+  readiness: () => request<Readiness>("/api/readiness"),
+  live: () => request<LiveOverview>("/api/live"),
   refreshBalance: (value: number) => request<any>(`/api/balance/refresh?value=${value}`, { method: "POST" }),
   whale: (mint: string) => request<WhaleIntel>(`/api/intel/whale?mint=${encodeURIComponent(mint)}`),
   smartMoney: (mint: string) => request<Record<string, unknown>>(`/api/intel/smart_money?mint=${encodeURIComponent(mint)}`),

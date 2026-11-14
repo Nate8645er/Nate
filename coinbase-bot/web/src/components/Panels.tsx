@@ -59,24 +59,47 @@ export function Row({
 
 export function RiskCenter({ state }: { state: AppState }) {
   const L = state.limits;
+  const S = state.status as Record<string, string | boolean>;
   const confirmed = Boolean(L.confirmed);
+  const stop = state.emergency_stop;
   return (
     <div>
-      <Row k="Autonomous Live" v="LOCKED" tone="bad" />
+      <Row
+        k="Autonomous Live"
+        v={S.autonomous_live_locked === false ? "SCHARF" : "LOCKED"}
+        tone="bad"
+      />
       <Row
         k="Risikolimits bestätigt"
-        v={confirmed ? "ja" : "nein"}
+        v={confirmed ? "ja (Nate, 13.11.)" : "nein"}
         tone={confirmed ? "good" : "warn"}
       />
       <Row k="Gesamtkapital" v={`${L.total_capital_usdc} USDC`} />
-      <Row k="Max. Tagesverlust" v={`${L.max_daily_loss_usdc} USDC`} />
-      <Row k="Max. Gesamtverlust" v={`${L.max_total_loss_usdc} USDC`} />
+      <Row
+        k="Tagesverlust / Grenze"
+        v={`${S.daily_loss_usdc ?? "0"} / ${L.max_daily_loss_usdc} USDC`}
+      />
+      <Row
+        k="Gesamtverlust / Grenze"
+        v={`${S.total_loss_usdc ?? "0"} / ${L.max_total_loss_usdc} USDC`}
+      />
       <Row k="Max. Slippage" v={`${L.max_slippage_pct} %`} />
       <Row k="Max. offene Exposition" v={`${L.max_open_exposure_usdc} USDC`} />
+      <Row k="Hebel / Margin / Transfers" v="deaktiviert" tone="good" />
+      <Row
+        k="Not-Aus"
+        v={stop ? `AKTIV — ${S.emergency_stop_reason ?? ""}` : "bereit"}
+        tone={stop ? "bad" : "good"}
+      />
+      <Row
+        k="Not-Aus übersteht Neustart"
+        v={S.emergency_stop_persistent ? "ja" : "nein"}
+        tone={S.emergency_stop_persistent ? "good" : "bad"}
+      />
       <p className="mt-3 flex gap-2 rounded-lg border border-amber-400/30 bg-amber-400/10 p-2 text-[11px] text-amber-200">
         <ShieldAlert size={14} className="mt-px shrink-0" />
-        Limits mit 0 sind nicht gesetzt. Solange bleibt LIVE MANUAL gesperrt und
-        jede echte Order braucht zusätzlich eine eigene Freigabe.
+        Tages- und Gesamtverlustgrenze entsprechen dem gesamten Kapital. Diese
+        Konfiguration erlaubt den Totalverlust der {String(L.total_capital_usdc)} USDC.
       </p>
     </div>
   );

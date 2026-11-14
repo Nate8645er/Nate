@@ -34,11 +34,15 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from server.agents_map import AGENT_TO_STATION, connected_count, stations  # noqa: E402
-from server.auth import AuthStore, Session  # noqa: E402
+from server.auth import AUDIT_FILE, AuthStore, Session  # noqa: E402
 from multimarket import smart_money, social, whale  # noqa: E402
 from trading_team import RiskManager, paper_risk_config  # noqa: E402
 from trading_team.meeting import hold_meeting  # noqa: E402
-from trading_team.modes import AbsoluteLimits, ModeController, ModeError, TradingMode  # noqa: E402
+from trading_team.live_pipeline import read_positions, unresolved_orders  # noqa: E402
+from trading_team.modes import ModeController, ModeError, TradingMode  # noqa: E402
+from trading_team.persistence import SafetyStore  # noqa: E402
+from trading_team.readiness import KNOWN_ORDERS, run_readiness_check  # noqa: E402
+from trading_team.risk_config import NATE_CONFIRMED_LIMITS, NATE_PROFILE  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 STATE = ROOT / "state"
@@ -89,7 +93,30 @@ class EventBus:
 
 
 BUS = EventBus()
-CONTROLLER = ModeController(AbsoluteLimits(total_capital_usdc=D("17.10")))
+# Nate's confirmed limits and durable safety state. The emergency stop and the
+# loss ledger live in state/ and survive a restart. Autonomous live trading is
+# NOT armed here and there is no HTTP route that arms it.
+SAFETY = SafetyStore(STATE)
+CONTROLLER = ModeController(NATE_CONFIRMED_LIMITS, store=SAFETY)
+_CONNECTOR: dict = {"obj": None, "error": "nicht versucht"}
+
+
+def live_connector():
+    """The official Coinbase connector, only when an API key is present in the
+    environment of this process. The key never leaves the backend."""
+    if _CONNECTOR["obj"] is not None:
+        return _CONNECTOR["obj"]
+    if not os.environ.get("COINBASE_API_KEY"):
+        _CONNECTOR["error"] = "COINBASE_API_KEY ist in diesem Prozess nicht gesetzt"
+        return None
+    try:
+        from coinbase_connector.connector import CoinbaseLiveConnector
+        _CONNECTOR["obj"] = CoinbaseLiveConnector(
+            max_quote_per_order=str(NATE_PROFILE.max_position_usdc()))
+        _CONNECTOR["error"] = ""
+    except Exception as exc:  # noqa: BLE001
+        _CONNECTOR["error"] = f"{type(exc).__name__}: {exc}"
+    return _CONNECTOR["obj"]
 MARKET: dict = {"prices": {}, "updated_at": None, "stale": True}
 BALANCE: dict = {"available_usdc": None, "source": "nicht gelesen", "updated_at": None}
 
@@ -142,6 +169,11 @@ async def market_loop() -> None:
 async def lifespan(app: FastAPI):
     task = asyncio.create_task(market_loop())
     BUS.publish("system", {"message": "backend gestartet", "mode": CONTROLLER.mode.value})
+    if CONTROLLER.emergency_stop:
+        BUS.publish("emergency_stop", {"reason": CONTROLLER.stop_reason, "restored": True})
+    AUTH.audit("backend_start", mode=CONTROLLER.mode.value,
+               emergency_stop=CONTROLLER.emergency_stop,
+               unresolved_orders=len(unresolved_orders(SAFETY)))
     yield
     task.cancel()
 
@@ -162,6 +194,14 @@ def current_session(authorization: str = Header(default="")) -> Session:
 
 
 def auth(session: Session = Depends(current_session)) -> Session:
+    return session
+
+
+def require_admin_read(session: Session = Depends(current_session)) -> Session:
+    """Admin role for a read-only route (no CSRF needed for GET)."""
+    if session.role != "admin":
+        AUTH.audit("forbidden", username=session.username, role=session.role)
+        raise HTTPException(403, "admin erforderlich")
     return session
 
 
@@ -244,6 +284,8 @@ def state() -> dict:
         "stations": stations(),
         "market": {"prices": MARKET["prices"], "updated_at": MARKET["updated_at"], "stale": stale},
         "balance": BALANCE,
+        "risk_profile": NATE_PROFILE.to_dict(),
+        "safety": SAFETY.snapshot() | {"unresolved_orders": unresolved_orders(SAFETY)},
         "seq": BUS.seq,
     }
 
@@ -320,10 +362,84 @@ def set_mode(mode: str = Query(...)) -> dict:
 
 
 @app.post("/api/emergency_stop", dependencies=[Depends(require_admin)])
-def emergency_stop(reason: str = Query("Dashboard")) -> dict:
-    CONTROLLER.trigger_emergency_stop(reason)
+def emergency_stop(reason: str = Query("Dashboard"),
+                   session: Session = Depends(current_session)) -> dict:
+    CONTROLLER.trigger_emergency_stop(reason, source=session.username)
+    AUTH.audit("emergency_stop", username=session.username, reason=reason)
     BUS.publish("emergency_stop", {"reason": reason})
     return CONTROLLER.status()
+
+
+@app.post("/api/emergency_stop/clear", dependencies=[Depends(require_admin)])
+def emergency_stop_clear(reason: str = Query(..., min_length=8),
+                         session: Session = Depends(current_session)) -> dict:
+    """Clearing is deliberate: an admin, a written reason, an audit entry. It
+    returns the system to PAPER - it does not re-arm anything."""
+    try:
+        CONTROLLER.clear_emergency_stop(cleared_by=session.username, reason=reason)
+    except ModeError as exc:
+        raise HTTPException(409, str(exc))
+    AUTH.audit("emergency_stop_cleared", username=session.username, reason=reason)
+    BUS.publish("emergency_stop_cleared", {"by": session.username, "reason": reason})
+    return CONTROLLER.status()
+
+
+@app.get("/api/readiness", dependencies=[Depends(require_admin_read)])
+def readiness() -> dict:
+    """LIVE_READINESS_CHECK. Reads and self-tests only; arms nothing."""
+    report = run_readiness_check(
+        controller=CONTROLLER, connector=live_connector(), auth_store=AUTH,
+        audit_file=AUDIT_FILE, market_updated_at=MARKET["updated_at"],
+        expected_portfolio_id=os.environ.get("HYPERGROK_PORTFOLIO_ID") or None,
+        known_orders=KNOWN_ORDERS)
+    report["connector_note"] = _CONNECTOR["error"]
+    BUS.publish("readiness", {"verdict": report["verdict"], "passed": report["passed"],
+                              "total": report["total"]})
+    return report
+
+
+@app.get("/api/live", dependencies=[Depends(auth)])
+def live_overview() -> dict:
+    """Real-money figures only. Every value is read from Coinbase or from the
+    durable ledger; what is not known is null, never estimated."""
+    conn = live_connector()
+    real_balance, source = BALANCE["available_usdc"], BALANCE["source"]
+    if conn is not None:
+        try:
+            real_balance, source = float(conn.get_available_funds("USDC")), "Coinbase (live)"
+        except Exception as exc:  # noqa: BLE001
+            source = f"Coinbase nicht lesbar: {type(exc).__name__}"
+    ledger = SAFETY.read_ledger()
+    positions = read_positions(SAFETY)
+    stale = MARKET["updated_at"] is None or (time.time() - MARKET["updated_at"]) > 90
+    unrealised, rows = D("0"), []
+    for product, pos in positions.items():
+        price = None if stale else MARKET["prices"].get(product.replace("-USDC", "-USD"))
+        value = None if price is None else D(str(pos["base_size"])) * D(str(price))
+        pnl = None if value is None else value - D(str(pos["cost_usdc"]))
+        unrealised = None if (pnl is None or unrealised is None) else unrealised + pnl
+        rows.append({"product_id": product, **pos,
+                     "mark_usd": price, "unrealised_pnl_usdc": None if pnl is None else str(pnl)})
+    orders = SAFETY.read_order_ids()
+    fees = sum((D(str((o.get("outcome") or {}).get("fees_usdc") or "0")) for o in orders.values()),
+               D("0"))
+    realised = ledger.total_realised
+    return {
+        "mode": CONTROLLER.mode.value,
+        "is_live": CONTROLLER.mode is not TradingMode.PAPER,
+        "real_balance_usdc": real_balance,
+        "balance_source": source,
+        "allocated_capital_usdc": str(CONTROLLER.limits.total_capital_usdc),
+        "open_positions": rows,
+        "realised_pnl_usdc": str(realised),
+        "daily_pnl_usdc": str(ledger.realised_today()),
+        "unrealised_pnl_usdc": None if unrealised is None else str(unrealised),
+        "total_pnl_usdc": None if unrealised is None else str(realised + unrealised),
+        "trading_fees_usdc": str(fees),
+        "order_history": [{"client_order_id": cid, **row} for cid, row in orders.items()][-50:],
+        "note": "Nur Orders dieses Systems. Die zwei Testorders vom 13.11. liefen ueber den "
+                "Coinbase-Connector der Sitzung und stehen nicht in diesem Ledger.",
+    }
 
 
 # --------------------------------------------------------------------------

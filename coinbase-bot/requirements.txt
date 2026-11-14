@@ -1,2 +1,4 @@
 coinbase-advanced-py==1.8.4
+fastapi>=0.110
+uvicorn[standard]>=0.29
 pytest

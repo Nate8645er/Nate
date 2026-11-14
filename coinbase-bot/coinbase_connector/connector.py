@@ -124,6 +124,20 @@ class CoinbaseLiveConnector:
     def get_real_order_status(self, order_id: str) -> dict:
         return _as_dict(self._client.get_order(order_id))["order"]
 
+    def get_open_orders(self) -> list[dict]:
+        """Resting orders of the key's portfolio."""
+        return _as_dict(self._client.list_orders(order_status=["OPEN"])).get("orders") or []
+
+    def find_order_by_client_id(self, client_order_id: str, limit: int = 100) -> dict | None:
+        """Look an order up by the id WE chose. Used after a restart or a
+        timeout to learn whether an order reached Coinbase. None = Coinbase
+        does not list it among the most recent orders."""
+        orders = _as_dict(self._client.list_orders(limit=limit)).get("orders") or []
+        for order in orders:
+            if order.get("client_order_id") == client_order_id:
+                return order
+        return None
+
     def get_real_fills(self, order_id: str) -> list[dict]:
         return _as_dict(self._client.get_fills(order_ids=[order_id])).get("fills") or []
 
