@@ -1,0 +1,17 @@
+# Railway build for the FastAPI backend + React frontend (in coinbase-bot/).
+# Set Railway "Root Directory" = coinbase-bot so these files are found.
+providers = ["python", "node"]
+
+[phases.install]
+cmds = [
+  "python -m venv .venv",
+  ".venv/bin/pip install --upgrade pip",
+  ".venv/bin/pip install -r requirements.txt",
+  "cd web && npm ci"
+]
+
+[phases.build]
+cmds = ["cd web && npm run build"]
+
+[start]
+cmd = "bash deploy/railway-start.sh"

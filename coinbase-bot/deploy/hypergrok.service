@@ -1,0 +1,29 @@
+# /etc/systemd/system/hypergrok.service
+# Auto-start on boot, auto-restart on crash. The backend starts in PAPER and an
+# active emergency stop survives a restart, so a restart never trades on its own.
+[Unit]
+Description=HyperGrok AI Trading Backend (127.0.0.1 only)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Adjust User and the two paths to your server:
+User=ubuntu
+WorkingDirectory=/home/ubuntu/Nate/coinbase-bot
+# The passphrase that unlocks the encrypted Coinbase key at rest. Set it with:
+#   sudo systemctl edit hypergrok   ->   [Service]\nEnvironment=HYPERGROK_SECRET_PASSPHRASE=...
+# Keep it ONLY here (root-only drop-in), never in git.
+Environment=HYPERGROK_PORTFOLIO_ID=
+ExecStart=/home/ubuntu/Nate/coinbase-bot/.venv/bin/python -m uvicorn server.app:app --host 127.0.0.1 --port 8787 --log-level warning
+Restart=always
+RestartSec=5
+# Resource guards for a small free VM:
+MemoryMax=700M
+# Hardening:
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target

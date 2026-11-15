@@ -1,0 +1,8 @@
+# /etc/systemd/system/hypergrok-backup.timer  (daily backups)
+[Unit]
+Description=Daily HyperGrok state backup
+[Timer]
+OnCalendar=*-*-* 03:17:00
+Persistent=true
+[Install]
+WantedBy=timers.target

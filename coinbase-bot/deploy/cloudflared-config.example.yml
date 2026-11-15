@@ -1,0 +1,8 @@
+# ~/.cloudflared/config.yml on the server. Fill in your tunnel id + hostname.
+# HTTPS + WebSocket work through the tunnel; the backend stays on 127.0.0.1.
+tunnel: <TUNNEL-ID>
+credentials-file: /home/ubuntu/.cloudflared/<TUNNEL-ID>.json
+ingress:
+  - hostname: <dein-hostname>        # e.g. trading.deinedomain.de
+    service: http://127.0.0.1:8787
+  - service: http_status:404

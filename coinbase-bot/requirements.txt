@@ -1,0 +1,5 @@
+coinbase-advanced-py==1.8.4
+fastapi>=0.110
+uvicorn[standard]>=0.29
+cryptography>=42          # encrypted-at-rest secret store (server/secretstore.py)
+pytest

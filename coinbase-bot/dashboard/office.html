@@ -1,0 +1,616 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>HyperGrok AI Trading Office</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+  /* Layout: office floor (SVG) on the left, live meeting feed on the right; stacks on phones. */
+  :root{
+    --void:#04060f; --deep:#0a1024; --panel:#0e1530; --line:#1d2a4d;
+    --fg:#e8eeff; --muted:#8294c4; --cyan:#22e8ff; --violet:#9d6bff;
+    --up:#2ff39a; --down:#ff5577; --amber:#ffc34d;
+    --mono:"Space Grotesk",ui-monospace,Menlo,monospace; --sans:Inter,system-ui,sans-serif;
+    color-scheme: dark;
+  }
+  *{box-sizing:border-box}
+  body{background:
+      radial-gradient(1100px 600px at 70% -10%, #15205010, transparent),
+      radial-gradient(800px 500px at 10% 110%, #9d6bff14, transparent), var(--void);
+    color:var(--fg);font-family:var(--sans);line-height:1.5}
+  body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:#04060f;z-index:40}
+  .wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+    padding-block:14px;max-width:1280px;margin:0 auto}
+  header{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;
+    background:linear-gradient(180deg,#04060ff5,#04060fd0);border-bottom:1px solid var(--line);backdrop-filter:blur(10px)}
+  header .wrap{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap}
+  .brand{font-family:var(--mono);font-weight:700;letter-spacing:.16em;text-transform:uppercase;font-size:14px}
+  .brand b{color:var(--cyan);text-shadow:0 0 16px #22e8ff80}
+  .tag{font-family:var(--mono);font-size:10px;letter-spacing:.12em;padding:4px 9px;border-radius:999px;border:1px solid}
+  .t-mode{color:var(--amber);border-color:#ffc34d55;background:#ffc34d12}
+  .t-lock{color:var(--down);border-color:#ff557755;background:#ff557712}
+  .t-ok{color:var(--up);border-color:#2ff39a55;background:#2ff39a12}
+  .spacer{margin-left:auto}
+  .sub{width:100%;color:var(--muted);font-family:var(--mono);font-size:11px}
+  h2{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);
+    margin:22px 0 10px;display:flex;align-items:center;gap:9px}
+  h2::before{content:"";width:6px;height:6px;border-radius:1px;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+  .cols{display:grid;gap:14px;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)}
+  @media(max-width:860px){.cols{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg,#0e1530,#0b1226);border:1px solid var(--line);border-radius:14px;padding:14px;min-width:0}
+  .office{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#070b1a}
+  svg.floor{display:block;width:100%;height:auto}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+  button{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    padding:9px 14px;border-radius:9px;border:1px solid var(--line);background:#101a38;color:var(--fg);cursor:pointer}
+  button:hover{border-color:var(--cyan);box-shadow:0 0 0 1px #22e8ff40}
+  button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+  button[disabled]{opacity:.45;cursor:not-allowed}
+  button.danger{border-color:#ff557766;color:var(--down)}
+  .feed{max-height:430px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+  .msg{border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:#0b1226;opacity:.35;transition:opacity .25s,border-color .25s}
+  .msg.on{opacity:1;border-color:#22e8ff44}
+  .msg .top{display:flex;justify-content:space-between;gap:8px;align-items:center}
+  .who{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--cyan)}
+  .why{font-size:12px;color:var(--muted);margin-top:3px}
+  .d{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:999px;white-space:nowrap}
+  .d-BUY{color:var(--up);background:#2ff39a18}
+  .d-SELL{color:var(--down);background:#ff557718}
+  .d-HOLD{color:var(--muted);background:#8294c418}
+  .d-NOTRADE{color:var(--amber);background:#ffc34d18}
+  .d-VETO{color:var(--down);background:#ff557728;border:1px solid #ff557766}
+  .grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .kpi{border:1px solid var(--line);border-radius:12px;padding:11px;background:#0b1226;min-width:0}
+  .kpi .l{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+  .kpi .v{font-family:var(--mono);font-size:19px;font-variant-numeric:tabular-nums;margin-top:2px;overflow-wrap:anywhere}
+  .row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .row:last-child{border-bottom:0}
+  .note{font-size:11.5px;color:var(--muted);margin-top:9px}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .tab{font-family:var(--mono);font-size:10px;letter-spacing:.1em;padding:6px 11px;border-radius:999px;
+    border:1px solid var(--line);background:#0b1226;color:var(--muted);cursor:pointer}
+  .tab[aria-selected="true"]{color:var(--void);background:var(--cyan);border-color:var(--cyan);font-weight:700}
+  footer{margin:26px 0 10px;padding-top:12px;border-top:1px solid var(--line);color:var(--muted);font-size:11px}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<header>
+  <div class="wrap">
+    <span class="brand">HYPER<b>GROK</b> · AI TRADING OFFICE</span>
+    <span class="tag t-mode" id="modeTag">PAPER</span>
+    <span class="tag t-lock">AUTONOMOUS LIVE · LOCKED</span>
+    <span class="tag t-ok spacer" id="balTag">—</span>
+    <span class="sub" id="asof"></span>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="cols">
+    <section>
+      <h2>AI Office · Live Scene</h2>
+      <div class="office">
+        <svg class="floor" viewBox="0 0 800 520" role="img" aria-label="Animiertes KI-Trading-Buero mit sechs Arbeitsplaetzen und Meeting-Tisch">
+          <defs>
+            <linearGradient id="deskG" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#16214a"/><stop offset="1" stop-color="#0d1430"/>
+            </linearGradient>
+            <radialGradient id="glow"><stop offset="0" stop-color="#22e8ff55"/><stop offset="1" stop-color="transparent"/></radialGradient>
+            <filter id="soft"><feGaussianBlur stdDeviation="6"/></filter>
+          </defs>
+          <rect width="800" height="520" fill="#070b1a"/>
+          <g stroke="#13203f" stroke-width="1">
+            <path d="M0 130H800M0 260H800M0 390H800M160 0V520M320 0V520M480 0V520M640 0V520"/>
+          </g>
+          <ellipse cx="400" cy="262" rx="190" ry="120" fill="url(#glow)" filter="url(#soft)" opacity=".6"/>
+          <!-- meeting table -->
+          <ellipse cx="400" cy="262" rx="92" ry="52" fill="url(#deskG)" stroke="#2a3a6d"/>
+          <rect x="330" y="196" width="140" height="42" rx="7" fill="#0a1026" stroke="#2a3a6d"/>
+          <text id="bigScreen" x="400" y="214" text-anchor="middle" fill="#22e8ff" font-family="Space Grotesk,monospace" font-size="13">MEETING ROOM</text>
+          <text id="bigScreen2" x="400" y="230" text-anchor="middle" fill="#8294c4" font-family="Space Grotesk,monospace" font-size="10">bereit</text>
+          <g id="desks"></g>
+          <g id="paths" fill="none" stroke="#1b2a52" stroke-dasharray="3 5" opacity=".5"></g>
+          <g id="agents"></g>
+        </svg>
+      </div>
+      <div class="controls">
+        <button id="play">▶ Meeting abspielen</button>
+        <button id="reset">⟲ Zurücksetzen</button>
+        <button id="estop" class="danger">■ Not-Aus</button>
+        <span class="tag t-mode" id="stepTag">Schritt 0/0</span>
+      </div>
+      <div class="tabs" id="tabs"></div>
+      <p class="note" id="officeNote"></p>
+    </section>
+
+    <section>
+      <h2>Live Activity Feed</h2>
+      <div class="card"><div class="feed" id="feed"></div></div>
+
+      <h2>Live Profit Monitor</h2>
+      <div class="grid" id="monitor"></div>
+      <p class="note">REAL MONEY = tatsächliche Coinbase-Daten. Es wurde keine Order ausgeführt, daher gibt es keinen realisierten P&amp;L aus diesem Lauf. Keine geschätzten Gewinne.</p>
+
+      <h2>Risk Center</h2>
+      <div class="card" id="risk"></div>
+
+      <h2>Connectors</h2>
+      <div class="card" id="conn"></div>
+    </section>
+  </div>
+  <footer id="foot"></footer>
+</main>
+
+<script>
+const DATA = {
+  "generated_at": "2026-11-13T19:45:25.635582+00:00",
+  "real_balance_usdc": "17.1068518096028",
+  "real_balance_source": "Coinbase (autorisierter Connector, gelesen vor dem Meeting)",
+  "mode": "PAPER",
+  "status": {
+    "mode": "PAPER",
+    "emergency_stop": false,
+    "live_execution_tested": true,
+    "autonomous_live_locked": true,
+    "risk_limits_configured": false
+  },
+  "limits": {
+    "total_capital_usdc": "17.10",
+    "max_daily_loss_usdc": "0",
+    "max_total_loss_usdc": "0",
+    "max_slippage_pct": "1.0",
+    "max_open_exposure_usdc": "0",
+    "confirmed": false
+  },
+  "connectors": [
+    {
+      "name": "Coinbase",
+      "status": "CONNECTED",
+      "detail": "free/public"
+    },
+    {
+      "name": "Solana RPC",
+      "status": "CONNECTED",
+      "detail": "free/public"
+    },
+    {
+      "name": "Jupiter",
+      "status": "CONNECTED",
+      "detail": "free/public"
+    },
+    {
+      "name": "GeckoTerminal",
+      "status": "CONNECTED",
+      "detail": "free/public"
+    },
+    {
+      "name": "DexScreener",
+      "status": "CONNECTED",
+      "detail": "free/public"
+    },
+    {
+      "name": "Phantom",
+      "status": "NOT CONNECTED",
+      "detail": "Wallet \u2014 bewusst nicht verbunden (keine Keys, keine Signatur)"
+    }
+  ],
+  "meetings": [
+    {
+      "symbol": "BTC-USD",
+      "started_at": "2026-11-13T19:45:25.415314+00:00",
+      "statements": [
+        {
+          "step": 1,
+          "agent": "MarketAnalyst",
+          "decision": "HOLD",
+          "rationale": "Trend down, Momentum -0.1203, Vol 0.0192",
+          "data": {
+            "price": "68955.44",
+            "trend": "down"
+          }
+        },
+        {
+          "step": 2,
+          "agent": "Strategist",
+          "decision": "NO TRADE",
+          "rationale": "NO TRADE (Konsens BUY, agreed=False)",
+          "data": {
+            "stop_loss": "0",
+            "take_profit": "0"
+          }
+        },
+        {
+          "step": 3,
+          "agent": "Trend",
+          "decision": "SELL",
+          "rationale": "SMA-fast unter SMA-slow",
+          "data": {
+            "confidence": "0.7"
+          }
+        },
+        {
+          "step": 3,
+          "agent": "Momentum",
+          "decision": "BUY",
+          "rationale": "RSI 26 \u00fcberverkauft",
+          "data": {
+            "confidence": "0.6"
+          }
+        },
+        {
+          "step": 3,
+          "agent": "MeanReversion",
+          "decision": "BUY",
+          "rationale": "Preis am unteren Bollinger-Band",
+          "data": {
+            "confidence": "0.55"
+          }
+        },
+        {
+          "step": 3,
+          "agent": "VolSkeptiker",
+          "decision": "HOLD",
+          "rationale": "Volatilit\u00e4t vertretbar",
+          "data": {
+            "confidence": "0.3"
+          }
+        },
+        {
+          "step": 4,
+          "agent": "RiskManager",
+          "decision": "NO TRADE",
+          "rationale": "Kein Handelsplan zu bewerten",
+          "data": {}
+        }
+      ],
+      "consensus": "BUY",
+      "agreed": false,
+      "challenges": [
+        "Trend widerspricht (SELL): SMA-fast unter SMA-slow",
+        "VolSkeptiker widerspricht (HOLD): Volatilit\u00e4t vertretbar"
+      ],
+      "prepared_order": null,
+      "final": "NO TRADE",
+      "executed": false,
+      "execution_note": ""
+    },
+    {
+      "symbol": "ETH-USD",
+      "started_at": "2026-11-13T19:45:25.530583+00:00",
+      "statements": [
+        {
+          "step": 1,
+          "agent": "MarketAnalyst",
+          "decision": "HOLD",
+          "rationale": "Trend down, Momentum -0.1464, Vol 0.0253",
+          "data": {
+            "price": "1947.87",
+            "trend": "down"
+          }
+        },
+        {
+          "step": 2,
+          "agent": "Strategist",
+          "decision": "NO TRADE",
+          "rationale": "NO TRADE (Konsens BUY, agreed=False)",
+          "data": {
+            "stop_loss": "0",
+            "take_profit": "0"
+          }
+        },
+        {
+          "step": 3,
+          "agent": "Trend",
+          "decision": "SELL",
+          "rationale": "SMA-fast unter SMA-slow",
+          "data": {
+            "confidence": "0.7"
+          }
+        },
+        {
+          "step": 3,
+          "agent": "Momentum",
+          "decision": "BUY",
+          "rationale": "RSI 25 \u00fcberverkauft",
+          "data": {
+            "confidence": "0.6"
+          }
+        },
+        {
+          "step": 3,
+          "agent": "MeanReversion",
+          "decision": "BUY",
+          "rationale": "Preis am unteren Bollinger-Band",
+          "data": {
+            "confidence": "0.55"
+          }
+        },
+        {
+          "step": 3,
+          "agent": "VolSkeptiker",
+          "decision": "HOLD",
+          "rationale": "Volatilit\u00e4t vertretbar",
+          "data": {
+            "confidence": "0.3"
+          }
+        },
+        {
+          "step": 4,
+          "agent": "RiskManager",
+          "decision": "NO TRADE",
+          "rationale": "Kein Handelsplan zu bewerten",
+          "data": {}
+        }
+      ],
+      "consensus": "BUY",
+      "agreed": false,
+      "challenges": [
+        "Trend widerspricht (SELL): SMA-fast unter SMA-slow",
+        "VolSkeptiker widerspricht (HOLD): Volatilit\u00e4t vertretbar"
+      ],
+      "prepared_order": null,
+      "final": "NO TRADE",
+      "executed": false,
+      "execution_note": ""
+    },
+    {
+      "symbol": "SOL-USD",
+      "started_at": "2026-11-13T19:45:25.634409+00:00",
+      "statements": [
+        {
+          "step": 1,
+          "agent": "MarketAnalyst",
+          "decision": "HOLD",
+          "rationale": "Trend down, Momentum -0.1671, Vol 0.0219",
+          "data": {
+            "price": "79.97",
+            "trend": "down"
+          }
+        },
+        {
+          "step": 2,
+          "agent": "Strategist",
+          "decision": "SELL",
+          "rationale": "Konsens SELL / schlie\u00dfen",
+          "data": {
+            "stop_loss": "0",
+            "take_profit": "0"
+          }
+        },
+        {
+          "step": 3,
+          "agent": "Trend",
+          "decision": "SELL",
+          "rationale": "SMA-fast unter SMA-slow",
+          "data": {
+            "confidence": "0.7"
+          }
+        },
+        {
+          "step": 3,
+          "agent": "Momentum",
+          "decision": "BUY",
+          "rationale": "RSI 21 \u00fcberverkauft",
+          "data": {
+            "confidence": "0.6"
+          }
+        },
+        {
+          "step": 3,
+          "agent": "MeanReversion",
+          "decision": "HOLD",
+          "rationale": "innerhalb der B\u00e4nder",
+          "data": {
+            "confidence": "0.4"
+          }
+        },
+        {
+          "step": 3,
+          "agent": "VolSkeptiker",
+          "decision": "HOLD",
+          "rationale": "Volatilit\u00e4t vertretbar",
+          "data": {
+            "confidence": "0.3"
+          }
+        },
+        {
+          "step": 4,
+          "agent": "RiskManager",
+          "decision": "SELL",
+          "rationale": "Verkauf/Flat ben\u00f6tigt keine Kapitalfreigabe",
+          "data": {
+            "quote_size": "0"
+          }
+        },
+        {
+          "step": 5,
+          "agent": "Supervisor",
+          "decision": "NO TRADE",
+          "rationale": "Kein belastbarer Konsens (3 Gegenstimmen)",
+          "data": {}
+        }
+      ],
+      "consensus": "SELL",
+      "agreed": false,
+      "challenges": [
+        "Momentum widerspricht (BUY): RSI 21 \u00fcberverkauft",
+        "MeanReversion widerspricht (HOLD): innerhalb der B\u00e4nder",
+        "VolSkeptiker widerspricht (HOLD): Volatilit\u00e4t vertretbar"
+      ],
+      "prepared_order": null,
+      "final": "NO TRADE",
+      "executed": false,
+      "execution_note": ""
+    }
+  ]
+};
+
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const dcls = d => "d-" + String(d).replace(/\s+/g,"");
+const AGENTS = ["MarketAnalyst","Strategist","RiskManager","ExecutionAgent","TradeReviewer","Supervisor"];
+// desk anchor points around the room
+const DESK = {
+  MarketAnalyst:{x:95,y:95},  Strategist:{x:400,y:70},  RiskManager:{x:705,y:95},
+  ExecutionAgent:{x:95,y:440}, TradeReviewer:{x:400,y:470}, Supervisor:{x:705,y:440}
+};
+const SEAT = {
+  MarketAnalyst:{x:318,y:232}, Strategist:{x:400,y:208}, RiskManager:{x:482,y:232},
+  ExecutionAgent:{x:318,y:296}, TradeReviewer:{x:400,y:318}, Supervisor:{x:482,y:296}
+};
+const SVGNS="http://www.w3.org/2000/svg";
+const el=(n,a)=>{const e=document.createElementNS(SVGNS,n);for(const k in a)e.setAttribute(k,a[k]);return e;};
+
+// --- build desks, walk paths and agent avatars -----------------------------
+const desksG=document.getElementById("desks"), pathsG=document.getElementById("paths"), agentsG=document.getElementById("agents");
+const nodes={}, paths={};
+AGENTS.forEach(name=>{
+  const d=DESK[name], s=SEAT[name];
+  const deskY = d.y<260 ? d.y+16 : d.y-46;
+  desksG.appendChild(el("rect",{x:d.x-52,y:deskY,width:104,height:30,rx:6,fill:"url(#deskG)",stroke:"#2a3a6d"}));
+  const scr=el("rect",{x:d.x-30,y:deskY+5,width:60,height:20,rx:3,fill:"#081028",stroke:"#22e8ff44"});
+  scr.setAttribute("id","scr-"+name); desksG.appendChild(scr);
+  const lbl=el("text",{x:d.x,y:d.y<260?deskY+44:deskY-10,"text-anchor":"middle",fill:"#8294c4",
+    "font-family":"Space Grotesk,monospace","font-size":"10"}); lbl.textContent=name; desksG.appendChild(lbl);
+  // curved walk path desk -> seat
+  const mx=(d.x+s.x)/2, my=(d.y+s.y)/2 + (d.y<260?40:-40);
+  const p=el("path",{d:`M ${d.x} ${d.y} Q ${mx} ${my} ${s.x} ${s.y}`});
+  pathsG.appendChild(p); paths[name]=p;
+  const g=el("g",{}); g.setAttribute("id","ag-"+name);
+  g.appendChild(el("circle",{r:11,fill:"#0b1226",stroke:"#22e8ff","stroke-width":"1.5"}));
+  g.appendChild(el("circle",{r:4,cy:-2,fill:"#22e8ff"}));
+  const st=el("circle",{r:3,cx:9,cy:-9,fill:"#8294c4"}); st.setAttribute("id","dot-"+name); g.appendChild(st);
+  agentsG.appendChild(g); nodes[name]=g;
+  gsap.set(g,{x:d.x,y:d.y});
+});
+
+// --- real meeting data -----------------------------------------------------
+const meetings = DATA.meetings || [];
+let current = 0, step = 0, timeline = null;
+
+const tabs=document.getElementById("tabs");
+meetings.forEach((m,i)=>{
+  const b=document.createElement("button"); b.className="tab"; b.type="button";
+  b.setAttribute("aria-selected", i===0?"true":"false");
+  b.textContent=m.symbol+" · "+m.final;
+  b.onclick=()=>{current=i;reset();renderAll();[...tabs.children].forEach((c,j)=>c.setAttribute("aria-selected",String(j===i)));};
+  tabs.appendChild(b);
+});
+
+function statements(){ return (meetings[current]||{}).statements||[]; }
+
+function renderFeed(){
+  const f=document.getElementById("feed");
+  f.innerHTML = statements().map((s,i)=>`
+    <div class="msg${i<step?" on":""}" id="msg-${i}">
+      <div class="top"><span class="who">${esc(s.agent)} · Schritt ${s.step}</span>
+      <span class="d ${dcls(s.decision)}">${esc(s.decision)}</span></div>
+      <div class="why">${esc(s.rationale)}</div>
+    </div>`).join("") || `<div class="why">Kein Meeting aufgezeichnet.</div>`;
+}
+
+function renderAll(){
+  const m=meetings[current]||{};
+  document.getElementById("bigScreen").textContent = m.symbol || "MEETING ROOM";
+  document.getElementById("bigScreen2").textContent = m.consensus ? `Konsens ${m.consensus} · ${m.final}` : "bereit";
+  document.getElementById("stepTag").textContent = `Schritt ${step}/${statements().length}`;
+  document.getElementById("officeNote").textContent =
+    `Alle Bewegungen und Texte stammen aus dem aufgezeichneten Meeting (${m.symbol||"—"}). `
+    + (m.prepared_order ? "Order vorbereitet, aber nicht gesendet." : "Keine Order vorbereitet.")
+    + (m.execution_note ? " " + m.execution_note : "");
+  renderFeed();
+}
+
+// --- GSAP movement along the SVG path --------------------------------------
+function moveTo(name, toSeat){
+  const path=paths[name], g=nodes[name];
+  const total=path.getTotalLength();
+  const prog={L: toSeat?0:total};
+  const update=()=>{
+    const L=Math.min(Math.max(prog.L,0),total);
+    const p=path.getPointAtLength(L);
+    const q=path.getPointAtLength(Math.min(L+2,total));
+    const ang=Math.atan2(q.y-p.y,q.x-p.x)*(180/Math.PI);
+    gsap.set(g,{x:p.x,y:p.y,rotation:toSeat?ang*0.15:0});
+  };
+  return gsap.to(prog,{L: toSeat?total:0,duration:1.1,ease:"power3.inOut",onUpdate:update});
+}
+function setDot(name,color){ const d=document.getElementById("dot-"+name); if(d) d.setAttribute("fill",color); }
+function flashScreen(name,color){
+  const s=document.getElementById("scr-"+name); if(!s) return;
+  gsap.fromTo(s,{stroke:color,opacity:1},{opacity:.45,duration:.8,yoyo:true,repeat:1});
+}
+const COLOR={BUY:"#2ff39a",SELL:"#ff5577","NO TRADE":"#ffc34d",VETO:"#ff5577",HOLD:"#8294c4"};
+
+function playStep(i){
+  const s=statements()[i]; if(!s) return;
+  step=i+1;
+  const msg=document.getElementById("msg-"+i); if(msg){msg.classList.add("on");msg.scrollIntoView({block:"nearest"});}
+  document.getElementById("stepTag").textContent=`Schritt ${step}/${statements().length}`;
+  const col=COLOR[s.decision]||"#8294c4";
+  if(nodes[s.agent]){ setDot(s.agent,col); flashScreen(s.agent,col); }
+  // steps 3-5 are the debate: everyone who is a desk agent sits at the table
+  if(s.step>=3 && s.step<=5){ AGENTS.forEach(n=>moveTo(n,true)); }
+  if(s.decision==="VETO"){ document.getElementById("bigScreen2").textContent="VETO – blockiert"; }
+  if(s.agent==="Gate"||s.step===8){ document.getElementById("bigScreen2").textContent=s.rationale.slice(0,46); }
+}
+
+function play(){
+  if(timeline) timeline.kill();
+  reset();
+  timeline=gsap.timeline();
+  statements().forEach((s,i)=>timeline.call(()=>playStep(i),null,i*1.15));
+  timeline.call(()=>{ AGENTS.forEach(n=>moveTo(n,false)); }, null, statements().length*1.15+0.9);
+}
+function reset(){
+  if(timeline){timeline.kill();timeline=null;}
+  step=0; AGENTS.forEach(n=>{moveTo(n,false);setDot(n,"#8294c4");});
+  renderFeed(); document.getElementById("stepTag").textContent=`Schritt 0/${statements().length}`;
+}
+document.getElementById("play").onclick=play;
+document.getElementById("reset").onclick=reset;
+document.getElementById("estop").onclick=()=>{
+  if(timeline) timeline.kill();
+  AGENTS.forEach(n=>setDot(n,"#ff5577"));
+  document.getElementById("bigScreen2").textContent="NOT-AUS – alle Orders blockiert";
+  document.getElementById("modeTag").textContent="NOT-AUS";
+  document.getElementById("play").disabled=true;
+  document.getElementById("officeNote").textContent=
+    "Not-Aus in der Ansicht ausgelöst. Das Backend steht ohnehin auf PAPER; echte Orders waren zu keinem Zeitpunkt möglich.";
+};
+
+// --- header, monitors, risk, connectors ------------------------------------
+document.getElementById("modeTag").textContent=DATA.mode||"PAPER";
+document.getElementById("balTag").textContent="REAL "+Number(DATA.real_balance_usdc||0).toFixed(4)+" USDC";
+document.getElementById("asof").textContent=
+  "Snapshot "+new Date(DATA.generated_at).toLocaleString()+" · "+(DATA.real_balance_source||"");
+
+const L=DATA.limits||{}, S=DATA.status||{};
+document.getElementById("monitor").innerHTML=[
+  ["Coinbase-Guthaben (REAL)", Number(DATA.real_balance_usdc||0).toFixed(4)+" USDC"],
+  ["Trading-Kapital (Deckel)", L.total_capital_usdc+" USDC"],
+  ["Offene Position", "keine"],
+  ["Realisierter P&L (real)", "0.0000 USDC"],
+  ["Nicht realisierter P&L", "—"],
+  ["Offene Orders", "0"],
+  ["Modus", DATA.mode],
+  ["Limits bestätigt", L.confirmed ? "ja" : "nein"],
+].map(([l,v])=>`<div class="kpi"><div class="l">${esc(l)}</div><div class="v">${esc(v)}</div></div>`).join("");
+
+const vetoes=[]; meetings.forEach(m=>m.statements.filter(s=>s.decision==="VETO").forEach(s=>vetoes.push(m.symbol+": "+s.agent+" – "+s.rationale)));
+document.getElementById("risk").innerHTML=
+  `<div class="row"><span>Autonomous Live</span><span class="d d-VETO">LOCKED</span></div>
+   <div class="row"><span>Risikolimits bestätigt</span><span class="d ${L.confirmed?"d-BUY":"d-NOTRADE"}">${L.confirmed?"ja":"nein"}</span></div>
+   <div class="row"><span>Max. Tagesverlust</span><span>${esc(L.max_daily_loss_usdc)} USDC</span></div>
+   <div class="row"><span>Max. Gesamtverlust</span><span>${esc(L.max_total_loss_usdc)} USDC</span></div>
+   <div class="row"><span>Max. Slippage</span><span>${esc(L.max_slippage_pct)} %</span></div>
+   <div class="row"><span>Max. offene Exposition</span><span>${esc(L.max_open_exposure_usdc)} USDC</span></div>
+   <div class="row"><span>Vetos in diesen Meetings</span><span>${vetoes.length}</span></div>
+   ${vetoes.map(v=>`<div class="why">${esc(v)}</div>`).join("")}
+   <p class="note">Limits mit 0 sind noch nicht gesetzt — deshalb bleibt LIVE MANUAL gesperrt.</p>`;
+
+document.getElementById("conn").innerHTML=(DATA.connectors||[]).map(c=>
+  `<div class="row"><span>${esc(c.name)}</span><span class="d ${c.status==="CONNECTED"?"d-BUY":"d-NOTRADE"}">${esc(c.status)}</span></div>`).join("");
+
+document.getElementById("foot").textContent=
+  "HyperGrok AI Trading Office · Visualisierung echter Backend-Ereignisse. Das Frontend trifft keine Handelsentscheidungen und kann keine Order auslösen. Modus "
+  +(DATA.mode||"PAPER")+", autonomes Live gesperrt, keine Keys im Frontend.";
+
+renderAll();
+</script>
